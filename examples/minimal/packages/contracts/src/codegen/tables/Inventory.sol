@@ -69,44 +69,44 @@ library Inventory {
 
   /** Get amount */
   function get(address user, bytes32 item, uint32 variant) internal view returns (uint32 amount) {
-    bytes32[] memory _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+    bytes32[] memory _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keySchema, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Get amount (using the specified store) */
   function get(IStore _store, address user, bytes32 item, uint32 variant) internal view returns (uint32 amount) {
-    bytes32[] memory _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+    bytes32[] memory _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
 
-    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    bytes memory _blob = _store.getField(_tableId, _keySchema, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Set amount */
   function set(address user, bytes32 item, uint32 variant, uint32 amount) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+    bytes32[] memory _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((amount)));
+    StoreSwitch.setField(_tableId, _keySchema, 0, abi.encodePacked((amount)));
   }
 
   /** Set amount (using the specified store) */
   function set(IStore _store, address user, bytes32 item, uint32 variant, uint32 amount) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+    bytes32[] memory _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
 
-    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((amount)));
+    _store.setField(_tableId, _keySchema, 0, abi.encodePacked((amount)));
   }
 
   /** Tightly pack full data using this table's schema */
@@ -119,30 +119,30 @@ library Inventory {
     address user,
     bytes32 item,
     uint32 variant
-  ) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+  ) internal pure returns (bytes32[] memory _keySchema) {
+    _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(address user, bytes32 item, uint32 variant) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+    bytes32[] memory _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
 
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+    StoreSwitch.deleteRecord(_tableId, _keySchema);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, address user, bytes32 item, uint32 variant) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](3);
-    _primaryKeys[0] = bytes32(uint256(uint160((user))));
-    _primaryKeys[1] = bytes32((item));
-    _primaryKeys[2] = bytes32(uint256((variant)));
+    bytes32[] memory _keySchema = new bytes32[](3);
+    _keySchema[0] = bytes32(uint256(uint160((user))));
+    _keySchema[1] = bytes32((item));
+    _keySchema[2] = bytes32(uint256((variant)));
 
-    _store.deleteRecord(_tableId, _primaryKeys);
+    _store.deleteRecord(_tableId, _keySchema);
   }
 }

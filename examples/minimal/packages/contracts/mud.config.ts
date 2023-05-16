@@ -16,14 +16,14 @@ export default mudConfig({
       storeArgument: true,
     },
     MessageTable: {
-      primaryKeys: {},
+      keySchema: {},
       schema: {
         value: "string",
       },
       ephemeral: true,
     },
     Inventory: {
-      primaryKeys: {
+      keySchema: {
         user: "address",
         item: "bytes32",
         variant: "uint32",

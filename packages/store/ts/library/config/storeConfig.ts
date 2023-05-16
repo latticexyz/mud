@@ -30,7 +30,7 @@ export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
 const zPrimaryKey = z.string();
-const zPrimaryKeys = z.record(zKeyName, zPrimaryKey).default(TABLE_DEFAULTS.primaryKeys);
+const zkeySchema = z.record(zKeyName, zPrimaryKey).default(TABLE_DEFAULTS.keySchema);
 
 type PrimaryKey<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
@@ -82,7 +82,7 @@ export interface TableConfig<
   /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
   ephemeral?: boolean;
   /** Table's primary key names mapped to their types. Default is `{ key: "bytes32" }` */
-  primaryKeys?: Record<string, PrimaryKey<StaticUserTypes>>;
+  keySchema?: Record<string, PrimaryKey<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: SchemaConfig<UserTypes>;
 }
@@ -104,7 +104,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       storeArgument: typeof TABLE_DEFAULTS.storeArgument;
       // dataStruct isn't expanded, because its value is conditional on the number of schema fields
       dataStruct: boolean;
-      primaryKeys: typeof TABLE_DEFAULTS.primaryKeys;
+      keySchema: typeof TABLE_DEFAULTS.keySchema;
       ephemeral: typeof TABLE_DEFAULTS.ephemeral;
     }
   > {
@@ -118,7 +118,7 @@ const zFullTableConfig = z
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
-    primaryKeys: zPrimaryKeys,
+    keySchema: zkeySchema,
     schema: zSchemaConfig,
     ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
   })
@@ -283,7 +283,7 @@ export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRe
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
   // Local table variables must be unique within the table
   for (const table of Object.values(config.tables)) {
-    const primaryKeyNames = Object.keys(table.primaryKeys);
+    const primaryKeyNames = Object.keys(table.keySchema);
     const fieldNames = Object.keys(table.schema);
     const duplicateVariableNames = getDuplicates([...primaryKeyNames, ...fieldNames]);
     if (duplicateVariableNames.length > 0) {
@@ -316,7 +316,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   }
   // User types must exist
   for (const table of Object.values(config.tables)) {
-    for (const primaryKeyType of Object.values(table.primaryKeys)) {
+    for (const primaryKeyType of Object.values(table.keySchema)) {
       validateStaticAbiOrUserType(staticUserTypeNames, primaryKeyType, ctx);
     }
     for (const fieldType of Object.values(table.schema)) {

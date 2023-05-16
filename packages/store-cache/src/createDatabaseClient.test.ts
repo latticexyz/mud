@@ -6,12 +6,12 @@ import { KeyValue } from "./types";
 const config = mudConfig({
   namespace: "somenamespace",
   tables: {
-    Counter: { primaryKeys: { first: "bytes32", second: "uint256" }, schema: "uint256" },
+    Counter: { keySchema: { first: "bytes32", second: "uint256" }, schema: "uint256" },
     Position: { schema: { x: "int32", y: "int32" } },
-    MultiKey: { primaryKeys: { first: "bytes32", second: "uint32" }, schema: "int32" },
-    EnumTable: { primaryKeys: { first: "Enum1" }, schema: "Enum2" },
+    MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
+    EnumTable: { keySchema: { first: "Enum1" }, schema: "Enum2" },
     MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
-    BigInt: { primaryKeys: { first: "uint256" }, schema: "uint256" },
+    BigInt: { keySchema: { first: "uint256" }, schema: "uint256" },
   },
   enums: {
     Enum1: ["A1", "A2"],

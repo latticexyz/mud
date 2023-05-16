@@ -18,7 +18,7 @@ export interface RenderTableOptions {
   staticResourceData?: StaticResourceData;
   /** Path for store package imports */
   storeImportPath: string;
-  primaryKeys: RenderPrimaryKey[];
+  keySchema: RenderPrimaryKey[];
   fields: RenderField[];
   staticFields: RenderStaticField[];
   dynamicFields: RenderDynamicField[];

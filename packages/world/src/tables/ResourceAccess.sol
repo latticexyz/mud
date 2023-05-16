@@ -68,40 +68,40 @@ library ResourceAccess {
 
   /** Get access */
   function get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+    bytes32[] memory _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keySchema, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
   /** Get access (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+    bytes32[] memory _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
 
-    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    bytes memory _blob = _store.getField(_tableId, _keySchema, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
   /** Set access */
   function set(bytes32 resourceSelector, address caller, bool access) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+    bytes32[] memory _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
+    StoreSwitch.setField(_tableId, _keySchema, 0, abi.encodePacked((access)));
   }
 
   /** Set access (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, address caller, bool access) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+    bytes32[] memory _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
 
-    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
+    _store.setField(_tableId, _keySchema, 0, abi.encodePacked((access)));
   }
 
   /** Tightly pack full data using this table's schema */
@@ -113,28 +113,28 @@ library ResourceAccess {
   function encodeKeyTuple(
     bytes32 resourceSelector,
     address caller
-  ) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+  ) internal pure returns (bytes32[] memory _keySchema) {
+    _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector, address caller) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+    bytes32[] memory _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
 
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+    StoreSwitch.deleteRecord(_tableId, _keySchema);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 resourceSelector, address caller) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
+    bytes32[] memory _keySchema = new bytes32[](2);
+    _keySchema[0] = bytes32((resourceSelector));
+    _keySchema[1] = bytes32(uint256(uint160((caller))));
 
-    _store.deleteRecord(_tableId, _primaryKeys);
+    _store.deleteRecord(_tableId, _keySchema);
   }
 }
 

@@ -30,23 +30,23 @@ export function renderArguments(args: (string | undefined)[]) {
 
 export function renderCommonData({
   staticResourceData,
-  primaryKeys,
+  keySchema,
 }: {
   staticResourceData?: StaticResourceData;
-  primaryKeys: RenderPrimaryKey[];
+  keySchema: RenderPrimaryKey[];
 }) {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "bytes32 _tableId";
 
-  const _keyArgs = renderArguments(primaryKeys.map(({ name }) => name));
-  const _typedKeyArgs = renderArguments(primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
+  const _keyArgs = renderArguments(keySchema.map(({ name }) => name));
+  const _typedKeyArgs = renderArguments(keySchema.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
-  const _primaryKeysDefinition = `
-    bytes32[] memory _primaryKeys = new bytes32[](${primaryKeys.length});
+  const _keySchemaDefinition = `
+    bytes32[] memory _keySchema = new bytes32[](${keySchema.length});
     ${renderList(
-      primaryKeys,
-      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+      keySchema,
+      (primaryKey, index) => `_keySchema[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
     )}
   `;
 
@@ -55,7 +55,7 @@ export function renderCommonData({
     _typedTableId,
     _keyArgs,
     _typedKeyArgs,
-    _primaryKeysDefinition,
+    _keySchemaDefinition,
   };
 }
 

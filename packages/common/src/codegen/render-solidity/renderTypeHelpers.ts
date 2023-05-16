@@ -1,11 +1,11 @@
 import { RenderField, RenderPrimaryKey, RenderType } from "./types";
 
-export function renderTypeHelpers(options: { fields: RenderField[]; primaryKeys: RenderPrimaryKey[] }) {
-  const { fields, primaryKeys } = options;
+export function renderTypeHelpers(options: { fields: RenderField[]; keySchema: RenderPrimaryKey[] }) {
+  const { fields, keySchema } = options;
 
   let result = "";
 
-  for (const wrappingHelper of getWrappingHelpers([...fields, ...primaryKeys])) {
+  for (const wrappingHelper of getWrappingHelpers([...fields, ...keySchema])) {
     result += wrappingHelper;
   }
 
@@ -19,7 +19,7 @@ export function renderTypeHelpers(options: { fields: RenderField[]; primaryKeys:
     }
     `;
   }
-  if (primaryKeys.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
+  if (keySchema.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
     result += `
     function _boolToBytes32(bool value) pure returns (bytes32 result) {
       assembly {

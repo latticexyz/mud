@@ -9,7 +9,7 @@ import { RenderTableOptions } from "./types";
 
 export function renderFieldMethods(options: RenderTableOptions) {
   const storeArgument = options.storeArgument;
-  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keySchemaDefinition } = renderCommonData(options);
 
   let result = "";
   for (const [schemaIndex, field] of options.fields.entries()) {
@@ -24,8 +24,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedTableId,
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
-        ${_primaryKeysDefinition}
-        bytes memory _blob = ${_store}.getField(_tableId, _primaryKeys, ${schemaIndex});
+        ${_keySchemaDefinition}
+        bytes memory _blob = ${_store}.getField(_tableId, _keySchema, ${schemaIndex});
         return ${renderDecodeFieldSingle(field)};
       }
     `
@@ -41,8 +41,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
         _typedFieldName,
       ])}) internal {
-        ${_primaryKeysDefinition}
-        ${_store}.setField(_tableId, _primaryKeys, ${schemaIndex}, ${renderEncodeField(field)});
+        ${_keySchemaDefinition}
+        ${_store}.setField(_tableId, _keySchema, ${schemaIndex}, ${renderEncodeField(field)});
       }
     `
     );
@@ -59,8 +59,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal view returns (uint256) {
-          ${_primaryKeysDefinition}
-          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _primaryKeys, ${schemaIndex}, getSchema());
+          ${_keySchemaDefinition}
+          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keySchema, ${schemaIndex}, getSchema());
           return _byteLength / ${portionData.elementLength};
         }
       `
@@ -76,10 +76,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
           "uint256 _index",
         ])}) internal view returns (${portionData.typeWithLocation}) {
-          ${_primaryKeysDefinition}
+          ${_keySchemaDefinition}
           bytes memory _blob = ${_store}.getFieldSlice(
             _tableId,
-            _primaryKeys,
+            _keySchema,
             ${schemaIndex},
             getSchema(),
             _index * ${portionData.elementLength},
@@ -100,8 +100,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
-          ${_primaryKeysDefinition}
-          ${_store}.pushToField(_tableId, _primaryKeys, ${schemaIndex}, ${portionData.encoded});
+          ${_keySchemaDefinition}
+          ${_store}.pushToField(_tableId, _keySchema, ${schemaIndex}, ${portionData.encoded});
         }
       `
       );
@@ -115,8 +115,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal {
-          ${_primaryKeysDefinition}
-          ${_store}.popFromField(_tableId, _primaryKeys, ${schemaIndex}, ${portionData.elementLength});
+          ${_keySchemaDefinition}
+          ${_store}.popFromField(_tableId, _keySchema, ${schemaIndex}, ${portionData.elementLength});
         }
       `
       );
@@ -132,10 +132,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
           "uint256 _index",
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
-          ${_primaryKeysDefinition}
+          ${_keySchemaDefinition}
           ${_store}.updateInField(
             _tableId,
-            _primaryKeys,
+            _keySchema,
             ${schemaIndex},
             _index * ${portionData.elementLength},
             ${portionData.encoded}

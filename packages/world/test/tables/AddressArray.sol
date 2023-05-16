@@ -64,64 +64,64 @@ library AddressArray {
 
   /** Get value */
   function get(bytes32 _tableId, bytes32 key) internal view returns (address[] memory value) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keySchema, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 _tableId, bytes32 key) internal view returns (address[] memory value) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    bytes memory _blob = _store.getField(_tableId, _keySchema, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
   /** Set value */
   function set(bytes32 _tableId, bytes32 key, address[] memory value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((value)));
+    StoreSwitch.setField(_tableId, _keySchema, 0, EncodeArray.encode((value)));
   }
 
   /** Set value (using the specified store) */
   function set(IStore _store, bytes32 _tableId, bytes32 key, address[] memory value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    _store.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((value)));
+    _store.setField(_tableId, _keySchema, 0, EncodeArray.encode((value)));
   }
 
   /** Get the length of value */
   function length(bytes32 _tableId, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keySchema, 0, getSchema());
     return _byteLength / 20;
   }
 
   /** Get the length of value (using the specified store) */
   function length(IStore _store, bytes32 _tableId, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keySchema, 0, getSchema());
     return _byteLength / 20;
   }
 
   /** Get an item of value (unchecked, returns invalid data if index overflows) */
   function getItem(bytes32 _tableId, bytes32 key, uint256 _index) internal view returns (address) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getFieldSlice(
       _tableId,
-      _primaryKeys,
+      _keySchema,
       0,
       getSchema(),
       _index * 20,
@@ -132,59 +132,59 @@ library AddressArray {
 
   /** Get an item of value (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItem(IStore _store, bytes32 _tableId, bytes32 key, uint256 _index) internal view returns (address) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 0, getSchema(), _index * 20, (_index + 1) * 20);
+    bytes memory _blob = _store.getFieldSlice(_tableId, _keySchema, 0, getSchema(), _index * 20, (_index + 1) * 20);
     return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Push an element to value */
   function push(bytes32 _tableId, bytes32 key, address _element) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
+    StoreSwitch.pushToField(_tableId, _keySchema, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value (using the specified store) */
   function push(IStore _store, bytes32 _tableId, bytes32 key, address _element) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
+    _store.pushToField(_tableId, _keySchema, 0, abi.encodePacked((_element)));
   }
 
   /** Pop an element from value */
   function pop(bytes32 _tableId, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    StoreSwitch.popFromField(_tableId, _primaryKeys, 0, 20);
+    StoreSwitch.popFromField(_tableId, _keySchema, 0, 20);
   }
 
   /** Pop an element from value (using the specified store) */
   function pop(IStore _store, bytes32 _tableId, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    _store.popFromField(_tableId, _primaryKeys, 0, 20);
+    _store.popFromField(_tableId, _keySchema, 0, 20);
   }
 
   /** Update an element of value at `_index` */
   function update(bytes32 _tableId, bytes32 key, uint256 _index, address _element) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 20, abi.encodePacked((_element)));
+    StoreSwitch.updateInField(_tableId, _keySchema, 0, _index * 20, abi.encodePacked((_element)));
   }
 
   /** Update an element of value (using the specified store) at `_index` */
   function update(IStore _store, bytes32 _tableId, bytes32 key, uint256 _index, address _element) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    _store.updateInField(_tableId, _primaryKeys, 0, _index * 20, abi.encodePacked((_element)));
+    _store.updateInField(_tableId, _keySchema, 0, _index * 20, abi.encodePacked((_element)));
   }
 
   /** Tightly pack full data using this table's schema */
@@ -197,24 +197,24 @@ library AddressArray {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keySchema) {
+    _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 _tableId, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+    StoreSwitch.deleteRecord(_tableId, _keySchema);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 _tableId, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keySchema = new bytes32[](1);
+    _keySchema[0] = bytes32((key));
 
-    _store.deleteRecord(_tableId, _primaryKeys);
+    _store.deleteRecord(_tableId, _keySchema);
   }
 }

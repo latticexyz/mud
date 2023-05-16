@@ -68,18 +68,18 @@ library MessageTable {
   function emitEphemeral(string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](0);
+    bytes32[] memory _keySchema = new bytes32[](0);
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+    StoreSwitch.emitEphemeralRecord(_tableId, _keySchema, _data);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
   function emitEphemeral(IStore _store, string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](0);
+    bytes32[] memory _keySchema = new bytes32[](0);
 
-    _store.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+    _store.emitEphemeralRecord(_tableId, _keySchema, _data);
   }
 
   /** Tightly pack full data using this table's schema */
@@ -92,7 +92,7 @@ library MessageTable {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](0);
+  function encodeKeyTuple() internal pure returns (bytes32[] memory _keySchema) {
+    _keySchema = new bytes32[](0);
   }
 }

@@ -12,7 +12,7 @@ export default mudConfig({
      *
      ************************************************************************/
     NamespaceOwner: {
-      primaryKeys: {
+      keySchema: {
         namespace: "bytes16",
       },
       schema: {
@@ -20,7 +20,7 @@ export default mudConfig({
       },
     },
     ResourceAccess: {
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
         caller: "address",
       },
@@ -29,7 +29,7 @@ export default mudConfig({
       },
     },
     InstalledModules: {
-      primaryKeys: {
+      keySchema: {
         moduleName: "bytes16",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
@@ -49,7 +49,7 @@ export default mudConfig({
      ************************************************************************/
     Systems: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: {
@@ -60,7 +60,7 @@ export default mudConfig({
     },
     SystemRegistry: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         system: "address",
       },
       schema: {
@@ -69,7 +69,7 @@ export default mudConfig({
     },
     ResourceType: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: {
@@ -78,7 +78,7 @@ export default mudConfig({
     },
     FunctionSelectors: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         functionSelector: "bytes4",
       },
       schema: {
@@ -90,7 +90,7 @@ export default mudConfig({
     },
     KeysWithValue: {
       directory: "modules/keyswithvalue/tables",
-      primaryKeys: {
+      keySchema: {
         valueHash: "bytes32",
       },
       schema: {
@@ -100,12 +100,12 @@ export default mudConfig({
     },
     KeysInTable: {
       directory: "modules/keysintable/tables",
-      primaryKeys: { sourceTable: "bytes32" },
+      keySchema: { sourceTable: "bytes32" },
       schema: { length: "uint32", keys: "bytes32[]" }, // For now only indexes the first key of a primary key tuple
     },
     UsedKeysIndex: {
       directory: "modules/keysintable/tables",
-      primaryKeys: {
+      keySchema: {
         sourceTable: "bytes32",
         keysHash: "bytes32",
       },
@@ -114,7 +114,7 @@ export default mudConfig({
     },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
-      primaryKeys: {},
+      keySchema: {},
       schema: "uint256",
       tableIdArgument: true,
       storeArgument: true,
@@ -126,7 +126,7 @@ export default mudConfig({
      ************************************************************************/
     Bool: {
       directory: "../test/tables",
-      primaryKeys: {},
+      keySchema: {},
       schema: {
         value: "bool",
       },

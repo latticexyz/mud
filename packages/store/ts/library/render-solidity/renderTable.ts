@@ -29,10 +29,10 @@ export function renderTable(options: RenderTableOptions) {
     withRecordMethods,
     withEphemeralMethods,
     storeArgument,
-    primaryKeys,
+    keySchema,
   } = options;
 
-  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keySchemaDefinition } = renderCommonData(options);
   const shouldRenderDelete = !withEphemeralMethods;
 
   return `${renderedSolidityHeader}
@@ -82,8 +82,8 @@ library ${libraryName} {
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${primaryKeys.length});
-    ${renderList(primaryKeys, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+    SchemaType[] memory _schema = new SchemaType[](${keySchema.length});
+    ${renderList(keySchema, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
 
     return SchemaLib.encode(_schema);
   }
@@ -137,11 +137,11 @@ library ${libraryName} {
   }
   
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](${primaryKeys.length});
+  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keySchema) {
+    _keySchema = new bytes32[](${keySchema.length});
     ${renderList(
-      primaryKeys,
-      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+      keySchema,
+      (primaryKey, index) => `_keySchema[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
     )}
   }
 
@@ -152,8 +152,8 @@ library ${libraryName} {
           (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
-      ${_primaryKeysDefinition}
-      ${_store}.deleteRecord(_tableId, _primaryKeys);
+      ${_keySchemaDefinition}
+      ${_store}.deleteRecord(_tableId, _keySchema);
     }
   `
         )

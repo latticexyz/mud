@@ -33,8 +33,8 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // list of any symbols that need to be imported
     const imports: RelativeImportDatum[] = [];
 
-    const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
-      const abiOrUserType = tableData.primaryKeys[name];
+    const keySchema = Object.keys(tableData.keySchema).map((name) => {
+      const abiOrUserType = tableData.keySchema[name];
       const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
 
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
@@ -94,7 +94,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         structName: withStruct ? tableName + "Data" : undefined,
         staticResourceData,
         storeImportPath,
-        primaryKeys,
+        keySchema,
         fields,
         staticFields,
         dynamicFields,

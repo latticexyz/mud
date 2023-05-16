@@ -3,7 +3,7 @@ import { RenderTableOptions } from "./types";
 
 export function renderEphemeralMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
-  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _keySchemaDefinition } = renderCommonData(options);
 
   let result = renderWithStore(
     storeArgument,
@@ -17,9 +17,9 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
     ])}) internal {
       bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
 
-      ${_primaryKeysDefinition}
+      ${_keySchemaDefinition}
 
-      ${_store}.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+      ${_store}.emitEphemeralRecord(_tableId, _keySchema, _data);
     }
   `
   );
