@@ -1,5 +1,5 @@
 import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService } from "@latticexyz/network";
+import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { clientComponents } from "./clientComponents";
@@ -8,7 +8,6 @@ import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import { getTableIds } from "@latticexyz/utils";
-import { getSnapSyncRecords } from "./snapSync";
 import storeConfig from "contracts/mud.config";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;

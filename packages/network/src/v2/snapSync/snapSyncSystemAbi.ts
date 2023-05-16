@@ -1,3 +1,5 @@
+// TODO: autogenerate this and import from the SnapSync module
+// (see https://github.com/latticexyz/mud/issues/836)
 export default [
   {
     inputs: [

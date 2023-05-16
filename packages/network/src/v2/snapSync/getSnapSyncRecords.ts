@@ -1,7 +1,7 @@
-import { RawTableRecord } from "@latticexyz/network";
 import { TableId } from "@latticexyz/utils";
 import snapSyncSystemAbi from "./snapSyncSystemAbi";
 import { Contract, Signer, providers } from "ethers";
+import { RawTableRecord } from "../../types";
 
 export async function getSnapSyncRecords(
   worldAddress: string,
