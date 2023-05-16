@@ -1,4 +1,5 @@
 ## MODE
+
 ### What is MODE
 
 MODE is an off-chain indexer for on-chain applications build with MUD. MODE uses PostgresDB as the underlying storage backend and works out-of-the-box with any MUD app. It is capable of indexing MUD applications on any EVM-compatible chain and can index multiple worlds per-chain. It is built primarily as a utility for synchronizing MUD clients to the table state on-chain (see [Store](store) for more details) and exposes an API for a client to download MUD app state as well as to stream incremental updates to that state.
@@ -9,7 +10,7 @@ When building any applications, we care about reading and writing data. Writes e
 
 The issue with view functions is that complexity in having to generate and call these to get the “full picture” of the state from the chain explodes pretty quickly. For a web app client wanting to present the user with an up-to-date view of the on-chain state, the task of calling the different view functions becomes unnecessarily hard very fast. This can also quickly accelerate the need to run a set of dedicated nodes just to be able to service the needed number of RPC requests.
 
-Applications built with MUD are some of the biggest and most complex on-chain apps out there, so naturally they suffer from the above issues. MODE is one solution to the issue of easy “reads” of on-chain state. MODE is able to “track” the state of any MUD-built application on any network that MODE is running connected to, without having to write any code. Once the state is tracked, parsed, and saved to the underlying storage layer, MODE exposes an API that allows clients to make a single RPC call to retrieve the *entire* current state. Since after this “read”, there are bound to be more “writes” (e.g. users keep sending transactions to interact with the MUD app), MODE exposes a different endpoint that can stream incremental updates to the on-chain state. This way the client syncs itself once with the full state and maintains in-sync by receiving every change to the state as it happens on-chain and is tracked by MODE.
+Applications built with MUD are some of the biggest and most complex on-chain apps out there, so naturally they suffer from the above issues. MODE is one solution to the issue of easy “reads” of on-chain state. MODE is able to “track” the state of any MUD-built application on any network that MODE is running connected to, without having to write any code. Once the state is tracked, parsed, and saved to the underlying storage layer, MODE exposes an API that allows clients to make a single RPC call to retrieve the _entire_ current state. Since after this “read”, there are bound to be more “writes” (e.g. users keep sending transactions to interact with the MUD app), MODE exposes a different endpoint that can stream incremental updates to the on-chain state. This way the client syncs itself once with the full state and maintains in-sync by receiving every change to the state as it happens on-chain and is tracked by MODE.
 
 TODO: add a paragraph about being able to query the state (either on the DB directly or with the DSL)
 
@@ -17,7 +18,7 @@ TODO: add a paragraph comparing MODE to: 1) the snapshot service of MUD1 2) The 
 
 ## MODE Architecture
 
- MODE is designed to be modular and extensible. At a high level, MODE is broken down into the following functions
+MODE is designed to be modular and extensible. At a high level, MODE is broken down into the following functions
 
 - Ingress events from the chain
 - Save and organize events from the chain
@@ -55,19 +56,19 @@ This layer is responsible for getting the data from MUD applications on-chain in
 The IngressLayer contains the logic for the detection, parsing, and proper handling of MUD events that MODE detects on-chain. This includes handling
 
 - Schema table events — events that are emitted when new tables are created on-chain
-    - This is represented as a new row into the `schemas` table via the `StoreSetRecord` event
+  - This is represented as a new row into the `schemas` table via the `StoreSetRecord` event
 - Metadata table events — events that are emitted when tables are augmented with key / value names
-    - This is represented as a new row into the `metadata` table via the `StoreSetRecord` event
+  - This is represented as a new row into the `metadata` table via the `StoreSetRecord` event
 - Generic table events
-    - Records inserted (new row added to table) via `StoreSetRecord`
-    - Records updated (existing row updated in table) via `StoreSetField`
-    - Records deleted (existing row deleted from table) via `StoreDeleteRecord`
+  - Records inserted (new row added to table) via `StoreSetRecord`
+  - Records updated (existing row updated in table) via `StoreSetField`
+  - Records deleted (existing row deleted from table) via `StoreDeleteRecord`
 
 IngressLayer is responsible for figuring out which event is detected in the logs and handling it appropriately. IngressLayer maintains connections to both `ReadLayer` and `WriteLayer` and primarily uses the `WriteLayer` to execute CREATE / UPDATE / DELETE operations on the database layer.
 
 ### QueryLayer
 
-This layer is responsible for implementing a spec for a QueryLayer service defined in a Protobuf file, which allows us to generate boilerplate code / stubs for a set of languages while having a single source of truth for what the API should look like. 
+This layer is responsible for implementing a spec for a QueryLayer service defined in a Protobuf file, which allows us to generate boilerplate code / stubs for a set of languages while having a single source of truth for what the API should look like.
 
 The QueryLayer exposes the RPC endpoints that clients interact with when they make requests to MODE. Being the entry point for read requests, the QueryLayer maintains connections to the ReadLayer and the DatabaseLayer. The job of the QueryLayer is to receive user requests for MUD data, validate requests, transform them into dedicated objects, build SQL queries from those objects, and finally execute the queries against the backend. In theory, the QueryLayer may be just a wrapper around the SQL execution API, but we place guardrails in order to restrict the types of things that callers of the MODE API can do. Instead of a free-for-all SQL execution, clients get a DSL-like way to build requests, where you can specify which tables you want the state to include or if querying for state from a single table, which filters or projections to apply to the final result.
 
@@ -79,7 +80,7 @@ See `/GetState` endpoint for an example “fetch” endpoint implemented by the 
 
 **Streaming**
 
-QueryLayer can also be used to stream updates to pretty much anything that’s stored in the MODE DB. Recall that the IngressLayer of MODE is able to detect any MUD events on-chain and to stream them to the QueryLayer. The QueryLayer in turn exposes an endpoint that allows clients to open a cursor and receive those events, if they match the stream request filter. Stream requests, like fetch requests, require a namespace in order for MODE to know which state modifications need to be streamed. 
+QueryLayer can also be used to stream updates to pretty much anything that’s stored in the MODE DB. Recall that the IngressLayer of MODE is able to detect any MUD events on-chain and to stream them to the QueryLayer. The QueryLayer in turn exposes an endpoint that allows clients to open a cursor and receive those events, if they match the stream request filter. Stream requests, like fetch requests, require a namespace in order for MODE to know which state modifications need to be streamed.
 
 See `/StreamState` endpoint for an example “streaming” endpoint implemented by the MODE QueryLayer.
 
@@ -99,7 +100,7 @@ It also sets up the logical replication needed for streaming of events from this
 
 ### Schema Cache
 
-Because MODE can index any chain and any world on that chain simultaneously, it frequently needs to detect on-the-fly which tables are being modified or read from. Additionally, various details around MUD Store implementation mean that MODE sometimes needs to create tables but then modify them in-place, to perform things like column renames. 
+Because MODE can index any chain and any world on that chain simultaneously, it frequently needs to detect on-the-fly which tables are being modified or read from. Additionally, various details around MUD Store implementation mean that MODE sometimes needs to create tables but then modify them in-place, to perform things like column renames.
 
 To facilitate easy updates to tables and to always have a way to get information on what the table looks like structurally (both on-chain and off-chain), MODE contains a SchemaCache component that allows layers to get up-to-date information on the table schemas. Table schemas have a dedicated type in MODE and are stored in an internal schema table (MODE has several internal tables). The SchemaCache component exposes an API to get any schema for any table indexed by MODE given a `chainId` , a `worldAddress`, and a `tableName`. Note that the chain ID and the world address uniquely identify a world-level namespace / Postgres schema, therefore with a table name we can uniquely identify any table indexed by MODE and fetch it’s schema information.
 
@@ -110,7 +111,7 @@ Most building with MUD will find MODE useful for state sync and maintaining in-s
 ### GetState
 
 ```jsx
-rpc GetState(StateRequest) returns (QueryLayerStateResponse) {} 
+rpc GetState(StateRequest) returns (QueryLayerStateResponse) {}
 ```
 
 `GetState` retrieves the current state given a `StateRequest` where
@@ -119,7 +120,7 @@ rpc GetState(StateRequest) returns (QueryLayerStateResponse) {}
 StateRequest {
     // Namespace.
     Namespace namespace = 1;
-    
+
     // Selection of world and chain tables. If left empty, all tables
     // are included.
     repeated string worldTables = 2;
@@ -152,7 +153,7 @@ where `GenericTable` is
 GenericTable {
     repeated string cols = 1;
     repeated Row rows = 2;
-    repeated string types = 3; 
+    repeated string types = 3;
 }
 ```
 
@@ -190,7 +191,6 @@ Response (truncated)
     [...]
 }
 ```
-    
 
 ## StreamState
 
@@ -204,7 +204,7 @@ rpc StreamState(StateRequest) returns (stream QueryLayerStateStreamResponse) {}
 StateRequest {
     // Namespace.
     Namespace namespace = 1;
-    
+
     // Selection of world and chain tables. If left empty, all tables
     // are included.
     repeated string worldTables = 2;
@@ -246,7 +246,7 @@ Response
 ```jsx
 {
   "inserted": {
-    
+
   },
   "updated": {
     "chainTables": {
@@ -284,12 +284,12 @@ import { QueryLayerClient, QueryLayerDefinition } from "@latticexyz/services/pro
 const client = createClient(QueryLayerDefinition, createChannel("mode-rpc-url.com"));
 // Requests everything.
 const state = await client.getState({
-		chainTables: [],
-    worldTables: [],
-    namespace: {
-      chainId: chainId.toString(),
-      worldAddress: world.address,
-    },
+  chainTables: [],
+  worldTables: [],
+  namespace: {
+    chainId: chainId.toString(),
+    worldAddress: world.address,
+  },
 });
 // state is a mapping in form of
 //
@@ -298,7 +298,7 @@ const state = await client.getState({
 // where `tables_data` is a mapping in form of
 //
 // table_name_1: {generic_table}, table_name_2: {generic_table}
-// 
+//
 // where `generic_table` is a mapping in form of
 //
 // cols: [key_1, val_1]
