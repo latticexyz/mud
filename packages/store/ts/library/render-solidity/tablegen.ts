@@ -29,8 +29,7 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
 
-  // solc expects `/` as path separator, but path.join uses `\` if the user is on Windows
-  const fullOutputPath = path.join(outputBaseDirectory, `Tables.sol`).replace(/\\/g, "/");
+  const fullOutputPath = path.join(outputBaseDirectory, `Tables.sol`);
   const output = renderTableIndex(allTableOptions);
   await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
 }
