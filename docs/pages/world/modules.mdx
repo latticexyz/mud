@@ -111,6 +111,8 @@ The query fragments are executed from left to right and are concatenated with a 
 Example: Query for all keys in the movable table at position (0,0):
 
 ```solidity
+import { query, QueryFragment, QueryType } from "@latticexyz/world/src/modules/keysintable/query.sol";
+
 QueryFragment[] memory fragments = new QueryFragment[](2);
 
 // Specify the more restrictive filter first for performance reasons
