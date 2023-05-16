@@ -8,8 +8,10 @@
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "dev:node": "mud devnode",
     "dev:pty": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
+    "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "initialize": "pnpm recursive run initialize",
     "mud:up": "pnpm recursive exec mud set-version -v canary && pnpm install",
+    "prepare": "(forge --version || pnpm foundry:up)",
     "test": "pnpm recursive run test"
   },
   "devDependencies": {
