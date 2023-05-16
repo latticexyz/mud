@@ -55,7 +55,7 @@ keyTuple[0] = "bob";
 bool memory isPlayer = hasKey(world, PlayerTableId, keyTuple);
 ```
 
-Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains:
+Internally, it works by installing a [hook](https://v2.mud.dev/store/advanced-features#storage-hooks) that maintains:
 
 - an array of all keys in the table
 - an index or "**reverse mapping**" of whether a given key is in the table
