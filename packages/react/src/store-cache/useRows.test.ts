@@ -107,48 +107,5 @@ describe("useRows", () => {
     expect(result.current).toEqual([]);
   });
 
-  // it("should re-render only when Position changes for entity", () => {
-  //   const entity = createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
-  //   const otherEntity = createEntity(world, [withValue(Position, { x: 2, y: 2 })]);
-
-  //   const { result } = renderHook(() => useComponentValue(Position, entity));
-  //   expect(result.all.length).toBe(2);
-  //   expect(result.current).toEqual({ x: 1, y: 1 });
-
-  //   act(() => {
-  //     setComponent(Position, entity, { x: 0, y: 0 });
-  //   });
-  //   expect(result.all.length).toBe(3);
-  //   expect(result.current).toEqual({ x: 0, y: 0 });
-
-  //   act(() => {
-  //     setComponent(Position, otherEntity, { x: 0, y: 0 });
-  //     removeComponent(Position, otherEntity);
-  //   });
-  //   expect(result.all.length).toBe(3);
-  //   expect(result.current).toEqual({ x: 0, y: 0 });
-
-  //   act(() => {
-  //     removeComponent(Position, entity);
-  //   });
-  //   expect(result.all.length).toBe(4);
-  //   expect(result.current).toBe(undefined);
-  // });
-
-  // it("should return default value when Position is not set", () => {
-  //   const entity = createEntity(world);
-
-  //   const { result } = renderHook(() => useComponentValue(Position, entity, { x: -1, y: -1 }));
-  //   expect(result.current).toEqual({ x: -1, y: -1 });
-
-  //   act(() => {
-  //     setComponent(Position, entity, { x: 0, y: 0 });
-  //   });
-  //   expect(result.current).toEqual({ x: 0, y: 0 });
-
-  //   act(() => {
-  //     removeComponent(Position, entity);
-  //   });
-  //   expect(result.current).toEqual({ x: -1, y: -1 });
-  // });
+  it.todo("should re-render when the filter changes");
 });
