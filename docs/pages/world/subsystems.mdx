@@ -13,26 +13,26 @@ With World, you could deploy this piece of logic in a system — let’s call it
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-    namespace: "nftgame",
-    systems: {
-        TransferSystem: {
-            name: "transfer",
-            openAccess: false, // it's a subsystem now!
-        },
-        GameSystem: {...},
-        RaffleSystem: {...},
-        MintSystem: {...},
+  namespace: "nftgame",
+  systems: {
+    TransferSystem: {
+      name: "transfer",
+      openAccess: false, // it's a subsystem now!
     },
-    tables: {
-        BalanceTable: {
-            keySchema: { owner: "address"},
-            schema: { amount: "uint256" },
-        },
-        OwnerTable: {
-            keySchema: { token: "uint256" },
-            schema: { owner: "address" },
-        },
+    GameSystem: {...},
+    RaffleSystem: {...},
+    MintSystem: {...},
+  },
+  tables: {
+    BalanceTable: {
+      keySchema: { owner: "address"},
+      schema: { amount: "uint256" },
     },
+    OwnerTable: {
+      keySchema: { token: "uint256" },
+      schema: { owner: "address" },
+    },
+  },
 });
 ```
 

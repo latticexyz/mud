@@ -279,12 +279,12 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 import { MyNewTable } from "../codegen/tables/DogTable.sol"; // import table we created
 contract MySystem is System {
-    function addEntry(string memory name, string memory color) public returns (bytes32) {
-        bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
-        address owner = _msgSender() // IMPORTANT: always refer to the msg.sender using the _msgSender() function
-        DogTable.set(key, {owner: owner, name: name, color: color}) // creating our record!
-        return key;
-    }
+  function addEntry(string memory name, string memory color) public returns (bytes32) {
+    bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
+    address owner = _msgSender() // IMPORTANT: always refer to the msg.sender using the _msgSender() function
+    DogTable.set(key, {owner: owner, name: name, color: color}) // creating our record!
+    return key;
+  }
 }
 ```
 
