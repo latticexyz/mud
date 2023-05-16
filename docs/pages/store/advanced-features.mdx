@@ -116,7 +116,9 @@ StoreCore.registerStoreHook(table, subscriber);
 
 ### Accessing Store from a `CALL` or `DELEGATECALL` transparently
 
-<aside>📢 This feature is only available when using Store with the World framework</aside>
+<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
+  📢 This feature is only available when using Store with the World framework
+</aside>
 
 When spreading application logic over multiple contracts or wanting to enable upgrades, it becomes necessary to `DELEGATECALL` the logic from a contract holding the state of the Store to an implementation contract. This is what happens with the [proxy pattern](https://docs.openzeppelin.com/contracts/4.x/api/proxy) and the [diamond pattern](https://eips.ethereum.org/EIPS/eip-2535) (which is itself a form of proxy).
 

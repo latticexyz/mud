@@ -7,9 +7,8 @@ There exists two ways to interact with the Store:
 
 ### Access to Store via code-generated libraries
 
-<aside>
-📢 Accessing Store via the libraries generated with the `tablegen` tool is the recommended way to use Store.
-
+<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
+  📢 Accessing Store via the libraries generated with the `tablegen` tool is the recommended way to use Store.
 </aside>
 
 The `tablegen` tool of the MUD CLI can create libraries for each table that wraps the low-level API of Store and types the results.
@@ -93,7 +92,7 @@ MyTable.deleteRecord(keccak256("some.key"));
 
 ### Access to Store via low-level API
 
-<aside>
+<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
   ⚠️ Accessing Store via the low-level API is not recommend, although it is safe (no storage corruption can happen).
 </aside>
 
