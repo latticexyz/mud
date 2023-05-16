@@ -67,36 +67,36 @@ library SystemRegistry {
 
   /** Get resourceSelector */
   function get(address system) internal view returns (bytes32 resourceSelector) {
-    bytes32[] memory _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keySchema, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (Bytes.slice32(_blob, 0));
   }
 
   /** Get resourceSelector (using the specified store) */
   function get(IStore _store, address system) internal view returns (bytes32 resourceSelector) {
-    bytes32[] memory _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
 
-    bytes memory _blob = _store.getField(_tableId, _keySchema, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (Bytes.slice32(_blob, 0));
   }
 
   /** Set resourceSelector */
   function set(address system, bytes32 resourceSelector) internal {
-    bytes32[] memory _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
 
-    StoreSwitch.setField(_tableId, _keySchema, 0, abi.encodePacked((resourceSelector)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)));
   }
 
   /** Set resourceSelector (using the specified store) */
   function set(IStore _store, address system, bytes32 resourceSelector) internal {
-    bytes32[] memory _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
 
-    _store.setField(_tableId, _keySchema, 0, abi.encodePacked((resourceSelector)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)));
   }
 
   /** Tightly pack full data using this table's schema */
@@ -105,24 +105,24 @@ library SystemRegistry {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(address system) internal pure returns (bytes32[] memory _keySchema) {
-    _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+  function encodeKeyTuple(address system) internal pure returns (bytes32[] memory _keyTuple) {
+    _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(address system) internal {
-    bytes32[] memory _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
 
-    StoreSwitch.deleteRecord(_tableId, _keySchema);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, address system) internal {
-    bytes32[] memory _keySchema = new bytes32[](1);
-    _keySchema[0] = bytes32(uint256(uint160((system))));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160((system))));
 
-    _store.deleteRecord(_tableId, _keySchema);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 }

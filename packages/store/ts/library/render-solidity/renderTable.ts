@@ -32,7 +32,7 @@ export function renderTable(options: RenderTableOptions) {
     keySchema,
   } = options;
 
-  const { _typedTableId, _typedKeyArgs, _keySchemaDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
   const shouldRenderDelete = !withEphemeralMethods;
 
   return `${renderedSolidityHeader}
@@ -137,11 +137,11 @@ library ${libraryName} {
   }
   
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keySchema) {
-    _keySchema = new bytes32[](${keySchema.length});
+  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keyTuple) {
+    _keyTuple = new bytes32[](${keySchema.length});
     ${renderList(
       keySchema,
-      (primaryKey, index) => `_keySchema[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+      (primaryKey, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
     )}
   }
 
@@ -152,8 +152,8 @@ library ${libraryName} {
           (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
-      ${_keySchemaDefinition}
-      ${_store}.deleteRecord(_tableId, _keySchema);
+      ${_keyTupleDefinition}
+      ${_store}.deleteRecord(_tableId, _keyTuple);
     }
   `
         )

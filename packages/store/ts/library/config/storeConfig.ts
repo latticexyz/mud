@@ -29,10 +29,10 @@ export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray 
 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
-const zPrimaryKey = z.string();
-const zkeySchema = z.record(zKeyName, zPrimaryKey).default(TABLE_DEFAULTS.keySchema);
+const zKeySchema = z.string();
+const zkeySchema = z.record(zKeyName, zKeySchema).default(TABLE_DEFAULTS.keySchema);
 
-type PrimaryKey<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
+type KeySchema<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
 /************************************************************************
  *
@@ -82,7 +82,7 @@ export interface TableConfig<
   /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
   ephemeral?: boolean;
   /** Table's primary key names mapped to their types. Default is `{ key: "bytes32" }` */
-  keySchema?: Record<string, PrimaryKey<StaticUserTypes>>;
+  keySchema?: Record<string, KeySchema<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: SchemaConfig<UserTypes>;
 }

@@ -4,7 +4,7 @@ import {
   RelativeImportDatum,
   ImportDatum,
   StaticResourceData,
-  RenderPrimaryKey,
+  RenderKeyTuple,
   RenderType,
 } from "./types";
 
@@ -33,7 +33,7 @@ export function renderCommonData({
   keySchema,
 }: {
   staticResourceData?: StaticResourceData;
-  keySchema: RenderPrimaryKey[];
+  keySchema: RenderKeyTuple[];
 }) {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
@@ -42,11 +42,11 @@ export function renderCommonData({
   const _keyArgs = renderArguments(keySchema.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(keySchema.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
-  const _keySchemaDefinition = `
-    bytes32[] memory _keySchema = new bytes32[](${keySchema.length});
+  const _keyTupleDefinition = `
+    bytes32[] memory _keyTuple = new bytes32[](${keySchema.length});
     ${renderList(
       keySchema,
-      (primaryKey, index) => `_keySchema[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+      (primaryKey, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
     )}
   `;
 
@@ -55,7 +55,7 @@ export function renderCommonData({
     _typedTableId,
     _keyArgs,
     _typedKeyArgs,
-    _keySchemaDefinition,
+    _keyTupleDefinition,
   };
 }
 

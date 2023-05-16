@@ -2,7 +2,7 @@ import {
   RelativeImportDatum,
   RenderDynamicField,
   RenderField,
-  RenderPrimaryKey,
+  RenderKeyTuple,
   RenderStaticField,
   StaticResourceData,
 } from "@latticexyz/common/codegen";
@@ -18,7 +18,7 @@ export interface RenderTableOptions {
   staticResourceData?: StaticResourceData;
   /** Path for store package imports */
   storeImportPath: string;
-  keySchema: RenderPrimaryKey[];
+  keySchema: RenderKeyTuple[];
   fields: RenderField[];
   staticFields: RenderStaticField[];
   dynamicFields: RenderDynamicField[];

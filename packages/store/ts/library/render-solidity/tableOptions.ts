@@ -4,7 +4,7 @@ import {
   RelativeImportDatum,
   RenderDynamicField,
   RenderField,
-  RenderPrimaryKey,
+  RenderKeyTuple,
   RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
@@ -43,7 +43,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       if (renderType.isDynamic)
         throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
 
-      const primaryKey: RenderPrimaryKey = {
+      const primaryKey: RenderKeyTuple = {
         ...renderType,
         name,
         isDynamic: false,

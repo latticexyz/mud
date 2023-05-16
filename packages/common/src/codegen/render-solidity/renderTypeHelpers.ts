@@ -1,6 +1,6 @@
-import { RenderField, RenderPrimaryKey, RenderType } from "./types";
+import { RenderField, RenderKeyTuple, RenderType } from "./types";
 
-export function renderTypeHelpers(options: { fields: RenderField[]; keySchema: RenderPrimaryKey[] }) {
+export function renderTypeHelpers(options: { fields: RenderField[]; keySchema: RenderKeyTuple[] }) {
   const { fields, keySchema } = options;
 
   let result = "";
