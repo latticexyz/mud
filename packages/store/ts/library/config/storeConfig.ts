@@ -30,7 +30,7 @@ export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
 const zKeySchema = z.string();
-const zkeySchema = z.record(zKeyName, zKeySchema).default(TABLE_DEFAULTS.keySchema);
+const zKeySchema = z.record(zKeyName, zKeySchema).default(TABLE_DEFAULTS.keySchema);
 
 type KeySchema<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
@@ -118,7 +118,7 @@ const zFullTableConfig = z
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
-    keySchema: zkeySchema,
+    keySchema: zKeySchema,
     schema: zSchemaConfig,
     ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
   })
