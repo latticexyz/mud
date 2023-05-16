@@ -22,6 +22,7 @@ describe("useRows", () => {
 
   it("should return all rows of the position table", () => {
     const { result } = renderHook(() => useRows(client, { namespace: config["namespace"], table: "Position" }));
+    expect(result.current.length).toBe(0);
 
     const positionUpdates: KeyValue<typeof config, "Position">[] = [
       { key: { key: "0x00" }, value: { x: 1, y: 2 } },
@@ -58,22 +59,53 @@ describe("useRows", () => {
     ]);
   });
 
-  // it("should return Position value for entity", () => {
-  //   const entity = createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
+  it("should re-render only when the position table changes", () => {
+    const { result } = renderHook(() => useRows(client, { namespace: config["namespace"], table: "Position" }));
+    expect(result.all.length).toBe(2);
 
-  //   const { result } = renderHook(() => useComponentValue(Position, entity));
-  //   expect(result.current).toEqual({ x: 1, y: 1 });
+    // Update the position table
+    act(() => {
+      client.tables.Position.set({ key: "0x00" }, { x: 1, y: 2 });
+    });
+    expect(result.all.length).toBe(3);
+    expect(result.current).toEqual([
+      { key: { key: "0x00" }, value: { x: 1, y: 2 }, namespace: config["namespace"], table: "Position" },
+    ]);
 
-  //   act(() => {
-  //     setComponent(Position, entity, { x: 0, y: 0 });
-  //   });
-  //   expect(result.current).toEqual({ x: 0, y: 0 });
+    // Update an unrelated table
+    act(() => {
+      client.tables.MultiKey.set({ first: "0x03", second: 1 }, { value: 4 });
+    });
+    expect(result.all.length).toBe(3);
+    expect(result.current).toEqual([
+      { key: { key: "0x00" }, value: { x: 1, y: 2 }, namespace: config["namespace"], table: "Position" },
+    ]);
 
-  //   act(() => {
-  //     removeComponent(Position, entity);
-  //   });
-  //   expect(result.current).toBe(undefined);
-  // });
+    // Update the position table
+    act(() => {
+      client.tables.Position.set({ key: "0x00" }, { x: 2, y: 2 });
+    });
+    expect(result.all.length).toBe(4);
+    expect(result.current).toEqual([
+      { key: { key: "0x00" }, value: { x: 2, y: 2 }, namespace: config["namespace"], table: "Position" },
+    ]);
+
+    // Update an unrelated table
+    act(() => {
+      client.tables.MultiKey.remove({ first: "0x03", second: 1 });
+    });
+    expect(result.all.length).toBe(4);
+    expect(result.current).toEqual([
+      { key: { key: "0x00" }, value: { x: 2, y: 2 }, namespace: config["namespace"], table: "Position" },
+    ]);
+
+    // Update the position table
+    act(() => {
+      client.tables.Position.remove({ key: "0x00" });
+    });
+    expect(result.all.length).toBe(5);
+    expect(result.current).toEqual([]);
+  });
 
   // it("should re-render only when Position changes for entity", () => {
   //   const entity = createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
