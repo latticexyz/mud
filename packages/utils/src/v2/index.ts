@@ -4,5 +4,5 @@ export * from "./hexToArray";
 export * from "./isDefined";
 export * from "./isNotNull";
 export * from "./isHex";
-export * from "./stringToBytes16";
+export * from "./stringToBytes";
 export * from "./TableId";

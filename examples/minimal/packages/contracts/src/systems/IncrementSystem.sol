@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 import { console } from "forge-std/console.sol";
 import { System } from "@latticexyz/world/src/System.sol";
 import { IStore } from "@latticexyz/store/src/IStore.sol";
-import { CounterTable } from "../codegen/Tables.sol";
+import { CounterTable, Inventory } from "../codegen/Tables.sol";
 
 bytes32 constant SingletonKey = bytes32(uint256(0x060D));
 

@@ -1,0 +1,147 @@
+## Modules
+
+Modules are on-chain scripts that can be executed on the World. They are used to install tables, systems, hooks, and new entry point to a World in order to extend its capabilities.
+
+Currently the code of each module you want to use need to exist in your project, but we are paving the way to having an on-chain module registry à la NPM.
+
+### Default modules
+
+Currently, two modules are installed on each World:
+
+1. **`CoreModule`**
+
+The [`CoreModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/CoreModule.sol) module adds critical tables to the World.
+
+2. **`RegistrationModule`**
+
+The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
+
+#### Querying modules
+
+The `KeysInTableModule` and `KeysWithValueModule` modules enable on-chain indexing. Their functionality is leveraged in `query` to provide a simple API for on-chain querying.
+
+##### **`KeysInTableModule`**
+
+The [`KeysInTableModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keysintable/KeysInTableModule.sol) allows for querying for all keys that are in a given table. It can only be used on tables that have one key (eg: ECS components).
+
+For example, it can be used to fetch all keys in the "Position" table (if the table models `key → Position`).
+
+It offers two methods:
+
+- `getKeysInTable(bytes32 tableId)` returns all keys in a table
+- `hasKey(bytes32 tableId, bytes32[] memory key)` returns whether a given key is in a table (with O(1) gas)
+
+Using `getKeysInTable` to retrieve all keys in the Player table:
+
+```solidity
+// assumes a boolean flag indicates a player:
+// { Player: "bool" }
+//
+import { Player, PlayerTableId } from "./tables/Player.sol";
+// get all players
+bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
+```
+
+Using `hasKey` to check if a key is in the Player table:
+
+```solidity
+// assumes a boolean flag indicates a player:
+// { Player: "bool" }
+//
+import { Player, PlayerTableId } from "./tables/Player.sol";
+bytes32[] memory keyTuple = new bytes32[](1);
+keyTuple[0] = "bob";
+// check if key "bob" is a player
+bool memory isPlayer = hasKey(world, PlayerTableId, keyTuple);
+```
+
+Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains:
+
+- an array of all keys in the table
+- an index or "**reverse mapping**" of whether a given key is in the table
+
+##### **`KeysWithValueModule`**
+
+The [`KeysWithValueModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keyswithvalue/KeysWithValueModule.sol) allows for querying for all keys that have a given value in a table. It can only be used on tables that have one key (eg: ECS components).
+
+As an example, this can be used to ask for all NFTs owned by a specific user (if the table models `NFT ID → Owner`), or all units on a specific position (if the ECS component is modeled as `entity → Position`)
+
+It offers a single method:
+
+- `getKeysWithValue(uint256 tableId, bytes memory value)` returns all keys with the given value in a table
+
+Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
+
+```solidity
+// assumes this ownership table:
+// Owners: {
+//   schema: "address",
+//   primaryKeys: { nftId: "uint256" }
+// }
+import { Owners, OwnersId } from "./tables/Owners.sol";
+// get all nfts (as bytes, need to convert to uint256) owned by address 0x42
+bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
+```
+
+Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
+
+##### **`query`**
+
+`query` provides a simple API to get a list of keys matching certain specified criteria. It is not a standalone module, but requires `KeysInTable` and `KeysWithValue` to be installed.
+
+A query consists of a list of query fragments. A query fragment is a struct with three fields:
+
+```solidity
+struct QueryFragment {
+  QueryType queryType;
+  IComponent component;
+  bytes value;
+}
+```
+
+Available query fragments are:
+
+- `Has`: filter for keys that have the specified component. The value field in the query fragment is ignored.
+- `HasValue`: filter for keys that have the specified component with the specified value.
+- `Not`: filter for keys that do not have the specified component. The value field in th query fragment is ignored.
+- `NotValue`: filter for keys that do not have the specified component with the specified value.
+
+The query fragments are executed from left to right and are concatenated with a logical AND. For performance reasons, the most restrictive query fragment should be first in the list of query fragments, in order to reduce the number of keys the next query fragment needs to be checked for.
+
+Example: Query for all keys in the movable table at position (0,0):
+
+```solidity
+QueryFragment[] memory fragments = new QueryFragment[](2);
+
+// Specify the more restrictive filter first for performance reasons
+fragments[0] = QueryFragment(QueryType.HasValue, positionTableId, abi.encode(Coord(0,0)));
+
+// The value argument is ignored in Has query fragments
+fragments[1] = QueryFragment(QueryType.Has, movableTableId, new bytes(0));
+
+bytes32[][] memory keyTuples = LibQuery.query(fragments);
+```
+
+### Installing a module
+
+To install a module, create an entry in the **`modules`** field of your config, and specify whether it should be a root module with the `root` key. The arguments sent to the `install` functions are listed in the `args` key, and you can use dynamic functions that resolve to resources in the World (currently only `resolveTableId` is available).
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+  tables: {
+    MyTable: {
+      name: "mytable",
+      schema: "uint32",
+    },
+  },
+  modules: [
+    {
+      name: "KeysWithValueModule",
+      root: true,
+      args: [resolveTableId("MyTable")],
+    },
+  ],
+});
+```
