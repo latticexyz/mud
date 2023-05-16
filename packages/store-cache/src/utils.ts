@@ -228,6 +228,7 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
       record[key] = deserializeKey(value);
     }
   }
+
   return record;
 }
 

@@ -85,7 +85,7 @@ export type SubscriptionCallback<
 export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   table: T & string;
   namespace: string;
-  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };
+  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> };
 };
 
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
