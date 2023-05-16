@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createDatabase, createDatabaseClient } from ".";
 import { mudConfig } from "@latticexyz/store/register";
-import { subscribe } from "./utils";
+import { scan, subscribe } from "./utils";
 import { KeyValue } from "./types";
 
 const config = mudConfig({
@@ -18,6 +18,35 @@ describe("utils", () => {
   beforeEach(() => {
     db = createDatabase();
     client = createDatabaseClient(db, config);
+  });
+
+  describe("scan", () => {
+    it.only("should return a list of all database entries", () => {
+      const positionUpdates: KeyValue<typeof config, "Position">[] = [
+        { key: { key: "0x00" }, value: { x: 1, y: 2 } },
+        { key: { key: "0x01" }, value: { x: 2, y: 3 } },
+        { key: { key: "0x02" }, value: { x: 3, y: 4 } },
+        { key: { key: "0x03" }, value: { x: 4, y: 5 } },
+      ];
+
+      const multiKeyUpdates: KeyValue<typeof config, "MultiKey">[] = [
+        { key: { first: "0x00", second: 4 }, value: { value: 1 } },
+        { key: { first: "0x01", second: 3 }, value: { value: 2 } },
+        { key: { first: "0x02", second: 2 }, value: { value: 3 } },
+        { key: { first: "0x03", second: 1 }, value: { value: 4 } },
+      ];
+
+      // Set values in the tables
+      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
+      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+
+      const rows = scan(client._tupleDatabaseClient);
+
+      expect(rows).toEqual([
+        ...multiKeyUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "MultiKey" })),
+        ...positionUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "Position" })),
+      ]);
+    });
   });
 
   describe("subscribe", () => {
