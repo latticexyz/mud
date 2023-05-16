@@ -85,6 +85,40 @@ bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode
 
 Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
 
+##### **`SnapSyncModule`**
+
+The [`SnapSyncModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/snapsync/SnapSyncModule.sol) allows clients to query and quickly sync with the state of a World, without [MODE](/mode).
+
+It installs a [System](/world/world-101#systems) that returns all records in a given table, with offset-based pagination. This requires the `KeysInTable` module to be installed on that table.
+
+`SnapSyncSystem` exposes two public `view` functions:
+
+- `getRecords(bytes32 tableId, uint256 limit, uint256 offset)` returns all keys in a table
+- `getNumKeysInTable(bytes32 tableId)` returns the number of keys in a table
+
+Clients can use snap-sync to get all records on the World, then begin syncing regularly from the current block:
+
+```tsx
+import { getSnapSyncRecords } from "@latticexyz/network";
+import { getTableIds } from "@latticexyz/utils";
+
+...
+
+if (networkConfig.snapSync) {
+  const currentBlockNumber = await provider.getBlockNumber();
+  const tableRecords = await getSnapSyncRecords(
+    networkConfig.worldAddress,
+    getTableIds(storeConfig),
+    currentBlockNumber,
+    signerOrProvider
+  );
+
+  result.startSync(tableRecords, currentBlockNumber);
+} else {
+  result.startSync();
+}
+```
+
 ##### **`query`**
 
 `query` provides a simple API to get a list of keys matching certain specified criteria. It is not a standalone module, but requires `KeysInTable` and `KeysWithValue` to be installed.
