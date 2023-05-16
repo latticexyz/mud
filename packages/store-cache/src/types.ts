@@ -37,6 +37,9 @@ export type DatabaseClient<C extends StoreConfig> = {
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
       ) => Unsubscribe;
+      scan: <Table extends string = keyof C["tables"] & string>(
+        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
+      ) => KeyValue<C, Table> & { namespace: C["namespace"]; table: Table }[];
     };
   };
 } & {
@@ -63,6 +66,9 @@ export type DatabaseClient<C extends StoreConfig> = {
     callback: SubscriptionCallback<C, Table>,
     filter?: FilterOptions<C, Table>
   ) => Unsubscribe;
+  scan: <Table extends string = keyof C["tables"] & string>(
+    filter?: FilterOptions<C, Table>
+  ) => KeyValue<C, Table> & { namespace: C["namespace"]; table: Table }[];
   _tupleDatabaseClient: TupleDatabaseClient;
 };
 
