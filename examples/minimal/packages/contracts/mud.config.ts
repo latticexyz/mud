@@ -1,7 +1,8 @@
-import { mudConfig } from "@latticexyz/world/register";
+import { mudConfig } from "@latticexyz/world/snapSync";
 import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
+  snapSync: true,
   systems: {
     IncrementSystem: {
       name: "increment",
@@ -33,19 +34,9 @@ export default mudConfig({
   },
   modules: [
     {
-      name: "KeysInTableModule",
-      root: true,
-      args: [resolveTableId("CounterTable")],
-    },
-    {
       name: "KeysWithValueModule",
       root: true,
       args: [resolveTableId("CounterTable")],
-    },
-    {
-      name: "SnapSyncModule",
-      root: true,
-      args: [],
     },
   ],
 });
