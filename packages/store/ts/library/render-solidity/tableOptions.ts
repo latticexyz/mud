@@ -40,8 +40,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
-      if (renderType.isDynamic)
-        throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
+      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
 
       const keyTuple: RenderKeyTuple = {
         ...renderType,

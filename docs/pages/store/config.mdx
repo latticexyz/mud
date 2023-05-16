@@ -60,7 +60,7 @@ The table configuration can have these properties:
 
 **`fileSelector` (optional)** _only used with the World framework_: a `string`: where to create the table in the namespace.
 
-**`tableIdArgument` (optional)**: `bool`: whether to create getter and setter functions with the table ID as an argument, this is used to generate a single library to operate on multiple tables with the same schema and primary key structure.
+**`tableIdArgument` (optional)**: `bool`: whether to create getter and setter functions with the table ID as an argument, this is used to generate a single library to operate on multiple tables with the same schema and key structure.
 
 **`storeArgument` (optional)**: `bool`: whether to create getter and setter functions with the store address as an argument, this is used to generate a single library to operate on the same table in multiple stores. This adds new functions to the library, doubling the amount of functions created (each getter/setter will comes in a pair of “with `storeArgument`” and “without `storeArgument`”)
 

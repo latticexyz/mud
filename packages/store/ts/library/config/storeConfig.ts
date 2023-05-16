@@ -81,7 +81,7 @@ export interface TableConfig<
   dataStruct?: boolean;
   /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
   ephemeral?: boolean;
-  /** Table's primary key names mapped to their types. Default is `{ key: "bytes32" }` */
+  /** Table's key schema names mapped to their types. Default is `{ key: "bytes32" }` */
   keySchema?: Record<string, KeySchema<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: SchemaConfig<UserTypes>;
@@ -244,7 +244,7 @@ export type MUDUserConfig<
      *  - FullTableConfig object for multi-value tables (or for customizable options).
      */
     tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
-    /** The namespace for table ids. Default is "" (empty string) */
+    /** The namespace for table ids. Default is "" (ROOT) */
     namespace?: string;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
@@ -289,7 +289,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     if (duplicateVariableNames.length > 0) {
       ctx.addIssue({
         code: ZodIssueCode.custom,
-        message: `Field and primary key names within one table must be unique: ${duplicateVariableNames.join(", ")}`,
+        message: `Field and key names within one table must be unique: ${duplicateVariableNames.join(", ")}`,
       });
     }
   }

@@ -10,7 +10,7 @@ event StoreSetField(uint256 tableId, bytes32[] key, uint8 schemaIndex, bytes dat
 event StoreDeleteRecord(uint256 tableId, bytes32[] key);
 ```
 
-Each event includes the table ID and each primary key encoded as `bytes32`.
+Each event includes the table ID and each key encoded as `bytes32`.
 
 MUD comes with many libraries and services in order to reconstruct the state of any Store with typed columns and keys:
 
