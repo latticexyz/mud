@@ -12,7 +12,6 @@ import {
   KeyValue,
 } from "./types";
 import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
-import { Filter } from "abitype/dist/types/types";
 
 /**
  * Set the value for the given key
@@ -26,7 +25,8 @@ import { Filter } from "abitype/dist/types/types";
  * }
  * @returns Transaction
  */
-export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
@@ -34,7 +34,7 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
   value: Partial<Value<C, T>>,
   options?: SetOptions
 ) {
-  const keyTuple = databaseKey<C, T>(namespace, table, key);
+  const keyTuple = databaseKey<C, T>(config, namespace, table, key);
   const currentValue = client.get(keyTuple) ?? options?.defaultValue;
   const tx = options?.transaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
@@ -49,13 +49,14 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  * @param key Key to identify the record to get from the table
  * @returns Value for the given key
  */
-export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
 ): Value<C, T> {
-  return client.get(databaseKey<C, T>(namespace, table, key));
+  return client.get(databaseKey<C, T>(config, namespace, table, key));
 }
 
 /**
@@ -69,7 +70,8 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  * }
  * @returns Transaction
  */
-export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function remove<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
@@ -77,16 +79,17 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
   options?: RemoveOptions
 ) {
   const tx = options?.transaction ?? client.transact();
-  tx.remove(databaseKey<C, T>(namespace, table, key));
+  tx.remove(databaseKey<C, T>(config, namespace, table, key));
   if (!options?.transaction) tx.commit();
   return tx;
 }
 
 export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   filter?: FilterOptions<C, T>
 ) {
-  const scanArgs = getScanArgsFromFilter(filter);
+  const scanArgs = getScanArgsFromFilter(config, filter);
   const results = client.scan(scanArgs);
 
   return results.map(
@@ -109,11 +112,12 @@ export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tab
  * @returns Function to unsubscribe
  */
 export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   callback: SubscriptionCallback<C, T>,
   filter?: FilterOptions<C, T>
 ) {
-  const scanArgs = getScanArgsFromFilter(filter);
+  const scanArgs = getScanArgsFromFilter(config, filter);
 
   return client.subscribe(scanArgs, (write) => {
     const updates: Record<string, Update> = {};
@@ -170,7 +174,8 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
   return defaultValue as SchemaToPrimitives<Schema>;
 }
 
-function getScanArgsFromFilter<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   filter?: FilterOptions<C, T>
 ) {
   const { namespace, table, key } = filter || {};
@@ -178,15 +183,17 @@ function getScanArgsFromFilter<C extends StoreConfig = StoreConfig, T extends ke
   const scanArgs: ScanArgs<Tuple, Tuple> = {};
 
   // Transform scan args
-  scanArgs.gte = key?.gte && recordToTuple(key.gte);
-  scanArgs.gt = key?.gt && recordToTuple(key.gt);
-  scanArgs.lte = key?.lte && recordToTuple(key.lte);
-  scanArgs.lt = key?.lt && recordToTuple(key.lt);
+  if (table) {
+    scanArgs.gte = key?.gte && recordToTuple(getKeyOrder(config, table), key.gte);
+    scanArgs.gt = key?.gt && recordToTuple(getKeyOrder(config, table), key.gt);
+    scanArgs.lte = key?.lte && recordToTuple(getKeyOrder(config, table), key.lte);
+    scanArgs.lt = key?.lt && recordToTuple(getKeyOrder(config, table), key.lt);
 
-  // Override gte and lte if eq is set
-  if (key?.eq) {
-    scanArgs.gte = recordToTuple(key.eq);
-    scanArgs.lte = recordToTuple(key.eq);
+    // Override gte and lte if eq is set
+    if (key?.eq) {
+      scanArgs.gte = recordToTuple(getKeyOrder(config, table), key.eq);
+      scanArgs.lte = recordToTuple(getKeyOrder(config, table), key.eq);
+    }
   }
 
   return { prefix, ...scanArgs };
@@ -195,22 +202,30 @@ function getScanArgsFromFilter<C extends StoreConfig = StoreConfig, T extends ke
 /**
  * Convert a table and key into the corresponding tuple expected by tuple-database
  */
-function databaseKey<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
 ) {
-  return [namespace, table, ...recordToTuple(key)] satisfies Tuple;
+  return [namespace, table, ...recordToTuple(getKeyOrder(config, table), key)] satisfies Tuple;
+}
+
+/**
+ * Get an array corresponding to the keys of the table's key schema
+ */
+function getKeyOrder(config: StoreConfig, table: string) {
+  return Object.getOwnPropertyNames(config["tables"][table]["primaryKeys"]);
 }
 
 /**
  * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
- * as expected for keys in tuple-database
+ * and sort it based on config's key order, as expected for keys in tuple-database
  */
-function recordToTuple(record: Record<string, unknown>): Tuple {
+function recordToTuple(keyOrder: string[], record: Record<string, unknown>): Tuple {
   const tuple = [];
-  for (const [key, value] of Object.entries(record)) {
-    tuple.push({ [key]: serializeKey(value) });
+  for (const key of keyOrder) {
+    tuple.push({ [key]: serializeKey(record[key]) });
   }
   return tuple;
 }
