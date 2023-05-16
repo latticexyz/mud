@@ -3,14 +3,17 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
+    "dev": "pnpm recursive run dev",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
-    "dev:node": "pnpm --filter 'contracts' devnode",
+    "dev:node": "mud devnode",
+    "dev:pty": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
     "initialize": "pnpm recursive run initialize",
+    "mud:up": "pnpm recursive exec mud set-version -v canary && pnpm install",
     "test": "pnpm recursive run test"
   },
   "devDependencies": {
+    "@latticexyz/cli": "link:../../packages/cli",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.29.0",
