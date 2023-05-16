@@ -14,14 +14,14 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
   try {
     await esbuild.build({ entryPoints: [configPath], format: "esm", outfile: TEMP_CONFIG });
-    configPath = await resolveConfigPath(TEMP_CONFIG);
+    configPath = await resolveConfigPath(TEMP_CONFIG, true);
     return (await import(configPath)).default;
   } finally {
     rmSync(TEMP_CONFIG);
   }
 }
 
-async function resolveConfigPath(configPath: string | undefined) {
+async function resolveConfigPath(configPath: string | undefined, toFileURL?: boolean) {
   if (configPath === undefined) {
     configPath = await getUserConfigPath();
   } else {
@@ -33,7 +33,7 @@ async function resolveConfigPath(configPath: string | undefined) {
 
   // Add `file:///` for Windows support
   // (see https://github.com/nodejs/node/issues/31710)
-  return os.platform() === "win32" ? pathToFileURL(configPath).href : configPath;
+  return toFileURL && os.platform() === "win32" ? pathToFileURL(configPath).href : configPath;
 }
 
 async function getUserConfigPath() {
