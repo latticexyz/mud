@@ -1,6 +1,6 @@
 ## Store Config & `tablegen` Tool
 
-<aside>
+<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
   ⚠️ Currently, `tablegen` is only compatible with Foundry, and MUD 2 uses Foundry for testing and building. Hardhat
   will be available in the future.
 </aside>
@@ -14,7 +14,7 @@ Keep reading from the "Adding Tables" section
 
 ### Using `tablegen` without the MUD framework
 
-<aside>
+<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
   ⚠️ We are making this process easier, and will not require a MUD config in the future in order to use `tablegen`
 </aside>
 
@@ -83,16 +83,16 @@ Example:
 
 ```tsx
 tables: {
-    MyTableWithTwoKeys: {
-        schema: {
-            value1: "uint32",
-            value2: "uint32",
-        },
-        keySchema: {
-            key1: "uint256",
-            key2: "string"
-        }
+  MyTableWithTwoKeys: {
+    schema: {
+      value1: "uint32",
+      value2: "uint32",
     },
+    keySchema: {
+      key1: "uint256",
+      key2: "string"
+    }
+  },
 }
 ```
 
@@ -132,13 +132,13 @@ Example:
 
 ```tsx
 tables: {
-    MySingletonTable: {
-        schema: {
-            value1: "uint32",
-            value2: "uint32",
-        },
-        keySchema: {}
+  MySingletonTable: {
+    schema: {
+      value1: "uint32",
+      value2: "uint32",
     },
+    keySchema: {}
+  },
 }
 ```
 
