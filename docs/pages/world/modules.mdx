@@ -132,7 +132,8 @@ bytes32[][] memory keyTuples = LibQuery.query(fragments);
 To install a module, create an entry in the **`modules`** field of your config, and specify whether it should be a root module with the `root` key. The arguments sent to the `install` functions are listed in the `args` key, and you can use dynamic functions that resolve to resources in the World (currently only `resolveTableId` is available).
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
+import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
   tables: {
