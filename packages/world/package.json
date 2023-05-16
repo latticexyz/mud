@@ -16,7 +16,7 @@
     "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*",
     "./types/*": "./types/*",
-    "./snapSync": "./dist/src/modules/snapsync/ts/index.js"
+    "./snapSync": "./dist/src/ts/plugins/snapsync/index.js"
   },
   "typesVersions": {
     "*": {
@@ -30,7 +30,7 @@
         "./ts/node/index.ts"
       ],
       "snapSync": [
-        "./src/modules/snapsync/ts/index.ts"
+        "./src/ts/plugins/snapsync/index.ts"
       ]
     }
   },
