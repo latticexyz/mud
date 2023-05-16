@@ -72,7 +72,7 @@ Run `yarn create mud my-first-mud-project`; and `cd` into it. Open your favorite
 The MUD config for the vanilla template looks like this:
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   namespace: "mud",
@@ -83,7 +83,6 @@ export default mudConfig({
     },
     tables: {
       CounterTable: {
-        name: "counter",
         schema: {
           value: "uint32",
         },
@@ -115,7 +114,6 @@ We are deploying one system named “IncrementSystem”. The deployer will find 
 ```tsx
 tables: {
     CounterTable: {
-        name: "counter",
         schema: {
             value: "uint32",
         },
@@ -159,7 +157,7 @@ CounterTable.set(bytes32("singleton"), newValue);
 Let’s add a new table. It’s as simple as extending the config. For reference on how to create new tables and different options available, refer to the [Store documentation](https://www.notion.so/Store-930ed995c2b14782ae9a949e1e3c8fe9).
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   namespace: "mud",
@@ -170,13 +168,11 @@ export default mudConfig({
     },
     tables: {
       CounterTable: {
-        name: "counter",
         schema: {
           value: "uint32",
         },
       },
       DogTable: {
-        name: "dog",
         schema: {
           owner: "address",
           name: "string",
@@ -227,7 +223,7 @@ contract MySystem is System {
 And we edit our config
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
     namespace: "mud",
@@ -243,13 +239,11 @@ export default mudConfig({
         }
         tables: {
             CounterTable: {
-                name: "counter",
                 schema: {
                     value: "uint32",
                 },
             },
             DogTable: {
-                name: "dog",
                 schema: {
                     owner: "address",
                     name: "string",
