@@ -2,7 +2,7 @@
 
 ### Singleton table
 
-Store also supports “Singleton” tables, which are tables with a single record. Singleton tables don’t have primary keys.
+Store also supports “Singleton” tables, which are tables with a single record. Singleton tables don’t have keys.
 
 They are useful to store top-level state.
 
@@ -14,7 +14,7 @@ import { mudConfig } from "@latticexyz/store/register";
 export default mudConfig({
   tables: {
     CounterSingleton: {
-      primaryKeys: {},
+      keySchema: {},
       schema: "uint256",
     },
   },

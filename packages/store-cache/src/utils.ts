@@ -217,7 +217,7 @@ function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof 
  */
 function getKeyOrder(config: StoreConfig, table: string) {
   const tableConfig = config.tables[table];
-  return tableConfig ? Object.getOwnPropertyNames(tableConfig.primaryKeys) : undefined;
+  return tableConfig ? Object.getOwnPropertyNames(tableConfig.keySchema) : undefined;
 }
 
 /**

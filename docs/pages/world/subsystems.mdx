@@ -25,11 +25,11 @@ export default mudConfig({
     },
     tables: {
         BalanceTable: {
-            primaryKeys: { owner: "address"},
+            keySchema: { owner: "address"},
             schema: { amount: "uint256" },
         },
         OwnerTable: {
-            primaryKeys: { token: "uint256" },
+            keySchema: { token: "uint256" },
             schema: { owner: "address" },
         },
     },

@@ -78,7 +78,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 // assumes this ownership table:
 // Owners: {
 //   schema: "address",
-//   primaryKeys: { nftId: "uint256" }
+//   keySchema: { nftId: "uint256" }
 // }
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 import { Owners, OwnersId } from "./tables/Owners.sol";

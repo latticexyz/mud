@@ -13,7 +13,7 @@ export type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]:
 
 export type Tables<C extends StoreConfig> = {
   [key in keyof C["tables"]]: {
-    keyTuple: SchemaToPrimitives<C["tables"][key]["primaryKeys"]>;
+    keyTuple: SchemaToPrimitives<C["tables"][key]["keySchema"]>;
     value: SchemaToPrimitives<C["tables"][key]["schema"]>;
   };
 };
