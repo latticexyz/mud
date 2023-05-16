@@ -1,7 +1,10 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
 import { foundry } from "@wagmi/chains";
-import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
+import latticeTestnet from "./supportedChains/latticeTestnet";
 import { MudChain } from "./supportedChains/types";
+import worldsJson from "contracts/worlds.json";
+
+const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
@@ -11,25 +14,23 @@ type NetworkConfig = SetupContractConfig & {
 export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
 
-  const supportedChains: MudChain[] = [foundry];
-  const deploys = [latestLocalhostDeploy];
-
-  const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID);
+  const supportedChains: MudChain[] = [foundry, latticeTestnet];
+  const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID || 31337);
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
   if (!chain) {
     throw new Error(`Chain ${chainId} not found`);
   }
 
-  const deploy = deploys[chainIndex];
-  if (!deploy) {
-    throw new Error(`No deployment found for chain ${chainId}. Did you run \`mud deploy\`?`);
+  const world = worlds[chain.id.toString()];
+  const worldAddress = params.get("worldAddress") || world?.address;
+  if (!worldAddress) {
+    throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
-  const worldAddress = params.get("worldAddress") || deploy.worldAddress;
-  if (!worldAddress) {
-    throw new Error("No world address provided");
-  }
+  const initialBlockNumber = params.has("initialBlockNumber")
+    ? Number(params.get("initialBlockNumber"))
+    : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
 
   return {
     clock: {
@@ -47,7 +48,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
-    initialBlockNumber: Number(params.get("initialBlockNumber")) || deploy.blockNumber || 0,
-    devMode: params.get("dev") === "true",
+    initialBlockNumber,
+    disableCache: params.get("cache") === "false",
   };
 }
