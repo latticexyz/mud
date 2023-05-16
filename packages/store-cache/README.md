@@ -2,7 +2,7 @@
 
 The Store Cache is a typed reactive database used to replicate the onchain Store of a MUD project into a Javacsript client (Node or Browser based).
 
-It is based on [Tuple Database](https://github.com/ccorcos/tuple-database) -- a reactive schema-less typscript database.
+It is based on [Tuple Database](https://github.com/ccorcos/tuple-database) -- a reactive schema-less Typescript database.
 
 ## Features
 
