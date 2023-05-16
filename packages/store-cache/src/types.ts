@@ -39,7 +39,7 @@ export type DatabaseClient<C extends StoreConfig> = {
       ) => Unsubscribe;
       scan: <Table extends string = keyof C["tables"] & string>(
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => KeyValue<C, Table> & { namespace: C["namespace"]; table: Table }[];
+      ) => ScanResult<C, Table>;
     };
   };
 } & {
@@ -66,9 +66,7 @@ export type DatabaseClient<C extends StoreConfig> = {
     callback: SubscriptionCallback<C, Table>,
     filter?: FilterOptions<C, Table>
   ) => Unsubscribe;
-  scan: <Table extends string = keyof C["tables"] & string>(
-    filter?: FilterOptions<C, Table>
-  ) => KeyValue<C, Table> & { namespace: C["namespace"]; table: Table }[];
+  scan: <Table extends string = keyof C["tables"] & string>(filter?: FilterOptions<C, Table>) => ScanResult<C, Table>;
   _tupleDatabaseClient: TupleDatabaseClient;
 };
 
@@ -102,3 +100,7 @@ export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["t
     remove: { key: Key<C, key> }[];
   };
 }[Table];
+
+export type ScanResult<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = Array<
+  KeyValue<C, T> & { namespace: C["namespace"]; table: T }
+>;

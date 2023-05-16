@@ -10,6 +10,7 @@ import {
   Update,
   Value,
   KeyValue,
+  ScanResult,
 } from "./types";
 import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
 
@@ -88,7 +89,7 @@ export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tab
   config: C,
   client: TupleDatabaseClient,
   filter?: FilterOptions<C, T>
-) {
+): ScanResult<C, T> {
   const scanArgs = getScanArgsFromFilter(config, filter);
   const results = client.scan(scanArgs);
 
@@ -184,15 +185,15 @@ function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"
 
   // Transform scan args
   if (table) {
-    scanArgs.gte = key?.gte && recordToTuple(getKeyOrder(config, table), key.gte);
-    scanArgs.gt = key?.gt && recordToTuple(getKeyOrder(config, table), key.gt);
-    scanArgs.lte = key?.lte && recordToTuple(getKeyOrder(config, table), key.lte);
-    scanArgs.lt = key?.lt && recordToTuple(getKeyOrder(config, table), key.lt);
+    scanArgs.gte = key?.gte && recordToTuple(key.gte, getKeyOrder(config, table));
+    scanArgs.gt = key?.gt && recordToTuple(key.gt, getKeyOrder(config, table));
+    scanArgs.lte = key?.lte && recordToTuple(key.lte, getKeyOrder(config, table));
+    scanArgs.lt = key?.lt && recordToTuple(key.lt, getKeyOrder(config, table));
 
     // Override gte and lte if eq is set
     if (key?.eq) {
-      scanArgs.gte = recordToTuple(getKeyOrder(config, table), key.eq);
-      scanArgs.lte = recordToTuple(getKeyOrder(config, table), key.eq);
+      scanArgs.gte = recordToTuple(key.eq, getKeyOrder(config, table));
+      scanArgs.lte = recordToTuple(key.eq, getKeyOrder(config, table));
     }
   }
 
@@ -208,23 +209,24 @@ function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof 
   table: T & string,
   key: Key<C, T>
 ) {
-  return [namespace, table, ...recordToTuple(getKeyOrder(config, table), key)] satisfies Tuple;
+  return [namespace, table, ...recordToTuple(key, getKeyOrder(config, table))] satisfies Tuple;
 }
 
 /**
  * Get an array corresponding to the keys of the table's key schema
  */
 function getKeyOrder(config: StoreConfig, table: string) {
-  return Object.getOwnPropertyNames(config["tables"][table]["primaryKeys"]);
+  const tableConfig = config.tables[table];
+  return tableConfig ? Object.getOwnPropertyNames(tableConfig.primaryKeys) : undefined;
 }
 
 /**
  * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
  * and sort it based on config's key order, as expected for keys in tuple-database
  */
-function recordToTuple(keyOrder: string[], record: Record<string, unknown>): Tuple {
+function recordToTuple(record: Record<string, unknown>, keyOrder?: string[]): Tuple {
   const tuple = [];
-  for (const key of keyOrder) {
+  for (const key of keyOrder ?? Object.keys(record)) {
     tuple.push({ [key]: serializeKey(record[key]) });
   }
   return tuple;
