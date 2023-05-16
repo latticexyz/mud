@@ -83,7 +83,7 @@ import { Owners, OwnersId } from "./tables/Owners.sol";
 bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
 ```
 
-Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
+Internally, it works by installing a [hook](/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
 
 ##### **`query`**
 
