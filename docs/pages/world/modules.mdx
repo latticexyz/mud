@@ -134,13 +134,11 @@ import { mudConfig } from "@latticexyz/config";
 export default mudConfig({
   tables: {
     MyTable: {
-      name: "mytable",
       schema: "uint32",
     },
   },
   modules: [
     {
-      name: "KeysWithValueModule",
       root: true,
       args: [resolveTableId("MyTable")],
     },
