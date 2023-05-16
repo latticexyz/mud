@@ -2,7 +2,7 @@ import { mudConfig } from "@latticexyz/world/register";
 import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
-  overrideSystems: {
+  systems: {
     IncrementSystem: {
       name: "increment",
       openAccess: true,

@@ -70,7 +70,7 @@ export interface WorldUserConfig {
    * The key is the system name (capitalized).
    * The value is a SystemConfig object.
    */
-  overrideSystems?: SystemsUserConfig;
+  systems?: SystemsUserConfig;
   /** Systems to exclude from automatic deployment */
   excludeSystems?: string[];
   /**
@@ -91,4 +91,4 @@ export interface WorldUserConfig {
 }
 
 export type WorldConfig = z.output<typeof zWorldConfig>;
-export type SystemConfig = WorldConfig["overrideSystems"][string];
+export type SystemConfig = WorldConfig["systems"][string];
