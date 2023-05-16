@@ -6,7 +6,7 @@ import { describe, it, beforeEach, expect } from "vitest";
 
 const config = mudConfig({
   tables: {
-    MultiKey: { primaryKeys: { first: "bytes32", second: "uint32" }, schema: "int32" },
+    MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
     Position: { schema: { x: "int32", y: "int32" } },
   },
 });
