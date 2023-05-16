@@ -11,7 +11,7 @@ export const DEFAULTS = {
 
 export const TABLE_DEFAULTS = {
   directory: "tables",
-  primaryKeys: { key: "bytes32" },
+  keySchema: { key: "bytes32" },
   tableIdArgument: false,
   storeArgument: true,
   ephemeral: false,

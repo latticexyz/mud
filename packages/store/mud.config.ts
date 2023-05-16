@@ -7,7 +7,7 @@ export default mudConfig({
     Hooks: "address[]",
     Callbacks: "bytes24[]",
     StoreMetadata: {
-      primaryKeys: {
+      keySchema: {
         tableId: "bytes32",
       },
       schema: {

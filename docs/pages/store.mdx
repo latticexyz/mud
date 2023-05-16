@@ -5,6 +5,7 @@
 **Store is an onchain database**. When building on MUD, developers save contract state into Store. It replaces the Solidity compiler-driven data storage: the `mapping`, variables and arrays defined at the top of a contract.
 
 **Solidity compiler-driven storage**
+
 ```solidity
 // declaring
 mapping(address => uint) balances;
@@ -15,6 +16,7 @@ return balances[address(0)];
 ```
 
 **MUD Store**
+
 ```solidity
 // declaring in the Store config
 // Balances: SchemaType.UINT256,
@@ -24,7 +26,7 @@ Balances.set(address(0), 10);
 return Balances.get(address(0));
 ```
 
-Store is an embedded EVM database: you can think of it like [SQLite](https://www.sqlite.org/index.html), but for the EVM. Contracts can store all their application data  — like variables, maps, and arrays — in Store; and any data-model implementable in a SQL database can be represented into Store ([ECS](https://en.wikipedia.org/wiki/Entity_component_system), [EAV](https://en.wikipedia.org/wiki/Entity–attribute–value_model), [Graph](https://en.wikipedia.org/wiki/Graph_(abstract_data_type)), etc).
+Store is an embedded EVM database: you can think of it like [SQLite](https://www.sqlite.org/index.html), but for the EVM. Contracts can store all their application data — like variables, maps, and arrays — in Store; and any data-model implementable in a SQL database can be represented into Store ([ECS](https://en.wikipedia.org/wiki/Entity_component_system), [EAV](https://en.wikipedia.org/wiki/Entity–attribute–value_model), [Graph](<https://en.wikipedia.org/wiki/Graph_(abstract_data_type)>), etc).
 
 Store is also introspectable: other smart-contracts and off-chain applications can discover the schemas, tables, and records of any Store using a standard data-format and EVM event format. **This allows for zero-code indexing and frontend networking**.
 
@@ -32,13 +34,13 @@ Finally, Store is gas-efficient: it introduces conservative limits over the Soli
 
 ## Store’s core data model
 
-Store is a tuple-key columnar database. A Store is  made out of tables. Tables have two different kinds of columns: value columns and key columns. Columns are set when the table is created, but some migrations are possible.
+Store is a tuple-key columnar database. A Store is made out of tables. Tables have two different kinds of columns: value columns and key columns. Columns are set when the table is created, but some migrations are possible.
 
 [diagram with tables, record, key columns value columns]
 
 Each table can contain an unlimited amount of records; which are read from and written to by providing all their key columns, which can be thought of as primary keys. Indices are available, but never created by default, more on this in [the Index section](https://www.notion.so/Store-930ed995c2b14782ae9a949e1e3c8fe9).
 
-Columns support the same types as Solidity: signed and unsigned integers of all size, strings, bools, bytes, and arrays. Store allows consumers to push and pop any of the record’s arrays, along with accessing the value at a specific index. 
+Columns support the same types as Solidity: signed and unsigned integers of all size, strings, bools, bytes, and arrays. Store allows consumers to push and pop any of the record’s arrays, along with accessing the value at a specific index.
 
 Unlike the Solidity compiler-driven storage, tables are created at runtime: they are not hardcoded in the contract’s code. Default tables can be created in the contract’s `constructor`; while additional tables can be created during the lifetime of the contract. As mentioned earlier, migrations are also supported: columns can be renamed and their types can be changed.
 
@@ -48,10 +50,10 @@ Reading from a Store doesn’t need any ABI definitions: all decoding related in
 
 Store is an attempt at fixing some of the hardest state-related problems of onchain applications:
 
-- **Separation of state from logic**, the same way a web application separates business-logic from state using a Database like Postgres. *Alternative solutions: Proxies, Diamonds.*
-- **Access control over granular pieces of data**, allowing different parties to interact with the same onchain data-store. *Alternative solutions: None.*
-- **Synchronizing contract state** **with web apis and frontends** without having to write additional codes. *Alternative solutions: Subgraphs, custom networking code based on events.*
-- **Querying data from one contract to another**, without being limited by the existing `view` functions. *Alternative solutions: storage proofs.*
+- **Separation of state from logic**, the same way a web application separates business-logic from state using a Database like Postgres. _Alternative solutions: Proxies, Diamonds._
+- **Access control over granular pieces of data**, allowing different parties to interact with the same onchain data-store. _Alternative solutions: None._
+- **Synchronizing contract state** **with web apis and frontends** without having to write additional codes. _Alternative solutions: Subgraphs, custom networking code based on events._
+- **Querying data from one contract to another**, without being limited by the existing `view` functions. _Alternative solutions: storage proofs._
 
 In order to address those issues, Store has been designed from 4 guiding principles:
 

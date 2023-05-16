@@ -37,6 +37,7 @@ Using `getKeysInTable` to retrieve all keys in the Player table:
 // assumes a boolean flag indicates a player:
 // { Player: "bool" }
 //
+import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
 import { Player, PlayerTableId } from "./tables/Player.sol";
 // get all players
 bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
@@ -48,6 +49,7 @@ Using `hasKey` to check if a key is in the Player table:
 // assumes a boolean flag indicates a player:
 // { Player: "bool" }
 //
+import { hasKey } from "@latticexyz/world/src/modules/keysintable/hasKey.sol";
 import { Player, PlayerTableId } from "./tables/Player.sol";
 bytes32[] memory keyTuple = new bytes32[](1);
 keyTuple[0] = "bob";
@@ -55,7 +57,7 @@ keyTuple[0] = "bob";
 bool memory isPlayer = hasKey(world, PlayerTableId, keyTuple);
 ```
 
-Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains:
+Internally, it works by installing a [hook](https://v2.mud.dev/store/advanced-features#storage-hooks) that maintains:
 
 - an array of all keys in the table
 - an index or "**reverse mapping**" of whether a given key is in the table
@@ -76,14 +78,15 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 // assumes this ownership table:
 // Owners: {
 //   schema: "address",
-//   primaryKeys: { nftId: "uint256" }
+//   keySchema: { nftId: "uint256" }
 // }
+import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 import { Owners, OwnersId } from "./tables/Owners.sol";
 // get all nfts (as bytes, need to convert to uint256) owned by address 0x42
 bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
 ```
 
-Internally, it works by installing a [hook](http://localhost:3000/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
+Internally, it works by installing a [hook](/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
 
 ##### **`query`**
 
@@ -111,6 +114,8 @@ The query fragments are executed from left to right and are concatenated with a 
 Example: Query for all keys in the movable table at position (0,0):
 
 ```solidity
+import { query, QueryFragment, QueryType } from "@latticexyz/world/src/modules/keysintable/query.sol";
+
 QueryFragment[] memory fragments = new QueryFragment[](2);
 
 // Specify the more restrictive filter first for performance reasons
@@ -127,12 +132,12 @@ bytes32[][] memory keyTuples = LibQuery.query(fragments);
 To install a module, create an entry in the **`modules`** field of your config, and specify whether it should be a root module with the `root` key. The arguments sent to the `install` functions are listed in the `args` key, and you can use dynamic functions that resolve to resources in the World (currently only `resolveTableId` is available).
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
+import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
   tables: {
     MyTable: {
-      name: "mytable",
       schema: "uint32",
     },
   },

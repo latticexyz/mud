@@ -3,7 +3,7 @@ import { mudConfig } from "@latticexyz/world/register";
 export default mudConfig({
   tables: {
     NumberList: {
-      primaryKeys: {},
+      keySchema: {},
       schema: {
         value: "uint32[]",
       },

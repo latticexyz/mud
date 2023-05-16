@@ -148,7 +148,7 @@ export async function deploy(
   const tableIds: { [tableName: string]: Uint8Array } = {};
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, primaryKeys }]) => {
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema }]) => {
       console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
 
       // Store the tableId for later use
@@ -160,7 +160,7 @@ export async function deploy(
         return schemaType;
       });
 
-      const keyTypes = Object.values(primaryKeys).map((abiOrUserType) => {
+      const keyTypes = Object.values(keySchema).map((abiOrUserType) => {
         const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
       });

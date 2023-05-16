@@ -10,7 +10,7 @@ You could use a library, but it would increase the code size of each system. You
 With World, you could deploy this piece of logic in a system — let’s call it the `TransferSystem` — and set its `openAccess` to false. Now only systems in the same namespace can execute a transfer through this system, and there are no risk of security coming from having external EOAs or systems in different namespaces transfer NFTs directly by being able to call that system.
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
     namespace: "nftgame",
@@ -25,14 +25,12 @@ export default mudConfig({
     },
     tables: {
         BalanceTable: {
-            primaryKeys: { owner: "address"},
+            keySchema: { owner: "address"},
             schema: { amount: "uint256" },
-            name: "balance"
         },
         OwnerTable: {
-            primaryKeys: { token: "uint256" },
+            keySchema: { token: "uint256" },
             schema: { owner: "address" },
-            name: "owner"
         },
     },
 });
@@ -46,14 +44,15 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 import { BalanceTable } from "../codegen/tables/BalanceTable.sol";
 import { OwnerTable } from "../codegen/tables/OwnerTable.sol";
+
 contract TranferSystem is System {
-    function transfer(uint256 token, address to) public returns () {
-        address from = OwnerTable.get(token);
-        OwnerTable.set(token, to);
-        Balance.set(from, Balance.get(from) - 1);
-        Balance.set(to, Balance.get(to) + 1);
-        emit Transfer(from, to, token);
-    }
+  function transfer(uint256 token, address to) public returns () {
+    address from = OwnerTable.get(token);
+    OwnerTable.set(token, to);
+    Balance.set(from, Balance.get(from) - 1);
+    Balance.set(to, Balance.get(to) + 1);
+    emit Transfer(from, to, token);
+  }
 }
 ```
 
@@ -61,4 +60,5 @@ contract TranferSystem is System {
 **Question**: How can there be no access control or modifier on the transfer function? How does the World make sure no-one can call this function directly and change the BalanceTable and the OwnerTable?
 
 **Answer**: When using World, systems are called from the World, never directly. The World is used as an entry point and deals with access-control. Here, the World would enforce that only systems within the `nftgame` namespace can call this TransferSystem. If a contract or an EOA were to call this contract directly, the Store auto-generated libraries would try forwarding the read and writes to the `msg.sender` (remember that systems have no state!), where this likely no Store and no Store API; and even if there were to be one they wouldn’t modifying the one on the Store!
+
 </aside>
