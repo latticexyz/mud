@@ -1,0 +1,141 @@
+## Snap-sync
+
+The [`SnapSyncModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/snapsync/SnapSyncModule.sol) allows clients to query and quickly sync with the state of a World, without [MODE](/mode).
+
+Without an indexer like MODE, MUD clients can be slow to sync, because clients have to process all the events since the World was deployed.
+
+There are two main ways of syncing MUD clients. Snap sync allows you to "fast forward" and fetch the state of the chain.
+
+First, you need to install snap sync globally, and keysInTable on all of your tables
+
+That's all you need to do contract
+
+then on the client..
+
+#### Creating tables
+
+First, we define some tables.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  tables: {
+    Karma: "int32",
+    Reputation: {
+      schema: {
+        fame: "uint8",
+        infamy: "uint8",
+      },
+    },
+  },
+});
+```
+
+#### Installing modules
+
+Next, we install the relevant modules. `SnapSyncModule` is installed once globally, but `KeysInTableModule` must be installed on every table.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+import { resolveTableId } from "@latticexyz/config";
+
+export default mudConfig({
+  tables: {
+    Karma: "int32",
+    Reputation: {
+      schema: {
+        fame: "uint8",
+        infamy: "uint8",
+      },
+    },
+  },
+  modules: [
+    {
+      name: "SnapSyncModule",
+      root: true,
+      args: [],
+    },
+    {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("Karma")],
+    },
+    {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("Reputation")],
+    },
+  ],
+});
+```
+
+#### Using snap-sync in the client
+
+Now that the modules are installed on-chain, we need to enable snap-sync in the client.
+
+Usually when using [`std-client`](https://github.com/latticexyz/mud/tree/main/packages/std-client), we begin syncing by calling the `startSync()` function returned by `setupMUDV2Network`:
+
+```tsx
+// Start syncing from the initial block set in the MUD config
+result.startSync();
+```
+
+Without any arguments, `startSync()` uses the initial block number in the MUD config, which is usually the block that the World was deployed. The means the initial sync can be quite slow as it processes every event since `initialBlockNumber`.
+
+However, `startSync()` takes two arguments:
+
+- `initialRecords` is the initial set of records for each table.
+- `initialBlockNumber` is the block number to start syncing from.
+
+Using snap-sync, we can fetch the current state directly from the World contract, "skipping" the initial sync phase. The initial records are the result of the snap-sync `view`, on every table, at the current block number.
+
+In the client, we fetch all the records that have been set at the current block number:
+
+```tsx
+import { getSnapSyncRecords } from "@latticexyz/network";
+import { getTableIds } from "@latticexyz/utils";
+
+...
+
+// Fetch the ID's of all tables in our config
+const tableIds = getTableIds(storeConfig);
+
+// Fetch the current block number
+const currentBlockNumber = await provider.getBlockNumber();
+
+// Fetch all records for our tables at the current block
+const tableRecords = await getSnapSyncRecords(
+  networkConfig.worldAddress,
+  tableIds,
+  currentBlockNumber,
+  signerOrProvider
+);
+
+// Start syncing with these records at the current block
+result.startSync(tableRecords, currentBlockNumber);
+```
+
+To allow users to toggle snap-sync, add a flag to the `networkConfig` type:
+
+```tsx
+type NetworkConfig = SetupContractConfig & {
+  privateKey: string;
+  faucetServiceUrl?: string;
+  snapSync?: boolean;
+};
+```
+
+To set a default value for the flag, edit `getNetworkConfig()`:
+
+```tsx
+export async function getNetworkConfig(): Promise<NetworkConfig> {
+
+  ...
+
+  return {
+    ...
+    snapSync: params.get("snapSync") === "true",
+  };
+}
+```
