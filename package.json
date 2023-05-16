@@ -19,7 +19,7 @@
     "link:packages": "lerna exec 'pnpm link --global'",
     "lint": "pnpm prettier:check && eslint . --ext .ts --ext .tsx",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
-    "prettier": "prettier --write '**/*.{ts,tsx,css,md,sol}'",
+    "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,sol}'",
     "release": "pnpm install && lerna publish --no-private --force-publish",
     "release:canary": "lerna publish premajor --preid alpha.1 --canary --no-private --force-publish",
@@ -31,7 +31,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
-    "*.{ts,tsx,css,md,sol}": "prettier --write",
+    "*.{ts,tsx,css,md,mdx,sol}": "prettier --write",
     "package.json": "pnpm sort-package-json"
   },
   "devDependencies": {

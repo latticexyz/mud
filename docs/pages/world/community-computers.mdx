@@ -1,6 +1,6 @@
 ## Worlds as “community computers”
 
-Worlds are decentralized, ******truly****** permissionless, and extensible on-chain environments built on top of an Ethereum blockchain. They allow multiple participants, including developers and users, to collaborate and build applications with shared logic and state while maintaining a high level of interoperability and modularity. Worlds remove the distinction between first party and third party developer.
+Worlds are decentralized, **\*\***truly**\*\*** permissionless, and extensible on-chain environments built on top of an Ethereum blockchain. They allow multiple participants, including developers and users, to collaborate and build applications with shared logic and state while maintaining a high level of interoperability and modularity. Worlds remove the distinction between first party and third party developer.
 
 The concept of a community computer is inspired by the idea of a shared computing environment where users can contribute and access resources. In the case of the World kernel, these resources are the shared Store, Systems, and Modules that form the basis of a on-chain application. In a way, Worlds **are** on-chain community computers.
 
@@ -8,14 +8,16 @@ Key aspects of the World as a community computer include:
 
 1. **Shared State**: A World hosts a shared Store, which serves as the on-chain database for al applications deployed within the World. This enables multiple developers to build on the same data and ensure seamless interaction between different applications.
 2. **Permissionless Extensibility**: Unlike traditional on-chain architectures like Diamonds or Proxies, the World framework allows for permissionless registration of new logic and tables on the Store. This means that any developer can extend an application by adding new features without requiring approval from an administrator or other centralized authority.
-3. **Interoperability**: By centralizing the state under a single contract and having the World as the global entry point for any application, Worlds facilitate better interoperability between different applications built within them. The context — like which address a transaction is originally coming from — can travel across different pieces of logic using the World contract as a mediator. 
-4. **Deep Customizability**: Worlds can support new features and protocols that are not yet available on the Ethereum blockchain. For example, developers can implement a Canto CSR-style mechanism to redistribute fees, or even a *new features* of the EVM not available on the chain yet through virtualization. This is uniquely enabled by having the World be the entry point and storage contract of each app deployed within it. The World creates space between the chain and the developer logic, and enables deep World-specific features that previously had to be implemented at the chain level (like the `AUTHCALL` op-code as an example).
-On-chain communities can now get a computer that gets upgraded faster than the protocol, and they do not need to fork Ethereum and build their own chain in order to be “sovereign”.
+3. **Interoperability**: By centralizing the state under a single contract and having the World as the global entry point for any application, Worlds facilitate better interoperability between different applications built within them. The context — like which address a transaction is originally coming from — can travel across different pieces of logic using the World contract as a mediator.
+4. **Deep Customizability**: Worlds can support new features and protocols that are not yet available on the Ethereum blockchain. For example, developers can implement a Canto CSR-style mechanism to redistribute fees, or even a _new features_ of the EVM not available on the chain yet through virtualization. This is uniquely enabled by having the World be the entry point and storage contract of each app deployed within it. The World creates space between the chain and the developer logic, and enables deep World-specific features that previously had to be implemented at the chain level (like the `AUTHCALL` op-code as an example).
+   On-chain communities can now get a computer that gets upgraded faster than the protocol, and they do not need to fork Ethereum and build their own chain in order to be “sovereign”.
 
 By using the World framework as a Community Computer, developers can build decentralized applications that are more scalable, interoperable, and flexible. The permissionless nature of the World framework encourages innovation and collaboration among developers, leading to a more vibrant and dynamic ecosystem for on-chain apps.
 
-Worlds become natural Schelling points for users to extend the logic and state they care about: instead of deploying new contracts and building new frontends interoperating with existing apps, developers can add new features to applications deployed within the World — permissionlessly — and have them be available to the World’s frontends and tools. 
+Worlds become natural Schelling points for users to extend the logic and state they care about: instead of deploying new contracts and building new frontends interoperating with existing apps, developers can add new features to applications deployed within the World — permissionlessly — and have them be available to the World’s frontends and tools.
 
 <aside>
-ℹ️ If you don’t care about permissionless extension of applications, it is still recommended using World as a MUD-native way of managing contract upgrades and splitting logic into different contracts to avoid the Spurious Dragon contract size limit.
+  ℹ️ If you don’t care about permissionless extension of applications, it is still recommended using World as a
+  MUD-native way of managing contract upgrades and splitting logic into different contracts to avoid the Spurious Dragon
+  contract size limit.
 </aside>
