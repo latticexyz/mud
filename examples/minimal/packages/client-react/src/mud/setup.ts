@@ -7,7 +7,7 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import { awaitStreamValue, getTableIds } from "@latticexyz/utils";
+import { getTableIds } from "@latticexyz/utils";
 import { getSnapSyncRecords } from "./snapSync";
 import storeConfig from "contracts/mud.config";
 

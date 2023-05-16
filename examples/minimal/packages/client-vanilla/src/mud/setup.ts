@@ -7,6 +7,8 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import { getTableIds } from "@latticexyz/utils";
+import { getSnapSyncRecords } from "./snapSync";
 import storeConfig from "contracts/mud.config";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
@@ -22,8 +24,6 @@ export async function setup() {
     storeConfig,
     worldAbi: IWorld__factory.abi,
   });
-
-  result.startSync();
 
   // Request drip from faucet
   const signer = result.network.signer.get();
@@ -50,11 +50,25 @@ export async function setup() {
     setInterval(requestDrip, 20000);
   }
 
+  const provider = result.network.providers.get().json;
+  const signerOrProvider = signer ?? provider;
   // Create a World contract instance
-  const worldContract = IWorld__factory.connect(
-    networkConfig.worldAddress,
-    signer ?? result.network.providers.get().json
-  );
+  const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
+
+  if (networkConfig.snapSync) {
+    const currentBlockNumber = await provider.getBlockNumber();
+    const tableRecords = await getSnapSyncRecords(
+      networkConfig.worldAddress,
+      getTableIds(storeConfig),
+      currentBlockNumber,
+      signerOrProvider
+    );
+
+    console.log(`Syncing ${tableRecords.length} records`);
+    result.startSync(tableRecords, currentBlockNumber);
+  } else {
+    result.startSync();
+  }
 
   // Create a fast tx executor
   const fastTxExecutor =
