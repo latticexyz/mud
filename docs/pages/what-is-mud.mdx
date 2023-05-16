@@ -118,10 +118,11 @@ These events and schemas are leveraged by [MODE](https://www.notion.so/67312bda4
 
 If you decide to go with the MUD querying DSL, your app can subscribe to a subset of the Store via a simple yet flexible querying language and keep that subset of the Store up to date as onchain transactions change Store and the result set.
 
-<aside>
-📢 For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client data-store automatically, and no queries need to be written.
-If that state gets too big for the client (eg: [you are running an onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start tweaking the data being synced using queries.
-
+<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
+  📢 For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client
+  data-store automatically, and no queries need to be written. If that state gets too big for the client (eg: [you are
+  running an onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start
+  tweaking the data being synced using queries.
 </aside>
 
 [diagram with a few tables, a DSL query, a client that updates its frontend, and an onchain tx that percolates to changing the UI]
