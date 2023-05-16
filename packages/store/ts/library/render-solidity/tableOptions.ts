@@ -85,7 +85,8 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     })();
 
     options.push({
-      outputPath: path.join(tableData.directory, `${tableName}.sol`),
+      // solc expects `/` as path separator, but path.join uses `\` if the user is on Windows
+      outputPath: path.join(tableData.directory, `${tableName}.sol`).replace(/\\/g, "/"),
       tableName,
       renderOptions: {
         imports,
