@@ -2,16 +2,16 @@
 
 ### Singleton table
 
-Store also supports “Singleton” tables, which are tables with a single record. Singleton tables don’t have primary keys. 
+Store also supports “Singleton” tables, which are tables with a single record. Singleton tables don’t have primary keys.
 
 They are useful to store top-level state.
 
 Defining them in the config looks like this:
 
 ```tsx
-import { storeConfig } from "@latticexyz/cli";
+import { mudConfig } from "@latticexyz/store/register";
 
-export default storeConfig({
+export default mudConfig({
   tables: {
     CounterSingleton: {
       primaryKeys: {},
@@ -41,7 +41,7 @@ They are useful for sending data to connected clients without the gas costs asso
 Defining them in the config looks like this:
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/store/register";
 
 export default mudConfig({
   tables: {
@@ -78,6 +78,7 @@ This is an example of a Mirror hook which mirrors a table into another one:
 
 ```solidity
 uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
+
 contract MirrorSubscriber is IStoreHook {
   uint256 _table;
 
@@ -115,19 +116,17 @@ StoreCore.registerStoreHook(table, subscriber);
 
 ### Accessing Store from a `CALL` or `DELEGATECALL` transparently
 
-<aside>
-📢 This feature is only available when using Store with the World framework
-</aside>
+<aside>📢 This feature is only available when using Store with the World framework</aside>
 
 When spreading application logic over multiple contracts or wanting to enable upgrades, it becomes necessary to `DELEGATECALL` the logic from a contract holding the state of the Store to an implementation contract. This is what happens with the [proxy pattern](https://docs.openzeppelin.com/contracts/4.x/api/proxy) and the [diamond pattern](https://eips.ethereum.org/EIPS/eip-2535) (which is itself a form of proxy).
 
-This works transparently, and it is possible for implementation contracts (or facets if using a diamond proxy) to use the Store low-level API when being called via `DELEGATECALL`. 
+This works transparently, and it is possible for implementation contracts (or facets if using a diamond proxy) to use the Store low-level API when being called via `DELEGATECALL`.
 
 In contrast to proxies and diamonds, the MUD World framework mediates access to the Store at the table level for each implementation contract. This is unlike `DELEGATECALL`-based solution where implementation contracts can write to any Table in the Store, or even corrupt the entire storage layout.
 
 With World, different logic contracts — called “system” when using the World framework — can have access to different tables, and writes to unauthorized tables will revert. This whitelisting is handled by the World directly. This is done by `CALL`ing the systems instead of `DELEGATECALL`ing them. The system then sends read and write requests back to the World contract which holds the Store state and the access control logic.
 
-With World, some systems can be `DELEGATECALL`ed: they are called root systems. In order to make working with Store in both situations transparent to the developer and allow for root systems to become regular systems after deployment (and vice-versa), the code-generated table libraries use `StoreSwitch` under the hood, which is a wrapper around `StoreCore` that checks if a Store has been initialized in the storage of the contract or if a Store exists at the `msg.sender`. 
+With World, some systems can be `DELEGATECALL`ed: they are called root systems. In order to make working with Store in both situations transparent to the developer and allow for root systems to become regular systems after deployment (and vice-versa), the code-generated table libraries use `StoreSwitch` under the hood, which is a wrapper around `StoreCore` that checks if a Store has been initialized in the storage of the contract or if a Store exists at the `msg.sender`.
 
 It executes reads and writes to the Store in its storage in case there exists one, or sends the read and write calls to the `msg.sender` if not.
 
