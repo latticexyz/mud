@@ -37,6 +37,7 @@ Using `getKeysInTable` to retrieve all keys in the Player table:
 // assumes a boolean flag indicates a player:
 // { Player: "bool" }
 //
+import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
 import { Player, PlayerTableId } from "./tables/Player.sol";
 // get all players
 bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
@@ -48,6 +49,7 @@ Using `hasKey` to check if a key is in the Player table:
 // assumes a boolean flag indicates a player:
 // { Player: "bool" }
 //
+import { hasKey } from "@latticexyz/world/src/modules/keysintable/hasKey.sol";
 import { Player, PlayerTableId } from "./tables/Player.sol";
 bytes32[] memory keyTuple = new bytes32[](1);
 keyTuple[0] = "bob";
@@ -78,6 +80,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 //   schema: "address",
 //   primaryKeys: { nftId: "uint256" }
 // }
+import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 import { Owners, OwnersId } from "./tables/Owners.sol";
 // get all nfts (as bytes, need to convert to uint256) owned by address 0x42
 bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
