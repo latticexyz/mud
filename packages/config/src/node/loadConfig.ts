@@ -3,6 +3,8 @@ import path from "path";
 import { NotInsideProjectError } from "../library/errors";
 import esbuild from "esbuild";
 import { rmSync } from "fs";
+import { pathToFileURL } from "url";
+import os from "os";
 
 // In order of preference files are checked
 const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.config.mts"];
@@ -28,7 +30,10 @@ async function resolveConfigPath(configPath: string | undefined) {
       configPath = path.normalize(configPath);
     }
   }
-  return configPath;
+
+  // Add `file:///` for Windows support
+  // (see https://github.com/nodejs/node/issues/31710)
+  return os.platform() === "win32" ? pathToFileURL(configPath).href : configPath;
 }
 
 async function getUserConfigPath() {
