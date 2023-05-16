@@ -1,0 +1,166 @@
+If you are coming from MUDv1 or traditional video game engine, you might be familiar with the Entity Component System data modelling technique.
+
+MUDv2 exposes a different base data-model: **tables**. However, it is quite easy to model your state in the ECS way, and use client-side data-store like [`recs`](/client/recs) to query your state in an ECS-native way.
+
+## Modelling your state with ECS
+
+**To model your data in an ECS-native way, represent every component as a table with a `bytes32` key.** Do not use mutliple keys for components.
+
+Defining a table schema in the MUD config defaults to a single `bytes32` key if no `keySchema` is provided.
+
+Note: we recommend adding the `UniqueEntityModule` to your World. It allows system to request a fresh entity ID that hasn't been used before. It is useful when creating new entities dynamically.
+
+```typescript
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  tables: {
+    PlayerComponent: "bool",
+    PositionComponent: {
+      schema: { x: "int32", y: "int32" },
+    },
+    NameComponent: "string",
+    DamageComponent: uint256,
+    HealthComponent: uint256,
+  },
+  modules: [
+    {
+      name: "UniqueEntityModule",
+      root: true,
+      args: [],
+    },
+  ],
+});
+```
+
+Here, we defined five components:
+
+1. The `PlayerComponent`, which attaches a `bool` value to an entity. We can use it to represent entities as players.
+2. The `PositionComponent`, which attaches a `{ x : int32, y : int32 }` vector to an entity. We can use it to place entities in our game at a specific position.
+3. The `NameComponent`, which attaches a `string` value to an entity. We can use it to name entities.
+4. The `DamageComponent` which attaches a `uint256` value to an entity. We can use it to configure the amount of damage dealt by an entity.
+5. The `LifeComponent` which attaches a `uint256` value to an entity. We can use it to represent the amount of life an entity has left.
+
+## Creating entities
+
+To create entities, we simply get a fresh entity ID that hasn't been used. Another ECS modelling technique is using an address as entity ID. It is useful for representing things like wallets in ECS and attaching components to them.
+
+**Creating a new entity**
+
+```solidity
+import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
+import { DamageComponent } from "../codegen/tables/DamageComponent.sol";
+import { HealthComponent } from "../codegen/tables/HealthComponent.sol";
+import { PositionComponent } from "../codegen/tables/PositionComponent.sol";
+// let's create an entity at the center of the world
+bytes32 newEntity = getUniqueEntity();
+PositionComponent.set(newEntity, {x: 0, y: 0});
+// with 10 damage
+DamageComponent.set(newEntity, 10);
+// and 100 health
+HealthComponent.set(newEntity, 100);
+```
+
+**Creating a new entity from an address**
+
+```solidity
+import { DamageComponent } from "../codegen/tables/DamageComponent.sol";
+import { PlayerComponent } from "../codegen/tables/PlayerComponent.sol";
+import { HealthComponent } from "../codegen/tables/HealthComponent.sol";
+import { PositionComponent } from "../codegen/tables/PositionComponent.sol";
+// let's cast the msg.sender
+// note: we use _msgSender() with systems to a bytes32 to use it as an entity ID
+bytes32 playerEntity = bytes32(uint256(uint160(_msgSender())));
+// we spawn the player who sent this transaction at {10, 42}
+PositionComponent.set(playerEntity, {x: 10, y: 42});
+PlayerComponent.set(playerEntity, true);
+// with 50 damage
+DamageComponent.set(playerEntity, 50);
+// and 600 health
+HealthComponent.set(playerEntity, 600);
+```
+
+## Writing ECS-native systems
+
+Building up on the previous step, we can create an ECS-native system to spawn as a player and move, as well as creating monsters and moving them around.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
+import { DamageComponent } from "../codegen/tables/DamageComponent.sol";
+import { PlayerComponent } from "../codegen/tables/PlayerComponent.sol";
+import { HealthComponent } from "../codegen/tables/HealthComponent.sol";
+import { PositionComponent } from "../codegen/tables/PositionComponent.sol";
+import { NameComponent } from "../codegen/tables/NameSystem.sol;
+contract GameSystem is System {
+  function spawn(string memory name) public returns () {
+    // let's cast the msg.sender
+    // note: we use _msgSender() with systems to a bytes32 to use it as an entity ID
+    bytes32 playerEntity = bytes32(uint256(uint160(_msgSender())));
+    PositionComponent.set(playerEntity, {x: 10, y: 42});
+    PlayerComponent.set(playerEntity, true);
+    DamageComponent.set(playerEntity, 50);
+    HealthComponent.set(playerEntity, 600);
+    // we let players set their name
+    NameComponent.set(playerEntity, name)
+  }
+  function createMonster(int32 x, int32 y) returns () {
+    bytes32 newEntity = getUniqueEntity();
+    // we create the monster at the position specified in the arguments
+    PositionComponent.set(newEntity, {x: x, y: y});
+    DamageComponent.set(newEntity, 10);
+    HealthComponent.set(newEntity, 100);
+    NameComponent.set(newEntity, "Monster");
+  }
+  function move(int32 x, int32 y) returns () {
+    // check if sender has already spawned
+    bytes32 playerEntity = bytes32(uint256(uint160(_msgSender())));
+    require(PlayerComponent.get(playerEntity), "player hasn't spawned");
+    // move the entity associated with the sender address. you can't move other players!
+    PositionComponent.set(playerEntity, {x: x, y: y})
+  }
+  function moveMonster(bytes32 entity, int32 x, int32 y) returns () {
+    // check if the entity is not a player
+    require(PlayerComponent.get(entity) == false, "can't move a player");
+    PositionComponent.set(entity, {x: x, y: y})
+  }
+}
+```
+
+## Querying client side with `recs`
+
+Because we modelled our application state in an ECS-native way, we can easily query our application state in a reactive way with `recs`. Using React as an example (note that `recs` can be used with any framework), let's define three reactive queries: One that reacts to any player moving, another one that reacts to any monster moving, and finally one that reacts when _your_ player moves.
+
+```typescript
+import { useEntityQuery, useComponentValue } from "@latticexyz/react";
+import { getComponentValueStrict, Has, Not } from "@latticexyz/recs";
+const {
+  components: { PositionComponent, NameComponent, PlayerComponent },
+  playerEntity,
+} = useMUD();
+// A. Subscribe to all player position
+//   1. subscribe to all entities that are players and have a position
+const players = useEntityQuery([
+  Has(Player) /** All entities with a Player component */,
+  Has(Position) /** With a position */,
+]);
+//   2. map all entities to their position (they must have one, so we can use getComponentValueStrict)
+const playerPositions = players.map((player) => getComponentValueStrict(PositionComponent, player));
+// -----------------------------------
+// B. Subscribe to all monster position
+//   1. subscribe to all entities that are *not* players and have a position
+const monsters = useEntityQuery([
+  Not(Player) /** All entities without a player component */,
+  Has(Position) /** With a position */,
+]);
+//   2. map all entities to their position (they must have one, so we can use getComponentValueStrict)
+const monsterPositions = monsters.map((monster) => getComponentValueStrict(PositionComponent, monster));
+// -----------------------------------
+// C. Subscribe to our player's position and health
+//   1. subscribe to the position of our player
+const ourPosition = useComponentValue(PositionComponent, playerEntity);
+//   2. subscribe to the health of our player
+const ourHealth = useComponentValue(HealthComponent, playerEntity);
+```

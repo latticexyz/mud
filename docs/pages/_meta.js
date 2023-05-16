@@ -6,6 +6,7 @@ export default {
   world: "World",
   mode: "MODE",
   cli: "CLI",
+  ecs: "ECS",
   "ethglobal-hackathon": "ETHGlobal Hackathon",
   // blog: {
   //   title: "Blog",
