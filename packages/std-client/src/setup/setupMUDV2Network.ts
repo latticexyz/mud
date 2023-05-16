@@ -7,6 +7,7 @@ import {
   Ack,
   InputType,
   SingletonID,
+  RawTableRecord,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, defineComponent, Type, World } from "@latticexyz/recs";
@@ -154,16 +155,18 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   } = networkConfig;
   const { ecsEvents$, input$, dispose } = createSyncWorker<typeof components>(ack$, { thread: syncThread });
   world.registerDisposer(dispose);
-  function startSync() {
+
+  function startSync(initialRecords?: RawTableRecord[], initialBlockNumber?: number) {
     input$.next({
       type: InputType.Config,
       data: {
         ...syncWorkerConfig,
         provider: providerConfig,
         worldContract: contractsConfig.World,
-        initialBlockNumber: networkConfig.initialBlockNumber,
+        initialBlockNumber: initialBlockNumber ?? networkConfig.initialBlockNumber,
         disableCache: networkConfig.disableCache, // Disable cache on local networks (hardhat / anvil)
         fetchSystemCalls,
+        initialRecords,
       },
     });
   }
