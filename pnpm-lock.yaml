@@ -389,7 +389,7 @@ importers:
         specifier: workspace:*
         version: link:../utils
       '@latticexyz/world':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../world
       async-mutex:
         specifier: ^0.3.2
