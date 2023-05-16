@@ -131,17 +131,17 @@ A query consists of a list of query fragments. A query fragment is a struct with
 ```solidity
 struct QueryFragment {
   QueryType queryType;
-  IComponent component;
+  bytes32 tableId;
   bytes value;
 }
 ```
 
 Available query fragments are:
 
-- `Has`: filter for keys that have the specified component. The value field in the query fragment is ignored.
-- `HasValue`: filter for keys that have the specified component with the specified value.
-- `Not`: filter for keys that do not have the specified component. The value field in th query fragment is ignored.
-- `NotValue`: filter for keys that do not have the specified component with the specified value.
+- `Has`: filter for keys that are in the specified table. The value field in the query fragment is ignored.
+- `HasValue`: filter for keys that are in the specified table with the specified value.
+- `Not`: filter for keys that are not in the specified table. The value field in th query fragment is ignored.
+- `NotValue`: filter for keys that are not in the specified table with the specified value.
 
 The query fragments are executed from left to right and are concatenated with a logical AND. For performance reasons, the most restrictive query fragment should be first in the list of query fragments, in order to reduce the number of keys the next query fragment needs to be checked for.
 
