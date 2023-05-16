@@ -20,7 +20,7 @@ export async function transformTableRecordsIntoEvents(
       keyTuple,
       value
     );
-    const key = { ...indexedKey, ...indexedValues };
+    const key = { ...indexedKey, ...namedKey };
     const component = tableId.toString();
     const entityId = keyTupleToEntityID(keyTuple);
 
@@ -29,7 +29,7 @@ export async function transformTableRecordsIntoEvents(
       component,
       entity: entityId as Entity,
       key,
-      value: { ...indexedValues, ...indexedKey },
+      value: { ...indexedValues, ...namedValues },
       lastEventInTx: false,
       txHash: "cache",
       blockNumber,
