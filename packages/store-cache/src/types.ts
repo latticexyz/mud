@@ -35,7 +35,7 @@ export type DatabaseClient<C extends StoreConfig> = {
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
-        filter?: Omit<SubscriptionFilterOptions<C, Table>, "table" | "namespace">
+        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
       ) => Unsubscribe;
     };
   };
@@ -61,7 +61,7 @@ export type DatabaseClient<C extends StoreConfig> = {
   ) => TupleRootTransactionApi;
   subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
-    filter?: SubscriptionFilterOptions<C, Table>
+    filter?: FilterOptions<C, Table>
   ) => Unsubscribe;
   _tupleDatabaseClient: TupleDatabaseClient;
 };
@@ -82,10 +82,7 @@ export type SubscriptionCallback<
   T extends keyof C["tables"] = keyof C["tables"]
 > = (updates: Update<C, T>[]) => void;
 
-export type SubscriptionFilterOptions<
-  C extends StoreConfig = StoreConfig,
-  T extends keyof C["tables"] = keyof C["tables"]
-> = {
+export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   table: T & string;
   namespace: string;
   key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };

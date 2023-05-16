@@ -6,11 +6,13 @@ import {
   SchemaToPrimitives,
   SetOptions,
   SubscriptionCallback,
-  SubscriptionFilterOptions,
+  FilterOptions,
   Update,
   Value,
+  KeyValue,
 } from "./types";
 import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
+import { Filter } from "abitype/dist/types/types";
 
 /**
  * Set the value for the given key
@@ -80,6 +82,22 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
   return tx;
 }
 
+export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  client: TupleDatabaseClient,
+  filter?: FilterOptions<C, T>
+) {
+  const scanArgs = getScanArgsFromFilter(filter);
+  const results = client.scan(scanArgs);
+
+  return results.map(
+    ({ key, value }) =>
+      ({ namespace: key[0], table: key[1], key: tupleToRecord(key), value } as KeyValue<C, T> & {
+        namespace: C["namespace"];
+        table: T;
+      })
+  );
+}
+
 /**
  * Subscribe to changes in the database
  * @param client TupleDatabaseClient
@@ -93,27 +111,11 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
 export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
   callback: SubscriptionCallback<C, T>,
-  filter?: SubscriptionFilterOptions<C, T>
+  filter?: FilterOptions<C, T>
 ) {
-  const { namespace, table, key } = filter || {};
+  const scanArgs = getScanArgsFromFilter(filter);
 
-  const prefix = table != null && namespace != null ? [namespace, table] : undefined;
-
-  const scanArgs: ScanArgs<Tuple, Tuple> = {};
-
-  // Transform scan args
-  scanArgs.gte = key?.gte && recordToTuple(key.gte);
-  scanArgs.gt = key?.gt && recordToTuple(key.gt);
-  scanArgs.lte = key?.lte && recordToTuple(key.lte);
-  scanArgs.lt = key?.lt && recordToTuple(key.lt);
-
-  // Override gte and lte if eq is set
-  if (key?.eq) {
-    scanArgs.gte = recordToTuple(key.eq);
-    scanArgs.lte = recordToTuple(key.eq);
-  }
-
-  return client.subscribe({ prefix, ...scanArgs }, (write) => {
+  return client.subscribe(scanArgs, (write) => {
     const updates: Record<string, Update> = {};
 
     // Transform the writes into the expected format
@@ -166,6 +168,28 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
   }
 
   return defaultValue as SchemaToPrimitives<Schema>;
+}
+
+function getScanArgsFromFilter<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  filter?: FilterOptions<C, T>
+) {
+  const { namespace, table, key } = filter || {};
+  const prefix = table != null && namespace != null ? [namespace, table] : undefined;
+  const scanArgs: ScanArgs<Tuple, Tuple> = {};
+
+  // Transform scan args
+  scanArgs.gte = key?.gte && recordToTuple(key.gte);
+  scanArgs.gt = key?.gt && recordToTuple(key.gt);
+  scanArgs.lte = key?.lte && recordToTuple(key.lte);
+  scanArgs.lt = key?.lt && recordToTuple(key.lt);
+
+  // Override gte and lte if eq is set
+  if (key?.eq) {
+    scanArgs.gte = recordToTuple(key.eq);
+    scanArgs.lte = recordToTuple(key.eq);
+  }
+
+  return { prefix, ...scanArgs };
 }
 
 /**

@@ -1,5 +1,5 @@
 import { TupleDatabase, TupleDatabaseClient } from "tuple-database";
-import { DatabaseClient, Key, SetOptions, SubscriptionCallback, SubscriptionFilterOptions, Value } from "./types";
+import { DatabaseClient, Key, SetOptions, SubscriptionCallback, FilterOptions, Value } from "./types";
 import { set, get, remove, getDefaultValue, subscribe } from "./utils";
 import { StoreConfig } from "@latticexyz/store";
 import { curry } from "@latticexyz/common/utils";
@@ -32,7 +32,7 @@ export function createDatabaseClient<C extends StoreConfig>(database: TupleDatab
       remove: curry(utilsWithClient.remove, namespace, table),
       subscribe: (
         callback: SubscriptionCallback<C, typeof table>,
-        filter?: Omit<SubscriptionFilterOptions<C, typeof table>, "table">
+        filter?: Omit<FilterOptions<C, typeof table>, "table">
       ) => subscribe(_tupleDatabaseClient, callback, { namespace, table, ...filter }),
     };
   }
