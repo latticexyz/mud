@@ -283,9 +283,9 @@ export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRe
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
   // Local table variables must be unique within the table
   for (const table of Object.values(config.tables)) {
-    const primaryKeyNames = Object.keys(table.keySchema);
+    const keySchemaNames = Object.keys(table.keySchema);
     const fieldNames = Object.keys(table.schema);
-    const duplicateVariableNames = getDuplicates([...primaryKeyNames, ...fieldNames]);
+    const duplicateVariableNames = getDuplicates([...keySchemaNames, ...fieldNames]);
     if (duplicateVariableNames.length > 0) {
       ctx.addIssue({
         code: ZodIssueCode.custom,
@@ -316,8 +316,8 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   }
   // User types must exist
   for (const table of Object.values(config.tables)) {
-    for (const primaryKeyType of Object.values(table.keySchema)) {
-      validateStaticAbiOrUserType(staticUserTypeNames, primaryKeyType, ctx);
+    for (const keySchemaType of Object.values(table.keySchema)) {
+      validateStaticAbiOrUserType(staticUserTypeNames, keySchemaType, ctx);
     }
     for (const fieldType of Object.values(table.schema)) {
       validateAbiOrUserType(userTypeNames, staticUserTypeNames, fieldType, ctx);

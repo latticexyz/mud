@@ -33,7 +33,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // list of any symbols that need to be imported
     const imports: RelativeImportDatum[] = [];
 
-    const keySchema = Object.keys(tableData.keySchema).map((name) => {
+    const keyTuple = Object.keys(tableData.keySchema).map((name) => {
       const abiOrUserType = tableData.keySchema[name];
       const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
 
@@ -43,12 +43,12 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       if (renderType.isDynamic)
         throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
 
-      const primaryKey: RenderKeyTuple = {
+      const keyTuple: RenderKeyTuple = {
         ...renderType,
         name,
         isDynamic: false,
       };
-      return primaryKey;
+      return keyTuple;
     });
 
     const fields = Object.keys(tableData.schema).map((name) => {
@@ -94,7 +94,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         structName: withStruct ? tableName + "Data" : undefined,
         staticResourceData,
         storeImportPath,
-        keySchema,
+        keyTuple,
         fields,
         staticFields,
         dynamicFields,

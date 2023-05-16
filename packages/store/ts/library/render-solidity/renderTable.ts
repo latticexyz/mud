@@ -29,7 +29,7 @@ export function renderTable(options: RenderTableOptions) {
     withRecordMethods,
     withEphemeralMethods,
     storeArgument,
-    keySchema,
+    keyTuple,
   } = options;
 
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
@@ -82,8 +82,8 @@ library ${libraryName} {
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${keySchema.length});
-    ${renderList(keySchema, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+    SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
+    ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
 
     return SchemaLib.encode(_schema);
   }
@@ -138,11 +138,8 @@ library ${libraryName} {
   
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](${keySchema.length});
-    ${renderList(
-      keySchema,
-      (primaryKey, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
-    )}
+    _keyTuple = new bytes32[](${keyTuple.length});
+    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
   }
 
   ${

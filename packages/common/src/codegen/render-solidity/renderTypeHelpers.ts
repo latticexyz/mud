@@ -1,11 +1,11 @@
 import { RenderField, RenderKeyTuple, RenderType } from "./types";
 
-export function renderTypeHelpers(options: { fields: RenderField[]; keySchema: RenderKeyTuple[] }) {
-  const { fields, keySchema } = options;
+export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }) {
+  const { fields, keyTuple } = options;
 
   let result = "";
 
-  for (const wrappingHelper of getWrappingHelpers([...fields, ...keySchema])) {
+  for (const wrappingHelper of getWrappingHelpers([...fields, ...keyTuple])) {
     result += wrappingHelper;
   }
 
@@ -19,7 +19,7 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keySchema: R
     }
     `;
   }
-  if (keySchema.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
+  if (keyTuple.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
     result += `
     function _boolToBytes32(bool value) pure returns (bytes32 result) {
       assembly {
