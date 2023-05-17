@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "pnpm run initialize && recursive run dev",
+    "dev": "pnpm run initialize && pnpm recursive run dev",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "dev:node": "mud devnode",
