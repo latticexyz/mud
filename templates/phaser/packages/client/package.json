@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
-    "initialize": "yarn build",
-    "preview": "vite preview"
+    "dev": "wait-port localhost:8545 && vite",
+    "initialize": "pnpm build",
+    "preview": "vite preview",
+    "test": "tsc --noEmit"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
@@ -42,6 +43,7 @@
     "use-resize-observer": "^9.1.0",
     "viem": "^0.2.0",
     "vite": "^4.2.1",
+    "wait-port": "^1.0.4",
     "zustand": "^4.3.8"
   },
   "devDependencies": {

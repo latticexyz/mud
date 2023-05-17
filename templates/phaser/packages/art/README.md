@@ -30,4 +30,4 @@ Export does a few things:
   3. Creates Typescript types for your Tilesets
   4. Moves all created files into your game client package
 
-To export, run `yarn export` from the root of this project.
+To export, run `pnpm export` from the root of this project.
