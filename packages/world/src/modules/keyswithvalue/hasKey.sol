@@ -11,9 +11,9 @@ import { WithValueIndex } from "./tables/WithValueIndex.sol";
  * Note: this util can only be called within the context of a Store (e.g. from a System or Module).
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
-function hasKey(bytes32 tableId, bytes32[] memory key, bytes memory value) view returns (bool) {
-  bytes32 keysHash = keccak256(abi.encode(key));
+function hasKey(bytes32 tableId, bytes memory value, bytes32[] memory key) view returns (bool) {
   bytes32 valueHash = keccak256(abi.encode(value));
+  bytes32 keysHash = keccak256(abi.encode(key));
 
   return WithValueIndex.getHas(tableId, valueHash, keysHash);
 }
@@ -21,9 +21,9 @@ function hasKey(bytes32 tableId, bytes32[] memory key, bytes memory value) view 
 /**
  * Get whether the key has the given value in the given table for the given store.
  */
-function hasKey(IStore store, bytes32 tableId, bytes32[] memory key, bytes memory value) view returns (bool) {
-  bytes32 keysHash = keccak256(abi.encode(key));
+function hasKey(IStore store, bytes32 tableId, bytes memory value, bytes32[] memory key) view returns (bool) {
   bytes32 valueHash = keccak256(abi.encode(value));
+  bytes32 keysHash = keccak256(abi.encode(key));
 
   return WithValueIndex.getHas(store, tableId, valueHash, keysHash);
 }
