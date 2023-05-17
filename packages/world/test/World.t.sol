@@ -407,7 +407,7 @@ contract WorldTest is Test {
     // !gasreport getting the length with 10000 elements
     uint256 length = AddressArray.length(world, tableId, key);
 
-    assertEq(length, 170);
+    assertEq(length, amount + 1);
   }
 
   function testSetField() public {
