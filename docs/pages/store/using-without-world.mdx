@@ -10,7 +10,7 @@ import { Aside } from "../../components/Aside";
   World.
 </Aside>
 
-Install `@latticexyz/store` via NPM or Yarn, and add the correct remapping into your Forge config.
+Install `@latticexyz/store` via NPM, PNPM, or Yarn, and add the correct remapping into your Forge config.
 
 If you store your contracts in `packages/contract`, this would look like this:
 
@@ -19,7 +19,7 @@ If you store your contracts in `packages/contract`, this would look like this:
 @latticexyz/=./node_modules/@latticexyz/
 ```
 
-If you want to use code-generation for libraries, install the MUD cli: `yarn install -D mud` and the schema types: `yarn install -D @latticexyz/schema-type`
+If you want to use code-generation for libraries, install the MUD cli: `pnpm install -D mud` and the store config package: `pnpm install -D @latticexyz/store`
 
 Import Store and extend your contract with the `Store` contract:
 
@@ -35,10 +35,10 @@ Inheriting `Store` will bootstrap the internal tables in the contract’s constr
 
 ### Initializing tables in the constructor with code-generated librarie
 
-create a MUD config at the root of your project named `mud.config.mts`
+create a MUD config at the root of your project named `mud.config.ts`
 
 ```tsx
-// mud.config.mts
+// mud.config.ts
 import { mudConfig } from "@latticexyz/store/register";
 
 export default mudConfig({
@@ -55,7 +55,7 @@ export default mudConfig({
 export default config;
 ```
 
-Then run `mud tablegen` in the folder where your MUD config is located. It will output a single library: `MyTable.sol` at `./src/tables/MyTable.sol`
+Then run `pnpm mud tablegen` in the folder where your MUD config is located. It will output a single library: `MyTable.sol` at `./src/tables/MyTable.sol`
 
 ```solidity
 import { Store } from "@latticexyz/store/src/Store.sol";
