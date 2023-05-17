@@ -1,4 +1,4 @@
-import { MUDError } from "./errors";
+import { MUDError } from "@latticexyz/common/errors";
 
 export enum DynamicResolutionType {
   TABLE_ID,

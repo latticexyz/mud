@@ -1,5 +1,0 @@
-{
-  "chainId": 31337,
-  "rpc": "http://localhost:8545",
-  "wsRpc": "ws://localhost:8545"
-}

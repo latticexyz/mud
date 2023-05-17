@@ -10,7 +10,7 @@ import { keyTupleToEntityID } from "../keyTupleToEntityID";
 import { registerMetadata } from "../schemas/tableMetadata";
 import { registerSchema } from "../schemas/tableSchemas";
 import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
-import { decodeAbiParameters } from "viem";
+import { decodeValueJSON } from "../schemas/decodeValue";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
@@ -57,17 +57,23 @@ export async function syncTablesFromMode(
 
     for (const row of rows) {
       console.log(tableName, keyAbiTypes, fieldAbiTypes, row.values);
-      const keyTuple = row.values
-        .slice(0, keyLength)
-        .map((bytes, i) => decodeAbiParameters([{ type: keyAbiTypes[i] }], arrayToHex(bytes))[0]);
-      const values = row.values
-        .slice(keyLength)
-        .map((bytes, i) => decodeAbiParameters([{ type: fieldAbiTypes[i] }], arrayToHex(bytes))[0]);
+      const keyTuple = row.values.slice(0, keyLength).map((bytes, _) => decodeValueJSON(bytes));
+      const values = row.values.slice(keyLength).map((bytes, _) => decodeValueJSON(bytes));
 
+      const key = keyTuple.reduce<Record<number, unknown>>((acc, curr, i) => ({ ...acc, [i]: curr }), {});
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
 
-      storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
+      storeEvent(cacheStore, {
+        type: NetworkEvents.NetworkComponentUpdate,
+        component,
+        entity,
+        key,
+        value,
+        blockNumber,
+        namespace: tableId.namespace,
+        table: tableId.name,
+      });
 
       numRowsProcessed++;
       // Update progress every 100 rows
@@ -75,7 +81,9 @@ export async function syncTablesFromMode(
         setPercentage(Math.floor(numRowsProcessed / numRowsTotal));
       }
     }
+    console.log("done syncing from mode table", tableName);
   }
+  console.log("done syncing from mode", numRowsProcessed, "rows processed");
 
   // make sure all schemas/metadata are registered before returning to avoid downstream lookup issues
   await Promise.all(registrationPromises);

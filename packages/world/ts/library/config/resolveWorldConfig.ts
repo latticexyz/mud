@@ -1,4 +1,5 @@
-import { getDuplicates, MUDError, STORE_SELECTOR_MAX_LENGTH, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { getDuplicates, STORE_SELECTOR_MAX_LENGTH, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/common/errors";
 import { StoreConfig } from "@latticexyz/store";
 import { SystemConfig, WorldConfig } from "./types";
 
@@ -15,13 +16,13 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
   const defaultSystemNames =
     existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I[A-Z]/)) ?? [];
-  const overriddenSystemNames = Object.keys(config.overrideSystems);
+  const overriddenSystemNames = Object.keys(config.systems);
 
-  // Validate every key in overrideSystems refers to an existing system contract (and is not called "World")
+  // Validate every key in systems refers to an existing system contract (and is not called "World")
   if (existingContracts) {
     for (const systemName of overriddenSystemNames) {
       if (!existingContracts.includes(systemName) || systemName === "World") {
-        throw UnrecognizedSystemErrorFactory(["overrideSystems", systemName], systemName);
+        throw UnrecognizedSystemErrorFactory(["systems", systemName], systemName);
       }
     }
   }
@@ -35,7 +36,7 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
   const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
     return {
       ...acc,
-      [systemName]: resolveSystemConfig(systemName, config.overrideSystems[systemName], existingContracts),
+      [systemName]: resolveSystemConfig(systemName, config.systems[systemName], existingContracts),
     };
   }, {});
 
@@ -77,7 +78,7 @@ export function resolveSystemConfig(systemName: string, config?: SystemConfig, e
     } else {
       // Validate every system refers to an existing system contract
       if (existingContracts && !existingContracts.includes(accessListItem)) {
-        throw UnrecognizedSystemErrorFactory(["overrideSystems", systemName, "accessList"], accessListItem);
+        throw UnrecognizedSystemErrorFactory(["systems", systemName, "accessList"], accessListItem);
       }
       accessListSystems.push(accessListItem);
     }

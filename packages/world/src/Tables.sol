@@ -8,6 +8,7 @@ import { ResourceAccess, ResourceAccessTableId } from "./tables/ResourceAccess.s
 import { InstalledModules, InstalledModulesData, InstalledModulesTableId } from "./tables/InstalledModules.sol";
 import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
 import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
+import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHooks.sol";
 import { ResourceType, ResourceTypeTableId } from "./modules/core/tables/ResourceType.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
 import { WithValueKeys, WithValueKeysTableId } from "./modules/keyswithvalue/tables/WithValueKeys.sol";

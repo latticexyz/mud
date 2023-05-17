@@ -12,7 +12,7 @@ export default mudConfig({
      *
      ************************************************************************/
     NamespaceOwner: {
-      primaryKeys: {
+      keySchema: {
         namespace: "bytes16",
       },
       schema: {
@@ -20,7 +20,7 @@ export default mudConfig({
       },
     },
     ResourceAccess: {
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
         caller: "address",
       },
@@ -29,7 +29,7 @@ export default mudConfig({
       },
     },
     InstalledModules: {
-      primaryKeys: {
+      keySchema: {
         moduleName: "bytes16",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
@@ -49,7 +49,7 @@ export default mudConfig({
      ************************************************************************/
     Systems: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: {
@@ -60,16 +60,23 @@ export default mudConfig({
     },
     SystemRegistry: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         system: "address",
       },
       schema: {
         resourceSelector: "bytes32",
       },
     },
+    SystemHooks: {
+      directory: "modules/core/tables",
+      keySchema: {
+        resourceSelector: "bytes32",
+      },
+      schema: "address[]",
+    },
     ResourceType: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: {
@@ -78,7 +85,7 @@ export default mudConfig({
     },
     FunctionSelectors: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         functionSelector: "bytes4",
       },
       schema: {
@@ -90,15 +97,15 @@ export default mudConfig({
     },
     WithValueKeys: {
       directory: "modules/keyswithvalue/tables",
-      primaryKeys: {
+      keySchema: {
         sourceTable: "bytes32",
         valueHash: "bytes32",
       },
-      schema: "bytes32[]", // For now only indexes the first key of a primary key tuple
+      schema: "bytes32[]", // For now only indexes the first key of a key tuple
     },
     WithValueIndex: {
       directory: "modules/keyswithvalue/tables",
-      primaryKeys: {
+      keySchema: {
         sourceTable: "bytes32",
         valueHash: "bytes32",
         keysHash: "bytes32",
@@ -108,12 +115,12 @@ export default mudConfig({
     },
     InTableKeys: {
       directory: "modules/keysintable/tables",
-      primaryKeys: { sourceTable: "bytes32" },
-      schema: "bytes32[]", // For now only indexes the first key of a primary key tuple
+      keySchema: { sourceTable: "bytes32" },
+      schema: "bytes32[]", // For now only indexes the first key of a key tuple
     },
     InTableIndex: {
       directory: "modules/keysintable/tables",
-      primaryKeys: {
+      keySchema: {
         sourceTable: "bytes32",
         keysHash: "bytes32",
       },
@@ -122,7 +129,7 @@ export default mudConfig({
     },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
-      primaryKeys: {},
+      keySchema: {},
       schema: "uint256",
       tableIdArgument: true,
       storeArgument: true,
@@ -134,7 +141,7 @@ export default mudConfig({
      ************************************************************************/
     Bool: {
       directory: "../test/tables",
-      primaryKeys: {},
+      keySchema: {},
       schema: {
         value: "bool",
       },
@@ -156,6 +163,8 @@ export default mudConfig({
     // TODO: Move optional modules into a separate package
     // (see https://github.com/latticexyz/mud/pull/584)
     "UniqueEntitySystem",
+
+    "SnapSyncSystem",
 
     // Worldgen currently does not support systems inheriting logic
     // from other contracts, so all parts of CoreSystem are named

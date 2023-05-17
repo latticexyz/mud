@@ -11,7 +11,8 @@
   "type": "module",
   "exports": {
     ".": "./dist/library/index.js",
-    "./register": "./dist/register/index.js"
+    "./register": "./dist/register/index.js",
+    "./node": "./dist/node/index.js"
   },
   "typesVersions": {
     "*": {
@@ -20,6 +21,9 @@
       ],
       "register": [
         "./src/register/index.ts"
+      ],
+      "node": [
+        "./src/node/index.ts"
       ]
     }
   },
@@ -32,6 +36,7 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "chalk": "^5.2.0",
     "esbuild": "^0.17.15",

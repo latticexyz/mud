@@ -9,7 +9,7 @@ const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).default(SYST
 // The system config is a combination of a name config and access config
 const zSystemConfig = z.intersection(
   z.object({
-    name: zSelector,
+    name: zSelector.optional(),
     registerFunctionSelectors: z.boolean().default(SYSTEM_DEFAULTS.registerFunctionSelector),
   }),
   z.discriminatedUnion("openAccess", [
@@ -39,10 +39,11 @@ const zModuleConfig = z.object({
 export const zWorldConfig = z.object({
   worldContractName: z.string().optional(),
   worldInterfaceName: z.string().default(WORLD_DEFAULTS.worldInterfaceName),
-  overrideSystems: z.record(zSystemName, zSystemConfig).default(WORLD_DEFAULTS.overrideSystems),
+  systems: z.record(zSystemName, zSystemConfig).default(WORLD_DEFAULTS.systems),
   excludeSystems: z.array(zSystemName).default(WORLD_DEFAULTS.excludeSystems),
   postDeployScript: z.string().default(WORLD_DEFAULTS.postDeployScript),
   deploysDirectory: z.string().default(WORLD_DEFAULTS.deploysDirectory),
+  worldsFile: z.string().default(WORLD_DEFAULTS.worldsFile),
   worldgenDirectory: z.string().default(WORLD_DEFAULTS.worldgenDirectory),
   worldImportPath: z.string().default(WORLD_DEFAULTS.worldImportPath),
   modules: z.array(zModuleConfig).default(WORLD_DEFAULTS.modules),

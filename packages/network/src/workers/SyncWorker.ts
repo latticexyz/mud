@@ -1,17 +1,5 @@
 import { awaitStreamValue, DoWork, filterNullish, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
-import {
-  bufferTime,
-  catchError,
-  concat,
-  concatMap,
-  filter,
-  ignoreElements,
-  map,
-  Observable,
-  of,
-  Subject,
-  take,
-} from "rxjs";
+import { bufferTime, concat, concatMap, filter, ignoreElements, map, Observable, of, Subject, take } from "rxjs";
 import {
   isNetworkComponentUpdateEvent,
   NetworkComponentUpdate,
@@ -33,18 +21,6 @@ import {
 } from "./CacheStore";
 import { createReconnectingProvider } from "../createProvider";
 import { computed } from "mobx";
-import {
-  createSnapshotClient,
-  createDecode,
-  createFetchWorldEventsInBlockRange,
-  getSnapshotBlockNumber,
-  fetchSnapshotChunked,
-  createLatestEventStreamRPC,
-  createLatestEventStreamService,
-  createTransformWorldEventsFromStream,
-  createFetchSystemCallsFromEvents,
-  fetchEventsInBlockRangeChunked,
-} from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { SingletonID, SyncState } from "./constants";
 import { debug as parentDebug } from "./debug";
@@ -54,9 +30,14 @@ import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
+import { transformTableRecordsIntoEvents } from "../v2/transformTableRecordsIntoEvents";
 import * as devObservables from "../dev/observables";
+import { getEventSelector } from "viem";
+import { createLatestEventStreamRPC, fetchEventsInBlockRangeChunked } from "../v2/syncUtils";
 
 const debug = parentDebug.extend("SyncWorker");
+
+const VERSION = 3;
 
 export enum InputType {
   Ack,
@@ -98,6 +79,9 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       component: keccak256("component.LoadingState"),
       value: newLoadingState as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
       entity: SingletonID,
+      key: {},
+      namespace: "mudsync",
+      table: "LoadingState",
       txHash: "worker",
       lastEventInTx: false,
       blockNumber,
@@ -112,11 +96,11 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
    * 1. Get config
    * 2. Load initial state
    *   2.1 Get cache block number
-   *   2.2 Get snapshot block number
+   *   2.2 Get mode block number
    *   2.3 Load from more recent source
    * 3. Cach up to current block number by requesting events from RPC ( -> TODO: Replace with own service)
    * 4. Keep in sync
-   *  4.1 If available keep in sync with streaming service
+   *  4.1 If available keep in sync with mode
    *  4.2 Else keep in sync with RPC
    */
   private async init() {
@@ -130,17 +114,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       )
     );
     const config = computedConfig.get();
-    const {
-      modeUrl,
-      snapshotServiceUrl,
-      streamServiceUrl,
-      chainId,
-      worldContract,
-      provider: { options: providerOptions },
-      initialBlockNumber,
-      fetchSystemCalls,
-      disableCache,
-    } = config;
+    const { modeUrl, chainId, worldContract, disableCache, initialRecords } = config;
 
     // Set default values for cacheAgeThreshold and cacheInterval
     const cacheAgeThreshold = config.cacheAgeThreshold || 100;
@@ -149,17 +123,8 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     // Set up
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
     const provider = providers.get().json;
-    const snapshotClient = snapshotServiceUrl ? createSnapshotClient(snapshotServiceUrl) : undefined;
     const modeClient = modeUrl ? createModeClient(modeUrl) : undefined;
-    const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address);
-    const decode = createDecode(worldContract, provider);
-    const fetchWorldEvents = createFetchWorldEventsInBlockRange(
-      provider,
-      worldContract,
-      providerOptions?.batch,
-      decode
-    );
-    const transformWorldEvents = createTransformWorldEventsFromStream(decode);
+    const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address, VERSION);
 
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
 
@@ -175,25 +140,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const boundFetchStoreEvents = (fromBlock: number, toBlock: number) =>
       fetchStoreEvents(storeContract, fromBlock, toBlock);
 
-    const latestEventRPC$ = createLatestEventStreamRPC(
-      blockNumber$,
-      fetchWorldEvents,
-      boundFetchStoreEvents,
-      fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
-    );
-    const latestEvent$ = streamServiceUrl
-      ? createLatestEventStreamService(
-          streamServiceUrl,
-          worldContract.address,
-          transformWorldEvents,
-          Boolean(fetchSystemCalls)
-        ).pipe(
-          catchError((err) => {
-            console.error("SyncWorker stream service error, falling back to RPC", err);
-            return latestEventRPC$;
-          })
-        )
-      : latestEventRPC$;
+    const latestEvent$ = createLatestEventStreamRPC(blockNumber$, boundFetchStoreEvents);
 
     const initialLiveEvents: NetworkComponentUpdate<Components>[] = [];
     latestEvent$.subscribe((event) => {
@@ -222,27 +169,35 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching cache block number", percentage: 0 });
     const cacheBlockNumber = !disableCache ? await getIndexDBCacheStoreBlockNumber(indexDbCache) : -1;
     this.setLoadingState({ percentage: 50 });
-    const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     const modeBlockNumber = modeClient ? await getModeBlockNumber(modeClient, chainId) : -1;
 
+    let initialBlockNumber = config.initialBlockNumber;
+    if (initialBlockNumber < 0) {
+      const worldDeployLogs = await provider.getLogs({
+        address: worldContract.address,
+        topics: [getEventSelector("event HelloWorld()")],
+        fromBlock: "earliest",
+      });
+      initialBlockNumber = worldDeployLogs.length > 0 ? worldDeployLogs[0].blockNumber : 0;
+    }
+
     this.setLoadingState({ percentage: 100 });
-    debug(
-      `cache block: ${cacheBlockNumber}, snapshot block: ${
-        snapshotBlockNumber > 0 ? snapshotBlockNumber : "Unavailable"
-      }, start sync at ${initialBlockNumber}`
-    );
+    debug(`cache block: ${cacheBlockNumber}, start sync at ${initialBlockNumber}`);
 
     let initialState = createCacheStore();
-    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber, modeBlockNumber)) {
-      // Skip initializing from cache/snapshot/mode if the initial block number is newer than all of them
+
+    if (initialRecords) {
+      console.log("Initial state from pre-loaded records");
+      this.setLoadingState({ state: SyncState.INITIAL, msg: "Loading initial state", percentage: 0 });
+      const events = await transformTableRecordsIntoEvents(storeContract, initialRecords, initialBlockNumber);
+      storeEvents(initialState, events);
+      initialState.blockNumber = initialBlockNumber;
+    } else if (initialBlockNumber > Math.max(cacheBlockNumber, modeBlockNumber)) {
+      // Skip initializing from cache/mode if the initial block number is newer than all of them
       initialState.blockNumber = initialBlockNumber;
     } else {
-      // Load from cache if the mode/snapshot is less than <cacheAgeThreshold> blocks newer than the cache
+      // Load from cache if the mode is less than <cacheAgeThreshold> blocks newer than the cache
       const syncFromMode = modeClient && modeBlockNumber > cacheBlockNumber + cacheAgeThreshold;
-      const syncFromSnapshot =
-        !syncFromMode && snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
-
-      console.log("syncFromSnapshot", syncFromSnapshot);
       console.log("syncFromMode", syncFromMode);
 
       if (syncFromMode) {
@@ -252,23 +207,13 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
           this.setLoadingState({ percentage })
         );
         this.setLoadingState({ percentage: 100 });
-      } else if (syncFromSnapshot) {
-        this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
-        initialState = await fetchSnapshotChunked(
-          snapshotClient,
-          worldContract.address,
-          decode,
-          config.snapshotNumChunks,
-          (percentage: number) => this.setLoadingState({ percentage }),
-          config.pruneOptions
-        );
       } else if (!disableCache) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from cache", percentage: 0 });
         initialState = await loadIndexDbCacheStore(indexDbCache);
         this.setLoadingState({ percentage: 100 });
       }
 
-      debug(`got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
+      debug(`got ${initialState.state.size} items from ${syncFromMode ? "mode" : "cache"}`);
     }
 
     // Load events from gap between initial state and current block number from RPC
@@ -280,7 +225,6 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     });
 
     const gapStateEvents = await fetchEventsInBlockRangeChunked(
-      fetchWorldEvents,
       boundFetchStoreEvents,
       initialState.blockNumber,
       streamStartBlockNumber,

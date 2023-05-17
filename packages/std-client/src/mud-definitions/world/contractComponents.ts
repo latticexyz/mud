@@ -81,6 +81,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SystemHooks: (() => {
+      const tableId = new TableId("", "SystemHooks");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.StringArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     ResourceType: (() => {
       const tableId = new TableId("", "ResourceType");
       return defineComponent(
@@ -118,7 +133,7 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          value: RecsType.BigIntArray,
+          value: RecsType.StringArray,
         },
         {
           metadata: {
@@ -149,7 +164,7 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          value: RecsType.BigIntArray,
+          value: RecsType.StringArray,
         },
         {
           metadata: {

@@ -3,13 +3,23 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
+    "dev": "pnpm run initialize && pnpm recursive run dev",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
-    "dev:node": "pnpm --filter 'contracts' devnode"
+    "dev:node": "mud devnode",
+    "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
+    "initialize": "pnpm recursive run initialize",
+    "mud:up": "pnpm recursive exec mud set-version -v canary && pnpm install",
+    "prepare": "(forge --version || pnpm foundry:up)",
+    "test": "pnpm recursive run test"
   },
   "devDependencies": {
-    "run-pty": "^4.0.3"
+    "@latticexyz/cli": "link:../../packages/cli",
+    "@typescript-eslint/eslint-plugin": "5.46.1",
+    "@typescript-eslint/parser": "5.46.1",
+    "eslint": "8.29.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.9.5"
   },
   "engines": {
     "node": "18.x",
