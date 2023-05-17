@@ -88,7 +88,7 @@ export type SubscriptionCallback<
 
 export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   table: T & string;
-  namespace: string;
+  namespace?: string;
   key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> };
 };
 

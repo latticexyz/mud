@@ -32,7 +32,7 @@ library Inventory {
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
     _schema[0] = SchemaType.ADDRESS;
-    _schema[1] = SchemaType.BYTES32;
+    _schema[1] = SchemaType.UINT32;
     _schema[2] = SchemaType.UINT32;
 
     return SchemaLib.encode(_schema);
@@ -68,43 +68,43 @@ library Inventory {
   }
 
   /** Get amount */
-  function get(address user, bytes32 item, uint32 variant) internal view returns (uint32 amount) {
+  function get(address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
     bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Get amount (using the specified store) */
-  function get(IStore _store, address user, bytes32 item, uint32 variant) internal view returns (uint32 amount) {
+  function get(IStore _store, address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
     bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Set amount */
-  function set(address user, bytes32 item, uint32 variant, uint32 amount) internal {
+  function set(address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)));
   }
 
   /** Set amount (using the specified store) */
-  function set(IStore _store, address user, bytes32 item, uint32 variant, uint32 amount) internal {
+  function set(IStore _store, address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)));
   }
@@ -116,32 +116,32 @@ library Inventory {
 
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(
-    address user,
-    bytes32 item,
-    uint32 variant
+    address owner,
+    uint32 item,
+    uint32 itemVariant
   ) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(address user, bytes32 item, uint32 variant) internal {
+  function deleteRecord(address owner, uint32 item, uint32 itemVariant) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, address user, bytes32 item, uint32 variant) internal {
+  function deleteRecord(IStore _store, address owner, uint32 item, uint32 itemVariant) internal {
     bytes32[] memory _keyTuple = new bytes32[](3);
-    _keyTuple[0] = bytes32(uint256(uint160((user))));
-    _keyTuple[1] = bytes32((item));
-    _keyTuple[2] = bytes32(uint256((variant)));
+    _keyTuple[0] = bytes32(uint256(uint160((owner))));
+    _keyTuple[1] = bytes32(uint256((item)));
+    _keyTuple[2] = bytes32(uint256((itemVariant)));
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

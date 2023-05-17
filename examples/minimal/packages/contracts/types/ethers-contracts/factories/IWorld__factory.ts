@@ -702,13 +702,13 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
+        internalType: "uint32",
         name: "item",
-        type: "bytes32",
+        type: "uint32",
       },
       {
         internalType: "uint32",
-        name: "variant",
+        name: "itemVariant",
         type: "uint32",
       },
     ],

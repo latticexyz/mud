@@ -4,8 +4,8 @@ import { System } from "@latticexyz/world/src/System.sol";
 import { Inventory } from "../codegen/Tables.sol";
 
 contract InventorySystem is System {
-  function pickUp(bytes32 item, uint32 variant) public {
-    uint32 previousAmount = Inventory.get(_msgSender(), item, variant);
-    Inventory.set(_msgSender(), item, variant, previousAmount + 1);
+  function pickUp(uint32 item, uint32 itemVariant) public {
+    uint32 previousAmount = Inventory.get(_msgSender(), item, itemVariant);
+    Inventory.set(_msgSender(), item, itemVariant, previousAmount + 1);
   }
 }
