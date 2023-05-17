@@ -37,32 +37,56 @@ You can simply read values and subscribe to changes, the data will be kept up to
 ### Fetch data from the Store
 
 ```typescript
+// get the value for a given key
 client.tables.MultiKey.get({ first: "0x00F", second: 12 });
 client.tables.Counter.get({ first: "0x00F", second: 23233n });
 // when the name of the primary keys is not defined, the default is a single key called "key"
 // config: Position: { schema: { x: "int32", y: "int32" } }
 client.tables.Position.get({ key: "0x00DEADDEADEAD" });
+
+// get all rows of the Position table
+client.tables.Position.scan();
 ```
 
 ### Subscribe to a simple key-based query
 
 ```typescript
 // subscribe to all changes of the Position table
-client.tables.Position.subscribe(({set, remove}) => {
-  for(const entrySet of set) {
+client.tables.Position.subscribe(({ set, remove }) => {
+  for (const entrySet of set) {
     // { key: "0x00" }, { x: 1, y: 2 }
     console.log(entrySet.key, entrySet.value);
   }
 });
 // subscribe to all changes of a single record with key 0x01
-client.tables.Position.subscribe(({set, remove}, { key: { eq: { key: "0x01" } } }) => {
-  for(const entrySet of set) {
-    // { key: "0x01" }, { x: 1, y: 2 }
-    console.log(entrySet.key, entrySet.value);
-  }
-});
+client.tables.Position.subscribe(
+  ({ set, remove }) => {
+    for (const entrySet of set) {
+      // { key: "0x01" }, { x: 1, y: 2 }
+      console.log(entrySet.key, entrySet.value);
+    }
+  },
+  { key: { eq: { key: "0x01" } } }
+);
 ```
 
-### Subscribe to complex queries
+### Scan or subscribe to range queries
 
-TODO: @alvrs
+The Store Cache is based on `tuple-database` and exposes its query layer for key range queries. The key is converted to a tuple based on the order in the table's `keySchema` in the MUD config (the first key in the `keySchema` object becomes the first entry in the tuple, etc).
+
+For more details on `tuple-database`'s sort-order for range queries, have a look at the [`tuple-database` documentation](https://github.com/ccorcos/tuple-database#sort-order).
+
+```typescript
+// get all rows of the Position table with keys greater than `0x0A` and less than `0x0F`
+client.tables.Position.scan({ key: { gt: { key: "0x0A" }, lt: { key: "0x0F" } } });
+
+// subscribe to all updates of the Counter table where the first key is greater or equal to `0x0F`
+client.tables.Counter.subscribe(
+  (updates) => {
+    for (const entrySet of set) {
+      // { first: "0x0F", second: 1n }, { value: 2n }
+      console.log(entrySet.key, entrySet.value);
+  },
+  { key: { gte: { first: "0x0F" } } }
+);
+```
