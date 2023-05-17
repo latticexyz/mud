@@ -8,7 +8,7 @@ type Props = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
  */
 export const ClickWrapper = (props: Props) => {
   const { children, style } = props;
-  const newStyle = { pointerEvents: "all", ...style };
+  const newStyle = { pointerEvents: "all", ...style } as Record<string, string>;
 
   return (
     <div {...props} style={newStyle}>

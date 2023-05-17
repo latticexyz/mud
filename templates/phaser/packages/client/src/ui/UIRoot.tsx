@@ -1,7 +1,6 @@
 import { useStore } from "../store";
 import { LoadingScreen } from "./LoadingScreen";
 import { Wrapper } from "./Wrapper";
-import { Title } from "./Title";
 
 export const UIRoot = () => {
   const layers = useStore((state) => {
@@ -16,8 +15,6 @@ export const UIRoot = () => {
   return (
     <Wrapper>
       <LoadingScreen />
-
-      <Title />
     </Wrapper>
   );
 };

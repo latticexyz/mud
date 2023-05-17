@@ -23,7 +23,7 @@ export function createMapSystem(layer: PhaserLayer) {
       putTileAt(coord, Tileset.Grass, "Background");
 
       if (seed >= 0.45) {
-        putTileAt(coord, Tileset.Mountains, "Foreground");
+        putTileAt(coord, Tileset.Mountain, "Foreground");
       } else if (seed < -0.45) {
         putTileAt(coord, Tileset.Forest, "Foreground");
       }

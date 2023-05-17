@@ -8,8 +8,8 @@ import { phaserConfig } from "../../layers/phaser/configurePhaser";
 
 const createContainer = () => {
   const container = document.createElement("div");
-  container.style.width = "100%";
-  container.style.height = "100%";
+  container.style.width = "100vw";
+  container.style.height = "100vh";
   container.style.pointerEvents = "all";
   container.style.overflow = "hidden";
   return container;
