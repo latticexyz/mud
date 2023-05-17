@@ -133,7 +133,7 @@
   },
   {
     "source": "test/PackedCounter.t.sol",
-    "name": "pack uint16 array into PackedCounter",
+    "name": "pack uint40 array into PackedCounter",
     "functionCall": "PackedCounter packedCounter = PackedCounterLib.pack(counters)",
     "gasUsed": 2152
   },
@@ -183,7 +183,7 @@
     "source": "test/Schema.t.sol",
     "name": "validate schema",
     "functionCall": "encodedSchema.validate({ allowEmpty: false })",
-    "gasUsed": 18965
+    "gasUsed": 18272
   },
   {
     "source": "test/Slice.t.sol",

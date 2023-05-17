@@ -1,7 +1,8 @@
-import { mudConfig, resolveTableId } from "@latticexyz/world/register";
+import { mudConfig } from "@latticexyz/world/register";
+import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
-  overrideSystems: {
+  systems: {
     IncrementSystem: {
       name: "increment",
       openAccess: true,
@@ -9,25 +10,42 @@ export default mudConfig({
   },
   tables: {
     CounterTable: {
-      name: "counter",
       schema: {
         value: "uint32",
       },
       storeArgument: true,
     },
     MessageTable: {
-      primaryKeys: {},
+      keySchema: {},
       schema: {
         value: "string",
       },
       ephemeral: true,
     },
+    Inventory: {
+      keySchema: {
+        owner: "address",
+        item: "uint32",
+        itemVariant: "uint32",
+      },
+      schema: { amount: "uint32" },
+    },
   },
   modules: [
+    {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("CounterTable")],
+    },
     {
       name: "KeysWithValueModule",
       root: true,
       args: [resolveTableId("CounterTable")],
+    },
+    {
+      name: "SnapSyncModule",
+      root: true,
+      args: [],
     },
   ],
 });

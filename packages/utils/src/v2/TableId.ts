@@ -1,7 +1,7 @@
 import { arrayToHex } from "./arrayToHex";
 import { bytesToString } from "./bytesToString";
 import { hexToArray } from "./hexToArray";
-import { stringToBytes16 } from "./stringToBytes16";
+import { stringToBytes16 } from "./stringToBytes";
 
 export class TableId {
   namespace: string;

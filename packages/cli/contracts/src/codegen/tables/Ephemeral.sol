@@ -69,20 +69,20 @@ library Ephemeral {
   function emitEphemeral(bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
   function emitEphemeral(IStore _store, bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
 
-    _store.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
 
   /** Tightly pack full data using this table's schema */
@@ -91,8 +91,8 @@ library Ephemeral {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keyTuple) {
+    _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32((key));
   }
 }

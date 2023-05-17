@@ -176,9 +176,9 @@ contract StoreCoreGasTest is Test, StoreMock {
 
     PackedCounter encodedDynamicLength;
     {
-      uint16[] memory dynamicLengths = new uint16[](2);
-      dynamicLengths[0] = uint16(secondDataBytes.length);
-      dynamicLengths[1] = uint16(thirdDataBytes.length);
+      uint40[] memory dynamicLengths = new uint40[](2);
+      dynamicLengths[0] = uint40(secondDataBytes.length);
+      dynamicLengths[1] = uint40(thirdDataBytes.length);
       encodedDynamicLength = PackedCounterLib.pack(dynamicLengths);
     }
 
@@ -329,9 +329,9 @@ contract StoreCoreGasTest is Test, StoreMock {
 
     PackedCounter encodedDynamicLength;
     {
-      uint16[] memory dynamicLengths = new uint16[](2);
-      dynamicLengths[0] = uint16(secondDataBytes.length);
-      dynamicLengths[1] = uint16(thirdDataBytes.length);
+      uint40[] memory dynamicLengths = new uint40[](2);
+      dynamicLengths[0] = uint40(secondDataBytes.length);
+      dynamicLengths[1] = uint40(thirdDataBytes.length);
       encodedDynamicLength = PackedCounterLib.pack(dynamicLengths);
     }
 
@@ -575,7 +575,7 @@ contract StoreCoreGasTest is Test, StoreMock {
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
     bytes memory arrayDataBytes = EncodeArray.encode(arrayData);
-    PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint16(arrayDataBytes.length));
+    PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint40(arrayDataBytes.length));
     bytes memory dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory data = abi.encodePacked(staticData, dynamicData);

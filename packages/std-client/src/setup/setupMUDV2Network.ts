@@ -7,6 +7,7 @@ import {
   Ack,
   InputType,
   SingletonID,
+  RawTableRecord,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, defineComponent, Type, World } from "@latticexyz/recs";
@@ -21,26 +22,32 @@ import { defineContractComponents as defineStoreComponents } from "../mud-defini
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
+import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
+import { StoreConfig } from "@latticexyz/store";
 
-type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
+type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfig> = {
   networkConfig: SetupContractConfig;
   world: World;
   contractComponents: C;
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
+  syncStoreCache?: boolean;
+  storeConfig: S;
   worldAbi: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };
 
-export async function setupMUDV2Network<C extends ContractComponents>({
+export async function setupMUDV2Network<C extends ContractComponents, S extends StoreConfig>({
   networkConfig,
   world,
   contractComponents,
   initialGasPrice,
   fetchSystemCalls,
   syncThread,
+  storeConfig,
+  syncStoreCache = true,
   worldAbi = IWorldKernel__factory.abi,
-}: SetupMUDV2NetworkOptions<C>) {
+}: SetupMUDV2NetworkOptions<C, S>) {
   devObservables.worldAbi$.next(worldAbi);
 
   const SystemsRegistry = defineStringComponent(world, {
@@ -148,21 +155,34 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   } = networkConfig;
   const { ecsEvents$, input$, dispose } = createSyncWorker<typeof components>(ack$, { thread: syncThread });
   world.registerDisposer(dispose);
-  function startSync() {
+
+  function startSync(initialRecords?: RawTableRecord[], initialBlockNumber?: number) {
     input$.next({
       type: InputType.Config,
       data: {
         ...syncWorkerConfig,
         provider: providerConfig,
         worldContract: contractsConfig.World,
-        initialBlockNumber: networkConfig.initialBlockNumber,
+        initialBlockNumber: initialBlockNumber ?? networkConfig.initialBlockNumber,
         disableCache: networkConfig.disableCache, // Disable cache on local networks (hardhat / anvil)
         fetchSystemCalls,
+        initialRecords,
       },
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$);
+  const db = createDatabase();
+  const storeCache = createDatabaseClient(db, storeConfig);
+
+  const { txReduced$ } = applyNetworkUpdates(
+    world,
+    components,
+    ecsEvents$,
+    mappings,
+    ack$,
+    syncStoreCache ? storeConfig : undefined,
+    syncStoreCache ? storeCache : undefined
+  );
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
@@ -186,5 +206,6 @@ export async function setupMUDV2Network<C extends ContractComponents>({
     /* @deprecated playerEntityId is equivalent to playerEntity */
     playerEntityId,
     playerEntity,
+    storeCache,
   };
 }

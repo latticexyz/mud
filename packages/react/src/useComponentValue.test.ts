@@ -11,6 +11,7 @@ import {
   removeComponent,
 } from "@latticexyz/recs";
 import { useComponentValue } from "./useComponentValue";
+import { describe, it, expect, beforeEach } from "vitest";
 
 describe("useComponentValue", () => {
   let world: World;

@@ -1,0 +1,71 @@
+# Store
+
+## What is Store?
+
+**Store is an onchain database**. When building on MUD, developers save contract state into Store. It replaces the Solidity compiler-driven data storage: the `mapping`, variables and arrays defined at the top of a contract.
+
+**Solidity compiler-driven storage**
+
+```solidity
+// declaring
+mapping(address => uint) balances;
+// storing
+balances[address(0)] = 10;
+// getting
+return balances[address(0)];
+```
+
+**MUD Store**
+
+```solidity
+// declaring in the Store config
+// Balances: SchemaType.UINT256,
+// storing
+Balances.set(address(0), 10);
+// getting
+return Balances.get(address(0));
+```
+
+Store is an embedded EVM database: you can think of it like [SQLite](https://www.sqlite.org/index.html), but for the EVM. Contracts can store all their application data — like variables, maps, and arrays — in Store; and any data-model implementable in a SQL database can be represented into Store ([ECS](https://en.wikipedia.org/wiki/Entity_component_system), [EAV](https://en.wikipedia.org/wiki/Entity–attribute–value_model), [Graph](<https://en.wikipedia.org/wiki/Graph_(abstract_data_type)>), etc).
+
+Store is also introspectable: other smart-contracts and off-chain applications can discover the schemas, tables, and records of any Store using a standard data-format and EVM event format. **This allows for zero-code indexing and frontend networking**.
+
+Finally, Store is gas-efficient: it introduces conservative limits over the Solidity compiler-driven storage enabling additional tighter storage encoding, leading to cheaper storage than native Solidity in some conditions.
+
+## Store’s core data model
+
+Store is a tuple-key columnar database. A Store is made out of tables. Tables have two different kinds of columns: value columns and key columns. Columns are set when the table is created, but some migrations are possible.
+
+[diagram with tables, record, key columns value columns]
+
+Each table can contain an unlimited amount of records; which are read from and written to by providing all their key columns, which can be thought of as primary keys. Indices are available, but never created by default, more on this in [the Index section](https://www.notion.so/Store-930ed995c2b14782ae9a949e1e3c8fe9).
+
+Columns support the same types as Solidity: signed and unsigned integers of all size, strings, bools, bytes, and arrays. Store allows consumers to push and pop any of the record’s arrays, along with accessing the value at a specific index.
+
+Unlike the Solidity compiler-driven storage, tables are created at runtime: they are not hardcoded in the contract’s code. Default tables can be created in the contract’s `constructor`; while additional tables can be created during the lifetime of the contract. As mentioned earlier, migrations are also supported: columns can be renamed and their types can be changed.
+
+Reading from a Store doesn’t need any ABI definitions: all decoding related information can be found onchain, making it such that any tool and frontend can fully decode the content of a Store with strongly typed records.
+
+## Why we built Store
+
+Store is an attempt at fixing some of the hardest state-related problems of onchain applications:
+
+- **Separation of state from logic**, the same way a web application separates business-logic from state using a Database like Postgres. _Alternative solutions: Proxies, Diamonds._
+- **Access control over granular pieces of data**, allowing different parties to interact with the same onchain data-store. _Alternative solutions: None._
+- **Synchronizing contract state** **with web apis and frontends** without having to write additional codes. _Alternative solutions: Subgraphs, custom networking code based on events._
+- **Querying data from one contract to another**, without being limited by the existing `view` functions. _Alternative solutions: storage proofs._
+
+In order to address those issues, Store has been designed from 4 guiding principles:
+
+1. The contract-storage of an application using Store should be introspectable: an off-chain indexer, a frontend, or even another contract should be able to discover the data-structures found in Store, retrieve their schemas, and query any valid subset of the data. There is no need for Store-specific ABI files.
+2. Storage being one of the most expensive resource in the EVM, Store must make good use of it: all records should be packed as tightly as possible in order to save on storage space. Store should make conservative assumptions in order to beat the Solidity compiler at storage management.
+3. It should be possible to reconstruct an entire Store — with types, table and column names, and all records — using events. These events should be standardized and contain enough information to decode them in a typed way without needing an ABI.
+4. All the Storage of an application — or even multiple applications — should be centralized in a single contract without any business logic. It should be possible to tightly scope access control at the level of tables and records.
+
+## Store vs Solidity storage
+
+There exists a few differences between Store and the native Solidity storage:
+
+- Store encodes storage in a different way from the Solidity compiler, leading to gas saving with tables that have multiple arrays.
+- Store doesn’t support nested struct, and only allows for 14 dynamic types per Table (ie: arrays, strings, and bytes column). This is unlike Solidity which supports nested struct with an unlimited amount of dynamic types.
+- Store’s arrays are capped at 65,536 elements. However Store doesn’t come with limits on the amount of records it can store per table.

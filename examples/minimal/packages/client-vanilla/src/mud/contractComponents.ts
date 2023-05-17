@@ -35,5 +35,20 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    Inventory: (() => {
+      const tableId = new TableId("", "Inventory");
+      return defineComponent(
+        world,
+        {
+          amount: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }
