@@ -81,6 +81,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SystemHooks: (() => {
+      const tableId = new TableId("", "SystemHooks");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.StringArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     ResourceType: (() => {
       const tableId = new TableId("", "ResourceType");
       return defineComponent(
