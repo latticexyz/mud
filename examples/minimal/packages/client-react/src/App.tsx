@@ -19,7 +19,7 @@ export const App = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const message = useComponentValue(MessageTable, singletonEntity);
 
-  const inventory = useRows(storeCache, { namespace: "", table: "Inventory" });
+  const inventory = useRows(storeCache, { table: "Inventory" });
 
   useEffect(() => {
     if (!message?.value) return;

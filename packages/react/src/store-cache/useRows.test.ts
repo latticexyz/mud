@@ -21,7 +21,7 @@ describe("useRows", () => {
   });
 
   it("should return all rows of the position table", () => {
-    const { result } = renderHook(() => useRows(client, { namespace: config["namespace"], table: "Position" }));
+    const { result } = renderHook(() => useRows(client, { table: "Position" }));
     expect(result.current.length).toBe(0);
 
     const positionUpdates: KeyValue<typeof config, "Position">[] = [

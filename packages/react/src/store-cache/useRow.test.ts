@@ -21,7 +21,7 @@ describe("useRow", () => {
   });
 
   it("should return the row of the position table with the specified key", () => {
-    const { result } = renderHook(() => useRow(client, config["namespace"], "Position", { key: "0x01" }));
+    const { result } = renderHook(() => useRow(client, { table: "Position", key: { key: "0x01" } }));
     expect(result.current).toBe(undefined);
 
     const positionUpdates: KeyValue<typeof config, "Position">[] = [
@@ -59,7 +59,7 @@ describe("useRow", () => {
   });
 
   it("should re-render only when the position value of the specified key changes", () => {
-    const { result } = renderHook(() => useRow(client, config["namespace"], "Position", { key: "0x00" }));
+    const { result } = renderHook(() => useRow(client, { table: "Position", key: { key: "0x00" } }));
     expect(result.all.length).toBe(2);
 
     // Update the position table
