@@ -50,7 +50,6 @@
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
-    "@wagmi/chains": "^0.2.22",
     "chalk": "^5.2.0",
     "execa": "^7.0.0",
     "prettier": "^2.8.4",
@@ -58,6 +57,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "@wagmi/chains": "^0.2.22",
     "tsup": "^6.7.0",
     "vitest": "0.30.1"
   },
