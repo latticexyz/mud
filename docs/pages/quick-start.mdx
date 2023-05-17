@@ -14,7 +14,7 @@ Make sure you have the following dependencies installed.
 
 ### Create a new project
 
-It's easy to spin up a new project with MUD. Just run the following command:
+It's easy to start a new project with MUD. Just run the following command:
 
 ```
 pnpm create mud@canary your-project-name
@@ -24,17 +24,22 @@ You'll be prompted to pick the type of template to use (vanilla JS or React).
 
 ### Run your project
 
-Jump into your new project's directory and run it with:
+Jump into your new project's directory. In one terminal, run the anvil node with:
+
+```
+pnpm run dev:node
+```
+
+And in another terminal, run the app with:
 
 ```
 pnpm run dev
 ```
 
-Under the hood, this will do a few different steps:
+Under the hood, `dev` will do a few different steps:
 
 - Generates code to make it easier and safer to interact with MUD
-- Starts a local Ethereum node with anvil (from Foundry)
-- Deploys contracts to the local node
+- Deploys contracts to the local anvil node
 - Starts the client app
 
 ## Project layout
