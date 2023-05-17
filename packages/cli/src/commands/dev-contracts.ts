@@ -102,8 +102,8 @@ const commandModule: CommandModule<Options, Options> = {
         if (contracts) await handleContractsChange(mudConfig);
 
         await deploy();
-      } catch (e) {
-        console.error(e);
+      } catch (error) {
+        console.error("MUD dev-contracts watcher failed to deploy config or contracts changes", error);
       }
 
       changeInProgress.current = false;
