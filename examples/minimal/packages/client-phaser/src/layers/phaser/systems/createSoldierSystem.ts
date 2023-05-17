@@ -110,6 +110,8 @@ export function createSoldierSystem(layer: PhaserLayer) {
     const level = currentValue?.value ?? 0;
 
     soldier.setScale(1 + level * 0.3);
+    emitter.setScale({ start: 0.5 + level * 0.1, end: 0 });
+    emitter.setSpeed({ min: -400 - level * 10, max: 400 + level * 10 });
     emitter.explode(level * 4);
 
     const textArray = level > 100 ? pleadingForHelp : exclamations;
