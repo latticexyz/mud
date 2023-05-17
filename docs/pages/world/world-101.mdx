@@ -94,13 +94,15 @@ In order to use World, you just need your project to have the right folder struc
 
 Run the following command:
 
-```
+```console
 pnpm create mud@canary your-project-name
 ```
 
-You'll be prompted to pick the type of template to use (vanilla JS or React). Jump into your new project's directory by running:
+You'll be prompted to pick the type of template to use (vanilla JS or React); select vanilla.
 
-```
+Jump into your new project's directory by running:
+
+```console
 cd your-project-name
 ```
 
@@ -125,18 +127,9 @@ Let’s break it down:
 
 First, notice there is no `namespace` key: all our resources will be installed in the `ROOT` namespace, and our systems' functions will be registered as-is on the World.
 
-The project has one system called `IncrementSystem.sol`. Any file that ends in `*System` is considered a system and deployed by default.
+Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
 
-```tsx
-tables: {
-  Counter: {
-    keySchema: {},
-    schema: "uint32",
-  },
-},
-```
-
-We are creating one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
+Lastly, this project has one system at `IncrementSystem.sol`, but it does not need to be in the config. Any file that ends in `*System.sol` is considered a system and deployed by default.
 
 The file system on the World looks like this now when deployed:
 
@@ -229,7 +222,7 @@ Now we can import our new table, and write something to it. Let’s write a func
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { MyNewTable } from "../codegen/tables/Dog.sol"; // import table we created
+import { Dog } from "../codegen/tables/Dog.sol"; // import table we created
 contract MySystem is System {
   function addEntry(string memory name, string memory color) public returns (bytes32) {
     bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
@@ -240,7 +233,7 @@ contract MySystem is System {
 }
 ```
 
-That’s it! MySystem, just like IncrementSystem, will have access to Dog given they are in the same namespace.
+That’s it! `MySystem`, just like `IncrementSystem`, will have access to Dog given they are in the same namespace.
 
 After this step, the filesystem of the World is like this:
 
@@ -255,7 +248,7 @@ root
 5. **Writing a test**
 
 Let's write a test to make sure our system actually adds a record to the Dog when `addEntry` is called.
-Create a new file named `MySystemTest.t.sol` in the `test` folder
+Create a new file named `MySystemTest.t.sol` in the `test` folder.
 
 ```solidity
 // SPDX-License-Identifier: MIT
