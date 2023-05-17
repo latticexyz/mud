@@ -1,6 +1,7 @@
 import { DatabaseClient, FilterOptions, ScanResult } from "@latticexyz/store-cache";
 import { StoreConfig } from "@latticexyz/store";
 import { useEffect, useState } from "react";
+import { useDeepMemo } from "../utils/useDeepMemo";
 
 /**
  * Returns an array of all rows matching the provided filter
@@ -10,6 +11,7 @@ export function useRows<C extends StoreConfig, T extends keyof C["tables"] & str
   filter?: FilterOptions<C, T>
 ) {
   const [rows, setRows] = useState<ScanResult<C, T>>([]);
+  const filterMemo = useDeepMemo(filter);
 
   useEffect(() => {
     setRows(storeCache.scan(filter));
@@ -21,7 +23,8 @@ export function useRows<C extends StoreConfig, T extends keyof C["tables"] & str
     }, filter);
 
     return unsubscribe;
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterMemo]);
 
   return rows;
 }
