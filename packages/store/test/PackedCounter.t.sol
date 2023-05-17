@@ -6,13 +6,13 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 
 contract PackedCounterTest is Test {
   function testTotal() public {
-    uint16[] memory counters = new uint16[](4);
+    uint40[] memory counters = new uint40[](4);
     counters[0] = 1;
     counters[1] = 2;
     counters[2] = 3;
     counters[3] = 4;
 
-    // !gasreport pack uint16 array into PackedCounter
+    // !gasreport pack uint40 array into PackedCounter
     PackedCounter packedCounter = PackedCounterLib.pack(counters);
 
     // !gasreport get total of PackedCounter
@@ -22,7 +22,7 @@ contract PackedCounterTest is Test {
   }
 
   function testAtIndex() public {
-    uint16[] memory counters = new uint16[](4);
+    uint40[] memory counters = new uint40[](4);
     counters[0] = 1;
     counters[1] = 2;
     counters[2] = 3;
@@ -40,7 +40,7 @@ contract PackedCounterTest is Test {
   }
 
   function testSetAtIndex() public {
-    uint16[] memory counters = new uint16[](4);
+    uint40[] memory counters = new uint40[](4);
     counters[0] = 1;
     counters[1] = 2;
     counters[2] = 3;
