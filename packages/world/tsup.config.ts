@@ -6,7 +6,7 @@ export default defineConfig({
     "ts/library/index.ts",
     "ts/register/index.ts",
     "ts/node/index.ts",
-    "src/ts/plugins/snapsync/index.ts",
+    "ts/plugins/snapsync/index.ts",
   ],
   target: "esnext",
   format: ["esm"],

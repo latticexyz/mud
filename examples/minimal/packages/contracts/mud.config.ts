@@ -7,7 +7,7 @@ import { mudConfig } from "@latticexyz/world/register";
  * This could lead to expensive queries on live RPCs if the world is large,
  * so we suggest using MODE for production deployments.
  */
-import "@latticexyz/world/snapSync";
+import "@latticexyz/world/snapsync";
 import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({

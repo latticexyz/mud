@@ -1,7 +1,7 @@
 import { extendMUDCoreConfig, resolveTableId } from "@latticexyz/config";
-import { zPluginWorldConfig } from "../../../../ts/library";
-import { zSnapSyncPluginConfig } from "./plugin";
 import { zPluginStoreConfig } from "@latticexyz/store/config";
+import { zSnapSyncPluginConfig } from "./plugin";
+import { zPluginWorldConfig } from "../../library";
 
 extendMUDCoreConfig((config) => {
   const modifiedConfig = { ...config } as Record<string, unknown>;
