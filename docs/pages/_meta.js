@@ -1,10 +1,10 @@
 export default {
   index: "Introduction",
-  "quick-start": "Quick Start",
+  "quick-start": "Quick start",
   "what-is-mud": "What is MUD?",
   store: "Store",
   world: "World",
-  "client-side": "MUD Client",
+  "client-side": "MUD client",
   mode: "MODE",
   cli: "CLI",
   ecs: "ECS and MUD",
