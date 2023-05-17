@@ -24,9 +24,9 @@ export default mudConfig({
     },
     Inventory: {
       keySchema: {
-        user: "address",
-        item: "bytes32",
-        variant: "uint32",
+        owner: "address",
+        item: "uint32",
+        itemVariant: "uint32",
       },
       schema: { amount: "uint32" },
     },
