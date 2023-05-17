@@ -10,7 +10,8 @@ import { Signer, Wallet } from "ethers";
 import { computedToStream } from "@latticexyz/utils";
 import { privateKeyToAccount } from "viem/accounts";
 import { Address, fallback, webSocket, http, createPublicClient, createWalletClient } from "viem";
-import * as chains from "viem/chains";
+import * as mudChains from "@latticexyz/common/chains";
+import * as chains from "@wagmi/chains";
 import * as devObservables from "./dev/observables";
 
 export type Network = Awaited<ReturnType<typeof createNetwork>>;
@@ -71,8 +72,10 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   disposers.push(() => syncBlockSub?.unsubscribe());
 
   // Create viem clients
-  // TODO: add lattice testnet chain
-  const chain = Object.values(chains).find((c) => c.id === config.chainId);
+  const chain = Object.values({
+    ...mudChains,
+    ...chains,
+  }).find((c) => c.id === config.chainId);
   const publicClient = createPublicClient({
     chain,
     transport: fallback([webSocket(), http()]),
