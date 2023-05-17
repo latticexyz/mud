@@ -164,7 +164,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
         provider: providerConfig,
         worldContract: contractsConfig.World,
         initialBlockNumber: initialBlockNumber ?? networkConfig.initialBlockNumber,
-        disableCache: networkConfig.disableCache, // Disable cache on local networks (hardhat / anvil)
+        disableCache: networkConfig.disableCache || [31337, 1337].includes(networkConfig.chainId), // Disable cache on local networks (hardhat / anvil)
         fetchSystemCalls,
         initialRecords,
       },
