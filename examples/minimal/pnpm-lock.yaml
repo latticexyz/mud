@@ -28,9 +28,9 @@ importers:
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.2)
-      '@latticexyz/cli':
-        specifier: link:../../../../packages/cli
-        version: link:../../../../packages/cli
+      '@latticexyz/common':
+        specifier: link:../../../../packages/common
+        version: link:../../../../packages/common
       '@latticexyz/ecs-browser':
         specifier: link:../../../../packages/ecs-browser
         version: link:../../../../packages/ecs-browser

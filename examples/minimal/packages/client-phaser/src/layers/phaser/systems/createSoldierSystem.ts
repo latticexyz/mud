@@ -56,7 +56,7 @@ export function createSoldierSystem(layer: PhaserLayer) {
     },
     networkLayer: {
       components: { CounterTable },
-      worldSend,
+      systemCalls: { increment },
     },
   } = layer;
   const soliderSprite = config.sprites[Sprites.Soldier];
@@ -87,7 +87,7 @@ export function createSoldierSystem(layer: PhaserLayer) {
   soldier.on("pointerdown", async () => {
     if (tween) return;
 
-    await worldSend("increment", []);
+    increment();
 
     tween = phaserScene.add.tween({
       targets: soldier,
