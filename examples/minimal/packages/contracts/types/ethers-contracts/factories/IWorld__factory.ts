@@ -702,6 +702,24 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint32",
+        name: "item",
+        type: "uint32",
+      },
+      {
+        internalType: "uint32",
+        name: "itemVariant",
+        type: "uint32",
+      },
+    ],
+    name: "pickUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes16",
         name: "namespace",
         type: "bytes16",

@@ -4,7 +4,7 @@ import {
   RelativeImportDatum,
   RenderDynamicField,
   RenderField,
-  RenderPrimaryKey,
+  RenderKeyTuple,
   RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
@@ -33,22 +33,21 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // list of any symbols that need to be imported
     const imports: RelativeImportDatum[] = [];
 
-    const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
-      const abiOrUserType = tableData.primaryKeys[name];
+    const keyTuple = Object.keys(tableData.keySchema).map((name) => {
+      const abiOrUserType = tableData.keySchema[name];
       const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
 
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
-      if (renderType.isDynamic)
-        throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
+      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
 
-      const primaryKey: RenderPrimaryKey = {
+      const keyTuple: RenderKeyTuple = {
         ...renderType,
         name,
         isDynamic: false,
       };
-      return primaryKey;
+      return keyTuple;
     });
 
     const fields = Object.keys(tableData.schema).map((name) => {
@@ -86,7 +85,8 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     })();
 
     options.push({
-      outputPath: path.join(tableData.directory, `${tableName}.sol`),
+      // solc expects `/` as path separator, but path.join uses `\` if the user is on Windows
+      outputPath: path.join(tableData.directory, `${tableName}.sol`).replace(/\\/g, "/"),
       tableName,
       renderOptions: {
         imports,
@@ -94,7 +94,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         structName: withStruct ? tableName + "Data" : undefined,
         staticResourceData,
         storeImportPath,
-        primaryKeys,
+        keyTuple,
         fields,
         staticFields,
         dynamicFields,

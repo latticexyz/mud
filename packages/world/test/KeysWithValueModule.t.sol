@@ -230,7 +230,7 @@ contract KeysWithValueModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 10 keys
+    // !gasreport Setting the 10th key
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10 keys with a given value
@@ -246,7 +246,7 @@ contract KeysWithValueModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 100 keys
+    // !gasreport Setting the 100th key
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 100 keys with a given value
@@ -262,7 +262,7 @@ contract KeysWithValueModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 1000 keys
+    // !gasreport Setting the 1000th key
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 1000 keys with a given value
@@ -272,20 +272,19 @@ contract KeysWithValueModuleTest is Test {
     assertEq(keyTuples.length, amount);
   }
 
-  // NOTE: this test is expected to fail by setting too many keys
   function testGetKeysWithValueMany10000() public {
     uint256 amount = 10000;
     uint256 value = 1;
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 10000 keys
+    // !gasreport Setting the 10000th key
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10000 keys with a given value
     bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
-    // Assert that the list is NOT what we expect
-    assertFalse(keyTuples.length == amount);
+    // Assert that the list is correct
+    assertEq(keyTuples.length, amount);
   }
 }

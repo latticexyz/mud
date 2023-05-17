@@ -35,5 +35,5 @@ jobs:
         uses: ./.github/actions/require-empty-diff
 
       - name: Run tests
-        working-directory: ./examples/${{ matrix.example }}
+        working-directory: ./templates/${{ matrix.template }}
         run: pnpm run test

@@ -3,8 +3,8 @@ pragma solidity >=0.8.0;
 
 import { Bytes } from "./Bytes.sol";
 
-// - 4 bytes accumulated counter
-// - 2 bytes length per counter
+// - 7 bytes accumulated counter
+// - 5 bytes length per counter
 type PackedCounter is bytes32;
 
 using PackedCounterLib for PackedCounter global;
@@ -18,17 +18,17 @@ library PackedCounterLib {
 
   /**
    * Encode the given counters into a single packed counter
-   * - 4 bytes for the accumulated length
-   * - 2 bytes per counter -> max 14 counters
+   * - 7 bytes for the accumulated length
+   * - 5 bytes per counter -> max 5 counters
    */
-  function pack(uint16[] memory counters) internal pure returns (PackedCounter) {
+  function pack(uint40[] memory counters) internal pure returns (PackedCounter) {
     bytes32 packedCounter;
-    uint32 accumulator;
+    uint56 accumulator;
 
     // Compute the sum of all counters
     // and pack the counters
     for (uint256 i; i < counters.length; ) {
-      packedCounter = Bytes.setBytes2(packedCounter, 4 + 2 * i, bytes2(counters[i]));
+      packedCounter = Bytes.setBytes5(packedCounter, 7 + 5 * i, bytes5(counters[i]));
       accumulator += counters[i];
       unchecked {
         i++;
@@ -36,35 +36,35 @@ library PackedCounterLib {
     }
 
     // Store total length
-    packedCounter = Bytes.setBytes4(packedCounter, 0, bytes4(accumulator));
+    packedCounter = Bytes.setBytes7(packedCounter, 0, bytes7(accumulator));
 
     return PackedCounter.wrap(packedCounter);
   }
 
   // Overrides for pack function
-  function pack(uint16 a) internal pure returns (PackedCounter) {
-    uint16[] memory counters = new uint16[](1);
+  function pack(uint40 a) internal pure returns (PackedCounter) {
+    uint40[] memory counters = new uint40[](1);
     counters[0] = a;
     return pack(counters);
   }
 
-  function pack(uint16 a, uint16 b) internal pure returns (PackedCounter) {
-    uint16[] memory counters = new uint16[](2);
+  function pack(uint40 a, uint40 b) internal pure returns (PackedCounter) {
+    uint40[] memory counters = new uint40[](2);
     counters[0] = a;
     counters[1] = b;
     return pack(counters);
   }
 
-  function pack(uint16 a, uint16 b, uint16 c) internal pure returns (PackedCounter) {
-    uint16[] memory counters = new uint16[](3);
+  function pack(uint40 a, uint40 b, uint40 c) internal pure returns (PackedCounter) {
+    uint40[] memory counters = new uint40[](3);
     counters[0] = a;
     counters[1] = b;
     counters[2] = c;
     return pack(counters);
   }
 
-  function pack(uint16 a, uint16 b, uint16 c, uint16 d) internal pure returns (PackedCounter) {
-    uint16[] memory counters = new uint16[](4);
+  function pack(uint40 a, uint40 b, uint40 c, uint40 d) internal pure returns (PackedCounter) {
+    uint40[] memory counters = new uint40[](4);
     counters[0] = a;
     counters[1] = b;
     counters[2] = c;
@@ -80,19 +80,19 @@ library PackedCounterLib {
 
   /**
    * Decode the accumulated counter
-   * (first four bytes of packed counter)
+   * (first 7 bytes of packed counter)
    */
   function total(PackedCounter packedCounter) internal pure returns (uint256) {
-    return uint256(uint32(bytes4(PackedCounter.unwrap(packedCounter))));
+    return uint256(uint56(bytes7(PackedCounter.unwrap(packedCounter))));
   }
 
   /**
    * Decode the counter at the given index
-   * (two bytes per counter after the first four bytes)
+   * (5 bytes per counter after the first 7 bytes)
    */
   function atIndex(PackedCounter packedCounter, uint256 index) internal pure returns (uint256) {
-    uint256 offset = 4 + index * 2;
-    return uint256(uint16(Bytes.slice2(PackedCounter.unwrap(packedCounter), offset)));
+    uint256 offset = 7 + index * 5;
+    return uint256(uint40(Bytes.slice5(PackedCounter.unwrap(packedCounter), offset)));
   }
 
   /**
@@ -117,9 +117,9 @@ library PackedCounterLib {
     }
 
     // Set the new accumulated value and value at index
-    uint256 offset = 4 + index * 2; // (4 bytes total length, 2 bytes per dynamic schema)
-    rawPackedCounter = Bytes.setBytes4(rawPackedCounter, 0, bytes4(uint32(accumulator)));
-    rawPackedCounter = Bytes.setBytes2(rawPackedCounter, offset, bytes2(uint16(newValueAtIndex)));
+    uint256 offset = 7 + index * 5; // (7 bytes total length, 5 bytes per dynamic schema)
+    rawPackedCounter = Bytes.setBytes7(rawPackedCounter, 0, bytes7(uint56(accumulator)));
+    rawPackedCounter = Bytes.setBytes5(rawPackedCounter, offset, bytes5(uint40(newValueAtIndex)));
 
     return PackedCounter.wrap(rawPackedCounter);
   }

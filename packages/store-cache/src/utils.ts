@@ -6,9 +6,11 @@ import {
   SchemaToPrimitives,
   SetOptions,
   SubscriptionCallback,
-  SubscriptionFilterOptions,
+  FilterOptions,
   Update,
   Value,
+  KeyValue,
+  ScanResult,
 } from "./types";
 import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
 
@@ -24,7 +26,8 @@ import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
  * }
  * @returns Transaction
  */
-export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
@@ -32,7 +35,7 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
   value: Partial<Value<C, T>>,
   options?: SetOptions
 ) {
-  const keyTuple = databaseKey<C, T>(namespace, table, key);
+  const keyTuple = databaseKey<C, T>(config, namespace, table, key);
   const currentValue = client.get(keyTuple) ?? options?.defaultValue;
   const tx = options?.transaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
@@ -47,13 +50,14 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  * @param key Key to identify the record to get from the table
  * @returns Value for the given key
  */
-export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
 ): Value<C, T> {
-  return client.get(databaseKey<C, T>(namespace, table, key));
+  return client.get(databaseKey<C, T>(config, namespace, table, key));
 }
 
 /**
@@ -67,7 +71,8 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  * }
  * @returns Transaction
  */
-export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function remove<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
@@ -75,9 +80,26 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
   options?: RemoveOptions
 ) {
   const tx = options?.transaction ?? client.transact();
-  tx.remove(databaseKey<C, T>(namespace, table, key));
+  tx.remove(databaseKey<C, T>(config, namespace, table, key));
   if (!options?.transaction) tx.commit();
   return tx;
+}
+
+export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
+  client: TupleDatabaseClient,
+  filter?: FilterOptions<C, T>
+): ScanResult<C, T> {
+  const scanArgs = getScanArgsFromFilter(config, filter);
+  const results = client.scan(scanArgs);
+
+  return results.map(
+    ({ key, value }) =>
+      ({ namespace: key[0], table: key[1], key: tupleToRecord(key), value } as KeyValue<C, T> & {
+        namespace: C["namespace"];
+        table: T;
+      })
+  );
 }
 
 /**
@@ -91,29 +113,14 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
  * @returns Function to unsubscribe
  */
 export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   client: TupleDatabaseClient,
   callback: SubscriptionCallback<C, T>,
-  filter?: SubscriptionFilterOptions<C, T>
+  filter?: FilterOptions<C, T>
 ) {
-  const { namespace, table, key } = filter || {};
+  const scanArgs = getScanArgsFromFilter(config, filter);
 
-  const prefix = table && namespace ? [namespace, table] : undefined;
-
-  const scanArgs: ScanArgs<Tuple, Tuple> = {};
-
-  // Transform scan args
-  scanArgs.gte = key?.gte && recordToTuple(key.gte);
-  scanArgs.gt = key?.gt && recordToTuple(key.gt);
-  scanArgs.lte = key?.lte && recordToTuple(key.lte);
-  scanArgs.lt = key?.lt && recordToTuple(key.lt);
-
-  // Override gte and lte if eq is set
-  if (key?.eq) {
-    scanArgs.gte = recordToTuple(key.eq);
-    scanArgs.lte = recordToTuple(key.eq);
-  }
-
-  return client.subscribe({ prefix, ...scanArgs }, (write) => {
+  return client.subscribe(scanArgs, (write) => {
     const updates: Record<string, Update> = {};
 
     // Transform the writes into the expected format
@@ -168,25 +175,62 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
   return defaultValue as SchemaToPrimitives<Schema>;
 }
 
+function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
+  filter?: FilterOptions<C, T>
+) {
+  const { table, key } = filter || {};
+  // Default to the config namespace if a filter without namespace is provided
+  const namespace = filter ? filter.namespace ?? config.namespace : undefined;
+
+  const prefix = table != null && namespace != null ? [namespace, table] : undefined;
+  const scanArgs: ScanArgs<Tuple, Tuple> = {};
+
+  // Transform scan args
+  if (table) {
+    scanArgs.gte = key?.gte && recordToTuple(key.gte, getKeyOrder(config, table));
+    scanArgs.gt = key?.gt && recordToTuple(key.gt, getKeyOrder(config, table));
+    scanArgs.lte = key?.lte && recordToTuple(key.lte, getKeyOrder(config, table));
+    scanArgs.lt = key?.lt && recordToTuple(key.lt, getKeyOrder(config, table));
+
+    // Override gte and lte if eq is set
+    if (key?.eq) {
+      scanArgs.gte = recordToTuple(key.eq, getKeyOrder(config, table));
+      scanArgs.lte = recordToTuple(key.eq, getKeyOrder(config, table));
+    }
+  }
+
+  return { prefix, ...scanArgs };
+}
+
 /**
  * Convert a table and key into the corresponding tuple expected by tuple-database
  */
-function databaseKey<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  config: C,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
 ) {
-  return [namespace, table, ...recordToTuple(key)] satisfies Tuple;
+  return [namespace, table, ...recordToTuple(key, getKeyOrder(config, table))] satisfies Tuple;
+}
+
+/**
+ * Get an array corresponding to the keys of the table's key schema
+ */
+function getKeyOrder(config: StoreConfig, table: string) {
+  const tableConfig = config.tables[table];
+  return tableConfig ? Object.getOwnPropertyNames(tableConfig.keySchema) : undefined;
 }
 
 /**
  * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
- * as expected for keys in tuple-database
+ * and sort it based on config's key order, as expected for keys in tuple-database
  */
-function recordToTuple(record: Record<string, unknown>): Tuple {
+function recordToTuple(record: Record<string, unknown>, keyOrder?: string[]): Tuple {
   const tuple = [];
-  for (const [key, value] of Object.entries(record)) {
-    tuple.push({ [key]: serializeKey(value) });
+  for (const key of keyOrder ?? Object.keys(record)) {
+    tuple.push({ [key]: serializeKey(record[key]) });
   }
   return tuple;
 }
@@ -201,18 +245,35 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
     // Ignore all non-object tuple values
     if (entry === null || Array.isArray(entry) || typeof entry !== "object") continue;
     for (const [key, value] of Object.entries(entry)) {
-      record[key] = value;
+      record[key] = deserializeKey(value);
     }
   }
+
   return record;
 }
 
 /**
  * Helper to serialize values that are not natively supported in keys by tuple-database.
+ * (see https://github.com/ccorcos/tuple-database/issues/25)
  * For now only `bigint` needs serialization.
  */
 function serializeKey(key: unknown) {
-  if (typeof key === "bigint") return String(key);
+  if (typeof key === "bigint") return `${key.toString()}n`;
+  return key;
+}
+
+/**
+ * Helper to deserialize values that were serialized by `serializeKey` (because they are not natively supported in keys by tuple-database).
+ * (see https://github.com/ccorcos/tuple-database/issues/25)
+ * For now only `bigint` is serialized and need to be deserialized here.
+ */
+function deserializeKey(key: unknown): unknown {
+  // Check whether the key matches the mattern `${number}n`
+  // (serialization of bigint in `serializeKey`)
+  // and turn it back into a bigint
+  if (typeof key === "string" && /^-?\d+n$/.test(key)) {
+    return BigInt(key.slice(0, -1));
+  }
   return key;
 }
 

@@ -29,10 +29,10 @@ export function renderTable(options: RenderTableOptions) {
     withRecordMethods,
     withEphemeralMethods,
     storeArgument,
-    primaryKeys,
+    keyTuple,
   } = options;
 
-  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
   const shouldRenderDelete = !withEphemeralMethods;
 
   return `${renderedSolidityHeader}
@@ -82,8 +82,8 @@ library ${libraryName} {
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${primaryKeys.length});
-    ${renderList(primaryKeys, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+    SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
+    ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
 
     return SchemaLib.encode(_schema);
   }
@@ -137,12 +137,9 @@ library ${libraryName} {
   }
   
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](${primaryKeys.length});
-    ${renderList(
-      primaryKeys,
-      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
-    )}
+  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keyTuple) {
+    _keyTuple = new bytes32[](${keyTuple.length});
+    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
   }
 
   ${
@@ -152,8 +149,8 @@ library ${libraryName} {
           (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
-      ${_primaryKeysDefinition}
-      ${_store}.deleteRecord(_tableId, _primaryKeys);
+      ${_keyTupleDefinition}
+      ${_store}.deleteRecord(_tableId, _keyTuple);
     }
   `
         )
@@ -169,12 +166,12 @@ ${renderTypeHelpers(options)}
 function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length > 0) {
     return `
-    uint16[] memory _counters = new uint16[](${dynamicFields.length});
+    uint40[] memory _counters = new uint40[](${dynamicFields.length});
     ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
       if (arrayElement) {
-        return `_counters[${index}] = uint16(${name}.length * ${arrayElement.staticByteLength});`;
+        return `_counters[${index}] = uint40(${name}.length * ${arrayElement.staticByteLength});`;
       } else {
-        return `_counters[${index}] = uint16(bytes(${name}).length);`;
+        return `_counters[${index}] = uint40(bytes(${name}).length);`;
       }
     })}
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);

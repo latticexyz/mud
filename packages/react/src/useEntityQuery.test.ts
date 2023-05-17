@@ -13,6 +13,7 @@ import {
   removeComponent,
 } from "@latticexyz/recs";
 import { useEntityQuery } from "./useEntityQuery";
+import { describe, beforeEach, it, expect } from "vitest";
 
 describe("useEntityQuery", () => {
   let world: World;

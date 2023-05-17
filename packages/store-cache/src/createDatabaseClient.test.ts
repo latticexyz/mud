@@ -6,11 +6,12 @@ import { KeyValue } from "./types";
 const config = mudConfig({
   namespace: "somenamespace",
   tables: {
-    Counter: { primaryKeys: { first: "bytes32", second: "uint256" }, schema: "uint256" },
+    Counter: { keySchema: { first: "bytes32", second: "uint256" }, schema: "uint256" },
     Position: { schema: { x: "int32", y: "int32" } },
-    MultiKey: { primaryKeys: { first: "bytes32", second: "uint32" }, schema: "int32" },
-    EnumTable: { primaryKeys: { first: "Enum1" }, schema: "Enum2" },
+    MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
+    EnumTable: { keySchema: { first: "Enum1" }, schema: "Enum2" },
     MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
+    BigInt: { keySchema: { first: "uint256" }, schema: "uint256" },
   },
   enums: {
     Enum1: ["A1", "A2"],
@@ -121,6 +122,60 @@ describe("createDatabaseClient", () => {
     // Remove the value
     tables.Counter.remove(key);
     expect(tables.Counter.get(key)).toBeUndefined();
+  });
+
+  describe("scan", () => {
+    it("should return all the values of the selected table", () => {
+      const positionUpdates: KeyValue<typeof config, "Position">[] = [
+        { key: { key: "0x00" }, value: { x: 1, y: 2 } },
+        { key: { key: "0x01" }, value: { x: 2, y: 3 } },
+        { key: { key: "0x02" }, value: { x: 3, y: 4 } },
+        { key: { key: "0x03" }, value: { x: 4, y: 5 } },
+      ];
+
+      const multiKeyUpdates: KeyValue<typeof config, "MultiKey">[] = [
+        { key: { first: "0x00", second: 4 }, value: { value: 1 } },
+        { key: { first: "0x01", second: 3 }, value: { value: 2 } },
+        { key: { first: "0x02", second: 2 }, value: { value: 3 } },
+        { key: { first: "0x03", second: 1 }, value: { value: 4 } },
+      ];
+
+      // Set values in the tables
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of multiKeyUpdates) tables.MultiKey.set(update.key, update.value);
+
+      expect(tables.Position.scan()).toEqual(
+        positionUpdates.map(({ key, value }) => ({ key, value, namespace: config.namespace, table: "Position" }))
+      );
+    });
+
+    it("should return a list of all database entries", () => {
+      const positionUpdates: KeyValue<typeof config, "Position">[] = [
+        { key: { key: "0x00" }, value: { x: 1, y: 2 } },
+        { key: { key: "0x01" }, value: { x: 2, y: 3 } },
+        { key: { key: "0x02" }, value: { x: 3, y: 4 } },
+        { key: { key: "0x03" }, value: { x: 4, y: 5 } },
+      ];
+
+      const multiKeyUpdates: KeyValue<typeof config, "MultiKey">[] = [
+        { key: { first: "0x00", second: 4 }, value: { value: 1 } },
+        { key: { first: "0x01", second: 3 }, value: { value: 2 } },
+        { key: { first: "0x02", second: 2 }, value: { value: 3 } },
+        { key: { first: "0x03", second: 1 }, value: { value: 4 } },
+      ];
+
+      // Set values in the tables
+      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
+      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+
+      const rows = client.scan();
+
+      expect(rows.length).toBe(positionUpdates.length + multiKeyUpdates.length);
+      expect(rows).toEqual([
+        ...multiKeyUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "MultiKey" })),
+        ...positionUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "Position" })),
+      ]);
+    });
   });
 
   describe("subscribe", () => {
@@ -360,5 +415,32 @@ describe("createDatabaseClient", () => {
     expect(mock).toHaveBeenCalledTimes(2);
     expect(mock).toHaveBeenNthCalledWith(1, [{ set: [{ key, value }], remove: [], table, namespace }]);
     expect(mock).toHaveBeenNthCalledWith(2, [{ set: [], remove: [{ key }], table, namespace }]);
+  });
+
+  // TODO: Remove bigint seralization to allow filter based on numeric value of bigints (see https://github.com/latticexyz/mud/issues/816)
+  // Requires bigint keys to be supported by `tuple-database`, see https://github.com/ccorcos/tuple-database/issues/2
+  // For now we serialize bigints to use them as keys, which changes the comparison (eg. 2n < 10n but "2n" > "10n")
+  it.skip("should be possible to filter based on bigint keys", () => {
+    const mock = vi.fn();
+
+    // Subscribe to key values larger than 10n
+    tables.BigInt.subscribe(mock, { key: { gt: { first: 10n } } });
+
+    // Set a couple values on various keys
+    tables.BigInt.set({ first: 1n }, { value: 1n }); // should not be subscribed to
+    tables.BigInt.set({ first: 2n }, { value: 2n }); // should not be subscribed to
+    tables.BigInt.set({ first: 10n }, { value: 10n }); // should not be subscribed to
+    tables.BigInt.set({ first: 11n }, { value: 11n }); // should be subscribed to
+
+    // Expect mock to only have been called with keys greater than 10n
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock).toHaveBeenNthCalledWith(1, [
+      {
+        set: [{ key: { first: 11n }, value: { value: 11n } }],
+        remove: [],
+        table: "BigInt",
+        namespace: config.namespace,
+      },
+    ]);
   });
 });

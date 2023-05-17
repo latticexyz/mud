@@ -315,7 +315,7 @@ contract KeysInTableModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 10 keys
+    // !gasreport Setting the 10th key
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10 keys with a given value
@@ -331,7 +331,7 @@ contract KeysInTableModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 100 keys
+    // !gasreport Setting the 100th key
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 100 keys with a given value
@@ -347,7 +347,7 @@ contract KeysInTableModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 1000 keys
+    // !gasreport Setting the 1000th key
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 1000 keys with a given value
@@ -364,13 +364,13 @@ contract KeysInTableModuleTest is Test {
 
     bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    // !gasreport Setting the last of 10000 keys
+    // !gasreport Setting the 10000th key
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10000 keys with a given value
     bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
 
-    // Assert that the list is NOT what we expect
-    assertFalse(keyTuples.length == amount);
+    // Assert that the list is correct
+    assertEq(keyTuples.length, amount);
   }
 }
