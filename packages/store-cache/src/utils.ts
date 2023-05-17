@@ -179,7 +179,10 @@ function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"
   config: C,
   filter?: FilterOptions<C, T>
 ) {
-  const { namespace, table, key } = filter || {};
+  const { table, key } = filter || {};
+  // Default to the config namespace if a filter without namespace is provided
+  const namespace = filter ? filter.namespace ?? config.namespace : undefined;
+
   const prefix = table != null && namespace != null ? [namespace, table] : undefined;
   const scanArgs: ScanArgs<Tuple, Tuple> = {};
 
