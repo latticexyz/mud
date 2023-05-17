@@ -4,6 +4,7 @@
   "scripts": {
     "build": "pnpm recursive run build",
     "dev": "concurrently -n contracts,client -c cyan,magenta 'cd packages/contracts && pnpm run dev' 'cd packages/client-react && pnpm run dev'",
+    "dev:client-phaser": "pnpm --filter 'client-phaser' run dev",
     "dev:client-react": "pnpm --filter 'client-react' run dev",
     "dev:client-vanilla": "pnpm --filter 'client-vanilla' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",

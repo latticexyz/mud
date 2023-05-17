@@ -400,6 +400,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@wagmi/chains':
+        specifier: ^0.2.22
+        version: 0.2.23(typescript@4.9.5)
       async-mutex:
         specifier: ^0.3.2
         version: 0.3.2
@@ -4040,7 +4043,6 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
-    dev: true
 
   /@yarnpkg/lockfile@1.1.0:
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
