@@ -47,7 +47,7 @@ export default mudConfig({
 
 ### Global configuration keys
 
-**`namespace` (required)**: a `string`: which namespace to deploy the resources defined in the config into
+**`namespace` (optional)**: a `string`: which namespace to deploy the resources defined in the config into. The default value is the ROOT namespace.
 
 **`excludeSystems` (optional)**: an array of `string`: which systems to not deploy, even if their name includes “system”.
 
@@ -64,7 +64,6 @@ export default mudConfig({
 `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use special functions:
 
 1. `resolveTableId`: This function will turn a table name from your config into its low-level ID in the World. Useful to pass references of a table to a module.
-2. **_More to come_**
 
 ### System configuration keys
 

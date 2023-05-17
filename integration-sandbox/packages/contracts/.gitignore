@@ -8,5 +8,3 @@ broadcast/
 
 # Ignore all deploy artifacts
 deploys/**/*.json
-# Except the latest ones (so we can load these into client)
-!deploys/**/latest.json

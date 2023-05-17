@@ -234,6 +234,14 @@ func (tuple *SchemaTypePair) Flatten() []SchemaType {
 	return append(tuple.Static, tuple.Dynamic...)
 }
 
+func (tuple *SchemaTypePair) Length() int {
+	return len(tuple.Static) + len(tuple.Dynamic)
+}
+
+func (tuple *SchemaTypePair) String() string {
+	return fmt.Sprintf("static: %v, dynamic: %v, static data length: %v", tuple.Static, tuple.Dynamic, tuple.StaticDataLength)
+}
+
 func DecodeSchemaTypePair(encoding []byte) *SchemaTypePair {
 
 	staticDataLength := new(big.Int).SetBytes(encoding[0:2]).Uint64()
@@ -470,13 +478,30 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 		dynamicDataSlice := encoding[schemaTypePair.StaticDataLength : schemaTypePair.StaticDataLength+32]
 		bytesOffset += 32
 
+		// Keep in sync with client.
+		packedCounterAccumulatorType := UINT56
+		packedCounterCounterType := UINT40
+
 		for i, fieldType := range schemaTypePair.Dynamic {
-			offset := 4 + i*2
-			dataLength := new(big.Int).SetBytes(dynamicDataSlice[offset : offset+2]).Uint64()
+			// Decode the length of the data. MODE works with UINT56 decoded as a string from a BigInt
+			// since all uints are handled the same to handle those > Go uint64.
+			dataLengthString := DecodeStaticField(
+				packedCounterCounterType,
+				dynamicDataSlice,
+				getStaticByteLength(packedCounterAccumulatorType)+uint64(i)*getStaticByteLength(packedCounterCounterType),
+			).(string)
+
+			// Convert the length to a uint64.
+			dataLengthBigInt, success := new(big.Int).SetString(dataLengthString, 10)
+			if !success {
+				logger.GetLogger().Fatal("could not decode dynamic data length")
+			}
+			dataLength := dataLengthBigInt.Uint64()
+
+			// Decode the data using the data length.
 			value := DecodeDynamicField(fieldType, encoding[bytesOffset:bytesOffset+dataLength])
 			bytesOffset += dataLength
 
-			// Save a mapping of FIELD TYPE (string) -> (FIELD VALUE (interface{}), FIELD TYPE (SchemaType))
 			data.Add(&DataSchemaType__Struct{
 				Data:       value,
 				SchemaType: fieldType,

@@ -328,8 +328,8 @@ library StoreCore {
     }
     // index must be checked because it could be arbitrarily large
     // (but dataToSet.length can be unchecked - it won't overflow into another slot due to gas costs and hashed slots)
-    if (startByteIndex > type(uint16).max) {
-      revert IStoreErrors.StoreCore_DataIndexOverflow(type(uint16).max, startByteIndex);
+    if (startByteIndex > type(uint40).max) {
+      revert IStoreErrors.StoreCore_DataIndexOverflow(type(uint40).max, startByteIndex);
     }
 
     // TODO add setItem-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
