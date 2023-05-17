@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "concurrently \"cd packages/contracts && pnpm run dev\" \"cd packages/client && pnpm run dev\"",
+    "dev": "concurrently -n contracts,client -c cyan,magenta 'cd packages/contracts && pnpm run dev' 'cd packages/client && pnpm run dev'",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
