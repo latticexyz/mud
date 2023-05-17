@@ -3,11 +3,10 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "run-pty % pnpm dev:node % pnpm dev:client-react % pnpm dev:contracts",
+    "dev": "run-pty % pnpm dev:client-react % pnpm dev:contracts",
     "dev:client-react": "pnpm --filter 'client-react' run dev",
     "dev:client-vanilla": "pnpm --filter 'client-vanilla' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
-    "dev:node": "pnpm --filter 'contracts' devnode",
     "initialize": "pnpm recursive run initialize",
     "test": "pnpm recursive run test"
   },
@@ -15,7 +14,6 @@
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.29.0",
-    "run-pty": "^4.0.3",
     "typescript": "^4.9.5"
   },
   "engines": {
