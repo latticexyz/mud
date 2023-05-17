@@ -34,7 +34,7 @@ export default mudConfig({
 
 ### Generating the tables
 
-To generate the tables, run `mud tablegen` in the same folder as the config file.
+To generate the tables, run `pnpm mud tablegen` in the same folder as the config file.
 
 ### Adding Tables
 
@@ -104,14 +104,14 @@ Example:
 
 ```tsx
 tables: {
-    MyTableWithFourValues: {
-        schema: {
-            x: "uint32",
-            y: "uint32",
-            stringField: "string",
-            uintArray: "uint256"
-        }
-    },
+  MyTableWithFourValues: {
+    schema: {
+      x: "uint32",
+      y: "uint32",
+      stringField: "string",
+      uintArray: "uint256"
+    }
+  },
 }
 ```
 
