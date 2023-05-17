@@ -1,30 +1,32 @@
 import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService } from "@latticexyz/network";
+import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { clientComponents } from "./clientComponents";
 import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { IWorld__factory } from "../../../contracts/types/ethers-contracts/factories/IWorld__factory";
+import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import { getTableIds } from "@latticexyz/utils";
+import storeConfig from "contracts/mud.config";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
 export async function setup() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
-  const result = await setupMUDV2Network<typeof contractComponents>({
+  const result = await setupMUDV2Network<typeof contractComponents, typeof storeConfig>({
     networkConfig,
     world,
     contractComponents,
     syncThread: "main",
+    storeConfig,
+    worldAbi: IWorld__factory.abi,
   });
-
-  result.startSync();
 
   // Request drip from faucet
   const signer = result.network.signer.get();
-  if (!networkConfig.devMode && networkConfig.faucetServiceUrl && signer) {
+  if (networkConfig.faucetServiceUrl && signer) {
     const address = await signer.getAddress();
     console.info("[Dev Faucet]: Player address -> ", address);
 
@@ -47,11 +49,25 @@ export async function setup() {
     setInterval(requestDrip, 20000);
   }
 
+  const provider = result.network.providers.get().json;
+  const signerOrProvider = signer ?? provider;
   // Create a World contract instance
-  const worldContract = IWorld__factory.connect(
-    networkConfig.worldAddress,
-    signer ?? result.network.providers.get().json
-  );
+  const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
+
+  if (networkConfig.snapSync) {
+    const currentBlockNumber = await provider.getBlockNumber();
+    const tableRecords = await getSnapSyncRecords(
+      networkConfig.worldAddress,
+      getTableIds(storeConfig),
+      currentBlockNumber,
+      signerOrProvider
+    );
+
+    console.log(`Syncing ${tableRecords.length} records`);
+    result.startSync(tableRecords, currentBlockNumber);
+  } else {
+    result.startSync();
+  }
 
   // Create a fast tx executor
   const fastTxExecutor =

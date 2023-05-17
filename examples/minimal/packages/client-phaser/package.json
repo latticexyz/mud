@@ -1,13 +1,13 @@
 {
-  "name": "client",
-  "license": "MIT",
-  "private": true,
+  "name": "client-phaser",
   "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "initialize": "yarn build",
-    "dev": "vite",
     "build": "vite build",
+    "dev": "vite",
+    "initialize": "yarn build",
     "preview": "vite preview"
   },
   "dependencies": {

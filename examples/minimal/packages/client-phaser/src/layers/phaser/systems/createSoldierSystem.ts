@@ -66,7 +66,9 @@ export function createSoldierSystem(layer: PhaserLayer) {
     .sprite(0, 0, "soldier")
     .play(Animations.SwordsmanIdle)
     .setPosition(0, 0)
-    .setInteractive()
+    .setInteractive({
+      useHandCursor: true,
+    })
     .setOrigin(0.5, 0.5);
 
   let tween: Phaser.Tweens.Tween | undefined;
