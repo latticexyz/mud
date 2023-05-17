@@ -1,3 +1,5 @@
+import { Aside } from "../../components/Aside";
+
 ## Reading and writing to Store
 
 There exists two ways to interact with the Store:
@@ -7,10 +9,9 @@ There exists two ways to interact with the Store:
 
 ### Access to Store via code-generated libraries
 
-<aside>
-📢 Accessing Store via the libraries generated with the `tablegen` tool is the recommended way to use Store.
-
-</aside>
+<Aside emoji="📢">
+  Accessing Store via the libraries generated with the `tablegen` tool is the recommended way to use Store.
+</Aside>
 
 The `tablegen` tool of the MUD CLI can create libraries for each table that wraps the low-level API of Store and types the results.
 
@@ -93,9 +94,9 @@ MyTable.deleteRecord(keccak256("some.key"));
 
 ### Access to Store via low-level API
 
-<aside>
-  ⚠️ Accessing Store via the low-level API is not recommend, although it is safe (no storage corruption can happen).
-</aside>
+<Aside emoji="⚠️">
+  Accessing Store via the low-level API is not recommend, although it is safe (no storage corruption can happen).
+</Aside>
 
 Reading records returns `bytes`, and writing to records require `bytes` too. Store will make sure to prevent corruption when writes happen by retrieving the schemas and computing expected total length.
 

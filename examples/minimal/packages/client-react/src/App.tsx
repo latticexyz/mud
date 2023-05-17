@@ -1,7 +1,9 @@
-import { useComponentValue } from "@latticexyz/react";
+import { useComponentValue, useRows } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
-import { stringToBytes32 } from "@latticexyz/utils";
+
+const ITEMS = ["cup", "spoon", "fork"];
+const VARIANTS = ["yellow", "green", "red"];
 
 export const App = () => {
   const {
@@ -17,9 +19,7 @@ export const App = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const message = useComponentValue(MessageTable, singletonEntity);
 
-  useEffect(() => {
-    storeCache.tables.Inventory.subscribe((update) => console.log("got update from inventory table", update));
-  }, [storeCache]);
+  const inventory = useRows(storeCache, { table: "Inventory" });
 
   useEffect(() => {
     if (!message?.value) return;
@@ -42,17 +42,6 @@ export const App = () => {
         }}
       >
         Increment
-      </button>{" "}
-      <button
-        type="button"
-        onClick={async () => {
-          const tx = await worldSend("pickUp", [stringToBytes32("someItem"), 1]);
-
-          console.log("pickup tx", tx);
-          console.log("pickUp result", await tx.wait());
-        }}
-      >
-        Set Inventory table
       </button>{" "}
       <button
         type="button"
@@ -97,6 +86,30 @@ export const App = () => {
             Send
           </button>
         </form>
+      </div>
+      <div>
+        <div>
+          {ITEMS.map((item, index) => (
+            <button
+              key={item + index}
+              type="button"
+              onClick={async () => {
+                const tx = await worldSend("pickUp", [index, index]);
+                console.log("pick up tx", tx);
+              }}
+            >
+              Pick up a {VARIANTS[index]} {item}
+            </button>
+          ))}
+        </div>
+        <h1>Inventory</h1>
+        <ul>
+          {inventory.map(({ key, value }) => (
+            <li key={key.owner + key.item + key.itemVariant}>
+              {key.owner.substring(0, 8)} owns {value.amount} of {VARIANTS[key.itemVariant]} {ITEMS[key.item]}
+            </li>
+          ))}
+        </ul>
       </div>
     </>
   );

@@ -7,7 +7,7 @@ import { Bytes } from "./Bytes.sol";
 // - 2 bytes static length of the schema
 // - 1 byte for number of static size fields
 // - 1 byte for number of dynamic size fields
-// - 28 bytes for 28 schema types (max 14 dynamic fields to we can pack their lengths into 1 word)
+// - 28 bytes for 28 schema types (MAX_DYNAMIC_FIELDS allows us to pack the lengths into 1 word)
 type Schema is bytes32;
 
 using SchemaLib for Schema global;
@@ -15,6 +15,9 @@ using SchemaLib for Schema global;
 library SchemaLib {
   error SchemaLib_InvalidLength(uint256 length);
   error SchemaLib_StaticTypeAfterDynamicType();
+
+  // Based on PackedCounter's capacity
+  uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
 
   /************************************************************************
    *
@@ -54,9 +57,9 @@ library SchemaLib {
       }
     }
 
-    // Require max 14 dynamic fields
+    // Require MAX_DYNAMIC_FIELDS
     uint8 dynamicFields = uint8(_schema.length) - staticFields;
-    if (dynamicFields > 14) revert SchemaLib_InvalidLength(dynamicFields);
+    if (dynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(dynamicFields);
 
     // Store total static length, and number of static and dynamic fields
     schema = Bytes.setBytes2(schema, 0, (bytes2(length))); // 2 length bytes
@@ -177,9 +180,9 @@ library SchemaLib {
     // Schema must not be empty
     if (!allowEmpty && schema.isEmpty()) revert SchemaLib_InvalidLength(0);
 
-    // Schema must have no more than 14 dynamic fields
+    // Schema must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = schema.numDynamicFields();
-    if (_numDynamicFields > 14) revert SchemaLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = schema.numStaticFields();
     // Schema must not have more than 28 fields in total

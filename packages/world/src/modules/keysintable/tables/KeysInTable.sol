@@ -293,8 +293,8 @@ library KeysInTable {
 
   /** Tightly pack full data using this table's schema */
   function encode(uint32 length, bytes32[] memory keys) internal view returns (bytes memory) {
-    uint16[] memory _counters = new uint16[](1);
-    _counters[0] = uint16(keys.length * 32);
+    uint40[] memory _counters = new uint40[](1);
+    _counters[0] = uint40(keys.length * 32);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return abi.encodePacked(length, _encodedLengths.unwrap(), EncodeArray.encode((keys)));
