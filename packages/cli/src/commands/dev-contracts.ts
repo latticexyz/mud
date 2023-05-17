@@ -59,6 +59,10 @@ const commandModule: CommandModule<Options, Options> = {
       contracts: false,
     };
 
+    const changeInProgress = {
+      current: false,
+    };
+
     // Watch for changes
     const configWatcher = chokidar.watch([configPath, srcDirectory]);
     configWatcher.on("all", async (_, updatePath) => {
@@ -80,6 +84,10 @@ const commandModule: CommandModule<Options, Options> = {
     });
 
     const handleChange = debounce(100, async () => {
+      // Avoid handling changes multiple times in parallel
+      if (changeInProgress.current) return;
+      changeInProgress.current = true;
+
       // Load latest config
       const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
@@ -89,10 +97,20 @@ const commandModule: CommandModule<Options, Options> = {
       changedSinceLastHandled.contracts = false;
 
       // Handle changes
-      if (config) await handleConfigChange(mudConfig);
-      if (contracts) await handleContractsChange(mudConfig);
+      try {
+        if (config) await handleConfigChange(mudConfig);
+        if (contracts) await handleContractsChange(mudConfig);
 
-      await deploy();
+        await deploy();
+      } catch (e) {
+        console.error(e);
+      }
+
+      changeInProgress.current = false;
+      if (changedSinceLastHandled.config || changedSinceLastHandled.contracts) {
+        console.log("Detected change while handling the previous change");
+        handleChange();
+      }
 
       printMUD();
       console.log("MUD watching for changes...");
