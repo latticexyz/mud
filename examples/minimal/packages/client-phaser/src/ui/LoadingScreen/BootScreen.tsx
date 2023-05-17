@@ -6,7 +6,6 @@ type Props = {
 };
 
 export const BootScreen = ({ children }: Props) => {
-
   return (
     <Container>
       <div>

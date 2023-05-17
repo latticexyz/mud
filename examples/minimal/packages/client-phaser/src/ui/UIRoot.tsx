@@ -22,7 +22,7 @@ export const UIRoot = () => {
       <ECSBrowser />
       <Controls />
 
-      <Title/>
+      <Title />
     </Wrapper>
   );
 };

@@ -19,9 +19,7 @@ export const Controls = () => {
   }, [devMode]);
 
   return (
-    <ClickWrapper
-      style={{ position: "absolute", top: 0, left: 0, zIndex: 1000 }}
-    >
+    <ClickWrapper style={{ position: "absolute", top: 0, left: 0, zIndex: 1000 }}>
       <button onClick={() => useStore.setState({ devMode: !devMode })}>
         {devMode ? "Hide" : "Show"} MUD Dev Console
       </button>

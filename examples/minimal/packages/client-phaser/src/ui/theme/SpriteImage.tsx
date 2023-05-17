@@ -2,7 +2,7 @@ import { Sprites } from "../../layers/phaser/constants";
 import atlasJson from "../../../public/assets/atlases/atlas.json";
 import { useMUD } from "../../store";
 
-export const SpriteImage = ({ spriteKey, scale }: { spriteKey: Sprites, scale?: number }) => {
+export const SpriteImage = ({ spriteKey, scale }: { spriteKey: Sprites; scale?: number }) => {
   const {
     phaserLayer: {
       scenes: {

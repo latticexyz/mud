@@ -25,7 +25,7 @@ export const usePhaserLayer = ({ networkLayer }: Props) => {
 
   const { phaserLayerPromise, container } = useMemo(() => {
     if (!networkLayer) return { phaserLayerPromise: null, container: null };
-    
+
     const container = createContainer();
     if (parentRef.current) {
       parentRef.current.appendChild(container);
