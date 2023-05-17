@@ -8,9 +8,7 @@ const VARIANTS = ["yellow", "green", "red"];
 export const App = () => {
   const {
     components: { CounterTable, MessageTable },
-    singletonEntity,
-    worldSend,
-    storeCache,
+    network: { singletonEntity, worldSend, storeCache },
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);

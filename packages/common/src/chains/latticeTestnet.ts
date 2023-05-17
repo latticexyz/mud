@@ -1,6 +1,6 @@
-import { MudChain } from "./types";
+import type { MUDChain } from "./types";
 
-const latticeTestnet = {
+export const latticeTestnet = {
   name: "Lattice Testnet",
   id: 4242,
   network: "lattice-testnet",
@@ -17,6 +17,4 @@ const latticeTestnet = {
   },
   modeUrl: "https://mode.testnet-mud-services.linfra.xyz",
   faucetUrl: "https://faucet.testnet-mud-services.linfra.xyz",
-} as const satisfies MudChain;
-
-export default latticeTestnet;
+} as const satisfies MUDChain;
