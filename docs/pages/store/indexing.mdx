@@ -1,4 +1,4 @@
-## Index
+## Indexing
 
 When rolling out your own storage strategy — which virtually all smart contract developers do because they don’t use Store yet 🙃 — you must decide how to implement “indices”. These data structures can be found in most popular contracts. As an example, the `balances` mapping of the ERC-721 spec is an index: it is a derived state of the `owners` mapping: every time the owner of an ERC-721 token changes, the `balances` must be updated on both side.
 

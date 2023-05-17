@@ -1,3 +1,5 @@
+import { Aside } from "../components/Aside";
+
 ## What’s MUD?
 
 MUD is a framework for ambitious Ethereum applications.
@@ -5,11 +7,11 @@ It compresses the complexity of building EVM apps with a tightly integrated soft
 
 MUD comes with:
 
-1. An [onchain database](store).
-2. An [entry-point framework](world) that brings standardized access-control, upgrades, and modules.
+1. **Store**: An [onchain database](store).
+2. **World**: An [entry-point framework](world) that brings standardized access-control, upgrades, and modules.
 3. Blazing fast development tools based on [Foundry](https://github.com/foundry-rs/foundry)
 4. Client-side data-stores that magically reflect onchain state.
-5. [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1.
+5. **MODE**: [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1.
 
 ## What MUD isn't
 
@@ -51,13 +53,13 @@ allowance = allowances[address(0)][address(1)]
 ```tsx
 // table definition
 Allowance: {
-      keySchema: {
-        from: "address",
+  keySchema: {
+    from: "address",
 		to: "address",
-      },
-      schema: {
-        amount: "uint256",
-      },
+  },
+  schema: {
+    amount: "uint256",
+  },
 }
 ```
 
@@ -118,11 +120,12 @@ These events and schemas are leveraged by [MODE](https://www.notion.so/67312bda4
 
 If you decide to go with the MUD querying DSL, your app can subscribe to a subset of the Store via a simple yet flexible querying language and keep that subset of the Store up to date as onchain transactions change Store and the result set.
 
-<aside>
-📢 For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client data-store automatically, and no queries need to be written.
-If that state gets too big for the client (eg: [you are running an onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start tweaking the data being synced using queries.
-
-</aside>
+<Aside emoji="📢">
+  For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client data-store
+  automatically, and no queries need to be written. If that state gets too big for the client (eg: [you are running an
+  onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start tweaking the
+  data being synced using queries.
+</Aside>
 
 [diagram with a few tables, a DSL query, a client that updates its frontend, and an onchain tx that percolates to changing the UI]
 

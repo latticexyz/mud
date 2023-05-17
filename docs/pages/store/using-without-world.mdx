@@ -1,11 +1,14 @@
+import { Aside } from "../../components/Aside";
+
 ## Using Store without World
 
 ### Installation
 
-<aside>
-⚠️ If you use the MUD framework, you don’t have to install Store into your contract. Each World automatically comes with a Store. This *Installation* section is meant to be for developers who **do not** use the MUD framework and the MUD World.
-
-</aside>
+<Aside emoji="⚠️">
+  If you use the MUD framework, you don’t have to install Store into your contract. Each World automatically comes with
+  a Store. This *Installation* section is meant to be for developers who **do not** use the MUD framework and the MUD
+  World.
+</Aside>
 
 Install `@latticexyz/store` via NPM or Yarn, and add the correct remapping into your Forge config.
 
@@ -13,7 +16,7 @@ If you store your contracts in `packages/contract`, this would look like this:
 
 ```solidity
 // remappings.txt
-@latticexyz/=../../node_modules/@latticexyz/
+@latticexyz/=./node_modules/@latticexyz/
 ```
 
 If you want to use code-generation for libraries, install the MUD cli: `yarn install -D mud` and the schema types: `yarn install -D @latticexyz/schema-type`
@@ -67,10 +70,10 @@ contract Contract is Store {
 }
 ```
 
-<aside>
-  ℹ️ the output directory of the library depends on your Foundry `src` directory and the optional `directory` property
-  in the table object of your config. The file name will always be the table name in the config.
-</aside>
+<Aside emoji="ℹ️">
+  the output directory of the library depends on your Foundry `src` directory and the optional `directory` property in
+  the table object of your config. The file name will always be the table name in the config.
+</Aside>
 
 ### Initializing tables in the constructor with the low-level API
 
