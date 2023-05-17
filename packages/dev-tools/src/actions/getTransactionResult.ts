@@ -25,9 +25,9 @@ export const getTransactionResult = (publicClient: PublicClient & { chain: Chain
         abi: worldAbi,
         functionName,
         args,
-        // value: tx.value,
-        blockNumber: receipt.blockNumber,
-        // TODO: do we need to include nonce, gas price, etc. to properly simulate?
+        // simulation happens at the end of the block, so we need to use the previous block number
+        blockNumber: receipt.blockNumber - 1n,
+        // TODO: do we need to include value, nonce, gas price, etc. to properly simulate?
       });
     });
   }
