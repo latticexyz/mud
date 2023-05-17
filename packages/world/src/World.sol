@@ -15,10 +15,12 @@ import { Call } from "./Call.sol";
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 
+import { ISystemHook } from "./interfaces/ISystemHook.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
+import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
@@ -267,7 +269,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes16 name,
     bytes memory funcSelectorAndArgs,
     uint256 value
-  ) internal virtual returns (bytes memory) {
+  ) internal virtual returns (bytes memory data) {
     // Load the system data
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
@@ -278,15 +280,29 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // Allow access if the system is public or the caller has access to the namespace or name
     if (!publicAccess) AccessControl.requireAccess(namespace, name, msg.sender);
 
+    // Get system hooks
+    address[] memory hooks = SystemHooks.get(resourceSelector);
+
+    // Call onBeforeCallSystem hooks (before calling the system)
+    for (uint256 i; i < hooks.length; i++) {
+      ISystemHook hook = ISystemHook(hooks[i]);
+      hook.onBeforeCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    }
+
     // Call the system and forward any return data
-    return
-      Call.withSender({
-        msgSender: msg.sender,
-        target: systemAddress,
-        funcSelectorAndArgs: funcSelectorAndArgs,
-        delegate: namespace == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
-        value: value
-      });
+    data = Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: funcSelectorAndArgs,
+      delegate: namespace == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
+      value: value
+    });
+
+    // Call onAfterCallSystem hooks (after calling the system)
+    for (uint256 i; i < hooks.length; i++) {
+      ISystemHook hook = ISystemHook(hooks[i]);
+      hook.onAfterCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    }
   }
 
   /************************************************************************

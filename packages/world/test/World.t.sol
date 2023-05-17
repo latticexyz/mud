@@ -24,6 +24,7 @@ import { Systems } from "../src/modules/core/tables/Systems.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { ISystemHook } from "../src/interfaces/ISystemHook.sol";
 
 import { Bool } from "./tables/Bool.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
@@ -116,11 +117,24 @@ contract WorldTestTableHook is IStoreHook {
   }
 }
 
+contract WorldTestSystemHook is ISystemHook {
+  event SystemHookCalled(bytes data);
+
+  function onBeforeCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, systemAddress, funcSelectorAndArgs));
+  }
+
+  function onAfterCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, systemAddress, funcSelectorAndArgs));
+  }
+}
+
 contract WorldTest is Test {
   using ResourceSelector for bytes32;
 
   event HelloWorld();
   event HookCalled(bytes data);
+  event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
@@ -382,7 +396,6 @@ contract WorldTest is Test {
     assertEq(length, amount + 1);
   }
 
-  // NOTE: this test is expected to fail weirdly
   function testSetRecords10000() public {
     uint256 amount = 10000;
 
@@ -604,8 +617,29 @@ contract WorldTest is Test {
     // (See https://github.com/latticexyz/mud/issues/444)
   }
 
-  function testRegisterSystemHook() public view {
-    // TODO
+  function testRegisterSystemHook() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("namespace", "testSystem", system, false);
+
+    // Register a new hook
+    ISystemHook systemHook = new WorldTestSystemHook();
+    world.registerSystemHook("namespace", "testSystem", systemHook);
+
+    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+
+    // Expect the hooks to be called in correct order
+    vm.expectEmit(true, true, true, true);
+    emit SystemHookCalled(abi.encode("before", address(this), address(system), funcSelectorAndArgs));
+
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("fallback");
+
+    vm.expectEmit(true, true, true, true);
+    emit SystemHookCalled(abi.encode("after", address(this), address(system), funcSelectorAndArgs));
+
+    // Call a system fallback function without arguments via the World
+    world.call("namespace", "testSystem", funcSelectorAndArgs);
   }
 
   function testWriteRootSystem() public {

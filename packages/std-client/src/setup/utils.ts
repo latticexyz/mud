@@ -31,6 +31,8 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { IComputedValue } from "mobx";
 import { filter, map, Observable, Subject, timer } from "rxjs";
 import { DecodedNetworkComponentUpdate, DecodedSystemCall } from "./types";
+import { StoreConfig } from "@latticexyz/store";
+import { createDatabaseClient } from "@latticexyz/store-cache";
 
 export function createDecodeNetworkComponentUpdate<C extends Components>(
   world: World,
@@ -130,12 +132,14 @@ export async function createEncoders(
 /**
  * Sets up synchronization between contract components and client components
  */
-export function applyNetworkUpdates<C extends Components>(
+export function applyNetworkUpdates<C extends Components, S extends StoreConfig>(
   world: World,
   components: C,
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
   ack$: Subject<Ack>,
+  storeConfig?: S,
+  storeCache?: ReturnType<typeof createDatabaseClient<S>>,
   decodeAndEmitSystemCall?: (event: SystemCall<C>) => void
 ) {
   const txReduced$ = new Subject<string>();
@@ -154,6 +158,35 @@ export function applyNetworkUpdates<C extends Components>(
     for (const update of updates) {
       if (isNetworkComponentUpdateEvent<C>(update)) {
         if (update.lastEventInTx) txReduced$.next(update.txHash);
+
+        if (storeCache && storeConfig) {
+          // Apply network updates to store cache
+          const { namespace, table, key } = update;
+
+          const tableConfig = storeConfig.tables[table];
+
+          // Apply network updates to cache store
+          if (!tableConfig || namespace !== storeConfig.namespace) {
+            // console.warn("Ignoring table config outside own mud config", update, storeConfig.namespace);
+          } else {
+            // TODO: key names are not yet part of the on-chain table metadata, so we have to
+            // load them from the local mud.config (and have to ignore all tables that are not
+            // defined in the local mud config)
+            // (see https://github.com/latticexyz/mud/issues/824)
+
+            // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
+            const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.keySchema));
+
+            // StoreCache handles setting partial value and initializing with default values
+            const value = update.value ?? update.partialValue;
+            if (value) {
+              const namedValue = nameKeys(value, Object.getOwnPropertyNames(tableConfig.schema));
+              storeCache.set(namespace, table, namedKey as any, namedValue as any);
+            } else {
+              storeCache.remove(namespace, table, namedKey as any);
+            }
+          }
+        }
 
         const entity = update.entity ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];
@@ -186,4 +219,12 @@ export function applyNetworkUpdates<C extends Components>(
     ackSub?.unsubscribe();
   });
   return { txReduced$: txReduced$.asObservable() };
+}
+
+function nameKeys(indexedRecord: Record<number, unknown>, keyNames: string[]) {
+  const namedRecord: Record<string, unknown> = {};
+  keyNames.forEach((key, index) => {
+    namedRecord[key] = indexedRecord[index];
+  });
+  return namedRecord;
 }

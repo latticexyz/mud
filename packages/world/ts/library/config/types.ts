@@ -70,7 +70,7 @@ export interface WorldUserConfig {
    * The key is the system name (capitalized).
    * The value is a SystemConfig object.
    */
-  overrideSystems?: SystemsUserConfig;
+  systems?: SystemsUserConfig;
   /** Systems to exclude from automatic deployment */
   excludeSystems?: string[];
   /**
@@ -80,6 +80,8 @@ export interface WorldUserConfig {
   postDeployScript?: string;
   /** Directory to write the deployment info to (Default "./deploys") */
   deploysDirectory?: string;
+  /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
+  worldsFile?: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
@@ -89,4 +91,4 @@ export interface WorldUserConfig {
 }
 
 export type WorldConfig = z.output<typeof zWorldConfig>;
-export type SystemConfig = WorldConfig["overrideSystems"][string];
+export type SystemConfig = WorldConfig["systems"][string];

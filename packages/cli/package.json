@@ -14,12 +14,11 @@
   },
   "types": "src/index.ts",
   "bin": {
-    "mud": "./dist/mud.js",
-    "mud2": "./dist/mud2.js"
+    "mud": "./dist/mud.js"
   },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup && chmod +x ./dist/mud.js ./dist/mud2.js",
+    "build:js": "tsup && chmod +x ./dist/mud.js",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
@@ -44,11 +43,9 @@
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
     "ethers": "^5.7.2",
     "execa": "^7.0.0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "glob": "^8.0.3",
     "nice-grpc-web": "^2.0.1",
     "openurl": "^1.1.1",
@@ -66,6 +63,8 @@
     "@types/node": "^18.15.11",
     "@types/openurl": "^1.0.0",
     "@types/yargs": "^17.0.10",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.30.1"

@@ -1,13 +1,22 @@
 export default {
-  index: "MUD",
-  blog: {
-    title: "Blog",
-    type: "page",
-    display: "hidden",
-  },
-  guides: "Guides",
-  tutorials: "Tutorials",
-  packages: "Packages",
+  index: "Introduction",
+  "quick-start": "Quick start",
+  "what-is-mud": "What is MUD?",
+  store: "Store",
+  world: "World",
+  "client-side": "MUD client",
+  mode: "MODE",
+  cli: "CLI",
+  ecs: "ECS and MUD",
+  "ethglobal-hackathon": "ETHGlobal Hackathon",
+  // blog: {
+  //   title: "Blog",
+  //   type: "page",
+  //   display: "hidden",
+  // },
+  // guides: "Guides",
+  // tutorials: "Tutorials",
+  // packages: "Packages",
   community: {
     title: "Community",
     type: "page",
@@ -26,4 +35,5 @@ export default {
     href: "https:/lattice.xyz/discord",
     newWindow: true,
   },
+  contribute: "Contribute",
 };

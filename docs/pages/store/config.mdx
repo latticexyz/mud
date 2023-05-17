@@ -1,0 +1,173 @@
+import { Aside } from "../../components/Aside";
+
+## Store Config & `tablegen` Tool
+
+<Aside emoji="⚠️">
+  Currently, `tablegen` is only compatible with Foundry, and MUD 2 uses Foundry for testing and building. Hardhat will
+  be available in the future.
+</Aside>
+
+The `tablegen` CLI tool generates libraries for Store tables. It makes it much less error-prone than using the Store low-level API, and comes with typed Solidity APIs when setting and retrieving records.
+
+### Using `tablegen` with the MUD framework
+
+If you are using the MUD framework and have a `mud.config.ts` file in your project, you can edit your Store config directly in this file!
+Keep reading from the "Adding Tables" section
+
+### Using `tablegen` without the MUD framework
+
+<Aside emoji="⚠️">
+  We are making this process easier, and will not require a MUD config in the future in order to use `tablegen`
+</Aside>
+
+A Store config should be named `mud.config.mts` (notice the `.mts` extension: It’s a typescript ES module), and placed at the root of your project (if you are building a mono-repo, put it at the root folder of where your contracts will be, in the same folder as your Foundry config).
+
+This is the minimal config:
+
+```tsx
+import { mudConfig } from "@latticexyz/store/register";
+
+export default mudConfig({
+  tables: {}, // an empty config with no tables
+});
+```
+
+### Generating the tables
+
+To generate the tables, run `mud tablegen` in the same folder as the config file.
+
+### Adding Tables
+
+Adding a table is done by creating an entry in the `table` object of the config.
+
+```tsx
+import { mudConfig } from "@latticexyz/store/register";
+
+export default mudConfig({
+  tables: {
+    MyTable: {
+      schema: {
+        value: "uint32",
+      },
+    },
+  },
+});
+```
+
+The key of the entry is the name of the table, and the value is another object: the table configuration.
+
+The table configuration can have these properties:
+
+**`directory` (optional)**: a `string`: which directory to create the table in. the default is `tables` (in the source directory as defined by the Foundry config; in MUD the default in `src`, so the default table directory is `src/tables`)
+
+**`fileSelector` (optional)** _only used with the World framework_: a `string`: where to create the table in the namespace.
+
+**`tableIdArgument` (optional)**: `bool`: whether to create getter and setter functions with the table ID as an argument, this is used to generate a single library to operate on multiple tables with the same schema and key structure.
+
+**`storeArgument` (optional)**: `bool`: whether to create getter and setter functions with the store address as an argument, this is used to generate a single library to operate on the same table in multiple stores. This adds new functions to the library, doubling the amount of functions created (each getter/setter will comes in a pair of “with `storeArgument`” and “without `storeArgument`”)
+
+**`dataStruct` (optional)**: `bool`: whether to create getter and setter functions with a data struct.
+
+_For 1-column tables it’s `false` by default. For multi-column tables it’s `true` by default._
+
+Example of a table library with `dataStruct`:
+
+```tsx
+// no data struct
+MyTable.set(keccak256("some.key"), 1, 12, "foo");
+// data struct
+MyTable.set(keccak256("some.key"), { field1: 1, field2: 12, stringField: "foo" });
+```
+
+**`keySchema` (optional):** an object with keys being the key name, and value being types of the keys. By default, the table will have a single key of type `bytes32`.
+
+Example:
+
+```tsx
+tables: {
+  MyTableWithTwoKeys: {
+    schema: {
+      value1: "uint32",
+      value2: "uint32",
+    },
+    keySchema: {
+      key1: "uint256",
+      key2: "string"
+    }
+  },
+}
+```
+
+**`schema` (required)**: an object with keys being the column name, and value being types from `SchemaType`
+
+Example:
+
+```tsx
+tables: {
+    MyTableWithFourValues: {
+        schema: {
+            x: "uint32",
+            y: "uint32",
+            stringField: "string",
+            uintArray: "uint256"
+        }
+    },
+}
+```
+
+### Shortcut: table with a single column
+
+There is a shortcut to create a table with a `uint256` key and a single column in the value schema:
+
+```tsx
+tables: {
+  // Create a table with key uint256 and a single column with type address
+  CounterTable: "address";
+}
+```
+
+### Singleton tables
+
+In order to create Singleton tables that do not have keys (and effectively store a single value), you must pass an empty object to the `keySchema` property
+
+Example:
+
+```tsx
+tables: {
+  MySingletonTable: {
+    schema: {
+      value1: "uint32",
+      value2: "uint32",
+    },
+    keySchema: {}
+  },
+}
+```
+
+The getter and setter functions will not have a `key` argument.
+
+### User types
+
+`tablegen` supports Solidity enums as keys and values. They must be defined in your config as `enums` in the `userTypes` property of the config:
+
+```tsx
+import { mudConfig } from "@latticexyz/store/register";
+
+export default mudConfig({
+  tables: {},
+  enums: {
+    AnimalType: ["NONE", "DOG", "CAT", "SQUIREL"],
+  },
+});
+```
+
+You can then use the name of your enum as a string in place of a type from `SchemaType`
+
+Example:
+
+```tsx
+tables: {
+  // Create a table with key uint256 and a single column with type AnimalType
+  AnimalTypeTable: "AnimalType";
+}
+```

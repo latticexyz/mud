@@ -12,7 +12,9 @@
   "exports": {
     "./codegen": "./dist/codegen.js",
     "./foundry": "./dist/foundry.js",
-    "./type-utils": "./dist/type-utils.js"
+    "./type-utils": "./dist/type-utils.js",
+    "./utils": "./dist/utils.js",
+    "./errors": "./dist/errors.js"
   },
   "typesVersions": {
     "*": {
@@ -24,12 +26,15 @@
       ],
       "type-utils": [
         "./src/type-utils/index.ts"
+      ],
+      "utils": [
+        "./src/utils/index.ts"
+      ],
+      "errors": [
+        "./src/errors/index.ts"
       ]
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -39,7 +44,6 @@
     "test": "vitest typecheck --run --passWithNoTests"
   },
   "dependencies": {
-    "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
     "chalk": "^5.2.0",
@@ -48,6 +52,7 @@
     "prettier-plugin-solidity": "^1.1.2"
   },
   "devDependencies": {
+    "@types/node": "^18.15.11",
     "tsup": "^6.7.0",
     "vitest": "0.30.1"
   },

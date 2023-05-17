@@ -68,31 +68,31 @@ library MessageTable {
   function emitEphemeral(string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](0);
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
   function emitEphemeral(IStore _store, string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](0);
+    bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.emitEphemeralRecord(_tableId, _primaryKeys, _data);
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
 
   /** Tightly pack full data using this table's schema */
   function encode(string memory value) internal view returns (bytes memory) {
-    uint16[] memory _counters = new uint16[](1);
-    _counters[0] = uint16(bytes(value).length);
+    uint40[] memory _counters = new uint40[](1);
+    _counters[0] = uint40(bytes(value).length);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](0);
+  function encodeKeyTuple() internal pure returns (bytes32[] memory _keyTuple) {
+    _keyTuple = new bytes32[](0);
   }
 }
