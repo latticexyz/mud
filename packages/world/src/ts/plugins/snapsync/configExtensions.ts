@@ -1,7 +1,7 @@
 import { extendMUDCoreConfig, resolveTableId } from "@latticexyz/config";
 import { zPluginWorldConfig } from "../../../../ts/library";
 import { zSnapSyncPluginConfig } from "./plugin";
-import type { TableConfig } from "@latticexyz/store";
+import { zPluginStoreConfig } from "@latticexyz/store/config";
 
 extendMUDCoreConfig((config) => {
   const modifiedConfig = { ...config } as Record<string, unknown>;
@@ -9,7 +9,8 @@ extendMUDCoreConfig((config) => {
 
   if (snapSyncConfig.snapSync) {
     const worldConfig = zPluginWorldConfig.parse(config);
-    const tableNames = Object.entries(worldConfig.tables as TableConfig)
+    const storeConfig = zPluginStoreConfig.parse(config);
+    const tableNames = Object.entries(storeConfig.tables)
       .filter(([_, t]) => !t.ephemeral)
       .map(([name, _]) => name);
     const newModules = tableNames.map((tableName) => {
