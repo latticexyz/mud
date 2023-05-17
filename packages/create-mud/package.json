@@ -16,6 +16,7 @@
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "pnpm run test:vanilla && pnpm run test:react",
+    "test:phaser": "dist/cli.js test-project --template phaser && rimraf test-project",
     "test:react": "dist/cli.js test-project --template react && rimraf test-project",
     "test:vanilla": "dist/cli.js test-project --template vanilla && rimraf test-project"
   },
