@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
+    "dev": "wait-port -t 10000 localhost:8545 && vite",
     "initialize": "pnpm build",
     "preview": "vite preview"
   },
@@ -37,6 +37,7 @@
     "viem": "^0.3.18"
   },
   "devDependencies": {
-    "vite": "^4.2.1"
+    "vite": "^4.2.1",
+    "wait-port": "^1.0.4"
   }
 }
