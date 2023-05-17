@@ -4,7 +4,7 @@ import { useMUD } from "./MUDContext";
 export const App = () => {
   const {
     components: { Counter },
-    systemCalls: { increment, optimisticIncrement },
+    systemCalls: { increment },
     network: { singletonEntity },
   } = useMUD();
 
@@ -23,15 +23,6 @@ export const App = () => {
         }}
       >
         Increment
-      </button>
-      <button
-        type="button"
-        onClick={async (event) => {
-          event.preventDefault();
-          console.log("new counter value:", await optimisticIncrement());
-        }}
-      >
-        Optimistic increment
       </button>
     </>
   );
