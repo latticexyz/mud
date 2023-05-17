@@ -188,6 +188,9 @@ importers:
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
+      '@wagmi/chains':
+        specifier: ^0.2.22
+        version: 0.2.23(typescript@4.9.5)
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -4026,6 +4029,17 @@ packages:
         optional: true
     dependencies:
       typescript: 5.0.4
+    dev: false
+
+  /@wagmi/chains@0.2.23(typescript@4.9.5):
+    resolution: {integrity: sha512-oIc4ZpUL6bH/HdS7ROPWlFnP5U3XBujO/OiX4csRIezyLjMQ9FNXQRZShhi5ddL0Kj1RDbyVLe9K/QotEm1vig==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 4.9.5
     dev: false
 
   /@yarnpkg/lockfile@1.1.0:
