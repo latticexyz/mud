@@ -44,15 +44,21 @@ const commandModule: CommandModule<Options, Options> = {
     // Initial cleanup
     await forge(["clean"]);
 
+    const rpc = args.rpc ?? (await getRpcUrl());
+    const configPath = args.configPath ?? (await resolveConfigPath(args.configPath));
+    const srcDirectory = await getSrcDirectory();
+    const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
+
+    // Initial run of all codegen steps before starting anvil
+    // (so clients can wait for everything to be ready before starting)
+    await handleConfigChange(initialConfig);
+    await handleContractsChange(initialConfig);
+
     // Start an anvil instance in the background if no RPC url is provided
     if (!args.rpc) {
       const anvilArgs = ["--block-time", "1", "--block-base-fee-per-gas", "0"];
       anvil(anvilArgs);
     }
-    const rpc = args.rpc ?? (await getRpcUrl());
-    const configPath = args.configPath ?? (await resolveConfigPath(args.configPath));
-    const srcDirectory = await getSrcDirectory();
-    const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
     const changedSinceLastHandled = {
       config: false,

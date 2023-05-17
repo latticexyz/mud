@@ -119,6 +119,9 @@ importers:
       vite:
         specifier: ^4.2.1
         version: 4.2.1
+      wait-port:
+        specifier: ^1.0.4
+        version: 1.0.4
 
   packages/client-vanilla:
     dependencies:
@@ -198,6 +201,9 @@ importers:
       vite:
         specifier: ^4.2.1
         version: 4.2.1
+      wait-port:
+        specifier: ^1.0.4
+        version: 1.0.4
 
   packages/contracts:
     devDependencies:
@@ -1838,6 +1844,11 @@ packages:
 
   /commander@2.18.0:
     resolution: {integrity: sha512-6CYPa+JP2ftfRU2qkDK+UTVeQYosOg/2GbcjIcKPHfinyOLPVGXu/ovN86RP49Re5ndJK1N0kuiidFFuepc4ZQ==}
+    dev: true
+
+  /commander@9.5.0:
+    resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
+    engines: {node: ^12.20.0 || >=14}
     dev: true
 
   /concat-map@0.0.1:
@@ -4189,6 +4200,18 @@ packages:
       rollup: 3.20.6
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
+
+  /wait-port@1.0.4:
+    resolution: {integrity: sha512-w8Ftna3h6XSFWWc2JC5gZEgp64nz8bnaTp5cvzbJSZ53j+omktWTDdwXxEF0jM8YveviLgFWvNGrSvRHnkyHyw==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      chalk: 4.1.2
+      commander: 9.5.0
+      debug: 4.3.4
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /which-boxed-primitive@1.0.2:
