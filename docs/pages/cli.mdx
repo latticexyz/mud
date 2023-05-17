@@ -6,21 +6,22 @@ It comes with
 
 1. `tablegen`: code-generation tool that makes it easy to work with Store tables
 2. `create`: bootstrap a MUD project from one of the template.
-3. `deploy`: deployer for MUD v2 projects that deploys an app using the [World](world) kernel onchain
-4. `devnode`: a wrapper around Anvil with defaults needed to make MUD work properly in development. We recommend running `mud devnode` over `anvil`.
-5. `faucet`: a interface to the Lattice Testnet faucet. It makes it easy to fund addresses on the testnet
+3. `dev-contracts`: start a local MUD development server, including local Ethereum node and file watchers
+4. `deploy`: deployer for MUD v2 projects that deploys an app using the [World](world) kernel onchain
+5. `devnode`: a wrapper around Anvil with defaults needed to make MUD work properly in development. We recommend running `mud devnode` over `anvil`.
+6. `faucet`: a interface to the Lattice Testnet faucet. It makes it easy to fund addresses on the testnet
 
 ## Installation
 
 We don’t recommend installing the CLI globally.
 
-Instead, you should add the CLI as a dev dependency to your project (done automatically if you start from a starter kit using `yarn create mud`), and use it with `yarn mud` inside your project directory.
+Instead, you should add the CLI as a dev dependency to your project (done automatically if you start from a starter kit using `yarn create mud@canary`), and use it with `pnpm mud` inside your project directory.
 
 ## Commands
 
 ## `tablegen`
 
-Generates Store libraries from a `mud.config.mts` file. See the [Store Config and `tablegen` documentation](store/config) in the Store section for more details.
+Generates Store libraries from a `mud.config.ts` file. See the [Store Config and `tablegen` documentation](store/config) in the Store section for more details.
 
 ## `create`
 
@@ -32,11 +33,39 @@ The valid templates are:
 
 **`minimal`**: A minimal template with javascript for the frontend (no framework)
 
+## `dev-contracts`
+
+Start a local MUD development server.
+
+The tool with start a local Ethereum node in the background, or use a custom node via the provided `--rpc` argument.
+
+It will run all the necessary codegeneration steps, deploy the MUD contracts to the local node.
+It will also watch for file changes to the `mud.config.ts` file and all Solidity source files, and re-run the codegen or deploy steps if necessary.
+The latest deployment is saved to the `worlds.json` file, where the client can find it to always connect to the latest local deployment.
+
+The `tsgenOutput` argument is used to specify the output path for code generated for `recs`.
+
+To run the dev server with internal development node:
+
+```bash
+pnpm mud dev-contracts --tsgenOutput ../client/src/mud
+```
+
+To run the dev server with a custom development node:
+
+```bash
+# Terminal 1:
+anvil --port 8545
+
+# Terminal 2:
+pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc localhost:8545
+```
+
 ## `deploy`
 
 Deploy a MUD project with the World framework.
 
-This tool will use the `mud.config.mts` to detect all systems, tables, modules, and namespaces in the World and will deploy them to the chain specified in your Foundry profile.
+This tool will use the `mud.config.ts` to detect all systems, tables, modules, and namespaces in the World and will deploy them to the chain specified in your Foundry profile.
 
 When using the deployer, you must set the private key of the deployer using the `PRIVATE_KEY` environment variable. You can make this easier by using `[dotenv](https://www.npmjs.com/package/dotenv)` before running `mud deploy` in your deployment script.
 
@@ -65,7 +94,7 @@ This command also wipes the Anvil cache. Anvil cache blow-up problems won’t ha
 Connects to a MUD faucet service to fund an address.
 
 ```bash
-mud faucet --faucetUrl <faucetService> --adress <address>
+pnpm mud faucet --faucetUrl <faucetService> --adress <address>
 ```
 
 The default faucet service is the one running on the Lattice testnet.
