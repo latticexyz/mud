@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
+    "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/recs": "link:../../../../packages/recs",
