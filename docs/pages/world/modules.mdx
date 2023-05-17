@@ -124,7 +124,7 @@ fragments[0] = QueryFragment(QueryType.HasValue, positionTableId, abi.encode(Coo
 // The value argument is ignored in Has query fragments
 fragments[1] = QueryFragment(QueryType.Has, movableTableId, new bytes(0));
 
-bytes32[][] memory keyTuples = LibQuery.query(fragments);
+bytes32[][] memory keyTuples = query(fragments);
 ```
 
 ### Installing a module
