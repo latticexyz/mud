@@ -14,7 +14,19 @@ export default function IndexIntro() {
       <Splash theme={resolvedTheme} />
       <WarningBox
         title="MUD v2 is still in alpha"
-        message="Please note that MUD v2 is still under development! Quick start templates are not yet available and some APIs may change. If you're here for the Autonomous Worlds Hackathon, we recommend you get familiar with the high-level concepts and check back here when the hackathon starts"
+        message={
+          <>
+            <p>Please note that MUD v2 is still under development and some APIs may change!</p>
+            <p>
+              If you're here for the{" "}
+              <a href="https://ethglobal.com/events/autonomous" target="_blank" style={{ textDecoration: "underline" }}>
+                Autonomous Worlds Hackathon
+              </a>
+              , we recommend you get familiar with the high-level concepts and check back here when the hackathon
+              starts.
+            </p>
+          </>
+        }
       />
       <div style={{ display: "flex", justifyContent: "center" }}>
         <div style={{ width: "200px", marginBottom: "20px" }}>
