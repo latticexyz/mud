@@ -1,12 +1,14 @@
+import { Aside } from "../../components/Aside";
+
 ## Using Store without World
 
 ### Installation
 
-<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
-  ⚠️ If you use the MUD framework, you don’t have to install Store into your contract. Each World automatically comes
-  with a Store. This *Installation* section is meant to be for developers who **do not** use the MUD framework and the
-  MUD World.
-</aside>
+<Aside emoji="⚠️">
+  If you use the MUD framework, you don’t have to install Store into your contract. Each World automatically comes with
+  a Store. This *Installation* section is meant to be for developers who **do not** use the MUD framework and the MUD
+  World.
+</Aside>
 
 Install `@latticexyz/store` via NPM or Yarn, and add the correct remapping into your Forge config.
 
@@ -68,10 +70,10 @@ contract Contract is Store {
 }
 ```
 
-<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
-  ℹ️ the output directory of the library depends on your Foundry `src` directory and the optional `directory` property
-  in the table object of your config. The file name will always be the table name in the config.
-</aside>
+<Aside emoji="ℹ️">
+  the output directory of the library depends on your Foundry `src` directory and the optional `directory` property in
+  the table object of your config. The file name will always be the table name in the config.
+</Aside>
 
 ### Initializing tables in the constructor with the low-level API
 

@@ -1,9 +1,11 @@
+import { Aside } from "../../components/Aside";
+
 ## Store Config & `tablegen` Tool
 
-<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
-  ⚠️ Currently, `tablegen` is only compatible with Foundry, and MUD 2 uses Foundry for testing and building. Hardhat
-  will be available in the future.
-</aside>
+<Aside emoji="⚠️">
+  Currently, `tablegen` is only compatible with Foundry, and MUD 2 uses Foundry for testing and building. Hardhat will
+  be available in the future.
+</Aside>
 
 The `tablegen` CLI tool generates libraries for Store tables. It makes it much less error-prone than using the Store low-level API, and comes with typed Solidity APIs when setting and retrieving records.
 
@@ -14,9 +16,9 @@ Keep reading from the "Adding Tables" section
 
 ### Using `tablegen` without the MUD framework
 
-<aside style={{ padding: "1em", border: "2px dashed #ddd", borderRadius: "1em" }}>
-  ⚠️ We are making this process easier, and will not require a MUD config in the future in order to use `tablegen`
-</aside>
+<Aside emoji="⚠️">
+  We are making this process easier, and will not require a MUD config in the future in order to use `tablegen`
+</Aside>
 
 A Store config should be named `mud.config.mts` (notice the `.mts` extension: It’s a typescript ES module), and placed at the root of your project (if you are building a mono-repo, put it at the root folder of where your contracts will be, in the same folder as your Foundry config).
 
