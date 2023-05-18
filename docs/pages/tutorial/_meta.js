@@ -1,3 +1,3 @@
 export default {
-    emojimon: "Emojimon",
-}
+  emojimon: "Emojimon",
+};

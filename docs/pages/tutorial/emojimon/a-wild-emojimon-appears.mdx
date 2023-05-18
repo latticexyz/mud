@@ -2,7 +2,7 @@
 
 To bring this all together we will now add the ability to generate encounters on tall grass in which the user can either capture the emojimon or flee the encounter.
 
-Adding encounters and all of their functionality will serve as a review of all the concepts we've learned so far: creating **tables** (i.e. components), creating and calling **systems**, **optimistic rendering** in the client, and client and contract **queries**. 
+Adding encounters and all of their functionality will serve as a review of all the concepts we've learned so far: creating **tables** (i.e. components), creating and calling **systems**, **optimistic rendering** in the client, and client and contract **queries**.
 
 **In order to do so we will add the following features:**
 
@@ -200,7 +200,7 @@ function move(uint32 x, uint32 y) public {
 
 At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible.
 
-**For the sake of this tutorial we will be leaving this as deterministic.** If you're interested in generating somewhat robust randomness in your application, you can look into  [Chainlink VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
+**For the sake of this tutorial we will be leaving this as deterministic.** If you're interested in generating somewhat robust randomness in your application, you can look into [Chainlink VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
 
 ```solidity
 if (Encounterable.get(player) && EncounterTrigger.get(position)) {
@@ -280,7 +280,7 @@ const moveTo = async (inputX: number, inputY: number) => {
 
 ## 3.2 Add emojimon to encounters
 
-Players are now able to start an encounter but they do not yet have an opponent—let’s fix this by adding an emojimon! 
+Players are now able to start an encounter but they do not yet have an opponent—let’s fix this by adding an emojimon!
 
 We’ve already given you a headstart by creating different types of monsters (in `MonsterType.sol` in the contracts package and `monsterTypes.ts` in the client package), but let’s also add a new table: `MonsterTypeComponent.sol` into the MUD config.
 
@@ -342,21 +342,15 @@ function startEncounter(bytes32 player) internal {
 Okay so the emojimon are now ready to be added to the encounter, but we still don’t have a way to render this on the client. Let’s create a new React component that contains the encounter screen.
 
 ```tsx
-EncounterScreen.tsx
+EncounterScreen.tsx;
 ```
 
 Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`.
 
 ```tsx
 const encounter = useComponentValue(Encounter, playerEntity);
-const monsterType = useComponentValue(
-  Monster,
-  encounter ? (encounter.monster as Entity) : undefined
-)?.value;
-const monster =
-  monsterType != null && monsterType in MonsterType
-    ? monsterTypes[monsterType as MonsterType]
-    : null;
+const monsterType = useComponentValue(Monster, encounter ? (encounter.monster as Entity) : undefined)?.value;
+const monster = monsterType != null && monsterType in MonsterType ? monsterTypes[monsterType as MonsterType] : null;
 
 return (
   <GameMap
@@ -365,14 +359,7 @@ return (
     terrain={terrain}
     onTileClick={canSpawn ? spawn : undefined}
     players={player ? [player] : []}
-    encounter={
-      monster ? (
-        <EncounterScreen
-          monsterName={monster.name}
-          monsterEmoji={monster.emoji}
-        />
-      ) : undefined
-    }
+    encounter={monster ? <EncounterScreen monsterName={monster.name} monsterEmoji={monster.emoji} /> : undefined}
   />
 );
 ```
@@ -396,9 +383,9 @@ The first step is modifying the MUD config to add the necessary tables.
 
 `OwnedBy` will use a `bytes32` because we use this for representing entity IDs, so one entity can own another entity by having an `OwnedBy` component that points to the owner entity ID.
 
-We also need a way to represent the catch attempt. We’ll add a `MonsterCatchResult` enum with the different types of results of a catch attempt (missed, caught, fled). 
+We also need a way to represent the catch attempt. We’ll add a `MonsterCatchResult` enum with the different types of results of a catch attempt (missed, caught, fled).
 
-We’ll also use an [ephemeral table](https://mud.dev/store/advanced-features#ephemeral-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of ephemeral tables like native Solidity events but with the same structure and encoding as regular tables.
+We’ll also use an [ephemeral table](/store/advanced-features#ephemeral-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of ephemeral tables like native Solidity events but with the same structure and encoding as regular tables.
 
 ```tsx
 import { mudConfig } from "@latticexyz/world/register";

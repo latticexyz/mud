@@ -6,7 +6,7 @@ ECS is a software architectural pattern used commonly in video game development.
 
 - **Entities** are the basic units of a game, and they can have any number of components.
 - **Components** are small pieces of data that define an entity's behavior (such as position or health).
-    - (*We are currently working on an ECS plugin to make the concept of components more explicit in MUD, but for now, components on the contract side will be implemented as [tables](https://mud.dev/store#stores-core-data-model).*)
+  - (_We are currently working on an ECS plugin to make the concept of components more explicit in MUD, but for now, components on the contract side will be implemented as [tables](/store#stores-core-data-model)._)
 - **Systems** are functions responsible for updating the game state and performing operations on entities and their components.
 
 ## Using ECS in Emojimon
@@ -16,8 +16,8 @@ We will be using ECS mental models in conjunction with MUD to bring Emojimon to 
 ### Scope of this project
 
 - Create a 2D map with three types of terrain: none, long grass, and boulders.
-    - Long grass randomly generates encounters with Emojimon.
-    - Boulders prevent movement.
+  - Long grass randomly generates encounters with Emojimon.
+  - Boulders prevent movement.
 - Allow players to spawn in and move around the map.
 - Allow players to either capture Emojimon or flee during an encounter.
 
@@ -27,7 +27,7 @@ You'll notice that in the scope above there are a few key interactions that we n
 
 In the ECS model both the player and the boulder can be thought of as entities, both of which have components that give it certain properties. For example, the player may have a `movable` component and the boulder an `obstruction` component.
 
-In a vacuum these components don't *do* anything, they are just data (in this example, booleans). However, when we bring a system into context—the `MoveSystem`—this allows us to operate on an entity’s `position` component to move them. It would also have the logic to know that `position` cannot be moved onto a spot on the grid in which an entity with `obstruction` is present.
+In a vacuum these components don't _do_ anything, they are just data (in this example, booleans). However, when we bring a system into context—the `MoveSystem`—this allows us to operate on an entity’s `position` component to move them. It would also have the logic to know that `position` cannot be moved onto a spot on the grid in which an entity with `obstruction` is present.
 
 ### ECS in MUD
 
