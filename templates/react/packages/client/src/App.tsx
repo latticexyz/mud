@@ -4,8 +4,8 @@ import { useMUD } from "./MUDContext";
 export const App = () => {
   const {
     components: { Counter },
-    singletonEntity,
-    worldSend,
+    systemCalls: { increment },
+    network: { singletonEntity },
   } = useMUD();
 
   const counter = useComponentValue(Counter, singletonEntity);
@@ -19,11 +19,7 @@ export const App = () => {
         type="button"
         onClick={async (event) => {
           event.preventDefault();
-
-          const tx = await worldSend("increment", []);
-
-          console.log("increment tx", tx);
-          console.log("increment result", await tx.wait());
+          console.log("new counter value:", await increment());
         }}
       >
         Increment

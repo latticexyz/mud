@@ -15,13 +15,24 @@ It comes with
 
 We don’t recommend installing the CLI globally.
 
-Instead, you should add the CLI as a dev dependency to your project (done automatically if you start from a starter kit using `yarn create mud@canary`), and use it with `pnpm mud` inside your project directory.
+Instead, you should add the CLI as a dev dependency to your project (done automatically if you start from a starter kit using `pnpm create mud@canary`), and use it with `pnpm mud` inside your project directory.
+
+## Using the CLI
+
+Some commands expect a MUD config in the same folder where the CLI is being executed. This includes `tablegen`, `dev-contracts`, and `deploy`.
+
+`create`, `faucet`, and `devnode` can be executed anywhere.
 
 ## Commands
 
 ## `tablegen`
 
 Generates Store libraries from a `mud.config.ts` file. See the [Store Config and `tablegen` documentation](store/config) in the Store section for more details.
+
+```bash
+# in a folder with a mud.config.ts
+pnpm mud tablegen
+```
 
 ## `create`
 
@@ -32,6 +43,10 @@ The valid templates are:
 **`react`**: A MUD template with React client side that uses the MUD React hooks
 
 **`minimal`**: A minimal template with javascript for the frontend (no framework)
+
+```bash
+pnpm mud create --template minimal
+```
 
 ## `dev-contracts`
 
@@ -45,9 +60,12 @@ The latest deployment is saved to the `worlds.json` file, where the client can f
 
 The `tsgenOutput` argument is used to specify the output path for code generated for `recs`.
 
+When using the MUD templates, the project is laid down as a monorepo with contracts in the `packages/contracts` folder, and the client in the `packages/client`. `dev-contracts` need to be executed in the folder with the MUD config -- `packages/contracts` -- and point to where the client codegeneration should be saved. In this casem the `packages/client/src/mud`.
+
 To run the dev server with internal development node:
 
 ```bash
+# in a folder with the mud.config.ts
 pnpm mud dev-contracts --tsgenOutput ../client/src/mud
 ```
 
@@ -67,11 +85,11 @@ Deploy a MUD project with the World framework.
 
 This tool will use the `mud.config.ts` to detect all systems, tables, modules, and namespaces in the World and will deploy them to the chain specified in your Foundry profile.
 
-When using the deployer, you must set the private key of the deployer using the `PRIVATE_KEY` environment variable. You can make this easier by using `[dotenv](https://www.npmjs.com/package/dotenv)` before running `mud deploy` in your deployment script.
+When using the deployer, you must set the private key of the deployer using the `PRIVATE_KEY` environment variable. You can make this easier by using [`dotenv`](https://www.npmjs.com/package/dotenv) before running `pnpm mud deploy` in your deployment script.
 
 To set the profile used by the deployer, either set your `FOUNDRY_PROFILE` environment variable, or pass `--profile <profileName>` to the deployer (eg: `mud deploy --profile optimism-mainnet`).
 
-The RPC used by the deployer will be `[http://localhost:8545](http://localhost:8545)` if no profile is set, otherwise it will be read from the `eth_rpc_url` configuration field of the Foundry profile.
+The RPC used by the deployer will be `http://localhost:8545` if no profile is set, otherwise it will be read from the `eth_rpc_url` configuration field of the Foundry profile.
 
 Example profile:
 
@@ -83,11 +101,24 @@ eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
 eth_rpc_url = "https://infura[...]"
 ```
 
+```bash
+# to deploy locally
+pnpm mud deploy
+# to deploy to the lattice testnet
+pnpm mud deploy --profile lattice-testnet
+# to deploy to optimism mainnet
+pnpm mud deploy --profile optimism-mainnet
+```
+
 ## `devnode`
 
 Runs Anvil with a block time of 1s, and no base fee (to make it possible for unfunded account to send transactions).
 
 This command also wipes the Anvil cache. Anvil cache blow-up problems won’t happen to you anymore 🙂
+
+```bash
+pnpm mud devnode
+```
 
 ## `faucet`
 
@@ -99,4 +130,4 @@ pnpm mud faucet --faucetUrl <faucetService> --address <address>
 
 The default faucet service is the one running on the Lattice testnet.
 
-To fund an address on the testnet, run `mud faucet --address <address>`
+To fund an address on the testnet, run `pnpm mud faucet --address <address>`

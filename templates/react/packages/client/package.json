@@ -6,13 +6,14 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "wait-port -t 10000 localhost:8545 && vite",
+    "dev": "wait-port localhost:8545 && vite",
     "initialize": "pnpm build",
     "preview": "vite preview",
     "test": "tsc --noEmit"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
+    "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/react": "link:../../../../packages/react",
