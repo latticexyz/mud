@@ -15,6 +15,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/common": "link:../../../../packages/common",
+    "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/ecs-browser": "link:../../../../packages/ecs-browser",
     "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/phaserx": "link:../../../../packages/phaserx",
