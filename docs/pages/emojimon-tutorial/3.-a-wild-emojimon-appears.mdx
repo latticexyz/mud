@@ -1,0 +1,553 @@
+# A wild Emojimon appears
+
+To bring this all together we will now add the ability to generate encounters on tall grass in which the user can either capture the emojimon or flee the encounter.
+
+Adding encounters and all of their functionality will serve as a review of all the concepts we've learned so far: creating **tables** (i.e. components), creating and calling **systems**, **optimistic rendering** in the client, and client and contract **queries**. 
+
+**In order to do so we will add the following features:**
+
+1. Trigger encounters when players walk in tall grass
+2. Spawn monsters (i.e. emojimon) into the encounter
+3. Allow players to capture emojimon
+4. Allow players to flee encounters
+
+In order to trigger encounters we need to recognize when a player (an entity that can enter encounters) is walking through tall grass (an entity that can generate encounters). We then need the game to enter into an entirely different state—the encounter (itself an entity)—in which the player loses the ability to move. Afterwards, we would need to enable to the player to capture an emojimon (an entity capable of being captured and owned)
+
+Before continuing, try figuring out what components and systems would need to be added to get the build all these features. You could even try building them—we've already taught you all that is needed (and you can view the gif in the [Introduction](notion://www.notion.so/latticexyz/WIP-71f07ce04f9b46f98ce2cc5737edd76f) as a reference).
+
+## 3.1 Enable tall grass to trigger encounters
+
+Let's start by adding three new tables to `mud.config.ts`.
+
+- `Encounterable` → to determine whether or not an entity can engage in an encounter
+- `EncounterTrigger` → to determine whether or not an entity can trigger an encounter when moved on by a player.
+- `Encounter` → to associate a player with an encounter.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    Encounter: {
+      dataStruct: false,
+      keySchema: {
+        player: "bytes32",
+      },
+      schema: {
+        actionCount: "uint256",
+        monster: "bytes32",
+      },
+    },
+    EncounterTrigger: "bool",
+    Encounterable: "bool",
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      schema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    Movable: "bool",
+    Obstruction: "bool",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      schema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+We then have to make sure that players and tall grass are receiving these components properly. We will do so in the following two code snippets:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/Tables.sol";
+import { TerrainType } from "../src/codegen/Types.sol";
+import { positionToEntityKey } from "../src/positionToEntityKey.sol";
+
+contract PostDeploy is Script {
+  function run(address worldAddress) external {
+    console.log("Deployed world: ", worldAddress);
+    IWorld world = IWorld(worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+
+    TerrainType O = TerrainType.None;
+    TerrainType T = TerrainType.TallGrass;
+    TerrainType B = TerrainType.Boulder;
+
+    TerrainType[20][20] memory map = [
+      [O, O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, T, O, O, O, O, O, T, O, O, O, O, B, O, O, O, O, O, O],
+      [O, T, T, T, T, O, O, O, O, O, O, O, O, O, O, T, T, O, O, O],
+      [O, O, T, T, T, T, O, O, O, O, B, O, O, O, O, O, T, O, O, O],
+      [O, O, O, O, T, T, O, O, O, O, O, O, O, O, O, O, O, T, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, T, O, O, O, B, B, O, O, O, O, T, O, O, O, O, O, B, O, O],
+      [O, O, T, T, O, O, O, O, O, T, O, B, O, O, T, O, B, O, O, O],
+      [O, O, T, O, O, O, O, T, T, T, O, B, B, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, T, T, T, O, B, T, O, T, T, O, O, O, O],
+      [O, B, O, O, O, B, O, O, T, T, O, B, O, O, T, T, O, O, O, O],
+      [O, O, B, O, O, O, T, O, T, T, O, O, B, T, T, T, O, O, O, O],
+      [O, O, B, B, O, O, O, O, T, O, O, O, B, O, T, O, O, O, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, B, O, T, O, O, O, O],
+      [O, O, O, O, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, O, O, O, B, B, O, O, T, O, O, O, O, O],
+      [O, O, O, O, T, O, O, O, T, B, O, O, O, T, T, O, B, O, O, O],
+      [O, O, O, T, O, T, T, T, O, O, O, O, O, T, O, O, O, O, O, O],
+      [O, O, O, T, T, T, T, O, O, O, O, T, O, O, O, T, O, O, O, O],
+      [O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O, O]
+    ];
+
+    uint32 height = uint32(map.length);
+    uint32 width = uint32(map[0].length);
+    bytes memory terrain = new bytes(width * height);
+
+    for (uint32 y = 0; y < height; y++) {
+      for (uint32 x = 0; x < width; x++) {
+        TerrainType terrainType = map[y][x];
+        if (terrainType == TerrainType.None) continue;
+
+        terrain[(y * width) + x] = bytes1(uint8(terrainType));
+
+        bytes32 entity = positionToEntityKey(x, y);
+        if (terrainType == TerrainType.Boulder) {
+          Position.set(world, entity, x, y);
+          Obstruction.set(world, entity, true);
+        } else if (terrainType == TerrainType.TallGrass) {
+          Position.set(world, entity, x, y);
+          EncounterTrigger.set(world, entity, true);
+        }
+      }
+    }
+
+    MapConfig.set(world, width, height, terrain);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+```solidity
+function spawn(uint32 x, uint32 y) public {
+  bytes32 player = addressToEntityKey(address(_msgSender()));
+  require(!Player.get(player), "already spawned");
+
+  // Constrain position to map size, wrapping around if necessary
+  (uint32 width, uint32 height, ) = MapConfig.get();
+  x = x + (width % width);
+  y = y + (height % height);
+
+  bytes32 position = positionToEntityKey(x, y);
+  require(!Obstruction.get(position), "this space is obstructed");
+
+  Player.set(player, true);
+  Position.set(player, x, y);
+  Movable.set(player, true);
+  Encounterable.set(player, true);
+}
+```
+
+We'll also need a way to connect a player to an encounter. Since encounters will be triggered during movement, we’ll add a `startEncounter` method to `MapSystem.sol`.
+
+```solidity
+function startEncounter(bytes32 player) internal {
+  // TODO: spawn monster
+  Encounter.set(player, 1, "");
+}
+```
+
+Now let's make sure that tall grass is being queried for so it can properly trigger encounters.
+
+```solidity
+function move(uint32 x, uint32 y) public {
+  bytes32 player = addressToEntityKey(_msgSender());
+  require(Movable.get(player), "cannot move");
+
+  (uint32 fromX, uint32 fromY) = Position.get(player);
+  require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+  bytes32 position = positionToEntityKey(x, y);
+  require(!Obstruction.get(position), "this space is obstructed");
+
+  // Constrain position to map size, wrapping around if necessary
+  (uint32 width, uint32 height, ) = MapConfig.get();
+  x = x + (width % width);
+  y = y + (height % height);
+
+  Position.set(player, x, y);
+
+  if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+    // TODO: chance to start encounter
+  }
+}
+```
+
+At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible.
+
+**For the sake of this tutorial we will be leaving this as deterministic.** If you're interested in generating somewhat robust randomness in your application, you can look into  [Chainlink VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
+
+```solidity
+if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+  uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+  if (rand % 5 == 0) {
+    startEncounter(player);
+  }
+}
+```
+
+Now that we have all of the encounter logic setup we just want to take the last step of preventing movement while a player is in an encounter—this will be a modification of the move method.
+
+```solidity
+function move(uint32 x, uint32 y) public {
+  bytes32 player = addressToEntityKey(_msgSender());
+  require(Movable.get(player), "cannot move");
+
+  (uint32 fromX, uint32 fromY) = Position.get(player);
+  require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+  uint256 actionCount = Encounter.getActionCount(player);
+  require(actionCount == 0, "cannot move during an encounter");
+
+  bytes32 position = positionToEntityKey(x, y);
+  require(!Obstruction.get(position), "this space is obstructed");
+
+  // Constrain position to map size, wrapping around if necessary
+  (uint32 width, uint32 height, ) = MapConfig.get();
+  x = x + (width % width);
+  y = y + (height % height);
+
+  Position.set(player, x, y);
+
+  if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+    uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+    if (rand % 5 == 0) {
+      startEncounter(player);
+    }
+  }
+}
+```
+
+Let's also make sure these interactions are rendering optimistically like everything else. We'll have to do this both in our systems as well as in the client (though we are currently researching ways to improve this architecture).
+
+```tsx
+const moveTo = async (inputX: number, inputY: number) => {
+  if (!playerEntity) {
+    throw new Error("no player");
+  }
+
+  const [x, y] = wrapPosition(inputX, inputY);
+  if (isObstructed(x, y)) {
+    console.warn("cannot move to obstructed space");
+    return;
+  }
+
+  const inEncounter = !!getComponentValue(Encounter, playerEntity);
+  if (inEncounter) {
+    console.warn("cannot move while in encounter");
+    return;
+  }
+
+  const positionId = uuid();
+  Position.addOverride(positionId, {
+    entity: playerEntity,
+    value: { x, y },
+  });
+
+  try {
+    const tx = await worldSend("move", [x, y]);
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+  } finally {
+    Position.removeOverride(positionId);
+  }
+};
+```
+
+## 3.2 Add emojimon to encounters
+
+Players are now able to start an encounter but they do not yet have an opponent—let’s fix this by adding an emojimon! 
+
+We’ve already given you a headstart by creating different types of monsters (in `MonsterType.sol` in the contracts package and `monsterTypes.ts` in the client package), but let’s also add a new table: `MonsterTypeComponent.sol` into the MUD config.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    Encounter: {
+      dataStruct: false,
+      keySchema: {
+        player: "bytes32",
+      },
+      schema: {
+        actionCount: "uint256",
+        monster: "bytes32",
+      },
+    },
+    EncounterTrigger: "bool",
+    Encounterable: "bool",
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      schema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    Movable: "bool",
+    Obstruction: "bool",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      schema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+Now we need a way to choose a type of monster when entering an encounter. We can add this logic to move method in `MapSystem.sol`—but remember, we are doing this deterministically because of the constraints of the EVM.
+
+```solidity
+function startEncounter(bytes32 player) internal {
+  bytes32 monster = keccak256(abi.encode(player, blockhash(block.number - 1), block.difficulty));
+  MonsterType monsterType = MonsterType((uint256(monster) % uint256(type(MonsterType).max)) + 1);
+  Monster.set(monster, monsterType);
+  Encounter.set(player, 1, monster);
+}
+```
+
+Okay so the emojimon are now ready to be added to the encounter, but we still don’t have a way to render this on the client. Let’s create a new React component that contains the encounter screen.
+
+```tsx
+EncounterScreen.tsx
+```
+
+Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`.
+
+```tsx
+const encounter = useComponentValue(Encounter, playerEntity);
+const monsterType = useComponentValue(
+  Monster,
+  encounter ? (encounter.monster as Entity) : undefined
+)?.value;
+const monster =
+  monsterType != null && monsterType in MonsterType
+    ? monsterTypes[monsterType as MonsterType]
+    : null;
+
+return (
+  <GameMap
+    width={width}
+    height={height}
+    terrain={terrain}
+    onTileClick={canSpawn ? spawn : undefined}
+    players={player ? [player] : []}
+    encounter={
+      monster ? (
+        <EncounterScreen
+          monsterName={monster.name}
+          monsterEmoji={monster.emoji}
+        />
+      ) : undefined
+    }
+  />
+);
+```
+
+You did it! You are now able to move, start encounters, and see emojimon in said encounters.
+
+With this screen setup there are two more steps to go—enabling the player to capture emojimon and flee the encounter. Let’s keep going!
+
+## 3.3 Capture emojimon
+
+What would an emojimon encounter be without throwing emojiballs?
+
+**In order to have a proper capture system we will need a few new additions:**
+
+1. A component that designates whether or not a user has captured an emojimon.
+2. A new method to throw emojiballs and catch emojimon.
+3. A way to represent the result of a catch attempt.
+4. Showing this interaction in the client.
+
+The first step is modifying the MUD config to add the necessary tables.
+
+`OwnedBy` will use a `bytes32` because we use this for representing entity IDs, so one entity can own another entity by having an `OwnedBy` component that points to the owner entity ID.
+
+We also need a way to represent the catch attempt. We’ll add a `MonsterCatchResult` enum with the different types of results of a catch attempt (missed, caught, fled). 
+
+We’ll also use an [ephemeral table](https://mud.dev/store/advanced-features#ephemeral-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of ephemeral tables like native Solidity events but with the same structure and encoding as regular tables.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    MonsterCatchResult: ["Missed", "Caught", "Fled"],
+    MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    Encounter: {
+      dataStruct: false,
+      keySchema: {
+        player: "bytes32",
+      },
+      schema: {
+        actionCount: "uint256",
+        monster: "bytes32",
+      },
+    },
+    EncounterTrigger: "bool",
+    Encounterable: "bool",
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      schema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    MonsterCatchAttempt: {
+      ephemeral: true,
+      dataStruct: false,
+      keySchema: {
+        encounter: "bytes32",
+      },
+      schema: {
+        result: "MonsterCatchResult",
+      },
+    },
+    Monster: "MonsterType",
+    Movable: "bool",
+    Obstruction: "bool",
+    OwnedBy: "bytes32",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      schema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+Next we’ll implement a way for the player to throw an emojiball and capture the emojimon. `MapSystem.sol` is getting crowded, and is concerned with logic that affects the map, so we can start up a new system here. Let’s call it `EncounterSystem.sol` and add the first method, `throwBall`.
+
+```tsx
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+
+contract EncounterSystem is System {
+  function throwBall() public {
+    // TODO
+  }
+}
+```
+
+But wait—we also want the emojimon to be able to escape if the fail throws multiple times, just like in Pokémon. This is where the `actionCount` on our `Encounter` table comes in. We’ll use that to store how many attempts we’ve made and cause the monster to flee if we’ve made too many attempts.
+
+```tsx
+function throwBall() public {
+  bytes32 player = addressToEntityKey(_msgSender());
+
+  (uint256 actionCount, bytes32 monster) = Encounter.get(player);
+  require(actionCount != 0, "not in this encounter");
+
+  uint256 rand = uint256(keccak256(abi.encode(player, monster, actionCount, blockhash(block.number - 1), block.difficulty)));
+  if (rand % 2 == 0) {
+    // 50% chance to catch monster
+    MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Caught);
+    OwnedBy.set(monster, player);
+    Encounter.deleteRecord(player);
+  } else if (actionCount > 2) {
+    // Missed 2 times, monster escapes
+    MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Fled);
+    Encounter.deleteRecord(player);
+    Monster.deleteRecord(monster);
+  } else {
+    // Throw missed!
+    MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Missed);
+    Encounter.setActionCount(player, ++actionCount);
+  }
+}
+```
+
+The encounter screen already has a “Throw” button displayed, we just need to wire it up to our client-side system calls.
+
+```tsx
+const throwBall = async () => {
+  const player = playerEntity;
+  if (!player) {
+    throw new Error("no player");
+  }
+
+  const encounter = getComponentValue(Encounter, player);
+  if (!encounter) {
+    throw new Error("no encounter");
+  }
+
+  const tx = await worldSend("throwBall", []);
+  await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+
+  const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
+  if (!catchAttempt) {
+    throw new Error("no catch attempt found");
+  }
+
+  return catchAttempt.result as MonsterCatchResult;
+};
+```
+
+When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `awaitStreamValue` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
+
+## 3.4 Flee encounters
+
+Last but not least, players should be able to flee encounters. We can add this with a method in `EncounterSystem.sol` as well. To keep it simple we’ll guarantee that the player can run away safely.
+
+```solidity
+function flee() public {
+  bytes32 player = addressToEntityKey(_msgSender());
+  Encounter.deleteRecord(player);
+}
+```
+
+Since our flee system always allows you to run away, we technically don't need to listen for system call updates to determine the outcome. But doing so will help our UI and toasts stay in sync with component updates.
+
+Because the encounter screen is shown only when you're in an encounter, you'll see that it will automatically disappear when you run away. This is the nice thing about MUD and declarative, responsive UI!
+
+```tsx
+const fleeEncounter = async () => {
+  const tx = await worldSend("flee", []);
+  await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+};
+```
+
+You could probably add optimistic rendering here, but we’ll skip that for now.
