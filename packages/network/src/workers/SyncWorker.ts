@@ -115,6 +115,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
     const config = computedConfig.get();
     const { modeUrl, chainId, worldContract, disableCache, initialRecords } = config;
+    devObservables.worldAddress$.next(worldContract.address);
 
     // Set default values for cacheAgeThreshold and cacheInterval
     const cacheAgeThreshold = config.cacheAgeThreshold || 100;
