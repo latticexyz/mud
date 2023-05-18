@@ -21,6 +21,7 @@ declare module "@latticexyz/config" {
 }
 
 declare module "@latticexyz/store/register" {
+  // prettier-ignore
   export type ExpandMUDUserConfig<T extends MUDCoreUserConfig> = OrDefaults<
       T,
       {
