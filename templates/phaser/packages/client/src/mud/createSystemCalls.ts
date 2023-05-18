@@ -7,12 +7,12 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
-  { CounterTable }: ClientComponents
+  { Counter }: ClientComponents
 ) {
   const increment = async () => {
     const tx = await worldSend("increment", []);
     await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-    return getComponentValue(CounterTable, singletonEntity);
+    return getComponentValue(Counter, singletonEntity);
   };
 
   return {
