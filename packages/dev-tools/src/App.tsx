@@ -29,7 +29,7 @@ export function App() {
           shown ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="absolute bottom-0 right-full min-w-max flex flex-col-reverse items-end justify-center m-2">
+        <div className="absolute bottom-0 right-full min-w-max flex flex-col-reverse items-end justify-center m-2 text-gray-500">
           <button
             type="button"
             className="peer text-sm p-2 rounded leading-none transition opacity-60 hover:opacity-100"
@@ -37,9 +37,9 @@ export function App() {
           >
             <span className="whitespace-nowrap font-medium">{shown ? "→" : "←"} MUD Dev Tools</span>
           </button>
-          <span className="transition opacity-0 peer-hover:opacity-40 px-2 text-xs flex items-center justify-center gap-2">
+          <span className="transition opacity-0 peer-hover:opacity-60 px-2 text-xs flex items-center justify-center gap-2">
             Keyboard shortcut
-            <code className="bg-black/10 p-1 rounded text-mono text-xs leading-none">`</code>
+            <code className="bg-gray-500/10 p-1 rounded text-mono text-xs leading-none">`</code>
           </span>
         </div>
         <div
