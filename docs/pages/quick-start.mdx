@@ -21,7 +21,6 @@ If you are using Windows:
 2. install `nodejs`, including “native modules” (nodejs.org/en/download) (re native modules: just keep the checkmark, it’s enabled by default in the installer)
 3. Install foundry via foundryup using Git bash
 
-
 ## Project setup
 
 To start off let’s create your MUD project from a template by running the following pnpm command.
@@ -30,7 +29,7 @@ To start off let’s create your MUD project from a template by running the foll
 pnpm create mud@canary my-project
 ```
 
-At this point you will see the option of choosing a template—as of writing the two options are **vanilla** and **react**. For the sake of this tutorial either one works, but examples from the **vanilla** template will be used here.
+At this point you will see the option of choosing a template—as of writing the three options are **vanilla**, **react** and **phaser**. For the sake of this tutorial any of them works, but examples from the **vanilla** template will be used here.
 
 After selecting your template you can run the app by switching into the project directory (`cd my-project`) and starting the development server.
 
@@ -124,7 +123,7 @@ Each system can contain any number of methods, though this sytem only has the si
 
 ## Client package
 
-The client package will vary depending on which template used (vanilla or react), but much of it will remain the same between the two. Vite is used for bundling and serving the client app. As mentioned earlier there is boilerplate code included in each to bootstrap MUD. There are a few files you should understand and be aware of as you build your project:
+The client package will vary depending on which template used (vanilla, react or phaser), but much of it will remain the same between the two. Vite is used for bundling and serving the client app. As mentioned earlier there is boilerplate code included in each to bootstrap MUD. There are a few files you should understand and be aware of as you build your project:
 
 - `contractComponents.ts` has RECS component definitions created for you; this file will automatically regenerate as you add tables and re-run `pnpm dev`.
 - You can adjust `clientComponents.ts` to either override contract components or add client-only components.
