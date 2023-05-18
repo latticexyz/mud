@@ -25,7 +25,6 @@
     "@latticexyz/cli": "link:../../../../packages/cli",
     "@latticexyz/config": "link:../../../../packages/config",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/solecs": "link:../../../../packages/solecs",
     "@latticexyz/std-contracts": "link:../../../../packages/std-contracts",
     "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/world": "link:../../../../packages/world",
