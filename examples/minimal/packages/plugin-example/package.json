@@ -1,0 +1,41 @@
+{
+  "name": "plugin-example",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/ts/library/index.js",
+    "./register": "./dist/ts/register/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./ts/library/index.ts"
+      ],
+      "register": [
+        "./ts/register/index.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@latticexyz/common": "link:../../../../packages/common",
+    "@latticexyz/config": "link:../../../../packages/config",
+    "@latticexyz/store": "link:../../../../packages/store",
+    "@latticexyz/world": "link:../../../../packages/world",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "rimraf": "^3.0.2",
+    "tsup": "^6.7.0",
+    "typescript": "^4.9.5"
+  }
+}
