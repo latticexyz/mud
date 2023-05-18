@@ -6,6 +6,7 @@
   "scripts": {
     "build": "forge clean && forge build",
     "deploy": "pnpm run initialize && mud deploy",
+    "deploy:hackathon": "pnpm run initialize && mud deploy --profile=hackathon-testnet",
     "deploy:testnet": "pnpm run initialize && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
     "initialize": "pnpm run tablegen && pnpm run worldgen && pnpm run build && pnpm run worldtypes && pnpm run tsgen",
