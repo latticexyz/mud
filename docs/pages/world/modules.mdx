@@ -16,6 +16,29 @@ The [`CoreModule`](https://github.com/latticexyz/mud/blob/main/packages/world/sr
 
 The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
 
+#### **`UniqueEntityModule`**
+
+The [`UniqueEntityModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/uniqueentity/UniqueEntityModule.sol) installs a system that always returns a unique `bytes32` key. It is designed for tables that have one key (eg: ECS components).
+
+It exposes a single method:
+
+- `function getUniqueEntity() returns (bytes32 uniqueEntity)` increments and returns an entity nonce
+
+Using `getUniqueEntity`:
+
+```solidity
+import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
+import { Soldier } from "./tables/Soldier.sol";
+
+...
+
+function spawnSoldier() public {
+  bytes32 key = getUniqueEntity();
+
+  Soldier.setHealth(key, 100);
+}
+```
+
 #### Querying modules
 
 The `KeysInTableModule` and `KeysWithValueModule` modules index information about tables on-chain. Their functionality is leveraged in `SnapSyncModule` and `query` to allow on-chain querying.
