@@ -1,6 +1,14 @@
+const containerId = "mud-dev-tools";
+
+// TODO: rework to always return a unmount function (not a promise or possibly undefined)
 export async function mount() {
   if (typeof window === "undefined") {
     console.warn("MUD dev-tools should only be used in browser bundles");
+    return;
+  }
+
+  if (document.getElementById(containerId)) {
+    console.warn("MUD dev-tools is already mounted");
     return;
   }
 
@@ -10,7 +18,14 @@ export async function mount() {
     const { App } = await import("./App");
 
     const rootElement = document.createElement("div");
-    rootElement.id = "mud-dev-tools";
+    rootElement.id = containerId;
+
+    // We shouldn't need to do this with stacking contexts and this being at
+    // the end of the DOM, but for some reason, any elements on the page with
+    // z-index seem to overlap this.
+    // https://web.dev/learn/css/z-index/#stacking-context
+    rootElement.style.position = "relative";
+    rootElement.style.zIndex = "999999";
 
     const root = ReactDOM.createRoot(rootElement);
     root.render(
@@ -20,9 +35,9 @@ export async function mount() {
     );
 
     document.body.appendChild(rootElement);
+
+    return () => root.unmount();
   } catch (error) {
     console.error("Failed to mount MUD dev-tools", error);
   }
-
-  // TODO: expose an unmount function?
 }
