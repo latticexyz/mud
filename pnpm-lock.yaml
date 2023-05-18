@@ -730,6 +730,16 @@ importers:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
 
+  packages/solhint-plugin-mud:
+    dependencies:
+      '@solidity-parser/parser':
+        specifier: ^0.16.0
+        version: 0.16.0
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+
   packages/std-client:
     dependencies:
       '@ethersproject/providers':
