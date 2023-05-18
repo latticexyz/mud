@@ -53,7 +53,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-yarn create mud my-project
+pnpm create mud@canary my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)
@@ -111,10 +111,13 @@ cd mud && pnpm install
 
 MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
 
-## Library
+## Talks
 
-[!embed](https://www.youtube.com/embed/j-_Zf8o5Wlo)
-[!embed](https://www.youtube.com/embed/mv3jA4USZtg)
+<div>
+  <a href="https://www.youtube.com/watch?v=IjxzJjJJSs8" target="_blank"><img src="https://img.youtube.com/vi/IjxzJjJJSs8/hqdefault.jpg" alt="MUD 101" width="30%" /></a>
+  <a href="https://www.youtube.com/watch?v=j-_Zf8o5Wlo" target="_blank"><img src="https://img.youtube.com/vi/j-_Zf8o5Wlo/hqdefault.jpg" alt="MUD - An Engine for Autonomous Worlds" width="30%" /></a>
+  <a href="https://www.youtube.com/watch?v=mv3jA4USZtg" target="_blank"><img src="https://img.youtube.com/vi/mv3jA4USZtg/hqdefault.jpg" alt="MUD in Practice - How we built OPCraft" width="30%" /></a>
+</div>
 
 ## Community support
 
