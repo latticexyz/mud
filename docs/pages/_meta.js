@@ -32,7 +32,7 @@ export default {
   discord: {
     title: "Discord",
     type: "page",
-    href: "https:/lattice.xyz/discord",
+    href: "https://lattice.xyz/discord",
     newWindow: true,
   },
   contribute: "Contribute",

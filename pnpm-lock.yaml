@@ -293,6 +293,9 @@ importers:
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
+      use-local-storage-state:
+        specifier: ^18.3.2
+        version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
         specifier: ^0.3.18
         version: 0.3.18(typescript@5.0.4)
@@ -400,6 +403,9 @@ importers:
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@wagmi/chains':
+        specifier: ^0.2.22
+        version: 0.2.23(typescript@4.9.5)
       async-mutex:
         specifier: ^0.3.2
         version: 0.3.2
@@ -4050,7 +4056,6 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
-    dev: true
 
   /@yarnpkg/lockfile@1.1.0:
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -14419,6 +14424,17 @@ packages:
       querystringify: 2.2.0
       requires-port: 1.0.0
     dev: true
+
+  /use-local-storage-state@18.3.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-JiTuQsJmmKvc0mH0hiSjaTkKFlwtwXTeOlJ+cdg7rRJzZWwv+s/Rr2S2r2NR68O0W5ogwwt1MX1y+P2wQ1lY4w==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /use-sync-external-store@1.2.0(react@18.2.0):
     resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
