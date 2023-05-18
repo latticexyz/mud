@@ -21,11 +21,12 @@ declare module "@latticexyz/config" {
 }
 
 declare module "@latticexyz/store/register" {
-  // prettier-ignore
-  export type ExpandMUDUserConfig<T extends MUDCoreUserConfig> = OrDefaults<
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
+    extends OrDefaults<
       T,
       {
         myNewConfigOption: typeof DEFAULTS.myNewConfigOption;
       }
-    >
+    > {}
 }
