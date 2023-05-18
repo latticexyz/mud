@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { anvil, forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { anvil, forge, getRpcUrl, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
@@ -47,6 +47,7 @@ const commandModule: CommandModule<Options, Options> = {
     const rpc = args.rpc ?? (await getRpcUrl());
     const configPath = args.configPath ?? (await resolveConfigPath(args.configPath));
     const srcDirectory = await getSrcDirectory();
+    const scriptDirectory = await getScriptDirectory();
     const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
     // Initial run of all codegen steps before starting anvil
@@ -79,7 +80,7 @@ const commandModule: CommandModule<Options, Options> = {
         changedSinceLastHandled.contracts = true;
       }
 
-      if (updatePath.includes(srcDirectory)) {
+      if (updatePath.includes(srcDirectory) || updatePath.includes(scriptDirectory)) {
         // Ignore changes to codegen files to avoid an infinite loop
         if (updatePath.includes(initialConfig.codegenDirectory)) return;
         changedSinceLastHandled.contracts = true;
