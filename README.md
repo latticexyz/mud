@@ -113,9 +113,11 @@ MUD follows the [conventional commit specification](https://www.conventionalcomm
 
 ## Talks
 
-[![MUD 101](https://img.youtube.com/vi/IjxzJjJJSs8/maxresdefault.jpg)](https://www.youtube.com/watch?v=IjxzJjJJSs8)
-[![MUD - An Engine for Autonomous Worlds](https://img.youtube.com/vi/j-_Zf8o5Wlo/maxresdefault.jpg)](https://www.youtube.com/embed/j-_Zf8o5Wlo)
-[![MUD in Practice - How we build OPCraft](https://img.youtube.com/vi/mv3jA4USZtg/hqdefault.jpg)](https://www.youtube.com/embed/mv3jA4USZtg)
+<div>
+  <a href="https://www.youtube.com/watch?v=IjxzJjJJSs8" target="_blank"><img src="https://img.youtube.com/vi/IjxzJjJJSs8/hqdefault.jpg" alt="MUD 101" width="30%" /></a>
+  <a href="https://www.youtube.com/watch?v=j-_Zf8o5Wlo" target="_blank"><img src="https://img.youtube.com/vi/j-_Zf8o5Wlo/hqdefault.jpg" alt="MUD - An Engine for Autonomous Worlds" width="30%" /></a>
+  <a href="https://www.youtube.com/watch?v=mv3jA4USZtg" target="_blank"><img src="https://img.youtube.com/vi/mv3jA4USZtg/hqdefault.jpg" alt="MUD in Practice - How we built OPCraft" width="30%" /></a>
+</div>
 
 ## Community support
 
