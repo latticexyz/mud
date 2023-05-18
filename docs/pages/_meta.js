@@ -8,7 +8,7 @@ export default {
   mode: "MODE",
   cli: "CLI",
   ecs: "ECS and MUD",
-  tutorial: "Tutorials",
+  tutorials: "Tutorials",
   "ethglobal-hackathon": "ETHGlobal Hackathon",
   // blog: {
   //   title: "Blog",

@@ -339,12 +339,6 @@ function startEncounter(bytes32 player) internal {
 }
 ```
 
-Okay so the emojimon are now ready to be added to the encounter, but we still don’t have a way to render this on the client. Let’s create a new React component that contains the encounter screen.
-
-```tsx
-EncounterScreen.tsx;
-```
-
 Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`.
 
 ```tsx

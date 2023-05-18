@@ -74,7 +74,7 @@ contract MapSystem is System {
 	function spawn(uint32 x, uint32 y) public {
 	  bytes32 player = addressToEntityKey(address(_msgSender()));
 	  require(!Player.get(player), "already spawned");
-	
+
 	  Player.set(player, true);
 	  Position.set(player, x, y);
 	  Movable.set(player, true);
@@ -82,11 +82,11 @@ contract MapSystem is System {
 }
 ```
 
-As you may be able to tell already, writing systems and their methods is similar to writing regular smart contracts. The key difference is that their state is defined and stored in tables rather than in the system contract itself. *Insert an excerpt about how this is a key part of MUD, and elaborate on the benefits this brings to the developer.*
+As you may be able to tell already, writing systems and their methods is similar to writing regular smart contracts. The key difference is that their state is defined and stored in tables rather than in the system contract itself. _Insert an excerpt about how this is a key part of MUD, and elaborate on the benefits this brings to the developer._
 
 ### Move method
 
-Next we’ll add the *move* method to `MapSystem.sol`. This will allow us to move users (e.g. the user's wallet address as their entityID) by updating their `Position` table.
+Next we’ll add the _move_ method to `MapSystem.sol`. This will allow us to move users (e.g. the user's wallet address as their entityID) by updating their `Position` table.
 
 ```solidity
 // add this to MapSystem.sol
@@ -178,14 +178,7 @@ export const GameBoard = () => {
         }
       : null;
 
-  return (
-    <GameMap
-      width={20}
-      height={20}
-      onTileClick={canSpawn ? spawn : undefined}
-      players={player ? [player] : []}
-    />
-  );
+  return <GameMap width={20} height={20} onTileClick={canSpawn ? spawn : undefined} players={player ? [player] : []} />;
 };
 ```
 
@@ -193,9 +186,9 @@ export const GameBoard = () => {
 
 You may notice that your movement on the game board is laggy. While this is the default behavior of even web2 games (e.g. lag between user actions and client-side rendering), this problem is worsened by the need to wait on transaction confirmations on a blockchain.
 
-A commonly used pattern in game development is the addition of *optimistic rendering*—client-side code that assumes a successful user action and renders it in the client before the server agrees, or, in this case, before the transaction is confirmed.
+A commonly used pattern in game development is the addition of _optimistic rendering_—client-side code that assumes a successful user action and renders it in the client before the server agrees, or, in this case, before the transaction is confirmed.
 
-This pattern has a trade-off, especially on the blockchain: it can potentially create a worse user experience when transactions fail, but it creates a *much* smoother experience when the optimistic assumption proves to be true.
+This pattern has a trade-off, especially on the blockchain: it can potentially create a worse user experience when transactions fail, but it creates a _much_ smoother experience when the optimistic assumption proves to be true.
 
 MUD provides an easy way to add optimistic rendering. First we need to override our `Position` component on the client to add optimistic updates.
 
