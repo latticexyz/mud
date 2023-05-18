@@ -1,6 +1,6 @@
 # Make it muliplayer
 
-You may not have realized it, but you’ve just made a game that is almost completely ready to become massively multiplayer. MUD has handled all of the network code out-of-the-box and there is a naturally shared, accessible database via the blockchain. 
+You may not have realized it, but you’ve just made a game that is almost completely ready to become massively multiplayer. MUD has handled all of the network code out-of-the-box and there is a naturally shared, accessible database via the blockchain.
 
 By writing a simple query to find all players and render them in the client, we’re prepared for any number of players.
 
@@ -38,15 +38,12 @@ export const GameBoard = () => {
 
   const mapConfig = useComponentValue(MapConfig, singletonEntity);
   if (mapConfig == null) {
-    throw new Error(
-      "map config not set or not ready, only use this hook after loading state === LIVE"
-    );
+    throw new Error("map config not set or not ready, only use this hook after loading state === LIVE");
   }
 
   const { width, height, terrain: terrainData } = mapConfig;
   const terrain = Array.from(hexToArray(terrainData)).map((value, index) => {
-    const { emoji } =
-      value in TerrainType ? terrainTypes[value as TerrainType] : { emoji: "" };
+    const { emoji } = value in TerrainType ? terrainTypes[value as TerrainType] : { emoji: "" };
     return {
       x: index % width,
       y: Math.floor(index / width),
@@ -55,14 +52,8 @@ export const GameBoard = () => {
   });
 
   const encounter = useComponentValue(Encounter, playerEntity);
-  const monsterType = useComponentValue(
-    Monster,
-    encounter ? (encounter.monster as Entity) : undefined
-  )?.value;
-  const monster =
-    monsterType != null && monsterType in MonsterType
-      ? monsterTypes[monsterType as MonsterType]
-      : null;
+  const monsterType = useComponentValue(Monster, encounter ? (encounter.monster as Entity) : undefined)?.value;
+  const monster = monsterType != null && monsterType in MonsterType ? monsterTypes[monsterType as MonsterType] : null;
 
   return (
     <GameMap
@@ -72,12 +63,7 @@ export const GameBoard = () => {
       onTileClick={canSpawn ? spawn : undefined}
       players={players}
       encounter={
-        encounter && monster ? (
-          <EncounterScreen
-            monsterName={monster.name}
-            monsterEmoji={monster.emoji}
-          />
-        ) : undefined
+        encounter && monster ? <EncounterScreen monsterName={monster.name} monsterEmoji={monster.emoji} /> : undefined
       }
     />
   );
