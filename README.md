@@ -32,7 +32,7 @@ MUD is MIT-licensed, open source and free to use.
 
 ![MUD features](./docs/public/features.png)
 
-[![MUD 101](https://img.youtube.com/vi/eaLv0FNEf8A/0.jpg)](https://www.youtube.com/watch?v=eaLv0FNEf8A)
+[![MUD 101](https://img.youtube.com/vi/IjxzJjJJSs8/0.jpg)](https://www.youtube.com/watch?v=IjxzJjJJSs8)
 
 ### Today
 
