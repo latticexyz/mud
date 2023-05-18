@@ -36,7 +36,10 @@ export async function mount() {
 
     document.body.appendChild(rootElement);
 
-    return () => root.unmount();
+    return () => {
+      root.unmount();
+      rootElement.remove();
+    };
   } catch (error) {
     console.error("Failed to mount MUD dev-tools", error);
   }
