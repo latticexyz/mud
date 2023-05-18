@@ -4,7 +4,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/solhint-plugin"
+    "directory": "packages/solhint-plugin-mud"
   },
   "license": "MIT",
   "exports": {
