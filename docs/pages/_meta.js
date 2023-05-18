@@ -36,5 +36,4 @@ export default {
     newWindow: true,
   },
   contribute: "Contribute",
-  "preface-the-ecs-model": "Preface: the ECS model",
 };
