@@ -4,5 +4,8 @@ export type { ArraySchemaType } from "./ArraySchemaType";
 export type { DynamicSchemaType } from "./DynamicSchemaType";
 export type { StaticAbiType } from "./StaticAbiTypes";
 export { StaticAbiTypes } from "./StaticAbiTypes";
+export type { DynamicAbiType } from "./DynamicAbiTypes";
+export { DynamicAbiTypes } from "./DynamicAbiTypes";
 export type { StaticArray } from "./StaticArray";
 export type { StaticSchemaType } from "./StaticSchemaType";
+export * from "./isArrayAbiType";

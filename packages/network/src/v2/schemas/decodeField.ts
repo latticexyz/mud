@@ -1,4 +1,4 @@
-import { DynamicSchemaType, StaticSchemaType } from "@latticexyz/schema-type";
+import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
 import { Schema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
@@ -10,7 +10,7 @@ export const decodeField = (schema: Schema, schemaIndex: number, hexData: string
 
   schema.staticFields.forEach((fieldType, index) => {
     if (index === schemaIndex) {
-      data[schemaIndex] = decodeStaticField(fieldType as StaticSchemaType, bytes, 0);
+      data[schemaIndex] = decodeStaticField(fieldType as StaticAbiType, bytes, 0);
     }
   });
 
@@ -18,7 +18,7 @@ export const decodeField = (schema: Schema, schemaIndex: number, hexData: string
     schema.dynamicFields.forEach((fieldType, i) => {
       const index = schema.staticFields.length + i;
       if (index === schemaIndex) {
-        data[schemaIndex] = decodeDynamicField(fieldType as DynamicSchemaType, bytes);
+        data[schemaIndex] = decodeDynamicField(fieldType as DynamicAbiType, bytes);
       }
     });
   }

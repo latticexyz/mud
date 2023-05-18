@@ -1,4 +1,4 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { AbiType } from "@latticexyz/schema-type";
 import { TableId } from "@latticexyz/utils";
 
 export const schemaTableId = new TableId("mudstore", "schema");
@@ -14,8 +14,8 @@ export type TableSchema = { valueSchema: Schema; keySchema: Schema };
 
 export type Schema = Readonly<{
   staticDataLength: number;
-  staticFields: SchemaType[];
-  dynamicFields: SchemaType[];
+  staticFields: AbiType[];
+  dynamicFields: AbiType[];
   rawSchema: string;
   abi: string;
   isEmpty: boolean;

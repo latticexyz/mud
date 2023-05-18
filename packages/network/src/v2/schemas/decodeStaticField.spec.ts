@@ -1,83 +1,80 @@
-import { SchemaType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
 import { decodeStaticField } from "./decodeStaticField";
 
 describe("decodeStaticField", () => {
-  describe("SchemaType.BOOL", () => {
+  describe("bool", () => {
     it("should decode with no offset", () => {
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array([0]), 0)).toEqual(false);
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array([1]), 0)).toEqual(true);
+      expect(decodeStaticField("bool", new Uint8Array([0]), 0)).toEqual(false);
+      expect(decodeStaticField("bool", new Uint8Array([1]), 0)).toEqual(true);
     });
     it("should decode with offset", () => {
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array([0, 0]), 1)).toEqual(false);
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array([0, 1]), 1)).toEqual(true);
+      expect(decodeStaticField("bool", new Uint8Array([0, 0]), 1)).toEqual(false);
+      expect(decodeStaticField("bool", new Uint8Array([0, 1]), 1)).toEqual(true);
     });
     it("should decode slice", () => {
       const buffer = new Uint8Array([0, 1, 2, 3]).buffer;
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array(buffer, 0, 1), 0)).toEqual(false);
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array(buffer, 1, 1), 0)).toEqual(true);
+      expect(decodeStaticField("bool", new Uint8Array(buffer, 0, 1), 0)).toEqual(false);
+      expect(decodeStaticField("bool", new Uint8Array(buffer, 1, 1), 0)).toEqual(true);
     });
     it("should decode empty array", () => {
-      expect(decodeStaticField(SchemaType.BOOL, new Uint8Array(0), 0)).toEqual(false);
+      expect(decodeStaticField("bool", new Uint8Array(0), 0)).toEqual(false);
     });
   });
 
-  describe("SchemaType.UINT256", () => {
+  describe("uint256", () => {
     const bytes = hexToArray("0x00000000000000000000000000000000000000000000000000000000008e216c");
     it("should decode with no offset", () => {
-      expect(decodeStaticField(SchemaType.UINT256, bytes, 0)).toEqual(9314668n);
+      expect(decodeStaticField("uint256", bytes, 0)).toEqual(9314668n);
     });
     it("should decode empty array", () => {
-      expect(decodeStaticField(SchemaType.UINT256, new Uint8Array(0), 0)).toEqual(0n);
+      expect(decodeStaticField("uint256", new Uint8Array(0), 0)).toEqual(0n);
     });
   });
 
-  describe("SchemaType.ADDRESS", () => {
+  describe("address", () => {
     it("should decode empty array", () => {
-      expect(decodeStaticField(SchemaType.ADDRESS, new Uint8Array(0), 0)).toEqual(
-        "0x0000000000000000000000000000000000000000"
-      );
+      expect(decodeStaticField("address", new Uint8Array(0), 0)).toEqual("0x0000000000000000000000000000000000000000");
     });
   });
 
-  describe("SchemaType.INT8", () => {
+  describe("int8", () => {
     it("should decode type(int8).max", () => {
-      expect(decodeStaticField(SchemaType.INT8, hexToArray("0x7f"), 0)).toEqual(127);
+      expect(decodeStaticField("int8", hexToArray("0x7f"), 0)).toEqual(127);
     });
     it("should decode type(int8).min", () => {
-      expect(decodeStaticField(SchemaType.INT8, hexToArray("0x80"), 0)).toEqual(-128);
+      expect(decodeStaticField("int8", hexToArray("0x80"), 0)).toEqual(-128);
     });
     it("should decode empty array", () => {
-      expect(decodeStaticField(SchemaType.INT8, new Uint8Array(0), 0)).toEqual(0);
+      expect(decodeStaticField("int8", new Uint8Array(0), 0)).toEqual(0);
     });
   });
 
-  describe("SchemaType.INT48", () => {
+  describe("int48", () => {
     it("should decode type(int48).max", () => {
-      expect(decodeStaticField(SchemaType.INT48, hexToArray("0x7fffffffffff"), 0)).toEqual(140737488355327);
+      expect(decodeStaticField("int48", hexToArray("0x7fffffffffff"), 0)).toEqual(140737488355327);
     });
     it("should decode type(int48).min", () => {
-      expect(decodeStaticField(SchemaType.INT48, hexToArray("0x800000000000"), 0)).toEqual(-140737488355328);
+      expect(decodeStaticField("int48", hexToArray("0x800000000000"), 0)).toEqual(-140737488355328);
     });
   });
 
-  describe("SchemaType.INT256", () => {
+  describe("int256", () => {
     const bytes = hexToArray("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd8f0");
     it("should decode with no offset", () => {
-      expect(decodeStaticField(SchemaType.INT256, bytes, 0)).toEqual(-10000n);
+      expect(decodeStaticField("int256", bytes, 0)).toEqual(-10000n);
     });
   });
 
-  describe("SchemaType.BYTES2", () => {
+  describe("bytes2", () => {
     const bytes = hexToArray("0x0123456789abcdef");
     it("should decode with no offset", () => {
-      expect(decodeStaticField(SchemaType.BYTES2, bytes, 0)).toEqual("0x0123");
+      expect(decodeStaticField("bytes2", bytes, 0)).toEqual("0x0123");
     });
     it("should decode with offset", () => {
-      expect(decodeStaticField(SchemaType.BYTES2, bytes, 2)).toEqual("0x4567");
+      expect(decodeStaticField("bytes2", bytes, 2)).toEqual("0x4567");
     });
     it("should decode empty array", () => {
-      expect(decodeStaticField(SchemaType.BYTES2, new Uint8Array(0), 2)).toEqual("0x0000");
+      expect(decodeStaticField("bytes2", new Uint8Array(0), 2)).toEqual("0x0000");
     });
   });
 });

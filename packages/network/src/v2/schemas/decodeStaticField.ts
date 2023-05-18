@@ -1,128 +1,131 @@
-import { getStaticByteLength, SchemaType, StaticSchemaType } from "@latticexyz/schema-type";
+import { AbiTypeToPrimitiveType, getAbiByteLength, StaticAbiType } from "@latticexyz/schema-type";
 import { toHex, pad } from "viem";
 
 const unsupportedStaticField = (fieldType: never): never => {
-  throw new Error(`Unsupported static field type: ${SchemaType[fieldType] ?? fieldType}`);
+  throw new Error(`Unsupported static field type: ${fieldType}`);
 };
 
-// TODO: figure out how to use with SchemaTypeToPrimitiveType<T> return type to ensure correctness here
-export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, bytes: Uint8Array, offset: number) => {
-  const staticLength = getStaticByteLength(fieldType);
+export const decodeStaticField = <T extends StaticAbiType, P extends AbiTypeToPrimitiveType<T>>(
+  fieldType: T,
+  bytes: Uint8Array,
+  offset: number
+): P => {
+  const staticLength = getAbiByteLength(fieldType);
   const slice = bytes.slice(offset, offset + staticLength);
   const hex = toHex(slice);
   const numberHex = hex.replace(/^0x$/, "0x0");
 
   switch (fieldType) {
-    case SchemaType.BOOL:
-      return Number(numberHex) !== 0;
-    case SchemaType.UINT8:
-    case SchemaType.UINT16:
-    case SchemaType.UINT24:
-    case SchemaType.UINT32:
-    case SchemaType.UINT40:
-    case SchemaType.UINT48:
-      return Number(numberHex);
-    case SchemaType.UINT56:
-    case SchemaType.UINT64:
-    case SchemaType.UINT72:
-    case SchemaType.UINT80:
-    case SchemaType.UINT88:
-    case SchemaType.UINT96:
-    case SchemaType.UINT104:
-    case SchemaType.UINT112:
-    case SchemaType.UINT120:
-    case SchemaType.UINT128:
-    case SchemaType.UINT136:
-    case SchemaType.UINT144:
-    case SchemaType.UINT152:
-    case SchemaType.UINT160:
-    case SchemaType.UINT168:
-    case SchemaType.UINT176:
-    case SchemaType.UINT184:
-    case SchemaType.UINT192:
-    case SchemaType.UINT200:
-    case SchemaType.UINT208:
-    case SchemaType.UINT216:
-    case SchemaType.UINT224:
-    case SchemaType.UINT232:
-    case SchemaType.UINT240:
-    case SchemaType.UINT248:
-    case SchemaType.UINT256:
-      return BigInt(numberHex);
-    case SchemaType.INT8:
-    case SchemaType.INT16:
-    case SchemaType.INT24:
-    case SchemaType.INT32:
-    case SchemaType.INT40:
-    case SchemaType.INT48: {
+    case "bool":
+      return (Number(numberHex) !== 0) as P;
+    case "uint8":
+    case "uint16":
+    case "uint24":
+    case "uint32":
+    case "uint40":
+    case "uint48":
+      return Number(numberHex) as P;
+    case "uint56":
+    case "uint64":
+    case "uint72":
+    case "uint80":
+    case "uint88":
+    case "uint96":
+    case "uint104":
+    case "uint112":
+    case "uint120":
+    case "uint128":
+    case "uint136":
+    case "uint144":
+    case "uint152":
+    case "uint160":
+    case "uint168":
+    case "uint176":
+    case "uint184":
+    case "uint192":
+    case "uint200":
+    case "uint208":
+    case "uint216":
+    case "uint224":
+    case "uint232":
+    case "uint240":
+    case "uint248":
+    case "uint256":
+      return BigInt(numberHex) as P;
+    case "int8":
+    case "int16":
+    case "int24":
+    case "int32":
+    case "int40":
+    case "int48": {
       const max = 2 ** (staticLength * 8);
       const num = Number(numberHex);
-      return num < max / 2 ? num : num - max;
+      return (num < max / 2 ? num : num - max) as P;
     }
-    case SchemaType.INT56:
-    case SchemaType.INT64:
-    case SchemaType.INT72:
-    case SchemaType.INT80:
-    case SchemaType.INT88:
-    case SchemaType.INT96:
-    case SchemaType.INT104:
-    case SchemaType.INT112:
-    case SchemaType.INT120:
-    case SchemaType.INT128:
-    case SchemaType.INT136:
-    case SchemaType.INT144:
-    case SchemaType.INT152:
-    case SchemaType.INT160:
-    case SchemaType.INT168:
-    case SchemaType.INT176:
-    case SchemaType.INT184:
-    case SchemaType.INT192:
-    case SchemaType.INT200:
-    case SchemaType.INT208:
-    case SchemaType.INT216:
-    case SchemaType.INT224:
-    case SchemaType.INT232:
-    case SchemaType.INT240:
-    case SchemaType.INT248:
-    case SchemaType.INT256: {
+    case "int56":
+    case "int64":
+    case "int72":
+    case "int80":
+    case "int88":
+    case "int96":
+    case "int104":
+    case "int112":
+    case "int120":
+    case "int128":
+    case "int136":
+    case "int144":
+    case "int152":
+    case "int160":
+    case "int168":
+    case "int176":
+    case "int184":
+    case "int192":
+    case "int200":
+    case "int208":
+    case "int216":
+    case "int224":
+    case "int232":
+    case "int240":
+    case "int248":
+    case "int256": {
       const max = 2n ** (BigInt(staticLength) * 8n);
       const num = BigInt(numberHex);
-      return num < max / 2n ? num : num - max;
+      return (num < max / 2n ? num : num - max) as P;
     }
-    case SchemaType.BYTES1:
-    case SchemaType.BYTES2:
-    case SchemaType.BYTES3:
-    case SchemaType.BYTES4:
-    case SchemaType.BYTES5:
-    case SchemaType.BYTES6:
-    case SchemaType.BYTES7:
-    case SchemaType.BYTES8:
-    case SchemaType.BYTES9:
-    case SchemaType.BYTES10:
-    case SchemaType.BYTES11:
-    case SchemaType.BYTES12:
-    case SchemaType.BYTES13:
-    case SchemaType.BYTES14:
-    case SchemaType.BYTES15:
-    case SchemaType.BYTES16:
-    case SchemaType.BYTES17:
-    case SchemaType.BYTES18:
-    case SchemaType.BYTES19:
-    case SchemaType.BYTES20:
-    case SchemaType.BYTES21:
-    case SchemaType.BYTES22:
-    case SchemaType.BYTES23:
-    case SchemaType.BYTES24:
-    case SchemaType.BYTES25:
-    case SchemaType.BYTES26:
-    case SchemaType.BYTES27:
-    case SchemaType.BYTES28:
-    case SchemaType.BYTES29:
-    case SchemaType.BYTES30:
-    case SchemaType.BYTES31:
-    case SchemaType.BYTES32:
-    case SchemaType.ADDRESS:
-      return pad(hex, { dir: "right", size: staticLength });
+    case "bytes1":
+    case "bytes2":
+    case "bytes3":
+    case "bytes4":
+    case "bytes5":
+    case "bytes6":
+    case "bytes7":
+    case "bytes8":
+    case "bytes9":
+    case "bytes10":
+    case "bytes11":
+    case "bytes12":
+    case "bytes13":
+    case "bytes14":
+    case "bytes15":
+    case "bytes16":
+    case "bytes17":
+    case "bytes18":
+    case "bytes19":
+    case "bytes20":
+    case "bytes21":
+    case "bytes22":
+    case "bytes23":
+    case "bytes24":
+    case "bytes25":
+    case "bytes26":
+    case "bytes27":
+    case "bytes28":
+    case "bytes29":
+    case "bytes30":
+    case "bytes31":
+    case "bytes32":
+    case "address":
+      return pad(hex, { dir: "right", size: staticLength }) as P;
     default:
       return unsupportedStaticField(fieldType);
   }

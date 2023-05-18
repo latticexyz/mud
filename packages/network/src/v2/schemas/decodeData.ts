@@ -1,4 +1,4 @@
-import { DynamicSchemaType, getStaticByteLength, SchemaType, StaticSchemaType } from "@latticexyz/schema-type";
+import { DynamicAbiType, getAbiByteLength, StaticAbiType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
 import { Schema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
@@ -10,8 +10,8 @@ export const decodeData = (schema: Schema, hexData: string): Record<number, any>
 
   let bytesOffset = 0;
   schema.staticFields.forEach((fieldType, i) => {
-    const value = decodeStaticField(fieldType as StaticSchemaType, bytes, bytesOffset);
-    bytesOffset += getStaticByteLength(fieldType);
+    const value = decodeStaticField(fieldType as StaticAbiType, bytes, bytesOffset);
+    bytesOffset += getAbiByteLength(fieldType);
     data[i] = value;
   });
 
@@ -35,20 +35,17 @@ export const decodeData = (schema: Schema, hexData: string): Record<number, any>
     bytesOffset += 32;
 
     // keep in sync with PackedCounter.sol
-    const packedCounterAccumulatorType = SchemaType.UINT56;
-    const packedCounterCounterType = SchemaType.UINT40;
-    const dynamicDataLength = decodeStaticField(packedCounterAccumulatorType, dynamicDataLayout, 0) as bigint;
+    const packedCounterAccumulatorType = "uint56";
+    const packedCounterCounterType = "uint40";
+    const dynamicDataLength = decodeStaticField(packedCounterAccumulatorType, dynamicDataLayout, 0);
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = decodeStaticField(
         packedCounterCounterType,
         dynamicDataLayout,
-        getStaticByteLength(packedCounterAccumulatorType) + i * getStaticByteLength(packedCounterCounterType)
+        getAbiByteLength(packedCounterAccumulatorType) + i * getAbiByteLength(packedCounterCounterType)
       ) as number;
-      const value = decodeDynamicField(
-        fieldType as DynamicSchemaType,
-        bytes.slice(bytesOffset, bytesOffset + dataLength)
-      );
+      const value = decodeDynamicField(fieldType as DynamicAbiType, bytes.slice(bytesOffset, bytesOffset + dataLength));
       bytesOffset += dataLength;
       data[schema.staticFields.length + i] = value;
     });
