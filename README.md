@@ -32,8 +32,6 @@ MUD is MIT-licensed, open source and free to use.
 
 ![MUD features](./docs/public/features.png)
 
-[![MUD 101](https://img.youtube.com/vi/IjxzJjJJSs8/0.jpg)](https://www.youtube.com/watch?v=IjxzJjJJSs8)
-
 ### Today
 
 - State synchronization between contracts and clients without custom networking code
@@ -55,7 +53,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-yarn create mud my-project
+pnpm create mud@canary my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)
@@ -113,10 +111,11 @@ cd mud && pnpm install
 
 MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
 
-## Library
+## Talks
 
-[!embed](https://www.youtube.com/embed/j-_Zf8o5Wlo)
-[!embed](https://www.youtube.com/embed/mv3jA4USZtg)
+[![MUD 101](https://img.youtube.com/vi/IjxzJjJJSs8/maxresdefault.jpg)](https://www.youtube.com/watch?v=IjxzJjJJSs8)
+[![MUD - An Engine for Autonomous Worlds](https://img.youtube.com/vi/j-_Zf8o5Wlo/maxresdefault.jpg)](https://www.youtube.com/embed/j-_Zf8o5Wlo)
+[![MUD in Practice - How we build OPCraft](https://img.youtube.com/vi/mv3jA4USZtg/hqdefault.jpg)](https://www.youtube.com/embed/mv3jA4USZtg)
 
 ## Community support
 
