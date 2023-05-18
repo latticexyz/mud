@@ -20,7 +20,7 @@ Keep reading from the "Adding Tables" section
   We are making this process easier, and will not require a MUD config in the future in order to use `tablegen`
 </Aside>
 
-A Store config should be named `mud.config.mts` (notice the `.mts` extension: It’s a typescript ES module), and placed at the root of your project (if you are building a mono-repo, put it at the root folder of where your contracts will be, in the same folder as your Foundry config).
+A Store config should be named `mud.config.ts`, and placed at the root of your project (if you are building a mono-repo, put it at the root folder of where your contracts will be, in the same folder as your Foundry config).
 
 This is the minimal config:
 
@@ -34,7 +34,7 @@ export default mudConfig({
 
 ### Generating the tables
 
-To generate the tables, run `mud tablegen` in the same folder as the config file.
+To generate the tables, run `pnpm mud tablegen` in the same folder as the config file.
 
 ### Adding Tables
 
@@ -104,14 +104,14 @@ Example:
 
 ```tsx
 tables: {
-    MyTableWithFourValues: {
-        schema: {
-            x: "uint32",
-            y: "uint32",
-            stringField: "string",
-            uintArray: "uint256"
-        }
-    },
+  MyTableWithFourValues: {
+    schema: {
+      x: "uint32",
+      y: "uint32",
+      stringField: "string",
+      uintArray: "uint256"
+    }
+  },
 }
 ```
 

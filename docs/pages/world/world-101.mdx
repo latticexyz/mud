@@ -88,7 +88,7 @@ The state of each table is represented withtin the storage of the World contract
 
 ## Getting started with World
 
-In order to use World, you just need your project to have the right folder structure and have a `mud.config.mts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
+In order to use World, you just need your project to have the right folder structure and have a `mud.config.ts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
 
 1. **Start from the minimal template**
 
@@ -188,10 +188,10 @@ export default mudConfig({
 });
 ```
 
-We can run `yarn mud tablegen` in the contract folder to recreate the libraries.
+We can run `pnpm mud tablegen` in the contract folder to recreate the libraries.
 
 ```bash
-> yarn mud tablegen
+> pnpm mud tablegen
 Generated table: src/codegen/tables/Counter.sol
 Generated table: src/codegen/tables/Dog.sol
 ```
@@ -287,4 +287,4 @@ contract MySystemTest is MudV2Test {
 }
 ```
 
-Run your test suite with `mud test` in the `contracts` folder of your project. Alternatively, use `pnpm test` (or `yarn test`, `npm test` depending on which package manager you are using).
+Run your test suite with `pnpm mud test` in the `contracts` folder of your project (or `yarn test`, `npm test` depending on which package manager you are using).
