@@ -36,4 +36,5 @@ export default {
     newWindow: true,
   },
   contribute: "Contribute",
+  plugins: "Plugins",
 };
