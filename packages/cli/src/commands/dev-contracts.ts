@@ -94,22 +94,22 @@ const commandModule: CommandModule<Options, Options> = {
       if (changeInProgress.current) return;
       changeInProgress.current = true;
 
-      // Load latest config
-      const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
-
       // Reset dirty flags
       const { config, contracts } = changedSinceLastHandled;
       changedSinceLastHandled.config = false;
       changedSinceLastHandled.contracts = false;
 
-      // Handle changes
       try {
+        // Load latest config
+        const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
+
+        // Handle changes
         if (config) await handleConfigChange(mudConfig);
         if (contracts) await handleContractsChange(mudConfig);
 
         await deploy();
       } catch (error) {
-        console.error("MUD dev-contracts watcher failed to deploy config or contracts changes", error);
+        console.error(chalk.red("MUD dev-contracts watcher failed to deploy config or contracts changes"), error);
       }
 
       changeInProgress.current = false;
