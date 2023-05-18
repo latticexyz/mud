@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { router } from "./router";
 import { RouterProvider } from "react-router-dom";
+import useLocalStorageState from "use-local-storage-state";
 
 // TODO: fix tab index so that it's not possible to tab around in the UI when it's hidden
 
 export function App() {
-  const [shown, setShown] = useState(true);
+  const [shown, setShown] = useLocalStorageState("mud-dev-tools-shown", {
+    defaultValue: true,
+  });
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
