@@ -36,16 +36,26 @@ export type StringStructStruct = { value: PromiseOrValue<string> };
 
 export type StringStructStructOutput = [string] & { value: string };
 
-export type MoreStructStruct = {
+export type SelectionFragmentStruct = {
   selectionType: PromiseOrValue<BigNumberish>;
   fieldIndex: PromiseOrValue<BigNumberish>;
   value: PromiseOrValue<BytesLike>;
 };
 
-export type MoreStructStructOutput = [number, number, string] & {
+export type SelectionFragmentStructOutput = [number, number, string] & {
   selectionType: number;
   fieldIndex: number;
   value: string;
+};
+
+export type RecordStruct = {
+  key: PromiseOrValue<BytesLike>[];
+  value: PromiseOrValue<BytesLike>[];
+};
+
+export type RecordStructOutput = [string[], string[]] & {
+  key: string[];
+  value: string[];
 };
 
 export interface IWorldInterface extends utils.Interface {
@@ -69,12 +79,12 @@ export interface IWorldInterface extends utils.Interface {
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
     "isStore()": FunctionFragment;
-    "moreStruct(bytes32,uint8[],(uint8,uint8,bytes)[])": FunctionFragment;
     "pickUp(uint32,uint32)": FunctionFragment;
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256)": FunctionFragment;
     "pushToField(bytes32,bytes32[],uint8,bytes)": FunctionFragment;
     "pushToField(bytes16,bytes16,bytes32[],uint8,bytes)": FunctionFragment;
+    "query(address,bytes32,uint8[],(uint8,uint8,bytes)[])": FunctionFragment;
     "registerFunctionSelector(bytes16,bytes16,string,string)": FunctionFragment;
     "registerHook(bytes16,bytes16,address)": FunctionFragment;
     "registerNamespace(bytes16)": FunctionFragment;
@@ -121,12 +131,12 @@ export interface IWorldInterface extends utils.Interface {
       | "installModule"
       | "installRootModule"
       | "isStore"
-      | "moreStruct"
       | "pickUp"
       | "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"
       | "popFromField(bytes32,bytes32[],uint8,uint256)"
       | "pushToField(bytes32,bytes32[],uint8,bytes)"
       | "pushToField(bytes16,bytes16,bytes32[],uint8,bytes)"
+      | "query"
       | "registerFunctionSelector"
       | "registerHook"
       | "registerNamespace"
@@ -264,14 +274,6 @@ export interface IWorldInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "isStore", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "moreStruct",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BigNumberish>[],
-      MoreStructStruct[]
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "pickUp",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
@@ -311,6 +313,15 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>[],
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "query",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>[],
+      SelectionFragmentStruct[]
     ]
   ): string;
   encodeFunctionData(
@@ -549,7 +560,6 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isStore", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "moreStruct", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pickUp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)",
@@ -567,6 +577,7 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "pushToField(bytes16,bytes16,bytes32[],uint8,bytes)",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "query", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "registerFunctionSelector",
     data: BytesLike
@@ -872,13 +883,6 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<[void]>;
 
-    moreStruct(
-      tableId: PromiseOrValue<BytesLike>,
-      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
-      arg2: MoreStructStruct[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -918,6 +922,14 @@ export interface IWorld extends BaseContract {
       dataToPush: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    query(
+      store: PromiseOrValue<string>,
+      tableId: PromiseOrValue<BytesLike>,
+      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
+      fragments: SelectionFragmentStruct[],
+      overrides?: CallOverrides
+    ): Promise<[RecordStructOutput[]] & { records: RecordStructOutput[] }>;
 
     registerFunctionSelector(
       namespace: PromiseOrValue<BytesLike>,
@@ -1201,13 +1213,6 @@ export interface IWorld extends BaseContract {
 
   isStore(overrides?: CallOverrides): Promise<void>;
 
-  moreStruct(
-    tableId: PromiseOrValue<BytesLike>,
-    projectionFieldIndices: PromiseOrValue<BigNumberish>[],
-    arg2: MoreStructStruct[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   pickUp(
     item: PromiseOrValue<BigNumberish>,
     itemVariant: PromiseOrValue<BigNumberish>,
@@ -1247,6 +1252,14 @@ export interface IWorld extends BaseContract {
     dataToPush: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  query(
+    store: PromiseOrValue<string>,
+    tableId: PromiseOrValue<BytesLike>,
+    projectionFieldIndices: PromiseOrValue<BigNumberish>[],
+    fragments: SelectionFragmentStruct[],
+    overrides?: CallOverrides
+  ): Promise<RecordStructOutput[]>;
 
   registerFunctionSelector(
     namespace: PromiseOrValue<BytesLike>,
@@ -1528,13 +1541,6 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<void>;
 
-    moreStruct(
-      tableId: PromiseOrValue<BytesLike>,
-      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
-      arg2: MoreStructStruct[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -1574,6 +1580,14 @@ export interface IWorld extends BaseContract {
       dataToPush: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    query(
+      store: PromiseOrValue<string>,
+      tableId: PromiseOrValue<BytesLike>,
+      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
+      fragments: SelectionFragmentStruct[],
+      overrides?: CallOverrides
+    ): Promise<RecordStructOutput[]>;
 
     registerFunctionSelector(
       namespace: PromiseOrValue<BytesLike>,
@@ -1902,13 +1916,6 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<BigNumber>;
 
-    moreStruct(
-      tableId: PromiseOrValue<BytesLike>,
-      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
-      arg2: MoreStructStruct[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -1947,6 +1954,14 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    query(
+      store: PromiseOrValue<string>,
+      tableId: PromiseOrValue<BytesLike>,
+      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
+      fragments: SelectionFragmentStruct[],
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     registerFunctionSelector(
@@ -2232,13 +2247,6 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    moreStruct(
-      tableId: PromiseOrValue<BytesLike>,
-      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
-      arg2: MoreStructStruct[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -2277,6 +2285,14 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    query(
+      store: PromiseOrValue<string>,
+      tableId: PromiseOrValue<BytesLike>,
+      projectionFieldIndices: PromiseOrValue<BigNumberish>[],
+      fragments: SelectionFragmentStruct[],
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     registerFunctionSelector(

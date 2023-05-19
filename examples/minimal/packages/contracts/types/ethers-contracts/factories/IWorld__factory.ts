@@ -742,46 +742,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "tableId",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint8[]",
-        name: "projectionFieldIndices",
-        type: "uint8[]",
-      },
-      {
-        components: [
-          {
-            internalType: "enum SelectionType",
-            name: "selectionType",
-            type: "uint8",
-          },
-          {
-            internalType: "uint8",
-            name: "fieldIndex",
-            type: "uint8",
-          },
-          {
-            internalType: "bytes",
-            name: "value",
-            type: "bytes",
-          },
-        ],
-        internalType: "struct MoreStruct[]",
-        name: "",
-        type: "tuple[]",
-      },
-    ],
-    name: "moreStruct",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint32",
         name: "item",
         type: "uint32",
@@ -917,6 +877,69 @@ const _abi = [
     name: "pushToField",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IStore",
+        name: "store",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "tableId",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint8[]",
+        name: "projectionFieldIndices",
+        type: "uint8[]",
+      },
+      {
+        components: [
+          {
+            internalType: "enum SelectionType",
+            name: "selectionType",
+            type: "uint8",
+          },
+          {
+            internalType: "uint8",
+            name: "fieldIndex",
+            type: "uint8",
+          },
+          {
+            internalType: "bytes",
+            name: "value",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct SelectionFragment[]",
+        name: "fragments",
+        type: "tuple[]",
+      },
+    ],
+    name: "query",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32[]",
+            name: "key",
+            type: "bytes32[]",
+          },
+          {
+            internalType: "bytes[]",
+            name: "value",
+            type: "bytes[]",
+          },
+        ],
+        internalType: "struct Record[]",
+        name: "records",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
