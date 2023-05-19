@@ -28,11 +28,21 @@ import type {
   PromiseOrValue,
 } from "./common";
 
+export type BytesStructStruct = { value: PromiseOrValue<BytesLike> };
+
+export type BytesStructStructOutput = [string] & { value: string };
+
+export type StringStructStruct = { value: PromiseOrValue<string> };
+
+export type StringStructStructOutput = [string] & { value: string };
+
 export interface IWorldInterface extends utils.Interface {
   functions: {
     "call(bytes16,bytes16,bytes)": FunctionFragment;
     "deleteRecord(bytes32,bytes32[])": FunctionFragment;
     "deleteRecord(bytes16,bytes16,bytes32[])": FunctionFragment;
+    "dynamicArrayBytesStruct((bytes)[])": FunctionFragment;
+    "dynamicArrayStringStruct((string)[])": FunctionFragment;
     "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "emitEphemeralRecord(bytes32,bytes32[],bytes)": FunctionFragment;
     "getField(bytes32,bytes32[],uint8)": FunctionFragment;
@@ -70,6 +80,8 @@ export interface IWorldInterface extends utils.Interface {
     "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
+    "staticArrayBytesStruct(tuple[1])": FunctionFragment;
+    "staticArrayStringStruct(tuple[1])": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "willRevert()": FunctionFragment;
@@ -80,6 +92,8 @@ export interface IWorldInterface extends utils.Interface {
       | "call"
       | "deleteRecord(bytes32,bytes32[])"
       | "deleteRecord(bytes16,bytes16,bytes32[])"
+      | "dynamicArrayBytesStruct"
+      | "dynamicArrayStringStruct"
       | "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"
       | "emitEphemeralRecord(bytes32,bytes32[],bytes)"
       | "getField"
@@ -117,6 +131,8 @@ export interface IWorldInterface extends utils.Interface {
       | "setMetadata(bytes32,string,string[])"
       | "setRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setRecord(bytes32,bytes32[],bytes)"
+      | "staticArrayBytesStruct"
+      | "staticArrayStringStruct"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
       | "willRevert"
@@ -141,6 +157,14 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[]
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "dynamicArrayBytesStruct",
+    values: [BytesStructStruct[]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "dynamicArrayStringStruct",
+    values: [StringStructStruct[]]
   ): string;
   encodeFunctionData(
     functionFragment: "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)",
@@ -409,6 +433,14 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "staticArrayBytesStruct",
+    values: [[BytesStructStruct]]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "staticArrayStringStruct",
+    values: [[StringStructStruct]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -441,6 +473,14 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "deleteRecord(bytes16,bytes16,bytes32[])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "dynamicArrayBytesStruct",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "dynamicArrayStringStruct",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -577,6 +617,14 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "staticArrayBytesStruct",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "staticArrayStringStruct",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     data: BytesLike
   ): Result;
@@ -700,6 +748,16 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    dynamicArrayBytesStruct(
+      arg0: BytesStructStruct[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    dynamicArrayStringStruct(
+      arg0: StringStructStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -961,6 +1019,16 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    staticArrayBytesStruct(
+      arg0: [BytesStructStruct],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    staticArrayStringStruct(
+      arg0: [StringStructStruct],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1002,6 +1070,16 @@ export interface IWorld extends BaseContract {
     namespace: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  dynamicArrayBytesStruct(
+    arg0: BytesStructStruct[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  dynamicArrayStringStruct(
+    arg0: StringStructStruct[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1263,6 +1341,16 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  staticArrayBytesStruct(
+    arg0: [BytesStructStruct],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  staticArrayStringStruct(
+    arg0: [StringStructStruct],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1304,6 +1392,16 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    dynamicArrayBytesStruct(
+      arg0: BytesStructStruct[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    dynamicArrayStringStruct(
+      arg0: StringStructStruct[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1563,6 +1661,16 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    staticArrayBytesStruct(
+      arg0: [BytesStructStruct],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    staticArrayStringStruct(
+      arg0: [StringStructStruct],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1649,6 +1757,16 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    dynamicArrayBytesStruct(
+      arg0: BytesStructStruct[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    dynamicArrayStringStruct(
+      arg0: StringStructStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1910,6 +2028,16 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    staticArrayBytesStruct(
+      arg0: [BytesStructStruct],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    staticArrayStringStruct(
+      arg0: [StringStructStruct],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1952,6 +2080,16 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    dynamicArrayBytesStruct(
+      arg0: BytesStructStruct[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    dynamicArrayStringStruct(
+      arg0: StringStructStruct[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2210,6 +2348,16 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    staticArrayBytesStruct(
+      arg0: [BytesStructStruct],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    staticArrayStringStruct(
+      arg0: [StringStructStruct],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

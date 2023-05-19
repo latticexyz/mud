@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { anvil, forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { anvil, forge, getRpcUrl, getScriptDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
@@ -47,6 +47,7 @@ const commandModule: CommandModule<Options, Options> = {
     const rpc = args.rpc ?? (await getRpcUrl());
     const configPath = args.configPath ?? (await resolveConfigPath(args.configPath));
     const srcDirectory = await getSrcDirectory();
+    const scriptDirectory = await getScriptDirectory();
     const initialConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
     // Initial run of all codegen steps before starting anvil
@@ -79,7 +80,7 @@ const commandModule: CommandModule<Options, Options> = {
         changedSinceLastHandled.contracts = true;
       }
 
-      if (updatePath.includes(srcDirectory)) {
+      if (updatePath.includes(srcDirectory) || updatePath.includes(scriptDirectory)) {
         // Ignore changes to codegen files to avoid an infinite loop
         if (updatePath.includes(initialConfig.codegenDirectory)) return;
         changedSinceLastHandled.contracts = true;
@@ -94,22 +95,22 @@ const commandModule: CommandModule<Options, Options> = {
       if (changeInProgress.current) return;
       changeInProgress.current = true;
 
-      // Load latest config
-      const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
-
       // Reset dirty flags
       const { config, contracts } = changedSinceLastHandled;
       changedSinceLastHandled.config = false;
       changedSinceLastHandled.contracts = false;
 
-      // Handle changes
       try {
+        // Load latest config
+        const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
+
+        // Handle changes
         if (config) await handleConfigChange(mudConfig);
         if (contracts) await handleContractsChange(mudConfig);
 
         await deploy();
       } catch (error) {
-        console.error("MUD dev-contracts watcher failed to deploy config or contracts changes", error);
+        console.error(chalk.red("MUD dev-contracts watcher failed to deploy config or contracts changes"), error);
       }
 
       changeInProgress.current = false;

@@ -469,7 +469,16 @@ export async function deploy(
    * Recursively turn (nested) structs in signatures into tuples
    */
   function parseComponents(params: ParamType[]): string {
-    const components = params.map((param) => (param.type === "tuple" ? parseComponents(param.components) : param.type));
+    const components = params.map((param) => {
+      const tupleMatch = param.type.match(/tuple(.*)/);
+      if (tupleMatch) {
+        // there can be arrays of tuples,
+        // `tupleMatch[1]` preserves the array brackets (or is empty string for non-arrays)
+        return parseComponents(param.components) + tupleMatch[1];
+      } else {
+        return param.type;
+      }
+    });
     return `(${components})`;
   }
 
