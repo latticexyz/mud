@@ -1,6 +1,9 @@
 import { setup } from "./mud/setup";
 
-const { components, worldSend } = await setup();
+const {
+  components,
+  network: { worldSend },
+} = await setup();
 
 // Components expose a stream that triggers when the component is updated.
 components.NumberList.update$.subscribe((update) => {

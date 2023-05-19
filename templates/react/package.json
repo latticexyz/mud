@@ -3,10 +3,9 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "pnpm run initialize && pnpm recursive run dev",
+    "dev": "concurrently -n contracts,client -c cyan,magenta \"cd packages/contracts && pnpm run dev\" \"cd packages/client && pnpm run dev\"",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
-    "dev:node": "mud devnode",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "initialize": "pnpm recursive run initialize",
     "mud:up": "pnpm recursive exec mud set-version -v canary && pnpm install",
@@ -17,6 +16,7 @@
     "@latticexyz/cli": "link:../../packages/cli",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
+    "concurrently": "^8.0.1",
     "eslint": "8.29.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.5"

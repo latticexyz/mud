@@ -1,10 +1,10 @@
 # Interacting with MUD from a client
 
-MUD is client agnostic: any client -- a browser, a game engine, an iOS app -- can implement the synchronization protocol and a client-side cache to replicate [Store](/store) tables, along with the necessary infrastructure to send transactions to the World.
+MUD is client agnostic: any client -- a browser, a game engine, or an iOS app -- can implement the synchronization protocol and a client-side cache to replicate [Store](/store) tables, along with the necessary infrastructure to send transactions to the World.
 
-However, currently we **only** officially support the browser and Node. We provide tooling for representing the onchain state, replicate it from an RPC or [MODE](/mode) via a network stack, and send transactions to the World.
+However, currently we **only** officially support the browser and Node. We provide tooling for representing the onchain state and replicate it from an RPC or [MODE](/mode) via a network stack.
 
-There also exists tooling for [Unity](https://github.com/emergenceland/unimud) from the folks at [emergence.land](emergence.land),
+There also exists tooling for [Unity](https://github.com/emergenceland/unimud) from the folks at [emergence.land](https://emergence.land).
 
 ## Representing state in the browser
 
@@ -27,6 +27,18 @@ To read data and react to changes with `recs`, there exists two APIs:
 1. Reading component value directly
 2. Subscribing to a query that returns a set of matching entities
 
+For the examples below, let's assume this MUD config. Notice that each of these tables have an (implicit) `bytes32` key; which is recommended when [modelling your MUD data using ECS](/ecs).
+
+```typescript
+const config = mudConfig({
+  tables: {
+    NameComponent: "string",
+    PlayerComponent: "bool",
+    PositionComponent: { schema: { x: "int32", y: "int32" } },
+  },
+});
+```
+
 ### Reading component value directly
 
 If you have a specific `bytes32` key and a reference to a component, you can query its value directly, or use a React hook that will re-render when the corresponding component value updates.
@@ -45,22 +57,23 @@ const entityID = "0xDEAD" as EntityID;
 const entity = world.registerEntity({ id: "0xDEAD" as EntityI })
 // now we can fetch the value of the NameComponent on our entity
 const name = getComponentValueStrict(NameComponent, entity)
-console.log(name) // "Hello!"
+// -> "John Doe"
 ```
 
 **Reading component value in react with `@latticexyz/react`**
 
-```typescript
+```tsx
 import { useComponentValue } from "@latticexyz/react";
 function ExampleComponent() {
   const { components, world } = useMUD;
   const { NameComponent } = components;
   // you need a reference to an `Entity` from recs. For the sake of the example, let's say we know that the bytes32 key is "0xDEAD"
-  // you wouldn't do normally: entities would be found via queries.
+  // you wouldn't do this normally: entities would be found via queries.
   const entityID = "0xDEAD" as EntityID;
-  const entity = world.registerEntity({ id: "0xDEAD" as EntityI });
+  const entity = world.registerEntity({ id: "0xDEAD" });
   // now we can fetch the value of the NameComponent on our entity
   const name = useComponentValue(NameComponent, entity);
+  // -> "John Doe"
   // this will re-render when the component value changes!
   return <p>{name ?? "<no name>"}</p>;
 }
@@ -93,6 +106,7 @@ const matchingEntities = runQuery([
 const names = matchingEntities.map(
   playerEntity => getComponentValueStrict(NameComponent, playerEntity
 )
+// -> ["Bob", "Alice", "Eve"]
 ```
 
 **Reacting to queries with vanilla javascript**
@@ -116,7 +130,7 @@ defineSystem(world, [Has(PlayerComponent), Has(Name), HasValue(PositionComponent
 
 **Reacting to queries with React and `@latticexyz/react`**
 
-```typescript
+```tsx
 import { useEntityQuery } from "@latticexyz/react";
 import { Has, HasValue, getComponentValueStrict } from "@latticexyz/recs";
 function ExampleComponent() {
@@ -125,22 +139,147 @@ function ExampleComponent() {
   // get a list of all entities that are named, players, and at the center of the universe
   // it is reactive and will trigger a re-render when the set of matching queries update
   const entities = useEntityQuery([Has(PlayerComponent), Has(Name), HasValue(PositionComponent, {x: 0, y: 0}])
+  // [entity1, entity2, ...]
   return(
     <div>
       <span>Players at the center:</span>
       <ul>
-      entities.map(entity => (
+      {entities.map(entity => (
         <li>{getComponentValueStrict(NameComponent, entity)}</li>
-      ))
+      ))}
       </ul>
     </div>
-  )
-  return(
-    <p>{name ?? "<no name>"}</p>
   )
 }
 ```
 
 ## `store-cache`: a general tuple database
 
-## Sending transactions
+`store-cache` is a typed reactive database used to replicate the onchain Store of a MUD project into a Javacsript client (Node or Browser based).
+
+Unlike `recs`, `store-cache` supports multiple keys. It also comes with a more powerful query system. Currently, ECS-like queries where the same primary key is assumed to be same entity (like what `recs` does) are quite verbose. We are working on making this better. Meanwhile, please make these queries with `recs`.
+
+`store-cache` surfaces up three APIs:
+
+1. Fetching a specific record from a table when the keys are known
+2. Scanning a table with a query
+3. Subscribing to a query
+
+The `store-cache` package also exposes React hooks for each of these use-cases.
+
+Let's assume this MUD config for the examples below. Notice that some tables have multiple keys in their
+`keySchema`. We recommend using `store-cache` when querying these tables.
+
+```typescript
+const config = mudConfig({
+  tables: {
+    MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: { value: "uint256" } },
+    AddressCounter: { keySchema: { owner: "address", counterId: "uint256" }, schema: { value: "int256" } },
+    Position: { schema: { x: "int32", y: "int32" } },
+  },
+});
+```
+
+### Fetching a specific record
+
+**Fetching a record in vanilla javascript**
+
+```typescript
+// This is typed!
+const position = client.tables.Position.get({ key: "0x00" });
+// -> { x: 1, y: 2}
+const multiKey = client.tables.MultiKey.get({ first: "0xDEAD", second: 42 });
+// -> { value: 38843n }
+```
+
+**Fetching a record with React and `@latticexyz/react`**
+
+```tsx
+import { useRow } from "@latticexyz/react";
+function ExampleComponent() {
+  const { storeCache } = useMUD;
+  const position = useRow(client, { table: "Position", key: { key: "0x01" } });
+  // -> { namespace: "", table: "Position", key: { key: "0x01" }, value: { x: 1, y: 2 } }
+  const { value } = position;
+  return (
+    <div>
+      <span>Player position</span>
+      <span>
+        x: {value.x}, y: {value.y}
+      </span>
+    </div>
+  );
+}
+```
+
+### Scanning a table with a query
+
+**Scanning a table in vanilla javascript**
+
+```typescript
+const rows = client.scan(); // get all rows in the store
+// -> all rows in the store
+const positions = client.tables.Position.scan(); // get all rows in the position table
+// -> [{key: "0x00", value: {x: 10, y: 32}, namespace: config["namespace"], table: Position}, ...]
+const positionsFiltered = client.tables.Position.scan({
+  key: { gt: { key: "0x02" } },
+}); // get all entries whose key is bigger than 0x02
+// -> [{key: "0x03", value: {x: 69, y: 4}, namespace: config["namespace"], table: Position}, ...]
+```
+
+**Scanning a table with React and `@latticexyz/react`**
+
+```tsx
+import { useRows } from "@latticexyz/react";
+function ExampleComponent() {
+  const { storeCache } = useMUD;
+  const positions = useRows(client, { table: "Position" });
+  // -> [{key: "0x00", value: {x: 10, y: 32}, namespace: config["namespace"], table: Position}, ...]
+  const positionsFiltered = useRows(client, { table: "Position", key: { gt: { key: "0x02" } } });
+  //-> [{key: "0x03", value: {x: 69, y: 4}, namespace: config["namespace"], table: Position}, ...]
+  return (
+    <div>
+      <span>Positions:</span>
+      <ul>
+        {positions.map(({ key, value }) => (
+          <li>
+            {key}: {value.x}, {value.y}
+          </li>
+        ))}
+      </ul>
+      <span>Filtered Positions:</span>
+      <ul>
+        {positionsFiltered.map(({ key, value }) => (
+          <li>
+            {key}: {value.x}, {value.y}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+### Subscribe to queries
+
+**Subscribing to queries in vanilla javascript**
+
+```typescript
+// subscribe to all changes of the Position table
+client.tables.Position.subscribe(({ set, remove }) => {
+  for (const entrySet of set) {
+    // { key: "0x00" }, { x: 1, y: 2 }
+    console.log(entrySet.key, entrySet.value);
+  }
+});
+// subscribe to all changes of a single record with key 0x01
+client.tables.Position.subscribe(
+  ({ set, remove }) => {
+    for (const entrySet of set) {
+      // { key: "0x01" }, { x: 1, y: 2 }
+      console.log(entrySet.key, entrySet.value);
+    }
+  },
+  { key: { eq: { key: "0x01" } } }
+);
+```

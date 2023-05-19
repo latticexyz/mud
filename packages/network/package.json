@@ -44,6 +44,7 @@
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
+    "@wagmi/chains": "^0.2.22",
     "async-mutex": "^0.3.2",
     "debug": "^4.3.4",
     "ethers": "^5.7.2",

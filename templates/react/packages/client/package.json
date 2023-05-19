@@ -6,13 +6,14 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
+    "dev": "wait-port localhost:8545 && vite",
     "initialize": "pnpm build",
     "preview": "vite preview",
     "test": "tsc --noEmit"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
+    "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/react": "link:../../../../packages/react",
@@ -33,6 +34,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
-    "vite": "^4.2.1"
+    "vite": "^4.2.1",
+    "wait-port": "^1.0.4"
   }
 }

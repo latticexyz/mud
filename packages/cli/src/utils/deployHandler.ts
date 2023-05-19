@@ -23,11 +23,12 @@ export type DeployOptions = {
   srcDir?: string;
   disableTxWait: boolean;
   pollInterval: number;
+  skipBuild?: boolean;
 };
 
 export async function deployHandler(args: DeployOptions) {
   args.profile = args.profile ?? process.env.FOUNDRY_PROFILE;
-  const { configPath, printConfig, profile, clean } = args;
+  const { configPath, printConfig, profile, clean, skipBuild } = args;
 
   const rpc = args.rpc ?? (await getRpcUrl(profile));
   console.log(
@@ -39,7 +40,7 @@ export async function deployHandler(args: DeployOptions) {
   if (clean) await forge(["clean"], { profile });
 
   // Run forge build
-  await forge(["build"], { profile });
+  if (!skipBuild) await forge(["build"], { profile });
 
   // Get a list of all contract names
   const srcDir = args?.srcDir ?? (await getSrcDirectory());

@@ -88,31 +88,36 @@ The state of each table is represented withtin the storage of the World contract
 
 ## Getting started with World
 
-In order to use World, you just need your project to have the right folder structure and have a `mud.config.mts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
+In order to use World, you just need your project to have the right folder structure and have a `mud.config.ts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
 
 1. **Start from the minimal template**
 
-Run `pnpm create mud my-first-mud-project`; and `cd` into it. Open your favorite code editor.
+Run the following command:
+
+```console
+pnpm create mud@canary your-project-name
+```
+
+You'll be prompted to pick the type of template to use; select vanilla.
+
+Jump into your new project's directory by running:
+
+```console
+cd your-project-name
+```
 
 2. **Let’s look at the MUD config**
 
-The MUD config for the vanilla template looks like this:
+Open the project in your favorite code editor. The MUD config for the vanilla template looks like this:
 
 ```tsx
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  systems: {
-    IncrementSystem: {
-      name: "increment",
-      openAccess: true,
-    },
-  }
   tables: {
-    CounterTable: {
-      schema: {
-        value: "uint32",
-      },
+    Counter: {
+      keySchema: {},
+      schema: "uint32",
     },
   },
 });
@@ -122,34 +127,15 @@ Let’s break it down:
 
 First, notice there is no `namespace` key: all our resources will be installed in the `ROOT` namespace, and our systems' functions will be registered as-is on the World.
 
-```tsx
-systems: {
-  IncrementSystem: {
-    name: "increment",
-    openAccess: true,
-  },
-},
-```
+Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
 
-We are deploying one system named “IncrementSystem”. The deployer will find its code by looking for a file named `IncrementSystem.sol`. Its name is `increment`, so its full path within the world will be `/increment` (we didn't setup a namespace in the config, and thus the `ROOT` namespace is used). Its access is **open**, which means the World will let any address call this system.
-
-```tsx
-tables: {
-  CounterTable: {
-    schema: {
-      value: "uint32",
-    },
-  },
-},
-```
-
-We are creating one table named “CounterTable”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
+Lastly, this project has one system at `IncrementSystem.sol`, but it does not need to be in the config. Any file that ends in `*System.sol` is considered a system and deployed by default.
 
 The file system on the World looks like this now when deployed:
 
 ```bash
 root
-| CounterTable <- Table
+| Counter <- Table
 | increment <- System
 ```
 
@@ -160,12 +146,12 @@ If you are curious how the Increment System writes to the Counter Table, here is
 - The System uses the auto-generated library as if the Store storage existed in the contract:
 
 ```solidity
-uint32 counter = CounterTable.get(bytes32("singleton"));
+uint32 counter = Counter.get();
 uint32 newValue = counter + 1;
-CounterTable.set(bytes32("singleton"), newValue);
+Counter.set(, newValue);
 ```
 
-- The generated library detects that the Store is on the World — that routed the call to the system, it is `msg.sender` — instead of the system itself, and routes the write request (here `CounterTable.set(...)`) to the World.
+- The generated library detects that the Store is on the World — that routed the call to the system, it is `msg.sender` — instead of the system itself, and routes the write request (here `Counter.set(...)`) to the World.
 - The World checks that the system has access to the counter table. Here it does because it is in the same namespace.
 - The World writes to the appropriate record, and gives execution back to the system.
 
@@ -179,19 +165,12 @@ Let’s add a new table. It’s as simple as extending the config. For reference
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  systems: {
-    IncrementSystem: {
-      name: "increment",
-      openAccess: true,
-    },
-  }
   tables: {
-    CounterTable: {
-      schema: {
-        value: "uint32",
-      },
+    Counter: {
+      keySchema: {},
+      schema: "uint32",
     },
-    DogTable: {
+    Dog: {
       schema: {
         owner: "address",
         name: "string",
@@ -202,23 +181,23 @@ export default mudConfig({
 });
 ```
 
-We can run `yarn mud tablegen` in the contract folder to recreate the libraries.
+We can run `pnpm mud tablegen` in the contract folder to recreate the libraries.
 
 ```bash
-> yarn mud tablegen
-Generated table: src/codegen/tables/CounterTable.sol
-Generated table: src/codegen/tables/DogTable.sol
+> pnpm mud tablegen
+Generated table: src/codegen/tables/Counter.sol
+Generated table: src/codegen/tables/Dog.sol
 ```
 
-We now have a library in `src/codegen/tables/DogTable.sol` that can be used to interact with the new table we created!
+We now have a library in `src/codegen/tables/Dog.sol` that can be used to interact with the new table we created!
 
 The file system on the World looks like this at this stage:
 
 ```bash
 root
-  | CounterTable <- Table
+  | Counter <- Table
   | increment <- System
-  | DogTable <- Table
+  | Dog <- Table
 ```
 
 4. **Adding another system**
@@ -237,73 +216,40 @@ contract MySystem is System {
 }
 ```
 
-And we edit our config
-
-```tsx
-import { mudConfig } from "@latticexyz/world/register";
-
-export default mudConfig({
-  systems: {
-    IncrementSystem: {
-      name: "increment",
-      openAccess: true,
-    },
-    // let's add a new system
-    MySystem: {
-      name: "mysystem",
-      openAccess: true
-    }
-  }
-  tables: {
-    CounterTable: {
-      schema: {
-        value: "uint32",
-      },
-    },
-    DogTable: {
-      schema: {
-        owner: "address",
-        name: "string",
-        color: "string"
-      }
-    }
-  },
-});
-```
-
-Now we can import our new table, and write something to it. Let’s write a function that adds a new record to DogTable, and takes the color and the name as an argument. It will assign the `owner` column to the sender of the transaction:
+Now we can import our new table, and write something to it. Let’s write a function that adds a new record to Dog, and takes the color and the name as an argument. It will assign the `owner` column to the sender of the transaction:
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { MyNewTable } from "../codegen/tables/DogTable.sol"; // import table we created
+import { Dog } from "../codegen/tables/Dog.sol"; // import table we created
 contract MySystem is System {
   function addEntry(string memory name, string memory color) public returns (bytes32) {
     bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
     address owner = _msgSender() // IMPORTANT: always refer to the msg.sender using the _msgSender() function
-    DogTable.set(key, {owner: owner, name: name, color: color}) // creating our record!
+    Dog.set(key, {owner: owner, name: name, color: color}) // creating our record!
     return key;
   }
 }
 ```
 
-That’s it! MySystem, just like IncrementSystem, will have access to DogTable given they are in the same namespace.
+That’s it! `MySystem`, just like `IncrementSystem`, will have access to Dog given they are in the same namespace.
 
 After this step, the filesystem of the World is like this:
 
 ```bash
 root
-  | CounterTable <- Table
+  | Counter <- Table
   | increment <- System
-  | DogTable <- Table
+  | Dog <- Table
   | mysystem <- System
 ```
 
 5. **Writing a test**
 
-Let's write a test to make sure our system actually adds a record to the DogTable when `addEntry` is called.
-Create a new file named `MySystemTest.t.sol` in the `test` folder
+Let's write a test to make sure our system actually adds a record to the Dog when `addEntry` is called.
+
+Create a new file named `MySystemTest.t.sol` in the `test` folder.
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -312,7 +258,7 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { DogTable, DogTableId } from "../src/codegen/Tables.sol";
+import { Dog, DogId } from "../src/codegen/Tables.sol";
 
 contract MySystemTest is MudV2Test {
   IWorld world;
@@ -323,16 +269,16 @@ contract MySystemTest is MudV2Test {
   }
 
   function testAddEntry() public {
-    // Add a new entry to the DogTable via the system
+    // Add a new entry to the Dog via the system
     // this will call the addEntry function on MySystem
     bytes32 key = World.addEntry("bob", "blue");
-    // Expect the value retrieved from the DogTable at the corresponding key to match "bob" and "blue"
-    string memory name = DogTable.getName(world, key);
-    string memory color = DogTable.getColor(world, key);
+    // Expect the value retrieved from the Dog at the corresponding key to match "bob" and "blue"
+    string memory name = Dog.getName(world, key);
+    string memory color = Dog.getColor(world, key);
     assertEq(name, "bob");
     assertEq(color, "blue");
   }
 }
 ```
 
-Run your test suite with `mud test` in the `contracts` folder of your project. Alternatively, use `pnpm test` (or `yarn test`, `npm test` depending on which package manager you are using).
+Run your test suite with `pnpm mud test` in the `contracts` folder of your project (or `yarn test`, `npm test` depending on which package manager you are using).
