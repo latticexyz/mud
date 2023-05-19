@@ -1,7 +1,7 @@
 import { Observable, concatMap, map, of } from "rxjs";
 import { fetchStoreEvents } from "./fetchStoreEvents";
 import { NetworkComponentUpdate, NetworkEvent } from "../types";
-import orderBy from "lodash-es/orderBy";
+import orderBy from "lodash/orderBy";
 import debug from "debug";
 import { awaitPromise, range } from "@latticexyz/utils";
 
