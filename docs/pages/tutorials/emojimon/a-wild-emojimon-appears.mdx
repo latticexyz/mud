@@ -150,8 +150,8 @@ function spawn(uint32 x, uint32 y) public {
 
   // Constrain position to map size, wrapping around if necessary
   (uint32 width, uint32 height, ) = MapConfig.get();
-  x = x + (width % width);
-  y = y + (height % height);
+  x = (x + width) % width;
+  y = (y + height) % height;
 
   bytes32 position = positionToEntityKey(x, y);
   require(!Obstruction.get(position), "this space is obstructed");
@@ -187,8 +187,8 @@ function move(uint32 x, uint32 y) public {
 
   // Constrain position to map size, wrapping around if necessary
   (uint32 width, uint32 height, ) = MapConfig.get();
-  x = x + (width % width);
-  y = y + (height % height);
+  x = (x + width) % width;
+  y = (y + height) % height;
 
   Position.set(player, x, y);
 
@@ -229,8 +229,8 @@ function move(uint32 x, uint32 y) public {
 
   // Constrain position to map size, wrapping around if necessary
   (uint32 width, uint32 height, ) = MapConfig.get();
-  x = x + (width % width);
-  y = y + (height % height);
+  x = (x + width) % width;
+  y = (y + height) % height;
 
   Position.set(player, x, y);
 
