@@ -18,7 +18,7 @@ We're going to start by defining three new tables:
 
 The syntax is as follows:
 
-```tsx filename="mud.config.ts" {8-16} showLineNumbers
+```tsx filename="mud.config.ts" {8-16} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -49,7 +49,7 @@ Before we add in the functionality of users moving we need to make sure each use
 
 To solve for these problems we can add the **spawn method**, which will assign the `Player`, `Position`, and `Movable` tables we created earlier, inside of `MapSystem.sol`.
 
-```solidity filename="MapSystem.sol" {4-5,8-15} showLineNumbers
+```solidity filename="MapSystem.sol" {4-5,8-15} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
@@ -80,7 +80,7 @@ As you may be able to tell already, writing systems and their methods in MUD is 
 
 Next we’ll add the **move method** to `MapSystem.sol`. This will allow us to move users (e.g. the user's wallet address as their entityID) by updating their `Position` table.
 
-```solidity filename="MapSystem.sol" {17-25} showLineNumbers
+```solidity filename="MapSystem.sol" {17-25} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
@@ -119,7 +119,7 @@ This method will allow users to interact with a smart contract, auto-generated b
 
 We’ll fill in the `moveTo` and `moveBy` and `spawn` methods in our client’s `createSystemCalls.ts`.
 
-```tsx filename="createSystemCalls.ts" {11,14-19,23-33,37-47} showLineNumbers
+```tsx filename="createSystemCalls.ts" {11,14-19,23-33,37-47} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { uuid, awaitStreamValue } from "@latticexyz/utils";
 import { MonsterCatchResult } from "../monsterCatchResult";
@@ -193,7 +193,7 @@ The code we just implemented uses a `worldSend` helper to route the call through
 
 Now we can apply all of these backend changes to the client by updating `GameBoard.tsx` to spawn the player when a map tile is clicked, show the player on the map, and move the player with the keyboard.
 
-```tsx filename="GameBoard.tsx" {1,3-4,7-28} showLineNumbers
+```tsx filename="GameBoard.tsx" {1,3-4,7-28} copy showLineNumbers
 import { useComponentValue } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -235,7 +235,7 @@ This pattern has a trade-off, especially on the blockchain: it can potentially c
 
 MUD provides an easy way to add optimistic rendering. First we need to override our `Position` component on the client to add optimistic updates. Let’s go ahead and do this in `createClientComponents.ts`.
 
-```tsx filename="createClientComponents.ts" {9-10} showLineNumbers
+```tsx filename="createClientComponents.ts" {9-10} copy showLineNumbers
 import { overridableComponent } from "@latticexyz/recs";
 import { SetupNetworkResult } from "./setupNetwork";
 
@@ -254,7 +254,7 @@ Now we can update our `createSystemCalls.ts` methods to apply an optimistic upda
 
 Copy the code below and replace the existing `createSystemCalls.ts` method.
 
-```tsx filename="createSystemCalls.ts" {18-22,24,27-29,56-65,67,70-73} showLineNumbers
+```tsx filename="createSystemCalls.ts" {18-22,24,27-29,56-65,67,70-73} copy showLineNumbers
 import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
 import { uuid, awaitStreamValue } from "@latticexyz/utils";
 import { MonsterCatchResult } from "../monsterCatchResult";
