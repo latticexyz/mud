@@ -2,6 +2,10 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { isHex, Hex } from "viem";
 import { BehaviorSubject } from "rxjs";
 
+const localStorage = typeof window === "undefined" ? undefined : window.localStorage;
+const addEventListener = typeof window === "undefined" ? undefined : window.addEventListener;
+const removeEventListener = typeof window === "undefined" ? undefined : window.removeEventListener;
+
 function assertPrivateKey(privateKey: string, cacheKey: string): asserts privateKey is Hex {
   if (!isHex(privateKey)) {
     console.error("Private key found in cache is not valid hex", { privateKey, cacheKey });
@@ -13,7 +17,7 @@ function assertPrivateKey(privateKey: string, cacheKey: string): asserts private
 }
 
 export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<Hex> {
-  const cachedPrivateKey = localStorage.getItem(cacheKey);
+  const cachedPrivateKey = localStorage?.getItem(cacheKey);
 
   if (cachedPrivateKey != null) {
     assertPrivateKey(cachedPrivateKey, cacheKey);
@@ -25,14 +29,14 @@ export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<
       : (() => {
           const privateKey = generatePrivateKey();
           console.log("New burner wallet created:", privateKeyToAccount(privateKey));
-          localStorage.setItem(cacheKey, privateKey);
+          localStorage?.setItem(cacheKey, privateKey);
           return new BehaviorSubject(privateKey);
         })();
 
-  window.addEventListener("storage", function listener(event) {
+  addEventListener?.("storage", function listener(event) {
     // Clean up
     if (subject.closed) {
-      window.removeEventListener("storage", listener);
+      removeEventListener?.("storage", listener);
       return;
     }
 

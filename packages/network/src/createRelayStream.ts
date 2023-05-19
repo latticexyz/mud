@@ -4,7 +4,7 @@ import { spawn } from "threads";
 import { messagePayload } from "./utils";
 import { createChannel, createClient } from "nice-grpc-web";
 import { awaitPromise, awaitStreamValue } from "@latticexyz/utils";
-import { grpc } from "@improbable-eng/grpc-web";
+import grpcweb from "@improbable-eng/grpc-web";
 import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/services/ecs-relay";
 
 /**
@@ -15,7 +15,7 @@ import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/ser
  */
 export async function createRelayStream(signer: Signer, url: string, id: string) {
   const httpClient = createClient(ECSRelayServiceDefinition, createChannel(url));
-  const wsClient = createClient(ECSRelayServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
+  const wsClient = createClient(ECSRelayServiceDefinition, createChannel(url, grpcweb.grpc.WebsocketTransport()));
 
   const recoverWorker = await spawn(
     new Worker(new URL("./workers/Recover.worker.js", import.meta.url), { type: "module" })

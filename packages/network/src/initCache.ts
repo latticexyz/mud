@@ -1,6 +1,9 @@
 import { arrayToIterator, deferred, mergeIterators, transformIterator } from "@latticexyz/utils";
+import fakeIndexedDb from "fake-indexeddb";
 
-const indexedDB = self.indexedDB;
+// Use an indexedDB mock for nodejs environments
+// TODO: remove indexedDB requirement for better nodejs support
+const indexedDB = typeof self === "undefined" ? fakeIndexedDb : self.indexedDB;
 const VERSION = 2;
 
 /**
