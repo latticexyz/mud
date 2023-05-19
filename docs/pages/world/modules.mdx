@@ -28,7 +28,7 @@ Using `getUniqueEntity` to create a new unit:
 
 ```solidity
 import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
-import { Soldier } from "./tables/Soldier.sol";
+import { Soldier } from "../codegen/tables/Soldier.sol";
 
 ...
 
@@ -61,7 +61,7 @@ Using `getKeysInTable` to retrieve all keys in the Player table:
 // { Player: "bool" }
 //
 import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
-import { Player, PlayerTableId } from "./tables/Player.sol";
+import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
 // get all players
 bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
 ```
@@ -73,7 +73,7 @@ Using `hasKey` to check if a key is in the Player table:
 // { Player: "bool" }
 //
 import { hasKey } from "@latticexyz/world/src/modules/keysintable/hasKey.sol";
-import { Player, PlayerTableId } from "./tables/Player.sol";
+import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
 bytes32[] memory keyTuple = new bytes32[](1);
 keyTuple[0] = "bob";
 // check if key "bob" is a player
@@ -104,7 +104,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 //   keySchema: { nftId: "uint256" }
 // }
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
-import { Owners, OwnersId } from "./tables/Owners.sol";
+import { Owners, OwnersId } from "../codegen/tables/Owners.sol";
 // get all nfts (as bytes, need to convert to uint256) owned by address 0x42
 bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
 ```
