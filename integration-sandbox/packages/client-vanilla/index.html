@@ -7,10 +7,11 @@
   </head>
   <body>
     <script type="module">
-      import { set, push, pushRange, pop } from "/src/index.ts"
+      import { set, push, pushRange, pop, worldAddress } from "/src/index.ts"
       document.getElementById("button-reset").addEventListener("click", () => set([]));
       document.getElementById("button-push-many").addEventListener("click", () => pushRange(0, 5000));
       document.getElementById("button-push-one").addEventListener("click", () => push(123));
+      document.getElementById("world-address").innerHTML = worldAddress
     </script>
     <div>
       <div>List length: <span id="list-length" data-testid="list-length">unset</span></div>
@@ -19,6 +20,7 @@
       <button id="button-reset">Reset list</button>
       <button id="button-push-many">Push 5000 items</button>
       <button id="button-push-one">Push 1 item</button>
+      <div id="world-address" data-testid="world-address"></div>
     </div>
   </body>
 </html>

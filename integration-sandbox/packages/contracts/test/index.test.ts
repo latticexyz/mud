@@ -13,6 +13,8 @@ describe("arrays", async () => {
   let page: Page;
   let anvilProcess: ExecaChildProcess;
 
+  let worldAddress: string;
+
   beforeAll(async () => {
     // start anvil
     const anvilPort = 8545;
@@ -27,13 +29,15 @@ describe("arrays", async () => {
     ]);
 
     // deploy contracts
-    await deployHandler({
-      saveDeployment: true,
-      rpc: forkRpc,
-      priorityFeeMultiplier: 1,
-      disableTxWait: false,
-      pollInterval: 1000,
-    });
+    worldAddress = (
+      await deployHandler({
+        saveDeployment: true,
+        rpc: forkRpc,
+        priorityFeeMultiplier: 1,
+        disableTxWait: false,
+        pollInterval: 1000,
+      })
+    ).worldAddress;
 
     // start vite
     const mode = "development";
@@ -60,6 +64,13 @@ describe("arrays", async () => {
     anvilProcess.kill();
   });
 
+  test("world-address", async () => {
+    await page.goto("http://localhost:3000");
+    const pageWorldAddress = page.getByTestId("world-address");
+    await expect(pageWorldAddress).toBeVisible();
+    await expect(pageWorldAddress).toHaveText(worldAddress);
+  });
+
   test("big list should have correct length", async () => {
     await page.goto("http://localhost:3000");
     const resetButton = page.getByRole("button", { name: /Reset list/ });
@@ -67,12 +78,16 @@ describe("arrays", async () => {
     const pushOneButton = page.getByRole("button", { name: /Push 1 item/ });
     const listLength = page.getByTestId("list-length");
     const lastItem = page.getByTestId("last-item");
+    const pageWorldAddress = page.getByTestId("world-address");
     await expect(resetButton).toBeVisible();
     await expect(pushManyButton).toBeVisible();
     await expect(pushOneButton).toBeVisible();
+    await expect(pageWorldAddress).toBeVisible();
 
     // make sure scripts are loaded
     await page.waitForLoadState("domcontentloaded");
+
+    await expect(pageWorldAddress).toHaveText(worldAddress);
 
     await resetButton.click();
     await expect(listLength).toHaveText("0", { timeout: 30_000 });
