@@ -7,6 +7,7 @@ import {
   RenderKeyTuple,
   RenderType,
 } from "./types";
+import { posixPath } from "../utils";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -113,7 +114,7 @@ export function renderAbsoluteImports(imports: AbsoluteImportDatum[]) {
   const renderedImports = [];
   for (const [path, symbols] of aggregatedImports) {
     const renderedSymbols = [...symbols].join(", ");
-    renderedImports.push(`import { ${renderedSymbols} } from "${path}";`);
+    renderedImports.push(`import { ${renderedSymbols} } from "${posixPath(path)}";`);
   }
   return renderedImports.join("\n");
 }
