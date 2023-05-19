@@ -1,3 +1,5 @@
+import { Aside } from "../../../components/Aside";
+
 # A wild Emojimon appears
 
 To bring this all together we will now add the ability to generate encounters on tall grass in which the user can either capture the emojimon or flee the encounter.
@@ -11,9 +13,17 @@ Adding encounters and all of their functionality will serve as a review of all t
 3. Allow players to capture emojimon
 4. Allow players to flee encounters
 
-In order to trigger encounters we need to recognize when a player (an entity that can enter encounters) is walking through tall grass (an entity that can generate encounters). We then need the game to enter into an entirely different state—the encounter (itself an entity)—in which the player loses the ability to move. Afterwards, we would need to enable to the player to capture an emojimon (an entity capable of being captured and owned)
+<Aside emoji="ℹ️">
+  **ECS mental model**  
+  In order to trigger encounters we need to recognize when a player (an entity that can enter encounters) is walking through tall grass (an entity that can generate encounters).  
+  
+  We then need the game to enter into an entirely different state—the encounter (itself an entity)—in which the player loses the ability to move.  
+  
+  Afterwards, we would need to enable to the player to capture an emojimon (an entity capable of being captured and owned).
+</Aside>
 
-Before continuing, try figuring out what components and systems would need to be added to get the build all these features. You could even try building them—we've already taught you all that is needed (and you can view the gif in the [Introduction](notion://www.notion.so/latticexyz/WIP-71f07ce04f9b46f98ce2cc5737edd76f) as a reference).
+
+Before continuing, try figuring out what components and systems would need to be added to get the build all these features. You could even try building them—we've already taught you all that is needed (and you can view the gif in the [Introduction](https://mud.dev/tutorials/emojimon) as a reference).
 
 ## 3.1 Enable tall grass to trigger encounters
 
@@ -66,7 +76,9 @@ export default mudConfig({
 });
 ```
 
-We then have to make sure that players and tall grass are receiving these components properly. We will do so in the following two code snippets:
+We then have to make sure that players and tall grass are receiving these components properly.
+
+First let's make sure the client is being initialized properly in `PostDeploy.s.sol`.
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -142,6 +154,7 @@ contract PostDeploy is Script {
   }
 }
 ```
+Then let's update the spawn method in `MapSystem.sol` to include the `Encounterable` table.
 
 ```solidity
 function spawn(uint32 x, uint32 y) public {
@@ -172,7 +185,7 @@ function startEncounter(bytes32 player) internal {
 }
 ```
 
-Now let's make sure that tall grass is being queried for so it can properly trigger encounters.
+But to start an encounter from tall grass, our app needs to know when tall grass is being moved through. Let's add a query in the `MapSystem.sol`'s move method to handle this.
 
 ```solidity
 function move(uint32 x, uint32 y) public {
@@ -198,9 +211,10 @@ function move(uint32 x, uint32 y) public {
 }
 ```
 
-At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible.
-
-**For the sake of this tutorial we will be leaving this as deterministic.** If you're interested in generating somewhat robust randomness in your application, you can look into [Chainlink VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
+At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible. **For the sake of this tutorial we will be leaving this as deterministic.**  
+<Aside emoji="ℹ️">
+  If you're interested in generating somewhat robust randomness in your application, you can look into [Chainlink VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
+</Aside>
 
 ```solidity
 if (Encounterable.get(player) && EncounterTrigger.get(position)) {
@@ -211,7 +225,7 @@ if (Encounterable.get(player) && EncounterTrigger.get(position)) {
 }
 ```
 
-Now that we have all of the encounter logic setup we just want to take the last step of preventing movement while a player is in an encounter—this will be a modification of the move method.
+Now that we have all of the encounter logic setup we just want to take the last step of preventing movement while a player is in an encounter—this will be a modification of the move method (you should know where this is by now!)
 
 ```solidity
 function move(uint32 x, uint32 y) public {
@@ -243,7 +257,7 @@ function move(uint32 x, uint32 y) public {
 }
 ```
 
-Let's also make sure these interactions are rendering optimistically like everything else. We'll have to do this both in our systems as well as in the client (though we are currently researching ways to improve this architecture).
+Let's also make sure these interactions are rendering optimistically like everything else. Let's update `createSystemCalls` accordingly.
 
 ```tsx
 const moveTo = async (inputX: number, inputY: number) => {
@@ -342,10 +356,102 @@ function startEncounter(bytes32 player) internal {
 Okay so the emojimon are now ready to be added to the encounter, but we still don’t have a way to render this on the client. Let’s create a new React component that contains the encounter screen.
 
 ```tsx
-EncounterScreen.tsx;
+import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
+import { toast } from "react-toastify";
+import { useMUD } from "./MUDContext";
+import { MonsterCatchResult } from "./monsterCatchResult";
+
+type Props = {
+  monsterName: string;
+  monsterEmoji: string;
+};
+
+export const EncounterScreen = ({ monsterName, monsterEmoji }: Props) => {
+  const {
+    systemCalls: { throwBall, fleeEncounter },
+  } = useMUD();
+
+  const [appear, setAppear] = useState(false);
+  useEffect(() => {
+    setAppear(true);
+  }, []);
+
+  return (
+    <div
+      className={twMerge(
+        "flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000",
+        appear ? "opacity-100" : "opacity-0"
+      )}
+    >
+      <div className="text-8xl animate-bounce">{monsterEmoji}</div>
+      <div>A wild {monsterName} appears!</div>
+
+      <div className="flex gap-2">
+        <button
+          type="button"
+          className="bg-stone-600 hover:ring rounded-lg px-4 py-2"
+          onClick={async () => {
+            const toastId = toast.loading("Throwing emojiball…");
+            const result = await throwBall();
+            if (result === MonsterCatchResult.Caught) {
+              toast.update(toastId, {
+                isLoading: false,
+                type: "success",
+                render: `You caught the ${monsterName}!`,
+                autoClose: 5000,
+                closeButton: true,
+              });
+            } else if (result === MonsterCatchResult.Fled) {
+              toast.update(toastId, {
+                isLoading: false,
+                type: "default",
+                render: `Oh no, the ${monsterName} fled!`,
+                autoClose: 5000,
+                closeButton: true,
+              });
+            } else if (result === MonsterCatchResult.Missed) {
+              toast.update(toastId, {
+                isLoading: false,
+                type: "error",
+                render: "You missed!",
+                autoClose: 5000,
+                closeButton: true,
+              });
+            } else {
+              throw new Error(
+                `Unexpected catch attempt result: ${MonsterCatchResult[result]}`
+              );
+            }
+          }}
+        >
+          ☄️ Throw
+        </button>
+        <button
+          type="button"
+          className="bg-stone-800 hover:ring rounded-lg px-4 py-2"
+          onClick={async () => {
+            const toastId = toast.loading("Running away…");
+            await fleeEncounter();
+            toast.update(toastId, {
+              isLoading: false,
+              type: "default",
+              render: `You ran away!`,
+              autoClose: 5000,
+              closeButton: true,
+            });
+          }}
+        >
+          🏃‍♂️ Run
+        </button>
+      </div>
+    </div>
+  );
+};
+
 ```
 
-Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`.
+Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`. We'll add this to `GameBoard.tsx`.
 
 ```tsx
 const encounter = useComponentValue(Encounter, playerEntity);
@@ -385,7 +491,9 @@ The first step is modifying the MUD config to add the necessary tables.
 
 We also need a way to represent the catch attempt. We’ll add a `MonsterCatchResult` enum with the different types of results of a catch attempt (missed, caught, fled).
 
-We’ll also use an [ephemeral table](/store/advanced-features#ephemeral-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of ephemeral tables like native Solidity events but with the same structure and encoding as regular tables.
+We’ll add `MonsterCatchAttempt` as an [ephemeral table](/store/advanced-features#ephemeral-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of ephemeral tables like native Solidity events but with the same structure and encoding as regular tables.
+
+Go ahead and add both of these to the MUD config.
 
 ```tsx
 import { mudConfig } from "@latticexyz/world/register";
@@ -517,7 +625,7 @@ When you click the button, the `EncounterScreen` creates a pending toast and kic
 
 ## 3.4 Flee encounters
 
-Last but not least, players should be able to flee encounters. We can add this with a method in `EncounterSystem.sol` as well. To keep it simple we’ll guarantee that the player can run away safely.
+Last but not least, players should be able to flee encounters. We can add this with a `flee` method in `EncounterSystem.sol` as well. To keep it simple we’ll guarantee that the player can run away safely.
 
 ```solidity
 function flee() public {
