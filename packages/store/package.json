@@ -13,6 +13,7 @@
     ".": "./dist/ts/library/index.js",
     "./register": "./dist/ts/register/index.js",
     "./abi/*": "./abi/*",
+    "./config": "./dist/ts/library/config/index.js",
     "./*": "./dist/*"
   },
   "typesVersions": {
@@ -22,6 +23,9 @@
       ],
       "register": [
         "./ts/register/index.ts"
+      ],
+      "config": [
+        "./ts/library/config/index.ts"
       ]
     }
   },

@@ -25,7 +25,7 @@ Some commands expect a MUD config in the same folder where the CLI is being exec
 
 ## Commands
 
-## `tablegen`
+### `tablegen`
 
 Generates Store libraries from a `mud.config.ts` file. See the [Store Config and `tablegen` documentation](store/config) in the Store section for more details.
 
@@ -34,7 +34,7 @@ Generates Store libraries from a `mud.config.ts` file. See the [Store Config and
 pnpm mud tablegen
 ```
 
-## `create`
+### `create`
 
 Bootstrap a MUD project from a template. You can specify a template interactively when running the command without arguments, or pass it via `--template`
 
@@ -48,7 +48,7 @@ The valid templates are:
 pnpm mud create --template minimal
 ```
 
-## `dev-contracts`
+### `dev-contracts`
 
 Start a local MUD development server.
 
@@ -79,7 +79,7 @@ anvil --port 8545
 pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc localhost:8545
 ```
 
-## `deploy`
+### `deploy`
 
 Deploy a MUD project with the World framework.
 
@@ -110,7 +110,7 @@ pnpm mud deploy --profile lattice-testnet
 pnpm mud deploy --profile optimism-mainnet
 ```
 
-## `devnode`
+### `devnode`
 
 Runs Anvil with a block time of 1s, and no base fee (to make it possible for unfunded account to send transactions).
 
@@ -120,7 +120,7 @@ This command also wipes the Anvil cache. Anvil cache blow-up problems won’t ha
 pnpm mud devnode
 ```
 
-## `faucet`
+### `faucet`
 
 Connects to a MUD faucet service to fund an address.
 

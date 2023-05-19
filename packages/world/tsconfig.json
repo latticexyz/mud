@@ -15,5 +15,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["ts"]
+  "include": ["ts"],
+  "exclude": ["ts/plugins"]
 }

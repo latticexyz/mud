@@ -374,6 +374,46 @@ const _abi = [
   {
     inputs: [
       {
+        components: [
+          {
+            internalType: "bytes",
+            name: "value",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct BytesStruct[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    name: "dynamicArrayBytesStruct",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "value",
+            type: "string",
+          },
+        ],
+        internalType: "struct StringStruct[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    name: "dynamicArrayStringStruct",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes16",
         name: "namespace",
         type: "bytes16",
@@ -1293,6 +1333,46 @@ const _abi = [
       },
     ],
     name: "setRecord",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "bytes",
+            name: "value",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct BytesStruct[1]",
+        name: "",
+        type: "tuple[1]",
+      },
+    ],
+    name: "staticArrayBytesStruct",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "value",
+            type: "string",
+          },
+        ],
+        internalType: "struct StringStruct[1]",
+        name: "",
+        type: "tuple[1]",
+      },
+    ],
+    name: "staticArrayStringStruct",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
