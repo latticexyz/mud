@@ -17,3 +17,4 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/table
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { Bool } from "./../test/tables/Bool.sol";
 import { AddressArray } from "./../test/tables/AddressArray.sol";
+import { Customer, CustomerData } from "./../test/tables/Customer.sol";

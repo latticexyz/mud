@@ -742,6 +742,46 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "tableId",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint8[]",
+        name: "projectionFieldIndices",
+        type: "uint8[]",
+      },
+      {
+        components: [
+          {
+            internalType: "enum SelectionType",
+            name: "selectionType",
+            type: "uint8",
+          },
+          {
+            internalType: "uint8",
+            name: "fieldIndex",
+            type: "uint8",
+          },
+          {
+            internalType: "bytes",
+            name: "value",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct MoreStruct[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    name: "moreStruct",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint32",
         name: "item",
         type: "uint32",

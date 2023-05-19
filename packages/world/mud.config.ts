@@ -144,6 +144,11 @@ export default mudConfig({
       schema: "address[]",
       tableIdArgument: true,
     },
+    Customer: {
+      directory: "../test/tables",
+      schema: { balance: "uint32", name: "string" },
+      tableIdArgument: true,
+    },
   },
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],

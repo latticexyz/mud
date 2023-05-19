@@ -11,6 +11,7 @@ import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
 import { IEphemeralRecordSystem } from "./IEphemeralRecordSystem.sol";
 import { IModuleInstallationSystem } from "./IModuleInstallationSystem.sol";
 import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
+import { IQuerySystem } from "./IQuerySystem.sol";
 
 /**
  * The IBaseWorld interface includes all systems dynamically added to the World
@@ -23,7 +24,8 @@ interface IBaseWorld is
   IAccessManagementSystem,
   IEphemeralRecordSystem,
   IModuleInstallationSystem,
-  IWorldRegistrationSystem
+  IWorldRegistrationSystem,
+  IQuerySystem
 {
 
 }
