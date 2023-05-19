@@ -70,9 +70,11 @@ const Scene = () => {
   );
 };
 
+const styles = { height: "100vh" };
+
 export const App = () => {
   return (
-    <Canvas style={{ height: "100vh" }}>
+    <Canvas style={styles}>
       <Scene />
     </Canvas>
   );
