@@ -205,69 +205,69 @@ export function createSystemCalls(
   { playerEntity, worldSend, txReduced$ }: SetupNetworkResult,
   { Player, Position }: ClientComponents
 ) {
+  const moveTo = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
 
-	const moveTo = async (x: number, y: number) => {
-	  if (!playerEntity) {
-	    throw new Error("no player");
-	  }
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
 
-	  const positionId = uuid();
-	  Position.addOverride(positionId, {
-	    entity: playerEntity,
-	    value: { x, y },
-	  });
+    try {
+      const tx = await worldSend("move", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
 
-	  try {
-	    const tx = await worldSend("move", [x, y]);
-	    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-	  } finally {
-	    Position.removeOverride(positionId);
-	  }
-	};
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
 
-	const moveBy = async (deltaX: number, deltaY: number) => {
-	  if (!playerEntity) {
-	    throw new Error("no player");
-	  }
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
 
-	  const playerPosition = getComponentValue(Position, playerEntity);
-	  if (!playerPosition) {
-	    console.warn("cannot moveBy without a player position, not yet spawned?");
-	    return;
-	  }
+    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+  };
 
-	  await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
-	};
+  const spawn = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
 
-	const spawn = async (x: number, y: number) => {
-	  if (!playerEntity) {
-	    throw new Error("no player");
-	  }
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
 
-	  const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
-	  if (!canSpawn) {
-	    throw new Error("already spawned");
-	  }
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
 
-	  const positionId = uuid();
-	  Position.addOverride(positionId, {
-	    entity: playerEntity,
-	    value: { x, y },
-	  });
-	  const playerId = uuid();
-	  Player.addOverride(playerId, {
-	    entity: playerEntity,
-	    value: { value: true },
-	  });
-
-	  try {
-	    const tx = await worldSend("spawn", [x, y]);
-	    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-	  } finally {
-	    Position.removeOverride(positionId);
-	    Player.removeOverride(playerId);
-  }
-};
+    try {
+      const tx = await worldSend("spawn", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+}
 ```
 
 Try moving the player around with the keyboard now. It should feel much snappier!
