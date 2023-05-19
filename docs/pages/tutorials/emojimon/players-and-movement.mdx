@@ -196,11 +196,11 @@ export function createClientComponents({ components }: SetupNetworkResult) {
 }
 ```
 
-Now we can update our `createSystemCalls` methods to apply an optimistic update before we send the transaction and remove the optimistic update once the transaction completes.
+Now we can update our `createSystemCalls.ts` methods to apply an optimistic update before we send the transaction and remove the optimistic update once the transaction completes.
 
-Copy the code below and replace the existing `createSystemCalls` method.
+Copy the code below and replace the existing `createSystemCalls.ts` method.
 
-```tsx
+```ts
 export function createSystemCalls(
   { playerEntity, worldSend, txReduced$ }: SetupNetworkResult,
   { Player, Position }: ClientComponents
