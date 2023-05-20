@@ -21,16 +21,17 @@ export function CollapseCode({ children }: Props) {
     if (!highlightedPositions.length) return;
     lines.forEach((line, i) => {
       const distance = highlightedPositions.reduce((min, pos) => Math.min(min, Math.abs(pos - i)), Infinity);
-      line.setAttribute("data-highlight-distance", Math.min(distance, 4));
+      line.setAttribute("data-highlight-distance", Math.min(distance, 4).toString());
     });
   }, [collapsed]);
+
   return (
     <div
       ref={ref}
       style={{ marginTop: "1.5rem" }}
       className={collapsed ? styles.collapsed : styles.expanded}
       onClick={(event) => {
-        if (event.target.closest(".line")) {
+        if (event.target instanceof Element && event.target.closest(".line")) {
           setCollapsed(!collapsed);
         }
       }}
