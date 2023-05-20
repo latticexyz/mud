@@ -1,0 +1,33 @@
+.collapsed {
+  cursor: zoom-in;
+}
+.expanded {
+  cursor: zoom-out;
+}
+
+/* Hide any lines that are 4+ lines away from a highlighted one */
+.collapsed :global(.line[data-highlight-distance="4"]) {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+/* Add a border between the lines hidden above */
+.collapsed
+  :global(
+    .line[data-highlight-distance="3"] ~ .line[data-highlight-distance="4"] + .line[data-highlight-distance="3"]
+  ) {
+  border-top: 1px dashed rgba(0, 0, 0, 0.2);
+  margin-top: 0.5ex;
+  padding-top: 0.5ex;
+}
+/* Fade out lines based on distance, but fade in on hover */
+.collapsed :global(.line[data-highlight-distance="3"]),
+.collapsed :global(.line[data-highlight-distance="2"]) {
+  transition: opacity 0.2s ease-in-out;
+}
+.collapsed:not(:hover) :global(.line[data-highlight-distance="3"]) {
+  opacity: 0.3;
+}
+.collapsed:not(:hover) :global(.line[data-highlight-distance="2"]) {
+  opacity: 0.6;
+}
