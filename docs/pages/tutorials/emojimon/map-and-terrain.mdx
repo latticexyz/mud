@@ -1,4 +1,4 @@
-# Map and terrain
+# 2. Map and terrain
 
 **In this section, we will accomplish the following:**
 
@@ -6,13 +6,13 @@
 2. Add terrain (tall grass and boulders) to the map.
 3. Prevent movement with boulders.
 
-## 2.1 Use singleton tables for the map config
+## 2.1. Use singleton tables for the map config
 
 At this point we have the concept of a 2D grid but there is no official "map" and there is no terrain. In order to do so in the ECS model we will now implement the tables as a [singleton table](/store/advanced-features#singleton-table) and initialize it in the client. Put simply, singleton tables are tables with a single record. They don’t have keys and are quite useful to store top-level state.
 
 Go ahead and add the `MapConfig` as a singleton table in the MUD config (`mud.config.ts`).
 
-```tsx
+```ts filename="map.config.ts" {5,8-16} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -42,20 +42,20 @@ export default mudConfig({
 });
 ```
 
-## 2.2 Add terrain
+## 2.2. Add terrain
 
 There are two features we have yet to implement—boulders to obstruct movement and tall grass to generate encounters. Before we start setting up the components and systems necessary to do so we must first add the terrain itself and render them in the client.
 
 First, we’ll use the `PostDeploy.s.sol` to initialize the client with the terrain.
 
-```tsx
+```solidity filename="PostDeploy.s.sol" {7-8,18-58} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { MapConfig, Obstruction, Position } from "../src/codegen/Tables.sol";
+import { MapConfig } from "../src/codegen/Tables.sol";
 import { TerrainType } from "../src/codegen/Types.sol";
 
 contract PostDeploy is Script {
@@ -113,9 +113,9 @@ contract PostDeploy is Script {
 }
 ```
 
-Now let’s render the terrrain in the client via `GameBoard.tsx`.
+Now let’s render the terrain in the client via `GameBoard.tsx`.
 
-```tsx
+```tsx filename="GameBoard.tsx" {5-6,12-13,30-43,47-49} copy showLineNumbers
 import { useComponentValue } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -172,13 +172,13 @@ export const GameBoard = () => {
 };
 ```
 
-## 2.3 Turn boulders into obstructions
+## 2.3. Turn boulders into obstructions
 
 Although boulders are now rendering on the map at this point, they do not yet prevent movement in the way we want them to. To accomplish this we will add an `Obstruction` table and query for entities with that table in our move method.
 
 Let's start by adding the table to the MUD config:
 
-```tsx
+```ts filename="mud.config.ts" {18} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -211,7 +211,7 @@ export default mudConfig({
 
 We'll then make sure `PostDeploy.s.sol` initializes the boulders properly (with the obstruction and position component) so we can query them later.
 
-```solidity
+```solidity filename="PostDeploy.s.sol" {7,9,57-61} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
@@ -285,7 +285,169 @@ contract PostDeploy is Script {
 
 Then let's use this function in the move method and spawn method in `MapSystem.sol`.
 
-```solidity
+```solidity filename="MapSystem.sol" {4,13-14,28-29} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+}
+```
+
+Lastly, let's ensure these interactions are optimistically rendering in the `createSystemCalls.ts` method.
+
+```ts filename="createSystemCalls.ts" {11,13-15,22-25,65-68} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { Obstruction, Player, Position }: ClientComponents
+) {
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const moveTo = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldSend("move", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+  };
+
+  const spawn = async (x: number, y: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldSend("spawn", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
+  return {
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
+}
+```
+
+Now if you try moving onto a tile with a boulder you’ll see that you can’t!
+
+## 2.4. Constrain movement
+
+You may notice two quirks of the way we've implemented movement so far—players can move off of the bounds of the map and they may move more than one space at a time by clicking. We're going to fix those with some changes to systems and methods.
+
+We'll address this by updating the `spawn` and `move` methods in `MapSystem.sol` to wrap the player coordinate around the map size.
+
+```solidity filename="MapSystem.sol" {4,13-16,33-36} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
@@ -318,13 +480,13 @@ contract MapSystem is System {
     (uint32 fromX, uint32 fromY) = Position.get(player);
     require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
 
-    bytes32 position = positionToEntityKey(x, y);
-    require(!Obstruction.get(position), "this space is obstructed");
-
     // Constrain position to map size, wrapping around if necessary
     (uint32 width, uint32 height, ) = MapConfig.get();
     x = (x + width) % width;
     y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
 
     Position.set(player, x, y);
   }
@@ -337,9 +499,17 @@ contract MapSystem is System {
 }
 ```
 
-Lastly, let's ensure these interactions are optimistically rendering in the `createSystemCalls.ts` method.
+Let’s go back to `createSystemCalls.ts` to make sure these are rendering optimistically in the same way that movement and spawning currently are.
 
-```tsx
+```ts filename="createSystemCalls.ts" {10-11,13-19,25,30,64,74} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
 export function createSystemCalls(
   { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
   { MapConfig, Obstruction, Player, Position }: ClientComponents
@@ -349,10 +519,7 @@ export function createSystemCalls(
     if (!mapConfig) {
       throw new Error("mapConfig no yet loaded or initialized");
     }
-    return [
-      (x + mapConfig.width) % mapConfig.width,
-      (y + mapConfig.height) % mapConfig.height,
-    ];
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
   };
 
   const isObstructed = (x: number, y: number) => {
@@ -433,97 +600,23 @@ export function createSystemCalls(
       Player.removeOverride(playerId);
     }
   };
-```
 
-Now if you try moving onto a tile with a boulder you’ll see that you can’t!
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
 
-## 2.4 Constrain movement
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
 
-You may notice two quirks of the way we've implemented movement so far—players can move off of the bounds of the map and they may move more than one space at a time by clicking. We're going to fix those with some changes to systems and methods.
-
-First we're going to update the move method in `MapSystem.sol` to wrap the player coordinate around the map size.
-
-```solidity
-function move(uint32 x, uint32 y) public {
-  bytes32 player = addressToEntityKey(_msgSender());
-  require(Movable.get(player), "cannot move");
-
-  (uint32 fromX, uint32 fromY) = Position.get(player);
-  require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
-
-  // Constrain position to map size, wrapping around if necessary
-  (uint32 width, uint32 height, ) = MapConfig.get();
-  x = (x + width) % width;
-  y = (y + height) % height;
-
-  Position.set(player, x, y);
+  return {
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
 }
-```
-
-Next we'll ensure that users spawn within the confines of the map by updating the spawn method in `MapSystem.sol`.
-
-```solidity
-function spawn(uint32 x, uint32 y) public {
-  bytes32 player = addressToEntityKey(address(_msgSender()));
-  require(!Player.get(player), "already spawned");
-
-  // Constrain position to map size, wrapping around if necessary
-  (uint32 width, uint32 height, ) = MapConfig.get();
-  x = (x + width) % width;
-  y = (y + height) % height;
-
-  Player.set(player, true);
-  Position.set(player, x, y);
-  Movable.set(player, true);
-}
-```
-
-Let’s go back to `createSystemCalls.ts` to make sure these are rendering optimistically in the same way that movement and spawning currently are.
-
-```tsx
-const wrapPosition = (x: number, y: number) => {
-  const mapConfig = getComponentValue(MapConfig, singletonEntity);
-  if (!mapConfig) {
-    throw new Error("mapConfig no yet loaded or initialized");
-  }
-  return [
-    (x + mapConfig.width) % mapConfig.width,
-    (y + mapConfig.height) % mapConfig.height,
-  ];
-};
-
-const moveTo = async (inputX: number, inputY: number) => {
-  if (!playerEntity) {
-    throw new Error("no player");
-  }
-
-  const [x, y] = wrapPosition(inputX, inputY);
-
-  const positionId = uuid();
-  Position.addOverride(positionId, {
-    entity: playerEntity,
-    value: { x, y },
-  });
-
-  try {
-    const tx = await worldSend("move", [x, y]);
-    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-  } finally {
-    Position.removeOverride(positionId);
-  }
-};
-
-...
-
-const spawn = async (inputX: number, inputY: number) => {
-  if (!playerEntity) {
-    throw new Error("no player");
-  }
-
-  const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
-  if (!canSpawn) {
-    throw new Error("already spawned");
-  }
-
-  const [x, y] = wrapPosition(inputX, inputY);
 ```

@@ -8,13 +8,13 @@ Maintaining derived state up-to-date is usually done by putting indexing logic i
 // from the OZ ERC-721 contract
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol)
 function _transfer(address from, address to, uint256 tokenId) internal virtual {
-    [...]
-    unchecked {
-        _balances[from] -= 1;
-        _balances[to] += 1;
-	}
-	_owners[tokenId] = to;
-    [...]
+  // ...
+  unchecked {
+    _balances[from] -= 1;
+    _balances[to] += 1;
+  }
+  _owners[tokenId] = to;
+  // ...
 }
 ```
 
