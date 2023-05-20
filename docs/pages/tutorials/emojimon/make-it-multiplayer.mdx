@@ -1,8 +1,12 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
 # 4. Make it muliplayer
 
 You may not have realized it, but you’ve just made a game that is almost completely ready to become massively multiplayer. MUD has handled all of the network code out-of-the-box and there is a naturally shared, accessible database via the blockchain.
 
 By writing a simple query to find all players and render them in the client, we’re prepared for any number of players. We'll add this to `GameBoard.tsx`.
+
+<CollapseCode>
 
 ```tsx filename="GameBoard.tsx" {1,8,22-30,57} copy showLineNumbers
 import { useComponentValue, useEntityQuery } from "@latticexyz/react";
@@ -71,5 +75,7 @@ export const GameBoard = () => {
   );
 };
 ```
+
+</CollapseCode>
 
 All you have to do now is deploy to testnet!
