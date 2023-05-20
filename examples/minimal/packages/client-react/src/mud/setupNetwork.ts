@@ -4,7 +4,7 @@ import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import { getTableIds } from "@latticexyz/utils";
 import storeConfig from "contracts/mud.config";
@@ -49,7 +49,10 @@ export async function setupNetwork() {
   }
 
   const provider = result.network.providers.get().json;
-  const signerOrProvider = signer ?? provider;
+  const metamaskProvider = new Web3Provider((window as any).ethereum);
+  const metamaskSigner = metamaskProvider.getSigner();
+
+  const signerOrProvider = metamaskSigner ?? signer ?? provider;
   // Create a World contract instance
   const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
 
@@ -71,7 +74,7 @@ export async function setupNetwork() {
   // Create a fast tx executor
   const fastTxExecutor =
     signer?.provider instanceof JsonRpcProvider
-      ? await createFastTxExecutor(signer as Signer & { provider: JsonRpcProvider })
+      ? await createFastTxExecutor(signerOrProvider as Signer & { provider: JsonRpcProvider })
       : null;
 
   // TODO: infer this from fastTxExecute signature?
