@@ -58,7 +58,7 @@ struct H2 {
 /// @author alvarius
 /// @notice Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 library Perlin {
-  function noise2d(int256 _x, int256 _y, int256 denom, uint8 precision) public pure returns (int128) {
+  function noise2d(int256 _x, int256 _y, int256 denom, uint8 precision) internal pure returns (int128) {
     H2 memory h = H2(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
@@ -98,7 +98,7 @@ library Perlin {
     return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
   }
 
-  function noise(int256 _x, int256 _y, int256 _z, int256 denom, uint8 precision) public pure returns (int128) {
+  function noise(int256 _x, int256 _y, int256 _z, int256 denom, uint8 precision) internal pure returns (int128) {
     H memory h = H(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
