@@ -17,6 +17,9 @@ export function CollapseCode({ children }: Props) {
       if (line.matches(".highlighted")) {
         highlightedPositions.push(i);
       }
+      if (/^\s+$/g.test(line.innerHTML)) {
+        line.setAttribute("data-empty", "");
+      }
     });
     if (!highlightedPositions.length) return;
     lines.forEach((line, i) => {
