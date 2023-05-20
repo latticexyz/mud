@@ -89,6 +89,8 @@ describe("arrays", async () => {
 
     await expect(pageWorldAddress).toHaveText(worldAddress);
 
+    console.log("pageWorldAddress:", pageWorldAddress.textContent());
+
     await resetButton.click();
     await expect(listLength).toHaveText("0", { timeout: 30_000 });
     await expect(lastItem).toHaveText("unset");
