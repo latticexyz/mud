@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@latticexyz/network": "workspace:*",
+    "@latticexyz/react": "workspace:*",
     "@latticexyz/std-client": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
