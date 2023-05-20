@@ -69,7 +69,7 @@ export default mudConfig({
     },
     SystemHooks: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: "address[]",
