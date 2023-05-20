@@ -1,4 +1,4 @@
-# Players and movement
+# 1. Players and movement
 
 **In this section, we will accomplish the following:**
 
@@ -6,7 +6,7 @@
 2. Operate on a player's `Position` component with a system to create movement.
 3. Optimistically render player movement in the client.
 
-## 1.1 Create the components as tables
+## 1.1. Create the components as tables
 
 To create tables in MUD we are going to navigate to the `mud.config.ts` file. You can define tables, their types, their schemas, and other types of information here. MUD then autogenerates all of the files needed to make sure your app knows these tables exist.
 
@@ -39,7 +39,7 @@ export default mudConfig({
 });
 ```
 
-## 1.2 Create the system and its methods
+## 1.2. Create the system and its methods
 
 In MUD, a system can have an arbitrary number of methods inside of it. Since we will be moving players around on a 2D map, we started the codebase off by creating a system that will encompass all of the methods related to the map: `MapSystem.sol` in `src/systems`.
 
@@ -225,7 +225,7 @@ export const GameBoard = () => {
 };
 ```
 
-## 1.3 Add optimistic rendering
+## 1.3. Add optimistic rendering
 
 You may notice that your movement on the game board is laggy. While this is the default behavior of even web2 games (e.g. lag between user actions and client-side rendering), this problem is worsened by the need to wait on transaction confirmations on a blockchain.
 
