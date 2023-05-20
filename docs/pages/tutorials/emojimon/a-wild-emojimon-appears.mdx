@@ -13,8 +13,8 @@ Adding encounters and all of their functionality will serve as a review of all t
 3. Allow players to capture emojimon
 4. Allow players to flee encounters
 
-<Aside emoji="ℹ️">
-  **ECS mental model** In order to trigger encounters we need to recognize when a player (an entity that can enter
+<Aside emoji="💡">
+  **ECS mental model**: In order to trigger encounters we need to recognize when a player (an entity that can enter
   encounters) is walking through tall grass (an entity that can generate encounters). We then need the game to enter
   into an entirely different state—the encounter (itself an entity)—in which the player loses the ability to move.
   Afterwards, we would need to enable to the player to capture an emojimon (an entity capable of being captured and
@@ -31,7 +31,7 @@ Let's start by adding three new tables to `mud.config.ts`.
 - `EncounterTrigger` → to determine whether or not an entity can trigger an encounter when moved on by a player.
 - `Encounter` → to associate a player with an encounter.
 
-```tsx
+```ts filename="mud.config.ts" {8-19} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -40,13 +40,13 @@ export default mudConfig({
   },
   tables: {
     Encounter: {
-      dataStruct: false,
       keySchema: {
         player: "bytes32",
       },
       schema: {
-        actionCount: "uint256",
+        exists: "bool",
         monster: "bytes32",
+        catchAttempts: "uint256",
       },
     },
     EncounterTrigger: "bool",
@@ -78,7 +78,7 @@ We then have to make sure that players and tall grass are receiving these compon
 
 First let's make sure the client is being initialized properly in `PostDeploy.s.sol`.
 
-```solidity
+```solidity filename="PostDeploy.s.sol" {7,61-64} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
@@ -153,62 +153,62 @@ contract PostDeploy is Script {
 }
 ```
 
-Then let's update the spawn method in `MapSystem.sol` to include the `Encounterable` table.
+Then let's update the `spawn` method in `MapSystem.sol` to include the `Encounterable` table/component.
 
-```solidity
-function spawn(uint32 x, uint32 y) public {
-  bytes32 player = addressToEntityKey(address(_msgSender()));
-  require(!Player.get(player), "already spawned");
+```solidity filename="MapSystem.sol" {4,24} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
 
-  // Constrain position to map size, wrapping around if necessary
-  (uint32 width, uint32 height, ) = MapConfig.get();
-  x = (x + width) % width;
-  y = (y + height) % height;
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
 
-  bytes32 position = positionToEntityKey(x, y);
-  require(!Obstruction.get(position), "this space is obstructed");
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
 
-  Player.set(player, true);
-  Position.set(player, x, y);
-  Movable.set(player, true);
-  Encounterable.set(player, true);
-}
-```
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
 
-We'll also need a way to connect a player to an encounter. Since encounters will be triggered during movement, we’ll add a `startEncounter` method to `MapSystem.sol`.
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
 
-```solidity
-function startEncounter(bytes32 player) internal {
-  // TODO: spawn monster
-  Encounter.set(player, 1, "");
-}
-```
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
 
-But to start an encounter from tall grass, our app needs to know when tall grass is being moved through. Let's add a query in the `MapSystem.sol`'s move method to handle this.
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
 
-```solidity
-function move(uint32 x, uint32 y) public {
-  bytes32 player = addressToEntityKey(_msgSender());
-  require(Movable.get(player), "cannot move");
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
 
-  (uint32 fromX, uint32 fromY) = Position.get(player);
-  require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
 
-  bytes32 position = positionToEntityKey(x, y);
-  require(!Obstruction.get(position), "this space is obstructed");
+    Position.set(player, x, y);
+  }
 
-  // Constrain position to map size, wrapping around if necessary
-  (uint32 width, uint32 height, ) = MapConfig.get();
-  x = (x + width) % width;
-  y = (y + height) % height;
-
-  Position.set(player, x, y);
-
-  if (Encounterable.get(player) && EncounterTrigger.get(position)) {
-    // TODO: chance to start encounter
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
   }
 }
 ```
+
+Now that tall grass is an encounter trigger, we can query for an encounter trigger as we move to a new position. We'll update the `MapSystem` to handle this and also stub out a `startEncounter` method for starting an encounter and spawning a monster.
 
 At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible. **For the sake of this tutorial we will be leaving this as deterministic.**
 
@@ -217,89 +217,273 @@ At this point we would ideally like to implement an element of randomness for tr
   VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
 </Aside>
 
-```solidity
-if (Encounterable.get(player) && EncounterTrigger.get(position)) {
-  uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
-  if (rand % 5 == 0) {
-    startEncounter(player);
+```solidity filename="MapSystem.sol" {4,44-49,58-60} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
+    }
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+
+  function startEncounter(bytes32 player) internal {
+    // TODO: spawn monster
   }
 }
 ```
 
 Now that we have all of the encounter logic setup we just want to take the last step of preventing movement while a player is in an encounter—this will be a modification of the move method (you should know where this is by now!)
 
-```solidity
-function move(uint32 x, uint32 y) public {
-  bytes32 player = addressToEntityKey(_msgSender());
-  require(Movable.get(player), "cannot move");
+```solidity filename="MapSystem.sol" {4,31} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
 
-  (uint32 fromX, uint32 fromY) = Position.get(player);
-  require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
 
-  uint256 actionCount = Encounter.getActionCount(player);
-  require(actionCount == 0, "cannot move during an encounter");
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
 
-  bytes32 position = positionToEntityKey(x, y);
-  require(!Obstruction.get(position), "this space is obstructed");
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
 
-  // Constrain position to map size, wrapping around if necessary
-  (uint32 width, uint32 height, ) = MapConfig.get();
-  x = (x + width) % width;
-  y = (y + height) % height;
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
 
-  Position.set(player, x, y);
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
 
-  if (Encounterable.get(player) && EncounterTrigger.get(position)) {
-    uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
-    if (rand % 5 == 0) {
-      startEncounter(player);
+    require(!Encounter.getExists(player), "cannot move during an encounter");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
     }
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+
+  function startEncounter(bytes32 player) internal {
+    // TODO: spawn monster
   }
 }
 ```
 
 Let's also make sure these interactions are rendering optimistically like everything else. Let's update `createSystemCalls.ts` accordingly.
 
-```tsx
-const moveTo = async (inputX: number, inputY: number) => {
-  if (!playerEntity) {
-    throw new Error("no player");
-  }
+```ts filename="createSystemCalls.ts" {11,30-34} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
 
-  const [x, y] = wrapPosition(inputX, inputY);
-  if (isObstructed(x, y)) {
-    console.warn("cannot move to obstructed space");
-    return;
-  }
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-  const inEncounter = !!getComponentValue(Encounter, playerEntity);
-  if (inEncounter) {
-    console.warn("cannot move while in encounter");
-    return;
-  }
+export function createSystemCalls(
+  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { Encounter, MapConfig, Obstruction, Player, Position }: ClientComponents
+) {
+  const wrapPosition = (x: number, y: number) => {
+    const mapConfig = getComponentValue(MapConfig, singletonEntity);
+    if (!mapConfig) {
+      throw new Error("mapConfig no yet loaded or initialized");
+    }
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+  };
 
-  const positionId = uuid();
-  Position.addOverride(positionId, {
-    entity: playerEntity,
-    value: { x, y },
-  });
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
 
-  try {
-    const tx = await worldSend("move", [x, y]);
-    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-  } finally {
-    Position.removeOverride(positionId);
-  }
-};
+  const moveTo = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldSend("move", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+  };
+
+  const spawn = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldSend("spawn", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
+  return {
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
+}
 ```
 
-## 3.2 Add emojimon to encounters
+## 3.2 Start encounter and spawn a monster
 
-Players are now able to start an encounter but they do not yet have an opponent—let’s fix this by adding an emojimon!
+We're almost ready start an encounter. What would an Emojimon battle be without an opponent? Let’s fix this by adding a monster!
 
-We’ve already given you a headstart by creating different types of monsters (in `MonsterType.sol` in the contracts package and `monsterTypes.ts` in the client package), but let’s also add a new table: `MonsterTypeComponent.sol` into the MUD config.
+We'll add a new enum for `MonsterType` and use that in a new `Monster` table/component.
 
-```tsx
+```ts filename="mud.config.ts" {5,30} copy showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -309,13 +493,13 @@ export default mudConfig({
   },
   tables: {
     Encounter: {
-      dataStruct: false,
       keySchema: {
         player: "bytes32",
       },
       schema: {
-        actionCount: "uint256",
+        exists: "bool",
         monster: "bytes32",
+        catchAttempts: "uint256",
       },
     },
     EncounterTrigger: "bool",
@@ -329,6 +513,7 @@ export default mudConfig({
         terrain: "bytes",
       },
     },
+    Monster: "MonsterType",
     Movable: "bool",
     Obstruction: "bool",
     Player: "bool",
@@ -345,36 +530,145 @@ export default mudConfig({
 
 Now we need a way to choose a type of monster when entering an encounter. We can add this logic to move method in `MapSystem.sol`—but remember, we are doing this deterministically because of the constraints of the EVM.
 
-```solidity
-function startEncounter(bytes32 player) internal {
-  bytes32 monster = keccak256(abi.encode(player, blockhash(block.number - 1), block.difficulty));
-  MonsterType monsterType = MonsterType((uint256(monster) % uint256(type(MonsterType).max)) + 1);
-  Monster.set(monster, monsterType);
-  Encounter.set(player, 1, monster);
+```solidity filename="MapSystem.sol" {4-5,61-66} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounter, EncounterData, Encounterable, EncounterTrigger, MapConfig, Monster, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { MonsterType } from "../codegen/Types.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    require(!Encounter.getExists(player), "cannot move during an encounter");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
+    }
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+
+  function startEncounter(bytes32 player) internal {
+    bytes32 monster = keccak256(abi.encode(player, blockhash(block.number - 1), block.difficulty));
+    MonsterType monsterType = MonsterType((uint256(monster) % uint256(type(MonsterType).max)) + 1);
+    Monster.set(monster, monsterType);
+    Encounter.set(player, EncounterData({ exists: true, monster: monster, catchAttempts: 0 }));
+  }
 }
 ```
 
 Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`. Add the code below to `GameBoard.tsx`.
 
-```tsx
-const encounter = useComponentValue(Encounter, playerEntity);
-const monsterType = useComponentValue(Monster, encounter ? (encounter.monster as Entity) : undefined)?.value;
-const monster = monsterType != null && monsterType in MonsterType ? monsterTypes[monsterType as MonsterType] : null;
+```tsx filename="GameBoard.tsx" {7-9,15,48-50,59-63} copy showLineNumbers
+import { useComponentValue } from "@latticexyz/react";
+import { GameMap } from "./GameMap";
+import { useMUD } from "./MUDContext";
+import { useKeyboardMovement } from "./useKeyboardMovement";
+import { hexToArray } from "@latticexyz/utils";
+import { TerrainType, terrainTypes } from "./terrainTypes";
+import { EncounterScreen } from "./EncounterScreen";
+import { Entity } from "@latticexyz/recs";
+import { MonsterType, monsterTypes } from "./monsterTypes";
 
-return (
-  <GameMap
-    width={width}
-    height={height}
-    terrain={terrain}
-    onTileClick={canSpawn ? spawn : undefined}
-    players={player ? [player] : []}
-    encounter={
-      encounter ? (
-        <EncounterScreen monsterName={monster?.name ?? "MissingNo"} monsterEmoji={monster?.emoji ?? "💱"} />
-      ) : undefined
-    }
-  />
-);
+export const GameBoard = () => {
+  useKeyboardMovement();
+
+  const {
+    components: { Encounter, MapConfig, Monster, Player, Position },
+    network: { playerEntity, singletonEntity },
+    systemCalls: { spawn },
+  } = useMUD();
+
+  const canSpawn = useComponentValue(Player, playerEntity)?.value !== true;
+
+  const playerPosition = useComponentValue(Position, playerEntity);
+  const player =
+    playerEntity && playerPosition
+      ? {
+          x: playerPosition.x,
+          y: playerPosition.y,
+          emoji: "🤠",
+          entity: playerEntity,
+        }
+      : null;
+
+  const mapConfig = useComponentValue(MapConfig, singletonEntity);
+  if (mapConfig == null) {
+    throw new Error("map config not set or not ready, only use this hook after loading state === LIVE");
+  }
+
+  const { width, height, terrain: terrainData } = mapConfig;
+  const terrain = Array.from(hexToArray(terrainData)).map((value, index) => {
+    const { emoji } = value in TerrainType ? terrainTypes[value as TerrainType] : { emoji: "" };
+    return {
+      x: index % width,
+      y: Math.floor(index / width),
+      emoji,
+    };
+  });
+
+  const encounter = useComponentValue(Encounter, playerEntity);
+  const monsterType = useComponentValue(Monster, encounter ? (encounter.monster as Entity) : undefined)?.value;
+  const monster = monsterType != null && monsterType in MonsterType ? monsterTypes[monsterType as MonsterType] : null;
+
+  return (
+    <GameMap
+      width={width}
+      height={height}
+      terrain={terrain}
+      onTileClick={canSpawn ? spawn : undefined}
+      players={player ? [player] : []}
+      encounter={
+        encounter ? (
+          <EncounterScreen monsterName={monster?.name ?? "MissingNo"} monsterEmoji={monster?.emoji ?? "💱"} />
+        ) : undefined
+      }
+    />
+  );
+};
 ```
 
 You did it! You are now able to move, start encounters, and see emojimon in said encounters.
