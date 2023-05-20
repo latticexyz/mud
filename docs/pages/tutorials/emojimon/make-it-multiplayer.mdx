@@ -4,7 +4,7 @@ You may not have realized it, but you’ve just made a game that is almost compl
 
 By writing a simple query to find all players and render them in the client, we’re prepared for any number of players. We'll add this to `GameBoard.tsx`.
 
-```tsx
+```tsx filename="GameBoard.tsx" {1,8,22-30,57} copy showLineNumbers
 import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { GameMap } from "./GameMap";
 import { useMUD } from "./MUDContext";
@@ -63,7 +63,9 @@ export const GameBoard = () => {
       onTileClick={canSpawn ? spawn : undefined}
       players={players}
       encounter={
-        encounter && monster ? <EncounterScreen monsterName={monster.name} monsterEmoji={monster.emoji} /> : undefined
+        encounter ? (
+          <EncounterScreen monsterName={monster?.name ?? "MissingNo"} monsterEmoji={monster?.emoji ?? "💱"} />
+        ) : undefined
       }
     />
   );
