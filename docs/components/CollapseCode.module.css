@@ -18,7 +18,7 @@
   :global(
     .line[data-highlight-distance="3"] ~ .line[data-highlight-distance="4"] + .line[data-highlight-distance="3"]
   ) {
-  border-top: 1px dashed rgba(0, 0, 0, 0.2);
+  border-top: 1px dashed rgba(107, 114, 128, 0.5);
   margin-top: 0.5ex;
   padding-top: 0.5ex;
 }
