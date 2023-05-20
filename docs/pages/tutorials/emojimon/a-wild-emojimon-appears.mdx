@@ -1,4 +1,5 @@
 import { Aside } from "../../../components/Aside";
+import { CollapseCode } from "../../../components/CollapseCode";
 
 # 3. A wild Emojimon appears
 
@@ -78,6 +79,8 @@ We then have to make sure that players and tall grass are receiving these compon
 
 First let's make sure the client is being initialized properly in `PostDeploy.s.sol`.
 
+<CollapseCode>
+
 ```solidity filename="PostDeploy.s.sol" {7,61-64} copy showLineNumbers
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -152,6 +155,8 @@ contract PostDeploy is Script {
   }
 }
 ```
+
+</CollapseCode>
 
 Then let's update the `spawn` method in `MapSystem.sol` to include the `Encounterable` table/component.
 
