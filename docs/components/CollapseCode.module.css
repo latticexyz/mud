@@ -1,7 +1,7 @@
-.collapsed {
+.collapsed:has(:global(.line[data-highlight-distance="4"])) {
   cursor: zoom-in;
 }
-.expanded {
+.expanded:has(:global(.line[data-highlight-distance="4"])) {
   cursor: zoom-out;
 }
 
