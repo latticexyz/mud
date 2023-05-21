@@ -16,5 +16,5 @@ export const hackathonTestnet = {
     },
   },
   // modeUrl: "https://mode.testnet-mud-services.linfra.xyz",
-  // faucetUrl: "https://faucet.testnet-mud-services.linfra.xyz",
+  faucetUrl: "https://faucet.hackathon-mud-services.linfra.xyz",
 } as const satisfies MUDChain;
