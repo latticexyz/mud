@@ -86,9 +86,7 @@ Internally, it works by installing a [hook](/store/advanced-features#storage-hoo
 
 #### **`SnapSyncModule`**
 
-The [`SnapSyncModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/snapsync/SnapSyncModule.sol) allows clients to query and quickly sync with the state of a World, without [MODE](/mode).
-
-It installs a [System](/world/world-101#systems) that returns all records in a given table, with offset-based pagination. This requires the `KeysInTable` module to be installed on that table.
+The [`SnapSyncModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/snapsync/SnapSyncModule.sol) installs a [System](/world/world-101#systems) that returns all records in a given table, with offset-based pagination. It requires the `KeysInTable` module to be installed on each table, but the [`SnapSync` plugin](/world/snap-sync) does this automatically.
 
 `SnapSyncSystem` exposes two public `view` functions:
 
