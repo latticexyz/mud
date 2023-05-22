@@ -41,6 +41,7 @@
     "rimraf": "^3.0.2",
     "run-pty": "^4.0.3",
     "solhint": "^3.4.1",
+    "solhint-config-mud": "file:../../../../packages/solhint-config-mud",
     "solhint-plugin-mud": "file:../../../../packages/solhint-plugin-mud",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",
