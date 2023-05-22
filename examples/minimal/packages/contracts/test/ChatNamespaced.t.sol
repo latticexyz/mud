@@ -16,8 +16,8 @@ contract ChatNamespacedTest is MudV2Test {
   }
 
   function testEmitEphemeral() public {
-    vm.expectEmit(true, true, true, true);
     bytes32[] memory keyTuple;
+    vm.expectEmit(true, true, true, true);
     emit StoreCore.StoreEphemeralRecord(MessageTableTableId, keyTuple, MessageTable.encode("test"));
     IChatNamespacedSystem(worldAddress).namespace_ChatNamespaced_sendMessage("test");
   }
