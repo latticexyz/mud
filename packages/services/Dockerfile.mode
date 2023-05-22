@@ -27,4 +27,5 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /service/bin/mode /service/
 COPY --from=builder /service/grpc_health_probe /service/grpc_health_probe
+COPY --from=builder /service/config.mode-docker.yaml /service/config.mode-docker.yaml 
 EXPOSE 50091
