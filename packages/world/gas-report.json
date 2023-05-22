@@ -165,7 +165,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 823967
+    "gasUsed": 824012
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -177,7 +177,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "installRoot unique entity module",
     "functionCall": "world.installRootModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 794042
+    "gasUsed": 794087
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -201,7 +201,7 @@
     "source": "test/World.t.sol",
     "name": "Register a fallback system",
     "functionCall": "bytes4 funcSelector1 = world.registerFunctionSelector(namespace, name, \"\", \"\")",
-    "gasUsed": 86979
+    "gasUsed": 87024
   },
   {
     "source": "test/World.t.sol",
@@ -213,7 +213,7 @@
     "source": "test/World.t.sol",
     "name": "Register a function selector",
     "functionCall": "bytes4 functionSelector = world.registerFunctionSelector(namespace, name, \"msgSender\", \"()\")",
-    "gasUsed": 107577
+    "gasUsed": 107622
   },
   {
     "source": "test/World.t.sol",
