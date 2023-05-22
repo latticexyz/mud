@@ -8,7 +8,7 @@ export class NoMsgSender implements SolhintRule {
 
   isSystemOrLibrary = false;
 
-  constructor(reporter: any, config: any, inputSrc: string, fileName: string) {
+  constructor(reporter: any, config: any) {
     this.reporter = reporter;
     this.config = config;
   }
