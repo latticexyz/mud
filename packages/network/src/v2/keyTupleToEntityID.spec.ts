@@ -1,8 +1,8 @@
 import { keyTupleToEntityID } from "./keyTupleToEntityID";
 
 describe("keyTupleToEntityID", () => {
-  it("should use singleton key for empty key tuple", () => {
-    expect(keyTupleToEntityID([])).toBe("0x000000000000000000000000000000000000000000000000000000000000060d");
+  it("should have an empty key for empty key tuple (singleton table)", () => {
+    expect(keyTupleToEntityID([])).toBe("");
   });
 
   it("should pad addresses", () => {
