@@ -6,21 +6,17 @@ Currently the code of each module you want to use need to exist in your project,
 
 ### Default modules
 
-Currently, two modules are installed on each World:
+Currently, [`CoreModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/CoreModule.sol) is installed on each World.
 
-1. **`CoreModule`**
+It adds critical tables and systems to the World, which are externalized to keep the World contract size within the limit.
 
-The [`CoreModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/CoreModule.sol) module adds critical tables to the World.
+See [World internals](/world/internals) for table and system details.
 
-2. **`RegistrationModule`**
-
-The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
-
-#### Querying modules
+### Querying modules
 
 The `KeysInTableModule` and `KeysWithValueModule` modules index information about tables on-chain. Their functionality is leveraged in `SnapSyncModule` and `query` to allow on-chain querying.
 
-##### **`KeysInTableModule`**
+#### **`KeysInTableModule`**
 
 The [`KeysInTableModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keysintable/KeysInTableModule.sol) allows for querying for all keys that are in a given table. It can only be used on tables that have one key (eg: ECS components).
 
@@ -62,7 +58,7 @@ Internally, it works by installing a [hook](https://v2.mud.dev/store/advanced-fe
 - an array of all keys in the table
 - an index or "**reverse mapping**" of whether a given key is in the table
 
-##### **`KeysWithValueModule`**
+#### **`KeysWithValueModule`**
 
 The [`KeysWithValueModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keyswithvalue/KeysWithValueModule.sol) allows for querying for all keys that have a given value in a table. It can only be used on tables that have one key (eg: ECS components).
 
@@ -88,7 +84,7 @@ bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode
 
 Internally, it works by installing a [hook](/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
 
-##### **`SnapSyncModule`**
+#### **`SnapSyncModule`**
 
 The [`SnapSyncModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/snapsync/SnapSyncModule.sol) allows clients to query and quickly sync with the state of a World, without [MODE](/mode).
 
@@ -122,7 +118,7 @@ if (networkConfig.snapSync) {
 }
 ```
 
-##### **`query`**
+#### **`query`**
 
 `query` provides a simple API to get a list of keys matching certain specified criteria. It is not a standalone module, but requires `KeysInTable` and `KeysWithValue` to be installed.
 
