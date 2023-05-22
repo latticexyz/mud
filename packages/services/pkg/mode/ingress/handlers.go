@@ -235,10 +235,11 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	il.logger.Info("handling schema table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
 
 	// Parse out the schema types (both static and dynamic) for the table.
-	keySchemaBytes32, valueSchemaBytes32 := event.Data[:32], event.Data[32:]
-	valueStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(keySchemaBytes32)
-	// The last 32 bytes are the table "key" schema.
-	keyStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(valueSchemaBytes32)
+	valueSchemaBytes32 := schema.GetFieldSchema(event.Data)
+	keySchemaBytes32 := schema.GetKeySchema(event.Data)
+
+	valueStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(valueSchemaBytes32)
+	keyStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(keySchemaBytes32)
 
 	// Merge the two schemas into one, since the table schema is a combination of the key schema and the value schema.
 	storeCoreSchemaTypeKV := storecore.SchemaTypeKVFromPairs(keyStoreCoreSchemaTypePair, valueStoreCoreSchemaTypePair)

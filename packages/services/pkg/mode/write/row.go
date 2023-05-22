@@ -21,11 +21,13 @@ func RowFromDecodedData(decodedKeyData *storecore.DecodedData, decodedFieldData 
 	// DecodedData has everything stored in a single values array. So we start the index at 0 and
 	// go to the length of the key/field names.
 	// First add the keys.
-	for index, key_name := range tableSchema.KeyNames {
+	for index := 0; index < decodedKeyData.Length(); index++ {
+		key_name := tableSchema.KeyNames[index]
 		row[key_name] = decodedKeyData.GetData(index)
 	}
 	// Add the fields.
-	for index, field_name := range tableSchema.FieldNames {
+	for index := 0; index < decodedFieldData.Length(); index++ {
+		field_name := tableSchema.FieldNames[index]
 		row[field_name] = decodedFieldData.GetData(index)
 	}
 	return row

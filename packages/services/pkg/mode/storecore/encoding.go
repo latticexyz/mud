@@ -299,6 +299,16 @@ type DecodedData struct {
 	types  []SchemaType
 }
 
+func (decodedData *DecodedData) String() string {
+	var sb strings.Builder
+	sb.WriteString("DecodedData: [\n")
+	for _, v := range decodedData.values {
+		sb.WriteString(fmt.Sprintf("\t%v\n", v))
+	}
+	sb.WriteString("]")
+	return sb.String()
+}
+
 // NewDecodedDataFromSchemaTypePair creates a new instance of DecodedData with the provided SchemaTypePair.
 //
 // Parameters:
