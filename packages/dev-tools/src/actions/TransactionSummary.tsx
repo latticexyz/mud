@@ -47,12 +47,12 @@ export function TransactionSummary({ hash }: Props) {
       ? transactionReceipt.value.logs
           .map((log) => {
             try {
-              decodeEventLog({ abi: worldAbi, ...log });
+              return decodeEventLog({ abi: worldAbi, ...log });
             } catch (error) {
               // viem throws if there's no ABI for event, which can happen for events defined outside of MUD (e.g. custom worlds)
               // TODO: show these logs anyway with a note that they couldn't be parsed
               if (error instanceof AbiEventSignatureNotFoundError) {
-                return null;
+                return;
               }
               throw error;
             }
