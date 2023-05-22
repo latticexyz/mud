@@ -8,5 +8,8 @@ contract MudV2Test is Test {
 
   function setUp() public virtual {
     worldAddress = vm.parseAddress(vm.readFile(".mudtest"));
+    // allows passing AccessControl when writing tables directly through libraries
+    // (this should be combined with `--sender` flag when calling `forge test`)
+    vm.startPrank(worldAddress);
   }
 }

@@ -53,7 +53,7 @@ const commandModule: CommandModule<Options, Options> = {
 
     const userOptions = args.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
     try {
-      const testResult = await forge(["test", "--fork-url", forkRpc, ...userOptions], {
+      const testResult = await forge(["test", "--fork-url", forkRpc, "--sender", worldAddress, ...userOptions], {
         profile: args.profile,
       });
       console.log(testResult);
