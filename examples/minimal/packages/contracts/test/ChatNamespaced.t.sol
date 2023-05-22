@@ -11,10 +11,6 @@ import { MessageTable, MessageTableTableId } from "../src/codegen/Tables.sol";
 import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.sol";
 
 contract ChatNamespacedTest is MudV2Test {
-  function setUp() public override {
-    super.setUp();
-  }
-
   function testEmitEphemeral() public {
     bytes32[] memory keyTuple;
     vm.expectEmit(true, true, true, true);
