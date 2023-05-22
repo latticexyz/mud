@@ -166,5 +166,7 @@ export default mudConfig({
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
+    // Similar overlap occurs for IEphemeralRecordSystem. IWorldEphemeral is included instead.
+    "EphemeralRecordSystem",
   ],
 });
