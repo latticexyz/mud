@@ -394,6 +394,9 @@ importers:
       solhint:
         specifier: ^3.4.1
         version: 3.4.1
+      solhint-config-mud:
+        specifier: file:../../../../packages/solhint-config-mud
+        version: file:../../packages/solhint-config-mud
       solhint-plugin-mud:
         specifier: file:../../../../packages/solhint-plugin-mud
         version: file:../../packages/solhint-plugin-mud
@@ -4696,6 +4699,12 @@ packages:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
+
+  file:../../packages/solhint-config-mud:
+    resolution: {directory: ../../packages/solhint-config-mud, type: directory}
+    name: solhint-config-mud
+    version: 1.42.0
+    dev: true
 
   file:../../packages/solhint-plugin-mud:
     resolution: {directory: ../../packages/solhint-plugin-mud, type: directory}

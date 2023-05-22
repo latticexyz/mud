@@ -6,6 +6,7 @@ import { Cached, TableId } from "@latticexyz/utils";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 import { SyncState } from "./workers";
+import { MUDChain } from "@latticexyz/common/chains";
 
 export interface NetworkConfig {
   chainId: number;
@@ -20,6 +21,7 @@ export interface NetworkConfig {
   cacheInterval?: number;
   encoders?: boolean;
   pruneOptions?: { playerAddress: string; hashedComponentId: string };
+  chainConfig?: MUDChain;
 }
 
 export interface ClockConfig {

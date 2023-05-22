@@ -1,6 +1,6 @@
-import { decodeEventLog, decodeFunctionData, toBytes, Hex } from "viem";
+import { decodeEventLog, decodeFunctionData, toBytes, Hex, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
-import { TableId } from "@latticexyz/utils";
+import { TableId, isDefined } from "@latticexyz/utils";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { useStore } from "../useStore";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -44,7 +44,20 @@ export function TransactionSummary({ hash }: Props) {
   const returnData = transactionResult.status === "fulfilled" ? transactionResult.value.result : null;
   const events =
     worldAbi && transactionReceipt.status === "fulfilled"
-      ? transactionReceipt.value.logs.map((log) => decodeEventLog({ abi: worldAbi, ...log }))
+      ? transactionReceipt.value.logs
+          .map((log) => {
+            try {
+              return decodeEventLog({ abi: worldAbi, ...log });
+            } catch (error) {
+              // viem throws if there's no ABI for event, which can happen for events defined outside of MUD (e.g. custom worlds)
+              // TODO: show these logs anyway with a note that they couldn't be parsed
+              if (error instanceof AbiEventSignatureNotFoundError) {
+                return;
+              }
+              throw error;
+            }
+          })
+          .filter(isDefined)
       : null;
 
   return (
