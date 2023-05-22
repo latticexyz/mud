@@ -75,7 +75,7 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   try {
     const possibleChains = Object.values({ ...mudChains, ...chains });
     if (config.chainConfig) {
-      possibleChains.push(config.chainConfig);
+      possibleChains.unshift(config.chainConfig);
     }
     const chain = possibleChains.find((c) => c.id === config.chainId);
 
