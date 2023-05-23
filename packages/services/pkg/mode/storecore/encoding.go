@@ -1,6 +1,7 @@
 package storecore
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/logger"
@@ -468,6 +469,7 @@ func DecodeDataField__DecodedData(encoding []byte, schemaTypePair SchemaTypePair
 // Returns:
 // - (*DecodedData) - A pointer to the `DecodedData` object.
 func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
+	println("Top level decode data, encoding:", hex.EncodeToString(encoding))
 	var bytesOffset uint64 = 0
 
 	// Where the decoded data is stored.
@@ -475,6 +477,8 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 
 	// Decode static fields.
 	for _, fieldType := range schemaTypePair.Static {
+		println(fieldType.String())
+		println("decoding")
 		value := DecodeStaticField(fieldType, encoding, bytesOffset)
 		bytesOffset += getStaticByteLength(fieldType)
 		data.Add(&DataSchemaType__Struct{
@@ -645,12 +649,17 @@ func handleString(encoding []byte) string {
 // Returns:
 // - (string): The decoded field as a string.
 func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint64) interface{} {
+	println("decode static field", schemaType.String())
+	println(hex.EncodeToString(encoding))
 	// To avoid a ton of duplicate handling code per each schema type, we handle
 	// using ranges, since the schema types are sequential in specific ranges.
 
 	// UINT8 - UINT256 is the first range. We add one to the schema type to get the
 	// number of bytes to read, since enums start from 0 and UINT8 is the first one.
 	if schemaType >= UINT8 && schemaType <= UINT256 {
+		println(bytesOffset, bytesOffset+uint64(schemaType)+1)
+		println(hex.EncodeToString(encoding[bytesOffset : bytesOffset+uint64(schemaType)+1]))
+		println(handleUint(encoding[bytesOffset : bytesOffset+uint64(schemaType)+1]))
 		return handleUint(encoding[bytesOffset : bytesOffset+uint64(schemaType)+1])
 	} else
 	// INT8 - INT256 is the second range. We subtract UINT256 from the schema type

@@ -1,6 +1,7 @@
 package ingress
 
 import (
+	"encoding/hex"
 	"encoding/json"
 	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
@@ -497,11 +498,24 @@ func (il *IngressLayer) handleGenericTableEvent(event *storecore.StorecoreStoreS
 	}
 
 	// Decode the row record data (value).
+	println("====Decoding field======")
+	println(hex.EncodeToString(event.Data))
 	decodedFieldData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
 
 	// Decode the row key.
 	aggregateKey := mode.AggregateKey(event.Key)
+	//println(tableSchema.StoreCoreSchemaTypeKV.Key.String())
+	//println(tableSchema.StoreCoreSchemaTypeKV.Value.String())
+	println("====Decoding keys======")
+	println(hex.EncodeToString(aggregateKey))
+	println("dump")
+	for index, _ := range event.Key {
+		println(hex.Dump(event.Key[index][:]))
+	}
+	println("===========")
 	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
+	println("=========Decoded keys==========")
+	il.logger.Info(decodedKeyData.String())
 
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
