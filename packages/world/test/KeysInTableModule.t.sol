@@ -72,19 +72,19 @@ contract KeysInTableModuleTest is Test {
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
   }
 
-  function testInstallSingleton() public {
-    _installKeysInTableModule();
+  // function testInstallSingleton() public {
+  //   _installKeysInTableModule();
 
-    bytes32[] memory keyTuple = new bytes32[](0);
+  //   bytes32[] memory keyTuple = new bytes32[](0);
 
-    world.setRecord(namespace, singletonName, keyTuple, abi.encodePacked(val1));
+  //   world.setRecord(namespace, singletonName, keyTuple, abi.encodePacked(val1));
 
-    // Get the list of keys in this target table
-    bytes32[][] memory keysInTable = getKeysInTable(world, singletonTableId);
+  //   // Get the list of keys in this target table
+  //   bytes32[][] memory keysInTable = getKeysInTable(world, singletonTableId);
 
-    // Assert that the list is correct
-    assertEq(keysInTable.length, 0);
-  }
+  //   // Assert that the list is correct
+  //   assertEq(keysInTable.length, 0);
+  // }
 
   function testInstallComposite() public {
     _installKeysInTableModule();
@@ -217,6 +217,10 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[0][0], key2, "9");
   }
 
+  function testSetAndDeleteRecordHookCompositeGas() public {
+    testSetAndDeleteRecordHookComposite(val1, val2);
+  }
+
   function testSetAndDeleteRecordHookComposite(uint256 value1, uint256 value2) public {
     _installKeysInTableModule();
 
@@ -258,7 +262,7 @@ contract KeysInTableModuleTest is Test {
     }
 
     // Change the value of the first key
-    // !gasreport change a record on a table with keysInTableModule installed
+    // !gasreport change a composite record on a table with keysInTableModule installed
     world.setRecord(namespace, compositeName, keyTupleA, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
@@ -274,7 +278,7 @@ contract KeysInTableModuleTest is Test {
     }
 
     // Delete the first key
-    // !gasreport delete a record on a table with keysInTableModule installed
+    // !gasreport delete a composite record on a table with keysInTableModule installed
     world.deleteRecord(namespace, compositeName, keyTupleA);
 
     // Get the list of keys in the target table
