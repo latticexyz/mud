@@ -36,7 +36,7 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
   const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
     return {
       ...acc,
-      [systemName]: resolveSystemConfig(systemName, config.systems[systemName], existingContracts),
+      [systemName]: resolveSystemConfig(config.namespace, systemName, config.systems[systemName], existingContracts),
     };
   }, {});
 
@@ -53,6 +53,7 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
 
 /**
  * Resolves the system config by combining the default and overridden system configs,
+ * @param globalNamespace globally configured namespace
  * @param systemName name of the system
  * @param config optional SystemConfig object, if none is provided the default config is used
  * @param existingContracts optional list of existing contract names, used to validate system names in the access list. If not provided, no validation is performed.
@@ -63,7 +64,13 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
  * Default value for accessListAddresses is []
  * Default value for accessListSystems is []
  */
-export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
+export function resolveSystemConfig(
+  globalNamespace: string,
+  systemName: string,
+  config?: SystemConfig,
+  existingContracts?: string[]
+) {
+  const namespace = config?.namespace ?? globalNamespace;
   const name = config?.name ?? systemName.slice(0, STORE_SELECTOR_MAX_LENGTH);
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;
@@ -84,5 +91,5 @@ export function resolveSystemConfig(systemName: string, config?: SystemConfig, e
     }
   }
 
-  return { name, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
+  return { namespace, name, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
 }

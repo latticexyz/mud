@@ -7,6 +7,8 @@ import { SYSTEM_DEFAULTS } from "./defaults";
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
   | {
+      /** Namespace override for this system. Default is the globally configured namespace. */
+      namespace?: string;
       /** The full resource selector consists of namespace and name */
       name?: string;
       /**
@@ -30,10 +32,11 @@ export type SystemUserConfig =
         }
     );
 
-export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName extends string>
+export interface ExpandSystemConfig<T extends SystemUserConfig, Namespace extends string, SystemName extends string>
   extends OrDefaults<
     T,
     {
+      namespace: Namespace;
       name: SystemName;
       registerFunctionSelectors: typeof SYSTEM_DEFAULTS.registerFunctionSelector;
       openAccess: typeof SYSTEM_DEFAULTS.openAccess;
@@ -44,8 +47,8 @@ export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName exten
 
 export type SystemsUserConfig = Record<string, SystemUserConfig>;
 
-export type ExpandSystemsConfig<T extends SystemsUserConfig> = {
-  [SystemName in keyof T]: ExpandSystemConfig<T[SystemName], SystemName extends string ? SystemName : never>;
+export type ExpandSystemsConfig<T extends SystemsUserConfig, Namespace extends string> = {
+  [SystemName in keyof T]: ExpandSystemConfig<T[SystemName], Namespace, SystemName extends string ? SystemName : never>;
 };
 
 export type ModuleConfig = {

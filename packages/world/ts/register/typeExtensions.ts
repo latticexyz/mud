@@ -1,5 +1,6 @@
-import { OrDefaults } from "@latticexyz/common/type-utils";
+import { OrDefault, OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
+import { DEFAULTS } from "@latticexyz/store";
 import { ExpandSystemsConfig, WorldConfig, WorldUserConfig, WORLD_DEFAULTS } from "../library";
 
 import "@latticexyz/store/register";
@@ -36,6 +37,9 @@ declare module "@latticexyz/store/register" {
         modules: typeof WORLD_DEFAULTS.modules;
       }
     > {
-    systems: ExpandSystemsConfig<T["systems"] extends Record<string, unknown> ? T["systems"] : Record<string, never>>;
+    systems: ExpandSystemsConfig<
+      T["systems"] extends Record<string, unknown> ? T["systems"] : Record<string, never>,
+      T["namespace"] extends unknown ? string : OrDefault<T["namespace"], typeof DEFAULTS.namespace>
+    >;
   }
 }

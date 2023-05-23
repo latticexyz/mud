@@ -126,7 +126,7 @@ export interface ExpandTableConfig<
 const zFullTableConfig = z
   .object({
     directory: z.string().default(TABLE_DEFAULTS.directory),
-    namespace: z.string().optional(),
+    namespace: zSelector.optional(),
     name: zSelector.optional(),
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
