@@ -9,7 +9,6 @@ import { curry } from "@latticexyz/common/utils";
  */
 export function createDatabaseClient<C extends StoreConfig>(database: TupleDatabase, config: C) {
   const _tupleDatabaseClient = new TupleDatabaseClient(database);
-  const { namespace } = config;
   const tables: Record<string, unknown> = {};
 
   // Create utils with client argument prefilled
@@ -23,6 +22,7 @@ export function createDatabaseClient<C extends StoreConfig>(database: TupleDatab
 
   // Create utils with client, namespace and table argument prefilled
   for (const table in config.tables) {
+    const namespace = config.tables?.[table].namespace ?? config.namespace;
     tables[table] = {
       set: (key: Key<C, typeof table>, value: Value<C, typeof table>, options: SetOptions) =>
         utilsWithClient.set(namespace, table, key, value, {
