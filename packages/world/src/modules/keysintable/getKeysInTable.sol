@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
 
@@ -22,26 +21,27 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
   // TODO: add getKeySchema to StoreSwitch?
   // Schema schema = IStore(this).getKeySchema(tableId);
 
+  uint256 numFields = schema.numFields();
   uint256 length = KeysInTable.lengthKeys0(tableId);
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
     keyTuples[i] = new bytes32[](schema.numFields()); // the length of the key tuple depends on the schema
 
-    if (schema.numFields() > 0) {
+    if (numFields > 0) {
       keyTuples[i][0] = KeysInTable.getItemKeys0(tableId, i);
-    }
-    if (schema.numFields() > 1) {
-      keyTuples[i][1] = KeysInTable.getItemKeys1(tableId, i);
-    }
-    if (schema.numFields() > 2) {
-      keyTuples[i][2] = KeysInTable.getItemKeys2(tableId, i);
-    }
-    if (schema.numFields() > 3) {
-      keyTuples[i][3] = KeysInTable.getItemKeys3(tableId, i);
-    }
-    if (schema.numFields() > 4) {
-      keyTuples[i][4] = KeysInTable.getItemKeys4(tableId, i);
+      if (numFields > 1) {
+        keyTuples[i][1] = KeysInTable.getItemKeys1(tableId, i);
+        if (numFields > 2) {
+          keyTuples[i][2] = KeysInTable.getItemKeys2(tableId, i);
+          if (numFields > 3) {
+            keyTuples[i][3] = KeysInTable.getItemKeys3(tableId, i);
+            if (numFields > 4) {
+              keyTuples[i][4] = KeysInTable.getItemKeys4(tableId, i);
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -56,26 +56,27 @@ function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][]
 
   Schema schema = store.getKeySchema(tableId);
 
+  uint256 numFields = schema.numFields();
   uint256 length = KeysInTable.lengthKeys0(store, tableId);
   keyTuples = new bytes32[][](length);
 
-  for (uint256 i; i < keyTuples.length; i++) {
+  for (uint256 i; i < length; i++) {
     keyTuples[i] = new bytes32[](schema.numFields()); // the length of the key tuple depends on the schema
 
-    if (schema.numFields() > 0) {
+    if (numFields > 0) {
       keyTuples[i][0] = KeysInTable.getItemKeys0(store, tableId, i);
-    }
-    if (schema.numFields() > 1) {
-      keyTuples[i][1] = KeysInTable.getItemKeys1(store, tableId, i);
-    }
-    if (schema.numFields() > 2) {
-      keyTuples[i][2] = KeysInTable.getItemKeys2(store, tableId, i);
-    }
-    if (schema.numFields() > 3) {
-      keyTuples[i][3] = KeysInTable.getItemKeys3(store, tableId, i);
-    }
-    if (schema.numFields() > 4) {
-      keyTuples[i][4] = KeysInTable.getItemKeys4(store, tableId, i);
+      if (numFields > 1) {
+        keyTuples[i][1] = KeysInTable.getItemKeys1(store, tableId, i);
+        if (numFields > 2) {
+          keyTuples[i][2] = KeysInTable.getItemKeys2(store, tableId, i);
+          if (numFields > 3) {
+            keyTuples[i][3] = KeysInTable.getItemKeys3(store, tableId, i);
+            if (numFields > 4) {
+              keyTuples[i][4] = KeysInTable.getItemKeys4(store, tableId, i);
+            }
+          }
+        }
+      }
     }
   }
 }
