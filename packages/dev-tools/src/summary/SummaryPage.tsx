@@ -1,5 +1,5 @@
 import { NetworkSummary } from "./NetworkSummary";
-import { BurnerWalletSummary } from "./BurnerWalletSummary";
+import { AccountSummary } from "./AccountSummary";
 import { EventsSummary } from "./EventsSummary";
 import { ActionsSummary } from "./ActionsSummary";
 import { TablesSummary } from "./TablesSummary";
@@ -13,8 +13,8 @@ export function SummaryPage() {
           <NetworkSummary />
         </div>
         <div className="space-y-2">
-          <h1 className="font-bold text-white/40 uppercase text-xs">Burner wallet</h1>
-          <BurnerWalletSummary />
+          <h1 className="font-bold text-white/40 uppercase text-xs">Account</h1>
+          <AccountSummary />
         </div>
         <div className="space-y-2">
           <h1 className="font-bold text-white/40 uppercase text-xs">Recent actions</h1>
