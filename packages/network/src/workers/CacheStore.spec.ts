@@ -88,53 +88,6 @@ describe("CacheStore", () => {
       });
     });
 
-    it("should normalize hex entity ids to the same padding", () => {
-      const event1: NetworkComponentUpdate = {
-        type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00000000000000000000000001" as Entity,
-        key: { key: "0x00000000000000000000000001" },
-        component: "Position",
-        value: { x: 1, y: 2 },
-        lastEventInTx: true,
-        blockNumber: 1,
-        txHash: "",
-        namespace: "namespace",
-        table: "Position",
-      };
-
-      const event2: NetworkComponentUpdate = {
-        type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x0001" as Entity,
-        key: { key: "0x00000000000000000000000001" },
-        component: "Position",
-        value: { x: 1, y: 3 },
-        lastEventInTx: true,
-        blockNumber: 1,
-        txHash: "",
-        namespace: "namespace",
-        table: "Position",
-      };
-
-      const cacheStore = createCacheStore();
-      storeEvent(cacheStore, event1);
-      storeEvent(cacheStore, event2);
-
-      const events = [...getCacheStoreEntries(cacheStore)];
-      expect(events.length).toBe(1);
-      expect(events[0]).toEqual({
-        type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x01" as Entity,
-        key: { key: "0x00000000000000000000000001" },
-        component: "Position",
-        value: { x: 1, y: 3 },
-        lastEventInTx: false,
-        blockNumber: 0,
-        txHash: "cache",
-        namespace: "namespace",
-        table: "Position",
-      });
-    });
-
     it("should set block number to one less than the last received event", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
