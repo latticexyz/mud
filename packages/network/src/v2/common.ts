@@ -23,5 +23,6 @@ export type Schema = Readonly<{
 
 export type TableMetadata = Readonly<{
   tableName: string;
+  keyNames: string[];
   fieldNames: string[];
 }>;

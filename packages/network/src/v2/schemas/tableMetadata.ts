@@ -76,8 +76,10 @@ export function registerMetadata(
         world: world.address,
       });
     }
-    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[1]);
-    return { tableName, fieldNames };
+    const [keyNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[1]);
+    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[2]);
+
+    return { tableName, keyNames, fieldNames };
   });
   metadataCache[cacheKey] = metadataPromise;
   return metadataPromise;

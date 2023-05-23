@@ -46,7 +46,7 @@ export async function decodeStoreSetField(
 
   const metadata = await registerMetadata(contract, table);
   if (metadata) {
-    const { tableName, fieldNames } = metadata;
+    const { fieldNames } = metadata;
     const namedInitialValues = Object.fromEntries(
       defaultValues.map((fieldValue, schemaIndex) => {
         return [fieldNames[schemaIndex], fieldValue];

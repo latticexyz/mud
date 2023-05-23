@@ -42,13 +42,18 @@ export async function decodeStoreSetRecord(
       );
     }
     const tableName = indexedValues[0];
-    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], indexedValues[1]);
-    registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), { tableName, fieldNames });
+    const [keyNames] = utils.defaultAbiCoder.decode(["string[]"], indexedValues[1]);
+    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], indexedValues[2]);
+    registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), {
+      tableName,
+      keyNames,
+      fieldNames,
+    });
   }
 
   const metadata = await registerMetadata(contract, table);
   if (metadata) {
-    const { tableName, fieldNames } = metadata;
+    const { fieldNames } = metadata;
     const namedValues: Record<string, any> = {};
     for (const [index, fieldName] of fieldNames.entries()) {
       namedValues[fieldName] = indexedValues[index];

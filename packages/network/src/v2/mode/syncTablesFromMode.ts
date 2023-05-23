@@ -48,6 +48,7 @@ export async function syncTablesFromMode(
     const keySchemaTypes = keyAbiTypes.map((abiType) => AbiTypeToSchemaType[abiType]);
     const keySchemaHex = arrayToHex(encodeSchema(keySchemaTypes));
 
+    const keyNames: string[] = []; // FIXME
     const fieldNames = cols.slice(keyLength);
     // TODO: remove this hack once MODE is fixed (https://github.com/latticexyz/mud/issues/444)
     const fieldAbiTypes = types.slice(keyLength).map((modeType) => modeType.match(/tuple\((.*)\[]\)/)?.[1] ?? modeType);
@@ -57,7 +58,7 @@ export async function syncTablesFromMode(
     const rawSchema = fieldSchemaHex + keySchemaHex.substring(2);
     // TODO: refactor registerSchema/registerMetadata to take chain+world address rather than Contract
     registrationPromises.push(registerSchema(world, tableId, rawSchema));
-    registrationPromises.push(registerMetadata(world, tableId, { tableName, fieldNames }));
+    registrationPromises.push(registerMetadata(world, tableId, { tableName, keyNames, fieldNames }));
 
     for (const row of rows) {
       console.log(tableName, keyAbiTypes, fieldAbiTypes, row.values);
