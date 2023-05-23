@@ -3,8 +3,6 @@ services:
   db:
     image: postgres:latest
     restart: always
-    ports:
-      - 5432:5432
     volumes: 
       - ./data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
@@ -17,7 +15,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    network_mode: host
+    ports:
+      - 5432:5432
 
   mode:
     build:
@@ -25,9 +24,10 @@ services:
       dockerfile: Dockerfile.mode
     ports:
       - 50091:50091
+      - 50092:50092
+      - 6060:6060
     depends_on:
       db:
         condition: service_healthy
     command: ./service/mode --config ./service/config.mode-docker.yaml
-    network_mode: host
     restart: on-failure
