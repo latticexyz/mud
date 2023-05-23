@@ -742,6 +742,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "namespace_ChatNamespacedSy_sendMessage",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint32",
         name: "item",
         type: "uint32",

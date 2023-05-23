@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
 import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+import { Systems } from "@latticexyz/world/src/modules/core/tables/Systems.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 import { MessageTable, MessageTableTableId } from "../src/codegen/Tables.sol";
@@ -17,15 +18,11 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
-    // Manually deploy a system with another namespace
-    ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
-    IWorld(worldAddress).registerSystem("namespace", "ChatNamespaced", chatNamespacedSystem, true);
-    IWorld(worldAddress).registerFunctionSelector("namespace", "ChatNamespaced", "sendMessage", "(string)");
-    // Grant this system access to MessageTable
+    // Grant a system with an overridden namespace access to MessageTable
     IWorld(worldAddress).grantAccess(
       ResourceSelector.getNamespace(MessageTableTableId),
       ResourceSelector.getName(MessageTableTableId),
-      address(chatNamespacedSystem)
+      Systems.getSystem(IWorld(worldAddress), ResourceSelector.from("namespace", "ChatNamespacedSy"))
     );
 
     // ------------------ EXAMPLES ------------------

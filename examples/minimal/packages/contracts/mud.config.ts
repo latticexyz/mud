@@ -17,11 +17,11 @@ export default mudConfig({
       name: "increment",
       openAccess: true,
     },
+    ChatNamespacedSystem: {
+      namespace: "namespace",
+      openAccess: true,
+    },
   },
-  excludeSystems: [
-    // Until namespace overrides, this system must be manually deployed in PostDeploy
-    "ChatNamespacedSystem",
-  ],
   tables: {
     CounterTable: {
       schema: {

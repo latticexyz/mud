@@ -5,6 +5,7 @@ pragma solidity >=0.8.0;
 
 import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
 
+import { IChatNamespacedSystem } from "./IChatNamespacedSystem.sol";
 import { IChatSystem } from "./IChatSystem.sol";
 import { IIncrementSystem } from "./IIncrementSystem.sol";
 import { IInventorySystem } from "./IInventorySystem.sol";
@@ -14,6 +15,6 @@ import { IStructSystem } from "./IStructSystem.sol";
  * The IWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IWorld is IBaseWorld, IChatSystem, IIncrementSystem, IInventorySystem, IStructSystem {
+interface IWorld is IBaseWorld, IChatNamespacedSystem, IChatSystem, IIncrementSystem, IInventorySystem, IStructSystem {
 
 }

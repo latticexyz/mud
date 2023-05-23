@@ -8,13 +8,13 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { MessageTable, MessageTableTableId } from "../src/codegen/Tables.sol";
-import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.sol";
+import { IChatNamespacedSystem } from "../src/codegen/world/IChatNamespacedSystem.sol";
 
 contract ChatNamespacedTest is MudV2Test {
   function testEmitEphemeral() public {
     bytes32[] memory keyTuple;
     vm.expectEmit(true, true, true, true);
     emit StoreCore.StoreEphemeralRecord(MessageTableTableId, keyTuple, MessageTable.encode("test"));
-    IChatNamespacedSystem(worldAddress).namespace_ChatNamespaced_sendMessage("test");
+    IChatNamespacedSystem(worldAddress).namespace_ChatNamespacedSy_sendMessage("test");
   }
 }

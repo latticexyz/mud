@@ -57,6 +57,7 @@ export interface IWorldInterface extends utils.Interface {
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
     "isStore()": FunctionFragment;
+    "namespace_ChatNamespacedSy_sendMessage(string)": FunctionFragment;
     "pickUp(uint32,uint32)": FunctionFragment;
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256)": FunctionFragment;
@@ -108,6 +109,7 @@ export interface IWorldInterface extends utils.Interface {
       | "installModule"
       | "installRootModule"
       | "isStore"
+      | "namespace_ChatNamespacedSy_sendMessage"
       | "pickUp"
       | "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"
       | "popFromField(bytes32,bytes32[],uint8,uint256)"
@@ -249,6 +251,10 @@ export interface IWorldInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(functionFragment: "isStore", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "namespace_ChatNamespacedSy_sendMessage",
+    values: [PromiseOrValue<string>]
+  ): string;
   encodeFunctionData(
     functionFragment: "pickUp",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
@@ -527,6 +533,10 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isStore", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "namespace_ChatNamespacedSy_sendMessage",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "pickUp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)",
@@ -848,6 +858,11 @@ export interface IWorld extends BaseContract {
     ): Promise<ContractTransaction>;
 
     isStore(overrides?: CallOverrides): Promise<[void]>;
+
+    namespace_ChatNamespacedSy_sendMessage(
+      message: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     pickUp(
       item: PromiseOrValue<BigNumberish>,
@@ -1171,6 +1186,11 @@ export interface IWorld extends BaseContract {
 
   isStore(overrides?: CallOverrides): Promise<void>;
 
+  namespace_ChatNamespacedSy_sendMessage(
+    message: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   pickUp(
     item: PromiseOrValue<BigNumberish>,
     itemVariant: PromiseOrValue<BigNumberish>,
@@ -1490,6 +1510,11 @@ export interface IWorld extends BaseContract {
     ): Promise<void>;
 
     isStore(overrides?: CallOverrides): Promise<void>;
+
+    namespace_ChatNamespacedSy_sendMessage(
+      message: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     pickUp(
       item: PromiseOrValue<BigNumberish>,
@@ -1858,6 +1883,11 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<BigNumber>;
 
+    namespace_ChatNamespacedSy_sendMessage(
+      message: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -2180,6 +2210,11 @@ export interface IWorld extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     isStore(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    namespace_ChatNamespacedSy_sendMessage(
+      message: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     pickUp(
       item: PromiseOrValue<BigNumberish>,
