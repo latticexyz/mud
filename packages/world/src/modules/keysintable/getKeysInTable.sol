@@ -26,7 +26,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
-    keyTuples[i] = new bytes32[](schema.numFields()); // the length of the key tuple depends on the schema
+    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the schema
 
     if (numFields > 0) {
       keyTuples[i][0] = KeysInTable.getItemKeys0(tableId, i);
@@ -61,7 +61,7 @@ function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][]
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
-    keyTuples[i] = new bytes32[](schema.numFields()); // the length of the key tuple depends on the schema
+    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the schema
 
     if (numFields > 0) {
       keyTuples[i][0] = KeysInTable.getItemKeys0(store, tableId, i);
