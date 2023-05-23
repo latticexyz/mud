@@ -3,19 +3,19 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1286932
+    "gasUsed": 1593583
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1286932
+    "gasUsed": 1593583
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1286932
+    "gasUsed": 1593583
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -27,7 +27,7 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1286932
+    "gasUsed": 1593583
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -45,7 +45,7 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1286932
+    "gasUsed": 1593583
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -63,7 +63,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 744910
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -81,7 +81,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 744910
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -93,7 +93,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 744910
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -111,7 +111,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 744910
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -195,7 +195,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 824012
+    "gasUsed": 852798
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -207,7 +207,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "installRoot unique entity module",
     "functionCall": "world.installRootModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 794087
+    "gasUsed": 822873
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -261,7 +261,7 @@
     "source": "test/World.t.sol",
     "name": "Register a new table in the namespace",
     "functionCall": "bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)",
-    "gasUsed": 262408
+    "gasUsed": 262386
   },
   {
     "source": "test/World.t.sol",
@@ -272,8 +272,8 @@
   {
     "source": "test/World.t.sol",
     "name": "Set metadata",
-    "functionCall": "world.setMetadata(namespace, name, tableName, fieldNames)",
-    "gasUsed": 283358
+    "functionCall": "world.setMetadata(namespace, name, tableName, keyNames, fieldNames)",
+    "gasUsed": 401477
   },
   {
     "source": "test/World.t.sol",

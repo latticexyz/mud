@@ -49,10 +49,12 @@ library StoreCore {
     StoreMetadata.setMetadata();
 
     // Set metadata for the schema table
+    string[] memory keyNames = new string[](1);
+    keyNames[0] = "tableId";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "valueSchema";
     fieldNames[1] = "keySchema";
-    StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(fieldNames));
+    StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(keyNames), abi.encode(fieldNames));
   }
 
   /************************************************************************
@@ -108,7 +110,12 @@ library StoreCore {
   /**
    * Set metadata for a given tableId
    */
-  function setMetadata(bytes32 tableId, string memory tableName, string[] memory fieldNames) internal {
+  function setMetadata(
+    bytes32 tableId,
+    string memory tableName,
+    string[] memory keyNames,
+    string[] memory fieldNames
+  ) internal {
     Schema schema = getSchema(tableId);
 
     // Verify the number of field names corresponds to the schema length
@@ -117,7 +124,7 @@ library StoreCore {
     }
 
     // Set metadata
-    StoreMetadata.set(tableId, tableName, abi.encode(fieldNames));
+    StoreMetadata.set(tableId, tableName, abi.encode(keyNames), abi.encode(fieldNames));
   }
 
   /************************************************************************

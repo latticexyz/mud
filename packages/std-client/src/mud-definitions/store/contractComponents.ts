@@ -41,6 +41,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           tableName: RecsType.String,
+          abiEncodedKeyNames: RecsType.String,
           abiEncodedFieldNames: RecsType.String,
         },
         {

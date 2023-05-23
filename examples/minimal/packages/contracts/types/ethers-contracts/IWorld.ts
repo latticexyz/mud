@@ -76,8 +76,8 @@ export interface IWorldInterface extends utils.Interface {
     "sendMessage(string)": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes)": FunctionFragment;
     "setField(bytes16,bytes16,bytes32[],uint8,bytes)": FunctionFragment;
-    "setMetadata(bytes16,bytes16,string,string[])": FunctionFragment;
-    "setMetadata(bytes32,string,string[])": FunctionFragment;
+    "setMetadata(bytes16,bytes16,string,string[],string[])": FunctionFragment;
+    "setMetadata(bytes32,string,string[],string[])": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
     "staticArrayBytesStruct(tuple[1])": FunctionFragment;
@@ -127,8 +127,8 @@ export interface IWorldInterface extends utils.Interface {
       | "sendMessage"
       | "setField(bytes32,bytes32[],uint8,bytes)"
       | "setField(bytes16,bytes16,bytes32[],uint8,bytes)"
-      | "setMetadata(bytes16,bytes16,string,string[])"
-      | "setMetadata(bytes32,string,string[])"
+      | "setMetadata(bytes16,bytes16,string,string[],string[])"
+      | "setMetadata(bytes32,string,string[],string[])"
       | "setRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setRecord(bytes32,bytes32[],bytes)"
       | "staticArrayBytesStruct"
@@ -399,19 +399,21 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMetadata(bytes16,bytes16,string,string[])",
+    functionFragment: "setMetadata(bytes16,bytes16,string,string[],string[])",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
+      PromiseOrValue<string>[],
       PromiseOrValue<string>[]
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMetadata(bytes32,string,string[])",
+    functionFragment: "setMetadata(bytes32,string,string[],string[])",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
+      PromiseOrValue<string>[],
       PromiseOrValue<string>[]
     ]
   ): string;
@@ -601,11 +603,11 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setMetadata(bytes16,bytes16,string,string[])",
+    functionFragment: "setMetadata(bytes16,bytes16,string,string[],string[])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setMetadata(bytes32,string,string[])",
+    functionFragment: "setMetadata(bytes32,string,string[],string[])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -989,17 +991,19 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
+    "setMetadata(bytes16,bytes16,string,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "setMetadata(bytes32,string,string[])"(
+    "setMetadata(bytes32,string,string[],string[])"(
       table: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -1311,17 +1315,19 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "setMetadata(bytes16,bytes16,string,string[])"(
+  "setMetadata(bytes16,bytes16,string,string[],string[])"(
     namespace: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<BytesLike>,
     tableName: PromiseOrValue<string>,
+    keyNames: PromiseOrValue<string>[],
     fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "setMetadata(bytes32,string,string[])"(
+  "setMetadata(bytes32,string,string[],string[])"(
     table: PromiseOrValue<BytesLike>,
     tableName: PromiseOrValue<string>,
+    keyNames: PromiseOrValue<string>[],
     fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1631,17 +1637,19 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
+    "setMetadata(bytes16,bytes16,string,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setMetadata(bytes32,string,string[])"(
+    "setMetadata(bytes32,string,string[],string[])"(
       table: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1998,17 +2006,19 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
+    "setMetadata(bytes16,bytes16,string,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "setMetadata(bytes32,string,string[])"(
+    "setMetadata(bytes32,string,string[],string[])"(
       table: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -2321,17 +2331,19 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
+    "setMetadata(bytes16,bytes16,string,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "setMetadata(bytes32,string,string[])"(
+    "setMetadata(bytes32,string,string[],string[])"(
       table: PromiseOrValue<BytesLike>,
       tableName: PromiseOrValue<string>,
+      keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

@@ -96,7 +96,12 @@ interface IStoreData is IStoreRead, IStoreWrite {
 interface IStoreRegistration {
   function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
 
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+  function setMetadata(
+    bytes32 table,
+    string calldata tableName,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
+  ) external;
 
   // Register hook to be called when a record or field is set or deleted
   function registerStoreHook(bytes32 table, IStoreHook hook) external;

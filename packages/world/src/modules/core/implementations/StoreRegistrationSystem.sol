@@ -52,7 +52,12 @@ contract StoreRegistrationSystem is IStoreRegistration, System {
    * This overload exists to conform with the `IStore` interface.
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function setMetadata(bytes32 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
+  function setMetadata(
+    bytes32 tableId,
+    string calldata tableName,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
+  ) public virtual {
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
@@ -65,6 +70,7 @@ contract StoreRegistrationSystem is IStoreRegistration, System {
         tableId.getNamespace(),
         tableId.getName(),
         tableName,
+        keyNames,
         fieldNames
       ),
       delegate: true,

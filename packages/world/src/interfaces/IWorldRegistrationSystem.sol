@@ -22,6 +22,7 @@ interface IWorldRegistrationSystem {
     bytes16 namespace,
     bytes16 name,
     string calldata tableName,
+    string[] calldata keyNames,
     string[] calldata fieldNames
   ) external;
 

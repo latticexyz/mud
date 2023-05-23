@@ -50,11 +50,12 @@ contract KeysWithValueModule is IModule, WorldContext {
     );
 
     // Register metadata for the target table
-    (string memory tableName, string[] memory fieldNames) = KeysWithValue.getMetadata();
+    (string memory tableName, string[] memory keyNames, string[] memory fieldNames) = KeysWithValue.getMetadata();
     IBaseWorld(_world()).setMetadata(
       targetTableSelector.getNamespace(),
       targetTableSelector.getName(),
       tableName,
+      keyNames,
       fieldNames
     );
 

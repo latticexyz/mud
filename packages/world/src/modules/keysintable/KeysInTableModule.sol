@@ -57,10 +57,22 @@ contract KeysInTableModule is IModule, WorldContext {
       );
 
       // Register metadata for the tables
-      (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
-      world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
-      (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
-      world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
+      (string memory tableName1, string[] memory keyNames1, string[] memory fieldNames1) = KeysInTable.getMetadata();
+      world.setMetadata(
+        KeysInTableTableId.getNamespace(),
+        KeysInTableTableId.getName(),
+        tableName1,
+        keyNames1,
+        fieldNames1
+      );
+      (string memory tableName2, string[] memory keyNames2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
+      world.setMetadata(
+        UsedKeysIndexTableId.getNamespace(),
+        UsedKeysIndexTableId.getName(),
+        tableName2,
+        keyNames2,
+        fieldNames2
+      );
 
       // Grant the hook access to the tables
       world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));

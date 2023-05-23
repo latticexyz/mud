@@ -1254,6 +1254,11 @@ const _abi = [
       },
       {
         internalType: "string[]",
+        name: "keyNames",
+        type: "string[]",
+      },
+      {
+        internalType: "string[]",
         name: "fieldNames",
         type: "string[]",
       },
@@ -1274,6 +1279,11 @@ const _abi = [
         internalType: "string",
         name: "tableName",
         type: "string",
+      },
+      {
+        internalType: "string[]",
+        name: "keyNames",
+        type: "string[]",
       },
       {
         internalType: "string[]",

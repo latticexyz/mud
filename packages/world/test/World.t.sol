@@ -237,19 +237,21 @@ contract WorldTest is Test {
     bytes32 tableId = ResourceSelector.from(namespace, name);
 
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT8);
+    string[] memory keyNames = new string[](1);
+    keyNames[0] = "testKey1";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "testField1";
     fieldNames[1] = "testField2";
 
     // Expect an error when setting metadata on a resource that does not exist
     vm.expectRevert();
-    world.setMetadata("invalid", "invalid", tableName, fieldNames);
+    world.setMetadata("invalid", "invalid", tableName, keyNames, fieldNames);
 
     // Register a table
     world.registerTable(namespace, name, schema, defaultKeySchema);
 
     // !gasreport Set metadata
-    world.setMetadata(namespace, name, tableName, fieldNames);
+    world.setMetadata(namespace, name, tableName, keyNames, fieldNames);
 
     // Expect the metadata to be set
     StoreMetadataData memory metadata = StoreMetadata.get(world, tableId);
@@ -257,18 +259,18 @@ contract WorldTest is Test {
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect it to be possible to change metadata
-    world.setMetadata(namespace, name, "newTableName", fieldNames);
+    world.setMetadata(namespace, name, "newTableName", keyNames, fieldNames);
     metadata = StoreMetadata.get(world, tableId);
     assertEq(metadata.tableName, "newTableName");
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect an error when setting metadata on a route that is not owned by the caller
     _expectAccessDenied(address(1), namespace, name);
-    world.setMetadata(namespace, name, tableName, fieldNames);
+    world.setMetadata(namespace, name, tableName, keyNames, fieldNames);
 
     // Expect the World to be allowed to set metadata
     vm.prank(address(world));
-    world.setMetadata(namespace, name, tableName, fieldNames);
+    world.setMetadata(namespace, name, tableName, keyNames, fieldNames);
   }
 
   function testRegisterSystem() public {

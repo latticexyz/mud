@@ -61,11 +61,16 @@ library StoreSwitch {
     }
   }
 
-  function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
+  function setMetadata(
+    bytes32 table,
+    string memory tableName,
+    string[] memory keyNames,
+    string[] memory fieldNames
+  ) internal {
     if (isDelegateCall()) {
-      StoreCore.setMetadata(table, tableName, fieldNames);
+      StoreCore.setMetadata(table, tableName, keyNames, fieldNames);
     } else {
-      IStore(msg.sender).setMetadata(table, tableName, fieldNames);
+      IStore(msg.sender).setMetadata(table, tableName, keyNames, fieldNames);
     }
   }
 

@@ -12,6 +12,7 @@ export default mudConfig({
       },
       schema: {
         tableName: "string",
+        abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },
     },

@@ -8,7 +8,12 @@ import { Schema, IStoreHook } from "../modules/core/implementations/StoreRegistr
 interface IStoreRegistrationSystem {
   function registerSchema(bytes32 tableId, Schema valueSchema, Schema keySchema) external;
 
-  function setMetadata(bytes32 tableId, string calldata tableName, string[] calldata fieldNames) external;
+  function setMetadata(
+    bytes32 tableId,
+    string calldata tableName,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
+  ) external;
 
   function registerStoreHook(bytes32 tableId, IStoreHook hook) external;
 }

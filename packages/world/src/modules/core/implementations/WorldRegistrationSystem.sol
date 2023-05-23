@@ -85,13 +85,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes16 namespace,
     bytes16 name,
     string calldata tableName,
+    string[] calldata keyNames,
     string[] calldata fieldNames
   ) public virtual {
     // Require caller to own the namespace
     bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Set the metadata
-    StoreCore.setMetadata(tableId, tableName, fieldNames);
+    StoreCore.setMetadata(tableId, tableName, keyNames, fieldNames);
   }
 
   /**

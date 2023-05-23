@@ -42,10 +42,13 @@ library InstalledModules {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _keyNames = new string[](2);
+    _keyNames[0] = "moduleName";
+    _keyNames[1] = "argumentsHash";
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "moduleAddress";
-    return ("InstalledModules", _fieldNames);
+    return ("InstalledModules", _keyNames, _fieldNames);
   }
 
   /** Register the table's schema */
@@ -60,14 +63,14 @@ library InstalledModules {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Get moduleAddress */

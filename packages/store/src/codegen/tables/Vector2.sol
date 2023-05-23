@@ -43,11 +43,13 @@ library Vector2 {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _keyNames = new string[](1);
+    _keyNames[0] = "key";
     string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "x";
     _fieldNames[1] = "y";
-    return ("Vector2", _fieldNames);
+    return ("Vector2", _keyNames, _fieldNames);
   }
 
   /** Register the table's schema */
@@ -62,14 +64,14 @@ library Vector2 {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Get x */
