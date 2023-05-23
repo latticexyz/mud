@@ -1,4 +1,4 @@
-import { OrDefaults } from "@latticexyz/common/type-utils";
+import { OrDefault, OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
 import { ExpandTablesConfig, StoreConfig, StoreUserConfig } from "../library/config";
 import { DEFAULTS, PATH_DEFAULTS } from "../library/config/defaults";
@@ -31,5 +31,8 @@ export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
       codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
     }
   > {
-  tables: ExpandTablesConfig<T["tables"]>;
+  tables: ExpandTablesConfig<
+    T["tables"],
+    T["namespace"] extends unknown ? string : OrDefault<T["namespace"], typeof DEFAULTS.namespace>
+  >;
 }

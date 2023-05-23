@@ -78,7 +78,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       } else {
         return {
           tableIdName: tableName + "TableId",
-          namespace: config.namespace,
+          namespace: tableData.namespace,
           name: tableData.name,
         };
       }

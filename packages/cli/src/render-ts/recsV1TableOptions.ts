@@ -22,7 +22,7 @@ export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
     // WARNING: skip tables without a static tableId
     if (tableData.tableIdArgument) continue;
     const staticResourceData = {
-      namespace: config.namespace,
+      namespace: tableData.namespace,
       name: tableData.name,
     };
 

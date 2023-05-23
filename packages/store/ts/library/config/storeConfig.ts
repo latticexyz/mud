@@ -79,6 +79,8 @@ export interface TableConfig<
 > {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
+  /** Namespace override for this table's id. Default is the globally configured namespace. */
+  namespace?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
   /** Include methods that accept a manual `IStore` argument. Default is true. */
@@ -100,11 +102,15 @@ export type FullTableConfig<
   schema: FullSchemaConfig<UserTypes>;
 };
 
-export interface ExpandTableConfig<T extends TableConfig<string, string>, TableName extends string>
-  extends OrDefaults<
+export interface ExpandTableConfig<
+  T extends TableConfig<string, string>,
+  Namespace extends string,
+  TableName extends string
+> extends OrDefaults<
     T,
     {
       directory: typeof TABLE_DEFAULTS.directory;
+      namespace: Namespace;
       name: TableName;
       tableIdArgument: typeof TABLE_DEFAULTS.tableIdArgument;
       storeArgument: typeof TABLE_DEFAULTS.storeArgument;
@@ -120,6 +126,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
 const zFullTableConfig = z
   .object({
     directory: z.string().default(TABLE_DEFAULTS.directory),
+    namespace: z.string().optional(),
     name: zSelector.optional(),
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
@@ -175,14 +182,14 @@ export type FullTablesConfig<
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
 
-export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
+export type ExpandTablesConfig<T extends TablesConfig<string, string>, Namespace extends string> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
-    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, TableName extends string ? TableName : never>
+    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, Namespace, TableName extends string ? TableName : never>
     : T[TableName] extends TableConfig<string, string>
-    ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
+    ? ExpandTableConfig<T[TableName], Namespace, TableName extends string ? TableName : never>
     : // Weakly typed values get a weakly typed expansion.
       // This shouldn't normally happen within `mudConfig`, but can be manually triggered via `ExpandMUDUserConfig`
-      ExpandTableConfig<TableConfig<string, string>, TableName extends string ? TableName : string>;
+      ExpandTableConfig<TableConfig<string, string>, Namespace, TableName extends string ? TableName : string>;
 };
 
 /************************************************************************
@@ -271,19 +278,31 @@ const StoreConfigUnrefined = z
   .merge(zEnumsConfig);
 
 // finally validate global conditions
-export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
+export const zStoreConfig = StoreConfigUnrefined.transform(transformStoreConfig).superRefine(validateStoreConfig);
 
 export type StoreUserConfig = z.input<typeof zStoreConfig>;
 export type StoreConfig = z.output<typeof zStoreConfig>;
 
 // Catchall preserves other plugins' options
-export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
+export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any())
+  .transform(transformStoreConfig)
+  .superRefine(validateStoreConfig);
 
 /************************************************************************
  *
  *    HELPERS
  *
  ************************************************************************/
+
+function transformStoreConfig(config: z.output<typeof StoreConfigUnrefined>) {
+  // default table namespace depends on global namespace
+  for (const tableName of Object.keys(config.tables)) {
+    config.tables[tableName].namespace ??= config.namespace;
+  }
+  return config as Omit<typeof config, "tables"> & {
+    tables: Record<string, RequireKeys<(typeof config)["tables"][string], "namespace">>;
+  };
+}
 
 // Validate conditions that check multiple different config options simultaneously
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
