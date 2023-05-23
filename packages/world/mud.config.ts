@@ -108,7 +108,7 @@ export default mudConfig({
     KeysInTable: {
       directory: "modules/keysintable/tables",
       keySchema: { sourceTable: "bytes32" },
-      schema: { length: "uint32", keys: "bytes32[]" }, // For now only indexes the first key of a key tuple
+      schema: "bytes32[]", // For now only indexes the first key of a key tuple
     },
     UsedKeysIndex: {
       directory: "modules/keysintable/tables",

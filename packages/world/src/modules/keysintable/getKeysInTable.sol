@@ -18,7 +18,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keysIn
    * Note: this module does not yet support composite keys.
    * Therefore we create an array of key tuples but only fill the first entry.
    */
-  bytes32[] memory keysInTableRaw = KeysInTable.getKeys(tableId);
+  bytes32[] memory keysInTableRaw = KeysInTable.get(tableId);
 
   keysInTable = new bytes32[][](keysInTableRaw.length);
 
@@ -33,7 +33,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keysIn
  */
 function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][] memory keysInTable) {
   // Get the keys with the given table
-  bytes32[] memory keysInTableRaw = KeysInTable.getKeys(store, tableId);
+  bytes32[] memory keysInTableRaw = KeysInTable.get(store, tableId);
 
   keysInTable = new bytes32[][](keysInTableRaw.length);
 
