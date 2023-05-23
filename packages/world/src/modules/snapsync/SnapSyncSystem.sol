@@ -2,18 +2,13 @@
 pragma solidity >=0.8.0;
 import { System } from "../../System.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { SliceLib, Slice } from "@latticexyz/store/src/Slice.sol";
-import { DecodeSlice } from "@latticexyz/store/src/tightcoder/DecodeSlice.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { getKeysInTable } from "../keysintable/getKeysInTable.sol";
 import { KeysInTable, KeysInTableTableId } from "../keysintable/tables/KeysInTable.sol";
 import { SyncRecord } from "./SyncRecord.sol";
 
-function keyToTuple(bytes32 key) pure returns (bytes32[] memory) {
-  bytes32[] memory keyTuple = new bytes32[](1);
-  keyTuple[0] = key;
-  return keyTuple;
-}
+function keyToTuple(bytes32 key) pure returns (bytes32[] memory keyTuple) {}
 
 contract SnapSyncSystem is System {
   function getRecords(
@@ -23,20 +18,28 @@ contract SnapSyncSystem is System {
   ) public view virtual returns (SyncRecord[] memory records) {
     records = new SyncRecord[](limit);
 
-    bytes memory keyBlob = StoreSwitch.getFieldSlice(
-      KeysInTableTableId,
-      keyToTuple(tableId),
-      5,
-      KeysInTable.getSchema(),
-      offset * 32,
-      (offset + limit) * 32
-    );
+    Schema schema = StoreSwitch.getKeySchema(tableId);
+    uint256 numFields = schema.numFields();
 
-    Slice keySlice = SliceLib.fromBytes(keyBlob);
-    bytes32[] memory keys = DecodeSlice.decodeArray_bytes32(keySlice);
+    for (uint256 i = offset; i < limit + offset; i++) {
+      bytes32[] memory keyTuple = new bytes32[](numFields);
 
-    for (uint256 i; i < limit; i++) {
-      bytes32[] memory keyTuple = keyToTuple(keys[i]);
+      if (numFields > 0) {
+        keyTuple[0] = KeysInTable.getItemKeys0(tableId, i);
+        if (numFields > 1) {
+          keyTuple[1] = KeysInTable.getItemKeys1(tableId, i);
+          if (numFields > 2) {
+            keyTuple[2] = KeysInTable.getItemKeys2(tableId, i);
+            if (numFields > 3) {
+              keyTuple[3] = KeysInTable.getItemKeys3(tableId, i);
+              if (numFields > 4) {
+                keyTuple[4] = KeysInTable.getItemKeys4(tableId, i);
+              }
+            }
+          }
+        }
+      }
+
       bytes memory value = StoreSwitch.getRecord(tableId, keyTuple);
       records[i] = SyncRecord({ tableId: tableId, keyTuple: keyTuple, value: value });
     }
