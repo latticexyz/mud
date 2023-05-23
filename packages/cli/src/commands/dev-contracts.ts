@@ -9,7 +9,7 @@ import { tsgen } from "../render-ts";
 import { debounce } from "throttle-debounce";
 import { worldgenHandler } from "./worldgen";
 import { WorldConfig } from "@latticexyz/world";
-import { deployHandler, printMUD, worldtypes } from "../utils";
+import { deployHandler, logError, printMUD, worldtypes } from "../utils";
 import { homedir } from "os";
 import { rmSync } from "fs";
 
@@ -116,7 +116,8 @@ const commandModule: CommandModule<Options, Options> = {
 
         await deploy();
       } catch (error) {
-        console.error(chalk.red("MUD dev-contracts watcher failed to deploy config or contracts changes"), error);
+        console.error(chalk.red("MUD dev-contracts watcher failed to deploy config or contracts changes\n"));
+        logError(error);
       }
 
       changeInProgress.current = false;

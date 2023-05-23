@@ -61,7 +61,7 @@ export async function deploy(
   // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
   let maxPriorityFeePerGas: number;
   let maxFeePerGas: BigNumber;
-  setInternalFeePerGas(priorityFeeMultiplier);
+  await setInternalFeePerGas(priorityFeeMultiplier);
 
   // Catch all to await any promises before exiting the script
   let promises: Promise<unknown>[] = [];
