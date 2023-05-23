@@ -72,19 +72,19 @@ contract KeysInTableModuleTest is Test {
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
   }
 
-  // function testInstallSingleton() public {
-  //   _installKeysInTableModule();
+  function testInstallSingleton() public {
+    _installKeysInTableModule();
 
-  //   bytes32[] memory keyTuple = new bytes32[](0);
+    bytes32[] memory keyTuple = new bytes32[](0);
 
-  //   world.setRecord(namespace, singletonName, keyTuple, abi.encodePacked(val1));
+    world.setRecord(namespace, singletonName, keyTuple, abi.encodePacked(val1));
 
-  //   // Get the list of keys in this target table
-  //   bytes32[][] memory keysInTable = getKeysInTable(world, singletonTableId);
+    // Get the list of keys in this target table
+    bytes32[][] memory keysInTable = getKeysInTable(world, singletonTableId);
 
-  //   // Assert that the list is correct
-  //   assertEq(keysInTable.length, 0);
-  // }
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 0);
+  }
 
   function testInstallComposite() public {
     _installKeysInTableModule();
