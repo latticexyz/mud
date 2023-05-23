@@ -72,6 +72,8 @@ contract KeysInTableModuleTest is Test {
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
   }
 
+  // This test is expected to fail because `getKeySchema()` on StoreCore reverts on singleton tables
+  // TODO: we need to be able to determine whether a table is singleton vs. nonexistent
   function testFailInstallSingleton() public {
     _installKeysInTableModule();
 
