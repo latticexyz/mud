@@ -20,28 +20,26 @@ contract SnapSyncSystem is System {
     bytes32 tableId,
     uint256 limit,
     uint256 offset
-  ) public view virtual returns (SyncRecord[] memory) {
-    SyncRecord[] memory records = new SyncRecord[](limit);
+  ) public view virtual returns (SyncRecord[] memory records) {
+    records = new SyncRecord[](limit);
 
     bytes memory keyBlob = StoreSwitch.getFieldSlice(
       KeysInTableTableId,
       keyToTuple(tableId),
-      1,
+      5,
       KeysInTable.getSchema(),
       offset * 32,
       (offset + limit) * 32
     );
 
     Slice keySlice = SliceLib.fromBytes(keyBlob);
-    bytes32[] memory keysRaw = DecodeSlice.decodeArray_bytes32(keySlice);
+    bytes32[] memory keys = DecodeSlice.decodeArray_bytes32(keySlice);
 
     for (uint256 i; i < limit; i++) {
-      bytes32[] memory key = keyToTuple(keysRaw[i]);
-      bytes memory value = StoreSwitch.getRecord(tableId, key);
-      records[i] = SyncRecord({ tableId: tableId, keyTuple: key, value: value });
+      bytes32[] memory keyTuple = keyToTuple(keys[i]);
+      bytes memory value = StoreSwitch.getRecord(tableId, keyTuple);
+      records[i] = SyncRecord({ tableId: tableId, keyTuple: keyTuple, value: value });
     }
-
-    return records;
   }
 
   function getNumKeysInTable(bytes32 tableId) public view virtual returns (uint256) {
