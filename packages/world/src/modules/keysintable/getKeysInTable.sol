@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
 
@@ -17,9 +18,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
    * Note: this module only supports up to 5 composite keys.
    */
 
-  Schema schema;
-  // TODO: add getKeySchema to StoreSwitch?
-  // Schema schema = IStore(this).getKeySchema(tableId);
+  Schema schema = StoreSwitch.getKeySchema(tableId);
 
   uint256 numFields = schema.numFields();
   uint256 length = KeysInTable.lengthKeys0(tableId);
