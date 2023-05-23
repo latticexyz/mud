@@ -39,13 +39,15 @@ library Singleton {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _keyNames = new string[](0);
+
     string[] memory _fieldNames = new string[](4);
     _fieldNames[0] = "v1";
     _fieldNames[1] = "v2";
     _fieldNames[2] = "v3";
     _fieldNames[3] = "v4";
-    return ("Singleton", _fieldNames);
+    return ("Singleton", _keyNames, _fieldNames);
   }
 
   /** Register the table's schema */
@@ -60,14 +62,14 @@ library Singleton {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Get v1 */

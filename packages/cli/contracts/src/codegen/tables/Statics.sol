@@ -62,7 +62,15 @@ library Statics {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _keyNames = new string[](7);
+    _keyNames[0] = "k1";
+    _keyNames[1] = "k2";
+    _keyNames[2] = "k3";
+    _keyNames[3] = "k4";
+    _keyNames[4] = "k5";
+    _keyNames[5] = "k6";
+    _keyNames[6] = "k7";
     string[] memory _fieldNames = new string[](7);
     _fieldNames[0] = "v1";
     _fieldNames[1] = "v2";
@@ -71,7 +79,7 @@ library Statics {
     _fieldNames[4] = "v5";
     _fieldNames[5] = "v6";
     _fieldNames[6] = "v7";
-    return ("Statics", _fieldNames);
+    return ("Statics", _keyNames, _fieldNames);
   }
 
   /** Register the table's schema */
@@ -86,14 +94,14 @@ library Statics {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Get v1 */

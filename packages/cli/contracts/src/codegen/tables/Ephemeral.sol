@@ -37,10 +37,12 @@ library Ephemeral {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _keyNames = new string[](1);
+    _keyNames[0] = "key";
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("Ephemeral", _fieldNames);
+    return ("Ephemeral", _keyNames, _fieldNames);
   }
 
   /** Register the table's schema */
@@ -55,14 +57,14 @@ library Ephemeral {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _keyNames, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _keyNames, _fieldNames);
   }
 
   /** Emit the ephemeral event using individual values */
