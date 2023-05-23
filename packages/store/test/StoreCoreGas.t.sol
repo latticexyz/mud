@@ -62,6 +62,11 @@ contract StoreCoreGasTest is Test, StoreMock {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
+    string[] memory keyNames = new string[](4);
+    keyNames[0] = "key1";
+    keyNames[1] = "key2";
+    keyNames[2] = "key3";
+    keyNames[3] = "key4";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "field1";
     fieldNames[1] = "field2";
@@ -70,7 +75,7 @@ contract StoreCoreGasTest is Test, StoreMock {
     StoreCore.registerSchema(table, schema, keySchema);
 
     // !gasreport StoreCore: set table metadata
-    StoreCore.setMetadata(table, tableName, fieldNames);
+    StoreCore.setMetadata(table, tableName, keyNames, fieldNames);
   }
 
   function testSetAndGetDynamicDataLength() public {

@@ -590,8 +590,8 @@
   {
     "source": "test/StoreCoreGas.t.sol",
     "name": "StoreCore: set table metadata",
-    "functionCall": "StoreCore.setMetadata(table, tableName, fieldNames)",
-    "gasUsed": 251850
+    "functionCall": "StoreCore.setMetadata(table, tableName, keyNames, fieldNames)",
+    "gasUsed": 572499
   },
   {
     "source": "test/StoreCoreGas.t.sol",
@@ -608,14 +608,14 @@
   {
     "source": "test/StoreMetadata.t.sol",
     "name": "set record in StoreMetadataTable",
-    "functionCall": "StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })",
-    "gasUsed": 250196
+    "functionCall": "StoreMetadata.set(tableId, metadata)",
+    "gasUsed": 364352
   },
   {
     "source": "test/StoreMetadata.t.sol",
     "name": "get record from StoreMetadataTable",
-    "functionCall": "StoreMetadataData memory metadata = StoreMetadata.get(tableId)",
-    "gasUsed": 12117
+    "functionCall": "metadata = StoreMetadata.get(tableId)",
+    "gasUsed": 16634
   },
   {
     "source": "test/StoreSwitch.t.sol",

@@ -78,6 +78,11 @@ contract StoreCoreTest is Test, StoreMock {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
+    string[] memory keyNames = new string[](4);
+    keyNames[0] = "key1";
+    keyNames[1] = "key2";
+    keyNames[2] = "key3";
+    keyNames[3] = "key4";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "field1";
     fieldNames[1] = "field2";
@@ -85,7 +90,7 @@ contract StoreCoreTest is Test, StoreMock {
     // Register table
     IStore(this).registerSchema(table, schema, keySchema);
 
-    IStore(this).setMetadata(table, tableName, fieldNames);
+    IStore(this).setMetadata(table, tableName, keyNames, fieldNames);
 
     // Get metadata for table
     StoreMetadataData memory metadata = StoreMetadata.get(table);
@@ -99,6 +104,11 @@ contract StoreCoreTest is Test, StoreMock {
     Schema schema = SchemaLib.encode(SchemaType.UINT8);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
+    string[] memory keyNames = new string[](4);
+    keyNames[0] = "key1";
+    keyNames[1] = "key2";
+    keyNames[2] = "key3";
+    keyNames[3] = "key4";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "field1";
     fieldNames[1] = "field2";
@@ -107,7 +117,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerSchema(table, schema, keySchema);
 
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
-    IStore(this).setMetadata(table, tableName, fieldNames);
+    IStore(this).setMetadata(table, tableName, keyNames, fieldNames);
   }
 
   function testSetAndGetDynamicDataLength() public {
