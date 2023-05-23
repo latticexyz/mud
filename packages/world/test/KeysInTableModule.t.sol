@@ -68,7 +68,6 @@ contract KeysInTableModuleTest is Test {
 
     bytes32[] memory keyTuple = new bytes32[](0);
 
-    vm.expectRevert();
     world.setRecord(namespace, singletonName, keyTuple, abi.encodePacked(val1));
   }
 
@@ -260,6 +259,31 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testGetKeysInTable(uint256 value1, uint256 value2) public {
+    _installKeysInTableModule();
+
+    // Set a value in the source table
+    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value1));
+
+    // !gasreport Get list of keys in a given table
+    bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0][0], key1);
+
+    // Set another key with a different value
+    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value2));
+
+    // Get the list of keys in the target table
+    keysInTable = getKeysInTable(world, tableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 2);
+    assertEq(keysInTable[0][0], key1);
+    assertEq(keysInTable[1][0], key2);
+  }
+
+  function testGetKeysInTableSingleton(uint256 value1, uint256 value2) public {
     _installKeysInTableModule();
 
     // Set a value in the source table

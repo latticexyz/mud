@@ -45,6 +45,6 @@ contract SnapSyncSystem is System {
   }
 
   function getNumKeysInTable(bytes32 tableId) public view virtual returns (uint256) {
-    return KeysInTable.length(tableId);
+    return KeysInTable.lengthKeys0(tableId);
   }
 }
