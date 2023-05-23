@@ -745,6 +745,9 @@ importers:
         specifier: ^0.16.0
         version: 0.16.0
     devDependencies:
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
