@@ -64,11 +64,41 @@ contract KeysInTableHook is IStoreHook {
         // Delete the list of keys in this table
         KeysInTable.deleteRecord(tableId);
       } else {
-        bytes32 lastKey = KeysInTable.getItemKeys0(tableId, length - 1);
+        if (key.length > 0) {
+          bytes32 lastKey = KeysInTable.getItemKeys0(tableId, length - 1);
 
-        // Remove the key from the list of keys in this table
-        KeysInTable.updateKeys0(tableId, index, lastKey);
-        KeysInTable.popKeys0(tableId);
+          // Remove the key from the list of keys in this table
+          KeysInTable.updateKeys0(tableId, index, lastKey);
+          KeysInTable.popKeys0(tableId);
+        }
+        if (key.length > 1) {
+          bytes32 lastKey = KeysInTable.getItemKeys1(tableId, length - 1);
+
+          // Remove the key from the list of keys in this table
+          KeysInTable.updateKeys1(tableId, index, lastKey);
+          KeysInTable.popKeys1(tableId);
+        }
+        if (key.length > 2) {
+          bytes32 lastKey = KeysInTable.getItemKeys2(tableId, length - 1);
+
+          // Remove the key from the list of keys in this table
+          KeysInTable.updateKeys2(tableId, index, lastKey);
+          KeysInTable.popKeys2(tableId);
+        }
+        if (key.length > 3) {
+          bytes32 lastKey = KeysInTable.getItemKeys3(tableId, length - 1);
+
+          // Remove the key from the list of keys in this table
+          KeysInTable.updateKeys3(tableId, index, lastKey);
+          KeysInTable.popKeys3(tableId);
+        }
+        if (key.length > 4) {
+          bytes32 lastKey = KeysInTable.getItemKeys4(tableId, length - 1);
+
+          // Remove the key from the list of keys in this table
+          KeysInTable.updateKeys4(tableId, index, lastKey);
+          KeysInTable.popKeys4(tableId);
+        }
       }
     }
   }
