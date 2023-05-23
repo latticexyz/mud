@@ -7,8 +7,10 @@ import (
 	"math/big"
 	"strings"
 
+	abi_geth "github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
+
 	"go.uber.org/zap"
 )
 
@@ -451,6 +453,94 @@ func DecodeDataField__DecodedData(encoding []byte, schemaTypePair SchemaTypePair
 	logger.GetLogger().Fatal("could not decode data field at index", zap.Uint8("index", index))
 	return nil
 
+}
+
+// MapDecodedParameterBytes takes in a value that is a byte slice and maps it to a format that is
+// compatible with MODE / Postgres backend by calling handleBytes() after parsing the interface{}
+// into the correct fixed-size byte slice (e.g. [32]byte for BYTES32]) using a switch. This is
+// needed since data comes in as fixed size byte slices from the ABI Decoder.
+func MapDecodedParameterBytes(value interface{}, schemaType SchemaType) interface{} {
+	// TODO: finish
+	switch schemaType {
+	case BYTES4:
+		v := value.([4]byte)
+		return handleBytes(v[:])
+	case BYTES8:
+		v := value.([8]byte)
+		return handleBytes(v[:])
+	case BYTES16:
+		v := value.([16]byte)
+		return handleBytes(v[:])
+	case BYTES32:
+		v := value.([32]byte)
+		return handleBytes(v[:])
+	default:
+		return value
+	}
+}
+
+// MapDecodedParameterAddress takes in a value that is a common.Address and maps it to a format
+// that is compatible with MODE / Postgres (string).
+func MapDecodedParameterAddress(value interface{}, schemaType SchemaType) interface{} {
+	v := value.(common.Address)
+	return handleAddress(v[:])
+}
+
+// MapDecodedParameter takes in a value that is an interface{} and maps it to a format that is
+// compatible with MODE / Postgres.
+func MapDecodedParameter(value interface{}, schemaType SchemaType) interface{} {
+	// Only address and bytes types need to be mapped.
+	if schemaType >= BYTES1 && schemaType <= BYTES32 {
+		return MapDecodedParameterBytes(value, schemaType)
+	} else if schemaType == ADDRESS {
+		return MapDecodedParameterAddress(value, schemaType)
+	} else {
+		return value
+	}
+}
+
+// DecodeParameter ABI decodes the given an array of byte slices `data` into an interface{} using the
+// provided schema type `schemaType`.
+func ABIDecodeParameter(schemaType SchemaType, data [32]byte) (interface{}, error) {
+	args := make(abi_geth.Arguments, 0)
+
+	arg := abi_geth.Argument{}
+	var err error
+	arg.Type, err = abi_geth.NewType(strings.ToLower(schemaType.String()), "", nil)
+	if err != nil {
+		return nil, err
+	}
+	args = append(args, arg)
+
+	values, err := args.UnpackValues(data[:])
+	return MapDecodedParameter(values[0], schemaType), err
+}
+
+// DecodeKeyData decodes the given an array of byte slices `encodedKey` into a `DecodedData` object
+// using the provided schema type pair `schemaTypePair`.
+//
+// Parameters:
+// - encodedKey ([32]byte) - The byte slices of a key to be decoded.
+// - schemaTypePair (SchemaTypePair) - The schema type pair used to decode the byte slices.
+//
+// Returns:
+// - (*DecodedData) - A pointer to the `DecodedData` object.
+func DecodeKeyData(encodedKey [][32]byte, schemaTypePair SchemaTypePair) *DecodedData {
+	// Where the decoded data is stored.
+	data := NewDecodedDataFromSchemaTypePair(schemaTypePair)
+
+	for idx, fieldType := range schemaTypePair.Static {
+		decodedKeyData, err := ABIDecodeParameter(fieldType, encodedKey[idx])
+		if err != nil {
+			panic(err)
+		}
+		data.Add(&DataSchemaType__Struct{
+			Data:       decodedKeyData,
+			SchemaType: fieldType,
+		})
+	}
+
+	return data
 }
 
 // DecodeData decodes the given byte slice `encoding` into a `DecodedData` object
