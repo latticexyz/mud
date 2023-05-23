@@ -3,11 +3,16 @@ import { AccountSummary } from "./AccountSummary";
 import { EventsSummary } from "./EventsSummary";
 import { ActionsSummary } from "./ActionsSummary";
 import { TablesSummary } from "./TablesSummary";
+import packageJson from "../../package.json";
+
+const isLinked = Object.entries(packageJson.dependencies).some(
+  ([name, version]) => name.startsWith("@latticexyz/") && version.startsWith("link:")
+);
 
 export function SummaryPage() {
   return (
-    <>
-      <div className="p-6 space-y-8">
+    <div className="h-full flex flex-col">
+      <div className="flex-grow p-6 space-y-8 relative">
         <div className="space-y-2">
           <h1 className="font-bold text-white/40 uppercase text-xs">Network</h1>
           <NetworkSummary />
@@ -29,6 +34,9 @@ export function SummaryPage() {
           <TablesSummary />
         </div>
       </div>
-    </>
+      <div className="p-2 text-right font-mono text-xs leading-none text-white/20">
+        MUD {isLinked ? <>v{packageJson.version}</> : <>linked</>}
+      </div>
+    </div>
   );
 }
