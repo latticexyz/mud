@@ -72,7 +72,7 @@ contract KeysInTableModuleTest is Test {
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
   }
 
-  function testFailInstallSingleton() public {
+  function testInstallSingleton() public {
     _installKeysInTableModule();
 
     bytes32[] memory keyTuple = new bytes32[](0);
