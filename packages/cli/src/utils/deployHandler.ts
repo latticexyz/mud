@@ -55,7 +55,12 @@ export async function deployHandler(args: DeployOptions) {
   if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(mudConfig, null, 2));
 
   const privateKey = process.env.PRIVATE_KEY;
-  if (!privateKey) throw new MUDError("Missing PRIVATE_KEY environment variable");
+  if (!privateKey)
+    throw new MUDError(
+      `Missing PRIVATE_KEY environment variable.
+Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
+in your contracts directory to use the default anvil private key.`
+    );
   const deploymentInfo = await deploy(mudConfig, existingContracts, { ...args, rpc, privateKey });
 
   if (args.saveDeployment) {

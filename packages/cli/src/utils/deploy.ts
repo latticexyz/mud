@@ -543,6 +543,10 @@ export async function deploy(
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
     if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
+    if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
+      throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
+If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
+    }
 
     // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
     maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
