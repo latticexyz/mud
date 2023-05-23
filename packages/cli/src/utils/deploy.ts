@@ -44,7 +44,7 @@ export async function deploy(
   const resolvedConfig = resolveWorldConfig(mudConfig, existingContracts);
 
   const startTime = Date.now();
-  const { worldContractName, namespace, postDeployScript } = mudConfig;
+  const { worldContractName, postDeployScript } = mudConfig;
   const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
     deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
@@ -141,14 +141,17 @@ export async function deploy(
     console.log(chalk.green("Installed core World modules"));
   }
 
-  // Register namespace
-  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  // Register namespaces
+  const namespaces = new Set(Object.values(mudConfig.tables).map(({ namespace }) => namespace));
+  for (const namespace of namespaces) {
+    if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  }
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema }]) => {
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { namespace, name, schema, keySchema }]) => {
       console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
 
       // Store the tableId for later use
@@ -188,7 +191,7 @@ export async function deploy(
   promises = [
     ...promises,
     ...Object.entries(resolvedConfig.systems).map(
-      async ([systemName, { name, openAccess, registerFunctionSelectors }]) => {
+      async ([systemName, { namespace, name, openAccess, registerFunctionSelectors }]) => {
         // Register system at route
         console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${name}`));
         await fastTxExecute(
@@ -245,7 +248,9 @@ export async function deploy(
   promises = [];
 
   // Grant access to systems
-  for (const [systemName, { name, accessListAddresses, accessListSystems }] of Object.entries(resolvedConfig.systems)) {
+  for (const [systemName, { namespace, name, accessListAddresses, accessListSystems }] of Object.entries(
+    resolvedConfig.systems
+  )) {
     const resourceSelector = `${namespace}/${name}`;
 
     // Grant access to addresses
