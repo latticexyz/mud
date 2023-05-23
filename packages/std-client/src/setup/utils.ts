@@ -166,8 +166,8 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
           const tableConfig = storeConfig.tables[table];
 
           // Apply network updates to cache store
-          if (!tableConfig || namespace !== storeConfig.namespace) {
-            // console.warn("Ignoring table config outside own mud config", update, storeConfig.namespace);
+          if (!tableConfig || namespace !== tableConfig.namespace) {
+            // console.warn("Ignoring table config outside own mud config", update, tableConfig.namespace);
           } else {
             // TODO: key names are not yet part of the on-chain table metadata, so we have to
             // load them from the local mud.config (and have to ignore all tables that are not
