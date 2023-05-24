@@ -142,8 +142,9 @@ contract SnapSyncModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(records.length, 1);
-    assertEq(records[0].keyTuple[0], keyTupleA[0]);
-    assertEq(records[0].keyTuple[1], keyTupleA[1]);
+    for (uint256 i; i < 2; i++) {
+      assertEq(records[0].keyTuple[i], keyTupleA[i]);
+    }
     assertEq(records[0].value, abi.encodePacked(value1));
 
     // Set another key with a different value
@@ -156,13 +157,11 @@ contract SnapSyncModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(records.length, 2);
-    assertEq(records[0].keyTuple[0], keyTupleA[0]);
-    assertEq(records[0].keyTuple[1], keyTupleA[1]);
-    assertEq(records[0].keyTuple[2], keyTupleA[2]);
+    for (uint256 i; i < 3; i++) {
+      assertEq(records[0].keyTuple[i], keyTupleA[i]);
+      assertEq(records[1].keyTuple[i], keyTupleB[i]);
+    }
     assertEq(records[0].value, abi.encodePacked(value1));
-    assertEq(records[1].keyTuple[0], keyTupleB[0]);
-    assertEq(records[1].keyTuple[1], keyTupleB[1]);
-    assertEq(records[1].keyTuple[2], keyTupleB[2]);
     assertEq(records[1].value, abi.encodePacked(value2));
   }
 
@@ -188,10 +187,11 @@ contract SnapSyncModuleTest is Test {
     // !gasreport Call snap sync on a table with 1 record
     SyncRecord[] memory records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
 
-    // // Assert that the list is correct
+    // Assert that the list is correct
     assertEq(records.length, 1);
-    assertEq(records[0].keyTuple[0], keyTupleA[0]);
-    assertEq(records[0].keyTuple[1], keyTupleA[1]);
+    for (uint256 i; i < 2; i++) {
+      assertEq(records[0].keyTuple[i], keyTupleA[i]);
+    }
     assertEq(records[0].value, abi.encodePacked(value1));
 
     // Set another key with a different value
@@ -204,13 +204,11 @@ contract SnapSyncModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(records.length, 2);
-    assertEq(records[0].keyTuple[0], keyTupleA[0]);
-    assertEq(records[0].keyTuple[1], keyTupleA[1]);
-    assertEq(records[0].keyTuple[2], keyTupleA[2]);
+    for (uint256 i; i < 3; i++) {
+      assertEq(records[0].keyTuple[i], keyTupleA[i]);
+      assertEq(records[1].keyTuple[i], keyTupleB[i]);
+    }
     assertEq(records[0].value, abi.encodePacked(value1));
-    assertEq(records[1].keyTuple[0], keyTupleB[0]);
-    assertEq(records[1].keyTuple[1], keyTupleB[1]);
-    assertEq(records[1].keyTuple[2], keyTupleB[2]);
     assertEq(records[1].value, abi.encodePacked(value2));
   }
 }
