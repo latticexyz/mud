@@ -192,6 +192,18 @@
     "gasUsed": 70902
   },
   {
+    "source": "test/SnapSyncModule.t.sol",
+    "name": "Call snap sync on a table with 1 record",
+    "functionCall": "SyncRecord[] memory records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0)",
+    "gasUsed": 42689
+  },
+  {
+    "source": "test/SnapSyncModule.t.sol",
+    "name": "Call snap sync on a table with 2 records",
+    "functionCall": "records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0)",
+    "gasUsed": 61325
+  },
+  {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",

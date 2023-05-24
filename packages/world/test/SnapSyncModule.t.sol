@@ -18,6 +18,16 @@ import { SyncRecord } from "../src/modules/snapsync/SyncRecord.sol";
 import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
+interface ISnapSyncSystem {
+  function snapSync_system_getRecords(
+    bytes32 tableId,
+    uint256 limit,
+    uint256 offset
+  ) external view returns (SyncRecord[] memory records);
+
+  function snapSync_system_getNumKeysInTable(bytes32 tableId) external view returns (uint256);
+}
+
 contract SnapSyncModuleTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld world;
@@ -66,10 +76,6 @@ contract SnapSyncModuleTest is Test {
     singletonTableId = world.registerTable(namespace, singletonName, tableSchema, singletonKeySchema);
     compositeTableId = world.registerTable(namespace, compositeName, tableSchema, compositeKeySchema);
 
-    // Install the index module
-    // TODO: add support for installing this via installModule
-    // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys in table module
     world.installRootModule(keysInTableModule, abi.encode(tableId));
     world.installRootModule(keysInTableModule, abi.encode(singletonTableId));
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
@@ -82,22 +88,129 @@ contract SnapSyncModuleTest is Test {
     // Set a value in the source table
     world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value1));
 
-    // !gasreport Call snap sync on a given table
-    SyncRecord[][] memory records = getKeysInTable(world, tableId);
+    uint256 limit = ISnapSyncSystem(address(world)).snapSync_system_getNumKeysInTable(tableId);
+
+    // !gasreport Call snap sync on a table with 1 record
+    SyncRecord[] memory records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0);
+
+    // Assert that the list is correct
+    assertEq(records.length, 1);
+    assertEq(records[0].keyTuple[0], key1);
+    assertEq(records[0].value, abi.encodePacked(value1));
+
+    // Set another key with a different value
+    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value2));
+
+    limit = ISnapSyncSystem(address(world)).snapSync_system_getNumKeysInTable(tableId);
+
+    // !gasreport Call snap sync on a table with 2 records
+    records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0);
+
+    // Assert that the list is correct
+    assertEq(records.length, 2);
+    assertEq(records[0].keyTuple[0], key1);
+    assertEq(records[0].value, abi.encodePacked(value1));
+    assertEq(records[1].keyTuple[0], key2);
+    assertEq(records[1].value, abi.encodePacked(value2));
+  }
+
+  function testSnapSyncGas() public {
+    testSnapSync(val1, val2);
+  }
+
+  function testSnapSyncComposite(uint256 value1, uint256 value2) public {
+    _installModules();
+
+    bytes32[] memory keyTupleA = new bytes32[](3);
+    keyTupleA[0] = "A1";
+    keyTupleA[1] = "A2";
+    keyTupleA[2] = "A3";
+    bytes32[] memory keyTupleB = new bytes32[](3);
+    keyTupleB[0] = "B1";
+    keyTupleB[1] = "B2";
+    keyTupleB[2] = "B3";
+
+    ISnapSyncSystem syncSystem = ISnapSyncSystem(address(world));
+
+    // Set a value in the source table
+    world.setRecord(namespace, compositeName, keyTupleA, abi.encodePacked(value1));
+
+    uint256 limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
+
+    // !gasreport Call snap sync on a table with 1 record
+    SyncRecord[] memory records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+
+    // Assert that the list is correct
+    assertEq(records.length, 1);
+    assertEq(records[0].keyTuple[0], keyTupleA[0]);
+    assertEq(records[0].keyTuple[1], keyTupleA[1]);
+    assertEq(records[0].value, abi.encodePacked(value1));
+
+    // Set another key with a different value
+    world.setRecord(namespace, compositeName, keyTupleB, abi.encodePacked(value2));
+
+    limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
+
+    // !gasreport Call snap sync on a table with 2 records
+    records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+
+    // Assert that the list is correct
+    assertEq(records.length, 2);
+    assertEq(records[0].keyTuple[0], keyTupleA[0]);
+    assertEq(records[0].keyTuple[1], keyTupleA[1]);
+    assertEq(records[0].keyTuple[2], keyTupleA[2]);
+    assertEq(records[0].value, abi.encodePacked(value1));
+    assertEq(records[1].keyTuple[0], keyTupleB[0]);
+    assertEq(records[1].keyTuple[1], keyTupleB[1]);
+    assertEq(records[1].keyTuple[2], keyTupleB[2]);
+    assertEq(records[1].value, abi.encodePacked(value2));
+  }
+
+  function testSnapSyncCompositeSameKey(uint256 value1, uint256 value2) public {
+    _installModules();
+
+    bytes32[] memory keyTupleA = new bytes32[](3);
+    keyTupleA[0] = "KEY";
+    keyTupleA[1] = "A2";
+    keyTupleA[2] = "A3";
+    bytes32[] memory keyTupleB = new bytes32[](3);
+    keyTupleB[0] = "KEY";
+    keyTupleB[1] = "B2";
+    keyTupleB[2] = "B3";
+
+    // Set a value in the source table
+    world.setRecord(namespace, compositeName, keyTupleA, abi.encodePacked(value1));
+
+    ISnapSyncSystem syncSystem = ISnapSyncSystem(address(world));
+
+    uint256 limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
+
+    // !gasreport Call snap sync on a table with 1 record
+    SyncRecord[] memory records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
 
     // // Assert that the list is correct
-    // assertEq(keysInTable.length, 1);
-    // assertEq(keysInTable[0][0], key1);
+    assertEq(records.length, 1);
+    assertEq(records[0].keyTuple[0], keyTupleA[0]);
+    assertEq(records[0].keyTuple[1], keyTupleA[1]);
+    assertEq(records[0].value, abi.encodePacked(value1));
 
-    // // Set another key with a different value
-    // world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value2));
+    // Set another key with a different value
+    world.setRecord(namespace, compositeName, keyTupleB, abi.encodePacked(value2));
 
-    // // Get the list of keys in the target table
-    // keysInTable = getKeysInTable(world, tableId);
+    limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
 
-    // // Assert that the list is correct
-    // assertEq(keysInTable.length, 2);
-    // assertEq(keysInTable[0][0], key1);
-    // assertEq(keysInTable[1][0], key2);
+    // !gasreport Call snap sync on a table with 2 records
+    records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+
+    // Assert that the list is correct
+    assertEq(records.length, 2);
+    assertEq(records[0].keyTuple[0], keyTupleA[0]);
+    assertEq(records[0].keyTuple[1], keyTupleA[1]);
+    assertEq(records[0].keyTuple[2], keyTupleA[2]);
+    assertEq(records[0].value, abi.encodePacked(value1));
+    assertEq(records[1].keyTuple[0], keyTupleB[0]);
+    assertEq(records[1].keyTuple[1], keyTupleB[1]);
+    assertEq(records[1].keyTuple[2], keyTupleB[2]);
+    assertEq(records[1].value, abi.encodePacked(value2));
   }
 }
