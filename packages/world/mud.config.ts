@@ -122,7 +122,7 @@ export default mudConfig({
         sourceTable: "bytes32",
         keysHash: "bytes32",
       },
-      schema: { has: "bool", index: "uint32" },
+      schema: { has: "bool", index: "uint40" },
       dataStruct: false,
     },
     UniqueEntity: {
