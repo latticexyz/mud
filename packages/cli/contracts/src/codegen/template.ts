@@ -13,12 +13,14 @@ export type TemplateConfig = Record<
       v6: "E1" | "E2" | "E3";
       v7: "E1";
     };
-    Dynamics?: {
+    Dynamics1?: {
       staticB32: SchemaTypeToPrimitive[193];
       staticI32: SchemaTypeToPrimitive[133];
       staticU128: SchemaTypeToPrimitive[113];
       staticAddrs: SchemaTypeToPrimitive[195];
       staticBools: SchemaTypeToPrimitive[194];
+    };
+    Dynamics2?: {
       u64: SchemaTypeToPrimitive[105];
       str: SchemaTypeToPrimitive[197];
       b: SchemaTypeToPrimitive[196];

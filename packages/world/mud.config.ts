@@ -134,7 +134,7 @@ export default mudConfig({
     },
     FactoryContent: {
       directory: "modules/factory/tables",
-      primaryKeys: { templateId: "bytes32", tableId: "bytes32" },
+      keySchema: { templateId: "bytes32", tableId: "bytes32" },
       schema: "bytes",
     },
     FactoryIndex: {

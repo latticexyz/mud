@@ -9,7 +9,7 @@ try {
   config = mudConfig({
     tables: {
       Statics: {
-        primaryKeys: {
+        keySchema: {
           k1: "uint256",
           k2: "int32",
           k3: "bytes16",
@@ -28,20 +28,24 @@ try {
           v7: "Enum2",
         },
       },
-      Dynamics: {
+      Dynamics1: {
         schema: {
           staticB32: "bytes32[1]",
           staticI32: "int32[2]",
           staticU128: "uint128[3]",
           staticAddrs: "address[4]",
           staticBools: "bool[5]",
+        },
+      },
+      Dynamics2: {
+        schema: {
           u64: "uint64[]",
           str: "string",
           b: "bytes",
         },
       },
       Singleton: {
-        primaryKeys: {},
+        keySchema: {},
         schema: {
           v1: "int256",
           v2: "uint32[2]",
