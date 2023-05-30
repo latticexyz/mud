@@ -1,0 +1,48 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "wait-port localhost:8545 && vite",
+    "initialize": "pnpm build",
+    "preview": "vite preview",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@latticexyz/common": "link:../../../../packages/common",
+    "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
+    "@latticexyz/network": "link:../../../../packages/network",
+    "@latticexyz/phaserx": "link:../../../../packages/phaserx",
+    "@latticexyz/react": "link:../../../../packages/react",
+    "@latticexyz/recs": "link:../../../../packages/recs",
+    "@latticexyz/schema-type": "link:../../../../packages/schema-type",
+    "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/utils": "link:../../../../packages/utils",
+    "@latticexyz/world": "link:../../../../packages/world",
+    "@wagmi/chains": "^0.2.14",
+    "contracts": "workspace:*",
+    "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "simplex-noise": "^4.0.1",
+    "styled-components": "^5.3.10",
+    "use-resize-observer": "^9.1.0",
+    "zustand": "^4.3.8"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.194",
+    "@types/react": "^18.2.6",
+    "@types/react-dom": "^18.2.4",
+    "@types/styled-components": "^5.1.26",
+    "@vitejs/plugin-react": "^3.1.0",
+    "eslint-plugin-react": "7.31.11",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "vite": "^4.2.1",
+    "wait-port": "^1.0.4"
+  }
+}

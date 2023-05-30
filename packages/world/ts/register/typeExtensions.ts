@@ -36,8 +36,6 @@ declare module "@latticexyz/store/register" {
         modules: typeof WORLD_DEFAULTS.modules;
       }
     > {
-    overrideSystems: ExpandSystemsConfig<
-      T["overrideSystems"] extends Record<string, unknown> ? T["overrideSystems"] : Record<string, never>
-    >;
+    systems: ExpandSystemsConfig<T["systems"] extends Record<string, unknown> ? T["systems"] : Record<string, never>>;
   }
 }

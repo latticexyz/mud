@@ -16,3 +16,4 @@ export * from "./createBlockNumberStream";
 export * from "./createFaucetService";
 export * from "./utils";
 export * from "./createFastTxExecutor";
+export * from "./v2/snapSync";

@@ -1,3 +1,5 @@
+import { Aside } from "../../components/Aside";
+
 ## World 101
 
 The World is a standard smart contract that can be deployed by anyone. Creating a new World is akin to creating a new community computer or installing a new Operating System: it’s a brand new space for state and logic to be deployed by anyone on-chain — although you will probably be the first one to create resources in your new World!
@@ -22,18 +24,18 @@ A World contains resources. Currently, there exists three types of resources. Mo
 
 Each resource is contained within a namespace. You can think of the resources within a World as a filesystem:
 
-```jsx
-root |
-  (--mudswap < -Namespace) |
-  (Balance < -Table) |
-  (Pool < -Table) |
-  (Transfer < -System) |
-  (--tetris < -Namespace) |
-  (Board < -Table) |
-  (Move < -System) |
-  (Drop < -System) |
-  (Score < -Table) |
-  (Win < -System);
+```bash
+root
+|-- mudswap <- Namespace
+    | Balance <- Table
+    | Pool <- Table
+    | Transfer <- System
+|-- Tetris <- Namespace
+    | Board <- Table
+    | Move <- System
+    | Drop <- System
+    | Score <- Table
+    | Win <- System
 ```
 
 The organization of resources within namespaces is used for two different features of MUD:
@@ -44,50 +46,78 @@ The organization of resources within namespaces is used for two different featur
    - **Synchronizing a System** means downloading its EVM bytecode from the chain, and in a future version of MUD, being able to execute these systems optimistically client side. As an example, this would allow clients to immediately predict the likely outcome of an on-chain action without relying on external nodes or services like Tenderly to simulate the outcome.
 
 **A note on managing namespaces and resources**:
-In most basic cases, you don’t need to worry about namespaces and access control while building your application with World (regardless of whether you are deploying a new World or building on an existing one). If your project was generated from the MUD templates using `npm create mud`/`yarn create mud`/`mud create`, it will use the `tablegen` tool from the MUD CLI to generate libraries for tables, and the `deploy` tool to deploy the resources into the World. Namespace access will be done for you: systems will be able to write to all your tables out-of-the-box. You just need to decide which namespace you will build your application in!
+In most basic cases, you don’t need to worry about namespaces and access control while building your application with World (regardless of whether you are deploying a new World or building on an existing one). If your project was generated from the MUD templates using `pnpm create mud`/`yarn create mud`/`mud create`, it will use the `tablegen` tool from the MUD CLI to generate libraries for tables, and the `deploy` tool to deploy the resources into the World. Namespace access will be done for you: systems will be able to write to all your tables out-of-the-box. You just need to decide which namespace you will build your application in!
 
 ### Systems
 
-This is WIP
+Systems are stateless pieces of logic executed on the World, represented as a resource within a namespace.
+They are written in Solidity and compile to the EVM like regular smart contracts. You can think of them as SQL functions acting your SQL database (Store in this case).
+Systems read and store their state on the World's Store. These storage access are abstracted via the libraries generated with `tablegen`. You can learn more about `tablegen` in the [Store doc](/store/reading-and-writing).
 
-- Piece of code added to the world with logic
-- no state! use tables to read and write data
-- \_msgSender
-- root systems
-- systems and namespaces
-- can be delegatacall from the world
-- can be called from the world
-- both handled transparently by the StoreSwitch in the generated table
+**Reading and writing to the state in a system:**
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { FooBarTable } from "../codegen/tables/FooBarTable.sol";
+
+contract ExampleSystem is System {
+  function createRecord(uint256 foo, string memory bar) public returns () {
+    string memory barValue = FooBarTable.get(foo); // Reading from the state
+    FooBarTable.set(foo, bar); // Writing string "bar" at the key foo
+  }
+}
+```
+
+Systems **MUST** use the `_msgSender()` function exposed in the `System` interface to fetch the `msg.sender`. Using `msg.sender` directly is **insecure**.
+
+There exists two types of systems:
+
+1. **Regular systems**: Regular systems are `CALL`ed from the World, which isolates their storage from the World storage. They read and write to the Store by going through the World, which does access control checks (eg: Can this system write to this table>). Regular systems can register namespaced function selectors on the World. eg: `World.myNamespace_ExampleSystem_createRecord()`.
+2. **Root systems**: Root systems are `DELEGATECALL`ed from the World, which lets them borrow the World storage. They read and write to the Store _directly_. There are _NO_ access control on Root systems. Root systems can register root function selectors, allowing their functions to be called on the World directly, eg: `World.createRecord()`.
+
+Systems are not root by default, only systems registered in the ROOT namespace (the empty string namespace: `""`) are treated as root systems.
+
+Both ways of accessing the Store -- through the World or directly in storage -- are abstracted via the code-generated table libraries. Systems transparently switch between these two modes depending on whether they are `CALL`ed or `DELEGATECALL`ed.
+
+### Tables
+
+Tables are a type of resource, just like systems, and they are installed on the World at runtime. You can define them in your MUD config and they will automatically be registered by the deployer.
+The state of each table is represented withtin the storage of the World contract.
 
 ## Getting started with World
 
-In order to use World, you just need your project to have the right folder structure and have a `mud.config.mts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
+In order to use World, you just need your project to have the right folder structure and have a `mud.config.ts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
 
 1. **Start from the minimal template**
 
-Run `yarn create mud my-first-mud-project`; and `cd` into it. Open your favorite code editor.
+Run the following command:
+
+```console
+pnpm create mud@canary your-project-name
+```
+
+You'll be prompted to pick the type of template to use; select vanilla.
+
+Jump into your new project's directory by running:
+
+```console
+cd your-project-name
+```
 
 2. **Let’s look at the MUD config**
 
-The MUD config for the vanilla template looks like this:
+Open the project in your favorite code editor. The MUD config for the vanilla template looks like this:
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  namespace: "mud",
-  systems: {
-    IncrementSystem: {
-      name: "increment",
-      openAccess: true,
-    },
-    tables: {
-      CounterTable: {
-        name: "counter",
-        schema: {
-          value: "uint32",
-        },
-      },
+  tables: {
+    Counter: {
+      keySchema: {},
+      schema: "uint32",
     },
   },
 });
@@ -95,117 +125,79 @@ export default mudConfig({
 
 Let’s break it down:
 
-```jsx
-namespace: "mud";
-```
+First, notice there is no `namespace` key: all our resources will be installed in the `ROOT` namespace, and our systems' functions will be registered as-is on the World.
 
-`namespace: "mud"`: we are deploying our systems and tables in the namespace called “mud”. This namespace will be registered on the World deployed in development and will be owned by the deployer address.
+Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
 
-```tsx
-systems: {
-    IncrementSystem: {
-        name: "increment",
-        openAccess: true,
-    },
-},
-```
-
-We are deploying one system named “IncrementSystem”. The deployer will find its code by looking for a file named `IncrementSystem.sol`. Its name is `increment`, so its full path within the world will be `/mud/increment` (remember our namespace is `mud`). Its access is **open**, which means the World will let any address call this system.
-
-```tsx
-tables: {
-    CounterTable: {
-        name: "counter",
-        schema: {
-            value: "uint32",
-        },
-    },
-},
-```
-
-We are creating one table named “CounterTable”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
+Lastly, this project has one system at `IncrementSystem.sol`, but it does not need to be in the config. Any file that ends in `*System.sol` is considered a system and deployed by default.
 
 The file system on the World looks like this now when deployed:
 
 ```bash
 root
-|-- mud
-    | counter <- Table
-    | increment <- System
+| Counter <- Table
+| increment <- System
 ```
 
 Because `increment` is in the same namespace as `counter`, it can write records on that table using the libraries generated by `tablegen`.
 
-{/* TODO: better aside styling */}
-
-<aside style={{padding: '1em', border:'2px dashed #ddd', borderRadius: '1em'}}>
-❓ If you are curious how the Increment System writes to the Counter Table, here is a short explanation:
+<Aside emoji="❓">
+If you are curious how the Increment System writes to the Counter Table, here is a short explanation:
 - The System uses the auto-generated library as if the Store storage existed in the contract:
 
 ```solidity
-uint32 counter = CounterTable.get(bytes32("singleton"));
+uint32 counter = Counter.get();
 uint32 newValue = counter + 1;
-CounterTable.set(bytes32("singleton"), newValue);
+Counter.set(, newValue);
 ```
 
-- The generated library detects that the Store is on the World — that routed the call to the system, it is `msg.sender` — instead of the system itself, and routes the write request (here `CounterTable.set(...)`) to the World.
+- The generated library detects that the Store is on the World — that routed the call to the system, it is `msg.sender` — instead of the system itself, and routes the write request (here `Counter.set(...)`) to the World.
 - The World checks that the system has access to the counter table. Here it does because it is in the same namespace.
 - The World writes to the appropriate record, and gives execution back to the system.
 
-</aside>
+</Aside>
 
 3. **Adding another table**
 
 Let’s add a new table. It’s as simple as extending the config. For reference on how to create new tables and different options available, refer to the [Store documentation](https://www.notion.so/Store-930ed995c2b14782ae9a949e1e3c8fe9).
 
 ```tsx
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  namespace: "mud",
-  systems: {
-    IncrementSystem: {
-      name: "increment",
-      openAccess: true,
+  tables: {
+    Counter: {
+      keySchema: {},
+      schema: "uint32",
     },
-    tables: {
-      CounterTable: {
-        name: "counter",
-        schema: {
-          value: "uint32",
-        },
-      },
-      DogTable: {
-        name: "dog",
-        schema: {
-          owner: "address",
-          name: "string",
-          color: "string",
-        },
+    Dog: {
+      schema: {
+        owner: "address",
+        name: "string",
+        color: "string",
       },
     },
   },
 });
 ```
 
-We can run `yarn mud tablegen` in the contract folder to recreate the libraries.
+We can run `pnpm mud tablegen` in the contract folder to recreate the libraries.
 
 ```bash
-> yarn mud tablegen
-Generated table: src/codegen/tables/CounterTable.sol
-Generated table: src/codegen/tables/DogTable.sol
+> pnpm mud tablegen
+Generated table: src/codegen/tables/Counter.sol
+Generated table: src/codegen/tables/Dog.sol
 ```
 
-We now have a library in `src/codegen/tables/DogTable.sol` that can be used to interact with the new table we created!
+We now have a library in `src/codegen/tables/Dog.sol` that can be used to interact with the new table we created!
 
 The file system on the World looks like this at this stage:
 
 ```bash
 root
-|-- mud
-    | counter <- Table
-    | increment <- System
-    | mytable <- Table
+  | Counter <- Table
+  | increment <- System
+  | Dog <- Table
 ```
 
 4. **Adding another system**
@@ -224,72 +216,69 @@ contract MySystem is System {
 }
 ```
 
-And we edit our config
-
-```tsx
-import { mudConfig } from "@latticexyz/config";
-
-export default mudConfig({
-    namespace: "mud",
-    systems: {
-        IncrementSystem: {
-            name: "increment",
-            openAccess: true,
-        },
-        // let's add a new system
-        MySystem: {
-            name: "mysystem",
-            openAccess: true
-        }
-        tables: {
-            CounterTable: {
-                name: "counter",
-                schema: {
-                    value: "uint32",
-                },
-            },
-            DogTable: {
-                name: "dog",
-                schema: {
-                    owner: "address",
-                    name: "string",
-                    color: "string"
-                }
-            }
-        },
-    }
-});
-```
-
-Now we can import our new table, and write something to it. Let’s write a function that adds a new record to DogTable, and takes the color and the name as an argument. It will assign the `owner` column to the sender of the transaction:
+Now we can import our new table, and write something to it. Let’s write a function that adds a new record to Dog, and takes the color and the name as an argument. It will assign the `owner` column to the sender of the transaction:
 
 ```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { MyNewTable } from "../codegen/tables/DogTable.sol"; // import table we created
+import { Dog } from "../codegen/tables/Dog.sol"; // import table we created
 contract MySystem is System {
-    function addEntry(string memory name, string memory color) public returns () {
-        bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
-        address owner = _msgSender() // IMPORTANT: always refer to the msg.sender using the _msgSender() function
-        DogTable.set(key, {owner: owner, name: name, color: color}) // creating our record!
-    }
+  function addEntry(string memory name, string memory color) public returns (bytes32) {
+    bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
+    address owner = _msgSender() // IMPORTANT: always refer to the msg.sender using the _msgSender() function
+    Dog.set(key, {owner: owner, name: name, color: color}) // creating our record!
+    return key;
+  }
 }
 ```
 
-That’s it! MySystem, just like IncrementSystem, will have access to DogTable given they are in the same namespace.
+That’s it! `MySystem`, just like `IncrementSystem`, will have access to Dog given they are in the same namespace.
 
 After this step, the filesystem of the World is like this:
 
 ```bash
 root
-|-- mud
-    | counter <- Table
-    | increment <- System
-    | dog <- Table
-    | mysystem <- System
+  | Counter <- Table
+  | increment <- System
+  | Dog <- Table
+  | mysystem <- System
 ```
 
 5. **Writing a test**
 
-WIP
+Let's write a test to make sure our system actually adds a record to the Dog when `addEntry` is called.
+
+Create a new file named `MySystemTest.t.sol` in the `test` folder.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import "forge-std/Test.sol";
+import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { Dog, DogId } from "../src/codegen/Tables.sol";
+
+contract MySystemTest is MudV2Test {
+  IWorld world;
+
+  function setUp() public override {
+    super.setUp();
+    world = IWorld(worldAddress);
+  }
+
+  function testAddEntry() public {
+    // Add a new entry to the Dog via the system
+    // this will call the addEntry function on MySystem
+    bytes32 key = World.addEntry("bob", "blue");
+    // Expect the value retrieved from the Dog at the corresponding key to match "bob" and "blue"
+    string memory name = Dog.getName(world, key);
+    string memory color = Dog.getColor(world, key);
+    assertEq(name, "bob");
+    assertEq(color, "blue");
+  }
+}
+```
+
+Run your test suite with `pnpm mud test` in the `contracts` folder of your project (or `yarn test`, `npm test` depending on which package manager you are using).

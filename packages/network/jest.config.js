@@ -8,6 +8,7 @@ export default {
     // fix TS build issues
     "^(..?/.*).js$": "$1",
     // jest can't handle esm imports, so we import the typescript source instead
+    "^@latticexyz/common/chains$": "<rootDir>/../common/src/chains/index.ts",
     "^@latticexyz/recs$": "<rootDir>/../recs/src/index.ts",
     "^@latticexyz/schema-type$": "<rootDir>/../schema-type/src/typescript/index.ts",
     "^@latticexyz/services/ecs-snapshot$": "<rootDir>/../services/protobuf/ts/ecs-snapshot/ecs-snapshot.ts",

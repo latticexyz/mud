@@ -7,6 +7,7 @@ import { logError } from "./utils/errors";
 
 // Load .env file into process.env
 import * as dotenv from "dotenv";
+import chalk from "chalk";
 dotenv.config();
 
 yargs(hideBin(process.argv))
@@ -19,6 +20,12 @@ yargs(hideBin(process.argv))
   .strict()
   // Custom error handler
   .fail((msg, err) => {
+    console.error(chalk.red(msg));
+    if (msg.includes("Missing required argument")) {
+      console.log(
+        chalk.yellow(`Run 'pnpm mud ${process.argv[2]} --help' for a list of available and required arguments.`)
+      );
+    }
     console.log("");
     logError(err);
     console.log("");

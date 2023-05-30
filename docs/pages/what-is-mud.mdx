@@ -1,17 +1,17 @@
+import { Aside } from "../components/Aside";
+
 ## What’s MUD?
 
-
 MUD is a framework for ambitious Ethereum applications.
-It compresses the complexity of building EVM apps with a tightly integrated software stack. 
+It compresses the complexity of building EVM apps with a tightly integrated software stack.
 
 MUD comes with:
 
-1. An [onchain database](store).
-2. An [entry-point framework](world) that brings standardized access-control, upgrades, and modules.  
+1. **Store**: An [onchain database](store).
+2. **World**: An [entry-point framework](world) that brings standardized access-control, upgrades, and modules.
 3. Blazing fast development tools based on [Foundry](https://github.com/foundry-rs/foundry)
 4. Client-side data-stores that magically reflect onchain state.
-5. [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1.
-
+5. **MODE**: [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1.
 
 ## What MUD isn't
 
@@ -27,18 +27,19 @@ MUD comes with:
 
 The way we currently deal with smart-contract state leads to a couple major problems:
 
-1. Coupling state and logic makes upgrading the logic very difficult. Solutions like proxies and diamonds make this situation more bearable, but it is far from a panacea. 
+1. Coupling state and logic makes upgrading the logic very difficult. Solutions like proxies and diamonds make this situation more bearable, but it is far from a panacea.
 2. Solidity and Vyper hash the keys of mappings which makes the storage of smart contracts un-introspectable. Developers need to explain how their smart contract stores data to services like TheGraph in order to query them quickly.
 3. View functions expose a few ways to read data from smart-contracts onchain and off-chain, but if the developers don’t think about all the possible needs from 3rd party contracts ahead of time, it is almost impossible for other contracts to compose on their state.
 4. Introducing reasonable limitations (like flat structs and a limit on the amount of arrays a struct can contain) can make storage more efficient and cheaper for all users.
-5. There is no standard around storing data and emitting events to notify changes to off-chain applications. Each application has a bespoke event / view functions setup in order to bridge the onchain state to a client, which leads to a massive amount of spaghetti networking code for each frontend. 
+5. There is no standard around storing data and emitting events to notify changes to off-chain applications. Each application has a bespoke event / view functions setup in order to bridge the onchain state to a client, which leads to a massive amount of spaghetti networking code for each frontend.
 
 **With MUD, you never use the Solidity compiler-driven data storage**. No arrays, no mappings, no `bool isPaused` at the top of your contract definition. All state is saved and retrieved using Store: a gas efficient onchain database.
 
-Store is like SQLite: it’s an embedded database hand-optimized in Yul. It has tables, with columns and rows. 
-As an example, here is how you can implement a data-structure you'd write as `mapping(uint => mapping(uint => address))` in regular non-MUD Solidity. 
+Store is like SQLite: it’s an embedded database hand-optimized in Yul. It has tables, with columns and rows.
+As an example, here is how you can implement a data-structure you'd write as `mapping(uint => mapping(uint => address))` in regular non-MUD Solidity.
 
 **Vanilla Solidity**:
+
 ```solidity
 mapping(address => mapping(address => uint256)) private allowances
 // storing
@@ -52,13 +53,13 @@ allowance = allowances[address(0)][address(1)]
 ```tsx
 // table definition
 Allowance: {
-      primaryKeys: {
-        from: "address",
-		to: "address",
-      },
-      schema: {
-        amount: "uint256",
-      },
+  keySchema: {
+    from: "address",
+    to: "address",
+  },
+  schema: {
+    amount: "uint256",
+  },
 }
 ```
 
@@ -71,11 +72,11 @@ allowance = AllowanceTable.get(address(0), address(1));
 
 Store supports singleton tables, which are equivalent to storing a single variable, like `address contractOwner`.
 
-The recommended use of Store is through libraries generated using the MUD code-generation tool, but it can also be used directly with raw bytes. 
+The recommended use of Store is through libraries generated using the MUD code-generation tool, but it can also be used directly with raw bytes.
 
 [code with a schema → lib → writing and reading from Store]
 
-Unlike Solidity where all data structures in storage need to be created at compile time, You can create tables at runtime: this is particularly useful to extend the amount of state a contract stores over time, or even to rename tables and columns using migrations. Store brings some of the sanity of SQL database to Ethereum, without trading-off on gas cost. 
+Unlike Solidity where all data structures in storage need to be created at compile time, You can create tables at runtime: this is particularly useful to extend the amount of state a contract stores over time, or even to rename tables and columns using migrations. Store brings some of the sanity of SQL database to Ethereum, without trading-off on gas cost.
 
 Store also allows you to register hooks on certain tables and rows to automatically create indexed views. For example: in case you’d want derived state like `balanceOf` in the ERC-721 spec, Store can recompute the corresponding row for an address every-time any piece of logic changes the owner of a token. It will decrease the balance of the sender and increase the balance of the receiver. There is no need to implement `onTransferHooks` : any piece of code that changes the `owner` column in the Token table will trigger a re-computation of the Balance table.
 
@@ -85,7 +86,7 @@ Store can either be used on the same contract running your business logic (trade
 
 [diagram: store w/ logic, multiple logic contracts talking to Store]
 
-Store uses a custom storage encoding called ********************Tight-coder.******************** It makes Store cheaper to use than regular Solidity for data with more than one dynamic field (eg: two arrays in a struct), and roughly similarly expensive for other data structures.
+Store uses a custom storage encoding called **Tight-coder**. It makes Store cheaper to use than regular Solidity for data with more than one dynamic field (eg: two arrays in a struct), and roughly similarly expensive for other data structures.
 
 [two code stuff with raw Solidity and store, and gas cost commented]
 
@@ -97,7 +98,7 @@ World creates a Store at deployment time. Each table in the Store is registered 
 
 Features — like the logic to transfer a token from one address to another — are added to the World via state-less pieces of logic we call **Systems** which are also registered under a namespace. eg: `/mudswap/performSwapSystem`
 
-Systems are contracts, but they have no state. Instead, they read and write to the Store of the World. They can also be re-used across different Worlds if they are deployed on the same chain. 
+Systems are contracts, but they have no state. Instead, they read and write to the Store of the World. They can also be re-used across different Worlds if they are deployed on the same chain.
 
 Systems can read any table, and they have default write access to tables registered under the same namespace they are in. In order to write to tables in different namespaces, explicit access needs to be granted by the address owning the corresponding namespace.
 
@@ -113,26 +114,27 @@ All Systems are called through the World entry point, which does initial access-
 
 ### 3. No indexers or subgraphs needed, and your frontend is magically synchronized!
 
-When using Store (and by extension World), your onchain data is automatically introspectable, and any change is advertised via standard events. 
+When using Store (and by extension World), your onchain data is automatically introspectable, and any change is advertised via standard events.
 
 These events and schemas are leveraged by [MODE](https://www.notion.so/67312bda49de4acab98d8aa2ee3df03a): a node, but for MUD*.* MODE turns your onchain state into a SQL database and keeps it up to date with millisecond latencies. You can then query MODE via the MUD QDSL (a querying language optimized for describing efficient materialized views), GraphQL, or regular ANSI SQL.
 
 If you decide to go with the MUD querying DSL, your app can subscribe to a subset of the Store via a simple yet flexible querying language and keep that subset of the Store up to date as onchain transactions change Store and the result set.
 
-<aside>
-📢 For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client data-store automatically, and no queries need to be written.
-If that state gets too big for the client (eg: [you are running an onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start tweaking the data being synced using queries.
-
-</aside>
+<Aside emoji="📢">
+  For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client data-store
+  automatically, and no queries need to be written. If that state gets too big for the client (eg: [you are running an
+  onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start tweaking the
+  data being synced using queries.
+</Aside>
 
 [diagram with a few tables, a DSL query, a client that updates its frontend, and an onchain tx that percolates to changing the UI]
 
 This means you don’t need to write Subgraphs or Indexers: you just need to point a MODE to your Store!
 
-A major pain of frontends and clients is reflecting onchain state without spaghetti code. Some apps resort to polling, with various tricks like Multicall or Subgraphs in order to decrease RPC costs. 
+A major pain of frontends and clients is reflecting onchain state without spaghetti code. Some apps resort to polling, with various tricks like Multicall or Subgraphs in order to decrease RPC costs.
 
 With MUD, you define a list of queries on your Store state (the simplest being `*` which asks for all the data). The MUD client then either connects to a MODE or an Ethereum JSON-RPC in case none is available and magically keeps the Store data up to date on your frontend. We currently have libraries for Javascript, with more on the way. If you use Typescript, all your tables will be typed automatically.
 
-If you use React, MUD provides React hooks to bind the Store state to your components and automatically re-render them when the onchain data changes. 
+If you use React, MUD provides React hooks to bind the Store state to your components and automatically re-render them when the onchain data changes.
 
 [diagram with a balance table → a frontend with a button to transfer and an addressed prefilled → a onchain tx to a system → balance table updates → frontend update]

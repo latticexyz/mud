@@ -1,4 +1,4 @@
-import { renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
+import { posixPath, renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { TableOptions } from "./tableOptions";
 
 export function renderTableIndex(options: TableOptions[]) {
@@ -9,7 +9,7 @@ ${renderList(options, ({ outputPath, tableName, renderOptions: { structName, sta
   if (structName) imports.push(structName);
   if (staticResourceData) imports.push(`${tableName}TableId`);
 
-  return `import { ${imports.join(", ")} } from "./${outputPath}";`;
+  return `import { ${imports.join(", ")} } from "./${posixPath(outputPath)}";`;
 })}
 `;
 }

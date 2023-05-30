@@ -1,0 +1,1219 @@
+import { Aside } from "../../../components/Aside";
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# 3. A wild Emojimon appears
+
+To bring this all together we will now add the ability to generate encounters on tall grass in which the user can either capture the emojimon or flee the encounter.
+
+Adding encounters and all of their functionality will serve as a review of all the concepts we've learned so far: creating **tables** (i.e. components), creating and calling **systems**, **optimistic rendering** in the client, and client and contract **queries**.
+
+**In order to do so we will add the following features:**
+
+1. Trigger encounters when players walk in tall grass
+2. Spawn monsters (i.e. emojimon) into the encounter
+3. Allow players to capture emojimon
+4. Allow players to flee encounters
+
+<Aside emoji="💡">
+  **ECS mental model**: In order to trigger encounters we need to recognize when a player (an entity that can enter
+  encounters) is walking through tall grass (an entity that can generate encounters). We then need the game to enter
+  into an entirely different state—the encounter (itself an entity)—in which the player loses the ability to move.
+  Afterwards, we would need to enable to the player to capture an emojimon (an entity capable of being captured and
+  owned).
+</Aside>
+
+Before continuing, try figuring out what components and systems would need to be added to get the build all these features. You could even try building them—we've already taught you all that is needed (and you can view the gif in the [Introduction](/tutorials/emojimon) as a reference).
+
+## 3.1. Enable tall grass to trigger encounters
+
+Let's start by adding three new tables to `mud.config.ts`.
+
+- `Encounterable` → to determine whether or not an entity can engage in an encounter
+- `EncounterTrigger` → to determine whether or not an entity can trigger an encounter when moved on by a player.
+- `Encounter` → to associate a player with an encounter.
+
+<CollapseCode>
+
+```ts filename="mud.config.ts" {8-19} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    Encounter: {
+      keySchema: {
+        player: "bytes32",
+      },
+      schema: {
+        exists: "bool",
+        monster: "bytes32",
+        catchAttempts: "uint256",
+      },
+    },
+    EncounterTrigger: "bool",
+    Encounterable: "bool",
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      schema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    Movable: "bool",
+    Obstruction: "bool",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      schema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+We then have to make sure that players and tall grass are receiving these components properly.
+
+First let's make sure the client is being initialized properly in `PostDeploy.s.sol`.
+
+<CollapseCode>
+
+```solidity filename="PostDeploy.s.sol" {7,61-64} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+import { IWorld } from "../src/codegen/world/IWorld.sol";
+import { EncounterTrigger, MapConfig, Obstruction, Position } from "../src/codegen/Tables.sol";
+import { TerrainType } from "../src/codegen/Types.sol";
+import { positionToEntityKey } from "../src/positionToEntityKey.sol";
+
+contract PostDeploy is Script {
+  function run(address worldAddress) external {
+    console.log("Deployed world: ", worldAddress);
+    IWorld world = IWorld(worldAddress);
+
+    uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+    vm.startBroadcast(deployerPrivateKey);
+
+    TerrainType O = TerrainType.None;
+    TerrainType T = TerrainType.TallGrass;
+    TerrainType B = TerrainType.Boulder;
+
+    TerrainType[20][20] memory map = [
+      [O, O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, T, O, O, O, O, O, T, O, O, O, O, B, O, O, O, O, O, O],
+      [O, T, T, T, T, O, O, O, O, O, O, O, O, O, O, T, T, O, O, O],
+      [O, O, T, T, T, T, O, O, O, O, B, O, O, O, O, O, T, O, O, O],
+      [O, O, O, O, T, T, O, O, O, O, O, O, O, O, O, O, O, T, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, T, O, O, O, B, B, O, O, O, O, T, O, O, O, O, O, B, O, O],
+      [O, O, T, T, O, O, O, O, O, T, O, B, O, O, T, O, B, O, O, O],
+      [O, O, T, O, O, O, O, T, T, T, O, B, B, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, T, T, T, O, B, T, O, T, T, O, O, O, O],
+      [O, B, O, O, O, B, O, O, T, T, O, B, O, O, T, T, O, O, O, O],
+      [O, O, B, O, O, O, T, O, T, T, O, O, B, T, T, T, O, O, O, O],
+      [O, O, B, B, O, O, O, O, T, O, O, O, B, O, T, O, O, O, O, O],
+      [O, O, O, B, B, O, O, O, O, O, O, O, O, B, O, T, O, O, O, O],
+      [O, O, O, O, B, O, O, O, O, O, O, O, O, O, O, O, O, O, O, O],
+      [O, O, O, O, O, O, O, O, O, O, B, B, O, O, T, O, O, O, O, O],
+      [O, O, O, O, T, O, O, O, T, B, O, O, O, T, T, O, B, O, O, O],
+      [O, O, O, T, O, T, T, T, O, O, O, O, O, T, O, O, O, O, O, O],
+      [O, O, O, T, T, T, T, O, O, O, O, T, O, O, O, T, O, O, O, O],
+      [O, O, O, O, O, T, O, O, O, O, O, O, O, O, O, O, O, O, O, O]
+    ];
+
+    uint32 height = uint32(map.length);
+    uint32 width = uint32(map[0].length);
+    bytes memory terrain = new bytes(width * height);
+
+    for (uint32 y = 0; y < height; y++) {
+      for (uint32 x = 0; x < width; x++) {
+        TerrainType terrainType = map[y][x];
+        if (terrainType == TerrainType.None) continue;
+
+        terrain[(y * width) + x] = bytes1(uint8(terrainType));
+
+        bytes32 entity = positionToEntityKey(x, y);
+        if (terrainType == TerrainType.Boulder) {
+          Position.set(world, entity, x, y);
+          Obstruction.set(world, entity, true);
+        } else if (terrainType == TerrainType.TallGrass) {
+          Position.set(world, entity, x, y);
+          EncounterTrigger.set(world, entity, true);
+        }
+      }
+    }
+
+    MapConfig.set(world, width, height, terrain);
+
+    vm.stopBroadcast();
+  }
+}
+```
+
+</CollapseCode>
+
+Then let's update the `spawn` method in `MapSystem.sol` to include the `Encounterable` table/component.
+
+<CollapseCode>
+
+```solidity filename="MapSystem.sol" {4,24} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounterable, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+}
+```
+
+</CollapseCode>
+
+Now that tall grass is an encounter trigger, we can query for an encounter trigger as we move to a new position. We'll update the `MapSystem` to handle this and also stub out a `startEncounter` method for starting an encounter and spawning a monster.
+
+At this point we would ideally like to implement an element of randomness for triggering encounters in tall grass. However, due to the deterministic nature of blockchains and EVM applications, true randomness is not currently possible. **For the sake of this tutorial we will be leaving this as deterministic.**
+
+<Aside emoji="ℹ️">
+  If you're interested in generating somewhat robust randomness in your application, you can look into [Chainlink
+  VRF](https://docs.chain.link/vrf/v2/introduction/) and stay tuned for future MUD tooling.
+</Aside>
+
+<CollapseCode>
+
+```solidity filename="MapSystem.sol" {4,44-49,58-60} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
+    }
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+
+  function startEncounter(bytes32 player) internal {
+    // TODO: spawn monster
+  }
+}
+```
+
+</CollapseCode>
+
+Now that we have all of the encounter logic setup we just want to take the last step of preventing movement while a player is in an encounter—this will be a modification of the move method (you should know where this is by now!)
+
+<CollapseCode>
+
+```solidity filename="MapSystem.sol" {4,31} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounter, Encounterable, EncounterTrigger, MapConfig, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    require(!Encounter.getExists(player), "cannot move during an encounter");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
+    }
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+
+  function startEncounter(bytes32 player) internal {
+    // TODO: spawn monster
+  }
+}
+```
+
+</CollapseCode>
+
+Let's also make sure these interactions are rendering optimistically like everything else. Let's update `createSystemCalls.ts` accordingly.
+
+<CollapseCode>
+
+```ts filename="createSystemCalls.ts" {11,30-34} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { Encounter, MapConfig, Obstruction, Player, Position }: ClientComponents
+) {
+  const wrapPosition = (x: number, y: number) => {
+    const mapConfig = getComponentValue(MapConfig, singletonEntity);
+    if (!mapConfig) {
+      throw new Error("mapConfig no yet loaded or initialized");
+    }
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+  };
+
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const moveTo = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldSend("move", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+  };
+
+  const spawn = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldSend("spawn", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    // TODO
+    return null as any;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
+  return {
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
+}
+```
+
+</CollapseCode>
+
+## 3.2. Start encounter and spawn a monster
+
+We're almost ready start an encounter. What would an Emojimon battle be without an opponent? Let’s fix this by adding a monster!
+
+We'll add a new enum for `MonsterType` and use that in a new `Monster` table/component.
+
+<CollapseCode>
+
+```ts filename="mud.config.ts" {5,30} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    Encounter: {
+      keySchema: {
+        player: "bytes32",
+      },
+      schema: {
+        exists: "bool",
+        monster: "bytes32",
+        catchAttempts: "uint256",
+      },
+    },
+    EncounterTrigger: "bool",
+    Encounterable: "bool",
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      schema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    Monster: "MonsterType",
+    Movable: "bool",
+    Obstruction: "bool",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      schema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+Now we need a way to choose a type of monster when entering an encounter. We can add this logic to move method in `MapSystem.sol`—but remember, we are doing this deterministically because of the constraints of the EVM.
+
+<CollapseCode>
+
+```solidity filename="MapSystem.sol" {4-5,61-66} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounter, EncounterData, Encounterable, EncounterTrigger, MapConfig, Monster, Movable, Obstruction, Player, Position } from "../codegen/Tables.sol";
+import { MonsterType } from "../codegen/Types.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+import { positionToEntityKey } from "../positionToEntityKey.sol";
+
+contract MapSystem is System {
+  function spawn(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(address(_msgSender()));
+    require(!Player.get(player), "already spawned");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Player.set(player, true);
+    Position.set(player, x, y);
+    Movable.set(player, true);
+    Encounterable.set(player, true);
+  }
+
+  function move(uint32 x, uint32 y) public {
+    bytes32 player = addressToEntityKey(_msgSender());
+    require(Movable.get(player), "cannot move");
+
+    require(!Encounter.getExists(player), "cannot move during an encounter");
+
+    (uint32 fromX, uint32 fromY) = Position.get(player);
+    require(distance(fromX, fromY, x, y) == 1, "can only move to adjacent spaces");
+
+    // Constrain position to map size, wrapping around if necessary
+    (uint32 width, uint32 height, ) = MapConfig.get();
+    x = (x + width) % width;
+    y = (y + height) % height;
+
+    bytes32 position = positionToEntityKey(x, y);
+    require(!Obstruction.get(position), "this space is obstructed");
+
+    Position.set(player, x, y);
+
+    if (Encounterable.get(player) && EncounterTrigger.get(position)) {
+      uint256 rand = uint256(keccak256(abi.encode(player, position, blockhash(block.number - 1), block.difficulty)));
+      if (rand % 5 == 0) {
+        startEncounter(player);
+      }
+    }
+  }
+
+  function distance(uint32 fromX, uint32 fromY, uint32 toX, uint32 toY) internal pure returns (uint32) {
+    uint32 deltaX = fromX > toX ? fromX - toX : toX - fromX;
+    uint32 deltaY = fromY > toY ? fromY - toY : toY - fromY;
+    return deltaX + deltaY;
+  }
+
+  function startEncounter(bytes32 player) internal {
+    bytes32 monster = keccak256(abi.encode(player, blockhash(block.number - 1), block.difficulty));
+    MonsterType monsterType = MonsterType((uint256(monster) % uint256(type(MonsterType).max)) + 1);
+    Monster.set(monster, monsterType);
+    Encounter.set(player, EncounterData({ exists: true, monster: monster, catchAttempts: 0 }));
+  }
+}
+```
+
+</CollapseCode>
+
+Then let’s query to see if the player is in an encounter and, if so, get the monster type and render the `EncounterScreen`. Add the code below to `GameBoard.tsx`.
+
+<CollapseCode>
+
+```tsx filename="GameBoard.tsx" {7-9,15,48-50,59-63} copy showLineNumbers
+import { useComponentValue } from "@latticexyz/react";
+import { GameMap } from "./GameMap";
+import { useMUD } from "./MUDContext";
+import { useKeyboardMovement } from "./useKeyboardMovement";
+import { hexToArray } from "@latticexyz/utils";
+import { TerrainType, terrainTypes } from "./terrainTypes";
+import { EncounterScreen } from "./EncounterScreen";
+import { Entity } from "@latticexyz/recs";
+import { MonsterType, monsterTypes } from "./monsterTypes";
+
+export const GameBoard = () => {
+  useKeyboardMovement();
+
+  const {
+    components: { Encounter, MapConfig, Monster, Player, Position },
+    network: { playerEntity, singletonEntity },
+    systemCalls: { spawn },
+  } = useMUD();
+
+  const canSpawn = useComponentValue(Player, playerEntity)?.value !== true;
+
+  const playerPosition = useComponentValue(Position, playerEntity);
+  const player =
+    playerEntity && playerPosition
+      ? {
+          x: playerPosition.x,
+          y: playerPosition.y,
+          emoji: "🤠",
+          entity: playerEntity,
+        }
+      : null;
+
+  const mapConfig = useComponentValue(MapConfig, singletonEntity);
+  if (mapConfig == null) {
+    throw new Error("map config not set or not ready, only use this hook after loading state === LIVE");
+  }
+
+  const { width, height, terrain: terrainData } = mapConfig;
+  const terrain = Array.from(hexToArray(terrainData)).map((value, index) => {
+    const { emoji } = value in TerrainType ? terrainTypes[value as TerrainType] : { emoji: "" };
+    return {
+      x: index % width,
+      y: Math.floor(index / width),
+      emoji,
+    };
+  });
+
+  const encounter = useComponentValue(Encounter, playerEntity);
+  const monsterType = useComponentValue(Monster, encounter ? (encounter.monster as Entity) : undefined)?.value;
+  const monster = monsterType != null && monsterType in MonsterType ? monsterTypes[monsterType as MonsterType] : null;
+
+  return (
+    <GameMap
+      width={width}
+      height={height}
+      terrain={terrain}
+      onTileClick={canSpawn ? spawn : undefined}
+      players={player ? [player] : []}
+      encounter={
+        encounter ? (
+          <EncounterScreen monsterName={monster?.name ?? "MissingNo"} monsterEmoji={monster?.emoji ?? "💱"} />
+        ) : undefined
+      }
+    />
+  );
+};
+```
+
+</CollapseCode>
+
+You did it! You are now able to move, start encounters, and see emojimon in said encounters.
+
+With this screen setup there are two more steps to go—enabling the player to capture emojimon and flee the encounter. Let’s keep going!
+
+## 3.3. Capture emojimon
+
+What would an emojimon encounter be without throwing emojiballs?
+
+**In order to have a proper capture system we will need a few new additions:**
+
+1. A component that designates whether or not a user has captured an emojimon.
+2. A new method to throw emojiballs and catch emojimon.
+3. A way to represent the result of a catch attempt.
+4. Showing this interaction in the client.
+
+The first step is modifying the MUD config to add the necessary tables.
+
+`OwnedBy` will use a `bytes32` because we use this for representing entity IDs, so one entity can own another entity by having an `OwnedBy` component that points to the owner entity ID.
+
+We also need a way to represent the catch attempt. We’ll add a `MonsterCatchResult` enum with the different types of results of a catch attempt (missed, caught, fled).
+
+We’ll add `MonsterCatchAttempt` as an [ephemeral table](/store/advanced-features#ephemeral-tables) to broadcast the catch attempt to clients without storing any data on chain. This will allow the client to understand these interactions and render/animate them accordingly. You can think of ephemeral tables like native Solidity events but with the same structure and encoding as regular tables.
+
+Go ahead and add both of these to the MUD config.
+
+<CollapseCode>
+
+```ts filename="mud.config.ts" {5,31-40,44} copy showLineNumbers
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  enums: {
+    MonsterCatchResult: ["Missed", "Caught", "Fled"],
+    MonsterType: ["None", "Eagle", "Rat", "Caterpillar"],
+    TerrainType: ["None", "TallGrass", "Boulder"],
+  },
+  tables: {
+    Encounter: {
+      keySchema: {
+        player: "bytes32",
+      },
+      schema: {
+        exists: "bool",
+        monster: "bytes32",
+        catchAttempts: "uint256",
+      },
+    },
+    EncounterTrigger: "bool",
+    Encounterable: "bool",
+    MapConfig: {
+      keySchema: {},
+      dataStruct: false,
+      schema: {
+        width: "uint32",
+        height: "uint32",
+        terrain: "bytes",
+      },
+    },
+    MonsterCatchAttempt: {
+      ephemeral: true,
+      dataStruct: false,
+      keySchema: {
+        encounter: "bytes32",
+      },
+      schema: {
+        result: "MonsterCatchResult",
+      },
+    },
+    Monster: "MonsterType",
+    Movable: "bool",
+    Obstruction: "bool",
+    OwnedBy: "bytes32",
+    Player: "bool",
+    Position: {
+      dataStruct: false,
+      schema: {
+        x: "uint32",
+        y: "uint32",
+      },
+    },
+  },
+});
+```
+
+</CollapseCode>
+
+Next we’ll implement a way for the player to throw an emojiball and capture the emojimon. `MapSystem.sol` is getting crowded, and is concerned with logic that affects the map, so we can start up a new system here. Let’s call it `EncounterSystem.sol` and add the first method, `throwBall`.
+
+<CollapseCode>
+
+```solidity filename="EncounterSystem.sol" {} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+
+contract EncounterSystem is System {
+  function throwBall() public {
+    // TODO
+  }
+}
+```
+
+</CollapseCode>
+
+But wait—we also want the emojimon to be able to escape if the fail throws multiple times, just like in Pokémon. This is where the `actionCount` on our `Encounter` table comes in. We’ll use that to store how many attempts we’ve made and cause the monster to flee if we’ve made too many attempts.
+
+<CollapseCode>
+
+```solidity filename="EncounterSystem.sol" {4-6,10-34} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/Tables.sol";
+import { MonsterCatchResult } from "../codegen/Types.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+
+contract EncounterSystem is System {
+  function throwBall() public {
+    bytes32 player = addressToEntityKey(_msgSender());
+
+    EncounterData memory encounter = Encounter.get(player);
+    require(encounter.exists, "not in encounter");
+
+    uint256 rand = uint256(
+      keccak256(
+        abi.encode(player, encounter.monster, encounter.catchAttempts, blockhash(block.number - 1), block.difficulty)
+      )
+    );
+    if (rand % 2 == 0) {
+      // 50% chance to catch monster
+      MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Caught);
+      OwnedBy.set(encounter.monster, player);
+      Encounter.deleteRecord(player);
+    } else if (encounter.catchAttempts >= 2) {
+      // Missed 2 times, monster escapes
+      MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Fled);
+      Monster.deleteRecord(encounter.monster);
+      Encounter.deleteRecord(player);
+    } else {
+      // Throw missed!
+      MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Missed);
+      Encounter.setCatchAttempts(player, encounter.catchAttempts + 1);
+    }
+  }
+}
+```
+
+</CollapseCode>
+
+The encounter screen already has a “Throw” button displayed, we just need to wire it up to our client-side system calls.
+
+<CollapseCode>
+
+```ts filename="createSystemCalls.ts" {11,107-125} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents
+) {
+  const wrapPosition = (x: number, y: number) => {
+    const mapConfig = getComponentValue(MapConfig, singletonEntity);
+    if (!mapConfig) {
+      throw new Error("mapConfig no yet loaded or initialized");
+    }
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+  };
+
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const moveTo = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldSend("move", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+  };
+
+  const spawn = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldSend("spawn", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    const player = playerEntity;
+    if (!player) {
+      throw new Error("no player");
+    }
+
+    const encounter = getComponentValue(Encounter, player);
+    if (!encounter) {
+      throw new Error("no encounter");
+    }
+
+    const tx = await worldSend("throwBall", []);
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+
+    const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
+    if (!catchAttempt) {
+      throw new Error("no catch attempt found");
+    }
+
+    return catchAttempt.result as MonsterCatchResult;
+  };
+
+  const fleeEncounter = async () => {
+    // TODO
+    return null as any;
+  };
+
+  return {
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
+}
+```
+
+</CollapseCode>
+
+When you click the button, the `EncounterScreen` creates a pending toast and kicks off the transaction by calling our `throwBall` method above. We use `awaitStreamValue` to ensure the transaction went through and MUD has updated the client component data. After that, we can get the result of the catch attempt and return it so that the `EncounterScreen` can render the proper message in the toast.
+
+## 3.4. Flee encounters
+
+Last but not least, players should be able to flee encounters. We can add this with a `flee` method in `EncounterSystem.sol` as well. To keep it simple we’ll guarantee that the player can run away safely.
+
+<CollapseCode>
+
+```solidity filename="EncounterSystem.sol" {37-45} copy showLineNumbers
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { Player, Encounter, EncounterData, MonsterCatchAttempt, OwnedBy, Monster } from "../codegen/Tables.sol";
+import { MonsterCatchResult } from "../codegen/Types.sol";
+import { addressToEntityKey } from "../addressToEntityKey.sol";
+
+contract EncounterSystem is System {
+  function throwBall() public {
+    bytes32 player = addressToEntityKey(_msgSender());
+
+    EncounterData memory encounter = Encounter.get(player);
+    require(encounter.exists, "not in encounter");
+
+    uint256 rand = uint256(
+      keccak256(
+        abi.encode(player, encounter.monster, encounter.catchAttempts, blockhash(block.number - 1), block.difficulty)
+      )
+    );
+    if (rand % 2 == 0) {
+      // 50% chance to catch monster
+      MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Caught);
+      OwnedBy.set(encounter.monster, player);
+      Encounter.deleteRecord(player);
+    } else if (encounter.catchAttempts >= 2) {
+      // Missed 2 times, monster escapes
+      MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Fled);
+      Monster.deleteRecord(encounter.monster);
+      Encounter.deleteRecord(player);
+    } else {
+      // Throw missed!
+      MonsterCatchAttempt.emitEphemeral(player, MonsterCatchResult.Missed);
+      Encounter.setCatchAttempts(player, encounter.catchAttempts + 1);
+    }
+  }
+
+  function flee() public {
+    bytes32 player = addressToEntityKey(_msgSender());
+
+    EncounterData memory encounter = Encounter.get(player);
+    require(encounter.exists, "not in encounter");
+
+    Monster.deleteRecord(encounter.monster);
+    Encounter.deleteRecord(player);
+  }
+}
+```
+
+</CollapseCode>
+
+Since our flee system always allows you to run away, we technically don't need to listen for system call updates to determine the outcome. But doing so will help our UI and toasts stay in sync with component updates.
+
+Because the encounter screen is shown only when you're in an encounter, you'll see that it will automatically disappear when you run away. This is the nice thing about MUD and declarative, responsive UI!
+
+<CollapseCode>
+
+```ts filename="createSystemCalls.ts" {129-130} copy showLineNumbers
+import { Has, HasValue, getComponentValue, runQuery } from "@latticexyz/recs";
+import { uuid, awaitStreamValue } from "@latticexyz/utils";
+import { MonsterCatchResult } from "../monsterCatchResult";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+  { playerEntity, singletonEntity, worldSend, txReduced$ }: SetupNetworkResult,
+  { Encounter, MapConfig, MonsterCatchAttempt, Obstruction, Player, Position }: ClientComponents
+) {
+  const wrapPosition = (x: number, y: number) => {
+    const mapConfig = getComponentValue(MapConfig, singletonEntity);
+    if (!mapConfig) {
+      throw new Error("mapConfig no yet loaded or initialized");
+    }
+    return [(x + mapConfig.width) % mapConfig.width, (y + mapConfig.height) % mapConfig.height];
+  };
+
+  const isObstructed = (x: number, y: number) => {
+    return runQuery([Has(Obstruction), HasValue(Position, { x, y })]).size > 0;
+  };
+
+  const moveTo = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const inEncounter = !!getComponentValue(Encounter, playerEntity);
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await worldSend("move", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
+  const moveBy = async (deltaX: number, deltaY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const playerPosition = getComponentValue(Position, playerEntity);
+    if (!playerPosition) {
+      console.warn("cannot moveBy without a player position, not yet spawned?");
+      return;
+    }
+
+    await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
+  };
+
+  const spawn = async (inputX: number, inputY: number) => {
+    if (!playerEntity) {
+      throw new Error("no player");
+    }
+
+    const canSpawn = getComponentValue(Player, playerEntity)?.value !== true;
+    if (!canSpawn) {
+      throw new Error("already spawned");
+    }
+
+    const [x, y] = wrapPosition(inputX, inputY);
+    if (isObstructed(x, y)) {
+      console.warn("cannot spawn on obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
+
+    try {
+      const tx = await worldSend("spawn", [x, y]);
+      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+    } finally {
+      Position.removeOverride(positionId);
+      Player.removeOverride(playerId);
+    }
+  };
+
+  const throwBall = async () => {
+    const player = playerEntity;
+    if (!player) {
+      throw new Error("no player");
+    }
+
+    const encounter = getComponentValue(Encounter, player);
+    if (!encounter) {
+      throw new Error("no encounter");
+    }
+
+    const tx = await worldSend("throwBall", []);
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+
+    const catchAttempt = getComponentValue(MonsterCatchAttempt, player);
+    if (!catchAttempt) {
+      throw new Error("no catch attempt found");
+    }
+
+    return catchAttempt.result as MonsterCatchResult;
+  };
+
+  const fleeEncounter = async () => {
+    const tx = await worldSend("flee", []);
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+  };
+
+  return {
+    moveTo,
+    moveBy,
+    spawn,
+    throwBall,
+    fleeEncounter,
+  };
+}
+```
+
+</CollapseCode>
+
+You could probably add optimistic rendering here, but we’ll skip that for now.

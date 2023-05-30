@@ -2,7 +2,7 @@ module latticexyz/mud/packages/services
 
 go 1.18
 
-replace github.com/ethereum/go-ethereum v1.10.21 => github.com/ethereum-optimism/reference-optimistic-geth v0.0.0-20220810221227-a68e5aa189e1
+replace github.com/ethereum/go-ethereum v1.10.21 => github.com/ethereum-optimism/op-geth v1.101105.1
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
@@ -15,6 +15,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/keith-turner/ecoji v1.0.0
 	github.com/lib/pq v1.10.2
+	github.com/ompluscator/dynamic-struct v1.4.0
 	github.com/prometheus/client_golang v1.11.1
 	github.com/umbracle/ethgo v0.1.3
 	go.uber.org/zap v1.22.0
@@ -23,6 +24,8 @@ require (
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.30.0
 	gopkg.in/yaml.v3 v3.0.1
+	gorm.io/driver/postgres v1.5.0
+	gorm.io/gorm v1.25.0
 )
 
 require (
@@ -50,7 +53,6 @@ require (
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/ompluscator/dynamic-struct v1.4.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
@@ -70,7 +72,5 @@ require (
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
-	gorm.io/driver/postgres v1.5.0 // indirect
-	gorm.io/gorm v1.25.0 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )

@@ -14,7 +14,8 @@
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
     "./utils": "./dist/utils.js",
-    "./errors": "./dist/errors.js"
+    "./errors": "./dist/errors.js",
+    "./chains": "./dist/chains.js"
   },
   "typesVersions": {
     "*": {
@@ -32,6 +33,9 @@
       ],
       "errors": [
         "./src/errors/index.ts"
+      ],
+      "chains": [
+        "./src/chains/index.ts"
       ]
     }
   },
@@ -53,6 +57,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
+    "@wagmi/chains": "^0.2.22",
     "tsup": "^6.7.0",
     "vitest": "0.30.1"
   },

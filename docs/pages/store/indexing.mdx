@@ -1,20 +1,20 @@
-## Index
+## Indexing
 
-When rolling out your own storage strategy — which virtually all smart contract developers do because they don’t use Store yet 🙃 — you must decide how to implement “indices”. These data structures can be found in most popular contracts. As an example, the `balances` mapping of the ERC-721 spec is an index: it is a derived state of the `owners` mapping: every time the owner of an ERC-721 token changes, the `balances` must be updated on both side. 
+When rolling out your own storage strategy — which virtually all smart contract developers do because they don’t use Store yet 🙃 — you must decide how to implement “indices”. These data structures can be found in most popular contracts. As an example, the `balances` mapping of the ERC-721 spec is an index: it is a derived state of the `owners` mapping: every time the owner of an ERC-721 token changes, the `balances` must be updated on both side.
 
-Maintaining derived state up-to-date is usually done by putting indexing logic in functions that change their underlying state. As an example, most implementation of the ERC-721 specification add mutation logic to change the `balances` index in a transfer helper that also changes the ownership of the token. 
+Maintaining derived state up-to-date is usually done by putting indexing logic in functions that change their underlying state. As an example, most implementation of the ERC-721 specification add mutation logic to change the `balances` index in a transfer helper that also changes the ownership of the token.
 
 ```solidity
-// from the OZ ERC-721 contract 
+// from the OZ ERC-721 contract
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol)
 function _transfer(address from, address to, uint256 tokenId) internal virtual {
-    [...]
-    unchecked {
-        _balances[from] -= 1;
-        _balances[to] += 1;
-	}
-	_owners[tokenId] = to;
-    [...]
+  // ...
+  unchecked {
+    _balances[from] -= 1;
+    _balances[to] += 1;
+  }
+  _owners[tokenId] = to;
+  // ...
 }
 ```
 

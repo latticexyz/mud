@@ -5,4 +5,6 @@ export default {
   "subsystems": "Pattern: Sub-systems",
   "modules": "Modules",
   "community-computers": "Community Computers",
+  "querying": "Querying",
+  "internals": "Internal tables & systems",
 };

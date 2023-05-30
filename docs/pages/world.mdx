@@ -4,7 +4,7 @@ World is the Kernel of MUD. It is a specific pattern for writing on-chain applic
 
 1. **[Store](store)**: MUD’s on-chain database
 2. **Systems**: stateless logic contracts that read and write to Store tables.
-3. **Permissionless creation of tables and systems** from *anyone* on-chain.
+3. **Permissionless creation of tables and systems** from _anyone_ on-chain.
 4. **Access-control for tables and systems** based on namespaces.
 5. **Modules**: on-chain scripts installing tables, systems, and hooks on the World.
 
@@ -14,6 +14,6 @@ In its role as a router and as a centralized storage for state, the World is sim
 
 Given Worlds have storage access management for Store, they can relax that requirement and let anyone add new logic and new tables to the application without introducing security risks.
 
-This makes it possible for multiple actors — that do not necessarily trust each other — to build on the same Store and allow for interoperability across their tables and systems. 
+This makes it possible for multiple actors — that do not necessarily trust each other — to build on the same Store and allow for interoperability across their tables and systems.
 
 Of course this could have been done across multiple contracts, just like DeFi contract A can transfer an ERC-20 balance of DeFi contract B if it has been approved. However, by centralizing the state under a single contract and enforcing a standardized access control mechanism, the World framework makes it possible to build much better tools and frontend libraries to know about the **entire** state of the World.

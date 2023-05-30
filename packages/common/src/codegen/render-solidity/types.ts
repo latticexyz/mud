@@ -35,7 +35,7 @@ export interface RenderType {
   internalTypeId: string;
 }
 
-export interface RenderPrimaryKey extends RenderType {
+export interface RenderKeyTuple extends RenderType {
   name: string;
   isDynamic: false;
 }

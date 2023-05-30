@@ -13,7 +13,7 @@ export type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]:
 
 export type Tables<C extends StoreConfig> = {
   [key in keyof C["tables"]]: {
-    keyTuple: SchemaToPrimitives<C["tables"][key]["primaryKeys"]>;
+    keyTuple: SchemaToPrimitives<C["tables"][key]["keySchema"]>;
     value: SchemaToPrimitives<C["tables"][key]["schema"]>;
   };
 };
@@ -35,8 +35,11 @@ export type DatabaseClient<C extends StoreConfig> = {
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
-        filter?: Omit<SubscriptionFilterOptions<C, Table>, "table" | "namespace">
+        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
       ) => Unsubscribe;
+      scan: <Table extends string = keyof C["tables"] & string>(
+        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
+      ) => ScanResult<C, Table>;
     };
   };
 } & {
@@ -61,8 +64,9 @@ export type DatabaseClient<C extends StoreConfig> = {
   ) => TupleRootTransactionApi;
   subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
-    filter?: SubscriptionFilterOptions<C, Table>
+    filter?: FilterOptions<C, Table>
   ) => Unsubscribe;
+  scan: <Table extends string = keyof C["tables"] & string>(filter?: FilterOptions<C, Table>) => ScanResult<C, Table>;
   _tupleDatabaseClient: TupleDatabaseClient;
 };
 
@@ -82,13 +86,10 @@ export type SubscriptionCallback<
   T extends keyof C["tables"] = keyof C["tables"]
 > = (updates: Update<C, T>[]) => void;
 
-export type SubscriptionFilterOptions<
-  C extends StoreConfig = StoreConfig,
-  T extends keyof C["tables"] = keyof C["tables"]
-> = {
+export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   table: T & string;
-  namespace: string;
-  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };
+  namespace?: string;
+  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> };
 };
 
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
@@ -99,3 +100,7 @@ export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["t
     remove: { key: Key<C, key> }[];
   };
 }[Table];
+
+export type ScanResult<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = Array<
+  KeyValue<C, T> & { namespace: C["namespace"]; table: T }
+>;

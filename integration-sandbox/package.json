@@ -4,7 +4,6 @@
   "scripts": {
     "build": "pnpm recursive run build",
     "clean": "pnpm recursive run clean",
-    "initialize": "pnpm recursive run initialize",
     "test": "pnpm recursive run test"
   },
   "engines": {

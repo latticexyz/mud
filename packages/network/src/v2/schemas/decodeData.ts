@@ -1,10 +1,10 @@
-import { DynamicSchemaType, getStaticByteLength, StaticSchemaType } from "@latticexyz/schema-type";
+import { DynamicSchemaType, getStaticByteLength, SchemaType, StaticSchemaType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
-import { TableSchema } from "../common";
+import { Schema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
 import { decodeDynamicField } from "./decodeDynamicField";
 
-export const decodeData = (schema: TableSchema, hexData: string): Record<number, any> => {
+export const decodeData = (schema: Schema, hexData: string): Record<number, any> => {
   const data: Record<number, any> = {};
   const bytes = hexToArray(hexData);
 
@@ -21,6 +21,8 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
     console.warn(
       "Decoded static data length does not match schema's expected static data length. Data may get corrupted. Is `getStaticByteLength` outdated?",
       {
+        expectedLength: schema.staticDataLength,
+        actualLength: actualStaticDataLength,
         bytesOffset,
         schema,
         hexData,
@@ -29,13 +31,20 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
   }
 
   if (schema.dynamicFields.length > 0) {
-    const dynamicDataLayout = new DataView(bytes.slice(schema.staticDataLength, schema.staticDataLength + 32).buffer);
+    const dynamicDataLayout = bytes.slice(schema.staticDataLength, schema.staticDataLength + 32);
     bytesOffset += 32;
 
-    const dynamicDataLength = dynamicDataLayout.getUint32(0);
+    // keep in sync with PackedCounter.sol
+    const packedCounterAccumulatorType = SchemaType.UINT56;
+    const packedCounterCounterType = SchemaType.UINT40;
+    const dynamicDataLength = decodeStaticField(packedCounterAccumulatorType, dynamicDataLayout, 0) as bigint;
 
     schema.dynamicFields.forEach((fieldType, i) => {
-      const dataLength = dynamicDataLayout.getUint16(4 + i * 2);
+      const dataLength = decodeStaticField(
+        packedCounterCounterType,
+        dynamicDataLayout,
+        getStaticByteLength(packedCounterAccumulatorType) + i * getStaticByteLength(packedCounterCounterType)
+      ) as number;
       const value = decodeDynamicField(
         fieldType as DynamicSchemaType,
         bytes.slice(bytesOffset, bytesOffset + dataLength)
@@ -46,10 +55,13 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
 
     // Warn user if dynamic data length doesn't match the schema, because data corruption might be possible.
     const actualDynamicDataLength = bytesOffset - 32 - actualStaticDataLength;
-    if (actualDynamicDataLength !== dynamicDataLength) {
+    // TODO: refactor this so we don't break for bytes offsets >UINT40
+    if (BigInt(actualDynamicDataLength) !== dynamicDataLength) {
       console.warn(
         "Decoded dynamic data length does not match data layout's expected data length. Data may get corrupted. Did the data layout change?",
         {
+          expectedLength: dynamicDataLength,
+          actualLength: actualDynamicDataLength,
           bytesOffset,
           schema,
           hexData,
