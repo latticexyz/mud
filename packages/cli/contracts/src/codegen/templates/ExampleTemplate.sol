@@ -21,7 +21,7 @@ function ExampleTemplate() {
   FactoryContent.set(
     templateId,
     StaticsTableId,
-    Statics.encode(1, 1, "wasd", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
+    Statics.encode(1, 1, "0x0123", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
   );
 }
 
@@ -34,6 +34,6 @@ function ExampleTemplate(IStore store) {
     store,
     templateId,
     StaticsTableId,
-    Statics.encode(1, 1, "wasd", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
+    Statics.encode(1, 1, "0x0123", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
   );
 }
