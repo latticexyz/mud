@@ -22,11 +22,11 @@ export function createDatabaseClient<C extends StoreConfig>(database: TupleDatab
 
   // Create utils with client, namespace and table argument prefilled
   for (const table in config.tables) {
-    const namespace = config.tables?.[table].namespace ?? config.namespace;
+    const namespace = config.tables[table].namespace;
     tables[table] = {
       set: (key: Key<C, typeof table>, value: Value<C, typeof table>, options: SetOptions) =>
         utilsWithClient.set(namespace, table, key, value, {
-          defaultValue: getDefaultValue(config.tables?.[table].schema),
+          defaultValue: getDefaultValue(config.tables[table].schema),
           ...options,
         }),
       get: curry(utilsWithClient.get, namespace, table),
