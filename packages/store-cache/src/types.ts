@@ -94,7 +94,7 @@ export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C
 
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
   [key in Table]: {
-    namespace: C["namespace"];
+    namespace: C["tables"][Table]["namespace"];
     table: key;
     set: KeyValue<C, key>[];
     remove: { key: Key<C, key> }[];
@@ -102,5 +102,5 @@ export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["t
 }[Table];
 
 export type ScanResult<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = Array<
-  KeyValue<C, T> & { namespace: C["namespace"]; table: T }
+  KeyValue<C, T> & { namespace: C["tables"][T]["namespace"]; table: T }
 >;

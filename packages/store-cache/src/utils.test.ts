@@ -44,8 +44,16 @@ describe("utils", () => {
 
       expect(rows.length).toBe(positionUpdates.length + multiKeyUpdates.length);
       expect(rows).toEqual([
-        ...multiKeyUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "MultiKey" })),
-        ...positionUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "Position" })),
+        ...multiKeyUpdates.map((row) => ({
+          ...row,
+          namespace: config.tables["MultiKey"].namespace,
+          table: "MultiKey",
+        })),
+        ...positionUpdates.map((row) => ({
+          ...row,
+          namespace: config.tables["Position"].namespace,
+          table: "Position",
+        })),
       ]);
     });
 
@@ -72,7 +80,11 @@ describe("utils", () => {
 
       expect(rows.length).toBe(positionUpdates.length);
       expect(rows).toEqual([
-        ...positionUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "Position" })),
+        ...positionUpdates.map((row) => ({
+          ...row,
+          namespace: config.tables["Position"].namespace,
+          table: "Position",
+        })),
       ]);
     });
 

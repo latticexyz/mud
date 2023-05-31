@@ -29,7 +29,7 @@ import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
 export function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
   client: TupleDatabaseClient,
-  namespace: C["namespace"],
+  namespace: C["tables"][T]["namespace"],
   table: T & string,
   key: Key<C, T>,
   value: Partial<Value<C, T>>,
@@ -53,7 +53,7 @@ export function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C
 export function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
   client: TupleDatabaseClient,
-  namespace: C["namespace"],
+  namespace: C["tables"][T]["namespace"],
   table: T & string,
   key: Key<C, T>
 ): Value<C, T> {
@@ -74,7 +74,7 @@ export function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C
 export function remove<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
   client: TupleDatabaseClient,
-  namespace: C["namespace"],
+  namespace: C["tables"][T]["namespace"],
   table: T & string,
   key: Key<C, T>,
   options?: RemoveOptions
@@ -96,7 +96,7 @@ export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tab
   return results.map(
     ({ key, value }) =>
       ({ namespace: key[0], table: key[1], key: tupleToRecord(key), value } as KeyValue<C, T> & {
-        namespace: C["namespace"];
+        namespace: C["tables"][T]["namespace"];
         table: T;
       })
   );
@@ -181,7 +181,8 @@ function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"
 ) {
   const { table, key } = filter || {};
   // Default to the config namespace if a filter without namespace is provided
-  const namespace = filter ? filter.namespace ?? config.namespace : undefined;
+  const configNamespace = table && config.tables[table] ? config.tables[table].namespace : config.namespace;
+  const namespace = filter ? filter.namespace ?? configNamespace : undefined;
 
   const prefix = table != null && namespace != null ? [namespace, table] : undefined;
   const scanArgs: ScanArgs<Tuple, Tuple> = {};
@@ -208,7 +209,7 @@ function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"
  */
 function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  namespace: C["namespace"],
+  namespace: C["tables"][T]["namespace"],
   table: T & string,
   key: Key<C, T>
 ) {
