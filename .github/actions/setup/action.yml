@@ -18,6 +18,7 @@ runs:
     - name: Setup foundry
       uses: foundry-rs/foundry-toolchain@v1
       with:
+      # TODO update when "max fee per gas" issue is fixed for latest nightly
         version: nightly-87bc53fc6c874bd4c92d97ed180b949e3a36d78c
 
     - name: Setup protoc
