@@ -71,8 +71,8 @@ describe("arrays", async () => {
     await expect(pushManyButton).toBeVisible();
     await expect(pushOneButton).toBeVisible();
 
-    // make sure scripts are loaded
-    await page.waitForLoadState("domcontentloaded");
+    // make sure setup is finished before clicking buttons
+    await expect(page.getByTitle("Setup status")).toHaveText("finished");
 
     await resetButton.click();
     await expect(listLength).toHaveText("0", { timeout: 120_000 });
