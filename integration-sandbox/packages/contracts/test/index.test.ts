@@ -75,17 +75,17 @@ describe("arrays", async () => {
     await expect(page.getByTitle("Setup status")).toHaveText("finished");
 
     await resetButton.click();
-    await expect(listLength).toHaveText("0", { timeout: 120_000 });
+    await expect(listLength).toHaveText("0");
     await expect(lastItem).toHaveText("unset");
 
     await pushManyButton.click();
-    await expect(listLength).toHaveText("5000", { timeout: 60_000 });
+    await expect(listLength).toHaveText("5000");
     await expect(lastItem).toHaveText("4999");
     await pushOneButton.click();
     await expect(listLength).toHaveText("5001");
     await expect(lastItem).toHaveText("123");
     await pushManyButton.click();
-    await expect(listLength).toHaveText("10001", { timeout: 60_000 });
+    await expect(listLength).toHaveText("10001");
     await expect(lastItem).toHaveText("4999");
     await pushOneButton.click();
     await expect(listLength).toHaveText("10002");
