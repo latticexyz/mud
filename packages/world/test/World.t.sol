@@ -176,7 +176,7 @@ contract WorldTest is Test {
     bytes memory value = world.getRecord(StoreCoreInternal.SCHEMA_TABLE, schemaKey);
     assertEq(
       value,
-      hex"004002005f5f0000000000000000000000000000000000000000000000000000002001005f000000000000000000000000000000000000000000000000000000"
+      abi.encodePacked(SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), SchemaLib.encode(SchemaType.BYTES32))
     );
   }
 
