@@ -25,7 +25,7 @@ contract TemplateTest is Test, StoreReadWithStubs {
     // Assert that the template content was set correctly
     assertEq(
       FactoryContent.get(ExampleTemplateId, StaticsTableId),
-      Statics.encode(1, 1, "0x0123", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
+      Statics.encode(1, 1, "0x0123", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E2, Enum2.E1)
     );
 
     // Create a template instance
@@ -50,7 +50,7 @@ contract TemplateTest is Test, StoreReadWithStubs {
       "0x0123",
       0x71C7656EC7ab88b098defB751B7401B5f6d8976F,
       true,
-      Enum1.E1,
+      Enum1.E2,
       Enum2.E1
     );
     assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6, k7)), abi.encode(data));

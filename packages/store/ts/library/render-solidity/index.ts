@@ -5,6 +5,5 @@ export * from "./renderTypesFromConfig";
 export * from "./tablegen";
 export * from "./tableOptions";
 export * from "./templategen";
-export * from "./configgen";
 export * from "./types";
 export * from "./userType";

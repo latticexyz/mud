@@ -6,7 +6,6 @@ import gasReport from "./gas-report";
 import hello from "./hello";
 import tablegen from "./tablegen";
 import templategen from "./templategen";
-import configgen from "./configgen";
 import tsgen from "./tsgen";
 import deploy from "./deploy";
 import worldgen from "./worldgen";
@@ -23,7 +22,6 @@ export const commands: CommandModule<any, any>[] = [
   hello,
   tablegen,
   templategen,
-  configgen,
   tsgen,
   worldgen,
   setVersion,

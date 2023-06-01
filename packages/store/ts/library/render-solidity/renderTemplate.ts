@@ -19,7 +19,7 @@ const getTemplateImports = (mudConfig: StoreConfig, values: object) => {
 
 const formatValue = (val: string, value: any, mudConfig: StoreConfig) => {
   if (val in mudConfig.enums) {
-    return `${val}.${value}`;
+    return `${val}(uint8(${value}))`;
   } else if (val.includes("bytes")) {
     return `"${value}"`;
   }

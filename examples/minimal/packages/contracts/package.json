@@ -5,7 +5,6 @@
   "license": "MIT",
   "scripts": {
     "build": "forge clean && forge build",
-    "configgen": "mud configgen",
     "deploy": "pnpm run initialize && mud deploy",
     "deploy:testnet": "pnpm run initialize && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts --tsgenOutput ../client-react/src/mud",

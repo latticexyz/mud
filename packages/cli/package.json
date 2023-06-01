@@ -24,9 +24,8 @@
     "dev": "tsup --watch",
     "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "generate-test-templates": "tsx ./scripts/generate-test-templates.ts",
-    "generate-test-types": "tsx ./scripts/generate-test-types.ts",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit && pnpm run generate-test-tables && pnpm run generate-test-types &&  pnpm run generate-test-templates && forge test"
+    "test": "tsc --noEmit && pnpm run generate-test-tables &&  pnpm run generate-test-templates && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

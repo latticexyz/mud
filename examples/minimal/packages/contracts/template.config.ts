@@ -1,4 +1,11 @@
-import { templateConfig } from "./src/codegen/template";
+import { TemplateConfig } from "@latticexyz/store";
+import mudConfig from "./mud.config";
+
+const { tables } = mudConfig;
+
+function templateConfig(config: TemplateConfig<typeof tables>) {
+  return config;
+}
 
 export default templateConfig({
   Sample: {
