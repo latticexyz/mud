@@ -10,7 +10,7 @@ import { createTemplates } from "../src/codegen/scripts/CreateTemplates.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
-import { SampleTemplateId } from "../src/codegen/Templates.sol";
+import { SimpleTemplateId } from "../src/codegen/Templates.sol";
 
 contract TemplateTest is MudV2Test {
   IWorld world;
@@ -27,12 +27,12 @@ contract TemplateTest is MudV2Test {
     createTemplates(world);
 
     // Assert that the template content was set correctly
-    assertEq(FactoryContent.get(world, SampleTemplateId, CounterTableTableId), CounterTable.encode(420));
+    assertEq(FactoryContent.get(world, SimpleTemplateId, CounterTableTableId), CounterTable.encode(420));
 
     bytes32[][] memory keys = new bytes32[][](1);
     keys[0] = CounterTable.encodeKeyTuple("test");
 
-    createInstance(world, SampleTemplateId, keys);
+    createInstance(world, SimpleTemplateId, keys);
 
     assertEq(CounterTable.get(world, keys[0][0]), 420);
   }

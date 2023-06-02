@@ -7,6 +7,7 @@ export default defineConfig({
     "ts/register/index.ts",
     "ts/node/index.ts",
     "ts/plugins/snapsync/index.ts",
+    "ts/plugins/factory/index.ts",
   ],
   target: "esnext",
   format: ["esm"],

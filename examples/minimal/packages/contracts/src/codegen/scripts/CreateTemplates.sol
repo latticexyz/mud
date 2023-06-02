@@ -5,12 +5,12 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { SampleTemplate } from "../Templates.sol";
+import { SimpleTemplate } from "../Templates.sol";
 
 function createTemplates() {
-  SampleTemplate();
+  SimpleTemplate();
 }
 
 function createTemplates(IStore store) {
-  SampleTemplate(store);
+  SimpleTemplate(store);
 }

@@ -9,11 +9,11 @@ import { FactoryIndex } from "@latticexyz/world/src/modules/factory/tables/Facto
 
 import { CounterTable, CounterTableTableId } from "../tables/CounterTable.sol";
 
-bytes32 constant templateId = "Sample";
-bytes32 constant SampleTemplateId = templateId;
+bytes32 constant templateId = "Simple";
+bytes32 constant SimpleTemplateId = templateId;
 uint256 constant LENGTH = 1;
 
-function SampleTemplate() {
+function SimpleTemplate() {
   bytes32[] memory tableIds = new bytes32[](LENGTH);
   tableIds[0] = CounterTableTableId;
   FactoryIndex.set(templateId, tableIds);
@@ -21,7 +21,7 @@ function SampleTemplate() {
   FactoryContent.set(templateId, CounterTableTableId, CounterTable.encode(420));
 }
 
-function SampleTemplate(IStore store) {
+function SimpleTemplate(IStore store) {
   bytes32[] memory tableIds = new bytes32[](LENGTH);
   tableIds[0] = CounterTableTableId;
   FactoryIndex.set(store, templateId, tableIds);

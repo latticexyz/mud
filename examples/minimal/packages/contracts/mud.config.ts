@@ -8,6 +8,7 @@ import { mudConfig } from "@latticexyz/world/register";
  * so we suggest using MODE for production deployments.
  */
 import "@latticexyz/world/snapsync";
+import "@latticexyz/world/factory";
 import { resolveTableId } from "@latticexyz/config";
 import { Templates } from "@latticexyz/store";
 
@@ -56,7 +57,7 @@ const config = mudConfig({
 });
 
 const templates: Templates<typeof config> = {
-  Sample: {
+  Simple: {
     CounterTable: { value: 420 },
   },
 };

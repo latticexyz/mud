@@ -1,8 +1,8 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { StoreConfig, Templates } from "../config";
+import { StoreConfig, TemplateConfig } from "../config";
 
-const formatValue = (mudConfig: StoreConfig, val: string, value: any) => {
-  if (val in mudConfig.enums) {
+const formatValue = (config: StoreConfig, val: string, value: object) => {
+  if (val in config.enums) {
     return `${val}(uint8(${value}))`;
   } else if (val.includes("bytes")) {
     return `"${value}"`;
@@ -10,16 +10,16 @@ const formatValue = (mudConfig: StoreConfig, val: string, value: any) => {
   return `${value}`;
 };
 
-const getValue = (mudConfig: StoreConfig, key: string, value: any) => {
-  const schema = mudConfig.tables[key].schema;
+const getValue = (config: StoreConfig, key: string, value: object) => {
+  const { schema } = config.tables[key];
 
   return Object.entries(value)
-    .map(([fieldName, fieldValue]) => formatValue(mudConfig, schema[fieldName], fieldValue))
+    .map(([fieldName, fieldValue]) => formatValue(config, schema[fieldName], fieldValue))
     .join(",");
 };
 
-export function renderTemplate(mudConfig: StoreConfig & { templates: Templates<StoreConfig> }, name: string) {
-  const values = mudConfig.templates[name];
+export function renderTemplate(config: TemplateConfig, name: string) {
+  const values = config.templates[name];
 
   return `
   ${renderedSolidityHeader}
@@ -28,8 +28,8 @@ export function renderTemplate(mudConfig: StoreConfig & { templates: Templates<S
   import { FactoryContent } from "@latticexyz/world/src/modules/factory/tables/FactoryContent.sol";
   import { FactoryIndex } from "@latticexyz/world/src/modules/factory/tables/FactoryIndex.sol";
   ${
-    Object.keys(mudConfig.enums).length > 0
-      ? `import { ${Object.keys(mudConfig.enums)
+    Object.keys(config.enums).length > 0
+      ? `import { ${Object.keys(config.enums)
           .map((e) => e)
           .join(",")} } from "../Types.sol";`
       : ""
@@ -52,7 +52,11 @@ export function renderTemplate(mudConfig: StoreConfig & { templates: Templates<S
 
     ${Object.entries(values)
       .map(([key, value]) => {
-        return `FactoryContent.set(templateId, ${key}TableId, ${key}.encode(${getValue(mudConfig, key, value)}))`;
+        return `FactoryContent.set(templateId, ${key}TableId, ${key}.encode(${getValue(
+          config,
+          key,
+          value as object
+        )}))`;
       })
       .join(";")};
   }
@@ -67,9 +71,9 @@ export function renderTemplate(mudConfig: StoreConfig & { templates: Templates<S
     ${Object.entries(values)
       .map(([key, value]) => {
         return `FactoryContent.set(store, templateId, ${key}TableId, ${key}.encode(${getValue(
-          mudConfig,
+          config,
           key,
-          value
+          value as object
         )}))`;
       })
       .join(";")};
