@@ -9,7 +9,7 @@
     "deploy:testnet": "pnpm run initialize && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts --tsgenOutput ../client-react/src/mud",
     "dev:phaser": "pnpm mud dev-contracts --tsgenOutput ../client-phaser/src/mud",
-    "initialize": "pnpm run tablegen && pnpm run worldgen && pnpm run build && pnpm run worldtypes && pnpm run tsgen",
+    "initialize": "pnpm run tablegen && pnpm run worldgen &&  pnpm run templategen && pnpm run build && pnpm run worldtypes && pnpm run tsgen",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",

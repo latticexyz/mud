@@ -1,13 +1,11 @@
 import path from "path";
 import type { CommandModule } from "yargs";
 import { loadConfig } from "@latticexyz/config/node";
-import { loadTemplateConfig } from "@latticexyz/config";
-import { StoreConfig, templategen } from "@latticexyz/store";
+import { StoreConfig, Templates, templategen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 type Options = {
   configPath?: string;
-  templatePath?: string;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -18,16 +16,14 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
-      templatePath: { type: "string", desc: "Path to the template config file" },
     });
   },
 
-  async handler({ configPath, templatePath }) {
-    const config = (await loadConfig(configPath)) as StoreConfig;
-    const templateConfig = (await loadTemplateConfig(templatePath)) as Record<string, object>;
+  async handler({ configPath }) {
+    const config = (await loadConfig(configPath)) as StoreConfig & { templates: Templates<StoreConfig> };
     const srcDir = await getSrcDirectory();
 
-    await templategen(config, templateConfig, path.join(srcDir, config.codegenDirectory));
+    await templategen(config, path.join(srcDir, config.codegenDirectory));
 
     process.exit(0);
   },

@@ -1,15 +1,9 @@
 import path from "path";
-import { TemplateConfig, templategen } from "@latticexyz/store";
+import { StoreConfig, Templates, templategen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import config from "./test-config";
 
-const { tables } = config;
-
-function templateConfig(config: TemplateConfig<typeof tables>) {
-  return config;
-}
-
-const factoryConfig = templateConfig({
+const templates: Templates<typeof config> = {
   Example: {
     Statics: {
       v1: 1n,
@@ -21,12 +15,17 @@ const factoryConfig = templateConfig({
       v7: 0,
     },
   },
-});
+};
 
 const srcDirectory = await getSrcDirectory();
 
+const templateConfig: StoreConfig & { templates: any } = {
+  ...config,
+  templates,
+};
+
 if (config !== undefined) {
-  templategen(config, factoryConfig, path.join(srcDirectory, config.codegenDirectory));
+  templategen(templateConfig, path.join(srcDirectory, config.codegenDirectory));
 } else {
   process.exit(1);
 }

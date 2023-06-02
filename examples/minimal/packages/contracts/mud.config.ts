@@ -9,8 +9,9 @@ import { mudConfig } from "@latticexyz/world/register";
  */
 import "@latticexyz/world/snapsync";
 import { resolveTableId } from "@latticexyz/config";
+import { Templates } from "@latticexyz/store";
 
-export default mudConfig({
+const config = mudConfig({
   snapSync: true,
   systems: {
     IncrementSystem: {
@@ -51,10 +52,16 @@ export default mudConfig({
       root: true,
       args: [resolveTableId("CounterTable")],
     },
-    {
-      name: "FactoryModule",
-      root: true,
-      args: [],
-    },
   ],
 });
+
+const templates: Templates<typeof config> = {
+  Sample: {
+    CounterTable: { value: 420 },
+  },
+};
+
+export default {
+  ...config,
+  templates,
+};

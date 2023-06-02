@@ -1,18 +1,18 @@
 import path from "path";
 import { formatAndWriteSolidity } from "@latticexyz/common/codegen";
-import { StoreConfig } from "../config";
+import { StoreConfig, Templates } from "../config";
 import { renderTemplateIndex } from "./renderTemplateIndex";
 import { renderTemplateScript } from "./renderTemplateScript";
 import { renderTemplate } from "./renderTemplate";
 
-const generateIndex = async (templateConfig: Record<string, object>, outputBaseDirectory: string) => {
+const generateIndex = async (templateConfig: Templates<StoreConfig>, outputBaseDirectory: string) => {
   const output = renderTemplateIndex(templateConfig);
   const fullOutputPath = path.join(outputBaseDirectory, `Templates.sol`);
 
   await formatAndWriteSolidity(output, fullOutputPath, "Generated index");
 };
 
-const generateSystem = async (templateConfig: Record<string, object>, outputBaseDirectory: string) => {
+const generateSystem = async (templateConfig: Templates<StoreConfig>, outputBaseDirectory: string) => {
   const output = renderTemplateScript(templateConfig);
 
   const fullOutputPath = path.join(outputBaseDirectory, `scripts/CreateTemplates.sol`);
@@ -20,12 +20,11 @@ const generateSystem = async (templateConfig: Record<string, object>, outputBase
 };
 
 const generateTemplates = async (
-  mudConfig: StoreConfig,
-  templateConfig: Record<string, object>,
+  config: StoreConfig & { templates: Templates<StoreConfig> },
   outputBaseDirectory: string
 ) => {
-  for (const name of Object.keys(templateConfig)) {
-    const output = renderTemplate(mudConfig, templateConfig, name);
+  for (const name of Object.keys(config.templates)) {
+    const output = renderTemplate(config, name);
     const fullOutputPath = path.join(outputBaseDirectory, `templates/${name}Template.sol`);
 
     await formatAndWriteSolidity(output, fullOutputPath, "Generated template");
@@ -33,11 +32,10 @@ const generateTemplates = async (
 };
 
 export async function templategen(
-  mudConfig: StoreConfig,
-  templateConfig: Record<string, object>,
+  config: StoreConfig & { templates: Templates<StoreConfig> },
   outputBaseDirectory: string
 ) {
-  generateSystem(templateConfig, outputBaseDirectory);
-  generateIndex(templateConfig, outputBaseDirectory);
-  generateTemplates(mudConfig, templateConfig, outputBaseDirectory);
+  generateSystem(config.templates, outputBaseDirectory);
+  generateIndex(config.templates, outputBaseDirectory);
+  generateTemplates(config, outputBaseDirectory);
 }

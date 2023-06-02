@@ -1,6 +1,7 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
+import { StoreConfig, Templates } from "../config";
 
-export function renderTemplateScript(templateConfig: object) {
+export function renderTemplateScript(templateConfig: Templates<StoreConfig>) {
   return `
   ${renderedSolidityHeader}
   

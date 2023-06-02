@@ -7,7 +7,8 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { FactoryContent } from "@latticexyz/world/src/modules/factory/tables/FactoryContent.sol";
 import { FactoryIndex } from "@latticexyz/world/src/modules/factory/tables/FactoryIndex.sol";
 import { Enum1, Enum2 } from "../Types.sol";
-import { Statics, StaticsTableId, StaticsData } from "../tables/Statics.sol";
+
+import { Statics, StaticsTableId } from "../tables/Statics.sol";
 
 bytes32 constant templateId = "Example";
 bytes32 constant ExampleTemplateId = templateId;

@@ -1,23 +1,7 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { StoreConfig } from "../config";
+import { StoreConfig, Templates } from "../config";
 
-const getTemplateImports = (mudConfig: StoreConfig, values: object) => {
-  const imports = Object.keys(values)
-    .map((key) => {
-      const schema = mudConfig.tables[key].schema;
-
-      if (typeof schema === "object" && Object.keys(schema).length > 1) {
-        return `import {${key}, ${key}TableId, ${key}Data} from "../tables/${key}.sol"`;
-      } else {
-        return `import {${key}, ${key}TableId} from "../tables/${key}.sol"`;
-      }
-    })
-    .join(";");
-
-  return imports;
-};
-
-const formatValue = (val: string, value: any, mudConfig: StoreConfig) => {
+const formatValue = (mudConfig: StoreConfig, val: string, value: any) => {
   if (val in mudConfig.enums) {
     return `${val}(uint8(${value}))`;
   } else if (val.includes("bytes")) {
@@ -30,12 +14,12 @@ const getValue = (mudConfig: StoreConfig, key: string, value: any) => {
   const schema = mudConfig.tables[key].schema;
 
   return Object.entries(value)
-    .map(([fieldName, fieldValue]) => formatValue(schema[fieldName], fieldValue, mudConfig))
+    .map(([fieldName, fieldValue]) => formatValue(mudConfig, schema[fieldName], fieldValue))
     .join(",");
 };
 
-export function renderTemplate(mudConfig: StoreConfig, templateConfig: Record<string, object>, name: string) {
-  const values = templateConfig[name];
+export function renderTemplate(mudConfig: StoreConfig & { templates: Templates<StoreConfig> }, name: string) {
+  const values = mudConfig.templates[name];
 
   return `
   ${renderedSolidityHeader}
@@ -50,7 +34,10 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: Record<st
           .join(",")} } from "../Types.sol";`
       : ""
   }
-  ${getTemplateImports(mudConfig, values)};
+
+  ${Object.keys(values)
+    .map((key) => `import {${key}, ${key}TableId} from "../tables/${key}.sol"`)
+    .join(";")};
   
   bytes32 constant templateId = "${name}";
   bytes32 constant ${name}TemplateId = templateId;
