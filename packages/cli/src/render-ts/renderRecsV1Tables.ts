@@ -24,6 +24,7 @@ function renderDefineComponent(table: RecsV1TableOptions["tables"][number]) {
       return defineComponent(world, {
         ${table.fields.map(({ name, recsTypeString }) => `${name}: ${recsTypeString},`).join("")}
       }, {
+        id: "${name}",
         metadata: { contractId: tableId.toHexString(), tableId: tableId.toString() },
       });
     })()
