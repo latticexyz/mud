@@ -19,7 +19,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest --run --passWithNoTests"
+    "test": "vitest typecheck --run && vitest --run"
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
@@ -31,7 +31,7 @@
   },
   "devDependencies": {
     "tsup": "^6.7.0",
-    "vitest": "^0.30.1"
+    "vitest": "0.31.4"
   },
   "publishConfig": {
     "access": "public"
