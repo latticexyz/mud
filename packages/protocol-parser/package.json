@@ -1,0 +1,40 @@
+{
+  "name": "@latticexyz/protocol-parser",
+  "version": "1.42.0",
+  "description": "Parser utilities for the MUD protocol",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/protocol-parser"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
+    "test": "vitest --run --passWithNoTests"
+  },
+  "dependencies": {
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "abitype": "^0.8.7",
+    "viem": "^0.3.5"
+  },
+  "devDependencies": {
+    "tsup": "^6.7.0",
+    "vitest": "^0.30.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}

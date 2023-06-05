@@ -545,6 +545,34 @@ importers:
         specifier: ^3.13.6
         version: 3.14.0(typedoc@0.23.21)
 
+  packages/protocol-parser:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      abitype:
+        specifier: ^0.8.7
+        version: 0.8.7(typescript@5.0.4)
+      viem:
+        specifier: ^0.3.5
+        version: 0.3.18(typescript@5.0.4)
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+      vitest:
+        specifier: ^0.30.1
+        version: 0.30.1
+
   packages/react:
     dependencies:
       '@latticexyz/recs':
@@ -4144,6 +4172,18 @@ packages:
 
   /abitype@0.8.3(typescript@5.0.4):
     resolution: {integrity: sha512-ma+fOVhoLOq68Ht8ysPS+sEIModycx6oqxP9r1Cx79rzcEO7m0beo8o9dxIlZFLn8qv+PczL/Zs4whI5KmhVJg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: false
+
+  /abitype@0.8.7(typescript@5.0.4):
+    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.19.1
