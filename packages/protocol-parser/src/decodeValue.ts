@@ -1,8 +1,8 @@
-import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { AbiTypeToPrimitiveType, getAbiTypeDefaultValue } from "@latticexyz/schema-type";
 import { AbiType } from "abitype";
-import { Hex, hexToBool } from "viem";
+import { Hex, hexToBigInt, hexToBool } from "viem";
 
-// TODO: narrow AbiType to what we support with SchemaType?
+// TODO: narrow AbiType to what we support with SchemaType? (e.g. no tuples)
 
 export function decodeValue<TAbiType extends AbiType, TPrimitiveType extends AbiTypeToPrimitiveType<TAbiType>>(
   abiType: AbiType,
@@ -13,6 +13,11 @@ export function decodeValue<TAbiType extends AbiType, TPrimitiveType extends Abi
 
   if (abiType === "bool") {
     return hexToBool(data) as TPrimitiveType;
+  }
+
+  if (/^u?int\d+$/.test(abiType)) {
+    const value = hexToBigInt(data, { signed: /^int/.test(abiType) });
+    return (typeof getAbiTypeDefaultValue(abiType) === "number" ? Number(value) : value) as TPrimitiveType;
   }
 
   throw new Error("not implemented");
