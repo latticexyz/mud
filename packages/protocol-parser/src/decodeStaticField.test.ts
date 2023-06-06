@@ -6,13 +6,12 @@ describe("decodeStaticField", () => {
     expect(decodeStaticField("bool", "0x00")).toBe(false);
     expect(decodeStaticField("bool", "0x01")).toBe(true);
 
-    // TODO: these feel like edge cases and trimming padding may get tricky with other types, decide if we shouldn't allow for parsing these values
-    expect(decodeStaticField("bool", "0x0")).toBe(false);
-    expect(decodeStaticField("bool", "0x1")).toBe(true);
-    expect(decodeStaticField("bool", "0x000")).toBe(false);
-    expect(decodeStaticField("bool", "0x001")).toBe(true);
-    expect(decodeStaticField("bool", "0x0000")).toBe(false);
-    expect(decodeStaticField("bool", "0x0001")).toBe(true);
+    expect(() => decodeStaticField("bool", "0x0")).toThrow("Expected even number of hex characters, got 1");
+    expect(() => decodeStaticField("bool", "0x1")).toThrow("Expected even number of hex characters, got 1");
+    expect(() => decodeStaticField("bool", "0x000")).toThrow("Expected even number of hex characters, got 3");
+    expect(() => decodeStaticField("bool", "0x001")).toThrow("Expected even number of hex characters, got 3");
+    expect(() => decodeStaticField("bool", "0x0000")).toThrow("Expected 1 bytes for bool, got 2 bytes");
+    expect(() => decodeStaticField("bool", "0x0001")).toThrow("Expected 1 bytes for bool, got 2 bytes");
   });
 
   it("can decode uint8", () => {
@@ -73,9 +72,9 @@ describe("decodeStaticField", () => {
       "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF"
     );
 
-    expect(() => decodeStaticField("address", "0x00")).toThrow('Address "0x00" is invalid.');
+    expect(() => decodeStaticField("address", "0x00")).toThrow("Expected 20 bytes for address, got 1 bytes");
     expect(() => decodeStaticField("address", "0xffffffffffffffffffffffffffffffffffffffffff")).toThrow(
-      'Address "0xffffffffffffffffffffffffffffffffffffffffff" is invalid.'
+      "Expected 20 bytes for address, got 21 bytes"
     );
   });
 });

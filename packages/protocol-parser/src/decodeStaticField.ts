@@ -1,11 +1,28 @@
-import { Hex, getAddress, hexToBigInt, hexToBool } from "viem";
-import { StaticAbiType, StaticAbiTypeToPrimitiveType, staticAbiTypeToDefaultValue } from "./staticAbiTypes";
+import { Hex, getAddress, hexToBigInt, hexToBool, size } from "viem";
+import {
+  StaticAbiType,
+  StaticAbiTypeToPrimitiveType,
+  staticAbiTypeToByteLength,
+  staticAbiTypeToDefaultValue,
+} from "./staticAbiTypes";
 import { assertExhaustive } from "./assertExhaustive";
 
 export function decodeStaticField<
   TAbiType extends StaticAbiType,
   TPrimitiveType extends StaticAbiTypeToPrimitiveType<TAbiType>
 >(abiType: TAbiType, data: Hex): TPrimitiveType {
+  const dataLength = data.length - 2;
+  if (dataLength % 2 !== 0) {
+    // TODO: better error
+    throw new Error(`Expected even number of hex characters, got ${dataLength}`);
+  }
+
+  const dataSize = dataLength / 2;
+  if (dataSize !== staticAbiTypeToByteLength[abiType]) {
+    // TODO: better error
+    throw new Error(`Expected ${staticAbiTypeToByteLength[abiType]} bytes for ${abiType}, got ${dataSize} bytes`);
+  }
+
   switch (abiType) {
     case "uint8":
     case "uint16":

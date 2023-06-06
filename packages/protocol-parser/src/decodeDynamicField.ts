@@ -8,8 +8,20 @@ export function decodeDynamicField<
   TAbiType extends DynamicAbiType,
   TPrimitiveType extends DynamicAbiTypeToPrimitiveType<TAbiType>
 >(abiType: TAbiType, data: Hex): TPrimitiveType {
-  // TODO: strictly enforce hex length/size to be multiples of two?
-  const dataSize = size(data);
+  if (abiType === "bytes") {
+    return data as TPrimitiveType;
+  }
+  if (abiType === "string") {
+    return hexToString(data) as TPrimitiveType;
+  }
+
+  const dataLength = data.length - 2;
+  if (dataLength % 2 !== 0) {
+    // TODO: better error
+    throw new Error(`Expected even number of hex characters, got ${dataLength}`);
+  }
+  const dataSize = dataLength / 2;
+
   switch (abiType) {
     case "uint8[]":
     case "uint16[]":
@@ -112,6 +124,7 @@ export function decodeDynamicField<
       const staticAbiType = arrayAbiTypeToStaticAbiType(abiType);
       const itemByteLength = staticAbiTypeToByteLength[staticAbiType];
       if (dataSize % itemByteLength !== 0) {
+        // TODO: better error
         throw new Error(
           `Invalid ${abiType} data length, expected multiple of ${itemByteLength} bytes but got ${dataSize} bytes`
         );
@@ -121,12 +134,6 @@ export function decodeDynamicField<
         return decodeStaticField(staticAbiType, itemData);
       });
       return items as TPrimitiveType;
-    }
-    case "bytes": {
-      return data as TPrimitiveType;
-    }
-    case "string": {
-      return hexToString(data) as TPrimitiveType;
     }
   }
 
