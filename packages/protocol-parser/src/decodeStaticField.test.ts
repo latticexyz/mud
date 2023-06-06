@@ -6,12 +6,24 @@ describe("decodeStaticField", () => {
     expect(decodeStaticField("bool", "0x00")).toBe(false);
     expect(decodeStaticField("bool", "0x01")).toBe(true);
 
-    expect(() => decodeStaticField("bool", "0x0")).toThrow("Expected even number of hex characters, got 1");
-    expect(() => decodeStaticField("bool", "0x1")).toThrow("Expected even number of hex characters, got 1");
-    expect(() => decodeStaticField("bool", "0x000")).toThrow("Expected even number of hex characters, got 3");
-    expect(() => decodeStaticField("bool", "0x001")).toThrow("Expected even number of hex characters, got 3");
-    expect(() => decodeStaticField("bool", "0x0000")).toThrow("Expected 1 bytes for bool, got 2 bytes");
-    expect(() => decodeStaticField("bool", "0x0001")).toThrow("Expected 1 bytes for bool, got 2 bytes");
+    expect(() => decodeStaticField("bool", "0x0")).toThrow(
+      'Hex value "0x0" has length of 1, but expected length of 2 for bool type.'
+    );
+    expect(() => decodeStaticField("bool", "0x1")).toThrow(
+      'Hex value "0x1" has length of 1, but expected length of 2 for bool type.'
+    );
+    expect(() => decodeStaticField("bool", "0x000")).toThrow(
+      'Hex value "0x000" is an odd length (3). It must be an even length.'
+    );
+    expect(() => decodeStaticField("bool", "0x001")).toThrow(
+      'Hex value "0x001" is an odd length (3). It must be an even length.'
+    );
+    expect(() => decodeStaticField("bool", "0x0000")).toThrow(
+      'Hex value "0x0000" has length of 4, but expected length of 2 for bool type.'
+    );
+    expect(() => decodeStaticField("bool", "0x0001")).toThrow(
+      'Hex value "0x0001" has length of 4, but expected length of 2 for bool type.'
+    );
   });
 
   it("can decode uint8", () => {
@@ -72,9 +84,11 @@ describe("decodeStaticField", () => {
       "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF"
     );
 
-    expect(() => decodeStaticField("address", "0x00")).toThrow("Expected 20 bytes for address, got 1 bytes");
+    expect(() => decodeStaticField("address", "0x00")).toThrow(
+      'Hex value "0x00" has length of 2, but expected length of 40 for address type.'
+    );
     expect(() => decodeStaticField("address", "0xffffffffffffffffffffffffffffffffffffffffff")).toThrow(
-      "Expected 20 bytes for address, got 21 bytes"
+      'Hex value "0xffffffffffffffffffffffffffffffffffffffffff" has length of 42, but expected length of 40 for address type.'
     );
   });
 });

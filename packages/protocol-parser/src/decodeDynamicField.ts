@@ -1,8 +1,9 @@
-import { Hex, hexToString, size, sliceHex } from "viem";
+import { Hex, hexToString, sliceHex } from "viem";
 import { DynamicAbiType, DynamicAbiTypeToPrimitiveType, arrayAbiTypeToStaticAbiType } from "./dynamicAbiTypes";
 import { assertExhaustive } from "./assertExhaustive";
 import { staticAbiTypeToByteLength } from "./staticAbiTypes";
 import { decodeStaticField } from "./decodeStaticField";
+import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./errors";
 
 export function decodeDynamicField<
   TAbiType extends DynamicAbiType,
@@ -15,12 +16,11 @@ export function decodeDynamicField<
     return hexToString(data) as TPrimitiveType;
   }
 
-  const dataLength = data.length - 2;
-  if (dataLength % 2 !== 0) {
-    // TODO: better error
-    throw new Error(`Expected even number of hex characters, got ${dataLength}`);
+  if (data.length > 3 && data.length % 2 !== 0) {
+    throw new InvalidHexLengthError(data);
   }
-  const dataSize = dataLength / 2;
+
+  const dataSize = (data.length - 2) / 2;
 
   switch (abiType) {
     case "uint8[]":
@@ -124,10 +124,7 @@ export function decodeDynamicField<
       const staticAbiType = arrayAbiTypeToStaticAbiType(abiType);
       const itemByteLength = staticAbiTypeToByteLength[staticAbiType];
       if (dataSize % itemByteLength !== 0) {
-        // TODO: better error
-        throw new Error(
-          `Invalid ${abiType} data length, expected multiple of ${itemByteLength} bytes but got ${dataSize} bytes`
-        );
+        throw new InvalidHexLengthForArrayFieldError(staticAbiType, data);
       }
       const items = new Array(dataSize / itemByteLength).fill(undefined).map((_, i) => {
         const itemData = sliceHex(data, i * itemByteLength, (i + 1) * itemByteLength);

@@ -146,23 +146,15 @@ describe("decodeDynamicField", () => {
     ]);
 
     expect(() => decodeDynamicField("address[]", "0x00")).toThrow(
-      "Invalid address[] data length, expected multiple of 20 bytes but got 1 bytes"
+      'Hex value "0x00" has length of 2, but expected a multiple of 40 for address[] type.'
     );
     expect(() => decodeDynamicField("address[]", "0xffffffffffffffffffffffffffffffffffffffffff")).toThrow(
-      "Invalid address[] data length, expected multiple of 20 bytes but got 21 bytes"
+      'Hex value "0xffffffffffffffffffffffffffffffffffffffffff" has length of 42, but expected a multiple of 40 for address[] type.'
     );
   });
 
   it("can decode bytes", () => {
-    expect(decodeDynamicField("bytes", "0x01")).toBe("0x01");
-    expect(decodeDynamicField("bytes", "0x0001")).toBe("0x0001");
-    expect(decodeDynamicField("bytes", "0xff00ff00ff00ff00")).toBe("0xff00ff00ff00ff00");
-    expect(decodeDynamicField("bytes", "0x0000000000000000000000000000000000000000000000000000000000000001")).toBe(
-      "0x0000000000000000000000000000000000000000000000000000000000000001"
-    );
-  });
-
-  it("can decode bytes", () => {
+    expect(decodeDynamicField("bytes", "0x")).toBe("0x");
     expect(decodeDynamicField("bytes", "0x01")).toBe("0x01");
     expect(decodeDynamicField("bytes", "0x0001")).toBe("0x0001");
     expect(decodeDynamicField("bytes", "0xff00ff00ff00ff00")).toBe("0xff00ff00ff00ff00");
@@ -172,6 +164,7 @@ describe("decodeDynamicField", () => {
   });
 
   it("can decode string", () => {
+    expect(decodeDynamicField("string", "0x")).toBe("");
     expect(decodeDynamicField("string", "0x68656c6c6f")).toBe("hello");
   });
 });
