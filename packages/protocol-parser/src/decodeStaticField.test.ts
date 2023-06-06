@@ -32,7 +32,7 @@ describe("decodeStaticField", () => {
     );
   });
 
-  it("can decode int", () => {
+  it("can decode int8", () => {
     expect(decodeStaticField("int8", "0x00")).toBe(0);
     expect(decodeStaticField("int8", "0x01")).toBe(1);
     expect(decodeStaticField("int8", "0x7f")).toBe(127);
@@ -60,8 +60,8 @@ describe("decodeStaticField", () => {
     expect(decodeStaticField("bytes1", "0x01")).toBe("0x01");
     expect(decodeStaticField("bytes2", "0x0001")).toBe("0x0001");
     expect(decodeStaticField("bytes8", "0xff00ff00ff00ff00")).toBe("0xff00ff00ff00ff00");
-    expect(decodeStaticField("bytes32", "0x00000000000000000000000000000000000000000000000000000000000000001")).toBe(
-      "0x00000000000000000000000000000000000000000000000000000000000000001"
+    expect(decodeStaticField("bytes32", "0x0000000000000000000000000000000000000000000000000000000000000001")).toBe(
+      "0x0000000000000000000000000000000000000000000000000000000000000001"
     );
   });
 

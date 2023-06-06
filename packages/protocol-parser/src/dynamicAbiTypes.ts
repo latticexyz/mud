@@ -1,3 +1,4 @@
+import { StaticAbiType } from "./staticAbiTypes";
 import { AbiType } from "abitype";
 import { Hex } from "viem";
 
@@ -217,3 +218,13 @@ export const dynamicAbiTypeToDefaultValue = {
 
 export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType> =
   (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType];
+
+export type ArrayAbiTypeToStaticAbiType<T extends string> = T extends `${infer StaticAbiType}[]`
+  ? StaticAbiType
+  : never;
+
+export function arrayAbiTypeToStaticAbiType<T extends `${StaticAbiType}[]`>(
+  abiType: T
+): ArrayAbiTypeToStaticAbiType<T> {
+  return abiType.replace(/\[\]$/g, "") as ArrayAbiTypeToStaticAbiType<T>;
+}

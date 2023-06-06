@@ -1,9 +1,6 @@
 import { Hex, getAddress, hexToBigInt, hexToBool } from "viem";
 import { StaticAbiType, StaticAbiTypeToPrimitiveType, staticAbiTypeToDefaultValue } from "./staticAbiTypes";
-
-const unsupportedStaticAbiType = (abiType: never): never => {
-  throw new Error(`Unsupported static ABI type: ${abiType}`);
-};
+import { assertExhaustive } from "./assertExhaustive";
 
 export function decodeStaticField<
   TAbiType extends StaticAbiType,
@@ -75,14 +72,14 @@ export function decodeStaticField<
     case "int248":
     case "int256": {
       const value = hexToBigInt(data, { signed: abiType.startsWith("int") });
-      const defaultValue = typeof staticAbiTypeToDefaultValue[abiType];
-      if (typeof defaultValue === "number") {
+      const defaultValueType = typeof staticAbiTypeToDefaultValue[abiType];
+      if (defaultValueType === "number") {
         return Number(value) as TPrimitiveType;
       }
-      if (typeof defaultValue === "bigint") {
+      if (defaultValueType === "bigint") {
         return value as TPrimitiveType;
       }
-      throw new Error(`Unpexected default value type (${typeof defaultValue}) for ABI type (${abiType})`);
+      throw new Error(`Unexpected default value type (${defaultValueType}) for ABI type (${abiType})`);
     }
 
     case "bytes1":
@@ -129,5 +126,5 @@ export function decodeStaticField<
     }
   }
 
-  return unsupportedStaticAbiType(abiType);
+  return assertExhaustive(abiType, `Unsupported static ABI type: ${abiType}`);
 }
