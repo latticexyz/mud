@@ -63,7 +63,9 @@ contract ERC721Proxy is IERC721Proxy {
    * @dev See {IERC721-ownerOf}.
    */
   function ownerOf(uint256 tokenId) public view virtual override returns (address) {
-    return ERC721Table.getOwner(world, erc721TableId, tokenId);
+    address owner = _ownerOf(tokenId);
+    require(owner != address(0), "ERC721: invalid token ID");
+    return owner;
   }
 
   /**
