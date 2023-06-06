@@ -10,7 +10,6 @@ import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
 import { ERC721Table } from "./ERC721Table.sol";
 import { ERC721System } from "./ERC721System.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
 
 contract ERC721Registration {
   function install(

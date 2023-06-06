@@ -4,8 +4,6 @@
 pragma solidity ^0.8.0;
 
 import "../../../System.sol";
-import "./interfaces/IERC721.sol";
-import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { BalanceTable } from "../common/BalanceTable.sol";
 import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
