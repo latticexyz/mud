@@ -5,7 +5,6 @@ import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { ERC721Proxy } from "./ERC721Proxy.sol";
 
 import { ERC721_S, ERC721_T, METADATA_T, BALANCE_T, ALLOWANCE_T } from "../common/constants.sol";
-import { nameToBytes16 } from "../common/utils.sol";
 import { BalanceTable } from "../common/BalanceTable.sol";
 import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
@@ -24,7 +23,7 @@ contract ERC721Registration {
     // namespace is derived from the smart object's name
     world.registerSystem(namespace, ERC721_S, token, true);
 
-    ERC721Proxy proxy = new ERC721Proxy(world, _name);
+    ERC721Proxy proxy = new ERC721Proxy(world, namespace);
     // NOTE: Once inheritance and custom namespace is implemented in MUD, this code will be automatically executed in the MUD deploy script
     // Register core ERC721 Systems to world
     registerCoreFunctions(world, namespace);

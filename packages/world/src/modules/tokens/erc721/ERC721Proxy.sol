@@ -4,15 +4,14 @@ pragma solidity ^0.8.0;
 
 import "./interfaces/IERC721Proxy.sol";
 import "./interfaces/IERC721Receiver.sol";
+import "../common/ERC165.sol";
 import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { ERC721System } from "./ERC721System.sol";
 import { BalanceTable } from "../common/BalanceTable.sol";
 import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
 import { ERC721Table } from "./ERC721Table.sol";
-import "../common/ERC165.sol";
-
-import { tokenToTable, Token, nameToBytes16 } from "../common/utils.sol";
+import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { ERC721_T, ERC721_S, BALANCE_T, METADATA_T, ALLOWANCE_T } from "../common/constants.sol";
 
 contract ERC721Proxy is IERC721Proxy {
@@ -21,24 +20,26 @@ contract ERC721Proxy is IERC721Proxy {
   bytes32 private immutable metadataTableId;
   bytes32 private immutable allowanceTableId;
   bytes32 private immutable erc721TableId;
+  bytes16 private immutable namespace;
 
-  constructor(IBaseWorld _world, string memory _name) {
+  constructor(IBaseWorld _world, bytes16 _namespace) {
     world = _world;
-    balanceTableId = tokenToTable(_name, BALANCE_T);
-    metadataTableId = tokenToTable(_name, METADATA_T);
-    allowanceTableId = tokenToTable(_name, ALLOWANCE_T);
-    erc721TableId = tokenToTable(_name, ERC721_T);
+    namespace = _namespace;
+    balanceTableId = ResourceSelector.from(namespace, BALANCE_T);
+    metadataTableId = ResourceSelector.from(namespace, METADATA_T);
+    allowanceTableId = ResourceSelector.from(namespace, ALLOWANCE_T);
+    erc721TableId = ResourceSelector.from(namespace, ERC721_T);
   }
 
   modifier onlySystemOrWorld() {
     bytes memory rawSystemAddress = world.call(
-      nameToBytes16(name()),
+      namespace,
       ERC721_S,
       abi.encodeWithSelector(ERC721System.getAddress.selector)
     );
     require(
       msg.sender == address(world) || msg.sender == abi.decode(rawSystemAddress, (address)),
-      "ERC20: Only World or MUD token can emit approval event"
+      "ERC721: Only World or MUD token can execute call"
     );
     _;
   }

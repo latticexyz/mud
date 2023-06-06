@@ -13,7 +13,6 @@ import { ERC721Table } from "./ERC721Table.sol";
 
 import { ERC721Proxy } from "./ERC721Proxy.sol";
 import { IERC721Receiver } from "./interfaces/IERC721Receiver.sol";
-import { nameToBytes16, tokenToTable, Token } from "../common/utils.sol";
 import { METADATA_T, ERC721_T, BALANCE_T, ALLOWANCE_T } from "../common/constants.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 

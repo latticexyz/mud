@@ -7,3 +7,8 @@ bytes16 constant ALLOWANCE_T = bytes16("allowance.t");
 bytes16 constant ERC20_S = bytes16("ERC20.s");
 bytes16 constant ERC721_T = bytes16("ERC721.t");
 bytes16 constant ERC721_S = bytes16("ERC721.s");
+
+enum Token {
+  ERC20,
+  ERC721
+}
