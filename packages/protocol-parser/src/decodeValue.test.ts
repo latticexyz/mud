@@ -55,4 +55,35 @@ describe("decodeValue", () => {
     );
     expect(decodeValue("int256", "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")).toBe(-1n);
   });
+
+  it("can decode bytes", () => {
+    expect(decodeValue("bytes1", "0x01")).toBe("0x01");
+    expect(decodeValue("bytes2", "0x0001")).toBe("0x0001");
+    expect(decodeValue("bytes8", "0xff00ff00ff00ff00")).toBe("0xff00ff00ff00ff00");
+    expect(decodeValue("bytes32", "0x00000000000000000000000000000000000000000000000000000000000000001")).toBe(
+      "0x00000000000000000000000000000000000000000000000000000000000000001"
+    );
+    expect(decodeValue("bytes", "0x00000000000000000000000000000000000000000000000000000000000000001")).toBe(
+      "0x00000000000000000000000000000000000000000000000000000000000000001"
+    );
+  });
+
+  it("can decode string", () => {
+    expect(decodeValue("string", "0x68656c6c6f000000000000000000000000000000000000000000000000000000")).toBe("hello");
+    expect(decodeValue("string", "0x68656c6c6f")).toBe("hello");
+  });
+
+  it("can decode address", () => {
+    expect(decodeValue("address", "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266")).toBe(
+      "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+    );
+    expect(decodeValue("address", "0xffffffffffffffffffffffffffffffffffffffff")).toBe(
+      "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF"
+    );
+
+    expect(() => decodeValue("address", "0x00")).toThrow('Address "0x00" is invalid.');
+    expect(() => decodeValue("address", "0xffffffffffffffffffffffffffffffffffffffffff")).toThrow(
+      'Address "0xffffffffffffffffffffffffffffffffffffffffff" is invalid.'
+    );
+  });
 });
