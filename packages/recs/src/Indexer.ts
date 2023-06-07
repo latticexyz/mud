@@ -2,6 +2,21 @@ import { getComponentEntities, getComponentValue } from "./Component";
 import { getEntityString, getEntitySymbol } from "./Entity";
 import { Component, ComponentValue, Entity, EntitySymbol, Indexer, Metadata, Schema } from "./types";
 
+// Note: This was added because the value sometimes has keys that are numbers
+// These were added in MUD v2 but are interfering with the indexer
+// Clean function to remove any keys in value[0] and value[1] that are numbers
+const clean = (value: any) => {
+  if (!value) return value;
+  const cleanValue: any = {};
+  for (const [key, val] of Object.entries(value)) {
+    // check if key string is an integer
+    if (isNaN(parseInt(key))) {
+      cleanValue[key] = val;
+    }
+  }
+  return cleanValue;
+};
+
 /**
  * Create an indexed component from a given component.
  *
@@ -58,10 +73,10 @@ export function createIndexer<S extends Schema, M extends Metadata, T = undefine
   // Keeping index up to date
   const subscription = component.update$.subscribe(({ entity, value }) => {
     // Remove from previous location
-    remove(getEntitySymbol(entity), value[1]);
+    remove(getEntitySymbol(entity), clean(value[1]));
 
     // Add to new location
-    add(getEntitySymbol(entity), value[0]);
+    add(getEntitySymbol(entity), clean(value[0]));
   });
 
   component.world.registerDisposer(() => subscription?.unsubscribe());
