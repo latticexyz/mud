@@ -37,7 +37,7 @@ contract SignedKeysTest is Test, StoreReadWithStubs {
     bytes32[] memory keyTuple = SignedKeys.encodeKeyTuple({ x: -1, y: -2 });
 
     assertEq(keyTuple.length, 2);
-    assertEq(keyTuple[0], bytes32(hex"00000000000000000000000000000000000000000000000000000000ffffffff"));
-    assertEq(keyTuple[1], bytes32(hex"00000000000000000000000000000000000000000000000000000000fffffffe"));
+    assertEq(keyTuple[0], bytes32(hex"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
+    assertEq(keyTuple[1], bytes32(hex"fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"));
   }
 }

@@ -189,7 +189,7 @@
     "source": "test/SignedKeys.t.sol",
     "name": "encode SignedKeys key tuple",
     "functionCall": "bytes32[] memory keyTuple = SignedKeys.encodeKeyTuple({ x: -1, y: -2 })",
-    "gasUsed": 301
+    "gasUsed": 305
   },
   {
     "source": "test/SignedKeys.t.sol",
@@ -201,13 +201,13 @@
     "source": "test/SignedKeys.t.sol",
     "name": "set SignedKeys record",
     "functionCall": "SignedKeys.set({ x: -1, y: -2, value: true })",
-    "gasUsed": 39778
+    "gasUsed": 39782
   },
   {
     "source": "test/SignedKeys.t.sol",
     "name": "get SignedKeys record",
     "functionCall": "bool value = SignedKeys.get({ x: -1, y: -2 })",
-    "gasUsed": 4486
+    "gasUsed": 4490
   },
   {
     "source": "test/Slice.t.sol",
