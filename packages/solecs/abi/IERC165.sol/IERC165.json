@@ -1,0 +1,315 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"see https://eips.ethereum.org/EIPS/eip-165\",\"kind\":\"dev\",\"methods\":{\"supportsInterface(bytes4)\":{\"params\":{\"interfaceId\":\"interface id\"},\"returns\":{\"_0\":\"bool whether interface is supported\"}}},\"title\":\"ERC165 interface registration interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"supportsInterface(bytes4)\":{\"notice\":\"query whether contract has registered support for given interface\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"node_modules/@solidstate/contracts/interfaces/IERC165.sol\":\"IERC165\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":memmove/=node_modules/memmove/src/\",\":solmate/=node_modules/solmate/src/\"]},\"sources\":{\"node_modules/@solidstate/contracts/interfaces/IERC165.sol\":{\"keccak256\":\"0xc250e493770feaa0da8e5a55d241712c1c6526caa7d8df2455c3e5fa25124c0b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://768e47d9ddeb15daeab0c8c1109ae43a4c2a0633bd9e4bf141488dfc9252f7ba\",\"dweb:/ipfs/QmWMTTRTncar9LptrxU7WK7WG5hHp8KsYnBGfm3cYowuP8\"]},\"node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol\":{\"keccak256\":\"0xc15863a59c442e22b3f5de4e3fa79fffd45dcbe66a9fc18c52b1114c8420e177\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d81471f1ba8fbb03ce54b3e10478c858cb59cc8557530f326d0e63af122a9039\",\"dweb:/ipfs/QmTfG89JXeWNio2JtL6RpUrX2KZPRa3gAy5KFDU4xk3nMR\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "supportsInterface(bytes4)": {
+            "params": {
+              "interfaceId": "interface id"
+            },
+            "returns": {
+              "_0": "bool whether interface is supported"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "supportsInterface(bytes4)": {
+            "notice": "query whether contract has registered support for given interface"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@solidstate/=node_modules/@solidstate/",
+        ":ds-test/=node_modules/ds-test/src/",
+        ":forge-std/=node_modules/forge-std/src/",
+        ":hardhat/=node_modules/hardhat/",
+        ":memmove/=node_modules/memmove/src/",
+        ":solmate/=node_modules/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "node_modules/@solidstate/contracts/interfaces/IERC165.sol": "IERC165"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "node_modules/@solidstate/contracts/interfaces/IERC165.sol": {
+        "keccak256": "0xc250e493770feaa0da8e5a55d241712c1c6526caa7d8df2455c3e5fa25124c0b",
+        "urls": [
+          "bzz-raw://768e47d9ddeb15daeab0c8c1109ae43a4c2a0633bd9e4bf141488dfc9252f7ba",
+          "dweb:/ipfs/QmWMTTRTncar9LptrxU7WK7WG5hHp8KsYnBGfm3cYowuP8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol": {
+        "keccak256": "0xc15863a59c442e22b3f5de4e3fa79fffd45dcbe66a9fc18c52b1114c8420e177",
+        "urls": [
+          "bzz-raw://d81471f1ba8fbb03ce54b3e10478c858cb59cc8557530f326d0e63af122a9039",
+          "dweb:/ipfs/QmTfG89JXeWNio2JtL6RpUrX2KZPRa3gAy5KFDU4xk3nMR"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "node_modules/@solidstate/contracts/interfaces/IERC165.sol",
+    "id": 1112,
+    "exportedSymbols": {
+      "IERC165": [
+        1111
+      ],
+      "IERC165Internal": [
+        6943
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:501:15",
+    "nodes": [
+      {
+        "id": 1097,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:15",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".8"
+        ]
+      },
+      {
+        "id": 1099,
+        "nodeType": "ImportDirective",
+        "src": "58:56:15",
+        "nodes": [],
+        "absolutePath": "node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol",
+        "file": "./IERC165Internal.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1112,
+        "sourceUnit": 6944,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1098,
+              "name": "IERC165Internal",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 6943,
+              "src": "67:15:15",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1111,
+        "nodeType": "ContractDefinition",
+        "src": "225:308:15",
+        "nodes": [
+          {
+            "id": 1110,
+            "nodeType": "FunctionDefinition",
+            "src": "455:76:15",
+            "nodes": [],
+            "documentation": {
+              "id": 1103,
+              "nodeType": "StructuredDocumentation",
+              "src": "268:182:15",
+              "text": " @notice query whether contract has registered support for given interface\n @param interfaceId interface id\n @return bool whether interface is supported"
+            },
+            "functionSelector": "01ffc9a7",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "supportsInterface",
+            "nameLocation": "464:17:15",
+            "parameters": {
+              "id": 1106,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1105,
+                  "mutability": "mutable",
+                  "name": "interfaceId",
+                  "nameLocation": "489:11:15",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1110,
+                  "src": "482:18:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 1104,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "482:6:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "481:20:15"
+            },
+            "returnParameters": {
+              "id": 1109,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1108,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1110,
+                  "src": "525:4:15",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 1107,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "525:4:15",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "524:6:15"
+            },
+            "scope": 1111,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 1101,
+              "name": "IERC165Internal",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 6943,
+              "src": "246:15:15"
+            },
+            "id": 1102,
+            "nodeType": "InheritanceSpecifier",
+            "src": "246:15:15"
+          }
+        ],
+        "canonicalName": "IERC165",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 1100,
+          "nodeType": "StructuredDocumentation",
+          "src": "116:108:15",
+          "text": " @title ERC165 interface registration interface\n @dev see https://eips.ethereum.org/EIPS/eip-165"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          1111,
+          6943
+        ],
+        "name": "IERC165",
+        "nameLocation": "235:7:15",
+        "scope": 1112,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 15
+}

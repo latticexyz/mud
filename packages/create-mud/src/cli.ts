@@ -11,9 +11,9 @@ const templateRoot = resolve(__dirname, "..", "dist", "templates");
 create("create-mud", {
   templateRoot,
   defaultTemplate: "vanilla",
-  // templates use pnpm workspaces, so default to that for now
+  // templates use yarn workspaces, so default to that for now
   // not sure if it's worth trying to support multiple kinds of package managers for monorepos, given the tooling is so different
-  defaultPackageManager: "pnpm",
+  defaultPackageManager: "yarn",
   promptForDescription: false,
   promptForAuthor: false,
   promptForEmail: false,

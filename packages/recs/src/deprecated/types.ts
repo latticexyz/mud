@@ -35,6 +35,10 @@ export type ActionRequest<C extends Components, T, M = unknown> = {
   // Flag to set if the queue should wait for the underlying transaction to be confirmed (in addition to being reduced)
   awaitConfirmation?: boolean;
 
+  // If the transaction does not write to a table, we use this flag to skip waiting for the transaction to be reduced
+  // This is because transactions are only reduced if they write to a table. This flag allows non-write transactions to finish and leave the action queue
+  txMayNotWriteToTable?: boolean;
+
   // Metadata
   metadata?: M;
 };

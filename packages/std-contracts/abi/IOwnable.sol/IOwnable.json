@@ -1,0 +1,285 @@
+{
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "owner()": "8da5cb5b",
+    "transferOwnership(address)": "f2fde38b"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"returns\":{\"_0\":\"conrtact owner\"}},\"transferOwnership(address)\":{\"params\":{\"account\":\"address of new owner\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"owner()\":{\"notice\":\"get the ERC173 contract owner\"},\"transferOwnership(address)\":{\"notice\":\"transfer contract ownership to new account\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol\":\"IOwnable\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1000000},\"remappings\":[\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":memmove/=node_modules/memmove/src/\",\":solecs/=node_modules/@latticexyz/solecs/src/\",\":solmate/=node_modules/solmate/src/\"]},\"sources\":{\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol\":{\"keccak256\":\"0xd2d21c507ed587cd5de6cc016d4b9c7e956e468108b784455a400301707031c1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://091a98176309554295f1d471f888b1567d07e0250b11e23fa540739b6dfdce38\",\"dweb:/ipfs/Qme69DrKhhtwkSBMU456C3NxzXNMC7AJ4sVNMg5rKcrtPn\"]},\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol\":{\"keccak256\":\"0x9b18a5ad66323c65a81ecd62c3536db99115fe69a30b56a04409de941da7deb6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a93684363c5bfd4e31fa2cc2d3402e9451ba61c7dbb404e8e50658610fb2a555\",\"dweb:/ipfs/QmanFgF5v5GjBBrAEYCpaZyXRFRvzLGgB8SQcSEf9Dkj5Q\"]},\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol\":{\"keccak256\":\"0x9644c3e56c9ecd1763f8aaa437d5d573a7f64a8d93ad7bea1a9c44beb5911b89\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c32cfda38b44878ab196d32eeb72823a9f9904e8193286c787caccfb2e5bfa75\",\"dweb:/ipfs/QmfBNKWUSKaJtYL3JJ3YFioXCVFeeakqQ4cR5XzAxxZkCx\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "owner()": {
+            "returns": {
+              "_0": "conrtact owner"
+            }
+          },
+          "transferOwnership(address)": {
+            "params": {
+              "account": "address of new owner"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "owner()": {
+            "notice": "get the ERC173 contract owner"
+          },
+          "transferOwnership(address)": {
+            "notice": "transfer contract ownership to new account"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@solidstate/=node_modules/@solidstate/",
+        ":ds-test/=node_modules/ds-test/src/",
+        ":forge-std/=node_modules/forge-std/src/",
+        ":hardhat/=node_modules/hardhat/",
+        ":memmove/=node_modules/memmove/src/",
+        ":solecs/=node_modules/@latticexyz/solecs/src/",
+        ":solmate/=node_modules/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol": "IOwnable"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol": {
+        "keccak256": "0xd2d21c507ed587cd5de6cc016d4b9c7e956e468108b784455a400301707031c1",
+        "urls": [
+          "bzz-raw://091a98176309554295f1d471f888b1567d07e0250b11e23fa540739b6dfdce38",
+          "dweb:/ipfs/Qme69DrKhhtwkSBMU456C3NxzXNMC7AJ4sVNMg5rKcrtPn"
+        ],
+        "license": "MIT"
+      },
+      "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol": {
+        "keccak256": "0x9b18a5ad66323c65a81ecd62c3536db99115fe69a30b56a04409de941da7deb6",
+        "urls": [
+          "bzz-raw://a93684363c5bfd4e31fa2cc2d3402e9451ba61c7dbb404e8e50658610fb2a555",
+          "dweb:/ipfs/QmanFgF5v5GjBBrAEYCpaZyXRFRvzLGgB8SQcSEf9Dkj5Q"
+        ],
+        "license": "MIT"
+      },
+      "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol": {
+        "keccak256": "0x9644c3e56c9ecd1763f8aaa437d5d573a7f64a8d93ad7bea1a9c44beb5911b89",
+        "urls": [
+          "bzz-raw://c32cfda38b44878ab196d32eeb72823a9f9904e8193286c787caccfb2e5bfa75",
+          "dweb:/ipfs/QmfBNKWUSKaJtYL3JJ3YFioXCVFeeakqQ4cR5XzAxxZkCx"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+    "id": 7,
+    "exportedSymbols": {
+      "IERC173": [
+        184
+      ],
+      "IOwnable": [
+        6
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:115:0",
+    "nodes": [
+      {
+        "id": 1,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:0",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".8"
+        ]
+      },
+      {
+        "id": 3,
+        "nodeType": "ImportDirective",
+        "src": "58:55:0",
+        "nodes": [],
+        "absolutePath": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "file": "../../interfaces/IERC173.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7,
+        "sourceUnit": 185,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 2,
+              "name": "IERC173",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 184,
+              "src": "67:7:0",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 6,
+        "nodeType": "ContractDefinition",
+        "src": "115:32:0",
+        "nodes": [],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 4,
+              "name": "IERC173",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 184,
+              "src": "137:7:0"
+            },
+            "id": 5,
+            "nodeType": "InheritanceSpecifier",
+            "src": "137:7:0"
+          }
+        ],
+        "canonicalName": "IOwnable",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          6,
+          184,
+          194
+        ],
+        "name": "IOwnable",
+        "nameLocation": "125:8:0",
+        "scope": 7,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 0
+}

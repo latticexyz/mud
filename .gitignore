@@ -10,6 +10,7 @@ yarn.lock
 lerna-debug.log
 yarn-error.log
 .turbo
+*.idea
 
 # We don't want projects created from templates to ignore their lockfiles, but we don't
 # want to check them in here, so we'll ignore them from the root.

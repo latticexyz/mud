@@ -1,0 +1,258 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "Ownable__NotOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Ownable__NotTransitiveOwner",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"Ownable__NotOwner\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Ownable__NotTransitiveOwner\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol\":\"IOwnableInternal\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1000000},\"remappings\":[\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":memmove/=node_modules/memmove/src/\",\":solecs/=node_modules/@latticexyz/solecs/src/\",\":solmate/=node_modules/solmate/src/\"]},\"sources\":{\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol\":{\"keccak256\":\"0x6237a634712261bd82d5c7753780d35f77af215406d1e59512052f743f8f1c60\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8e54ac6cd1b376224b8d148c704693ff3f7ac9f69954fd30ee3d949fa17210c3\",\"dweb:/ipfs/QmWjq37K3gg29XhFbepg5GbmmFYoyXb81sh2K1MnVZqG6y\"]},\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol\":{\"keccak256\":\"0x9644c3e56c9ecd1763f8aaa437d5d573a7f64a8d93ad7bea1a9c44beb5911b89\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c32cfda38b44878ab196d32eeb72823a9f9904e8193286c787caccfb2e5bfa75\",\"dweb:/ipfs/QmfBNKWUSKaJtYL3JJ3YFioXCVFeeakqQ4cR5XzAxxZkCx\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Ownable__NotOwner"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Ownable__NotTransitiveOwner"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@solidstate/=node_modules/@solidstate/",
+        ":ds-test/=node_modules/ds-test/src/",
+        ":forge-std/=node_modules/forge-std/src/",
+        ":hardhat/=node_modules/hardhat/",
+        ":memmove/=node_modules/memmove/src/",
+        ":solecs/=node_modules/@latticexyz/solecs/src/",
+        ":solmate/=node_modules/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol": "IOwnableInternal"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol": {
+        "keccak256": "0x6237a634712261bd82d5c7753780d35f77af215406d1e59512052f743f8f1c60",
+        "urls": [
+          "bzz-raw://8e54ac6cd1b376224b8d148c704693ff3f7ac9f69954fd30ee3d949fa17210c3",
+          "dweb:/ipfs/QmWjq37K3gg29XhFbepg5GbmmFYoyXb81sh2K1MnVZqG6y"
+        ],
+        "license": "MIT"
+      },
+      "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol": {
+        "keccak256": "0x9644c3e56c9ecd1763f8aaa437d5d573a7f64a8d93ad7bea1a9c44beb5911b89",
+        "urls": [
+          "bzz-raw://c32cfda38b44878ab196d32eeb72823a9f9904e8193286c787caccfb2e5bfa75",
+          "dweb:/ipfs/QmfBNKWUSKaJtYL3JJ3YFioXCVFeeakqQ4cR5XzAxxZkCx"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+    "id": 18,
+    "exportedSymbols": {
+      "IERC173Internal": [
+        194
+      ],
+      "IOwnableInternal": [
+        17
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:220:1",
+    "nodes": [
+      {
+        "id": 8,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:1",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".8"
+        ]
+      },
+      {
+        "id": 10,
+        "nodeType": "ImportDirective",
+        "src": "58:71:1",
+        "nodes": [],
+        "absolutePath": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "file": "../../interfaces/IERC173Internal.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 18,
+        "sourceUnit": 195,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 9,
+              "name": "IERC173Internal",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 194,
+              "src": "67:15:1",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 17,
+        "nodeType": "ContractDefinition",
+        "src": "131:121:1",
+        "nodes": [
+          {
+            "id": 14,
+            "nodeType": "ErrorDefinition",
+            "src": "183:26:1",
+            "nodes": [],
+            "errorSelector": "2f7a8ee1",
+            "name": "Ownable__NotOwner",
+            "nameLocation": "189:17:1",
+            "parameters": {
+              "id": 13,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "206:2:1"
+            }
+          },
+          {
+            "id": 16,
+            "nodeType": "ErrorDefinition",
+            "src": "214:36:1",
+            "nodes": [],
+            "errorSelector": "d0b49847",
+            "name": "Ownable__NotTransitiveOwner",
+            "nameLocation": "220:27:1",
+            "parameters": {
+              "id": 15,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "247:2:1"
+            }
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 11,
+              "name": "IERC173Internal",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 194,
+              "src": "161:15:1"
+            },
+            "id": 12,
+            "nodeType": "InheritanceSpecifier",
+            "src": "161:15:1"
+          }
+        ],
+        "canonicalName": "IOwnableInternal",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          17,
+          194
+        ],
+        "name": "IOwnableInternal",
+        "nameLocation": "141:16:1",
+        "scope": 18,
+        "usedErrors": [
+          14,
+          16
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 1
+}

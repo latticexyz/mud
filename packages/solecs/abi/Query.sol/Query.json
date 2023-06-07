@@ -1,0 +1,260 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/interfaces/Query.sol",
+    "id": 5568,
+    "exportedSymbols": {
+      "IComponent": [
+        5307
+      ],
+      "LinkedList": [
+        1136
+      ],
+      "QueryFragment": [
+        5567
+      ],
+      "QueryType": [
+        5558
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:498:50",
+    "nodes": [
+      {
+        "id": 5547,
+        "nodeType": "PragmaDirective",
+        "src": "32:25:50",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".13"
+        ]
+      },
+      {
+        "id": 5549,
+        "nodeType": "ImportDirective",
+        "src": "59:46:50",
+        "nodes": [],
+        "absolutePath": "src/interfaces/IComponent.sol",
+        "file": "./IComponent.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5568,
+        "sourceUnit": 5308,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5548,
+              "name": "IComponent",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 5307,
+              "src": "68:10:50",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5551,
+        "nodeType": "ImportDirective",
+        "src": "106:52:50",
+        "nodes": [],
+        "absolutePath": "node_modules/memmove/src/LinkedList.sol",
+        "file": "memmove/LinkedList.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5568,
+        "sourceUnit": 1507,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5550,
+              "name": "LinkedList",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1136,
+              "src": "115:10:50",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 5558,
+        "nodeType": "EnumDefinition",
+        "src": "160:83:50",
+        "nodes": [],
+        "canonicalName": "QueryType",
+        "members": [
+          {
+            "id": 5552,
+            "name": "Has",
+            "nameLocation": "179:3:50",
+            "nodeType": "EnumValue",
+            "src": "179:3:50"
+          },
+          {
+            "id": 5553,
+            "name": "Not",
+            "nameLocation": "186:3:50",
+            "nodeType": "EnumValue",
+            "src": "186:3:50"
+          },
+          {
+            "id": 5554,
+            "name": "HasValue",
+            "nameLocation": "193:8:50",
+            "nodeType": "EnumValue",
+            "src": "193:8:50"
+          },
+          {
+            "id": 5555,
+            "name": "NotValue",
+            "nameLocation": "205:8:50",
+            "nodeType": "EnumValue",
+            "src": "205:8:50"
+          },
+          {
+            "id": 5556,
+            "name": "ProxyRead",
+            "nameLocation": "217:9:50",
+            "nodeType": "EnumValue",
+            "src": "217:9:50"
+          },
+          {
+            "id": 5557,
+            "name": "ProxyExpand",
+            "nameLocation": "230:11:50",
+            "nodeType": "EnumValue",
+            "src": "230:11:50"
+          }
+        ],
+        "name": "QueryType",
+        "nameLocation": "165:9:50"
+      },
+      {
+        "id": 5567,
+        "nodeType": "StructDefinition",
+        "src": "443:86:50",
+        "nodes": [],
+        "canonicalName": "QueryFragment",
+        "members": [
+          {
+            "constant": false,
+            "id": 5561,
+            "mutability": "mutable",
+            "name": "queryType",
+            "nameLocation": "478:9:50",
+            "nodeType": "VariableDeclaration",
+            "scope": 5567,
+            "src": "468:19:50",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_enum$_QueryType_$5558",
+              "typeString": "enum QueryType"
+            },
+            "typeName": {
+              "id": 5560,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 5559,
+                "name": "QueryType",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 5558,
+                "src": "468:9:50"
+              },
+              "referencedDeclaration": 5558,
+              "src": "468:9:50",
+              "typeDescriptions": {
+                "typeIdentifier": "t_enum$_QueryType_$5558",
+                "typeString": "enum QueryType"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5564,
+            "mutability": "mutable",
+            "name": "component",
+            "nameLocation": "502:9:50",
+            "nodeType": "VariableDeclaration",
+            "scope": 5567,
+            "src": "491:20:50",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IComponent_$5307",
+              "typeString": "contract IComponent"
+            },
+            "typeName": {
+              "id": 5563,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 5562,
+                "name": "IComponent",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 5307,
+                "src": "491:10:50"
+              },
+              "referencedDeclaration": 5307,
+              "src": "491:10:50",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IComponent_$5307",
+                "typeString": "contract IComponent"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 5566,
+            "mutability": "mutable",
+            "name": "value",
+            "nameLocation": "521:5:50",
+            "nodeType": "VariableDeclaration",
+            "scope": 5567,
+            "src": "515:11:50",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes_storage_ptr",
+              "typeString": "bytes"
+            },
+            "typeName": {
+              "id": 5565,
+              "name": "bytes",
+              "nodeType": "ElementaryTypeName",
+              "src": "515:5:50",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_storage_ptr",
+                "typeString": "bytes"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "name": "QueryFragment",
+        "nameLocation": "450:13:50",
+        "scope": 5568,
+        "visibility": "public"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 50
+}

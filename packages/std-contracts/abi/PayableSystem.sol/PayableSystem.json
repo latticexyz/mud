@@ -1,0 +1,1041 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "Ownable__NotOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "Ownable__NotTransitiveOwner",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "args",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "internalType": "bytes",
+          "name": "",
+          "type": "bytes"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "execute(bytes)": "09c5eabe",
+    "owner()": "8da5cb5b",
+    "transferOwnership(address)": "f2fde38b"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"Ownable__NotOwner\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"Ownable__NotTransitiveOwner\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"args\",\"type\":\"bytes\"}],\"name\":\"execute\",\"outputs\":[{\"internalType\":\"bytes\",\"name\":\"\",\"type\":\"bytes\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"returns\":{\"_0\":\"conrtact owner\"}},\"transferOwnership(address)\":{\"params\":{\"account\":\"address of new owner\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"owner()\":{\"notice\":\"get the ERC173 contract owner\"},\"transferOwnership(address)\":{\"notice\":\"transfer contract ownership to new account\"}},\"notice\":\"System base contract\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"node_modules/@latticexyz/solecs/src/PayableSystem.sol\":\"PayableSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":1000000},\"remappings\":[\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":memmove/=node_modules/memmove/src/\",\":solecs/=node_modules/@latticexyz/solecs/src/\",\":solmate/=node_modules/solmate/src/\"]},\"sources\":{\"node_modules/@latticexyz/solecs/src/LibTypes.sol\":{\"keccak256\":\"0xa3898035fd9fa865bcfc9861e3b5ecce36be3196fb27705e50a02fed9831f102\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://273284a35a950f6d0bc4223d345cf46c59972a00510ddbc4ba695ede38714798\",\"dweb:/ipfs/QmdqzKMaAfKWfBzUsrzsDMWnyxSKJRuEvrc6VTR5VarQaH\"]},\"node_modules/@latticexyz/solecs/src/Ownable.sol\":{\"keccak256\":\"0x7572ffd98860b2539eacdbb2112ce3d25ad8521c5d95f91e21ea5588a6904209\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3516b95146224d3fc04c5cc2818161fa9504a048894f6dd905b1e42307494fc4\",\"dweb:/ipfs/QmTqvvAs1fSLzXVWjAgSt3TtE3MM3M1DFXRzkkSsixtVza\"]},\"node_modules/@latticexyz/solecs/src/PayableSystem.sol\":{\"keccak256\":\"0x95bd81a7a7ad3f1897a6222b839d320131948733e28175a8e5cc884e19bd4666\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://deecdcc0ec5d100f72e3f1fdd10b6e96ccd7356c9dd96f37ad08504d34db6897\",\"dweb:/ipfs/QmVxTLhF9ma7RgTWMo5ASETGrAey7zRMvjK6Vx1GJPykCB\"]},\"node_modules/@latticexyz/solecs/src/interfaces/IComponent.sol\":{\"keccak256\":\"0xc25ab58cac1449fcd501ddcc56dade0653a7946adcd9eee2931bc095eda2a6b4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9505da36322f3b3de4dc0aaf0aec911e76be6cbd091f4d142070a7316df4629\",\"dweb:/ipfs/QmY5aGhwzBV5fXeLRDuzWMUfbPZGGdggbLdARhrkjmPBYW\"]},\"node_modules/@latticexyz/solecs/src/interfaces/IERC173.sol\":{\"keccak256\":\"0x2bd9a729a3bfcfc445bc557a914aee17fcaf1c0f74b909b6a91a5d3755a699e9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://203741d681a686fb75f0715332e554083733f349100dfe11252c17fbe9cd094e\",\"dweb:/ipfs/QmaBXDHiU4ZdJ8K5jQZ3FfswMpWEqSPsBWGFkJMU2qmmWi\"]},\"node_modules/@latticexyz/solecs/src/interfaces/IOwnableWritable.sol\":{\"keccak256\":\"0x804db2685d65f5d4029431c47276b6ac43d3c329ea4ce75358928dbd4d11ee77\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a1d85dfe46f678ce4cf3a788092519251a24c2c015f9e858a81111b506b0ee78\",\"dweb:/ipfs/QmVmE4f8axCeh8V2kcs8nxYd27rSiwvXJbDbNCg3VZHSXY\"]},\"node_modules/@latticexyz/solecs/src/interfaces/IPayableSystem.sol\":{\"keccak256\":\"0x874d69ab02df690af73cb5d9c7b153f2ab3c429f002289d15de3a9497738fba6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b8712f6afd72fcbfc83f42a5b5be33535207185c532da212ed68e691318466a7\",\"dweb:/ipfs/QmRqNib7btSWNHSLCgEaYg7uEWeG33TPyh5zriCHHHE2VL\"]},\"node_modules/@latticexyz/solecs/src/interfaces/IUint256Component.sol\":{\"keccak256\":\"0x12e2eaa4c5663048343e43a1994c446baacb16a4aacbe314ed5202d878751be9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2d78184a1b1868773f2d5a7cf54bb42bccc666dc75cea14eeed15b8573fd000f\",\"dweb:/ipfs/QmemXPHPB7V8StWR8kZcKt3eDxB78sZFZW4Dp7TcEFTxx9\"]},\"node_modules/@latticexyz/solecs/src/interfaces/IWorld.sol\":{\"keccak256\":\"0xd4e257a8c2c2ddceba671d791df0556d40b15b06f6ca479784afb143d2919adf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://dcf752a88f0679992ebea18e93de0c13bf0d840c222b764865c889c72349d9e1\",\"dweb:/ipfs/QmaSpUThcJGNkZnz4uAHLJKdhYTeQQCSCKagDaTF8h9DJ7\"]},\"node_modules/@latticexyz/solecs/src/interfaces/Query.sol\":{\"keccak256\":\"0x987e47a4d3f076910382b4e8619f607ea15abdedd786d6095bd27126ff6f941c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8c3d57f9da85917b77e1043a179d3b516bc8c00a8880fdcb1bffca7e53169059\",\"dweb:/ipfs/QmaHxqsT1ZpS8toN88qxgbeaDSMvnhYv9J9FMjVnKrMgoP\"]},\"node_modules/@solidstate/contracts/access/ownable/IOwnable.sol\":{\"keccak256\":\"0xd2d21c507ed587cd5de6cc016d4b9c7e956e468108b784455a400301707031c1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://091a98176309554295f1d471f888b1567d07e0250b11e23fa540739b6dfdce38\",\"dweb:/ipfs/Qme69DrKhhtwkSBMU456C3NxzXNMC7AJ4sVNMg5rKcrtPn\"]},\"node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol\":{\"keccak256\":\"0x6237a634712261bd82d5c7753780d35f77af215406d1e59512052f743f8f1c60\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8e54ac6cd1b376224b8d148c704693ff3f7ac9f69954fd30ee3d949fa17210c3\",\"dweb:/ipfs/QmWjq37K3gg29XhFbepg5GbmmFYoyXb81sh2K1MnVZqG6y\"]},\"node_modules/@solidstate/contracts/access/ownable/Ownable.sol\":{\"keccak256\":\"0xe16b09090c1251f8cc97fb2cc10c86675e0d0d9f0fc0032b417c37c8dba2db5f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8482effd630de3e3eb3c66ce6bc5ddd12838381e6e585df42116b4fd7764e4bc\",\"dweb:/ipfs/Qma9ga6QS2SooCYKyB7J5EHE8uUGiAv49kosEyjHt9Zg79\"]},\"node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol\":{\"keccak256\":\"0x0185d24250a5e6fbafce443b9ba19bba761803e3e5d91ba423bfb1f5f0bbdbf9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://547fadeaec559ee824f4dd37b2ef972a061ca59576f5733cf643e00d88a4db52\",\"dweb:/ipfs/QmYx6rmRmZZQkoS8TykMVsz9ZvfQ8MfSPt6UzWJ8pyj8qF\"]},\"node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol\":{\"keccak256\":\"0x7385e2020de914f75cabdc83c6adf88ed21e9de14669a89b3832b80f4f8c7b73\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a367c512bf29fb4923ed5d2454783e3dae88e5e03dec216e65c3986f3c3a8995\",\"dweb:/ipfs/QmfYkD6osr6SQzod6wc7WPae6YvVnYbn2BjJuHrYL3ERXM\"]},\"node_modules/@solidstate/contracts/interfaces/IERC173.sol\":{\"keccak256\":\"0x9b18a5ad66323c65a81ecd62c3536db99115fe69a30b56a04409de941da7deb6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a93684363c5bfd4e31fa2cc2d3402e9451ba61c7dbb404e8e50658610fb2a555\",\"dweb:/ipfs/QmanFgF5v5GjBBrAEYCpaZyXRFRvzLGgB8SQcSEf9Dkj5Q\"]},\"node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol\":{\"keccak256\":\"0x9644c3e56c9ecd1763f8aaa437d5d573a7f64a8d93ad7bea1a9c44beb5911b89\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c32cfda38b44878ab196d32eeb72823a9f9904e8193286c787caccfb2e5bfa75\",\"dweb:/ipfs/QmfBNKWUSKaJtYL3JJ3YFioXCVFeeakqQ4cR5XzAxxZkCx\"]},\"node_modules/@solidstate/contracts/utils/AddressUtils.sol\":{\"keccak256\":\"0x7d924db4dbd9210923ab08db77db3c77438014c255fd49fa208ebce283d991bf\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5189eebdf91899224a14b4cd5184fa9e67a9b8904e6d88ff9610944d06c63929\",\"dweb:/ipfs/QmRwNhfcp98pPgbzK4i9hbypHLTWPGYpuRCtEJRCTNASRm\"]},\"node_modules/@solidstate/contracts/utils/UintUtils.sol\":{\"keccak256\":\"0x5aaeaea22a0800402c6f2d8ce6185293bc64f74f6c390c1b1c53b624b43972f8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8b1c95c745da8ca4de7b68e65ef9122dab4e748c3ae3c9f5fd5aa7c65887c9d2\",\"dweb:/ipfs/QmX2KURY4JbM4NVFp5KPYsNxoJGA8n8w6SdAFdD5Pasgza\"]},\"node_modules/memmove/src/Array.sol\":{\"keccak256\":\"0x0d7681d3392c34f811cebc9598c5e8f4eef6aba431dca9e1fa87267ba51a4515\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0ffb5179dd40ccacadc2cb26ac99e9ea5148796f6d21413d7e0f37913831bea1\",\"dweb:/ipfs/QmfJogaoqook5JgnUZKib6w6khzViUag3EQb1EZ8aUEasQ\"]},\"node_modules/memmove/src/LinkedList.sol\":{\"keccak256\":\"0x2374863d39689178dda92b841e77b835ba8fa550561be23b7861d2e52c0fe8c1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8538ec6ca6be4e1b25b74dfd2139586fa2b9dab8d49d91428ed64dc683884598\",\"dweb:/ipfs/Qma7Z6urenqG5Dzqwe8ouGiFH37mbsJEX83tqjSq1PTnRc\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Ownable__NotOwner"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "Ownable__NotTransitiveOwner"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes",
+              "name": "args",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "execute",
+          "outputs": [
+            {
+              "internalType": "bytes",
+              "name": "",
+              "type": "bytes"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "owner()": {
+            "returns": {
+              "_0": "conrtact owner"
+            }
+          },
+          "transferOwnership(address)": {
+            "params": {
+              "account": "address of new owner"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "owner()": {
+            "notice": "get the ERC173 contract owner"
+          },
+          "transferOwnership(address)": {
+            "notice": "transfer contract ownership to new account"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@solidstate/=node_modules/@solidstate/",
+        ":ds-test/=node_modules/ds-test/src/",
+        ":forge-std/=node_modules/forge-std/src/",
+        ":hardhat/=node_modules/hardhat/",
+        ":memmove/=node_modules/memmove/src/",
+        ":solecs/=node_modules/@latticexyz/solecs/src/",
+        ":solmate/=node_modules/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 1000000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "node_modules/@latticexyz/solecs/src/PayableSystem.sol": "PayableSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "node_modules/@latticexyz/solecs/src/LibTypes.sol": {
+        "keccak256": "0xa3898035fd9fa865bcfc9861e3b5ecce36be3196fb27705e50a02fed9831f102",
+        "urls": [
+          "bzz-raw://273284a35a950f6d0bc4223d345cf46c59972a00510ddbc4ba695ede38714798",
+          "dweb:/ipfs/QmdqzKMaAfKWfBzUsrzsDMWnyxSKJRuEvrc6VTR5VarQaH"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/Ownable.sol": {
+        "keccak256": "0x7572ffd98860b2539eacdbb2112ce3d25ad8521c5d95f91e21ea5588a6904209",
+        "urls": [
+          "bzz-raw://3516b95146224d3fc04c5cc2818161fa9504a048894f6dd905b1e42307494fc4",
+          "dweb:/ipfs/QmTqvvAs1fSLzXVWjAgSt3TtE3MM3M1DFXRzkkSsixtVza"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/PayableSystem.sol": {
+        "keccak256": "0x95bd81a7a7ad3f1897a6222b839d320131948733e28175a8e5cc884e19bd4666",
+        "urls": [
+          "bzz-raw://deecdcc0ec5d100f72e3f1fdd10b6e96ccd7356c9dd96f37ad08504d34db6897",
+          "dweb:/ipfs/QmVxTLhF9ma7RgTWMo5ASETGrAey7zRMvjK6Vx1GJPykCB"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/IComponent.sol": {
+        "keccak256": "0xc25ab58cac1449fcd501ddcc56dade0653a7946adcd9eee2931bc095eda2a6b4",
+        "urls": [
+          "bzz-raw://c9505da36322f3b3de4dc0aaf0aec911e76be6cbd091f4d142070a7316df4629",
+          "dweb:/ipfs/QmY5aGhwzBV5fXeLRDuzWMUfbPZGGdggbLdARhrkjmPBYW"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/IERC173.sol": {
+        "keccak256": "0x2bd9a729a3bfcfc445bc557a914aee17fcaf1c0f74b909b6a91a5d3755a699e9",
+        "urls": [
+          "bzz-raw://203741d681a686fb75f0715332e554083733f349100dfe11252c17fbe9cd094e",
+          "dweb:/ipfs/QmaBXDHiU4ZdJ8K5jQZ3FfswMpWEqSPsBWGFkJMU2qmmWi"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/IOwnableWritable.sol": {
+        "keccak256": "0x804db2685d65f5d4029431c47276b6ac43d3c329ea4ce75358928dbd4d11ee77",
+        "urls": [
+          "bzz-raw://a1d85dfe46f678ce4cf3a788092519251a24c2c015f9e858a81111b506b0ee78",
+          "dweb:/ipfs/QmVmE4f8axCeh8V2kcs8nxYd27rSiwvXJbDbNCg3VZHSXY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/IPayableSystem.sol": {
+        "keccak256": "0x874d69ab02df690af73cb5d9c7b153f2ab3c429f002289d15de3a9497738fba6",
+        "urls": [
+          "bzz-raw://b8712f6afd72fcbfc83f42a5b5be33535207185c532da212ed68e691318466a7",
+          "dweb:/ipfs/QmRqNib7btSWNHSLCgEaYg7uEWeG33TPyh5zriCHHHE2VL"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/IUint256Component.sol": {
+        "keccak256": "0x12e2eaa4c5663048343e43a1994c446baacb16a4aacbe314ed5202d878751be9",
+        "urls": [
+          "bzz-raw://2d78184a1b1868773f2d5a7cf54bb42bccc666dc75cea14eeed15b8573fd000f",
+          "dweb:/ipfs/QmemXPHPB7V8StWR8kZcKt3eDxB78sZFZW4Dp7TcEFTxx9"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/IWorld.sol": {
+        "keccak256": "0xd4e257a8c2c2ddceba671d791df0556d40b15b06f6ca479784afb143d2919adf",
+        "urls": [
+          "bzz-raw://dcf752a88f0679992ebea18e93de0c13bf0d840c222b764865c889c72349d9e1",
+          "dweb:/ipfs/QmaSpUThcJGNkZnz4uAHLJKdhYTeQQCSCKagDaTF8h9DJ7"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/solecs/src/interfaces/Query.sol": {
+        "keccak256": "0x987e47a4d3f076910382b4e8619f607ea15abdedd786d6095bd27126ff6f941c",
+        "urls": [
+          "bzz-raw://8c3d57f9da85917b77e1043a179d3b516bc8c00a8880fdcb1bffca7e53169059",
+          "dweb:/ipfs/QmaHxqsT1ZpS8toN88qxgbeaDSMvnhYv9J9FMjVnKrMgoP"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/access/ownable/IOwnable.sol": {
+        "keccak256": "0xd2d21c507ed587cd5de6cc016d4b9c7e956e468108b784455a400301707031c1",
+        "urls": [
+          "bzz-raw://091a98176309554295f1d471f888b1567d07e0250b11e23fa540739b6dfdce38",
+          "dweb:/ipfs/Qme69DrKhhtwkSBMU456C3NxzXNMC7AJ4sVNMg5rKcrtPn"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol": {
+        "keccak256": "0x6237a634712261bd82d5c7753780d35f77af215406d1e59512052f743f8f1c60",
+        "urls": [
+          "bzz-raw://8e54ac6cd1b376224b8d148c704693ff3f7ac9f69954fd30ee3d949fa17210c3",
+          "dweb:/ipfs/QmWjq37K3gg29XhFbepg5GbmmFYoyXb81sh2K1MnVZqG6y"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/access/ownable/Ownable.sol": {
+        "keccak256": "0xe16b09090c1251f8cc97fb2cc10c86675e0d0d9f0fc0032b417c37c8dba2db5f",
+        "urls": [
+          "bzz-raw://8482effd630de3e3eb3c66ce6bc5ddd12838381e6e585df42116b4fd7764e4bc",
+          "dweb:/ipfs/Qma9ga6QS2SooCYKyB7J5EHE8uUGiAv49kosEyjHt9Zg79"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol": {
+        "keccak256": "0x0185d24250a5e6fbafce443b9ba19bba761803e3e5d91ba423bfb1f5f0bbdbf9",
+        "urls": [
+          "bzz-raw://547fadeaec559ee824f4dd37b2ef972a061ca59576f5733cf643e00d88a4db52",
+          "dweb:/ipfs/QmYx6rmRmZZQkoS8TykMVsz9ZvfQ8MfSPt6UzWJ8pyj8qF"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol": {
+        "keccak256": "0x7385e2020de914f75cabdc83c6adf88ed21e9de14669a89b3832b80f4f8c7b73",
+        "urls": [
+          "bzz-raw://a367c512bf29fb4923ed5d2454783e3dae88e5e03dec216e65c3986f3c3a8995",
+          "dweb:/ipfs/QmfYkD6osr6SQzod6wc7WPae6YvVnYbn2BjJuHrYL3ERXM"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/interfaces/IERC173.sol": {
+        "keccak256": "0x9b18a5ad66323c65a81ecd62c3536db99115fe69a30b56a04409de941da7deb6",
+        "urls": [
+          "bzz-raw://a93684363c5bfd4e31fa2cc2d3402e9451ba61c7dbb404e8e50658610fb2a555",
+          "dweb:/ipfs/QmanFgF5v5GjBBrAEYCpaZyXRFRvzLGgB8SQcSEf9Dkj5Q"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol": {
+        "keccak256": "0x9644c3e56c9ecd1763f8aaa437d5d573a7f64a8d93ad7bea1a9c44beb5911b89",
+        "urls": [
+          "bzz-raw://c32cfda38b44878ab196d32eeb72823a9f9904e8193286c787caccfb2e5bfa75",
+          "dweb:/ipfs/QmfBNKWUSKaJtYL3JJ3YFioXCVFeeakqQ4cR5XzAxxZkCx"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/utils/AddressUtils.sol": {
+        "keccak256": "0x7d924db4dbd9210923ab08db77db3c77438014c255fd49fa208ebce283d991bf",
+        "urls": [
+          "bzz-raw://5189eebdf91899224a14b4cd5184fa9e67a9b8904e6d88ff9610944d06c63929",
+          "dweb:/ipfs/QmRwNhfcp98pPgbzK4i9hbypHLTWPGYpuRCtEJRCTNASRm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@solidstate/contracts/utils/UintUtils.sol": {
+        "keccak256": "0x5aaeaea22a0800402c6f2d8ce6185293bc64f74f6c390c1b1c53b624b43972f8",
+        "urls": [
+          "bzz-raw://8b1c95c745da8ca4de7b68e65ef9122dab4e748c3ae3c9f5fd5aa7c65887c9d2",
+          "dweb:/ipfs/QmX2KURY4JbM4NVFp5KPYsNxoJGA8n8w6SdAFdD5Pasgza"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/memmove/src/Array.sol": {
+        "keccak256": "0x0d7681d3392c34f811cebc9598c5e8f4eef6aba431dca9e1fa87267ba51a4515",
+        "urls": [
+          "bzz-raw://0ffb5179dd40ccacadc2cb26ac99e9ea5148796f6d21413d7e0f37913831bea1",
+          "dweb:/ipfs/QmfJogaoqook5JgnUZKib6w6khzViUag3EQb1EZ8aUEasQ"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/memmove/src/LinkedList.sol": {
+        "keccak256": "0x2374863d39689178dda92b841e77b835ba8fa550561be23b7861d2e52c0fe8c1",
+        "urls": [
+          "bzz-raw://8538ec6ca6be4e1b25b74dfd2139586fa2b9dab8d49d91428ed64dc683884598",
+          "dweb:/ipfs/Qma7Z6urenqG5Dzqwe8ouGiFH37mbsJEX83tqjSq1PTnRc"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "node_modules/@latticexyz/solecs/src/PayableSystem.sol",
+    "id": 6350,
+    "exportedSymbols": {
+      "IPayableSystem": [
+        16900
+      ],
+      "IUint256Component": [
+        7183
+      ],
+      "IWorld": [
+        7296
+      ],
+      "Ownable": [
+        16886
+      ],
+      "PayableSystem": [
+        6349
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:576:42",
+    "nodes": [
+      {
+        "id": 6300,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:42",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 6302,
+        "nodeType": "ImportDirective",
+        "src": "58:65:42",
+        "nodes": [],
+        "absolutePath": "node_modules/@latticexyz/solecs/src/interfaces/IPayableSystem.sol",
+        "file": "./interfaces/IPayableSystem.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 6350,
+        "sourceUnit": 16901,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 6301,
+              "name": "IPayableSystem",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 16900,
+              "src": "67:14:42",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 6304,
+        "nodeType": "ImportDirective",
+        "src": "124:71:42",
+        "nodes": [],
+        "absolutePath": "node_modules/@latticexyz/solecs/src/interfaces/IUint256Component.sol",
+        "file": "./interfaces/IUint256Component.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 6350,
+        "sourceUnit": 7184,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 6303,
+              "name": "IUint256Component",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7183,
+              "src": "133:17:42",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 6306,
+        "nodeType": "ImportDirective",
+        "src": "196:49:42",
+        "nodes": [],
+        "absolutePath": "node_modules/@latticexyz/solecs/src/interfaces/IWorld.sol",
+        "file": "./interfaces/IWorld.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 6350,
+        "sourceUnit": 7297,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 6305,
+              "name": "IWorld",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7296,
+              "src": "205:6:42",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 6308,
+        "nodeType": "ImportDirective",
+        "src": "247:40:42",
+        "nodes": [],
+        "absolutePath": "node_modules/@latticexyz/solecs/src/Ownable.sol",
+        "file": "./Ownable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 6350,
+        "sourceUnit": 16887,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 6307,
+              "name": "Ownable",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 16886,
+              "src": "256:7:42",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 6349,
+        "nodeType": "ContractDefinition",
+        "src": "321:286:42",
+        "nodes": [
+          {
+            "id": 6316,
+            "nodeType": "VariableDeclaration",
+            "src": "384:28:42",
+            "nodes": [],
+            "constant": false,
+            "mutability": "mutable",
+            "name": "components",
+            "nameLocation": "402:10:42",
+            "scope": 6349,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IUint256Component_$7183",
+              "typeString": "contract IUint256Component"
+            },
+            "typeName": {
+              "id": 6315,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 6314,
+                "name": "IUint256Component",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 7183,
+                "src": "384:17:42"
+              },
+              "referencedDeclaration": 7183,
+              "src": "384:17:42",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IUint256Component_$7183",
+                "typeString": "contract IUint256Component"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "id": 6319,
+            "nodeType": "VariableDeclaration",
+            "src": "416:12:42",
+            "nodes": [],
+            "constant": false,
+            "mutability": "mutable",
+            "name": "world",
+            "nameLocation": "423:5:42",
+            "scope": 6349,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IWorld_$7296",
+              "typeString": "contract IWorld"
+            },
+            "typeName": {
+              "id": 6318,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 6317,
+                "name": "IWorld",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 7296,
+                "src": "416:6:42"
+              },
+              "referencedDeclaration": 7296,
+              "src": "416:6:42",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IWorld_$7296",
+                "typeString": "contract IWorld"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "id": 6348,
+            "nodeType": "FunctionDefinition",
+            "src": "433:172:42",
+            "nodes": [],
+            "body": {
+              "id": 6347,
+              "nodeType": "Block",
+              "src": "481:124:42",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 6341,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 6327,
+                      "name": "components",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6316,
+                      "src": "487:10:42",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IUint256Component_$7183",
+                        "typeString": "contract IUint256Component"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "condition": {
+                        "commonType": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        "id": 6333,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "leftExpression": {
+                          "id": 6328,
+                          "name": "_components",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 6324,
+                          "src": "500:11:42",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "nodeType": "BinaryOperation",
+                        "operator": "==",
+                        "rightExpression": {
+                          "arguments": [
+                            {
+                              "hexValue": "30",
+                              "id": 6331,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": true,
+                              "kind": "number",
+                              "lValueRequested": false,
+                              "nodeType": "Literal",
+                              "src": "523:1:42",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              },
+                              "value": "0"
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_rational_0_by_1",
+                                "typeString": "int_const 0"
+                              }
+                            ],
+                            "id": 6330,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "lValueRequested": false,
+                            "nodeType": "ElementaryTypeNameExpression",
+                            "src": "515:7:42",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_type$_t_address_$",
+                              "typeString": "type(address)"
+                            },
+                            "typeName": {
+                              "id": 6329,
+                              "name": "address",
+                              "nodeType": "ElementaryTypeName",
+                              "src": "515:7:42",
+                              "typeDescriptions": {}
+                            }
+                          },
+                          "id": 6332,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "typeConversion",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "515:10:42",
+                          "tryCall": false,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        "src": "500:25:42",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "falseExpression": {
+                        "arguments": [
+                          {
+                            "id": 6338,
+                            "name": "_components",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 6324,
+                            "src": "568:11:42",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "id": 6337,
+                          "name": "IUint256Component",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 7183,
+                          "src": "550:17:42",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_IUint256Component_$7183_$",
+                            "typeString": "type(contract IUint256Component)"
+                          }
+                        },
+                        "id": 6339,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "550:30:42",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_IUint256Component_$7183",
+                          "typeString": "contract IUint256Component"
+                        }
+                      },
+                      "id": 6340,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "nodeType": "Conditional",
+                      "src": "500:80:42",
+                      "trueExpression": {
+                        "arguments": [],
+                        "expression": {
+                          "argumentTypes": [],
+                          "expression": {
+                            "id": 6334,
+                            "name": "_world",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 6322,
+                            "src": "528:6:42",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_contract$_IWorld_$7296",
+                              "typeString": "contract IWorld"
+                            }
+                          },
+                          "id": 6335,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "memberName": "components",
+                          "nodeType": "MemberAccess",
+                          "referencedDeclaration": 7203,
+                          "src": "528:17:42",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_external_view$__$returns$_t_contract$_IUint256Component_$7183_$",
+                            "typeString": "function () view external returns (contract IUint256Component)"
+                          }
+                        },
+                        "id": 6336,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "528:19:42",
+                        "tryCall": false,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_IUint256Component_$7183",
+                          "typeString": "contract IUint256Component"
+                        }
+                      },
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IUint256Component_$7183",
+                        "typeString": "contract IUint256Component"
+                      }
+                    },
+                    "src": "487:93:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IUint256Component_$7183",
+                      "typeString": "contract IUint256Component"
+                    }
+                  },
+                  "id": 6342,
+                  "nodeType": "ExpressionStatement",
+                  "src": "487:93:42"
+                },
+                {
+                  "expression": {
+                    "id": 6345,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 6343,
+                      "name": "world",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6319,
+                      "src": "586:5:42",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IWorld_$7296",
+                        "typeString": "contract IWorld"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 6344,
+                      "name": "_world",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 6322,
+                      "src": "594:6:42",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IWorld_$7296",
+                        "typeString": "contract IWorld"
+                      }
+                    },
+                    "src": "586:14:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IWorld_$7296",
+                      "typeString": "contract IWorld"
+                    }
+                  },
+                  "id": 6346,
+                  "nodeType": "ExpressionStatement",
+                  "src": "586:14:42"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 6325,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6322,
+                  "mutability": "mutable",
+                  "name": "_world",
+                  "nameLocation": "452:6:42",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6348,
+                  "src": "445:13:42",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IWorld_$7296",
+                    "typeString": "contract IWorld"
+                  },
+                  "typeName": {
+                    "id": 6321,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 6320,
+                      "name": "IWorld",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 7296,
+                      "src": "445:6:42"
+                    },
+                    "referencedDeclaration": 7296,
+                    "src": "445:6:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IWorld_$7296",
+                      "typeString": "contract IWorld"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6324,
+                  "mutability": "mutable",
+                  "name": "_components",
+                  "nameLocation": "468:11:42",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6348,
+                  "src": "460:19:42",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6323,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "460:7:42",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "444:36:42"
+            },
+            "returnParameters": {
+              "id": 6326,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "481:0:42"
+            },
+            "scope": 6349,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "abstract": true,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 6310,
+              "name": "IPayableSystem",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 16900,
+              "src": "356:14:42"
+            },
+            "id": 6311,
+            "nodeType": "InheritanceSpecifier",
+            "src": "356:14:42"
+          },
+          {
+            "baseName": {
+              "id": 6312,
+              "name": "Ownable",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 16886,
+              "src": "372:7:42"
+            },
+            "id": 6313,
+            "nodeType": "InheritanceSpecifier",
+            "src": "372:7:42"
+          }
+        ],
+        "canonicalName": "PayableSystem",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": {
+          "id": 6309,
+          "nodeType": "StructuredDocumentation",
+          "src": "289:31:42",
+          "text": " System base contract"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          6349,
+          16886,
+          7600,
+          17429,
+          17844,
+          17305,
+          16900,
+          7643,
+          17439
+        ],
+        "name": "PayableSystem",
+        "nameLocation": "339:13:42",
+        "scope": 6350,
+        "usedErrors": [
+          17841,
+          17843
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 42
+}

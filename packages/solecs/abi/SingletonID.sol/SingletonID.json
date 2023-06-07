@@ -1,0 +1,82 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/SingletonID.sol",
+    "id": 4377,
+    "exportedSymbols": {
+      "SingletonID": [
+        4376
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:64:34",
+    "nodes": [
+      {
+        "id": 4373,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:34",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 4376,
+        "nodeType": "VariableDeclaration",
+        "src": "58:36:34",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "SingletonID",
+        "nameLocation": "75:11:34",
+        "scope": 4377,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_uint256",
+          "typeString": "uint256"
+        },
+        "typeName": {
+          "id": 4374,
+          "name": "uint256",
+          "nodeType": "ElementaryTypeName",
+          "src": "58:7:34",
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint256",
+            "typeString": "uint256"
+          }
+        },
+        "value": {
+          "hexValue": "3078363044",
+          "id": 4375,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "number",
+          "lValueRequested": false,
+          "nodeType": "Literal",
+          "src": "89:5:34",
+          "typeDescriptions": {
+            "typeIdentifier": "t_rational_1549_by_1",
+            "typeString": "int_const 1549"
+          },
+          "value": "0x60D"
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 34
+}

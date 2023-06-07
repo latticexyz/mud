@@ -1,0 +1,144 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"title\":\"ERC165 interface registration interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol\":\"IERC165Internal\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\",\":hardhat/=node_modules/hardhat/\",\":memmove/=node_modules/memmove/src/\",\":solmate/=node_modules/solmate/src/\"]},\"sources\":{\"/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol\":{\"keccak256\":\"0xc15863a59c442e22b3f5de4e3fa79fffd45dcbe66a9fc18c52b1114c8420e177\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d81471f1ba8fbb03ce54b3e10478c858cb59cc8557530f326d0e63af122a9039\",\"dweb:/ipfs/QmTfG89JXeWNio2JtL6RpUrX2KZPRa3gAy5KFDU4xk3nMR\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@solidstate/=node_modules/@solidstate/",
+        ":ds-test/=node_modules/ds-test/src/",
+        ":forge-std/=node_modules/forge-std/src/",
+        ":hardhat/=node_modules/hardhat/",
+        ":memmove/=node_modules/memmove/src/",
+        ":solmate/=node_modules/solmate/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol": "IERC165Internal"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol": {
+        "keccak256": "0xc15863a59c442e22b3f5de4e3fa79fffd45dcbe66a9fc18c52b1114c8420e177",
+        "urls": [
+          "bzz-raw://d81471f1ba8fbb03ce54b3e10478c858cb59cc8557530f326d0e63af122a9039",
+          "dweb:/ipfs/QmTfG89JXeWNio2JtL6RpUrX2KZPRa3gAy5KFDU4xk3nMR"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol",
+    "id": 171,
+    "exportedSymbols": {
+      "IERC165Internal": [
+        170
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:172:4",
+    "nodes": [
+      {
+        "id": 166,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:4",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".8"
+        ]
+      },
+      {
+        "id": 168,
+        "nodeType": "ImportDirective",
+        "src": "58:56:4",
+        "nodes": [],
+        "absolutePath": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol",
+        "file": "./IERC165Internal.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 171,
+        "sourceUnit": 171,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 167,
+              "name": "IERC165Internal",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 170,
+              "src": "67:15:4",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 170,
+        "nodeType": "ContractDefinition",
+        "src": "174:30:4",
+        "nodes": [],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IERC165Internal",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 169,
+          "nodeType": "StructuredDocumentation",
+          "src": "116:57:4",
+          "text": " @title ERC165 interface registration interface"
+        },
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          170
+        ],
+        "name": "IERC165Internal",
+        "nameLocation": "184:15:4",
+        "scope": 171,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 4
+}

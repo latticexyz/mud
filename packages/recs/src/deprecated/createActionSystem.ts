@@ -157,10 +157,12 @@ export function createActionSystem<M = unknown>(
       if (tx) {
         // Wait for all tx events to be reduced
         updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx });
-        await awaitStreamValue(txReduced$, (v) => v === tx);
+        if (!action.txMayNotWriteToTable) {
+          await awaitStreamValue(txReduced$, (v) => v === tx);
+        }
         updateComponent(Action, action.entity, { state: ActionState.TxReduced });
         // TODO: extend ActionData type to be aware of whether waitForTransaction is set
-        if (action.awaitConfirmation) {
+        if (action.awaitConfirmation || action.txMayNotWriteToTable) {
           if (waitForTransaction) {
             await waitForTransaction(tx);
           } else {

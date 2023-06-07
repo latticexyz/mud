@@ -28,6 +28,9 @@ export interface DeployConfig {
   priorityFeeMultiplier: number;
   debug?: boolean;
   worldAddress?: string;
+  createNamespace: boolean;
+  installDefaultModules: boolean;
+  estimateGas: boolean;
   disableTxWait: boolean;
   pollInterval: number;
 }
@@ -46,8 +49,19 @@ export async function deploy(
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
-    deployConfig;
+  const {
+    profile,
+    rpc,
+    privateKey,
+    priorityFeeMultiplier,
+    debug,
+    worldAddress,
+    createNamespace,
+    installDefaultModules,
+    estimateGas,
+    disableTxWait,
+    pollInterval,
+  } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -93,36 +107,57 @@ export async function deploy(
   );
 
   // Deploy default World modules
-  const defaultModules: Record<string, Promise<string>> = {
-    // TODO: these only need to be deployed once per chain, add a check if they exist already
-    CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, disableTxWait, "CoreModule"),
-    KeysWithValueModule: deployContract(
-      KeysWithValueModuleData.abi,
-      KeysWithValueModuleData.bytecode,
-      disableTxWait,
-      "KeysWithValueModule"
-    ),
-    KeysInTableModule: deployContract(
-      KeysInTableModuleData.abi,
-      KeysInTableModuleData.bytecode,
-      disableTxWait,
-      "KeysInTableModule"
-    ),
-    UniqueEntityModule: deployContract(
-      UniqueEntityModuleData.abi,
-      UniqueEntityModuleData.bytecode,
-      disableTxWait,
-      "UniqueEntityModule"
-    ),
-  };
+  const defaultModules: Record<string, Promise<string>> = !installDefaultModules
+    ? {}
+    : {
+        // TODO: these only need to be deployed once per chain, add a check if they exist already
+        CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, disableTxWait, "CoreModule"),
+        KeysWithValueModule: deployContract(
+          KeysWithValueModuleData.abi,
+          KeysWithValueModuleData.bytecode,
+          disableTxWait,
+          "KeysWithValueModule"
+        ),
+        KeysInTableModule: deployContract(
+          KeysInTableModuleData.abi,
+          KeysInTableModuleData.bytecode,
+          disableTxWait,
+          "KeysInTableModule"
+        ),
+        UniqueEntityModule: deployContract(
+          UniqueEntityModuleData.abi,
+          UniqueEntityModuleData.bytecode,
+          disableTxWait,
+          "UniqueEntityModule"
+        ),
+        SnapSyncModule: deployContract(
+          SnapSyncModuleData.abi,
+          SnapSyncModuleData.bytecode,
+          disableTxWait,
+          "SnapSyncModule"
+        ),
+      };
 
   // Deploy user Modules
-  const modulePromises = mudConfig.modules
-    .filter((module) => !defaultModules[module.name]) // Only deploy user modules here, not default modules
-    .reduce<Record<string, Promise<string>>>((acc, module) => {
-      acc[module.name] = deployContractByName(module.name, disableTxWait);
-      return acc;
-    }, defaultModules);
+
+  // Note: when creating a new namespace, we want some default modules
+  // However, when deploying to an existing one, we may not want those (since they'd be already deployed)
+  // Over here, we enforce that when deploying to an existing namespace, you CANNOT deploy a new module
+  // and have to use an existing one, by passing in the module address
+  // TODO: However, a better way to do this is to check if the module exists, and if not, deploy it,
+  // otherwise, get the address of it and simply use that
+  const modulePromises = !createNamespace
+    ? mudConfig.modules.reduce<Record<string, Promise<string>>>((acc, module) => {
+        console.log(chalk.blue(`Using existing deployed module ${module.name}...`));
+        acc[module.name] = Promise.resolve(module.address);
+        return acc;
+      }, {})
+    : mudConfig.modules
+        .filter((module) => !defaultModules[module.name]) // Only deploy user modules here, not default modules
+        .reduce<Record<string, Promise<string>>>((acc, module) => {
+          acc[module.name] = deployContractByName(module.name, disableTxWait);
+          return acc;
+        }, defaultModules);
 
   // Combine all contracts into one object
   const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
@@ -140,7 +175,12 @@ export async function deploy(
   }
 
   // Register namespace
-  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  if (createNamespace && namespace) {
+    console.log(chalk.blue(`Registering namespace ${namespace}`));
+    await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  } else {
+    console.log(chalk.yellow("Skipping namespace registration"));
+  }
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
@@ -486,7 +526,11 @@ export async function deploy(
   ): Promise<Awaited<ReturnType<Awaited<ReturnType<C[F]>>["wait"]>>> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
-      const gasLimit = await contract.estimateGas[func].apply(null, args);
+      // We are manually specifying a high gasLimit since deploying large STORE tables is expensive
+      // and the estimateGas function cannot properly estimate gas usage
+      // Since this is used in the cli only for deployment, it's okay to use a high gasLimit
+      const gasLimit = estimateGas ? await contract.estimateGas[func].apply(null, args) : 10_000_000;
+
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
       const txPromise = contract[func]
         .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas, gasPrice }])
@@ -494,7 +538,7 @@ export async function deploy(
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
-      if (debug) console.error(error);
+      console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
@@ -534,6 +578,11 @@ export async function deploy(
   async function setInternalFeePerGas(multiplier: number) {
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
+    if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
+    if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
+      throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
+If you're deploying to the Lattice testnet, you can fund your account by running 'yarn mud faucet --address ${await signer.getAddress()}'`);
+    }
 
     if (feeData.lastBaseFeePerGas) {
       if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {

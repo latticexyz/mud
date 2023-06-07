@@ -1,0 +1,28 @@
+[
+  {
+    "inputs": [],
+    "name": "components",
+    "outputs": [
+      {
+        "internalType": "contract IUint256Component",
+        "name": "",
+        "type": "IUint256Component"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "world",
+    "outputs": [
+      {
+        "internalType": "contract IWorld",
+        "name": "",
+        "type": "IWorld"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

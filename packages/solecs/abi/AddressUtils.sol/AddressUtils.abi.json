@@ -1,0 +1,17 @@
+[
+  {
+    "inputs": [],
+    "name": "AddressUtils__InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressUtils__NotContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "AddressUtils__SendValueFailed",
+    "type": "error"
+  }
+]

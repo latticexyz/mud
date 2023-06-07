@@ -1,0 +1,2708 @@
+{
+  "_format": "ethers-rs-sol-cache-3",
+  "paths": {
+    "artifacts": "abi",
+    "build_infos": "abi/build-info",
+    "sources": "src",
+    "tests": "test",
+    "scripts": "script",
+    "libraries": [
+      "node_modules"
+    ]
+  },
+  "files": {
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol": {
+      "lastModificationDate": 1687204488140,
+      "contentHash": "b3dfa912b96c3de89a3df204decdbbb2",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IOwnable": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IOwnable.sol/IOwnable.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol": {
+      "lastModificationDate": 1687204488140,
+      "contentHash": "1b4485ee11e314b89acfd1553a2381ba",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IOwnableInternal": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IOwnableInternal.sol/IOwnableInternal.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol": {
+      "lastModificationDate": 1687204488178,
+      "contentHash": "21bf2a3e0b20893c8a668088e4a0d32c",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "OwnableInternal": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OwnableInternal.sol/OwnableInternal.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol": {
+      "lastModificationDate": 1687204488178,
+      "contentHash": "eb5b8e5d7cc0a6a80ee2909b50ba0ee5",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "OwnableStorage": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ownable/OwnableStorage.sol/OwnableStorage.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol": {
+      "lastModificationDate": 1687204488119,
+      "contentHash": "c6e6393127b064be4c5150cd13112765",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IERC165Internal": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC165Internal.sol/IERC165Internal.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol": {
+      "lastModificationDate": 1687204488119,
+      "contentHash": "fb91cbea8b5c9a1a381c28baad1fe2c2",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IERC173": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "interfaces/IERC173.sol/IERC173.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol": {
+      "lastModificationDate": 1687204488119,
+      "contentHash": "64e9b98233e6a0123e11ad7f0aad7590",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IERC173Internal": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC173Internal.sol/IERC173Internal.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol": {
+      "lastModificationDate": 1687204488013,
+      "contentHash": "ed9ca7d575dcdaac321baa215901dcbd",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "AddressUtils": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "AddressUtils.sol/AddressUtils.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol": {
+      "lastModificationDate": 1687204488191,
+      "contentHash": "29ed272a1ff94be3a26f39ca7f64d1f9",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "UintUtils": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "UintUtils.sol/UintUtils.json"
+        }
+      }
+    },
+    "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol": {
+      "lastModificationDate": 1687204488073,
+      "contentHash": "38d64821b08d1c7bce516640a0a7d983",
+      "sourceName": "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.13, <0.9.0",
+      "artifacts": {
+        "ArrayLib": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Array.sol/ArrayLib.json"
+        },
+        "RefArrayLib": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Array.sol/RefArrayLib.json"
+        }
+      }
+    },
+    "node_modules/@solidstate/contracts/access/ownable/Ownable.sol": {
+      "lastModificationDate": 1687204488178,
+      "contentHash": "deabc129830c24b45ba89a7288ed7a85",
+      "sourceName": "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "Ownable": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ownable/Ownable.sol/Ownable.json"
+        }
+      }
+    },
+    "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol": {
+      "lastModificationDate": 1687204488178,
+      "contentHash": "eb5b8e5d7cc0a6a80ee2909b50ba0ee5",
+      "sourceName": "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "OwnableStorage": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OwnableStorage.sol/OwnableStorage.json"
+        }
+      }
+    },
+    "node_modules/@solidstate/contracts/interfaces/IERC165.sol": {
+      "lastModificationDate": 1687204488119,
+      "contentHash": "69b3ec8b394b10e4f828aa9cf2a04531",
+      "sourceName": "node_modules/@solidstate/contracts/interfaces/IERC165.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IERC165": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC165.sol/IERC165.json"
+        }
+      }
+    },
+    "node_modules/@solidstate/contracts/interfaces/IERC173.sol": {
+      "lastModificationDate": 1687204488119,
+      "contentHash": "fb91cbea8b5c9a1a381c28baad1fe2c2",
+      "sourceName": "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol"
+      ],
+      "versionRequirement": "^0.8.8",
+      "artifacts": {
+        "IERC173": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC173.sol/IERC173.json"
+        }
+      }
+    },
+    "node_modules/memmove/src/LinkedList.sol": {
+      "lastModificationDate": 1687204488114,
+      "contentHash": "d97eb113596d10ea6923492617aa02bf",
+      "sourceName": "node_modules/memmove/src/LinkedList.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol"
+      ],
+      "versionRequirement": ">=0.8.13, <0.9.0",
+      "artifacts": {
+        "IndexableLinkedListLib": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "LinkedList.sol/IndexableLinkedListLib.json"
+        },
+        "LinkedListLib": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "LinkedList.sol/LinkedListLib.json"
+        }
+      }
+    },
+    "src/BareComponent.sol": {
+      "lastModificationDate": 1690073210898,
+      "contentHash": "260134e24670d39a891766dbf7a695f4",
+      "sourceName": "src/BareComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "BareComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "BareComponent.sol/BareComponent.json"
+        }
+      }
+    },
+    "src/Component.sol": {
+      "lastModificationDate": 1690073210898,
+      "contentHash": "05cfbda36eadf78ccddba45c1b79678a",
+      "sourceName": "src/Component.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "Component": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Component.sol/Component.json"
+        }
+      }
+    },
+    "src/Indexer.sol": {
+      "lastModificationDate": 1690073210898,
+      "contentHash": "c6641f818865d99056d5df834d8a8b0d",
+      "sourceName": "src/Indexer.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC165.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC165.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "Indexer": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Indexer.sol/Indexer.json"
+        }
+      }
+    },
+    "src/LibQuery.sol": {
+      "lastModificationDate": 1690073210898,
+      "contentHash": "49af4c63d9bd09a598e3c6e7080211c8",
+      "sourceName": "src/LibQuery.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.13",
+      "artifacts": {
+        "LibQuery": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "LibQuery.sol/LibQuery.json"
+        }
+      }
+    },
+    "src/LibTypes.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "5c018f749369c4d050462ed510ac0326",
+      "sourceName": "src/LibTypes.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.13",
+      "artifacts": {
+        "LibTypes": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "LibTypes.sol/LibTypes.json"
+        }
+      }
+    },
+    "src/MapSet.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "4f5195769d3c3e219edcc86fbdae3c46",
+      "sourceName": "src/MapSet.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "src/Ownable.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "MapSet": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "MapSet.sol/MapSet.json"
+        }
+      }
+    },
+    "src/Ownable.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "8e277d16951364d1dbd39e1c11fd0030",
+      "sourceName": "src/Ownable.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "Ownable": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Ownable.sol/Ownable.json"
+        }
+      }
+    },
+    "src/OwnableWritable.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "53d4098b2a6ca1367808ef375e4dee9d",
+      "sourceName": "src/OwnableWritable.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "OwnableWritable": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OwnableWritable.sol/OwnableWritable.json"
+        }
+      }
+    },
+    "src/OwnableWritableStorage.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "923fdae11869cfd8c14e8040d9213961",
+      "sourceName": "src/OwnableWritableStorage.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "OwnableWritableStorage": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OwnableWritableStorage.sol/OwnableWritableStorage.json"
+        }
+      }
+    },
+    "src/PayableSystem.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "569217b76b233ce2296dd508454a083a",
+      "sourceName": "src/PayableSystem.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/Ownable.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IPayableSystem.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "PayableSystem": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "PayableSystem.sol/PayableSystem.json"
+        }
+      }
+    },
+    "src/Set.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "7d93ebf1a29c4028a315f21f4d081984",
+      "sourceName": "src/Set.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "src/Ownable.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "Set": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Set.sol/Set.json"
+        }
+      }
+    },
+    "src/SingletonID.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "694ec4115b030acfe4e0622c73220962",
+      "sourceName": "src/SingletonID.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "SingletonID": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SingletonID.sol/SingletonID.json"
+        }
+      }
+    },
+    "src/System.sol": {
+      "lastModificationDate": 1690073210899,
+      "contentHash": "0f6d40b22bcf8fc4b04865bd477d998d",
+      "sourceName": "src/System.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/Ownable.sol",
+        "src/SystemStorage.sol",
+        "src/constants.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/ISystem.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol",
+        "src/utils.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "System": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "System.sol/System.json"
+        }
+      }
+    },
+    "src/SystemStorage.sol": {
+      "lastModificationDate": 1690073210900,
+      "contentHash": "195722a683dd20688101b2fad25dcd2d",
+      "sourceName": "src/SystemStorage.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/constants.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/ISystem.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol",
+        "src/utils.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "SystemStorage": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "SystemStorage.sol/SystemStorage.json"
+        }
+      }
+    },
+    "src/World.sol": {
+      "lastModificationDate": 1690073210900,
+      "contentHash": "79e1c0e5715cf54d7cc20418883b0093",
+      "sourceName": "src/World.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibQuery.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/System.sol",
+        "src/SystemStorage.sol",
+        "src/components/Uint256Component.sol",
+        "src/constants.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/ISystem.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol",
+        "src/systems/RegisterSystem.sol",
+        "src/utils.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "World": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "World.sol/World.json"
+        }
+      }
+    },
+    "src/components/Uint256Component.sol": {
+      "lastModificationDate": 1690073210900,
+      "contentHash": "d1284175c9c92abbfcea2d71a86acecd",
+      "sourceName": "src/components/Uint256Component.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "Uint256Component": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Uint256Component.sol/Uint256Component.json"
+        }
+      }
+    },
+    "src/constants.sol": {
+      "lastModificationDate": 1690073210900,
+      "contentHash": "bf43c1888a70280a98a8221981966be5",
+      "sourceName": "src/constants.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "constants": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "constants.sol/constants.json"
+        }
+      }
+    },
+    "src/interfaces/IComponent.sol": {
+      "lastModificationDate": 1690073210900,
+      "contentHash": "2f2b128c82c31ead6e9438a4dcda9234",
+      "sourceName": "src/interfaces/IComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/LibTypes.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IComponent.sol/IComponent.json"
+        }
+      }
+    },
+    "src/interfaces/IERC165.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "eac6fd5ec07bd474323008c946ee58ce",
+      "sourceName": "src/interfaces/IERC165.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC165Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC165.sol"
+      ],
+      "versionRequirement": "^0.8.0",
+      "artifacts": {
+        "IERC165": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC165.sol/IERC165.json"
+        }
+      }
+    },
+    "src/interfaces/IERC173.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "4268f68a47b02579f17c272e74e91759",
+      "sourceName": "src/interfaces/IERC173.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IERC173": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IERC173.sol/IERC173.json"
+        }
+      }
+    },
+    "src/interfaces/IEntityContainer.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "76b03ad87a06855df31ad43323156488",
+      "sourceName": "src/interfaces/IEntityContainer.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IEntityContainer": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IEntityContainer.sol/IEntityContainer.json"
+        }
+      }
+    },
+    "src/interfaces/IEntityIndexer.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "f09854ff02b50d116cb69fd121baeb80",
+      "sourceName": "src/interfaces/IEntityIndexer.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "src/interfaces/IEntityContainer.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IEntityIndexer": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IEntityIndexer.sol/IEntityIndexer.json"
+        }
+      }
+    },
+    "src/interfaces/IOwnableWritable.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "4d31756610c3f8fa98f07b924461e6c6",
+      "sourceName": "src/interfaces/IOwnableWritable.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/interfaces/IERC173.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IOwnableWritable": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IOwnableWritable.sol/IOwnableWritable.json"
+        }
+      }
+    },
+    "src/interfaces/IPayableSystem.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "ebfb486a7011c9e3fa443d6368ab1eb4",
+      "sourceName": "src/interfaces/IPayableSystem.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/interfaces/IERC173.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IPayableSystem": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IPayableSystem.sol/IPayableSystem.json"
+        }
+      }
+    },
+    "src/interfaces/ISystem.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "c6a71920b1a01143cb6c2c273819bf19",
+      "sourceName": "src/interfaces/ISystem.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/interfaces/IERC173.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "ISystem": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "ISystem.sol/ISystem.json"
+        }
+      }
+    },
+    "src/interfaces/IUint256Component.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "4e684c8410efc1595ea4609af353fd9e",
+      "sourceName": "src/interfaces/IUint256Component.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/LibTypes.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IUint256Component": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IUint256Component.sol/IUint256Component.json"
+        }
+      }
+    },
+    "src/interfaces/IWorld.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "47b28e3c51cea933c48e3dd208a4c881",
+      "sourceName": "src/interfaces/IWorld.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "IWorld": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "IWorld.sol/IWorld.json"
+        }
+      }
+    },
+    "src/interfaces/Query.sol": {
+      "lastModificationDate": 1690073210901,
+      "contentHash": "1a825da15738dc3bc1670d0df424ce1f",
+      "sourceName": "src/interfaces/Query.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol"
+      ],
+      "versionRequirement": ">=0.8.13",
+      "artifacts": {
+        "Query": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "Query.sol/Query.json"
+        }
+      }
+    },
+    "src/systems/RegisterSystem.sol": {
+      "lastModificationDate": 1690073210902,
+      "contentHash": "443fd4fe77f86e6c7d62bf86a2e60068",
+      "sourceName": "src/systems/RegisterSystem.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/LibTypes.sol",
+        "src/Ownable.sol",
+        "src/System.sol",
+        "src/SystemStorage.sol",
+        "src/constants.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/ISystem.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol",
+        "src/utils.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "RegisterSystem": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "RegisterSystem.sol/RegisterSystem.json"
+        }
+      }
+    },
+    "src/test/components/DamageComponent.sol": {
+      "lastModificationDate": 1690073210902,
+      "contentHash": "37f108b97225fce0986bcb0d8fe8c51d",
+      "sourceName": "src/test/components/DamageComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "DamageComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "DamageComponent.sol/DamageComponent.json"
+        }
+      }
+    },
+    "src/test/components/FromPrototypeComponent.sol": {
+      "lastModificationDate": 1690073210903,
+      "contentHash": "93ed05d9f23c744fec60b44d7fad29e5",
+      "sourceName": "src/test/components/FromPrototypeComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "FromPrototypeComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "FromPrototypeComponent.sol/FromPrototypeComponent.json"
+        }
+      }
+    },
+    "src/test/components/OwnedByEntityComponent.sol": {
+      "lastModificationDate": 1690073210903,
+      "contentHash": "909a92f4130ccd36d28129e6dd7cd4ee",
+      "sourceName": "src/test/components/OwnedByEntityComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "OwnedByEntityComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "OwnedByEntityComponent.sol/OwnedByEntityComponent.json"
+        }
+      }
+    },
+    "src/test/components/PositionComponent.sol": {
+      "lastModificationDate": 1690073210903,
+      "contentHash": "e97fdc59f461686cceac9373ed77d123",
+      "sourceName": "src/test/components/PositionComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "PositionComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "PositionComponent.sol/PositionComponent.json"
+        }
+      }
+    },
+    "src/test/components/PrototypeTagComponent.sol": {
+      "lastModificationDate": 1690073210903,
+      "contentHash": "6698f95baa9d0b7b150dbcdf02018435",
+      "sourceName": "src/test/components/PrototypeTagComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "PrototypeTagComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "PrototypeTagComponent.sol/PrototypeTagComponent.json"
+        }
+      }
+    },
+    "src/test/components/TestComponent.sol": {
+      "lastModificationDate": 1690073210903,
+      "contentHash": "ac0df6f0a7e78c2d75f24d26ab58b69d",
+      "sourceName": "src/test/components/TestComponent.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnable.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/IOwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableInternal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/AddressUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/utils/UintUtils.sol",
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/Array.sol",
+        "node_modules/@solidstate/contracts/access/ownable/Ownable.sol",
+        "node_modules/@solidstate/contracts/access/ownable/OwnableStorage.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "node_modules/memmove/src/LinkedList.sol",
+        "src/BareComponent.sol",
+        "src/Component.sol",
+        "src/LibTypes.sol",
+        "src/MapSet.sol",
+        "src/Ownable.sol",
+        "src/OwnableWritable.sol",
+        "src/OwnableWritableStorage.sol",
+        "src/Set.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IEntityContainer.sol",
+        "src/interfaces/IEntityIndexer.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/IUint256Component.sol",
+        "src/interfaces/IWorld.sol",
+        "src/interfaces/Query.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "TestComponent": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "TestComponent.sol/TestComponent.json"
+        },
+        "TestComponent1": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "TestComponent.sol/TestComponent1.json"
+        },
+        "TestComponent2": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "TestComponent.sol/TestComponent2.json"
+        },
+        "TestComponent3": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "TestComponent.sol/TestComponent3.json"
+        },
+        "TestComponent4": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "TestComponent.sol/TestComponent4.json"
+        }
+      }
+    },
+    "src/utils.sol": {
+      "lastModificationDate": 1690073210903,
+      "contentHash": "7a8e2f3369de6600b4208780ddbe20dc",
+      "sourceName": "src/utils.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 3000
+          },
+          "metadata": {
+            "useLiteralContent": false,
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "paris",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "/Users/dhvani/Documents/Tenet/AW/mud/node_modules/.pnpm/@solidstate+contracts@0.0.52/node_modules/@solidstate/contracts/interfaces/IERC173Internal.sol",
+        "node_modules/@solidstate/contracts/interfaces/IERC173.sol",
+        "src/LibTypes.sol",
+        "src/constants.sol",
+        "src/interfaces/IComponent.sol",
+        "src/interfaces/IERC173.sol",
+        "src/interfaces/IOwnableWritable.sol",
+        "src/interfaces/ISystem.sol",
+        "src/interfaces/IUint256Component.sol"
+      ],
+      "versionRequirement": ">=0.8.0",
+      "artifacts": {
+        "utils": {
+          "0.8.13+commit.abaa5c0e.Darwin.appleclang": "utils.sol/utils.json"
+        }
+      }
+    }
+  }
+}

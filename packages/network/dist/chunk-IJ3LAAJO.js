@@ -1,0 +1,2 @@
+import{verifyMessage as a}from"ethers/lib/utils.js";import{keccak256 as o}from"ethers/lib/utils.js";function r(e){return`(${e.version},${e.id},${o(e.data)},${e.timestamp})`}function p(e){return a(r(e),e.signature)}export{r as a,p as b};
+//# sourceMappingURL=chunk-IJ3LAAJO.js.map

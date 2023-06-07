@@ -1,0 +1,64 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/interfaces/IERC165.sol",
+    "id": 5312,
+    "exportedSymbols": {
+      "IERC165": [
+        1111
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:97:41",
+    "nodes": [
+      {
+        "id": 5309,
+        "nodeType": "PragmaDirective",
+        "src": "32:23:41",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 5311,
+        "nodeType": "ImportDirective",
+        "src": "57:71:41",
+        "nodes": [],
+        "absolutePath": "node_modules/@solidstate/contracts/interfaces/IERC165.sol",
+        "file": "@solidstate/contracts/interfaces/IERC165.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 5312,
+        "sourceUnit": 1112,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 5310,
+              "name": "IERC165",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1111,
+              "src": "66:7:41",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 41
+}

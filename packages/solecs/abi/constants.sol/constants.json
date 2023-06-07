@@ -1,0 +1,289 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/constants.sol",
+    "id": 5238,
+    "exportedSymbols": {
+      "componentsComponentId": [
+        5229
+      ],
+      "systemsComponentId": [
+        5237
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:202:39",
+    "nodes": [
+      {
+        "id": 5221,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:39",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 5229,
+        "nodeType": "VariableDeclaration",
+        "src": "58:89:39",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "componentsComponentId",
+        "nameLocation": "75:21:39",
+        "scope": 5238,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_uint256",
+          "typeString": "uint256"
+        },
+        "typeName": {
+          "id": 5222,
+          "name": "uint256",
+          "nodeType": "ElementaryTypeName",
+          "src": "58:7:39",
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint256",
+            "typeString": "uint256"
+          }
+        },
+        "value": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "hexValue": "776f726c642e636f6d706f6e656e742e636f6d706f6e656e7473",
+                  "id": 5226,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "117:28:39",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_4350dba81aa91e31664a09d24a668f006169a11b3d962b7557aed362d3252aec",
+                    "typeString": "literal_string \"world.component.components\""
+                  },
+                  "value": "world.component.components"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_4350dba81aa91e31664a09d24a668f006169a11b3d962b7557aed362d3252aec",
+                    "typeString": "literal_string \"world.component.components\""
+                  }
+                ],
+                "id": 5225,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": -8,
+                "src": "107:9:39",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 5227,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "107:39:39",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            }
+          ],
+          "expression": {
+            "argumentTypes": [
+              {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            ],
+            "id": 5224,
+            "isConstant": false,
+            "isLValue": false,
+            "isPure": true,
+            "lValueRequested": false,
+            "nodeType": "ElementaryTypeNameExpression",
+            "src": "99:7:39",
+            "typeDescriptions": {
+              "typeIdentifier": "t_type$_t_uint256_$",
+              "typeString": "type(uint256)"
+            },
+            "typeName": {
+              "id": 5223,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "99:7:39",
+              "typeDescriptions": {}
+            }
+          },
+          "id": 5228,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "typeConversion",
+          "lValueRequested": false,
+          "names": [],
+          "nodeType": "FunctionCall",
+          "src": "99:48:39",
+          "tryCall": false,
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint256",
+            "typeString": "uint256"
+          }
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 5237,
+        "nodeType": "VariableDeclaration",
+        "src": "149:83:39",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "systemsComponentId",
+        "nameLocation": "166:18:39",
+        "scope": 5238,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_uint256",
+          "typeString": "uint256"
+        },
+        "typeName": {
+          "id": 5230,
+          "name": "uint256",
+          "nodeType": "ElementaryTypeName",
+          "src": "149:7:39",
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint256",
+            "typeString": "uint256"
+          }
+        },
+        "value": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "hexValue": "776f726c642e636f6d706f6e656e742e73797374656d73",
+                  "id": 5234,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "string",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "205:25:39",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_stringliteral_017c816a964927a00e050edd780dcf113ca2756dfa9e9fda94a05c140d9317b0",
+                    "typeString": "literal_string \"world.component.systems\""
+                  },
+                  "value": "world.component.systems"
+                }
+              ],
+              "expression": {
+                "argumentTypes": [
+                  {
+                    "typeIdentifier": "t_stringliteral_017c816a964927a00e050edd780dcf113ca2756dfa9e9fda94a05c140d9317b0",
+                    "typeString": "literal_string \"world.component.systems\""
+                  }
+                ],
+                "id": 5233,
+                "name": "keccak256",
+                "nodeType": "Identifier",
+                "overloadedDeclarations": [],
+                "referencedDeclaration": -8,
+                "src": "195:9:39",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_keccak256_pure$_t_bytes_memory_ptr_$returns$_t_bytes32_$",
+                  "typeString": "function (bytes memory) pure returns (bytes32)"
+                }
+              },
+              "id": 5235,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "functionCall",
+              "lValueRequested": false,
+              "names": [],
+              "nodeType": "FunctionCall",
+              "src": "195:36:39",
+              "tryCall": false,
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            }
+          ],
+          "expression": {
+            "argumentTypes": [
+              {
+                "typeIdentifier": "t_bytes32",
+                "typeString": "bytes32"
+              }
+            ],
+            "id": 5232,
+            "isConstant": false,
+            "isLValue": false,
+            "isPure": true,
+            "lValueRequested": false,
+            "nodeType": "ElementaryTypeNameExpression",
+            "src": "187:7:39",
+            "typeDescriptions": {
+              "typeIdentifier": "t_type$_t_uint256_$",
+              "typeString": "type(uint256)"
+            },
+            "typeName": {
+              "id": 5231,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "187:7:39",
+              "typeDescriptions": {}
+            }
+          },
+          "id": 5236,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "kind": "typeConversion",
+          "lValueRequested": false,
+          "names": [],
+          "nodeType": "FunctionCall",
+          "src": "187:45:39",
+          "tryCall": false,
+          "typeDescriptions": {
+            "typeIdentifier": "t_uint256",
+            "typeString": "uint256"
+          }
+        },
+        "visibility": "internal"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 39
+}
