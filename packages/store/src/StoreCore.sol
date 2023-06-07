@@ -34,7 +34,7 @@ library StoreCore {
     registerSchema(
       StoreCoreInternal.SCHEMA_TABLE,
       SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
-      SchemaLib.encode(SchemaType.UINT256) // The Schema table's keySchema is { tableId: UINT256 }
+      SchemaLib.encode(SchemaType.BYTES32) // The Schema table's keySchema is { tableId: BYTES32 }
     );
 
     // Register other internal tables
