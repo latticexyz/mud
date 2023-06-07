@@ -92,6 +92,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world

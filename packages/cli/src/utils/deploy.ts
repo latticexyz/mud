@@ -38,10 +38,10 @@ export interface DeploymentInfo {
 
 export async function deploy(
   mudConfig: StoreConfig & WorldConfig,
-  existingContracts: string[],
+  existingContractNames: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
-  const resolvedConfig = resolveWorldConfig(mudConfig, existingContracts);
+  const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
