@@ -5,6 +5,9 @@ import { staticAbiTypeToByteLength } from "./staticAbiTypes";
 import { decodeStaticField } from "./decodeStaticField";
 import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./errors";
 
+// TODO: require size/length for dynamic fields, because hex might be longer (sometimes we just move the length pointer of arrays without updating the value)
+//       this means the error should probably change from "invalid length" to "too short", which viem has that we could reuse?
+
 export function decodeDynamicField<
   TAbiType extends DynamicAbiType,
   TPrimitiveType extends DynamicAbiTypeToPrimitiveType<TAbiType>
