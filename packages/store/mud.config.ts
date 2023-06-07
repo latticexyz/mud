@@ -3,6 +3,9 @@ import { mudConfig } from "./ts/register";
 export default mudConfig({
   storeImportPath: "../../",
   namespace: "mudstore",
+  enums: {
+    ExampleEnum: ["None", "First", "Second", "Third"],
+  },
   tables: {
     Hooks: "address[]",
     Callbacks: "bytes24[]",
@@ -15,6 +18,7 @@ export default mudConfig({
         abiEncodedFieldNames: "bytes",
       },
     },
+    // TODO: move these test tables to a separate mud config
     Mixed: {
       schema: {
         u32: "uint32",
@@ -29,10 +33,14 @@ export default mudConfig({
         y: "uint32",
       },
     },
-    SignedKeys: {
+    KeyEncoding: {
       keySchema: {
-        x: "int32",
-        y: "int32",
+        k1: "uint256",
+        k2: "int32",
+        k3: "bytes16",
+        k4: "address",
+        k5: "bool",
+        k6: "ExampleEnum",
       },
       schema: "bool",
     },

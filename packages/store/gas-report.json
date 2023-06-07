@@ -96,6 +96,30 @@
     "gasUsed": 1381
   },
   {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "encode KeyEncoding key tuple",
+    "functionCall": "bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third)",
+    "gasUsed": 680
+  },
+  {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "register KeyEncoding schema",
+    "functionCall": "KeyEncoding.registerSchema()",
+    "gasUsed": 64695
+  },
+  {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "set KeyEncoding record",
+    "functionCall": "KeyEncoding.set(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third, true)",
+    "gasUsed": 41889
+  },
+  {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "get KeyEncoding record",
+    "functionCall": "bool value = KeyEncoding.get(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third)",
+    "gasUsed": 5244
+  },
+  {
     "source": "test/Mixed.t.sol",
     "name": "store Mixed struct in storage (native solidity)",
     "functionCall": "testMixed = mixed",
@@ -184,30 +208,6 @@
     "name": "validate schema",
     "functionCall": "encodedSchema.validate({ allowEmpty: false })",
     "gasUsed": 18272
-  },
-  {
-    "source": "test/SignedKeys.t.sol",
-    "name": "encode SignedKeys key tuple",
-    "functionCall": "bytes32[] memory keyTuple = SignedKeys.encodeKeyTuple({ x: -1, y: -2 })",
-    "gasUsed": 305
-  },
-  {
-    "source": "test/SignedKeys.t.sol",
-    "name": "register SignedKeys schema",
-    "functionCall": "SignedKeys.registerSchema()",
-    "gasUsed": 58212
-  },
-  {
-    "source": "test/SignedKeys.t.sol",
-    "name": "set SignedKeys record",
-    "functionCall": "SignedKeys.set({ x: -1, y: -2, value: true })",
-    "gasUsed": 39782
-  },
-  {
-    "source": "test/SignedKeys.t.sol",
-    "name": "get SignedKeys record",
-    "functionCall": "bool value = SignedKeys.get({ x: -1, y: -2 })",
-    "gasUsed": 4490
   },
   {
     "source": "test/Slice.t.sol",
