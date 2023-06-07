@@ -31,7 +31,7 @@ contract KeyTupleEncodingTest is MudV2Test {
 
     // assert that the key tuple is encoded how we expect
     assertEq(keyTuple[0], bytes32(hex"000000000000000000000000000000000000000000000000000000000000002a"));
-    assertEq(keyTuple[1], bytes32(hex"00000000000000000000000000000000000000000000000000000000ffffffd6"));
+    assertEq(keyTuple[1], bytes32(hex"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6"));
     assertEq(keyTuple[2], bytes32(hex"1234000000000000000000000000000000000000000000000000000000000000"));
     assertEq(keyTuple[3], bytes32(hex"000000000000000000000000ffffffffffffffffffffffffffffffffffffffff"));
     assertEq(keyTuple[4], bytes32(hex"0000000000000000000000000000000000000000000000000000000000000001"));

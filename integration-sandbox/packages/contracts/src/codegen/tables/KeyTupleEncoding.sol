@@ -85,11 +85,11 @@ library KeyTupleEncoding {
     DogBreeds dogBreed
   ) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
 
@@ -109,11 +109,11 @@ library KeyTupleEncoding {
     DogBreeds dogBreed
   ) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
 
@@ -133,11 +133,11 @@ library KeyTupleEncoding {
     bool value
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
 
@@ -157,11 +157,11 @@ library KeyTupleEncoding {
     bool value
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
 
@@ -184,11 +184,11 @@ library KeyTupleEncoding {
     DogBreeds dogBreed
   ) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
   }
@@ -204,11 +204,11 @@ library KeyTupleEncoding {
     DogBreeds dogBreed
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
 
@@ -227,11 +227,11 @@ library KeyTupleEncoding {
     DogBreeds dogBreed
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((bigint)));
-    _keyTuple[1] = bytes32(uint256(uint32((signed))));
-    _keyTuple[2] = bytes32((halfBytes));
-    _keyTuple[3] = bytes32(uint256(uint160((sender))));
-    _keyTuple[4] = (isTrue) ? bytes32(uint256(1)) : bytes32(0);
+    _keyTuple[0] = bytes32(uint256(bigint));
+    _keyTuple[1] = bytes32(uint256(int256(signed)));
+    _keyTuple[2] = bytes32(halfBytes);
+    _keyTuple[3] = bytes32(uint256(uint160(sender)));
+    _keyTuple[4] = _boolToBytes32(isTrue);
     _keyTuple[5] = bytes32(uint256(uint8(color)));
     _keyTuple[6] = bytes32(uint256(uint8(dogBreed)));
 
