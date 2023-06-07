@@ -85,5 +85,20 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SignedKeys: (() => {
+      const tableId = new TableId("mudstore", "SignedKeys");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.Boolean,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }

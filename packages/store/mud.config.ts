@@ -29,5 +29,12 @@ export default mudConfig({
         y: "uint32",
       },
     },
+    SignedKeys: {
+      keySchema: {
+        x: "int32",
+        y: "int32",
+      },
+      schema: "bool",
+    },
   },
 });

@@ -186,6 +186,30 @@
     "gasUsed": 18272
   },
   {
+    "source": "test/SignedKeys.t.sol",
+    "name": "encode SignedKeys key tuple",
+    "functionCall": "bytes32[] memory keyTuple = SignedKeys.encodeKeyTuple({ x: -1, y: -2 })",
+    "gasUsed": 301
+  },
+  {
+    "source": "test/SignedKeys.t.sol",
+    "name": "register SignedKeys schema",
+    "functionCall": "SignedKeys.registerSchema()",
+    "gasUsed": 58212
+  },
+  {
+    "source": "test/SignedKeys.t.sol",
+    "name": "set SignedKeys record",
+    "functionCall": "SignedKeys.set({ x: -1, y: -2, value: true })",
+    "gasUsed": 39778
+  },
+  {
+    "source": "test/SignedKeys.t.sol",
+    "name": "get SignedKeys record",
+    "functionCall": "bool value = SignedKeys.get({ x: -1, y: -2 })",
+    "gasUsed": 4486
+  },
+  {
     "source": "test/Slice.t.sol",
     "name": "make Slice from bytes",
     "functionCall": "Slice slice = SliceLib.fromBytes(data)",
