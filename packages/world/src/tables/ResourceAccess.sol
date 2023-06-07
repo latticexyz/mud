@@ -69,8 +69,8 @@ library ResourceAccess {
   /** Get access */
   function get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -79,8 +79,8 @@ library ResourceAccess {
   /** Get access (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -89,8 +89,8 @@ library ResourceAccess {
   /** Set access */
   function set(bytes32 resourceSelector, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)));
   }
@@ -98,8 +98,8 @@ library ResourceAccess {
   /** Set access (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, address caller, bool access) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)));
   }
@@ -112,15 +112,15 @@ library ResourceAccess {
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -128,8 +128,8 @@ library ResourceAccess {
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = resourceSelector;
-    _keyTuple[1] = bytes32(abi.encode(caller));
+    _keyTuple[0] = bytes32((resourceSelector));
+    _keyTuple[1] = bytes32(uint256(uint160((caller))));
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

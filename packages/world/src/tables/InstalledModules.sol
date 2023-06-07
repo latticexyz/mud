@@ -73,8 +73,8 @@ library InstalledModules {
   /** Get moduleAddress */
   function getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (address(Bytes.slice20(_blob, 0)));
@@ -87,8 +87,8 @@ library InstalledModules {
     bytes32 argumentsHash
   ) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (address(Bytes.slice20(_blob, 0)));
@@ -97,8 +97,8 @@ library InstalledModules {
   /** Set moduleAddress */
   function setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)));
   }
@@ -106,8 +106,8 @@ library InstalledModules {
   /** Set moduleAddress (using the specified store) */
   function setModuleAddress(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)));
   }
@@ -115,8 +115,8 @@ library InstalledModules {
   /** Get the full data */
   function get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (InstalledModulesData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -129,8 +129,8 @@ library InstalledModules {
     bytes32 argumentsHash
   ) internal view returns (InstalledModulesData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -141,8 +141,8 @@ library InstalledModules {
     bytes memory _data = encode(moduleAddress);
 
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
@@ -152,8 +152,8 @@ library InstalledModules {
     bytes memory _data = encode(moduleAddress);
 
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     _store.setRecord(_tableId, _keyTuple, _data);
   }
@@ -184,15 +184,15 @@ library InstalledModules {
     bytes32 argumentsHash
   ) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -200,8 +200,8 @@ library InstalledModules {
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes16 moduleName, bytes32 argumentsHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(abi.encode(moduleName));
-    _keyTuple[1] = argumentsHash;
+    _keyTuple[0] = bytes32((moduleName));
+    _keyTuple[1] = bytes32((argumentsHash));
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

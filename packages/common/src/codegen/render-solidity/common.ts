@@ -153,26 +153,20 @@ export function renderTableId(staticResourceData: StaticResourceData) {
 
 export function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderType) {
   const bits = staticByteLength * 8;
-  const innerText = typeUnwrap ? `${typeUnwrap}(${name})` : name;
+  const innerText = `${typeUnwrap}(${name})`;
 
-  // if (internalTypeId.match(/^uint\d{1,3}$/)) {
-  //   return `bytes32(uint256(${innerText}))`;
-  // } else if (internalTypeId.match(/^int\d{1,3}$/)) {
-  //   return `bytes32(uint256(uint${bits}(${innerText})))`;
-  // } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
-  //   return `bytes32(${innerText})`;
-  // } else if (internalTypeId === "address") {
-  //   return `bytes32(uint256(uint160(${innerText})))`;
-  // } else if (internalTypeId === "bool") {
-  //   return `_boolToBytes32(${innerText})`;
-  // } else {
-  //   throw new Error(`Unknown value type id ${internalTypeId}`);
-  // }
-
-  if (internalTypeId === "bytes32") {
-    return innerText;
+  if (internalTypeId.match(/^uint\d{1,3}$/)) {
+    return `bytes32(uint256(${innerText}))`;
+  } else if (internalTypeId.match(/^int\d{1,3}$/)) {
+    return `bytes32(uint256(uint${bits}(${innerText})))`;
+  } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
+    return `bytes32(${innerText})`;
+  } else if (internalTypeId === "address") {
+    return `bytes32(uint256(uint160(${innerText})))`;
+  } else if (internalTypeId === "bool") {
+    return `_boolToBytes32(${innerText})`;
   } else {
-    return `bytes32(abi.encode(${innerText}))`;
+    throw new Error(`Unknown value type id ${internalTypeId}`);
   }
 }
 
