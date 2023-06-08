@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
-import { cast, getSrcDirectory } from "@latticexyz/common/foundry";
+import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { TableId } from "@latticexyz/utils";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
@@ -19,6 +19,7 @@ type Options = {
   tx: string;
   worldAddress?: string;
   configPath?: string;
+  profile?: string;
   srcDir?: string;
   rpc?: string;
 };
@@ -36,14 +37,18 @@ const commandModule: CommandModule<Options, Options> = {
         description: "World contract address. Defaults to the value from worlds.json, based on rpc port",
       },
       configPath: { type: "string", desc: "Path to the config file" },
+      profile: { type: "string", desc: "The foundry profile to use" },
       srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
-      rpc: { type: "string", description: "json rpc endpoint, defaults to http://localhost:8545" },
+      rpc: { type: "string", description: "json rpc endpoint. Defaults to foundry's configured eth_rpc_url" },
     });
   },
 
   async handler(args) {
-    const { tx, configPath, rpc } = args;
-    const srcDir = args.srcDir ?? (await getSrcDirectory());
+    args.profile ??= process.env.FOUNDRY_PROFILE;
+    const { profile } = args;
+    args.srcDir ??= await getSrcDirectory(profile);
+    args.rpc ??= await getRpcUrl(profile);
+    const { tx, configPath, srcDir, rpc } = args;
 
     const existingContracts = getExistingContracts(srcDir);
 
@@ -89,9 +94,9 @@ const commandModule: CommandModule<Options, Options> = {
 
 export default commandModule;
 
-async function getWorldAddress(worldsFile: string, rpc?: string) {
+async function getWorldAddress(worldsFile: string, rpc: string) {
   if (existsSync(worldsFile)) {
-    const chainId = rpc ? await getChainId(rpc) : 8545;
+    const chainId = await getChainId(rpc);
     const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
 
     if (!deploys[chainId]) {

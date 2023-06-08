@@ -27,7 +27,7 @@ export type DeployOptions = {
 };
 
 export async function deployHandler(args: DeployOptions) {
-  args.profile = args.profile ?? process.env.FOUNDRY_PROFILE;
+  args.profile ??= process.env.FOUNDRY_PROFILE;
   const { configPath, printConfig, profile, clean, skipBuild } = args;
 
   const rpc = args.rpc ?? (await getRpcUrl(profile));
