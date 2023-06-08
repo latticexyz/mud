@@ -1,16 +1,17 @@
+import { existsSync, readFileSync } from "fs";
 import type { CommandModule } from "yargs";
 import { ethers } from "ethers";
+
 import { loadConfig } from "@latticexyz/config/node";
-import { StoreConfig } from "@latticexyz/store";
+import { MUDError } from "@latticexyz/common/errors";
 import { cast, getSrcDirectory } from "@latticexyz/common/foundry";
-import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { TableId } from "@latticexyz/utils";
+import { StoreConfig } from "@latticexyz/store";
+import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import { getChainId, getExistingContracts } from "../utils";
 
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
-import { existsSync, readFileSync } from "fs";
-import { MUDError } from "@latticexyz/common/errors";
 
 const systemsTableId = new TableId("", "Systems");
 
