@@ -1,9 +1,7 @@
 import { afterEach, beforeEach, describe, test } from "vitest";
 import { createServer } from "vite";
 import type { ViteDevServer } from "vite";
-import { chromium } from "playwright";
-import type { Browser, Page } from "playwright";
-import { expect } from "@playwright/test";
+import { expect, chromium, Browser, Page } from "@playwright/test";
 import { deployHandler } from "@latticexyz/cli";
 import { execa, ExecaChildProcess } from "execa";
 
