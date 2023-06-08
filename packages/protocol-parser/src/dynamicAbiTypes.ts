@@ -8,6 +8,8 @@ export { dynamicAbiTypes };
 
 export type DynamicAbiType = (typeof dynamicAbiTypes)[number];
 
+export type DynamicPrimitiveType = number[] | bigint[] | Hex[] | boolean[] | Hex | string;
+
 export const dynamicAbiTypeToDefaultValue = {
   "uint8[]": [] as number[],
   "uint16[]": [] as number[],
@@ -113,7 +115,7 @@ export const dynamicAbiTypeToDefaultValue = {
 
   bytes: "0x",
   string: "",
-} as const satisfies Record<DynamicAbiType, number[] | bigint[] | Hex[] | boolean[] | Hex | string>;
+} as const satisfies Record<DynamicAbiType, DynamicPrimitiveType>;
 
 export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType> =
   (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType];

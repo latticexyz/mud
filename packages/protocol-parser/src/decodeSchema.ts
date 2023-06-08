@@ -44,17 +44,14 @@ function decodeSchema(data: Hex): Schema {
       actualStaticDataLength,
       data,
     });
+    // TODO: better error
     throw new Error("Schema static data length mismatch! Is `staticAbiTypeToByteLength` outdated?");
   }
-
-  const abiTypes = [...staticFields, ...dynamicFields];
-  const abi = `(${abiTypes.join(",")})`;
 
   return {
     staticDataLength,
     staticFields,
     dynamicFields,
-    abi,
     isEmpty: data === "0x",
     rawSchema: data,
   };

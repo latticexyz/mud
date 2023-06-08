@@ -7,7 +7,6 @@ export type Schema = Readonly<{
   staticFields: StaticAbiType[];
   dynamicFields: DynamicAbiType[];
   rawSchema: Hex;
-  abi: string;
   isEmpty: boolean;
 }>;
 

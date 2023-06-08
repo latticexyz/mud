@@ -7,6 +7,8 @@ export { staticAbiTypes };
 
 export type StaticAbiType = (typeof staticAbiTypes)[number];
 
+export type StaticPrimitiveType = number | bigint | boolean | Hex;
+
 export const staticAbiTypeToDefaultValue = {
   uint8: 0,
   uint16: 0,
@@ -109,7 +111,7 @@ export const staticAbiTypeToDefaultValue = {
 
   bool: false,
   address: "0x0000000000000000000000000000000000000000",
-} as const satisfies Record<StaticAbiType, number | bigint | boolean | Hex>;
+} as const satisfies Record<StaticAbiType, StaticPrimitiveType>;
 
 export type StaticAbiTypeToPrimitiveType<TStaticAbiType extends StaticAbiType> =
   (typeof staticAbiTypeToDefaultValue)[TStaticAbiType];
