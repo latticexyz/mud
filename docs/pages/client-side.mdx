@@ -15,7 +15,7 @@ When using MUD in the browser, we provide two different ways to query the [Store
 
 **Note**: when using the default MUD templates (created with `pnpm create mud@canary`), the Store data will be available in **both** client-side stores. You are free to query with the one that makes the most sense.
 
-Over time, we will migrate to `store-cache` as the default and surface a opinionated layer for ECS data on top.
+Over time, we will migrate to `store-cache` as the default and surface an opinionated layer for ECS data on top.
 
 ## `recs`: the reactive ECS database
 
@@ -88,10 +88,10 @@ There are 4 types of query fragments:
 
 1. `Has`: matches entities that have a specific component.
 2. `Not`: matches entities that do not have a specific component.
-3. `HasValue`: matches entities that have a specific componenet with a set value.
+3. `HasValue`: matches entities that have a specific component with a set value.
 4. `NotValue`: matches entities that do not have a component with a set value (will also match if it doesn't have the component at all)
 
-**Running query with vanilla javsascript**
+**Running query with vanilla javascript**
 
 ```typescript
 import { runQuery, Has, HasValue, getComponentValueStrict } from "@latticexyz/recs";
@@ -155,7 +155,7 @@ function ExampleComponent() {
 
 ## `store-cache`: a general tuple database
 
-`store-cache` is a typed reactive database used to replicate the onchain Store of a MUD project into a Javacsript client (Node or Browser based).
+`store-cache` is a typed reactive database used to replicate the onchain Store of a MUD project into a Javascript client (Node or Browser based).
 
 Unlike `recs`, `store-cache` supports multiple keys. It also comes with a more powerful query system. Currently, ECS-like queries where the same primary key is assumed to be same entity (like what `recs` does) are quite verbose. We are working on making this better. Meanwhile, please make these queries with `recs`.
 
@@ -165,7 +165,7 @@ Unlike `recs`, `store-cache` supports multiple keys. It also comes with a more p
 2. Scanning a table with a query
 3. Subscribing to a query
 
-The `store-cache` package also exposes React hooks for each of these use-cases.
+The `store-cache` package also exposes React hooks for each of these use cases.
 
 Let's assume this MUD config for the examples below. Notice that some tables have multiple keys in their
 `keySchema`. We recommend using `store-cache` when querying these tables.
