@@ -107,11 +107,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (uint256 v1) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -131,11 +131,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (uint256 v1) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -146,11 +146,11 @@ library Statics {
   /** Set v1 */
   function setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, uint256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -170,11 +170,11 @@ library Statics {
     uint256 v1
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -192,11 +192,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (int32 v2) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -216,11 +216,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (int32 v2) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -231,11 +231,11 @@ library Statics {
   /** Set v2 */
   function setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, int32 v2) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -255,11 +255,11 @@ library Statics {
     int32 v2
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -277,11 +277,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (bytes16 v3) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -301,11 +301,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (bytes16 v3) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -316,11 +316,11 @@ library Statics {
   /** Set v3 */
   function setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, bytes16 v3) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -340,11 +340,11 @@ library Statics {
     bytes16 v3
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -362,11 +362,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (address v4) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -386,11 +386,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (address v4) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -401,11 +401,11 @@ library Statics {
   /** Set v4 */
   function setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, address v4) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -425,11 +425,11 @@ library Statics {
     address v4
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -447,11 +447,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (bool v5) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -471,11 +471,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (bool v5) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -486,11 +486,11 @@ library Statics {
   /** Set v5 */
   function setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, bool v5) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -510,11 +510,11 @@ library Statics {
     bool v5
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -532,11 +532,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (Enum1 v6) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -556,11 +556,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (Enum1 v6) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -571,11 +571,11 @@ library Statics {
   /** Set v6 */
   function setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, Enum1 v6) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -595,11 +595,11 @@ library Statics {
     Enum1 v6
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -617,11 +617,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (Enum2 v7) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -641,11 +641,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (Enum2 v7) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -656,11 +656,11 @@ library Statics {
   /** Set v7 */
   function setV7(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, Enum2 v7) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -680,11 +680,11 @@ library Statics {
     Enum2 v7
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -702,11 +702,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (StaticsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -726,11 +726,11 @@ library Statics {
     Enum2 k7
   ) internal view returns (StaticsData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -758,11 +758,11 @@ library Statics {
     bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
 
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -790,11 +790,11 @@ library Statics {
     bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
 
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -887,11 +887,11 @@ library Statics {
     Enum2 k7
   ) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
   }
@@ -899,11 +899,11 @@ library Statics {
   /* Delete all data for given keys */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
@@ -922,11 +922,11 @@ library Statics {
     Enum2 k7
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(uint32((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
