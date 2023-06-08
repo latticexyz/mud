@@ -151,14 +151,13 @@ export function renderTableId(staticResourceData: StaticResourceData) {
   };
 }
 
-export function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderType) {
-  const bits = staticByteLength * 8;
+export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTypeId }: RenderType) {
   const innerText = `${typeUnwrap}(${name})`;
 
   if (internalTypeId.match(/^uint\d{1,3}$/)) {
     return `bytes32(uint256(${innerText}))`;
   } else if (internalTypeId.match(/^int\d{1,3}$/)) {
-    return `bytes32(uint256(uint${bits}(${innerText})))`;
+    return `bytes32(uint256(int256(${innerText})))`;
   } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
     return `bytes32(${innerText})`;
   } else if (internalTypeId === "address") {
