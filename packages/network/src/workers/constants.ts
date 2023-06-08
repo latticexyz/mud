@@ -1,4 +1,5 @@
 import { Entity } from "@latticexyz/recs";
+import { Hex, pad } from "viem";
 
 export enum SyncState {
   CONNECTING,
@@ -6,7 +7,7 @@ export enum SyncState {
   LIVE,
 }
 
-export const SingletonID = "0x060d" as Entity;
+export const SingletonID = pad("0x060d" as Hex, { size: 32 }) as Entity;
 
 /** @deprecated Import SingletonID instead */
 export const GodID = SingletonID;
