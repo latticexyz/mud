@@ -6,7 +6,7 @@ import { worldgen } from "@latticexyz/world/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import path from "path";
 import { rmSync } from "fs";
-import { getExistingContracts } from "../utils/getExistingContracts";
+import { getExistingContracts } from "../utils";
 
 type Options = {
   configPath?: string;
