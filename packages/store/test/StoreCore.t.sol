@@ -49,6 +49,9 @@ contract StoreCoreTest is Test, StoreMock {
 
     Schema loadedKeySchema = IStore(this).getKeySchema(table);
     assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
+
+    bytes memory schemaRecord = IStore(this).getRecord(StoreCoreInternal.SCHEMA_TABLE, key);
+    assertEq(schemaRecord, abi.encodePacked(schema.unwrap(), keySchema.unwrap()));
   }
 
   function testFailRegisterInvalidSchema() public {

@@ -137,8 +137,7 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 	// Decode the row field data (value).
 	decodedFieldData := storecore.DecodeDataField__DecodedData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value, event.SchemaIndex)
 	// Decode the row key.
-	aggregateKey := mode.AggregateKey(event.Key)
-	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
+	decodedKeyData := storecore.DecodeKeyData(event.Key, *tableSchema.StoreCoreSchemaTypeKV.Key)
 
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
@@ -500,8 +499,7 @@ func (il *IngressLayer) handleGenericTableEvent(event *storecore.StorecoreStoreS
 	decodedFieldData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
 
 	// Decode the row key.
-	aggregateKey := mode.AggregateKey(event.Key)
-	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
+	decodedKeyData := storecore.DecodeKeyData(event.Key, *tableSchema.StoreCoreSchemaTypeKV.Key)
 
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)

@@ -33,6 +33,11 @@ Next, add the `SnapSync` plugin. This will automatically install the necessary [
 ```tsx
 import { mudConfig } from "@latticexyz/world/register";
 import { resolveTableId } from "@latticexyz/config";
+/**
+ * Importing this enables "snap sync mode".
+ * It allows clients to sync the latest state of the world using view functions.
+ */
+import "@latticexyz/world/snapsync";
 
 export default mudConfig({
   snapSync: true,
@@ -50,7 +55,25 @@ export default mudConfig({
 
 #### Using snap-sync in the client
 
-Now that the modules are installed on-chain, we need to enable snap-sync in the client.
+Now that the modules are installed on-chain, we need to enable snap-sync in the client. This depends on your exact client setup, but it comes by default with the MUD templates from [Quick start](/quick-start#project-setup).
+
+##### With a template
+
+In the standard templates, you can enable snap-sync on a given client by appending `?snapSync=true` to the url. Alternatively you can hardcode it to be enabled by default in `getNetworkConfig`:
+
+```tsx
+export async function getNetworkConfig(): Promise<NetworkConfig> {
+
+  ...
+
+  return {
+    ...
+    snapSync: params.get("snapSync") === "true",
+  };
+}
+```
+
+##### Manually
 
 When using [`std-client`](https://github.com/latticexyz/mud/tree/main/packages/std-client), we usually begin syncing by calling the `startSync()` function from `setupMUDV2Network`:
 
@@ -63,7 +86,7 @@ Without any arguments, `startSync()` uses the initial block number in the MUD co
 
 However, `startSync()` takes two arguments:
 
-- `initialRecords` is the initial set of records for each table.
+- `initialRecords` is an initial set of records for each table.
 - `initialBlockNumber` is the block number to start syncing from.
 
 Using snap-sync, we can fetch the current state directly from the World contract, "skipping" the initial sync phase. The initial records are fetched at the current block number, for every table, using the snap-sync `view`.
@@ -96,7 +119,7 @@ result.startSync(tableRecords, currentBlockNumber);
 
 If both MODE and snap-sync are enabled, the arguments that are passed into `startSync()` take precedence. In this case the client would perform the initial "catch up" with snap-sync then stream from MODE.
 
-To allow users to toggle snap-sync, add a flag to the `networkConfig` type:
+To allow users to toggle snap-sync, add a flag to the `NetworkConfig` type:
 
 ```tsx
 type NetworkConfig = SetupContractConfig & {
