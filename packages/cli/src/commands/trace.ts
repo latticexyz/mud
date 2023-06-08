@@ -56,7 +56,7 @@ const commandModule: CommandModule<Options, Options> = {
     );
 
     // Get worldAddress either from args or from worldsFile
-    const worldAddress = await getWorldAddress(mudConfig.worldsFile, args.worldAddress, rpc);
+    const worldAddress = args.worldAddress ?? (await getWorldAddress(mudConfig.worldsFile, rpc));
 
     // Create World contract instance from deployed address
     const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
@@ -89,10 +89,8 @@ const commandModule: CommandModule<Options, Options> = {
 
 export default commandModule;
 
-async function getWorldAddress(worldsFile: string, worldAddress?: string, rpc?: string) {
-  if (worldAddress) {
-    return worldAddress;
-  } else if (existsSync(worldsFile)) {
+async function getWorldAddress(worldsFile: string, rpc?: string) {
+  if (existsSync(worldsFile)) {
     const chainId = rpc ? await getChainId(rpc) : 8545;
     const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
 
