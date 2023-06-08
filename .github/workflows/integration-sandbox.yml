@@ -24,6 +24,9 @@ jobs:
         working-directory: ./integration-sandbox
         run: pnpm install
 
+      - name: Install Playwright Dependencies
+        run: pnpx playwright install-deps
+
       - name: Clean integration sandbox
         working-directory: ./integration-sandbox
         run: pnpm run clean
