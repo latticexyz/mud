@@ -29,7 +29,7 @@
     "execa": "^7.1.1",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "jsdom": "^22.0.0",
-    "playwright": "^1.33.0",
+    "playwright": "^1.34.3",
     "rimraf": "^3.0.2",
     "typechain": "^8.1.1",
     "typescript": "^4.9.5",

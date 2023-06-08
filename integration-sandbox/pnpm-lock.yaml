@@ -91,7 +91,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: ^0.31.0
-        version: 0.31.0(jsdom@22.0.0)(playwright@1.33.0)
+        version: 0.31.0(jsdom@22.0.0)(playwright@1.34.3)
 
   packages/contracts:
     devDependencies:
@@ -138,8 +138,8 @@ importers:
         specifier: ^22.0.0
         version: 22.0.0
       playwright:
-        specifier: ^1.33.0
-        version: 1.33.0
+        specifier: ^1.34.3
+        version: 1.34.3
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -154,7 +154,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: ^0.31.0
-        version: 0.31.0(jsdom@22.0.0)(playwright@1.33.0)
+        version: 0.31.0(jsdom@22.0.0)(playwright@1.34.3)
 
 packages:
 
@@ -1795,13 +1795,19 @@ packages:
     hasBin: true
     dev: true
 
-  /playwright@1.33.0:
-    resolution: {integrity: sha512-+zzU3V2TslRX2ETBRgQKsKytYBkJeLZ2xzUj4JohnZnxQnivoUvOvNbRBYWSYykQTO0Y4zb8NwZTYFUO+EpPBQ==}
+  /playwright-core@1.34.3:
+    resolution: {integrity: sha512-2pWd6G7OHKemc5x1r1rp8aQcpvDh7goMBZlJv6Co5vCNLVcQJdhxRL09SGaY6HcyHH9aT4tiynZabMofVasBYw==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
+
+  /playwright@1.34.3:
+    resolution: {integrity: sha512-UOOVE4ZbGfGkP1KVqWTdXOmm8Pw2pBhfbmlqKMkpiRCQjL5W+J+xRQXpgutFr0iM4pWl8g0GyyASMsqjQfFohw==}
     engines: {node: '>=14'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      playwright-core: 1.33.0
+      playwright-core: 1.34.3
     dev: true
 
   /postcss@8.4.23:
@@ -2265,7 +2271,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest@0.31.0(jsdom@22.0.0)(playwright@1.33.0):
+  /vitest@0.31.0(jsdom@22.0.0)(playwright@1.34.3):
     resolution: {integrity: sha512-JwWJS9p3GU9GxkG7eBSmr4Q4x4bvVBSswaCFf1PBNHiPx00obfhHRJfgHcnI0ffn+NMlIh9QGvG75FlaIBdKGA==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -2315,7 +2321,7 @@ packages:
       magic-string: 0.30.0
       pathe: 1.1.0
       picocolors: 1.0.0
-      playwright: 1.33.0
+      playwright: 1.34.3
       std-env: 3.3.3
       strip-literal: 1.0.1
       tinybench: 2.5.0
