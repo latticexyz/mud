@@ -5,11 +5,11 @@ The MUD CLI is used for building and developing a MUD project.
 It comes with
 
 1. `tablegen`: code-generation tool that makes it easy to work with Store tables
-2. `create`: bootstrap a MUD project from one of the template.
+2. `create`: bootstrap a MUD project from one of the templates.
 3. `dev-contracts`: start a local MUD development server, including local Ethereum node and file watchers
 4. `deploy`: deployer for MUD v2 projects that deploys an app using the [World](world) kernel onchain
 5. `devnode`: a wrapper around Anvil with defaults needed to make MUD work properly in development. We recommend running `mud devnode` over `anvil`.
-6. `faucet`: a interface to the Lattice Testnet faucet. It makes it easy to fund addresses on the testnet
+6. `faucet`: an interface to the Lattice Testnet faucet. It makes it easy to fund addresses on the testnet
 
 ## Installation
 
@@ -60,7 +60,7 @@ The latest deployment is saved to the `worlds.json` file, where the client can f
 
 The `tsgenOutput` argument is used to specify the output path for code generated for `recs`.
 
-When using the MUD templates, the project is laid down as a monorepo with contracts in the `packages/contracts` folder, and the client in the `packages/client`. `dev-contracts` need to be executed in the folder with the MUD config -- `packages/contracts` -- and point to where the client codegeneration should be saved. In this casem the `packages/client/src/mud`.
+When using the MUD templates, the project is laid down as a monorepo with contracts in the `packages/contracts` folder, and the client in the `packages/client`. `dev-contracts` need to be executed in the folder with the MUD config -- `packages/contracts` -- and point to where the client codegeneration should be saved. In this case the `packages/client/src/mud`.
 
 To run the dev server with internal development node:
 

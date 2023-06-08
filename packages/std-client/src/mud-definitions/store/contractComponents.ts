@@ -85,8 +85,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    SignedKeys: (() => {
-      const tableId = new TableId("mudstore", "SignedKeys");
+    KeyEncoding: (() => {
+      const tableId = new TableId("mudstore", "KeyEncoding");
       return defineComponent(
         world,
         {
