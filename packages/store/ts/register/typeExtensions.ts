@@ -1,5 +1,6 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
+import { StoreHooks } from "../library";
 import { ExpandTablesConfig, StoreConfig, StoreUserConfig } from "../library/config";
 import { DEFAULTS, PATH_DEFAULTS } from "../library/config/defaults";
 
@@ -17,6 +18,9 @@ declare module "@latticexyz/config" {
   // Other plugins receive this resolved config as their input.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface MUDCoreConfig extends StoreConfig {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface MUDHooks extends StoreHooks {}
 }
 
 // store-specific helper to preserve strong types, depends on store's type extensions to the core config

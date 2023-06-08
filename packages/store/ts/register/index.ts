@@ -6,8 +6,10 @@
 import "@latticexyz/config/register";
 export { mudCoreConfig, resolveTableId } from "@latticexyz/config/register";
 // Extend core config and types
-import "./configExtensions";
+import "./contextExtensions";
 import "./typeExtensions";
+// Tap hooks
+import "./tapHooks";
 
 export { mudConfig } from "./mudConfig";
 export type { ExpandMUDUserConfig } from "./typeExtensions";

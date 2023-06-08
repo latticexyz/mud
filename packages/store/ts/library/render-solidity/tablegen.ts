@@ -6,9 +6,12 @@ import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
 import { rmSync } from "fs";
 import { StoreConfig } from "../config";
+import { getMudHook } from "@latticexyz/config";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
   const allTableOptions = getTableOptions(config);
+
+  //getMudHook("")
 
   const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));
   for (const tableDir of uniqueTableDirectories) {

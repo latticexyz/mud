@@ -1,4 +1,5 @@
-import { extendMUDCoreConfig, fromZodErrorCustom } from "@latticexyz/config";
+import { extendMUDCoreConfig, fromZodErrorCustom, initializeMUDHook } from "@latticexyz/config";
+import { SyncHook } from "tapable";
 import { ZodError } from "zod";
 import { zPluginStoreConfig } from "../library/config";
 
@@ -16,3 +17,5 @@ extendMUDCoreConfig((config) => {
     }
   }
 });
+
+initializeMUDHook("preTablegen", new SyncHook(["mudConfig"]));

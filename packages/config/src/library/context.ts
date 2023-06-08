@@ -1,5 +1,6 @@
-import { MUDConfigExtender } from "./core";
+import { MUDConfigExtender, MUDHooks } from "./types";
 import { MUDContextAlreadyCreatedError, MUDContextNotCreatedError } from "./errors";
+import { defaultHooks } from "./defaultHooks";
 
 export type GlobalWithMUDCoreContext = typeof global & {
   __mudCoreContext: MUDCoreContext;
@@ -33,4 +34,6 @@ export class MUDCoreContext {
   }
 
   public readonly configExtenders: MUDConfigExtender[] = [];
+  // the typecast helps prevent typechecks after type extensions from erroring on defaultHooks not having a key
+  public readonly hooks: MUDHooks = defaultHooks as MUDHooks;
 }

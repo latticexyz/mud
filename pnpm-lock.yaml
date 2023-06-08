@@ -238,6 +238,9 @@ importers:
       find-up:
         specifier: ^6.3.0
         version: 6.3.0
+      tapable:
+        specifier: ^2.2.1
+        version: 2.2.1
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -245,6 +248,9 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(zod@3.21.4)
     devDependencies:
+      '@types/tapable':
+        specifier: ^2.2.3
+        version: 2.2.3
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(typescript@4.9.5)
@@ -900,6 +906,9 @@ importers:
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
+      tapable:
+        specifier: ^2.2.1
+        version: 2.2.1
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -916,6 +925,9 @@ importers:
       '@types/node':
         specifier: ^18.15.11
         version: 18.15.11
+      '@types/tapable':
+        specifier: ^2.2.3
+        version: 2.2.3
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -3765,6 +3777,12 @@ packages:
 
   /@types/stack-utils@2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
+    dev: true
+
+  /@types/tapable@2.2.3:
+    resolution: {integrity: sha512-WA0xhgs1wenECj1psxojjYOIc1Zkn+4gNtuWmF+dcFs5UfsQa8WhWs+8WG4D2RuaX7DufNPU+KsOEF7KqlByuw==}
+    dependencies:
+      tapable: 2.2.1
     dev: true
 
   /@types/throttle-debounce@5.0.0:
@@ -13564,6 +13582,10 @@ packages:
     transitivePeerDependencies:
       - ts-node
     dev: true
+
+  /tapable@2.2.1:
+    resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
+    engines: {node: '>=6'}
 
   /tar-stream@1.6.2:
     resolution: {integrity: sha512-rzS0heiNf8Xn7/mpdSVVSMAWAoy9bfb1WOTYC78Z0UQKeKa/CWS8FOq0lKGNa8DWKAn9gxjCvMLYc5PGXYlK2A==}
