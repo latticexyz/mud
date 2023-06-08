@@ -100,7 +100,7 @@ async function getWorldAddress(worldsFile: string, rpc: string) {
     const deploys = JSON.parse(readFileSync(worldsFile, "utf-8"));
 
     if (!deploys[chainId]) {
-      throw new MUDError(`worldsFile is missing chainId ${chainId}`);
+      throw new MUDError(`chainId ${chainId} is missing in worldsFile "${worldsFile}"`);
     }
     return deploys[chainId].address as string;
   } else {
