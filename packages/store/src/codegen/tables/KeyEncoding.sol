@@ -83,11 +83,11 @@ library KeyEncoding {
     ExampleEnum k6
   ) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -105,11 +105,11 @@ library KeyEncoding {
     ExampleEnum k6
   ) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -119,11 +119,11 @@ library KeyEncoding {
   /** Set value */
   function set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
@@ -141,11 +141,11 @@ library KeyEncoding {
     bool value
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
@@ -166,22 +166,22 @@ library KeyEncoding {
     ExampleEnum k6
   ) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -190,11 +190,11 @@ library KeyEncoding {
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, ExampleEnum k6) internal {
     bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256((k1)));
-    _keyTuple[1] = bytes32(uint256(int256((k2))));
-    _keyTuple[2] = bytes32((k3));
-    _keyTuple[3] = bytes32(uint256(uint160((k4))));
-    _keyTuple[4] = _boolToBytes32((k5));
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     _store.deleteRecord(_tableId, _keyTuple);
