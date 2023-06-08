@@ -70,7 +70,7 @@ library Ephemeral {
     bytes memory _data = encode(value);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = bytes32((key));
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
@@ -80,7 +80,7 @@ library Ephemeral {
     bytes memory _data = encode(value);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = bytes32((key));
 
     _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
@@ -93,6 +93,6 @@ library Ephemeral {
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    _keyTuple[0] = bytes32((key));
   }
 }

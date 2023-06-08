@@ -71,8 +71,8 @@ library UsedKeysIndex {
   /** Get has */
   function getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -81,8 +81,8 @@ library UsedKeysIndex {
   /** Get has (using the specified store) */
   function getHas(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -91,8 +91,8 @@ library UsedKeysIndex {
   /** Set has */
   function setHas(bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)));
   }
@@ -100,8 +100,8 @@ library UsedKeysIndex {
   /** Set has (using the specified store) */
   function setHas(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)));
   }
@@ -109,8 +109,8 @@ library UsedKeysIndex {
   /** Get index */
   function getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return (uint40(Bytes.slice5(_blob, 0)));
@@ -119,8 +119,8 @@ library UsedKeysIndex {
   /** Get index (using the specified store) */
   function getIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
     return (uint40(Bytes.slice5(_blob, 0)));
@@ -129,8 +129,8 @@ library UsedKeysIndex {
   /** Set index */
   function setIndex(bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)));
   }
@@ -138,8 +138,8 @@ library UsedKeysIndex {
   /** Set index (using the specified store) */
   function setIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)));
   }
@@ -147,8 +147,8 @@ library UsedKeysIndex {
   /** Get the full data */
   function get(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -157,8 +157,8 @@ library UsedKeysIndex {
   /** Get the full data (using the specified store) */
   function get(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -169,8 +169,8 @@ library UsedKeysIndex {
     bytes memory _data = encode(has, index);
 
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
@@ -180,8 +180,8 @@ library UsedKeysIndex {
     bytes memory _data = encode(has, index);
 
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     _store.setRecord(_tableId, _keyTuple, _data);
   }
@@ -201,15 +201,15 @@ library UsedKeysIndex {
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 sourceTable, bytes32 keysHash) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 sourceTable, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -217,8 +217,8 @@ library UsedKeysIndex {
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+    _keyTuple[0] = bytes32((sourceTable));
+    _keyTuple[1] = bytes32((keysHash));
 
     _store.deleteRecord(_tableId, _keyTuple);
   }
