@@ -14,4 +14,10 @@ describe("keyTupleToEntityID", () => {
   it("convert number key to padded entity ID", () => {
     expect(keyTupleToEntityID([1])).toBe("0x0000000000000000000000000000000000000000000000000000000000000001");
   });
+
+  it("concat composite keys to a string concatenated with :", () => {
+    expect(keyTupleToEntityID([1, 2])).toBe(
+      "0x0000000000000000000000000000000000000000000000000000000000000001:0x0000000000000000000000000000000000000000000000000000000000000002"
+    );
+  });
 });
