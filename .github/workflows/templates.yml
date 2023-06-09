@@ -29,7 +29,7 @@ jobs:
 
       - name: Build template
         working-directory: ./templates/${{ matrix.template }}
-        run: pnpm run initialize && pnpm run build
+        run: pnpm run build
 
       - name: Outdated files, run `pnpm gas-report` and commit them
         uses: ./.github/actions/require-empty-diff
