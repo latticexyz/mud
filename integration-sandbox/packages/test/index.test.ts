@@ -11,36 +11,14 @@ describe("arrays", async () => {
   let page: Page;
   let anvilProcess: ExecaChildProcess;
   let deploymentProcess: ExecaChildProcess;
+  let modeProcess: ExecaChildProcess;
+  const anvilPort = 8545;
+  const rpc = `http://127.0.0.1:${anvilPort}`;
 
   beforeEach(async () => {
-    // start anvil
-    const anvilPort = 8545;
-    const forkRpc = `http://127.0.0.1:${anvilPort}`;
-    anvilProcess = execa("anvil", [
-      "--block-base-fee-per-gas",
-      "0",
-      "--gas-limit",
-      "20000000",
-      "--port",
-      String(anvilPort),
-    ]);
-
-    // deploy
-    console.log("Deploying contracts");
-    deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", forkRpc], { cwd: "../contracts" });
-    deploymentProcess.stdout?.on("data", (data) => console.log(data.toString()));
-    deploymentProcess.stderr?.on("data", (data) => console.warn(data.toString()));
-    await deploymentProcess;
-
-    // start vite
-    // TODO this should probably be preview instead of dev server
-    const mode = "development";
-    server = await createServer({
-      mode,
-      server: { port: 3000 },
-      root: "../client-vanilla",
-    });
-    await server.listen();
+    startAnvil();
+    await deployContracts();
+    await startViteServer();
 
     // open browser page
     browser = await chromium.launch();
@@ -64,13 +42,15 @@ describe("arrays", async () => {
     deploymentProcess.kill();
   });
 
-  test("big list should have correct length", async () => {
-    await page.goto("http://localhost:3000");
+  test("large list should have correct length", async () => {
+    await page.goto("http://localhost:3000?cache=false");
+
     const resetButton = page.getByRole("button", { name: /Reset list/ });
     const pushManyButton = page.getByRole("button", { name: /Push 5000 items/ });
     const pushOneButton = page.getByRole("button", { name: /Push 1 item/ });
     const listLength = page.getByTestId("list-length");
     const lastItem = page.getByTestId("last-item");
+
     await expect(resetButton).toBeVisible();
     await expect(pushManyButton).toBeVisible();
     await expect(pushOneButton).toBeVisible();
@@ -81,7 +61,6 @@ describe("arrays", async () => {
     await resetButton.click();
     await expect(listLength).toHaveText("0");
     await expect(lastItem).toHaveText("unset");
-
     await pushManyButton.click();
     await expect(listLength).toHaveText("5000");
     await expect(lastItem).toHaveText("4999");
@@ -95,4 +74,80 @@ describe("arrays", async () => {
     await expect(listLength).toHaveText("10002");
     await expect(lastItem).toHaveText("123");
   });
+
+  test("large list should have correct length", async () => {
+    await page.goto("http://localhost:3000?cache=false");
+
+    const resetButton = page.getByRole("button", { name: /Reset list/ });
+    const pushManyButton = page.getByRole("button", { name: /Push 5000 items/ });
+    const pushOneButton = page.getByRole("button", { name: /Push 1 item/ });
+    const listLength = page.getByTestId("list-length");
+    const lastItem = page.getByTestId("last-item");
+
+    await expect(resetButton).toBeVisible();
+    await expect(pushManyButton).toBeVisible();
+    await expect(pushOneButton).toBeVisible();
+
+    // make sure setup is finished before clicking buttons
+    await expect(page.getByTitle("Setup status")).toHaveText("finished");
+
+    await resetButton.click();
+    await expect(listLength).toHaveText("0");
+    await expect(lastItem).toHaveText("unset");
+    await pushManyButton.click();
+    await expect(listLength).toHaveText("5000");
+    await expect(lastItem).toHaveText("4999");
+    await pushOneButton.click();
+    await expect(listLength).toHaveText("5001");
+    await expect(lastItem).toHaveText("123");
+    await pushManyButton.click();
+    await expect(listLength).toHaveText("10001");
+    await expect(lastItem).toHaveText("4999");
+    await pushOneButton.click();
+    await expect(listLength).toHaveText("10002");
+    await expect(lastItem).toHaveText("123");
+  });
+
+  function startAnvil() {
+    anvilProcess = execa("anvil", [
+      "--block-base-fee-per-gas",
+      "0",
+      "--gas-limit",
+      "20000000",
+      "--port",
+      String(anvilPort),
+    ]);
+  }
+
+  async function deployContracts() {
+    console.log("Deploying contracts");
+    deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", rpc], { cwd: "../contracts", stdio: "inherit" });
+    await deploymentProcess;
+  }
+
+  async function startViteServer() {
+    // TODO this should probably be preview instead of dev server
+    const mode = "development";
+    server = await createServer({
+      mode,
+      server: { port: 3000 },
+      root: "../client-vanilla",
+    });
+    await server.listen();
+  }
+
+  async function syncMODE() {
+    modeProcess = execa("make", ["run-mode"], { cwd: "../../../packages/services/" });
+
+    modeProcess.stdout?.on("data", (data) => {
+      console.log("MODE log:", data.toString());
+    });
+
+    modeProcess.stderr?.on("data", (data) => {
+      console.error("MODE error", data.toString());
+      modeProcess.kill();
+    });
+
+    return modeProcess;
+  }
 });
