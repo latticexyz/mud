@@ -12,6 +12,7 @@
     "clean:abi": "rimraf abi",
     "clean:mud": "rimraf src/codegen",
     "clean:typechain": "rimraf types",
+    "deploy:local": "mud deploy",
     "test": "vitest --run && mud test",
     "tsgen": "mud tsgen --configPath mud.config.ts --out ../client-vanilla/src/mud"
   },
