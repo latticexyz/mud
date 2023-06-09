@@ -4,10 +4,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:types",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge clean && forge build",
     "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
-    "build:types": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
+    "build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
     "deploy": "pnpm run build && mud deploy",
     "deploy:hackathon": "pnpm run build && mud deploy --profile=hackathon-testnet",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
