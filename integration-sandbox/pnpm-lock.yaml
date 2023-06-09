@@ -113,9 +113,6 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../packages/world
         version: link:../../../packages/world
-      '@playwright/test':
-        specifier: ^1.35.0
-        version: 1.35.0
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
@@ -128,21 +125,33 @@ importers:
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
-      execa:
-        specifier: ^7.1.1
-        version: 7.1.1
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
-      jsdom:
-        specifier: ^22.0.0
-        version: 22.0.0
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
       typechain:
         specifier: ^8.1.1
         version: 8.1.1(typescript@4.9.5)
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+
+  packages/test:
+    devDependencies:
+      '@latticexyz/cli':
+        specifier: link:../../../packages/cli
+        version: link:../../../packages/cli
+      '@playwright/test':
+        specifier: ^1.35.0
+        version: 1.35.0
+      execa:
+        specifier: ^7.1.1
+        version: 7.1.1
+      jsdom:
+        specifier: ^22.0.0
+        version: 22.0.0
       typescript:
         specifier: ^4.9.5
         version: 4.9.5

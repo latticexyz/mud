@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, test } from "vitest";
 import { createServer } from "vite";
 import type { ViteDevServer } from "vite";
 import { expect, chromium, Browser, Page } from "@playwright/test";
-import { deployHandler } from "@latticexyz/cli";
+// import { deployHandler } from "@latticexyz/cli";
 import { execa, ExecaChildProcess } from "execa";
 
 describe("arrays", async () => {
@@ -10,6 +10,7 @@ describe("arrays", async () => {
   let browser: Browser;
   let page: Page;
   let anvilProcess: ExecaChildProcess;
+  let deploymentProcess: ExecaChildProcess;
 
   beforeEach(async () => {
     // start anvil
@@ -24,24 +25,23 @@ describe("arrays", async () => {
       String(anvilPort),
     ]);
 
-    // deploy contracts
-    await deployHandler({
-      saveDeployment: true,
-      rpc: forkRpc,
-      priorityFeeMultiplier: 1,
-      disableTxWait: false,
-      pollInterval: 1000,
-    });
+    // deploy
+    console.log("Deploying contracts");
+    deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", forkRpc], { cwd: "../contracts" });
+    deploymentProcess.stdout?.on("data", (data) => console.log(data.toString()));
+    deploymentProcess.stderr?.on("data", (data) => console.warn(data.toString()));
+    await deploymentProcess;
 
     // start vite
-    const mode = "development";
     // TODO this should probably be preview instead of dev server
+    const mode = "development";
     server = await createServer({
       mode,
       server: { port: 3000 },
       root: "../client-vanilla",
     });
     await server.listen();
+
     // open browser page
     browser = await chromium.launch();
     page = await browser.newPage();
@@ -50,6 +50,7 @@ describe("arrays", async () => {
     page.on("pageerror", (err) => {
       console.log("Browser page error:", err.message);
     });
+
     // log browser's console logs
     page.on("console", (msg) => {
       console.log("Browser console:", msg.text());
@@ -60,6 +61,7 @@ describe("arrays", async () => {
     await browser.close();
     await server.close();
     anvilProcess.kill();
+    deploymentProcess.kill();
   });
 
   test("big list should have correct length", async () => {
