@@ -7,7 +7,6 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "initialize": "yarn build",
     "preview": "vite preview"
   },
   "dependencies": {
