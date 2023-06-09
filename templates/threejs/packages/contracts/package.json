@@ -9,7 +9,6 @@
     "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
     "build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
     "deploy": "pnpm run build && mud deploy",
-    "deploy:hackathon": "pnpm run build && mud deploy --profile=hackathon-testnet",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
     "lint": "pnpm run prettier && pnpm run solhint",
