@@ -9,6 +9,7 @@
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
     "@playwright/test": "^1.35.0",
+    "chalk": "^5.2.0",
     "execa": "^7.1.1",
     "jsdom": "^22.0.0",
     "typescript": "^4.9.5",

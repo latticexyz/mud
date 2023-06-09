@@ -146,6 +146,9 @@ importers:
       '@playwright/test':
         specifier: ^1.35.0
         version: 1.35.0
+      chalk:
+        specifier: ^5.2.0
+        version: 5.2.0
       execa:
         specifier: ^7.1.1
         version: 7.1.1
@@ -1049,6 +1052,11 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+    dev: true
+
+  /chalk@5.2.0:
+    resolution: {integrity: sha512-ree3Gqw/nazQAPuJJEy+avdl7QfZMcUvmHIKgEZkGL+xOBzRvup5Hxo6LHuMceSxOabuJLJm5Yp/92R9eMmMvA==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
     dev: true
 
   /check-error@1.0.2:
