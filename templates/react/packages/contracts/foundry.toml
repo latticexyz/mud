@@ -8,7 +8,7 @@ verbosity = 2
 src = "src"
 test = "test"
 out = "out"
-allow_paths = ["../../node_modules", "../../../../packages"]
+allow_paths = ["../../../mud/packages"]
 extra_output_files = [
   "abi",
   "evm.bytecode"
