@@ -1,21 +1,10 @@
 import { Hex, hexToNumber, sliceHex } from "viem";
-import { Schema, TableSchema } from "./common";
+import { Schema } from "./common";
 import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
 import { DynamicAbiType } from "./dynamicAbiTypes";
 import { schemaAbiTypes } from "./schemaAbiTypes";
 
-export function decodeTableSchema(data: Hex): TableSchema {
-  const valueSchema = decodeSchema(sliceHex(data, 0, 32));
-  const keySchema = decodeSchema(sliceHex(data, 32, 64));
-  return {
-    keySchema,
-    valueSchema,
-    isEmpty: data === "0x",
-    schemaData: data,
-  };
-}
-
-export function decodeSchema(data: Hex): Schema {
+export function hexToSchema(data: Hex): Schema {
   if (data.length !== 66) {
     // TODO: better error
     throw new Error("wrong length");
