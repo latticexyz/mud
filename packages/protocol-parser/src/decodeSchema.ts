@@ -15,24 +15,24 @@ export function decodeTableSchema(data: Hex): TableSchema {
   };
 }
 
-function decodeSchema(data: Hex): Schema {
+export function decodeSchema(data: Hex): Schema {
   if (data.length !== 66) {
     // TODO: better error
     throw new Error("wrong length");
   }
 
   const staticDataLength = hexToNumber(sliceHex(data, 0, 2));
-  const numStaticFields = hexToNumber(sliceHex(data, 2, 1));
-  const numDynamicFields = hexToNumber(sliceHex(data, 3, 1));
+  const numStaticFields = hexToNumber(sliceHex(data, 2, 3));
+  const numDynamicFields = hexToNumber(sliceHex(data, 3, 4));
   const staticFields: StaticAbiType[] = [];
   const dynamicFields: DynamicAbiType[] = [];
 
   for (let i = 4; i < 4 + numStaticFields; i++) {
-    const schemaTypeIndex = hexToNumber(sliceHex(data, i, 1));
+    const schemaTypeIndex = hexToNumber(sliceHex(data, i, i + 1));
     staticFields.push(schemaAbiTypes[schemaTypeIndex] as StaticAbiType);
   }
   for (let i = 4 + numStaticFields; i < 4 + numStaticFields + numDynamicFields; i++) {
-    const schemaTypeIndex = hexToNumber(sliceHex(data, i, 1));
+    const schemaTypeIndex = hexToNumber(sliceHex(data, i, i + 1));
     dynamicFields.push(schemaAbiTypes[schemaTypeIndex] as DynamicAbiType);
   }
 

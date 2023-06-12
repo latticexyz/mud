@@ -15,5 +15,7 @@ export function abiTypesToSchemaData(staticFields: StaticAbiType[], dynamicField
     numDynamicFields.toString(16).padStart(2, "0"),
     ...staticSchemaTypes.map((schemaType) => schemaType.toString(16).padStart(2, "0")),
     ...dynamicSchemaTypes.map((schemaType) => schemaType.toString(16).padStart(2, "0")),
-  ].join("")}`;
+  ]
+    .join("")
+    .padEnd(64, "0")}`;
 }
