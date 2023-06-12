@@ -19,6 +19,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
+    "lint": "eslint .",
     "test": "vitest typecheck --run && vitest --run"
   },
   "dependencies": {
