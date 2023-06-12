@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+env:
+  # Attempt to fix OOM errors with sourcemaps in phaser template
+  NODE_OPTIONS: --max-old-space-size=8192
+
 jobs:
   build:
     name: Build template

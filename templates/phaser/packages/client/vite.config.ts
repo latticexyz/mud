@@ -12,7 +12,6 @@ export default defineConfig({
   build: {
     target: "es2022",
     minify: true,
-    // TODO: enable sourcemaps once we can do this in CI without OOM errors
-    // sourcemap: true,
+    sourcemap: true,
   },
 });
