@@ -29,9 +29,9 @@ jobs:
 
       - name: Build example
         working-directory: ./examples/${{ matrix.example }}
-        run: pnpm run initialize && pnpm run build
+        run: pnpm run build
 
-      - name: Outdated files, run `pnpm run initialize && pnpm run build` in `examples/${{ matrix.example }}` and commit them
+      - name: Outdated files, run `pnpm run build` in `examples/${{ matrix.example }}` and commit them
         uses: ./.github/actions/require-empty-diff
 
       - name: Run tests
