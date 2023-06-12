@@ -3,11 +3,11 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreView } from "../src/StoreView.sol";
+import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 
 // Mock Store to call MockSystem
-contract StoreSwitchTestStore is StoreView {
+contract StoreSwitchTestStore is StoreReadWithStubs {
   MockSystem mockSystem = new MockSystem();
 
   function callViaDelegateCall() public returns (bool isDelegate) {

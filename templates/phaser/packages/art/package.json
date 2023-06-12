@@ -1,0 +1,27 @@
+{
+  "name": "art",
+  "version": "1.0.0",
+  "license": "MIT",
+  "types": "./types",
+  "scripts": {
+    "compile-extensions": "tsc ./tiled/extensions/*.ts --outDir ./tiled/extensions/",
+    "export": "yarn generate-multiatlas-sprites && yarn export-tiled-types",
+    "export-tiled-types": "ts-node ./scripts/export-tiled-types.ts && cp tilesets/images/* ../client/public/assets/tilesets/",
+    "generate-multiatlas-sprites": "node ./scripts/cli.mjs --project ./config-sprites.json"
+  },
+  "devDependencies": {
+    "@mapeditor/tiled-api": "^1.8.2",
+    "@types/ejs": "^3.1.1",
+    "@types/glob": "^7.2.0",
+    "@types/node": "^18.0.3",
+    "ejs": "^3.1.8",
+    "ethers": "^5.7.0",
+    "free-tex-packer-cli": "^0.3.0",
+    "free-tex-packer-core": "^0.3.4",
+    "glob": "^8.0.3",
+    "optimist": "^0.6.1",
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4",
+    "xml-js": "^1.6.11"
+  }
+}

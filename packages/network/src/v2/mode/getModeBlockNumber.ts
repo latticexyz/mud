@@ -1,4 +1,4 @@
-import { QueryLayerClient } from "@latticexyz/services/protobuf/ts/mode/mode";
+import { QueryLayerClient } from "@latticexyz/services/mode";
 import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
 
 export async function getModeBlockNumber(client: QueryLayerClient, chainId: number): Promise<number> {

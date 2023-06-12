@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/codegen/Tables.sol";
@@ -18,15 +18,16 @@ import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { Systems } from "../src/tables/Systems.sol";
-import { Bool } from "../src/tables/Bool.sol";
-import { AddressArray } from "../src/tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
+import { Systems } from "../src/modules/core/tables/Systems.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IErrors } from "../src/interfaces/IErrors.sol";
+import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { ISystemHook } from "../src/interfaces/ISystemHook.sol";
+
+import { Bool } from "./tables/Bool.sol";
+import { AddressArray } from "./tables/AddressArray.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;
@@ -116,10 +117,24 @@ contract WorldTestTableHook is IStoreHook {
   }
 }
 
+contract WorldTestSystemHook is ISystemHook {
+  event SystemHookCalled(bytes data);
+
+  function onBeforeCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, systemAddress, funcSelectorAndArgs));
+  }
+
+  function onAfterCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, systemAddress, funcSelectorAndArgs));
+  }
+}
+
 contract WorldTest is Test {
   using ResourceSelector for bytes32;
 
+  event HelloWorld();
   event HookCalled(bytes data);
+  event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
@@ -132,7 +147,6 @@ contract WorldTest is Test {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
-    world.installRootModule(new RegistrationModule(), new bytes(0));
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -144,11 +158,29 @@ contract WorldTest is Test {
   function _expectAccessDenied(address caller, bytes16 namespace, bytes16 name) internal {
     vm.prank(caller);
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.AccessDenied.selector, ResourceSelector.from(namespace, name).toString(), caller)
+      abi.encodeWithSelector(
+        IWorldErrors.AccessDenied.selector,
+        ResourceSelector.from(namespace, name).toString(),
+        caller
+      )
     );
   }
 
   function testConstructor() public {
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld();
+    new World();
+
+    bytes32[] memory schemaKey = new bytes32[](1);
+    schemaKey[0] = StoreCoreInternal.SCHEMA_TABLE;
+    bytes memory value = world.getRecord(StoreCoreInternal.SCHEMA_TABLE, schemaKey);
+    assertEq(
+      value,
+      abi.encodePacked(SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), SchemaLib.encode(SchemaType.BYTES32))
+    );
+  }
+
+  function testRootNamespace() public {
     // Owner of root route should be the creator of the World
     address rootOwner = NamespaceOwner.get(world, ROOT_NAMESPACE);
     assertEq(rootOwner, address(this));
@@ -173,7 +205,7 @@ contract WorldTest is Test {
 
     // Expect an error when registering an existing namespace
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.ResourceExists.selector, ResourceSelector.toString(bytes16("test")))
+      abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, ResourceSelector.toString(bytes16("test")))
     );
     world.registerNamespace("test");
   }
@@ -194,7 +226,7 @@ contract WorldTest is Test {
     assertEq(world.getSchema(tableSelector).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, tableSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableSelector.toString()));
     world.registerTable(namespace, table, schema, defaultKeySchema);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
@@ -281,14 +313,14 @@ contract WorldTest is Test {
     assertEq(NamespaceOwner.get(world, "newNamespace"), address(this));
 
     // Expect an error when registering an existing system
-    vm.expectRevert(abi.encodeWithSelector(IErrors.SystemExists.selector, address(system)));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));
     world.registerSystem("", "newSystem", system, true);
 
     // Expect an error when registering a system at an existing resource selector
     System newSystem = new System();
 
     // Expect an error when registering a system at an existing resource selector
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
     resourceSelector = world.registerSystem("", "testSystem", newSystem, true);
 
     // Expect an error when registering a system in a namespace is not owned by the caller
@@ -309,14 +341,14 @@ contract WorldTest is Test {
     System system = new System();
 
     // Expect an error when trying to register a system at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
     world.registerSystem("namespace", "name", system, false);
 
     // Register a new system
     resourceSelector = world.registerSystem("namespace2", "name", new System(), false);
 
     // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
     world.registerTable("namespace2", "name", Bool.getSchema(), defaultKeySchema);
   }
 
@@ -324,7 +356,7 @@ contract WorldTest is Test {
     // TODO
   }
 
-  function testRetractAccess() public {
+  function testRevokeAccess() public {
     // TODO
   }
 
@@ -419,54 +451,6 @@ contract WorldTest is Test {
     // Expect the World to have access
     vm.prank(address(world));
     world.pushToField(namespace, name, keyTuple, 0, encodedData);
-  }
-
-  function testUpdateInField() public {
-    bytes16 namespace = "testUpdInField";
-    bytes16 name = "testTable";
-
-    // Register a new table
-    bytes32 tableId = world.registerTable(namespace, name, AddressArray.getSchema(), defaultKeySchema);
-
-    // Create data
-    address[] memory initData = new address[](3);
-    initData[0] = address(0x01);
-    initData[1] = address(bytes20(keccak256("some address")));
-    initData[2] = address(bytes20(keccak256("another address")));
-    bytes memory encodedData = EncodeArray.encode(initData);
-
-    world.setField(namespace, name, keyTuple, 0, encodedData);
-
-    // Expect the data to be written
-    assertEq(AddressArray.get(world, tableId, key), initData);
-
-    // Update index 0
-    address[] memory dataForUpdate = new address[](1);
-    dataForUpdate[0] = address(bytes20(keccak256("address for update")));
-    world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
-
-    // Expect the data to be updated
-    initData[0] = dataForUpdate[0];
-    assertEq(AddressArray.get(world, tableId, key), initData);
-
-    // Update index 1 via direct access
-    world.updateInField(tableId, keyTuple, 0, 20 * 1, EncodeArray.encode(dataForUpdate));
-
-    // Expect the data to be updated
-    initData[1] = dataForUpdate[0];
-    assertEq(AddressArray.get(world, tableId, key), initData);
-
-    // Expect an error when trying to write from an address that doesn't have access (via namespace/name)
-    _expectAccessDenied(address(0x01), namespace, name);
-    world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
-
-    // Expect an error when trying to write from an address that doesn't have access (via tableId)
-    _expectAccessDenied(address(0x01), namespace, name);
-    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
-
-    // Expect the World to have access
-    vm.prank(address(world));
-    world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
   }
 
   function testDeleteRecord() public {
@@ -602,8 +586,29 @@ contract WorldTest is Test {
     // (See https://github.com/latticexyz/mud/issues/444)
   }
 
-  function testRegisterSystemHook() public view {
-    // TODO
+  function testRegisterSystemHook() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("namespace", "testSystem", system, false);
+
+    // Register a new hook
+    ISystemHook systemHook = new WorldTestSystemHook();
+    world.registerSystemHook("namespace", "testSystem", systemHook);
+
+    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+
+    // Expect the hooks to be called in correct order
+    vm.expectEmit(true, true, true, true);
+    emit SystemHookCalled(abi.encode("before", address(this), address(system), funcSelectorAndArgs));
+
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("fallback");
+
+    vm.expectEmit(true, true, true, true);
+    emit SystemHookCalled(abi.encode("after", address(this), address(system), funcSelectorAndArgs));
+
+    // Call a system fallback function without arguments via the World
+    world.call("namespace", "testSystem", funcSelectorAndArgs);
   }
 
   function testWriteRootSystem() public {

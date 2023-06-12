@@ -1,0 +1,51 @@
+import { Aside } from "../components/Aside";
+
+## Plugins
+
+<Aside emoji="⚠️">
+  Currently, only config extension API is implemented, and it will likely change. Generator hooks (for `tablegen`,
+  `worldgen`, etc) and cli extension API will be available in the future.
+</Aside>
+
+Plugins are just npm packages that execute `extendMUDCoreConfig` when imported, and export some interface extensions.
+
+The `config` package provides the core of MUD API.
+Both `store` and `world` are plugins themselves, although `store` is special because it introduces `mudConfig`.
+
+Plugins can depend on other plugins, and most are expected to depend on `store` and `world`.
+
+### Plugins for the MUD framework
+
+MUD framework means that your plugin will depend on `world`, which in turn depends on `store`.
+
+Start with [`Basic plugin example`](https://github.com/latticexyz/mud/blob/main/examples/minimal/packages/plugin-example/ts), which shows how to add an option (but it does nothing with it).
+
+Plugins can take advantage of [Modules](world/modules) to add solidity logic to `world`.
+
+You can use [`world/ts/register`](https://github.com/latticexyz/mud/blob/main/packages/world/ts/register/index.ts) as an advanced example, since `world` is a plugin.
+
+#### `/register` vs `/library`
+
+You can have as many folders and exports as you want, but the main one is `/register`.
+When imported, `/register` has side-effects (changes interfaces and a global variable), which is why it should be isolated.
+
+You want to import `/register` in `mud.config.ts` and another plugin's `configExtensions`, `typeExtensions`.
+
+You want to import `/library` in most library-like code, like generators and utilities.
+
+#### `typeExtensions`
+
+You can't override typescript types.
+`typeExtensions` augments existing interfaces (and this works only for interfaces) by [merging interfaces](https://www.typescriptlang.org/docs/handbook/declaration-merging.html#merging-interfaces).
+
+The augmented interface is propagated:
+
+- recursively, to any file that imports `typeExtensions.ts`. But only `import "somepackage"` works, not `import { foo } from "somepackage"`
+- to its entire package, which is why you should put plugins into separate packages to avoid them polluting each other's interfaces
+
+#### `configExtensions`
+
+`extendMUDCoreConfig` adds its callback to an array, stored in a global variable (akin to hardhat's plugins).
+
+All these callbacks get called, in the order they were added, within `mudConfig`
+(aside from being a type helper, that's all `mudConfig` does - calls callbacks. `store` and `world` plugins are also just callbacks in that array).

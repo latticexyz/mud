@@ -1,0 +1,39 @@
+name: Examples
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  main:
+    name: Build/test examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [minimal]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install example dependencies
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm install
+
+      - name: Build example
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm run build
+
+      - name: Outdated files, run `pnpm run build` in `examples/${{ matrix.example }}` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Run tests
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm run test

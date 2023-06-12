@@ -6,11 +6,12 @@
     "moduleResolution": "node",
     "declaration": true,
     "sourceMap": true,
-    "rootDir": "./src",
     "outDir": "dist",
     "isolatedModules": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-  }
+    "skipLibCheck": true
+  },
+  "include": ["src"]
 }

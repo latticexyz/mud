@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Type, Component, Schema, World, EntityID } from "@latticexyz/recs";
+import { Layers, Type, Component, Schema, World, Entity } from "@latticexyz/recs";
 import { BrowserContainer, SmallHeadline } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
@@ -23,12 +23,12 @@ export const Browser = observer(
     setContractComponentValue?: SetContractComponentFunction<Schema>;
     prototypeComponent?: Component<{ value: Type.StringArray }>;
     nameComponent?: Component<{ value: Type.String }>;
-    spawnPrototypeAt?: (prototypeId: EntityID, position: Coord) => void;
+    spawnPrototypeAt?: (prototypeId: Entity, position: Coord) => void;
     world: World;
     devHighlightComponent: ReturnType<typeof createBrowserDevComponents>["devHighlightComponent"];
     hoverHighlightComponent: ReturnType<typeof createBrowserDevComponents>["hoverHighlightComponent"];
   }) => {
-    const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
+    const [filteredEntities, setFilteredEntities] = useState<Entity[]>([]);
     const [overflow, setOverflow] = useState(0);
     const clearDevHighlights = useClearDevHighlights(devHighlightComponent);
 
@@ -36,7 +36,7 @@ export const Browser = observer(
       <BrowserContainer>
         <QueryBuilder
           devHighlightComponent={devHighlightComponent}
-          allEntities={world.entities}
+          allEntities={[...world.getEntities()]}
           setFilteredEntities={setFilteredEntities}
           layers={layers}
           world={world}

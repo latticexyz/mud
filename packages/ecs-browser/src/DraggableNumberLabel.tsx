@@ -48,11 +48,5 @@ export function DraggableNumberLabel({
     };
   }, [startMouseX, setValue, snapshot, value]);
 
-  return (
-    <DraggableNumberLabelContainer
-      onMouseDown={onStart}
-    >
-      {label}
-    </DraggableNumberLabelContainer>
-  );
+  return <DraggableNumberLabelContainer onMouseDown={onStart}>{label}</DraggableNumberLabelContainer>;
 }

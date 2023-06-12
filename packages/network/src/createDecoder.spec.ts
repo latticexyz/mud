@@ -2,7 +2,7 @@ import { createDecoder, flattenValue } from "./createDecoder";
 import { createEncoder } from "./createEncoder";
 import { BigNumber } from "ethers";
 import { ContractSchemaValue } from "./types";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 
 describe("Decoder", () => {
   it("decodes the component value", () => {

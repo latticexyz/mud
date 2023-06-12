@@ -96,6 +96,30 @@
     "gasUsed": 1381
   },
   {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "encode KeyEncoding key tuple",
+    "functionCall": "bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third)",
+    "gasUsed": 680
+  },
+  {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "register KeyEncoding schema",
+    "functionCall": "KeyEncoding.registerSchema()",
+    "gasUsed": 64695
+  },
+  {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "set KeyEncoding record",
+    "functionCall": "KeyEncoding.set(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third, true)",
+    "gasUsed": 41889
+  },
+  {
+    "source": "test/KeyEncoding.t.sol",
+    "name": "get KeyEncoding record",
+    "functionCall": "bool value = KeyEncoding.get(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third)",
+    "gasUsed": 5244
+  },
+  {
     "source": "test/Mixed.t.sol",
     "name": "store Mixed struct in storage (native solidity)",
     "functionCall": "testMixed = mixed",
@@ -105,19 +129,19 @@
     "source": "test/Mixed.t.sol",
     "name": "register Mixed schema",
     "functionCall": "Mixed.registerSchema()",
-    "gasUsed": 61139
+    "gasUsed": 61228
   },
   {
     "source": "test/Mixed.t.sol",
     "name": "set record in Mixed",
     "functionCall": "Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })",
-    "gasUsed": 111957
+    "gasUsed": 112165
   },
   {
     "source": "test/Mixed.t.sol",
     "name": "get record from Mixed",
     "functionCall": "MixedData memory mixed = Mixed.get(key)",
-    "gasUsed": 13382
+    "gasUsed": 13460
   },
   {
     "source": "test/PackedCounter.t.sol",
@@ -133,7 +157,7 @@
   },
   {
     "source": "test/PackedCounter.t.sol",
-    "name": "pack uint16 array into PackedCounter",
+    "name": "pack uint40 array into PackedCounter",
     "functionCall": "PackedCounter packedCounter = PackedCounterLib.pack(counters)",
     "gasUsed": 2152
   },
@@ -183,7 +207,7 @@
     "source": "test/Schema.t.sol",
     "name": "validate schema",
     "functionCall": "encodedSchema.validate({ allowEmpty: false })",
-    "gasUsed": 18965
+    "gasUsed": 18272
   },
   {
     "source": "test/Slice.t.sol",
@@ -276,268 +300,352 @@
     "gasUsed": 1108
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (cold, 1 slot)",
+    "functionCall": "bytes memory secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, schema, 0, 4)",
+    "gasUsed": 8161
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (warm, 1 slot)",
+    "functionCall": "secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, schema, 4, 8)",
+    "gasUsed": 2188
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (semi-cold, 1 slot)",
+    "functionCall": "bytes memory thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, schema, 4, 32)",
+    "gasUsed": 4193
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (warm, 2 slots)",
+    "functionCall": "thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, schema, 8, 40)",
+    "gasUsed": 4475
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (cold, 1 slot)",
+    "functionCall": "uint256 length = StoreCore.getFieldLength(_table, _key, 1, schema)",
+    "gasUsed": 7968
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (warm, 1 slot)",
+    "functionCall": "length = StoreCore.getFieldLength(_table, _key, 1, schema)",
+    "gasUsed": 1964
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (warm due to , 2 slots)",
+    "functionCall": "uint256 length = StoreCore.getFieldLength(_table, _key, 2, schema)",
+    "gasUsed": 7968
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (warm, 2 slots)",
+    "functionCall": "length = StoreCore.getFieldLength(_table, _key, 2, schema)",
+    "gasUsed": 1964
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "pop from field (cold, 1 slot, 1 uint32 item)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
+    "gasUsed": 29270
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "pop from field (warm, 1 slot, 1 uint32 item)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
+    "gasUsed": 19348
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "pop from field (cold, 2 slots, 10 uint32 items)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
+    "gasUsed": 31149
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "pop from field (warm, 2 slots, 10 uint32 items)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
+    "gasUsed": 19231
+  },
+  {
+    "source": "test/StoreCoreGas.t.sol",
     "name": "access non-existing record",
-    "functionCall": "bytes memory data1 = StoreCore.getRecord(table, key)",
-    "gasUsed": 7316
+    "functionCall": "StoreCore.getRecord(table, key)",
+    "gasUsed": 7310
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "access static field of non-existing record",
-    "functionCall": "bytes memory data2 = StoreCore.getField(table, key, 0)",
-    "gasUsed": 2988
+    "functionCall": "StoreCore.getField(table, key, 0)",
+    "gasUsed": 2982
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "access dynamic field of non-existing record",
-    "functionCall": "bytes memory data3 = StoreCore.getField(table, key, 1)",
-    "gasUsed": 3599
+    "functionCall": "StoreCore.getField(table, key, 1)",
+    "gasUsed": 3593
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
+    "name": "access length of dynamic field of non-existing record",
+    "functionCall": "StoreCore.getFieldLength(table, key, 1, schema)",
+    "gasUsed": 1331
+  },
+  {
+    "source": "test/StoreCoreGas.t.sol",
+    "name": "access slice of dynamic field of non-existing record",
+    "functionCall": "StoreCore.getFieldSlice(table, key, 1, schema, 0, 0)",
+    "gasUsed": 1331
+  },
+  {
+    "source": "test/StoreCoreGas.t.sol",
     "name": "delete record (complex data, 3 slots)",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 10952
+    "gasUsed": 11001
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "Check for existence of table (existent)",
     "functionCall": "StoreCore.hasTable(table)",
     "gasUsed": 1111
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "check for existence of table (non-existent)",
     "functionCall": "StoreCore.hasTable(table2)",
     "gasUsed": 3138
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "register subscriber",
     "functionCall": "StoreCore.registerStoreHook(table, subscriber)",
-    "gasUsed": 65478
+    "gasUsed": 65566
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 73793
+    "gasUsed": 73972
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set static field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 0, data)",
-    "gasUsed": 31893
+    "gasUsed": 31960
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "delete record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 24382
+    "gasUsed": 24545
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "register subscriber",
     "functionCall": "StoreCore.registerStoreHook(table, subscriber)",
-    "gasUsed": 65478
+    "gasUsed": 65566
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 167200
+    "gasUsed": 167409
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set (dynamic) field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 1, arrayDataBytes)",
-    "gasUsed": 34987
+    "gasUsed": 34919
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "delete (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 25861
+    "gasUsed": 26059
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "push to field (1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.pushToField(table, key, 1, secondDataToPush)",
-    "gasUsed": 16996
+    "gasUsed": 17072
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "push to field (2 slots, 10 uint32 items)",
     "functionCall": "StoreCore.pushToField(table, key, 2, thirdDataToPush)",
-    "gasUsed": 39718
+    "gasUsed": 39780
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "StoreCore: register schema",
     "functionCall": "StoreCore.registerSchema(table, schema, keySchema)",
-    "gasUsed": 54854
+    "gasUsed": 54877
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "StoreCore: get schema (warm)",
-    "functionCall": "Schema loadedSchema = StoreCore.getSchema(table)",
-    "gasUsed": 1143
+    "functionCall": "StoreCore.getSchema(table)",
+    "gasUsed": 1136
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "StoreCore: get key schema (warm)",
-    "functionCall": "Schema loadedKeySchema = StoreCore.getKeySchema(table)",
-    "gasUsed": 1211
+    "functionCall": "StoreCore.getKeySchema(table)",
+    "gasUsed": 1204
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set complex record with dynamic data (4 slots)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 107567
+    "gasUsed": 107714
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get complex record with dynamic data (4 slots)",
-    "functionCall": "bytes memory loadedData = StoreCore.getRecord(table, key)",
-    "gasUsed": 6449
+    "functionCall": "StoreCore.getRecord(table, key)",
+    "gasUsed": 6443
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "compare: Set complex record with dynamic data using native solidity",
     "functionCall": "testStruct = _testStruct",
-    "gasUsed": 116842
+    "gasUsed": 116839
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "compare: Set complex record with dynamic data using abi.encode",
     "functionCall": "testMapping[1234] = abi.encode(_testStruct)",
     "gasUsed": 267377
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set dynamic length of dynamic index 0",
     "functionCall": "StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 10)",
     "gasUsed": 23600
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set dynamic length of dynamic index 1",
     "functionCall": "StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 1, 99)",
-    "gasUsed": 1720
+    "gasUsed": 1719
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "reduce dynamic length of dynamic index 0",
     "functionCall": "StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 5)",
     "gasUsed": 1707
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set static field (1 slot)",
-    "functionCall": "StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes))",
-    "gasUsed": 38011
+    "functionCall": "StoreCore.setField(table, key, 0, firstDataPacked)",
+    "gasUsed": 37980
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get static field (1 slot)",
-    "functionCall": "bytes memory loadedData = StoreCore.getField(table, key, 0)",
-    "gasUsed": 2990
+    "functionCall": "StoreCore.getField(table, key, 0)",
+    "gasUsed": 2980
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set static field (overlap 2 slot)",
-    "functionCall": "StoreCore.setField(table, key, 1, abi.encodePacked(secondDataBytes))",
-    "gasUsed": 33026
+    "functionCall": "StoreCore.setField(table, key, 1, secondDataPacked)",
+    "gasUsed": 35009
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get static field (overlap 2 slot)",
-    "functionCall": "loadedData = StoreCore.getField(table, key, 1)",
-    "gasUsed": 3882
+    "functionCall": "StoreCore.getField(table, key, 1)",
+    "gasUsed": 3877
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set dynamic field (1 slot, first dynamic field)",
     "functionCall": "StoreCore.setField(table, key, 2, thirdDataBytes)",
-    "gasUsed": 55329
+    "gasUsed": 57377
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get dynamic field (1 slot, first dynamic field)",
-    "functionCall": "loadedData = StoreCore.getField(table, key, 2)",
-    "gasUsed": 3831
+    "functionCall": "StoreCore.getField(table, key, 2)",
+    "gasUsed": 3812
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set dynamic field (1 slot, second dynamic field)",
     "functionCall": "StoreCore.setField(table, key, 3, fourthDataBytes)",
-    "gasUsed": 35469
+    "gasUsed": 35503
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get dynamic field (1 slot, second dynamic field)",
-    "functionCall": "loadedData = StoreCore.getField(table, key, 3)",
-    "gasUsed": 3850
+    "functionCall": "StoreCore.getField(table, key, 3)",
+    "gasUsed": 3825
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set static record (1 slot)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 37257
+    "gasUsed": 37369
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get static record (1 slot)",
-    "functionCall": "bytes memory loadedData = StoreCore.getRecord(table, key, schema)",
-    "gasUsed": 1335
+    "functionCall": "StoreCore.getRecord(table, key, schema)",
+    "gasUsed": 1329
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "set static record (2 slots)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 59822
+    "gasUsed": 59940
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "get static record (2 slots)",
-    "functionCall": "bytes memory loadedData = StoreCore.getRecord(table, key, schema)",
-    "gasUsed": 1584
+    "functionCall": "StoreCore.getRecord(table, key, schema)",
+    "gasUsed": 1578
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "StoreCore: set table metadata",
     "functionCall": "StoreCore.setMetadata(table, tableName, fieldNames)",
-    "gasUsed": 251688
+    "gasUsed": 251850
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "update in field (1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.updateInField(table, key, 1, 4 * 1, secondDataForUpdate)",
-    "gasUsed": 16533
+    "gasUsed": 16604
   },
   {
-    "source": "test/StoreCore.t.sol",
+    "source": "test/StoreCoreGas.t.sol",
     "name": "push to field (2 slots, 6 uint64 items)",
     "functionCall": "StoreCore.updateInField(table, key, 2, 8 * 1, thirdDataForUpdate)",
-    "gasUsed": 17636
+    "gasUsed": 17699
   },
   {
     "source": "test/StoreMetadata.t.sol",
     "name": "set record in StoreMetadataTable",
     "functionCall": "StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })",
-    "gasUsed": 250122
+    "gasUsed": 250196
   },
   {
     "source": "test/StoreMetadata.t.sol",
     "name": "get record from StoreMetadataTable",
     "functionCall": "StoreMetadataData memory metadata = StoreMetadata.get(tableId)",
-    "gasUsed": 12106
+    "gasUsed": 12117
   },
   {
     "source": "test/StoreSwitch.t.sol",
     "name": "check if delegatecall",
     "functionCall": "isDelegate = StoreSwitch.isDelegateCall()",
-    "gasUsed": 716
+    "gasUsed": 694
   },
   {
     "source": "test/StoreSwitch.t.sol",
@@ -639,18 +747,18 @@
     "source": "test/Vector2.t.sol",
     "name": "register Vector2 schema",
     "functionCall": "Vector2.registerSchema()",
-    "gasUsed": 57982
+    "gasUsed": 58004
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "set Vector2 record",
     "functionCall": "Vector2.set({ key: key, x: 1, y: 2 })",
-    "gasUsed": 38584
+    "gasUsed": 38643
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "get Vector2 record",
     "functionCall": "Vector2Data memory vector = Vector2.get(key)",
-    "gasUsed": 5083
+    "gasUsed": 5094
   }
 ]

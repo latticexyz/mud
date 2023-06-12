@@ -1,5 +1,5 @@
 import { ContractSchemaValue, ContractSchemaValueId } from "./types";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 
 /**
  * Creates a function to automatically encode component values given a contract component schema.

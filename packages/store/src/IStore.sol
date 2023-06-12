@@ -1,24 +1,51 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IErrors } from "./IErrors.sol";
+import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
-interface IStore is IErrors {
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
-
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
-
+interface IStoreRead {
   function getSchema(bytes32 table) external view returns (Schema schema);
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);
 
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+  // Get full record (including full array, load table schema from storage)
+  function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
 
-  // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hook) external;
+  // Get full record (including full array)
+  function getRecord(bytes32 table, bytes32[] calldata key, Schema schema) external view returns (bytes memory data);
+
+  // Get partial data at schema index
+  function getField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex) external view returns (bytes memory data);
+
+  // Get field length at schema index
+  function getFieldLength(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema
+  ) external view returns (uint256);
+
+  // Get start:end slice of the field at schema index
+  function getFieldSlice(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) external view returns (bytes memory data);
+
+  // If this function exists on the contract, it is a store
+  // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
+  // (see https://github.com/latticexyz/mud/issues/444)
+  function isStore() external view;
+}
+
+interface IStoreWrite {
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
   // Set full record (including full dynamic data)
   function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
@@ -28,6 +55,9 @@ interface IStore is IErrors {
 
   // Push encoded items to the dynamic field at schema index
   function pushToField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata dataToPush) external;
+
+  // Pop byte length from the dynamic field at schema index
+  function popFromField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, uint256 byteLengthToPop) external;
 
   // Change encoded items within the dynamic field at schema index
   function updateInField(
@@ -40,21 +70,39 @@ interface IStore is IErrors {
 
   // Set full record (including full dynamic data)
   function deleteRecord(bytes32 table, bytes32[] memory key) external;
-
-  // Get full record (including full array, load table schema from storage)
-  function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
-
-  // Get full record (including full array)
-  function getRecord(bytes32 table, bytes32[] calldata key, Schema schema) external view returns (bytes memory data);
-
-  // Get partial data at schema index
-  function getField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex) external view returns (bytes memory data);
-
-  // If this function exists on the contract, it is a store
-  // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
-  // (see https://github.com/latticexyz/mud/issues/444)
-  function isStore() external view;
 }
+
+interface IStoreEphemeral {
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
+
+  // Emit the ephemeral event without modifying storage
+  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
+}
+
+/**
+ * The IStoreData interface includes methods for reading and writing table values.
+ * These methods are frequently invoked during runtime, so it is essential to prioritize
+ * optimizing their gas cost
+ */
+interface IStoreData is IStoreRead, IStoreWrite {
+
+}
+
+/**
+ * The IStoreRegistration interface includes methods for managing table schemas,
+ * metadata, and hooks, which are usually called once in the setup phase of an application,
+ * making them less performance critical than the IStoreData methods.
+ */
+interface IStoreRegistration {
+  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+
+  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+  // Register hook to be called when a record or field is set or deleted
+  function registerStoreHook(bytes32 table, IStoreHook hook) external;
+}
+
+interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;

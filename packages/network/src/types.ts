@@ -1,11 +1,12 @@
 import { Result } from "@ethersproject/abi";
 import { ExternalProvider } from "@ethersproject/providers";
-import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
-import { TxMetadata } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
-import { Cached } from "@latticexyz/utils";
+import { Components, ComponentValue, Entity, SchemaOf } from "@latticexyz/recs";
+import { TxMetadata } from "@latticexyz/services/ecs-stream";
+import { Cached, TableId } from "@latticexyz/utils";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 import { SyncState } from "./workers";
+import { MUDChain } from "@latticexyz/common/chains";
 
 export interface NetworkConfig {
   chainId: number;
@@ -20,6 +21,7 @@ export interface NetworkConfig {
   cacheInterval?: number;
   encoders?: boolean;
   pruneOptions?: { playerAddress: string; hashedComponentId: string };
+  chainConfig?: MUDChain;
 }
 
 export interface ClockConfig {
@@ -88,9 +90,13 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
     partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
     initialValue?: ComponentValue<SchemaOf<C[key]>>;
+    ephemeral?: boolean;
   };
 }[keyof C] & {
-  entity: EntityID;
+  entity: Entity;
+  namespace: string;
+  table: string;
+  key: Record<string, unknown>;
   lastEventInTx: boolean;
   txHash: string;
   txMetadata?: TxMetadata;
@@ -118,8 +124,7 @@ export enum NetworkEvents {
   NetworkComponentUpdate = "NetworkComponentUpdate",
 }
 
-export type NetworkEvent<C extends Components = Components> = NetworkComponentUpdate<C> | SystemCall<C>;
-
+export type NetworkEvent<C extends Components = Components> = SystemCall<C> | NetworkComponentUpdate<C>;
 export function isSystemCallEvent<C extends Components>(e: NetworkEvent<C>): e is SystemCall<C> {
   return e.type === NetworkEvents.SystemCall;
 }
@@ -129,6 +134,12 @@ export function isNetworkComponentUpdateEvent<C extends Components>(
 ): e is NetworkComponentUpdate<C> {
   return e.type === NetworkEvents.NetworkComponentUpdate;
 }
+
+export type RawTableRecord = {
+  tableId: TableId;
+  keyTuple: string[];
+  value: string;
+};
 
 export type SyncWorkerConfig = {
   provider: ProviderConfig;
@@ -144,6 +155,7 @@ export type SyncWorkerConfig = {
   cacheAgeThreshold?: number;
   snapshotNumChunks?: number;
   pruneOptions?: { playerAddress: string; hashedComponentId: string };
+  initialRecords?: RawTableRecord[];
 };
 
 export enum ContractSchemaValue {

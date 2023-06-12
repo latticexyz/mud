@@ -1,18 +1,27 @@
 {
-  "private": true,
   "name": "mud-template-react",
+  "private": true,
+  "scripts": {
+    "build": "pnpm recursive run build",
+    "dev": "concurrently -n contracts,client -c cyan,magenta \"cd packages/contracts && pnpm run dev\" \"cd packages/client && pnpm run dev\"",
+    "dev:client": "pnpm --filter 'client' run dev",
+    "dev:contracts": "pnpm --filter 'contracts' dev",
+    "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
+    "mud:up": "pnpm recursive exec mud set-version -v canary && pnpm install",
+    "prepare": "(forge --version || pnpm foundry:up)",
+    "test": "pnpm recursive run test"
+  },
+  "devDependencies": {
+    "@latticexyz/cli": "link:../../packages/cli",
+    "@typescript-eslint/eslint-plugin": "5.46.1",
+    "@typescript-eslint/parser": "5.46.1",
+    "concurrently": "^8.0.1",
+    "eslint": "8.29.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.9.5"
+  },
   "engines": {
     "node": "18.x",
     "pnpm": "8.x"
-  },
-  "scripts": {
-    "build": "pnpm recursive run build",
-    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
-    "dev:client": "pnpm --filter 'client' run dev",
-    "dev:node": "pnpm --filter 'contracts' devnode",
-    "dev:contracts": "pnpm --filter 'contracts' dev"
-  },
-  "devDependencies": {
-    "run-pty": "^4.0.3"
   }
 }

@@ -1,0 +1,10 @@
+out/
+cache/
+node_modules/
+bindings/
+artifacts/
+abi/
+broadcast/
+
+# Ignore all deploy artifacts
+deploys/**/*.json

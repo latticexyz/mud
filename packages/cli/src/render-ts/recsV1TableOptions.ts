@@ -1,7 +1,6 @@
-import { StoreConfig } from "@latticexyz/config";
-import { resolveAbiOrUserType } from "../render-solidity/userType.js";
-import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings.js";
-import { RecsV1TableOptions } from "./types.js";
+import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
+import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings";
+import { RecsV1TableOptions } from "./types";
 
 export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
   const tableOptions = [];

@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { FaucetServiceDefinition } from "@latticexyz/services/protobuf/ts/faucet/faucet.js";
+import { FaucetServiceDefinition } from "@latticexyz/services/faucet";
 import { createChannel, createClient } from "nice-grpc-web";
 import chalk from "chalk";
 import { NodeHttpTransport } from "@improbable-eng/grpc-web-node-http-transport";

@@ -1,8 +1,8 @@
 import { BigNumber } from "ethers";
-import { keccak256 as keccak256Bytes, toUtf8Bytes } from "ethers/lib/utils";
+import { keccak256 as keccak256Bytes, toUtf8Bytes } from "ethers/lib/utils.js";
 import { Coord } from "./types";
 
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 
 /**
  * Compute keccak256 hash from given string and remove padding from the resulting hex string

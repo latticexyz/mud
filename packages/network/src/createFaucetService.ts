@@ -1,4 +1,4 @@
-import { FaucetServiceDefinition } from "@latticexyz/services/protobuf/ts/faucet/faucet";
+import { FaucetServiceDefinition } from "@latticexyz/services/faucet";
 import { createChannel, createClient, RawClient } from "nice-grpc-web";
 import { FromTsProtoServiceDefinition } from "nice-grpc-web/lib/service-definitions/ts-proto";
 

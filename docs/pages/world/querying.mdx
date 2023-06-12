@@ -1,0 +1,94 @@
+## Querying
+
+The `query` utility allows Systems to ask questions about keys in the World. These queries are evaluated left to right and can include fragments like "Give me all keys in the `CanFly` table" and "Then keep keys in the Position table with value `{x: 1, y: 43}`".
+
+`query` is simply a `view` function, but it can only be used with tables that have the relevant modules installed:
+
+- For `Has` or `Not` fragments, the corresponding table needs to have [`KeysInTable`](/world/modules#keysintablemodule).
+- For `HasValue` or `NotValue` fragments, the corresponding table needs to have [`KeysWithValue`](/world/modules#keyswithvaluemodule).
+
+Let's walk through an example of using `query` in a simple game, where we check that a position is unoccupied before allowing a playing to move into it.
+
+#### Creating tables
+
+First, we define some tables. Here, the `Player` table is a boolean flag; storing whether a key corresponds to a player. `Position` stores the (x, y) coordinate of a key.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+
+export default mudConfig({
+  tables: {
+    Player: "bool",
+    Position: { schema: { x: "int32", y: "int32" } },
+  },
+});
+```
+
+#### Installing the indexing modules
+
+Next, we install the necessary modules for our use case. We will be querying for all keys in the `Player` table, so it requires `KeysInTable`. Conversely, will be filtering by a _specific_ position, so `Position` requires `KeysWithValue`.
+
+```tsx
+import { mudConfig } from "@latticexyz/world/register";
+import { resolveTableId } from "@latticexyz/config";
+
+export default mudConfig({
+  tables: {
+    ...
+  },
+  modules: [
+    {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("Player")],
+    },
+    {
+      name: "KeysWithValueModule",
+      root: true,
+      args: [resolveTableId("Position")],
+    },
+  ],
+});
+```
+
+#### Using `query`
+
+Now the modules are installed, we can we construct the `QueryFragment`, then call `query` like so:
+
+```solidity
+QueryFragment[] memory fragments = new QueryFragment[](2);
+
+// Specify the more restrictive filter first for performance reasons
+fragments[0] = QueryFragment(QueryType.HasValue, PositionTableId, abi.encode(x, y));
+
+// The value argument is ignored in Has query fragments
+fragments[1] = QueryFragment(QueryType.Has, PlayerTableId, new bytes(0));
+
+bytes32[][] memory keyTuples = query(fragments);
+```
+
+Here is the full system, which queries for all players at a position to check if it occupied.
+
+```solidity
+import { System } from "@latticexyz/world/src/System.sol";
+import { query, QueryFragment, QueryType } from "@latticexyz/world/src/modules/keysintable/query.sol";
+import { PlayerTableId, Position, PositionTableId } from "../codegen/Tables.sol";
+
+contract MoveSystem is System {
+  function move(int32 x, int32 y) public {
+    QueryFragment[] memory fragments = new QueryFragment[](2);
+
+    // Specify the more restrictive filter first for performance reasons
+    fragments[0] = QueryFragment(QueryType.HasValue, PositionTableId, abi.encode(x, y));
+
+    // The value argument is ignored in Has query fragments
+    fragments[1] = QueryFragment(QueryType.Has, PlayerTableId, new bytes(0));
+
+    bytes32[][] memory keyTuples = query(fragments);
+
+    require(keyTuples.length == 0, "There is a player at the given position");
+
+    Position.set(bytes32(msg.sender), x, y);
+  }
+}
+```

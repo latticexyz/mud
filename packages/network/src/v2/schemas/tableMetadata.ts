@@ -3,7 +3,7 @@ import { Contract, utils } from "ethers";
 import { metadataTableId, schemaTableId, TableMetadata } from "../common";
 import { decodeData } from "./decodeData";
 import { registerSchema } from "./tableSchemas";
-import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore";
+import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/IStore";
 
 // worldAddress:tableId => metadata
 // TODO: add chain ID to namespace?
@@ -60,14 +60,14 @@ export function registerMetadata(
     // TODO: figure out how to pass in rawSchema, it was giving me "incorrect length" errors before
     //       we still have to do both calls though, and this is a getter, so this should be fine
     (world as IStore)["getRecord(bytes32,bytes32[])"](metadataTableId.toHexString(), [table.toHexString()]),
-  ]).then(([metadataSchema, metadataRecord]) => {
-    if (metadataSchema.isEmpty) {
+  ]).then(([{ valueSchema }, metadataRecord]) => {
+    if (valueSchema.isEmpty) {
       console.warn("Metadata schema not found", { table: metadataTableId.toString(), world: world.address });
     }
     if (!metadataRecord || metadataRecord === "0x") {
       console.warn("Metadata not found for table", { table: table.toString(), world: world.address });
     }
-    const decoded = decodeData(metadataSchema, metadataRecord);
+    const decoded = decodeData(valueSchema, metadataRecord);
     const tableName = decoded[0];
     if (tableName !== table.name) {
       console.warn("Metadata table name does not match table ID", {

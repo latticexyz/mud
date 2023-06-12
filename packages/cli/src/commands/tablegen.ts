@@ -1,8 +1,8 @@
 import path from "path";
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "@latticexyz/config";
-import { tablegen } from "../render-solidity/tablegen.js";
-import { getSrcDirectory } from "../utils/index.js";
+import { loadConfig } from "@latticexyz/config/node";
+import { StoreConfig, tablegen } from "@latticexyz/store";
+import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 type Options = {
   configPath?: string;
@@ -20,7 +20,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler({ configPath }) {
-    const config = await loadStoreConfig(configPath);
+    const config = (await loadConfig(configPath)) as StoreConfig;
     const srcDir = await getSrcDirectory();
 
     await tablegen(config, path.join(srcDir, config.codegenDirectory));

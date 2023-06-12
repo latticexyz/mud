@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreView } from "../../src/StoreView.sol";
+import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
 import { Hooks } from "../../src/codegen/Tables.sol";
 
-contract HooksTest is Test, StoreView {
+contract HooksTest is Test, StoreReadWithStubs {
   function testSetAndGet() public {
     // Hooks schema is already registered by StoreCore
     bytes32 key = keccak256("somekey");

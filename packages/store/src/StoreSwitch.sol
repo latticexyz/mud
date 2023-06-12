@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
 import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
@@ -54,6 +53,14 @@ library StoreSwitch {
     }
   }
 
+  function getKeySchema(bytes32 table) internal view returns (Schema keySchema) {
+    if (isDelegateCall()) {
+      keySchema = StoreCore.getKeySchema(table);
+    } else {
+      keySchema = IStore(msg.sender).getKeySchema(table);
+    }
+  }
+
   function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
     if (isDelegateCall()) {
       StoreCore.setMetadata(table, tableName, fieldNames);
@@ -94,6 +101,14 @@ library StoreSwitch {
     }
   }
 
+  function popFromField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
+    if (isDelegateCall()) {
+      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop);
+    } else {
+      IStore(msg.sender).popFromField(table, key, fieldIndex, byteLengthToPop);
+    }
+  }
+
   function updateInField(
     bytes32 table,
     bytes32[] memory key,
@@ -113,6 +128,14 @@ library StoreSwitch {
       StoreCore.deleteRecord(table, key);
     } else {
       IStore(msg.sender).deleteRecord(table, key);
+    }
+  }
+
+  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
+    if (isDelegateCall()) {
+      StoreCore.emitEphemeralRecord(table, key, data);
+    } else {
+      IStore(msg.sender).emitEphemeralRecord(table, key, data);
     }
   }
 
@@ -137,6 +160,34 @@ library StoreSwitch {
       return StoreCore.getField(table, key, fieldIndex);
     } else {
       return IStore(msg.sender).getField(table, key, fieldIndex);
+    }
+  }
+
+  function getFieldLength(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema schema
+  ) internal view returns (uint256) {
+    if (isDelegateCall()) {
+      return StoreCore.getFieldLength(table, key, fieldIndex, schema);
+    } else {
+      return IStore(msg.sender).getFieldLength(table, key, fieldIndex, schema);
+    }
+  }
+
+  function getFieldSlice(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.getFieldSlice(table, key, fieldIndex, schema, start, end);
+    } else {
+      return IStore(msg.sender).getFieldSlice(table, key, fieldIndex, schema, start, end);
     }
   }
 }

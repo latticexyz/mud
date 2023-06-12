@@ -4,10 +4,10 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { StoreMetadata, StoreMetadataData } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreView } from "../src/StoreView.sol";
+import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract StoreMetadataTest is Test, StoreView {
+contract StoreMetadataTest is Test, StoreReadWithStubs {
   function testSetAndGet() public {
     bytes32 tableId = "1";
     string memory tableName = "firstTable";

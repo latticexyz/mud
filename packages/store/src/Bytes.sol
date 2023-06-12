@@ -100,6 +100,32 @@ library Bytes {
     return input;
   }
 
+  /**
+   * Overwrite 5 bytes of a `bytes32` value and return the new value.
+   */
+  function setBytes5(bytes32 input, uint256 index, bytes5 overwrite) internal pure returns (bytes32 output) {
+    bytes5 mask = bytes5(type(uint40).max);
+    assembly {
+      mask := shr(mul(8, index), mask) // create a mask by shifting 0xff...ff right by index bytes
+      output := and(input, not(mask)) // zero out the byte at index
+      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
+    }
+    return output;
+  }
+
+  /**
+   * Overwrite 7 bytes of a `bytes32` value and return the new value.
+   */
+  function setBytes7(bytes32 input, uint256 index, bytes7 overwrite) internal pure returns (bytes32 output) {
+    bytes7 mask = bytes7(type(uint56).max);
+    assembly {
+      mask := shr(mul(8, index), mask) // create a mask by shifting 0xff...ff right by index bytes
+      output := and(input, not(mask)) // zero out the byte at index
+      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
+    }
+    return output;
+  }
+
   /************************************************************************
    *
    *    SLICE
@@ -171,6 +197,14 @@ library Bytes {
     bytes5 output;
     assembly {
       output := mload(add(add(data, 0x20), start))
+    }
+    return output;
+  }
+
+  function slice5(bytes32 data, uint256 start) internal pure returns (bytes5) {
+    bytes5 output;
+    assembly {
+      output := shl(mul(8, start), data)
     }
     return output;
   }

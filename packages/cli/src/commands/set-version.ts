@@ -2,8 +2,8 @@ import chalk from "chalk";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
-import { MUDError } from "@latticexyz/config";
-import { logError } from "../utils/errors.js";
+import { MUDError } from "@latticexyz/common/errors";
+import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
 
 type Options = {

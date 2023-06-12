@@ -4,10 +4,10 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreView } from "../src/StoreView.sol";
+import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract Vector2Test is Test, StoreView {
+contract Vector2Test is Test, StoreReadWithStubs {
   function testRegisterAndGetSchema() public {
     // !gasreport register Vector2 schema
     Vector2.registerSchema();

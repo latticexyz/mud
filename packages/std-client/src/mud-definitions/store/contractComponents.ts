@@ -25,7 +25,7 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          value: RecsType.BigIntArray,
+          value: RecsType.StringArray,
         },
         {
           metadata: {
@@ -76,6 +76,21 @@ export function defineContractComponents(world: World) {
         {
           x: RecsType.Number,
           y: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    KeyEncoding: (() => {
+      const tableId = new TableId("mudstore", "KeyEncoding");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.Boolean,
         },
         {
           metadata: {

@@ -1,6 +1,7 @@
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "@latticexyz/config";
-import { tsgen } from "../render-ts/tsgen.js";
+import { loadConfig } from "@latticexyz/config/node";
+import { StoreConfig } from "@latticexyz/store";
+import { tsgen } from "../render-ts/tsgen";
 
 type Options = {
   configPath: string;
@@ -22,7 +23,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(args) {
     const { configPath, out } = args;
 
-    const config = await loadStoreConfig(configPath);
+    const config = (await loadConfig(configPath)) as StoreConfig;
 
     await tsgen(config, out);
 

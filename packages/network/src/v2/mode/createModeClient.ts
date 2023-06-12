@@ -1,4 +1,4 @@
-import { QueryLayerClient, QueryLayerDefinition } from "@latticexyz/services/protobuf/ts/mode/mode";
+import { QueryLayerClient, QueryLayerDefinition } from "@latticexyz/services/mode";
 import { createChannel, createClient } from "nice-grpc-web";
 
 /**

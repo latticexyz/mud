@@ -7,7 +7,7 @@ const unsupportedDynamicField = (fieldType: SchemaType): never => {
   throw new Error(`Unsupported dynamic field type: ${SchemaType[fieldType] ?? fieldType}`);
 };
 
-// TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
+// TODO: figure out how to use with SchemaTypeToPrimitiveType<T> return type to ensure correctness here
 export const decodeDynamicField = <T extends DynamicSchemaType>(fieldType: T, bytes: Uint8Array) => {
   if (fieldType === SchemaType.BYTES) {
     return toHex(bytes);

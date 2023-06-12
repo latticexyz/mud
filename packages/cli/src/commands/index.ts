@@ -1,19 +1,20 @@
 import { CommandModule } from "yargs";
 
-import devnode from "./devnode.js";
-import faucet from "./faucet.js";
-import gasReport from "./gas-report.js";
-import hello from "./hello.js";
-import tablegen from "./tablegen.js";
-import tsgen from "./tsgen.js";
-import deployV2 from "./deploy-v2.js";
-import worldgen from "./worldgen.js";
-import setVersion from "./set-version.js";
-import testV2 from "./test-v2.js";
+import devnode from "./devnode";
+import faucet from "./faucet";
+import gasReport from "./gas-report";
+import hello from "./hello";
+import tablegen from "./tablegen";
+import tsgen from "./tsgen";
+import deploy from "./deploy";
+import worldgen from "./worldgen";
+import setVersion from "./set-version";
+import test from "./test";
+import devContracts from "./dev-contracts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
-  deployV2,
+  deploy,
   devnode,
   faucet,
   gasReport,
@@ -22,5 +23,6 @@ export const commands: CommandModule<any, any>[] = [
   tsgen,
   worldgen,
   setVersion,
-  testV2,
+  test,
+  devContracts,
 ];

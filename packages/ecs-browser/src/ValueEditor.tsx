@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { getComponentValueStrict, Layers, Type, updateComponent } from "@latticexyz/recs";
+import { Entity, getComponentValueStrict, Layers, Type, updateComponent } from "@latticexyz/recs";
 import {
   AnyComponent,
   ComponentValue,
-  EntityIndex,
   isArrayType,
   isEntityType,
   isNumberType,
@@ -23,7 +22,7 @@ export const ValueEditor = ({
   layers,
   setContractComponentValue,
 }: {
-  entity: EntityIndex;
+  entity: Entity;
   component: AnyComponent;
   componentValue: ComponentValue<Schema>;
   valueProp: string;
@@ -112,9 +111,9 @@ export const ValueEditor = ({
           }}
         >
           <option value="">None</option>
-          {Object.values(layers)[0].world.entities.map((entityId) => (
-            <option key={entityId} value={entityId}>
-              {entityId}
+          {[...Object.values(layers)[0].world.getEntities()].map((entity) => (
+            <option key={entity} value={entity}>
+              {entity}
             </option>
           ))}
         </ComponentBrowserSelect>
