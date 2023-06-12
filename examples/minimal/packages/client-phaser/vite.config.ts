@@ -9,11 +9,6 @@ export default defineConfig({
       strict: false,
     },
   },
-  optimizeDeps: {
-    esbuildOptions: {
-      target: "es2022",
-    },
-  },
   build: {
     target: "es2022",
     minify: true,
