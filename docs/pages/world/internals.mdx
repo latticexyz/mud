@@ -1,0 +1,28 @@
+## Internal tables and systems of World
+
+World uses [`Store internals`](/store/internals), because it calls `StoreCore.initialize` in its constructor.
+
+World's own internals are initialized via the [`deploy`](https://github.com/latticexyz/mud/blob/main/packages/cli/src/utils/deploy.ts) cli utility (because they would exceed max contract size if called in a constructor).
+
+Except `NamespaceOwner` is initialized in World's constructor, because it's needed for module access checks.
+
+### Tables
+
+- `NamespaceOwner` - maps namespace to its owner's address
+- `ResourceAccess` - maps selector (tableId / system selector) and caller address to access flag
+- `InstalledModules` - maps name and arguments hash (so a module can be installed multiple times) to the module's address
+- `Systems` - maps a system's selector (`namespace` + `name`) to its contract addresses and `publicAccess` flag
+- `SystemRegistry` - reverse maps a system's address to its selector
+- `SystemHooks` - maps a system's selector to an array of table hooks
+- `ResourceType` - maps selector to a `Resource` enum value. Helps differentiate between systems, tables, etc, because they all share the same resource pool
+- `FunctionSelectors` - maps selector of a function registered on World to its details: function's system namespace, name and selector. The system's function selector can be different from World's function selector.
+
+### Systems
+
+Internal systems are in `core` module's [implementations](https://github.com/latticexyz/mud/tree/main/packages/world/src/modules/core/implementations) folder, because they're installed by `CoreModule`.
+
+- `AccessManagementSystem` - grants/revokes access to/from resources
+- `EphemeralRecordSystem` - has `emitEphemeralRecord` for ephemeral tables
+- `ModuleInstallationSystem` - installation of (non-root) modules in the World
+- `StoreRegistrationSystem` - _its methods should not be used with the World framework_. Surfaces the APIs necessary to register Tables on-chain, but lacks namespaces used by World for better permission checks
+- `WorldRegistrationSystem` - surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain

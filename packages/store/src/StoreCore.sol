@@ -34,7 +34,7 @@ library StoreCore {
     registerSchema(
       StoreCoreInternal.SCHEMA_TABLE,
       SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
-      SchemaLib.encode(SchemaType.UINT256) // The Schema table's keySchema is { tableId: UINT256 }
+      SchemaLib.encode(SchemaType.BYTES32) // The Schema table's keySchema is { tableId: BYTES32 }
     );
 
     // Register other internal tables
@@ -543,7 +543,7 @@ library StoreCoreInternal {
     bytes32[] memory key = new bytes32[](1);
     key[0] = tableId;
     uint256 location = StoreCoreInternal._getStaticDataLocation(SCHEMA_TABLE, key);
-    return Schema.wrap(Storage.load({ storagePointer: location + 0x20 }));
+    return Schema.wrap(Storage.load({ storagePointer: location + 1 }));
   }
 
   /**
@@ -554,7 +554,7 @@ library StoreCoreInternal {
     key[0] = tableId;
     uint256 location = _getStaticDataLocation(SCHEMA_TABLE, key);
     Storage.store({ storagePointer: location, data: valueSchema.unwrap() });
-    Storage.store({ storagePointer: location + 0x20, data: keySchema.unwrap() });
+    Storage.store({ storagePointer: location + 1, data: keySchema.unwrap() });
 
     // Emit an event to notify indexers
     emit StoreCore.StoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(valueSchema.unwrap(), keySchema.unwrap()));

@@ -61,8 +61,7 @@ func KeyToString(keys [][32]byte) []string {
 //   - (map[string]interface{}): A map of filter objects.
 func KeyToFilter(tableSchema *TableSchema, key [][32]byte) map[string]interface{} {
 	// First decode the key data so that it's easier to work with.
-	aggregateKey := AggregateKey(key)
-	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
+	decodedKeyData := storecore.DecodeKeyData(key, *tableSchema.StoreCoreSchemaTypeKV.Key)
 
 	filter := make(map[string]interface{})
 

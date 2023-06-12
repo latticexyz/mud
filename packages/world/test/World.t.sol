@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/codegen/Tables.sol";
@@ -170,6 +170,14 @@ contract WorldTest is Test {
     vm.expectEmit(true, true, true, true);
     emit HelloWorld();
     new World();
+
+    bytes32[] memory schemaKey = new bytes32[](1);
+    schemaKey[0] = StoreCoreInternal.SCHEMA_TABLE;
+    bytes memory value = world.getRecord(StoreCoreInternal.SCHEMA_TABLE, schemaKey);
+    assertEq(
+      value,
+      abi.encodePacked(SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), SchemaLib.encode(SchemaType.BYTES32))
+    );
   }
 
   function testRootNamespace() public {

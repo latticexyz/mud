@@ -7,12 +7,15 @@
   </head>
   <body>
     <script type="module">
-      import { set, push, pushRange, pop } from "/src/index.ts"
+      import { set, push, pushRange, pop } from "/src/index.ts";
       document.getElementById("button-reset").addEventListener("click", () => set([]));
       document.getElementById("button-push-many").addEventListener("click", () => pushRange(0, 5000));
       document.getElementById("button-push-one").addEventListener("click", () => push(123));
+
+      document.getElementById("setup-status").innerHTML = "finished"
     </script>
     <div>
+      <div id="setup-status" title="Setup status">loading</div>
       <div>List length: <span id="list-length" data-testid="list-length">unset</span></div>
       <div>First item: <span id="first-item" data-testid="first-item">unset</span></div>
       <div>Last item: <span id="last-item" data-testid="last-item">unset</span></div>

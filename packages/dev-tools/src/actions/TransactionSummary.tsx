@@ -1,6 +1,6 @@
-import { decodeEventLog, decodeFunctionData, toBytes, Hex } from "viem";
+import { decodeEventLog, decodeFunctionData, toBytes, Hex, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
-import { TableId } from "@latticexyz/utils";
+import { TableId, isDefined } from "@latticexyz/utils";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { useStore } from "../useStore";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -44,8 +44,23 @@ export function TransactionSummary({ hash }: Props) {
   const returnData = transactionResult.status === "fulfilled" ? transactionResult.value.result : null;
   const events =
     worldAbi && transactionReceipt.status === "fulfilled"
-      ? transactionReceipt.value.logs.map((log) => decodeEventLog({ abi: worldAbi, ...log }))
+      ? transactionReceipt.value.logs
+          .map((log) => {
+            try {
+              return decodeEventLog({ abi: worldAbi, ...log });
+            } catch (error) {
+              // viem throws if there's no ABI for event, which can happen for events defined outside of MUD (e.g. custom worlds)
+              // TODO: show these logs anyway with a note that they couldn't be parsed
+              if (error instanceof AbiEventSignatureNotFoundError) {
+                return;
+              }
+              throw error;
+            }
+          })
+          .filter(isDefined)
       : null;
+
+  const blockExplorer = publicClient?.chain.blockExplorers?.default.url;
 
   return (
     <details
@@ -67,11 +82,31 @@ export function TransactionSummary({ hash }: Props) {
           {functionData?.functionName}({functionData?.args?.map((value) => serialize(value)).join(", ")})
         </div>
         {transactionReceipt.status === "fulfilled" ? (
-          <div className="flex-none font-mono text-xs text-white/40">
+          <a
+            href={
+              blockExplorer ? `${blockExplorer}/block/${transactionReceipt.value.blockNumber.toString()}` : undefined
+            }
+            target="_blank"
+            className={twMerge(
+              "flex-none font-mono text-xs text-white/40",
+              blockExplorer ? "hover:text-white/60 hover:underline" : null
+            )}
+            title={transactionReceipt.value.blockNumber.toString()}
+          >
             block {transactionReceipt.value.blockNumber.toString()}
-          </div>
+          </a>
         ) : null}
-        <div className="flex-none font-mono text-xs text-white/40">tx {truncateHex(hash)}</div>
+        <a
+          href={blockExplorer ? `${blockExplorer}/tx/${hash}` : undefined}
+          target="_blank"
+          className={twMerge(
+            "flex-none font-mono text-xs text-white/40",
+            blockExplorer ? "hover:text-white/60 hover:underline" : null
+          )}
+          title={hash}
+        >
+          tx {truncateHex(hash)}
+        </a>
         <div className="flex-none inline-flex w-4 h-4 justify-center items-center font-bold">
           {isPending ? <PendingIcon /> : isRevert ? <>⚠</> : <>✓</>}
         </div>

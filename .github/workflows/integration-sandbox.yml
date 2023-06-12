@@ -1,11 +1,10 @@
 name: Integration sandbox
 
 on:
-## integration test runs locally but is flakey in CI, skipping for now
-# push:
-# branches
-# - main
-# pull_request:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   main:
@@ -24,6 +23,9 @@ jobs:
       - name: Install integration sandbox dependencies
         working-directory: ./integration-sandbox
         run: pnpm install
+
+      - name: Install Playwright Dependencies
+        run: pnpx playwright install-deps
 
       - name: Clean integration sandbox
         working-directory: ./integration-sandbox

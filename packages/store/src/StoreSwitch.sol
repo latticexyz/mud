@@ -53,6 +53,14 @@ library StoreSwitch {
     }
   }
 
+  function getKeySchema(bytes32 table) internal view returns (Schema keySchema) {
+    if (isDelegateCall()) {
+      keySchema = StoreCore.getKeySchema(table);
+    } else {
+      keySchema = IStore(msg.sender).getKeySchema(table);
+    }
+  }
+
   function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
     if (isDelegateCall()) {
       StoreCore.setMetadata(table, tableName, fieldNames);
