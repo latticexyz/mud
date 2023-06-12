@@ -67,7 +67,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
   function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): Entity {
     // Prevent the same actions from being scheduled multiple times
     const existingAction = world.hasEntity(actionRequest.id as Entity);
-    if (existingAction != null) {
+    if (existingAction) {
       console.warn(`Action with id ${actionRequest.id} is already requested.`);
       return actionRequest.id as Entity;
     }
