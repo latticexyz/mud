@@ -117,7 +117,7 @@ export const dynamicAbiTypeToDefaultValue = {
   string: "",
 } as const satisfies Record<DynamicAbiType, DynamicPrimitiveType>;
 
-export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType> =
+export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType = DynamicAbiType> =
   (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType];
 
 export type ArrayAbiTypeToStaticAbiType<T extends string> = T extends `${infer StaticAbiType}[]`

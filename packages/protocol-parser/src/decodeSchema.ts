@@ -11,7 +11,7 @@ export function decodeTableSchema(data: Hex): TableSchema {
     keySchema,
     valueSchema,
     isEmpty: data === "0x",
-    rawSchema: data,
+    schemaData: data,
   };
 }
 
@@ -53,6 +53,6 @@ function decodeSchema(data: Hex): Schema {
     staticFields,
     dynamicFields,
     isEmpty: data === "0x",
-    rawSchema: data,
+    schemaData: data,
   };
 }

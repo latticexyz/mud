@@ -6,8 +6,8 @@ export type Schema = Readonly<{
   staticDataLength: number;
   staticFields: StaticAbiType[];
   dynamicFields: DynamicAbiType[];
-  rawSchema: Hex;
   isEmpty: boolean;
+  schemaData: Hex;
 }>;
 
-export type TableSchema = { keySchema: Schema; valueSchema: Schema; isEmpty: boolean; rawSchema: Hex };
+export type TableSchema = { keySchema: Schema; valueSchema: Schema; isEmpty: boolean; schemaData: Hex };

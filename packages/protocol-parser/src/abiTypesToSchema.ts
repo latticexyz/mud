@@ -1,7 +1,7 @@
 import { Schema } from "./common";
 import { DynamicAbiType } from "./dynamicAbiTypes";
 import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
-import { abiTypesToRawSchema } from "./abiTypesToRawSchema";
+import { abiTypesToSchemaData } from "./abiTypesToSchemaData";
 
 export function abiTypesToSchema(staticFields: StaticAbiType[], dynamicFields: DynamicAbiType[] = []): Schema {
   const staticDataLength = staticFields.reduce((acc, fieldType) => acc + staticAbiTypeToByteLength[fieldType], 0);
@@ -10,6 +10,6 @@ export function abiTypesToSchema(staticFields: StaticAbiType[], dynamicFields: D
     staticFields,
     dynamicFields,
     isEmpty: false,
-    rawSchema: abiTypesToRawSchema(staticFields, dynamicFields),
+    schemaData: abiTypesToSchemaData(staticFields, dynamicFields),
   };
 }

@@ -113,7 +113,7 @@ export const staticAbiTypeToDefaultValue = {
   address: "0x0000000000000000000000000000000000000000",
 } as const satisfies Record<StaticAbiType, StaticPrimitiveType>;
 
-export type StaticAbiTypeToPrimitiveType<TStaticAbiType extends StaticAbiType> =
+export type StaticAbiTypeToPrimitiveType<TStaticAbiType extends StaticAbiType = StaticAbiType> =
   (typeof staticAbiTypeToDefaultValue)[TStaticAbiType];
 
 export const staticAbiTypeToByteLength = {
