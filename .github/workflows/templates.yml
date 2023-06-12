@@ -7,7 +7,8 @@ on:
   pull_request:
 
 env:
-  # Attempt to fix OOM errors with sourcemaps in phaser client
+  # Fix OOM errors with sourcemaps in phaser client
+  # https://github.com/latticexyz/mud/issues/1019
   NODE_OPTIONS: --max-old-space-size=8192
 
 jobs:
