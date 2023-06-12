@@ -49,7 +49,7 @@
     "ethers": "^5.7.2",
     "mobx": "^6.7.0",
     "react": "^18.2.0",
-    "rxjs": "^7.5.5",
+    "rxjs": "7.8.1",
     "viem": "^0.3.18"
   },
   "devDependencies": {
