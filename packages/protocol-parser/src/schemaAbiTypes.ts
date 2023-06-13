@@ -1,7 +1,7 @@
 import { AbiType } from "abitype";
 import { TupleSplit } from "./utils";
 
-// Keep the order of this array in sync with SchemaType.sol enum
+// Keep this array in sync with SchemaType.sol enum
 
 export const schemaAbiTypes = [
   "uint8",
