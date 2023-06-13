@@ -27,8 +27,8 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "abitype": "^0.8.7",
-    "viem": "^0.3.5"
+    "abitype": "0.8.7",
+    "viem": "1.0.6"
   },
   "devDependencies": {
     "tsup": "^6.7.0",

@@ -564,11 +564,11 @@ importers:
         specifier: workspace:*
         version: link:../store
       abitype:
-        specifier: ^0.8.7
+        specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
       viem:
-        specifier: ^0.3.5
-        version: 0.3.18(typescript@5.0.4)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.0.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -4121,18 +4121,6 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
-    dev: false
-
-  /abitype@0.8.7(typescript@5.0.4):
-    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.0.4
     dev: false
 
   /abitype@0.8.7(typescript@5.0.4):
