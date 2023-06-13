@@ -549,6 +549,34 @@ importers:
         specifier: ^3.13.6
         version: 3.14.0(typedoc@0.23.21)
 
+  packages/protocol-parser:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      abitype:
+        specifier: 0.8.7
+        version: 0.8.7(typescript@5.0.4)
+      viem:
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.0.4)
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+      vitest:
+        specifier: 0.31.4
+        version: 0.31.4
+
   packages/react:
     dependencies:
       '@latticexyz/recs':
