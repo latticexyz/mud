@@ -4,7 +4,7 @@ ffi = false
 fuzz_runs = 256
 optimizer = true
 optimizer_runs = 3000
-verbosity = 1
+verbosity = 2
 src = "src"
 test = "test"
 out = "out"
@@ -17,6 +17,3 @@ fs_permissions = [{ access = "read", path = "./"}]
 
 [profile.lattice-testnet]
 eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
-
-[profile.hackathon-testnet]
-eth_rpc_url = "https://lattice-goerli-sequencer.optimism.io"

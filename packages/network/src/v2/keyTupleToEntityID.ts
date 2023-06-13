@@ -1,5 +1,5 @@
 import { Entity } from "@latticexyz/recs";
-import { normalizeEntityID } from "../utils";
+import { toHex, pad, isHex } from "viem";
 import { SingletonID } from "../workers";
 
 // TODO: revisit key tuple format?
@@ -8,5 +8,6 @@ export function keyTupleToEntityID(keyTuple: any[]): Entity {
   if (keyTuple.length === 0) {
     return SingletonID;
   }
-  return normalizeEntityID(keyTuple.join(":"));
+  // TODO: this should probably be padded based on key schema (uint vs bytes32 will have different leading/trailing zeroes)
+  return keyTuple.map((key) => (isHex(key) ? pad(key, { size: 32 }) : toHex(key, { size: 32 }))).join(":") as Entity;
 }

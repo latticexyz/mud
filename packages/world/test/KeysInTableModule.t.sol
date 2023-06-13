@@ -29,6 +29,8 @@ contract KeysInTableModuleTest is Test {
   bytes32[] keyTuple1;
   bytes32 key2 = keccak256("test2");
   bytes32[] keyTuple2;
+  bytes32 key3 = keccak256("test3");
+  bytes32[] keyTuple3;
 
   Schema tableSchema;
   Schema tableKeySchema;
@@ -55,6 +57,8 @@ contract KeysInTableModuleTest is Test {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
+    keyTuple3 = new bytes32[](1);
+    keyTuple3[0] = key3;
   }
 
   function _installKeysInTableModule() internal {
@@ -342,5 +346,26 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable.length, 2);
     assertEq(keysInTable[0][0], key1);
     assertEq(keysInTable[1][0], key2);
+  }
+
+  function testDeleteFromMiddle(uint256 value) public {
+    _installKeysInTableModule();
+
+    // Add 3 values
+    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value));
+    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value));
+    world.setRecord(namespace, name, keyTuple3, abi.encodePacked(value));
+
+    // Remove 2, starting from the middle
+    // This tests that KeysInTable correctly tracks swaps indexes
+    world.deleteRecord(namespace, name, keyTuple2);
+    world.deleteRecord(namespace, name, keyTuple3);
+
+    // Get the list of keys in the target table
+    bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0][0], key1);
   }
 }

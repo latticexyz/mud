@@ -15,7 +15,7 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key has not yet been set in the table...
     if (!UsedKeysIndex.getHas(tableId, keysHash)) {
-      uint256 length = KeysInTable.lengthKeys0(tableId);
+      uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
       // Push the key to the list of keys in this table
       if (key.length > 0) {
@@ -35,7 +35,7 @@ contract KeysInTableHook is IStoreHook {
       }
 
       // Update the index to avoid duplicating this key in the array
-      UsedKeysIndex.set(tableId, keysHash, true, uint32(length));
+      UsedKeysIndex.set(tableId, keysHash, true, length);
     }
   }
 
@@ -51,21 +51,24 @@ contract KeysInTableHook is IStoreHook {
 
   function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
     bytes32 keysHash = keccak256(abi.encode(key));
-    (bool has, uint32 index) = UsedKeysIndex.get(tableId, keysHash);
+    (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
     // If the key was part of the table...
     if (has) {
       // Delete the index as the key is not in the table
       UsedKeysIndex.deleteRecord(tableId, keysHash);
 
-      uint256 length = KeysInTable.lengthKeys0(tableId);
+      uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
       if (length == 1) {
         // Delete the list of keys in this table
         KeysInTable.deleteRecord(tableId);
       } else {
         if (key.length > 0) {
+          bytes32[] memory lastKeyTuple = new bytes32[](key.length);
+
           bytes32 lastKey = KeysInTable.getItemKeys0(tableId, length - 1);
+          lastKeyTuple[0] = lastKey;
 
           // Remove the key from the list of keys in this table
           KeysInTable.updateKeys0(tableId, index, lastKey);
@@ -73,6 +76,7 @@ contract KeysInTableHook is IStoreHook {
 
           if (key.length > 1) {
             lastKey = KeysInTable.getItemKeys1(tableId, length - 1);
+            lastKeyTuple[1] = lastKey;
 
             // Remove the key from the list of keys in this table
             KeysInTable.updateKeys1(tableId, index, lastKey);
@@ -80,13 +84,15 @@ contract KeysInTableHook is IStoreHook {
 
             if (key.length > 2) {
               lastKey = KeysInTable.getItemKeys2(tableId, length - 1);
+              lastKeyTuple[2] = lastKey;
 
-              // Remove the key from the list of keys in this table
+              // Swap and pop the key from the list of keys in this table
               KeysInTable.updateKeys2(tableId, index, lastKey);
               KeysInTable.popKeys2(tableId);
 
               if (key.length > 3) {
                 lastKey = KeysInTable.getItemKeys3(tableId, length - 1);
+                lastKeyTuple[3] = lastKey;
 
                 // Remove the key from the list of keys in this table
                 KeysInTable.updateKeys3(tableId, index, lastKey);
@@ -94,6 +100,7 @@ contract KeysInTableHook is IStoreHook {
 
                 if (key.length > 4) {
                   lastKey = KeysInTable.getItemKeys4(tableId, length - 1);
+                  lastKeyTuple[4] = lastKey;
 
                   // Remove the key from the list of keys in this table
                   KeysInTable.updateKeys4(tableId, index, lastKey);
@@ -102,6 +109,10 @@ contract KeysInTableHook is IStoreHook {
               }
             }
           }
+
+          // Update the index of lastKey after swapping it with the deleted key
+          bytes32 lastKeyHash = keccak256(abi.encode(lastKeyTuple));
+          UsedKeysIndex.setIndex(tableId, lastKeyHash, index);
         }
       }
     }
