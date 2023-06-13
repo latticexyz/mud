@@ -8,7 +8,12 @@ verbosity = 2
 src = "src"
 test = "test"
 out = "out"
-allow_paths = ["../../node_modules", "../../../../packages"]
+allow_paths = [
+  # pnpm symlinks to the project root's node_modules
+  "../../node_modules",
+  # we're also using linked mud packages from the monorepo
+  "../../../../packages"
+]
 extra_output_files = [
   "abi",
   "evm.bytecode"

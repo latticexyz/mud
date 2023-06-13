@@ -76,7 +76,8 @@ library StoreCore {
    */
   function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
     keySchema = StoreCoreInternal._getKeySchema(tableId);
-    if (keySchema.isEmpty()) {
+    // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
+    if (!hasTable(tableId)) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
