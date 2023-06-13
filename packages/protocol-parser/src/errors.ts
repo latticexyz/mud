@@ -16,6 +16,13 @@ export class InvalidHexLengthForSchemaError extends MUDError {
   }
 }
 
+export class InvalidHexLengthForPackedCounterError extends MUDError {
+  override name = "InvalidHexLengthForPackedCounterError";
+  constructor(value: Hex) {
+    super(`Hex value "${value}" has length of ${value.length - 2}, but expected length of 64 for a packed counter.`);
+  }
+}
+
 export class InvalidHexLengthForStaticFieldError extends MUDError {
   override name = "InvalidHexLengthForStaticFieldError";
   constructor(abiType: StaticAbiType, value: Hex) {
