@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { hexToSchema } from "./hexToSchema";
-import { SchemaStaticLengthMismatchError } from "./errors";
 
 describe("hexToSchema", () => {
   it("decodes schema hex data to schema", () => {
@@ -25,6 +24,12 @@ describe("hexToSchema", () => {
       isEmpty: false,
       schemaData: "0x002402045f2381c3c4c500000000000000000000000000000000000000000000",
     });
+  });
+
+  it("throws if schema hex data is not bytes32", () => {
+    expect(() => hexToSchema("0x002502045f2381c3c4c5")).toThrow(
+      'Hex value "0x002502045f2381c3c4c5" has length of 20, but expected length of 64 for a schema.'
+    );
   });
 
   it("throws if schema static field lengths do not match", () => {
