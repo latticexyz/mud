@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from "vitest";
-import { DynamicAbiTypeToPrimitiveType } from "./dynamicAbiTypes";
 import { Hex } from "viem";
+import { DynamicAbiTypeToPrimitiveType } from "./dynamicAbiTypes";
 
 describe("DynamicAbiTypeToPrimitiveType", () => {
   it("maps uint8 array to number array", () => {

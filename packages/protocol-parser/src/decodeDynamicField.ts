@@ -1,8 +1,11 @@
 import { Hex, hexToString, sliceHex } from "viem";
-import { DynamicAbiType } from "@latticexyz/schema-type";
-import { DynamicAbiTypeToPrimitiveType, arrayAbiTypeToStaticAbiType } from "./dynamicAbiTypes";
-import { assertExhaustive } from "./assertExhaustive";
-import { staticAbiTypeToByteLength } from "./staticAbiTypes";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import {
+  DynamicAbiType,
+  DynamicAbiTypeToPrimitiveType,
+  arrayAbiTypeToStaticAbiType,
+  staticAbiTypeToByteLength,
+} from "@latticexyz/schema-type";
 import { decodeStaticField } from "./decodeStaticField";
 import { InvalidHexLengthError, InvalidHexLengthForArrayFieldError } from "./errors";
 

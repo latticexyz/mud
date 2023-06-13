@@ -1,7 +1,7 @@
 import { Hex } from "viem";
-import { StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
+import { StaticAbiType, DynamicAbiType } from "./schemaAbiTypes";
 
-// Variable-length ABI types, where their lengths are defined by a PackedCounter
+// Variable-length ABI types, where their lengths are encoded by a PackedCounter within the record
 
 export type DynamicPrimitiveType = number[] | bigint[] | Hex[] | boolean[] | Hex | string;
 

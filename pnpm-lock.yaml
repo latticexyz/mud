@@ -680,6 +680,9 @@ importers:
       abitype:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
+      viem:
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.0.4)
     devDependencies:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084

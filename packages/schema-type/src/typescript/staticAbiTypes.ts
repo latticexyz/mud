@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { StaticAbiType } from "@latticexyz/schema-type";
+import { StaticAbiType } from "./schemaAbiTypes";
 
 // Fixed-length ABI types
 

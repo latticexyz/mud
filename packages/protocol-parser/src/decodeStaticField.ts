@@ -1,7 +1,11 @@
 import { Hex, getAddress, hexToBigInt, hexToBool } from "viem";
-import { StaticAbiType } from "@latticexyz/schema-type";
-import { StaticAbiTypeToPrimitiveType, staticAbiTypeToByteLength, staticAbiTypeToDefaultValue } from "./staticAbiTypes";
-import { assertExhaustive } from "./assertExhaustive";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import {
+  StaticAbiType,
+  StaticAbiTypeToPrimitiveType,
+  staticAbiTypeToByteLength,
+  staticAbiTypeToDefaultValue,
+} from "@latticexyz/schema-type";
 import { InvalidHexLengthError, InvalidHexLengthForStaticFieldError } from "./errors";
 
 export function decodeStaticField<
