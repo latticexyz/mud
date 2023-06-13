@@ -10,9 +10,19 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/typescript/index.js"
+    ".": "./dist/typescript/index.js",
+    "./deprecated": "./dist/typescript/deprecated/index.js"
   },
-  "types": "src/typescript/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/typescript/index.ts"
+      ],
+      "deprecated": [
+        "./src/typescript/deprecated/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
