@@ -25,7 +25,7 @@ jobs:
         run: pnpm install
 
       - name: Install Playwright Dependencies
-        run: pnpx playwright install-deps
+        run: pnpx playwright install --with-deps chromium
 
       - name: Clean integration sandbox
         working-directory: ./integration-sandbox

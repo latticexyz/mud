@@ -6,8 +6,10 @@ export function decodeValueJSON(bytes: Uint8Array): any {
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
-// TODO: figure out how to use with SchemaTypeToPrimitiveType<T> return type to ensure correctness here
-export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Array) {
+export function decodeValue<T extends SchemaType, P extends SchemaTypeToPrimitiveType<T>>(
+  schemaType: T,
+  bytes: Uint8Array
+): P {
   switch (schemaType) {
     case SchemaType.BOOL:
     case SchemaType.UINT8:
@@ -107,8 +109,8 @@ export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Arr
     case SchemaType.BYTES31:
     case SchemaType.BYTES32:
     case SchemaType.ADDRESS:
-      return decodeStaticField(schemaType, bytes, 0) as SchemaTypeToPrimitiveType<T>;
+      return decodeStaticField(schemaType, bytes, 0) as P;
     default:
-      return decodeDynamicField(schemaType, bytes) as SchemaTypeToPrimitiveType<T>;
+      return decodeDynamicField(schemaType, bytes) as P;
   }
 }
