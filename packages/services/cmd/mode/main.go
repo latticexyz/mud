@@ -12,7 +12,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/ingress"
 	"latticexyz/mud/packages/services/pkg/mode/query"
 	"latticexyz/mud/packages/services/pkg/mode/read"
-	"latticexyz/mud/packages/services/pkg/mode/schema"
+	"latticexyz/mud/packages/services/pkg/mode/tablestore"
 	"latticexyz/mud/packages/services/pkg/mode/write"
 
 	_ "github.com/lib/pq"
@@ -24,18 +24,23 @@ var (
 	configFile = flag.String("config", "", "path to config file")
 
 	// Alternatively, the configuration can be specified via command line flags.
-	chainNames          = flag.String("chain-names", "", "comma separated list of chain names")
-	chainIds            = flag.String("chain-ids", "", "comma separated list of chain ids")
-	chainRpcsHttp       = flag.String("chain-rpcs-http", "", "comma separated list of chain rpcs (http)")
-	chainRpcsWs         = flag.String("chain-rpcs-ws", "", "comma separated list of chain rpcs (ws)")
-	dbDsn               = flag.String("db-dsn", "", "database dsn")
-	dbDsnGorm           = flag.String("db-dsn-gorm", "", "database dsn for gorm")
-	dbWipe              = flag.Bool("db-wipe", false, "wipe database on launch")
+	// Chain flags.
+	chainNames    = flag.String("chain-names", "", "comma separated list of chain names")
+	chainIds      = flag.String("chain-ids", "", "comma separated list of chain ids")
+	chainRpcsHttp = flag.String("chain-rpcs-http", "", "comma separated list of chain rpcs (http)")
+	chainRpcsWs   = flag.String("chain-rpcs-ws", "", "comma separated list of chain rpcs (ws)")
+	// Database flags.
+	dbName = flag.String("db-name", "", "database name")
+	dbHost = flag.String("db-host", "", "database host")
+	dbPort = flag.Uint64("db-port", 5433, "database port")
+	dbWipe = flag.Bool("db-wipe", false, "database wipe on launch")
+	// Sync flags.
 	syncEnabled         = flag.Bool("sync-enabled", false, "enable syncing")
 	syncStartBlock      = flag.Uint64("sync-start-block", 0, "start block for syncing")
 	syncBlockBatchCount = flag.Uint64("sync-block-batch-count", 0, "number of blocks to sync in a batch")
-	portQl              = flag.Int("port-ql", 0, "port for query layer")
-	portMetrics         = flag.Int("port-metrics", 0, "port for metrics server")
+	// Ports.
+	portQl      = flag.Int("port-ql", 0, "port for query layer")
+	portMetrics = flag.Int("port-metrics", 0, "port for metrics server")
 )
 
 func main() {
@@ -52,7 +57,7 @@ func main() {
 	var err error
 	if *configFile != "" {
 		// Load config from file.
-		config, err = mode_config.FromFile(*configFile, logger)
+		config, err = mode_config.FromFile(*configFile)
 	} else {
 		// Load config from command line flags.
 		config, err = mode_config.FromFlags(
@@ -60,8 +65,9 @@ func main() {
 			*chainIds,
 			*chainRpcsHttp,
 			*chainRpcsWs,
-			*dbDsn,
-			*dbDsnGorm,
+			*dbName,
+			*dbHost,
+			*dbPort,
 			*dbWipe,
 			*syncEnabled,
 			*syncStartBlock,
@@ -74,25 +80,25 @@ func main() {
 		logger.Fatal("failed to load config", zap.Error(err))
 	}
 
-	// Run MODE metrics server.
+	// Run metrics server.
 	go grpc.StartMetricsServer(config.Metrics.Port, logger)
 
-	// Run the MODE DatabaseLayer.
-	dl := db.NewDatabaseLayer(context.Background(), config.Db.Dsn, config.Db.DsnGorm, config.Db.Wipe, logger)
+	// Run the DatabaseLayer.
+	dl := db.NewDatabaseLayer(context.Background(), &config.DB, logger)
 	go dl.RunDatabaseLayer(context.Background())
 
-	// Create a MODE WriteLayer for modifying the database.
+	// Create a WriteLayer for modifying the database.
 	wl := write.New(dl, logger)
 
-	// Create a MODE ReadLayer for reading from the database.
+	// Create a ReadLayer for reading from the database.
 	rl := read.New(dl, logger)
 
-	// Create a SchemaCache for storing + retrieving table schemas.
-	schemaCache := schema.NewCache(dl, config.Chains, logger)
+	// Create a store for storing + retrieving tables.
+	schemaCache := tablestore.NewStore(dl, config.Chains, logger)
 
-	// Run the MODE IngressLayers for every chain that is being indexed by MODE.
+	// Run the IngressLayers for every chain that is being indexed by MODE.
 	for _, chain := range config.Chains {
-		il := ingress.New(&chain, &config.Sync, wl, rl, schemaCache, logger)
+		il := ingress.New(chain, config.Sync, wl, rl, schemaCache, logger)
 
 		// If sync is enabled, start syncing from the specified start block.
 		if config.Sync.Enabled {
@@ -102,7 +108,7 @@ func main() {
 		go il.Run()
 	}
 
-	// Run the MODE QueryLayer.
-	ql := query.NewQueryLayer(dl, rl, schemaCache, logger)
-	query.RunQueryLayer(ql, config.Ql.Port)
+	// Run the QueryLayer.
+	ql := query.New(dl, rl, schemaCache, logger)
+	query.Run(ql, config.Ql.Port)
 }

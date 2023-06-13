@@ -1,8 +1,6 @@
 package mode
 
 import (
-	"latticexyz/mud/packages/services/pkg/mode/storecore"
-
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
@@ -54,18 +52,18 @@ func KeyToString(keys [][32]byte) []string {
 // It returns a map of filter objects, one for each key name in the tableSchema.
 //
 // Parameters:
-//   - tableSchema (*TableSchema): A pointer to the schema of the table containing the keys.
 //   - key ([][32]byte): The byte array keys to convert.
+//   - tableSchema (*TableSchema): A pointer to the schema of the table containing the keys.
 //
 // Returns:
 //   - (map[string]interface{}): A map of filter objects.
-func KeyToFilter(tableSchema *TableSchema, key [][32]byte) map[string]interface{} {
+func (table *Table) KeyToFilter(key [][32]byte) map[string]interface{} {
 	// First decode the key data so that it's easier to work with.
-	decodedKeyData := storecore.DecodeKeyData(key, *tableSchema.StoreCoreSchemaTypeKV.Key)
+	decodedKeyData := table.StoreCoreKeySchema.DecodeKeyData(key)
 
 	filter := make(map[string]interface{})
 
-	for idx, key_name := range tableSchema.KeyNames {
+	for idx, key_name := range table.KeyNames {
 		filter[key_name] = decodedKeyData.GetData(idx)
 	}
 	return filter

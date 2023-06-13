@@ -6,46 +6,46 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ops/stream"
 	"latticexyz/mud/packages/services/pkg/mode/read"
-	"latticexyz/mud/packages/services/pkg/mode/schema"
+	"latticexyz/mud/packages/services/pkg/mode/tablestore"
 
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
 	"go.uber.org/zap"
 )
 
-// NewQueryLayer creates a new QueryLayer instance.
+// New creates a new query Layer instance.
 //
 // Parameters:
 // - dl (*db.DatabaseLayer): The database layer to use for interacting with the database.
-// - rl (*read.ReadLayer): The read layer to use for retrieving data from the database.
-// - schemaCache (*schema.SchemaCache): The schema cache to use for retrieving table schemas.
+// - rl (*read.Layer): The read Layer to use for retrieving data from the database.
+// - tableStore (*tablestore.Stire): The table Store to use for retrieving tables.
 // - logger (*zap.Logger): The logger to use for logging.
 //
 // Returns:
-// - *QueryLayer: A new instance of QueryLayer.
-func NewQueryLayer(
+// - *Layer: A new instance of query Layer.
+func New(
 	dl *db.DatabaseLayer,
-	rl *read.ReadLayer,
-	schemaCache *schema.SchemaCache,
+	rl *read.Layer,
+	tableStore *tablestore.Store,
 	logger *zap.Logger,
-) *QueryLayer {
-	return &QueryLayer{
-		dl:          dl,
-		rl:          rl,
-		schemaCache: schemaCache,
-		logger:      logger,
+) *Layer {
+	return &Layer{
+		dl:         dl,
+		rl:         rl,
+		tableStore: tableStore,
+		logger:     logger,
 	}
 }
 
-// RunQueryLayer starts the gRPC and HTTP servers for the QueryLayer service.
+// Run starts the gRPC and HTTP servers for the QueryLayer service.
 //
 // Parameters:
 // - ql (*QueryLayer): The QueryLayer instance to run.
-// - qlGrpcPort (int): The port number to use for the gRPC server.
+// - qlGRPCPort (int): The port number to use for the gRPC server.
 //
 // Returns:
 // - void.
-func RunQueryLayer(ql *QueryLayer, qlGrpcPort int) {
+func Run(ql *Layer, qlGRPCPort int) {
 	// Create gRPC server.
 	grpcServer := grpc.CreateGrpcServer()
 
@@ -53,30 +53,33 @@ func RunQueryLayer(ql *QueryLayer, qlGrpcPort int) {
 	pb_mode.RegisterQueryLayerServer(grpcServer, ql)
 
 	// Start the RPC server at PORT.
-	go grpc.StartRPCServer(grpcServer, qlGrpcPort, ql.logger)
+	go grpc.StartRPCServer(grpcServer, qlGRPCPort, ql.logger)
 
 	// Start the HTTP server at PORT+1.
-	grpc.StartHTTPServer(grpc.CreateWebGrpcServer(grpcServer), qlGrpcPort+1, ql.logger)
+	grpc.StartHTTPServer(grpc.CreateWebGrpcServer(grpcServer), qlGRPCPort+1, ql.logger)
 }
 
 // NewBufferedEvents creates a new instance of BufferedEvents, which is used to buffer events for streaming.
 //
 // Parameters:
-// - streamAllBuilder (*stream.StreamAllBuilder): The StreamAllBuilder instance that is used to decide whether or not a table should be streamed.
+// - streamAllBuilder (*stream.StreamAllBuilder): The StreamAllBuilder instance that is used to decide whether or not
+// a table should be streamed.
 //
 // Returns:
-// - (*BufferedEvents): A new instance of BufferedEvents with ChainTables, WorldTables, ChainTableNames, and WorldTableNames initialized to empty slices.
-func NewBufferedEvents(streamAllBuilder *stream.StreamAllBuilder) *BufferedEvents {
+// - (*BufferedEvents): A new instance of BufferedEvents with ChainTables, WorldTables, ChainTableNames, and
+// WorldTableNames initialized to empty slices.
+func NewBufferedEvents(streamAllBuilder *stream.Builder) *BufferedEvents {
 	return &BufferedEvents{
 		StreamAllBuilder: streamAllBuilder,
-		ChainTables:      make([]*pb_mode.GenericTable, 0),
-		WorldTables:      make([]*pb_mode.GenericTable, 0),
+		ChainTableData:   make([]*pb_mode.TableData, 0),
+		WorldTableData:   make([]*pb_mode.TableData, 0),
 		ChainTableNames:  make([]string, 0),
 		WorldTableNames:  make([]string, 0),
 	}
 }
 
-// AddChainTable adds a chain table to the buffered events if the corresponding table schema should be streamed according to
+// AddChainTable adds a chain table to the buffered events if the corresponding table schema should be streamed
+// according to
 // the StreamAllBuilder.
 //
 // Parameters:
@@ -85,26 +88,27 @@ func NewBufferedEvents(streamAllBuilder *stream.StreamAllBuilder) *BufferedEvent
 //
 // Returns:
 // - void.
-func (buffer *BufferedEvents) AddChainTable(table *pb_mode.GenericTable, tableSchema *mode.TableSchema) {
+func (buffer *BufferedEvents) AddChainTable(tableData *pb_mode.TableData, table *mode.Table) {
 	// Use the StreamAllBuilder to decide if table is to be streamed.
-	if buffer.StreamAllBuilder.ShouldStream(tableSchema) {
-		buffer.ChainTables = append(buffer.ChainTables, table)
-		buffer.ChainTableNames = append(buffer.ChainTableNames, tableSchema.TableName)
+	if buffer.StreamAllBuilder.ShouldStream(table) {
+		buffer.ChainTableData = append(buffer.ChainTableData, tableData)
+		buffer.ChainTableNames = append(buffer.ChainTableNames, table.Name)
 	}
 }
 
-// AddWorldTable adds a world table to the buffer, to be included in the streamed response if its table schema should be streamed.
+// AddWorldTable adds a world table to the buffer, to be included in the streamed response if its table schema should
+// be streamed.
 //
 // Parameters:
 // - table (*pb_mode.GenericTable): The world table to add to the buffer.
-// - tableSchema (*mode.TableSchema): The schema of the world table being added.
+// - tableSchema (*mode.Table): The schema of the world table being added.
 //
 // Returns:
 // - void.
-func (buffer *BufferedEvents) AddWorldTable(table *pb_mode.GenericTable, tableSchema *mode.TableSchema) {
-	if buffer.StreamAllBuilder.ShouldStream(tableSchema) {
-		buffer.WorldTables = append(buffer.WorldTables, table)
-		buffer.WorldTableNames = append(buffer.WorldTableNames, tableSchema.TableName)
+func (buffer *BufferedEvents) AddWorldTable(tableData *pb_mode.TableData, table *mode.Table) {
+	if buffer.StreamAllBuilder.ShouldStream(table) {
+		buffer.WorldTableData = append(buffer.WorldTableData, tableData)
+		buffer.WorldTableNames = append(buffer.WorldTableNames, table.Name)
 	}
 }
 
@@ -116,8 +120,8 @@ func (buffer *BufferedEvents) AddWorldTable(table *pb_mode.GenericTable, tableSc
 // Returns:
 // - void.
 func (buffer *BufferedEvents) Clear() {
-	buffer.ChainTables = make([]*pb_mode.GenericTable, 0)
-	buffer.WorldTables = make([]*pb_mode.GenericTable, 0)
+	buffer.ChainTableData = make([]*pb_mode.TableData, 0)
+	buffer.WorldTableData = make([]*pb_mode.TableData, 0)
 	buffer.ChainTableNames = make([]string, 0)
 	buffer.WorldTableNames = make([]string, 0)
 }

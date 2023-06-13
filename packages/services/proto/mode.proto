@@ -14,8 +14,8 @@ message Row {
     repeated bytes values = 2;
 }
 
-// A GenericTable is a representation of a table.
-message GenericTable {
+// TableData contains a representation of a table.
+message TableData {
     repeated string cols = 1;
     repeated Row rows = 2;
     repeated string types = 3; 
@@ -28,12 +28,12 @@ message GenericTable {
 ///////////////////////////////////////////////////////////////////////
 
 message QueryLayerResponse {
-    map<string, GenericTable> tables = 1;
+    map<string, TableData> tables = 1;
 }
 
 message QueryLayerStateResponse {
-    map<string, GenericTable> chainTables = 1;
-    map<string, GenericTable> worldTables = 2;
+    map<string, TableData> chainTables = 1;
+    map<string, TableData> worldTables = 2;
 }
 
 message QueryLayerStateStreamResponse {

@@ -12,8 +12,8 @@ import (
 //
 // Returns:
 // - (*mode.QueryLayerResponse): A QueryLayerResponse object containing the input table.
-func QueryLayerResponseFromTable(table *mode.GenericTable, tableName string) *mode.QueryLayerResponse {
-	tables := map[string]*mode.GenericTable{
+func ResponseFromTable(table *mode.TableData, tableName string) *mode.QueryLayerResponse {
+	tables := map[string]*mode.TableData{
 		tableName: table,
 	}
 	return &mode.QueryLayerResponse{
@@ -29,8 +29,8 @@ func QueryLayerResponseFromTable(table *mode.GenericTable, tableName string) *mo
 //
 // Returns:
 // - (*mode.QueryLayerResponse): The QueryLayerResponse containing the tables.
-func QueryLayerResponseFromTables(tables []*mode.GenericTable, tableNames []string) *mode.QueryLayerResponse {
-	tableMap := make(map[string]*mode.GenericTable)
+func ResponseFromTables(tables []*mode.TableData, tableNames []string) *mode.QueryLayerResponse {
+	tableMap := make(map[string]*mode.TableData)
 	for i := range tables {
 		tableMap[tableNames[i]] = tables[i]
 	}
@@ -47,19 +47,23 @@ func QueryLayerResponseFromTables(tables []*mode.GenericTable, tableNames []stri
 // - isChainTable (bool): A boolean indicating whether the table is a chain table or a world table.
 //
 // Returns:
-// - (*mode.QueryLayerStateResponse): A pointer to the newly created QueryLayerStateResponse struct with the single table.
-func QueryLayerStateResponseFromTable(table *mode.GenericTable, tableName string, isChainTable bool) *mode.QueryLayerStateResponse {
-	tables := map[string]*mode.GenericTable{
-		tableName: table,
+// - (*mode.QueryLayerStateResponse): A pointer to the newly created QueryLayerStateResponse struct with the single
+// table.
+func StateResponseFromTable(
+	tableData *mode.TableData,
+	tableName string,
+	isChainTable bool,
+) *mode.QueryLayerStateResponse {
+	tables := map[string]*mode.TableData{
+		tableName: tableData,
 	}
 	if isChainTable {
 		return &mode.QueryLayerStateResponse{
 			ChainTables: tables,
 		}
-	} else {
-		return &mode.QueryLayerStateResponse{
-			WorldTables: tables,
-		}
+	}
+	return &mode.QueryLayerStateResponse{
+		WorldTables: tables,
 	}
 }
 
@@ -73,15 +77,20 @@ func QueryLayerStateResponseFromTable(table *mode.GenericTable, tableName string
 //
 // Returns:
 // - (*mode.QueryLayerStateResponse): The QueryLayerStateResponse object containing the provided chain and world tables.
-func QueryLayerStateResponseFromTables(chainTables []*mode.GenericTable, worldTables []*mode.GenericTable, chainTableNames []string, worldTableNames []string) *mode.QueryLayerStateResponse {
-	chainTableMap := make(map[string]*mode.GenericTable)
-	for i := range chainTables {
-		chainTableMap[chainTableNames[i]] = chainTables[i]
+func StateResponseFromTables(
+	chainTableData []*mode.TableData,
+	worldTableData []*mode.TableData,
+	chainTableNames []string,
+	worldTableNames []string,
+) *mode.QueryLayerStateResponse {
+	chainTableMap := make(map[string]*mode.TableData)
+	for i := range chainTableData {
+		chainTableMap[chainTableNames[i]] = chainTableData[i]
 	}
 
-	worldTableMap := make(map[string]*mode.GenericTable)
-	for i := range worldTables {
-		worldTableMap[worldTableNames[i]] = worldTables[i]
+	worldTableMap := make(map[string]*mode.TableData)
+	for i := range worldTableData {
+		worldTableMap[worldTableNames[i]] = worldTableData[i]
 	}
 
 	return &mode.QueryLayerStateResponse{
@@ -90,7 +99,7 @@ func QueryLayerStateResponseFromTables(chainTables []*mode.GenericTable, worldTa
 	}
 }
 
-// QueryLayerStateStreamResponseFromTables generates a QueryLayerStateStreamResponse from BufferedEvents.
+// StateStreamResponseFromTables generates a QueryLayerStateStreamResponse from BufferedEvents.
 //
 // Parameters:
 // - inserted (*BufferedEvents): The inserted BufferedEvents to create a QueryLayerStateResponse from.
@@ -98,12 +107,32 @@ func QueryLayerStateResponseFromTables(chainTables []*mode.GenericTable, worldTa
 // - deleted (*BufferedEvents): The deleted BufferedEvents to create a QueryLayerStateResponse from.
 //
 // Returns:
-// - (*mode.QueryLayerStateStreamResponse): A QueryLayerStateStreamResponse object containing the created QueryLayerStateResponse objects.
+// - (*mode.QueryLayerStateStreamResponse): A QueryLayerStateStreamResponse object containing the created
+// QueryLayerStateResponse objects.
 
-func QueryLayerStateStreamResponseFromTables(inserted *BufferedEvents, updated *BufferedEvents, deleted *BufferedEvents) *mode.QueryLayerStateStreamResponse {
+func StateStreamResponseFromTables(
+	inserted *BufferedEvents,
+	updated *BufferedEvents,
+	deleted *BufferedEvents,
+) *mode.QueryLayerStateStreamResponse {
 	return &mode.QueryLayerStateStreamResponse{
-		Inserted: QueryLayerStateResponseFromTables(inserted.ChainTables, inserted.WorldTables, inserted.ChainTableNames, inserted.WorldTableNames),
-		Updated:  QueryLayerStateResponseFromTables(updated.ChainTables, updated.WorldTables, updated.ChainTableNames, updated.WorldTableNames),
-		Deleted:  QueryLayerStateResponseFromTables(deleted.ChainTables, deleted.WorldTables, deleted.ChainTableNames, deleted.WorldTableNames),
+		Inserted: StateResponseFromTables(
+			inserted.ChainTableData,
+			inserted.WorldTableData,
+			inserted.ChainTableNames,
+			inserted.WorldTableNames,
+		),
+		Updated: StateResponseFromTables(
+			updated.ChainTableData,
+			updated.WorldTableData,
+			updated.ChainTableNames,
+			updated.WorldTableNames,
+		),
+		Deleted: StateResponseFromTables(
+			deleted.ChainTableData,
+			deleted.WorldTableData,
+			deleted.ChainTableNames,
+			deleted.WorldTableNames,
+		),
 	}
 }

@@ -24,14 +24,14 @@ import (
 //   - (colNames []string): A slice of column names.
 //   - (row []interface{}): A slice of row interfaces.
 //   - (rowInterface []interface{}): A slice of row interfaces.
-func PrepareForScan(rows *sqlx.Rows) (colNames []string, row []interface{}, rowInterface []interface{}) {
-	colNames, _ = rows.Columns()
-	row = make([]interface{}, len(colNames))
-	rowInterface = make([]interface{}, len(colNames))
+func PrepareForScan(rows *sqlx.Rows) ([]string, []interface{}, []interface{}) {
+	colNames, _ := rows.Columns()
+	row := make([]interface{}, len(colNames))
+	rowInterface := make([]interface{}, len(colNames))
 	for i := range row {
 		rowInterface[i] = &row[i]
 	}
-	return
+	return colNames, row, rowInterface
 }
 
 func EncodeParameters(parameters []string, data []interface{}) ([]byte, error) {
@@ -50,6 +50,51 @@ func EncodeParameters(parameters []string, data []interface{}) ([]byte, error) {
 	return args.Pack(data...)
 }
 
+func FieldIsNil(field interface{}) bool {
+	return field == nil
+}
+
+func FieldIsMap(field interface{}) bool {
+	_, ok := field.(map[string]interface{})
+	return ok
+}
+
+func FieldIsBytes(t *abi.Type) bool {
+	return t.String() == "bytes"
+}
+
+func FieldIsString(t *abi.Type) bool {
+	return t.String() == "string"
+}
+
+func HandleFieldMap(t *abi.Type, field interface{}) ([]byte, error) {
+	// If the field is a map, we marshal it to JSON.
+	_mapStr, err := json.Marshal(field)
+	if err != nil {
+		return nil, err
+	}
+
+	encoding, err := t.Encode(_mapStr)
+	if err != nil {
+		return nil, err
+	}
+	return encoding, nil
+}
+
+func HandleFieldBytes(t *abi.Type, field interface{}) ([]byte, error) {
+	return EncodeParameters(
+		[]string{t.String()},
+		[]interface{}{field},
+	)
+}
+
+func HandleFieldString(t *abi.Type, field interface{}) ([]byte, error) {
+	return EncodeParameters(
+		[]string{t.String()},
+		[]interface{}{field},
+	)
+}
+
 // SerializeRow serializes a single row with all fields encoded and returns it as a mode.Row.
 //
 // Parameters:
@@ -64,13 +109,30 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 	// A single row but every field is encoded.
 	values := [][]byte{}
 
-	for _, rowEntry := range row {
-		bytes, err := json.Marshal(rowEntry)
-		if err != nil {
-			logger.GetLogger().Info("error json.Marshal SerializeRow")
-			return nil, err
+	// Iterate columns and serialize each field for this row.
+	for i := range colNames {
+		field := row[i]
+		fieldABIType := colEncodingTypes[i]
+
+		var encodedField []byte
+		var encodingErr error
+
+		if FieldIsNil(field) {
+			// If the field is null, we just encode it as an empty string.
+			encodedField = []byte("")
+		} else if FieldIsMap(field) {
+			encodedField, encodingErr = HandleFieldMap(fieldABIType, field)
+		} else if FieldIsBytes(fieldABIType) {
+			encodedField, encodingErr = HandleFieldBytes(fieldABIType, field)
+		} else if FieldIsString(fieldABIType) {
+			encodedField, encodingErr = HandleFieldString(fieldABIType, field)
+		} else {
+			encodedField, encodingErr = fieldABIType.Encode(field)
 		}
-		values = append(values, bytes)
+		if encodingErr != nil {
+			return nil, encodingErr
+		}
+		values = append(values, encodedField)
 	}
 
 	return &mode.Row{
@@ -88,19 +150,23 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 // Returns:
 //   - (*mode.GenericTable): A pointer to the mode.GenericTable containing the serialized rows.
 //   - (error): An error, if any occurred during serialization.
-func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections map[string]string) (*mode.GenericTable, error) {
+func (table *Table) SerializeRows(rows *sqlx.Rows, fieldProjections map[string]string) (*mode.TableData, error) {
 	tsStart := time.Now()
 
 	colNames, row, rowInterface := PrepareForScan(rows)
-	colEncodingTypes, colEncodingTypesStrings := tableSchema.GetEncodingTypes(colNames, fieldProjections)
+	colEncodingTypes, colEncodingTypesStrings := table.GetEncodingTypes(colNames, fieldProjections)
 
 	serializedRows := []*mode.Row{}
 
 	for rows.Next() {
-		rows.Scan(rowInterface...)
+		err := rows.Scan(rowInterface...)
+		if err != nil {
+			logger.GetLogger().Warn("error while scanning", zap.Error(err), zap.String("table", table.NamespacedName()))
+			continue
+		}
 		serializedRow, err := SerializeRow(row, colNames, colEncodingTypes)
 		if err != nil {
-			logger.GetLogger().Warn("error while serializing", zap.Error(err), zap.String("table", tableSchema.NamespacedTableName()))
+			logger.GetLogger().Warn("error while serializing", zap.Error(err), zap.String("table", table.NamespacedName()))
 		} else {
 			serializedRows = append(serializedRows, serializedRow)
 		}
@@ -112,10 +178,13 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections m
 
 	// Record how long the serialization took.
 	tsElapsed := time.Since(tsStart)
-	logger.GetLogger().Info("serialization finished", zap.String("time taken", tsElapsed.String()), zap.String("table", tableSchema.NamespacedTableName()))
+	logger.GetLogger().Info("serialization finished",
+		zap.String("time taken", tsElapsed.String()),
+		zap.String("table", table.NamespacedName()),
+	)
 
-	return &mode.GenericTable{
-		Cols:  CapitalizeColNames(colNames, tableSchema),
+	return &mode.TableData{
+		Cols:  table.ToOnChainColNames(colNames),
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,
 	}, nil
@@ -131,7 +200,10 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections m
 // Returns:
 //   - (*mode.GenericTable): A pointer to the mode.GenericTable containing the serialized stream event.
 //   - (error): An error, if any occurred during serialization.
-func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, fieldProjections map[string]string) (*mode.GenericTable, error) {
+func (table *Table) SerializeStreamEvent(
+	event *db.StreamEvent,
+	fieldProjections map[string]string,
+) (*mode.TableData, error) {
 	colNames := []string{}
 	row := []interface{}{}
 	for colName := range event.Values {
@@ -139,7 +211,7 @@ func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, field
 		row = append(row, event.Values[colName])
 	}
 
-	colEncodingTypes, colEncodingTypesStrings := tableSchema.GetEncodingTypes(colNames, fieldProjections)
+	colEncodingTypes, colEncodingTypesStrings := table.GetEncodingTypes(colNames, fieldProjections)
 
 	serializedRows := []*mode.Row{}
 	serializedRow, err := SerializeRow(row, colNames, colEncodingTypes)
@@ -149,30 +221,29 @@ func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, field
 		serializedRows = append(serializedRows, serializedRow)
 	}
 
-	return &mode.GenericTable{
-		Cols:  CapitalizeColNames(colNames, tableSchema),
+	return &mode.TableData{
+		Cols:  table.ToOnChainColNames(colNames),
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,
 	}, nil
 }
 
-// CapitalizeColNames capitalizes the column names and returns them in a slice.
+// ToOnChainColNames converts the column names to their on-chain format.
 //
 // Parameters:
 //   - colNames ([]string): A slice of column names.
-//   - tableSchema (*TableSchema): A pointer to the schema of the table.
 //
 // Returns:
-//   - ([]string): A slice of capitalized column names.
-func CapitalizeColNames(colNames []string, tableSchema *TableSchema) []string {
-	capitalizedCols := []string{}
+//   - ([]string): A slice of converted column names.
+func (table *Table) ToOnChainColNames(colNames []string) []string {
+	onChainColNames := []string{}
 	for _, colName := range colNames {
-		originalName := tableSchema.OnChainColNames[colName]
+		originalName := table.OnChainColNames[colName]
 		if originalName != "" {
-			capitalizedCols = append(capitalizedCols, originalName)
+			onChainColNames = append(onChainColNames, originalName)
 		} else {
-			capitalizedCols = append(capitalizedCols, colName)
+			onChainColNames = append(onChainColNames, colName)
 		}
 	}
-	return capitalizedCols
+	return onChainColNames
 }
