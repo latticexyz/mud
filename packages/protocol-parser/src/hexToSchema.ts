@@ -3,11 +3,11 @@ import { Schema } from "./common";
 import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
 import { DynamicAbiType } from "./dynamicAbiTypes";
 import { schemaAbiTypes } from "./schemaAbiTypes";
+import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";
 
 export function hexToSchema(data: Hex): Schema {
   if (data.length !== 66) {
-    // TODO: better error
-    throw new Error("wrong length");
+    throw new InvalidHexLengthForSchemaError(data);
   }
 
   const staticDataLength = hexToNumber(sliceHex(data, 0, 2));
@@ -33,8 +33,7 @@ export function hexToSchema(data: Hex): Schema {
       actualStaticDataLength,
       data,
     });
-    // TODO: better error
-    throw new Error("Schema static data length mismatch! Is `staticAbiTypeToByteLength` outdated?");
+    throw new SchemaStaticLengthMismatchError(staticDataLength, actualStaticDataLength);
   }
 
   return {

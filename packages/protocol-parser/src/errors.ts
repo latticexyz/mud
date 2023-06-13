@@ -9,6 +9,13 @@ export class InvalidHexLengthError extends MUDError {
   }
 }
 
+export class InvalidHexLengthForSchemaError extends MUDError {
+  override name = "InvalidHexLengthForSchemaError";
+  constructor(value: Hex) {
+    super(`Hex value "${value}" has length of ${value.length - 2}, but expected length of 64 for a schema.`);
+  }
+}
+
 export class InvalidHexLengthForStaticFieldError extends MUDError {
   override name = "InvalidHexLengthForStaticFieldError";
   constructor(abiType: StaticAbiType, value: Hex) {
@@ -27,6 +34,15 @@ export class InvalidHexLengthForArrayFieldError extends MUDError {
       `Hex value "${value}" has length of ${value.length - 2}, but expected a multiple of ${
         staticAbiTypeToByteLength[abiType] * 2
       } for ${abiType}[] type.`
+    );
+  }
+}
+
+export class SchemaStaticLengthMismatchError extends MUDError {
+  override name = "SchemaStaticLengthMismatchError";
+  constructor(schemaDefinedLength: number, summedLength: number) {
+    super(
+      `Schema's static data length (${schemaDefinedLength}) did not match the summed length of all static fields (${summedLength}). Is \`staticAbiTypeToByteLength\` outdated?`
     );
   }
 }
