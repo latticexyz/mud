@@ -72,18 +72,18 @@ contract StoreCoreTest is Test, StoreMock {
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
 
-    StoreCore.getSchema(table);
-    StoreCore.getKeySchema(table);
+    IStore(this).getSchema(table);
+    IStore(this).getKeySchema(table);
 
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, TableId.toString(table2))
     );
-    StoreCore.getSchema(table2);
+    IStore(this).getSchema(table2);
 
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, TableId.toString(table2))
     );
-    StoreCore.getKeySchema(table2);
+    IStore(this).getKeySchema(table2);
   }
 
   function testSetMetadata() public {
