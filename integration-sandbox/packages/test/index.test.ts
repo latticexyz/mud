@@ -7,6 +7,14 @@ import { execa, ExecaChildProcess } from "execa";
 import chalk from "chalk";
 import { exec, ChildProcess } from "node:child_process";
 
+/**
+ * TODOs
+ * - wait for MODE to be done syncing by waiting for some log
+ * - let tests fail if deployer, MODE or browser throws an error
+ * - provide correct MODE connection url in MODE test
+ * - set up postgres/MODE in github action
+ */
+
 describe("arrays", async () => {
   let server: ViteDevServer;
   let browser: Browser;
