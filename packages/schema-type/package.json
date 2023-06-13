@@ -29,7 +29,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist/typescript",
     "dev": "tsup --watch",
-    "test": "tsc --noEmit && forge test"
+    "test": "vitest typecheck --run && vitest --run && forge test"
   },
   "dependencies": {
     "abitype": "0.8.7"
