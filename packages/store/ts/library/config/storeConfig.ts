@@ -10,10 +10,10 @@ import type {
 import {
   // validation utils
   getDuplicates,
+  MergedPluginsInput,
   parseStaticArray,
+  Plugins,
   STORE_SELECTOR_MAX_LENGTH,
-  // config
-  MUDCoreUserConfig,
   // schemas
   zObjectName,
   zSelector,
@@ -235,10 +235,11 @@ export const zEnumsConfig = z.object({
 // zod doesn't preserve doc comments
 /** MUDCoreUserConfig wrapper to use generics in some options for better type inference */
 export type MUDUserConfig<
-  T extends MUDCoreUserConfig = MUDCoreUserConfig,
+  P extends Plugins,
+  C extends Omit<MergedPluginsInput<P>, "plugins">,
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = T &
+> = C &
   EnumsConfig<EnumNames> & {
     /**
      * Configuration for each table.
@@ -278,6 +279,19 @@ export type StoreConfig = z.output<typeof zStoreConfig>;
 
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
+
+export type ExpandStoreUserConfig<C extends StoreUserConfig> = OrDefaults<
+  C,
+  {
+    enums: typeof DEFAULTS.enums;
+    namespace: typeof DEFAULTS.namespace;
+    storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
+    userTypesPath: typeof PATH_DEFAULTS.userTypesPath;
+    codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
+  }
+> & {
+  tables: ExpandTablesConfig<C["tables"]>;
+};
 
 /************************************************************************
  *

@@ -1,27 +1,22 @@
-import { MUDCoreContext } from "./context";
+import { MergeReturnType, UnionToIntersection } from "@latticexyz/common/type-utils";
+import { Plugins } from "./types";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface MUDCoreUserConfig {}
+// Helper type to infer the input types from a plugins config as union (InputA | InputB)
+type PluginsInput<P extends Plugins> = Parameters<P[keyof P]["expandConfig"]>[0];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface MUDCoreConfig {}
+// Infer the plugin input types as intersection (InputA & InputB)
+export type MergedPluginsInput<P extends Plugins> = UnionToIntersection<PluginsInput<P>>;
 
-export type MUDConfigExtender = (config: MUDCoreConfig) => Record<string, unknown>;
-
-/** Resolver that sequentially passes the config through all the plugins */
-export function mudCoreConfig(config: MUDCoreUserConfig): MUDCoreConfig {
-  // config types can change with plugins, `any` helps avoid errors when typechecking dependencies
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let configAsAny = config as any;
-  const context = MUDCoreContext.getContext();
-  for (const extender of context.configExtenders) {
-    configAsAny = extender(configAsAny);
+/**
+ * Helper function to sequentially apply `expandConfig` of each plugin and strongly type the result.
+ */
+export function mudCoreConfig<P extends Plugins, C extends Omit<MergedPluginsInput<P>, "plugins">>(
+  plugins: P,
+  config: C
+): MergeReturnType<P[keyof P]["expandConfig"]> {
+  let expanded = config as any;
+  for (const { expandConfig } of Object.values(plugins)) {
+    expanded = { ...expanded, ...expandConfig(config) };
   }
-  return configAsAny;
-}
-
-/** Utility for plugin developers to extend the core config */
-export function extendMUDCoreConfig(extender: MUDConfigExtender) {
-  const context = MUDCoreContext.getContext();
-  context.configExtenders.push(extender);
+  return expanded;
 }

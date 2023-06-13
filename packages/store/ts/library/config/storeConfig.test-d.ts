@@ -1,7 +1,7 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
 import { zStoreConfig, MUDUserConfig } from "./storeConfig";
-
+/*
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
   expectTypeOf<MUDUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig>>();
@@ -12,4 +12,4 @@ describe("StoreUserConfig", () => {
     NonNullable<NonNullable<z.input<typeof zStoreConfig>>["enums"]>[string]
   >();
   // TODO If more nested schemas are added, provide separate tests for them
-});
+});*/

@@ -17,3 +17,9 @@ export type OrDefault<T, Default> = T extends undefined ? Default : T;
 export type OrDefaults<T extends object, Defaults> = {
   [key in keyof Defaults]: key extends keyof T ? OrDefault<T[key], Defaults[key]> : Defaults[key];
 };
+
+// Helper type to turn `A | B` into `A & B`
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+
+// Helper type to extract and merge the return types of a given union of functions
+export type MergeReturnType<T extends (...args: any) => any> = UnionToIntersection<ReturnType<T>>;
