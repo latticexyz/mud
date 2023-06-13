@@ -1,7 +1,7 @@
 import { Hex, sliceHex } from "viem";
 import { decodeStaticField } from "./decodeStaticField";
 import { decodeDynamicField } from "./decodeDynamicField";
-import { InvalidHexLengthForPackedCounterError } from "./errors";
+import { InvalidHexLengthForPackedCounterError, PackedCounterLengthMismatchError } from "./errors";
 
 // Keep this logic in sync with PackedCounter.sol
 
@@ -22,7 +22,10 @@ export function hexToPackedCounter(data: Hex): {
   // TODO: use schema to make sure we only parse as many as we need (rather than zeroes at the end)?
   const fieldByteLengths = decodeDynamicField("uint40[]", sliceHex(data, 7));
 
-  // TODO: assert that the sum of the field byte lengths is equal to the total byte length
+  const summedLength = BigInt(fieldByteLengths.reduce((a, b) => a + b, 0));
+  if (summedLength !== totalByteLength) {
+    throw new PackedCounterLengthMismatchError(data, totalByteLength, summedLength);
+  }
 
   return { totalByteLength, fieldByteLengths };
 }
