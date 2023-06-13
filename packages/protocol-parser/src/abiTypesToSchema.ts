@@ -1,6 +1,6 @@
+import { StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
 import { Schema } from "./common";
-import { DynamicAbiType } from "./dynamicAbiTypes";
-import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
+import { staticAbiTypeToByteLength } from "./staticAbiTypes";
 import { abiTypesToSchemaData } from "./abiTypesToSchemaData";
 
 export function abiTypesToSchema(staticFields: StaticAbiType[], dynamicFields: DynamicAbiType[] = []): Schema {

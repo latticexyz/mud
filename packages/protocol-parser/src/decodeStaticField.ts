@@ -1,10 +1,6 @@
 import { Hex, getAddress, hexToBigInt, hexToBool } from "viem";
-import {
-  StaticAbiType,
-  StaticAbiTypeToPrimitiveType,
-  staticAbiTypeToByteLength,
-  staticAbiTypeToDefaultValue,
-} from "./staticAbiTypes";
+import { StaticAbiType } from "@latticexyz/schema-type";
+import { StaticAbiTypeToPrimitiveType, staticAbiTypeToByteLength, staticAbiTypeToDefaultValue } from "./staticAbiTypes";
 import { assertExhaustive } from "./assertExhaustive";
 import { InvalidHexLengthError, InvalidHexLengthForStaticFieldError } from "./errors";
 

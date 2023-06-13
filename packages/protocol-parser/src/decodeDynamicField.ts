@@ -1,5 +1,6 @@
 import { Hex, hexToString, sliceHex } from "viem";
-import { DynamicAbiType, DynamicAbiTypeToPrimitiveType, arrayAbiTypeToStaticAbiType } from "./dynamicAbiTypes";
+import { DynamicAbiType } from "@latticexyz/schema-type";
+import { DynamicAbiTypeToPrimitiveType, arrayAbiTypeToStaticAbiType } from "./dynamicAbiTypes";
 import { assertExhaustive } from "./assertExhaustive";
 import { staticAbiTypeToByteLength } from "./staticAbiTypes";
 import { decodeStaticField } from "./decodeStaticField";

@@ -1,8 +1,8 @@
 import { Hex, hexToNumber, sliceHex } from "viem";
 import { Schema } from "./common";
-import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
-import { DynamicAbiType } from "./dynamicAbiTypes";
-import { schemaAbiTypes } from "./schemaAbiTypes";
+import { StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
+import { staticAbiTypeToByteLength } from "./staticAbiTypes";
+import { schemaAbiTypes } from "../../schema-type/src/typescript/schemaAbiTypes";
 import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";
 
 export function hexToSchema(data: Hex): Schema {

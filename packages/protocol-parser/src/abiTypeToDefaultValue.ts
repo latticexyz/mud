@@ -1,4 +1,4 @@
-import { SchemaAbiType } from "./schemaAbiTypes";
+import { SchemaAbiType } from "@latticexyz/schema-type";
 import { DynamicAbiTypeToPrimitiveType, dynamicAbiTypeToDefaultValue } from "./dynamicAbiTypes";
 import { StaticAbiTypeToPrimitiveType, staticAbiTypeToDefaultValue } from "./staticAbiTypes";
 

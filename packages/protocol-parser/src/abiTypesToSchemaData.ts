@@ -1,7 +1,6 @@
 import { Hex } from "viem";
-import { DynamicAbiType } from "./dynamicAbiTypes";
-import { schemaAbiTypes } from "./schemaAbiTypes";
-import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
+import { schemaAbiTypes, StaticAbiType, DynamicAbiType } from "@latticexyz/schema-type";
+import { staticAbiTypeToByteLength } from "./staticAbiTypes";
 
 export function abiTypesToSchemaData(staticFields: StaticAbiType[], dynamicFields: DynamicAbiType[] = []): Hex {
   const staticDataLength = staticFields.reduce((acc, fieldType) => acc + staticAbiTypeToByteLength[fieldType], 0);

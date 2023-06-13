@@ -1,6 +1,5 @@
 import { Hex } from "viem";
-import { DynamicAbiType } from "./dynamicAbiTypes";
-import { StaticAbiType } from "./staticAbiTypes";
+import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 
 export type Schema = Readonly<{
   staticDataLength: number;

@@ -1,6 +1,7 @@
 import { MUDError } from "@latticexyz/common/errors";
+import { StaticAbiType } from "@latticexyz/schema-type";
 import { Hex } from "viem";
-import { StaticAbiType, staticAbiTypeToByteLength } from "./staticAbiTypes";
+import { staticAbiTypeToByteLength } from "./staticAbiTypes";
 
 export class InvalidHexLengthError extends MUDError {
   override name = "InvalidHexValueError";

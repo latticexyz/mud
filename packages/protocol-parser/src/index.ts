@@ -10,5 +10,4 @@ export * from "./errors";
 export * from "./hexToPackedCounter";
 export * from "./hexToSchema";
 export * from "./hexToTableSchema";
-export * from "./schemaAbiTypes";
 export * from "./staticAbiTypes";
