@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { hexToSchema } from "./hexToSchema";
+import { SchemaStaticLengthMismatchError } from "./errors";
 
 describe("hexToSchema", () => {
   it("decodes schema hex data to schema", () => {
@@ -24,5 +25,11 @@ describe("hexToSchema", () => {
       isEmpty: false,
       schemaData: "0x002402045f2381c3c4c500000000000000000000000000000000000000000000",
     });
+  });
+
+  it("throws if schema static field lengths do not match", () => {
+    expect(() => hexToSchema("0x002502045f2381c3c4c500000000000000000000000000000000000000000000")).toThrow(
+      'Schema "0x002502045f2381c3c4c500000000000000000000000000000000000000000000" static data length (37) did not match the summed length of all static fields (36). Is `staticAbiTypeToByteLength` up to date with Solidity schema types?'
+    );
   });
 });

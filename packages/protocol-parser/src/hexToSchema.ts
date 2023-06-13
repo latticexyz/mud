@@ -28,12 +28,7 @@ export function hexToSchema(data: Hex): Schema {
   // validate static data length
   const actualStaticDataLength = staticFields.reduce((acc, fieldType) => acc + staticAbiTypeToByteLength[fieldType], 0);
   if (actualStaticDataLength !== staticDataLength) {
-    console.error("Schema static data length mismatch! Is `staticAbiTypeToByteLength` outdated?", {
-      schemaStaticDataLength: staticDataLength,
-      actualStaticDataLength,
-      data,
-    });
-    throw new SchemaStaticLengthMismatchError(staticDataLength, actualStaticDataLength);
+    throw new SchemaStaticLengthMismatchError(data, staticDataLength, actualStaticDataLength);
   }
 
   return {
