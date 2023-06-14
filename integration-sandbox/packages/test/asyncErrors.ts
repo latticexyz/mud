@@ -12,7 +12,7 @@ export function createAsyncErrorHandler() {
   }
 
   function expectNoAsyncErrors() {
-    expect(errors).toEqual([]);
+    expect(errors, "expect no async errors").toEqual([]);
   }
 
   return { reportError, resetErrors, expectNoAsyncErrors };
