@@ -21,7 +21,7 @@ describe("arrays", async () => {
   let page: Page;
   let anvilProcess: ExecaChildProcess;
   let deploymentProcess: ExecaChildProcess;
-  let modeProcess: ChildProcess;
+  let modeProcess: ExecaChildProcess;
   const anvilPort = 8545;
   const rpc = `http://127.0.0.1:${anvilPort}`;
 
@@ -41,7 +41,10 @@ describe("arrays", async () => {
 
     // log browser's console logs
     page.on("console", (msg) => {
-      if (msg.text().toLowerCase().includes("error")) throw new Error(msg.text());
+      if (msg.text().toLowerCase().includes("error")) {
+        console.log(chalk.yellowBright("[browser console]:"), chalk.red(msg.text()));
+        throw new Error(msg.text());
+      }
       console.log(chalk.yellowBright("[browser console]:"), msg.text());
     });
   });
@@ -90,15 +93,15 @@ describe("arrays", async () => {
 
   describe("MODE sync", () => {
     beforeEach(async () => {
-      syncMODE();
+      await syncMODE();
     });
 
     afterEach(() => {
       modeProcess?.kill();
     });
 
-    test.only("large list should have correct length", async () => {
-      await page.goto("http://localhost:3000?cache=false&mode=http://localhost:50091");
+    test("large list should have correct length", async () => {
+      await page.goto("http://localhost:3000?cache=false&mode=http://localhost:50092");
 
       const resetButton = page.getByRole("button", { name: /Reset list/ });
       const pushManyButton = page.getByRole("button", { name: /Push 5000 items/ });
@@ -169,19 +172,33 @@ describe("arrays", async () => {
     let resolve: () => void;
     let reject: (reason?: string) => void;
 
-    modeProcess = exec("./bin/mode -config config.mode.yaml", { cwd: "../../../packages/services" }, (err, stdout) => {
-      const errors = [
-        ...extractLineContaining("ERROR: ", stdout),
-        ...extractLineContaining("ERROR", err?.message || ""),
-      ];
+    console.log(chalk.magenta("[mode]:"), "start syncing");
 
-      for (const error of errors) {
-        console.log(chalk.magenta("[mode error]:", error));
+    const modeProcess = execa("./bin/mode", ["-config", "config.mode.yaml"], {
+      cwd: "../../../packages/services",
+      stdio: "pipe",
+    });
+
+    modeProcess.stdout?.on("data", (data) => {
+      const dataString = data.toString();
+      const errors = extractLineContaining("ERROR", dataString).join("\n");
+      if (errors) {
+        console.log(chalk.magenta("[mode error]:", errors));
+        reject(errors);
       }
+    });
 
-      if (errors.length > 0) reject(errors.join("\n"));
-
-      // TODO: parse MODE logs to know when to resolve the promise
+    modeProcess.stderr?.on("data", (data) => {
+      const dataString = data.toString();
+      const errors = extractLineContaining("ERROR", dataString).join("\n");
+      if (errors) {
+        console.log(chalk.magenta("[mode error]:", errors));
+        reject(errors);
+      }
+      if (data.toString().includes("finished syncing")) {
+        console.log(chalk.magenta("[mode]:"), "done syncing");
+        resolve();
+      }
     });
 
     return new Promise<void>((res, rej) => {
