@@ -15,6 +15,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: runner
+          POSTGRES_DB: mode_ephemeral
           POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
