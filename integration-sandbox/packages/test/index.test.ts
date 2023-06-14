@@ -5,13 +5,10 @@ import { expect, chromium, Browser, Page } from "@playwright/test";
 // import { deployHandler } from "@latticexyz/cli";
 import { execa, ExecaChildProcess } from "execa";
 import chalk from "chalk";
-import { exec, ChildProcess } from "node:child_process";
 
 /**
  * TODOs
- * - wait for MODE to be done syncing by waiting for some log
  * - let tests fail if deployer, MODE or browser throws an error
- * - provide correct MODE connection url in MODE test
  * - set up postgres/MODE in github action
  */
 
@@ -25,7 +22,12 @@ describe("arrays", async () => {
   const anvilPort = 8545;
   const rpc = `http://127.0.0.1:${anvilPort}`;
 
+  // Store errors in an array to be able to throw synchronously in each test
+  let errors: string[] = [];
+
   beforeEach(async () => {
+    errors = [];
+
     startAnvil();
     await deployContracts();
     await startViteServer();
@@ -36,16 +38,18 @@ describe("arrays", async () => {
 
     // log uncaught errors in the browser page (browser and test consoles are separate)
     page.on("pageerror", (err) => {
-      console.log(chalk.yellow("[browser page]:"), err.message);
+      console.log(chalk.yellow("[browser page error]:"), err.message);
     });
 
     // log browser's console logs
     page.on("console", (msg) => {
       if (msg.text().toLowerCase().includes("error")) {
-        console.log(chalk.yellowBright("[browser console]:"), chalk.red(msg.text()));
-        throw new Error(msg.text());
+        const errorMessage = chalk.yellowBright("[browser error]:") + chalk.red(msg.text());
+        console.log(errorMessage);
+        errors.push(errorMessage);
+      } else {
+        console.log(chalk.yellowBright("[browser console]:"), msg.text());
       }
-      console.log(chalk.yellowBright("[browser console]:"), msg.text());
     });
   });
 
@@ -100,7 +104,7 @@ describe("arrays", async () => {
       modeProcess?.kill();
     });
 
-    test("large list should have correct length", async () => {
+    test.only("large list should have correct length", async () => {
       await page.goto("http://localhost:3000?cache=false&mode=http://localhost:50092");
 
       const resetButton = page.getByRole("button", { name: /Reset list/ });
@@ -119,9 +123,9 @@ describe("arrays", async () => {
       await resetButton.click();
       await expect(listLength).toHaveText("0");
       await expect(lastItem).toHaveText("unset");
-      // await pushManyButton.click();
-      // await expect(listLength).toHaveText("5000");
-      // await expect(lastItem).toHaveText("4999");
+      await pushManyButton.click();
+      await expect(listLength).toHaveText("5000");
+      await expect(lastItem).toHaveText("4999");
       await pushOneButton.click();
       // await expect(listLength).toHaveText("5001");
       await expect(lastItem).toHaveText("123");
@@ -131,6 +135,8 @@ describe("arrays", async () => {
       await pushOneButton.click();
       // await expect(listLength).toHaveText("10002");
       await expect(lastItem).toHaveText("123");
+
+      expectNoAsyncErrors();
     });
   });
 
@@ -190,10 +196,12 @@ describe("arrays", async () => {
 
     modeProcess.stderr?.on("data", (data) => {
       const dataString = data.toString();
-      const errors = extractLineContaining("ERROR", dataString).join("\n");
-      if (errors) {
-        console.log(chalk.magenta("[mode error]:", errors));
-        reject(errors);
+      const modeErrors = extractLineContaining("ERROR", dataString).join("\n");
+      if (modeErrors) {
+        const errorMessage = chalk.magenta("[mode error]:", modeErrors);
+        console.log(errorMessage);
+        errors.push(errorMessage);
+        reject(modeErrors);
       }
       if (data.toString().includes("finished syncing")) {
         console.log(chalk.magenta("[mode]:"), "done syncing");
@@ -205,6 +213,10 @@ describe("arrays", async () => {
       resolve = res;
       reject = rej;
     });
+  }
+
+  function expectNoAsyncErrors() {
+    expect(errors, "expect no async errors").toBe([]);
   }
 });
 
