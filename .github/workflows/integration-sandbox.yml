@@ -17,6 +17,7 @@ jobs:
           POSTGRES_USER: runner
           POSTGRES_DB: mode_ephemeral
           POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_INITDB_ARGS: --wal-level=logical
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
