@@ -31,10 +31,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build MODE
-        working-directory: ./packages/services
-        run: make mode
-
       - name: Install integration sandbox dependencies
         working-directory: ./integration-sandbox
         run: pnpm install

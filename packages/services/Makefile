@@ -56,7 +56,7 @@ protoc-clean:
 	cd ./protobuf/go/mode && ls *.pb.go | xargs -n1 -IX bash -c 'sed s/,omitempty// X > X.tmp && mv X{.tmp,}'
 .PHONY: protoc-clean
 
-build: ecs-stream ecs-snapshot ecs-relay faucet
+build: faucet mode
 .PHONY: build
 
 ecs-stream:
