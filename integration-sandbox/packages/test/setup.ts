@@ -69,6 +69,13 @@ export function syncMODE(reportError: (error: string) => void) {
     stdio: "pipe",
   });
 
+  modeProcess.on("error", (error) => {
+    const errorMessage = chalk.magenta("[mode error]:", error);
+    console.log(errorMessage);
+    reportError(errorMessage);
+    reject(errorMessage);
+  });
+
   modeProcess.stdout?.on("data", (data) => {
     const dataString = data.toString();
     const errors = extractLineContaining("ERROR", dataString).join("\n");
