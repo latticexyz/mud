@@ -76,6 +76,7 @@ export function syncMODE(reportError: (error: string) => void) {
       console.log(chalk.magenta("[mode error]:", errors));
       reject(errors);
     }
+    console.log(chalk.magentaBright("[mode postgres]:", dataString));
   });
 
   modeProcess.stderr?.on("data", (data) => {
@@ -91,6 +92,7 @@ export function syncMODE(reportError: (error: string) => void) {
       console.log(chalk.magenta("[mode]:"), "done syncing");
       resolve();
     }
+    console.log(chalk.magentaBright("[mode ingress]:", dataString));
   });
 
   return {
