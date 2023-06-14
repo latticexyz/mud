@@ -9,6 +9,7 @@ export async function getModeBlockNumber(client: QueryLayerClient, chainId: numb
         chainId: chainId.toString(),
       },
     });
+    console.log("response", JSON.stringify(response));
     const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
     return blockNumber;
   } catch (e) {
