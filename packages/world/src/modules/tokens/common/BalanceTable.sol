@@ -97,7 +97,7 @@ library BalanceTable {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint256 balance) internal pure returns (bytes memory) {
+  function encode(uint256 balance) internal view returns (bytes memory) {
     return abi.encodePacked(balance);
   }
 

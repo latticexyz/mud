@@ -430,7 +430,7 @@ library MetadataTable {
     address proxy,
     string memory name,
     string memory symbol
-  ) internal pure returns (bytes memory) {
+  ) internal view returns (bytes memory) {
     uint40[] memory _counters = new uint40[](2);
     _counters[0] = uint40(bytes(name).length);
     _counters[1] = uint40(bytes(symbol).length);

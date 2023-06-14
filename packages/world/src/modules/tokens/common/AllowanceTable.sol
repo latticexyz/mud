@@ -107,7 +107,7 @@ library AllowanceTable {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint256 allowance) internal pure returns (bytes memory) {
+  function encode(uint256 allowance) internal view returns (bytes memory) {
     return abi.encodePacked(allowance);
   }
 

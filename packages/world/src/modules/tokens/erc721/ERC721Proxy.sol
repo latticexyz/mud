@@ -6,13 +6,14 @@ import "./interfaces/IERC721Proxy.sol";
 import "./interfaces/IERC721Receiver.sol";
 import "../common/ERC165.sol";
 import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
-import { ERC721System } from "./ERC721System.sol";
 import { BalanceTable } from "../common/BalanceTable.sol";
 import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
 import { ERC721Table } from "./ERC721Table.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
+import { LibERC721 } from "./LibERC721.sol";
 import { ERC721_T, ERC721_S, BALANCE_T, METADATA_T, ALLOWANCE_T } from "../common/constants.sol";
+import { SystemRegistry } from "../../core/tables/SystemRegistry.sol";
 
 contract ERC721Proxy is IERC721Proxy {
   IBaseWorld private world;
@@ -32,15 +33,14 @@ contract ERC721Proxy is IERC721Proxy {
   }
 
   modifier onlySystemOrWorld() {
-    bytes memory rawSystemAddress = world.call(
-      namespace,
-      ERC721_S,
-      abi.encodeWithSelector(ERC721System.getAddress.selector)
-    );
-    require(
-      msg.sender == address(world) || msg.sender == abi.decode(rawSystemAddress, (address)),
-      "ERC721: Only World or MUD token can execute call"
-    );
+    // is there a system within the namespace that exists at the msg.sender address?
+    if (msg.sender != address(world)) {
+      bytes32 systemId = SystemRegistry.get(world, msg.sender);
+      require(
+        ResourceSelector.getNamespace(systemId) == namespace,
+        "ERC721: Only World or system within namespace can execute call"
+      );
+    }
     _;
   }
 
