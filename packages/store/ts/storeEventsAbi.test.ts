@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { storeEventsAbi } from "./storeEventsAbi";
-import { IStore__factory } from "../../types/ethers-contracts";
+import { IStore__factory } from "../types/ethers-contracts";
 
 // Make sure `storeEvents` stays in sync with Solidity definition/events
 
@@ -21,7 +21,7 @@ describe("storeEventsAbi", () => {
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const sortedStoreEventsAbi = storeEventsAbi.slice().sort((a, b) => a.name.localeCompare(b.name));
+    const sortedStoreEventsAbi = [...storeEventsAbi].sort((a, b) => a.name.localeCompare(b.name));
     expect(sortedStoreEventsAbi).toStrictEqual(expectedAbi);
   });
 });
