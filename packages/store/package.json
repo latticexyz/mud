@@ -10,22 +10,26 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/library/index.js",
+    ".": "./dist/ts/index.js",
+    "./codegen": "./dist/ts/codegen/index.js",
+    "./config": "./dist/ts/config/index.js",
     "./register": "./dist/ts/register/index.js",
     "./abi/*": "./abi/*",
-    "./config": "./dist/ts/library/config/index.js",
     "./*": "./dist/*"
   },
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/library/index.ts"
+        "./ts/index.ts"
+      ],
+      "codegen": [
+        "./ts/codegen/index.ts"
+      ],
+      "config": [
+        "./ts/config/index.ts"
       ],
       "register": [
         "./ts/register/index.ts"
-      ],
-      "config": [
-        "./ts/library/config/index.ts"
       ]
     }
   },
