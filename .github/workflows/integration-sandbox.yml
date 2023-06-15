@@ -25,13 +25,6 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - name: Confirm PostgreSQL settings
-        run: |
-          until pg_isready -h localhost -U runner; do sleep 1; done
-          psql -h localhost -U runner -d mode_ephemeral -c "SHOW wal_level;"
-          psql -h localhost -U runner -d mode_ephemeral -c "SHOW max_replication_slots;"
-          psql -h localhost -U runner -d mode_ephemeral -c "SHOW max_wal_senders;"
-
       - name: Checkout
         uses: actions/checkout@v3
         with:

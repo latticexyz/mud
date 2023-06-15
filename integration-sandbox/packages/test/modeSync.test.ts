@@ -5,11 +5,6 @@ import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, syncMODE } from "./setup";
 
-/**
- * TODOs
- * - set up postgres/MODE in github action
- */
-
 describe("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
@@ -65,6 +60,8 @@ describe("Sync from MODE", async () => {
     await resetButton.click();
     await expect(listLength).toHaveText("0");
     await expect(lastItem).toHaveText("unset");
+
+    // TODO: fix MODE to be able to handle arrays of this length
     // await pushManyButton.click();
     // await expect(listLength).toHaveText("5000");
     // await expect(lastItem).toHaveText("4999");

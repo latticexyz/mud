@@ -1,5 +1,12 @@
 import { expect } from "vitest";
 
+/**
+ * When a test initiates a background process which encounters an error,
+ * the test does not necessarily fail. Instead, vitest just prints a warning
+ * about an unhandled exception. This util allows background processes to
+ * report errors (via `reportError`) and allows tests to explicitly fail
+ * if there were errors in background processes (via `expectNoAsyncErrors`).
+ */
 export function createAsyncErrorHandler() {
   let errors: string[] = [];
 
