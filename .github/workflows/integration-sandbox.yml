@@ -32,6 +32,9 @@ jobs:
           psql -h localhost -U runner -d mode_ephemeral -c "ALTER SYSTEM SET max_replication_slots = 1;"
           psql -h localhost -U runner -d mode_ephemeral -c "ALTER SYSTEM SET max_wal_senders = 2;"
           psql -h localhost -U runner -d mode_ephemeral -c "SELECT pg_reload_conf();"
+          psql -h localhost -U runner -d mode_ephemeral -c "SHOW wal_level;"
+          psql -h localhost -U runner -d mode_ephemeral -c "SHOW max_replication_slots;"
+          psql -h localhost -U runner -d mode_ephemeral -c "SHOW max_wal_senders;"
 
       - name: Checkout
         uses: actions/checkout@v3
