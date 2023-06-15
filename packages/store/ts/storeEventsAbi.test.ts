@@ -21,7 +21,7 @@ describe("storeEventsAbi", () => {
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
 
-    const sortedStoreEventsAbi = storeEventsAbi.slice().sort((a, b) => a.name.localeCompare(b.name));
+    const sortedStoreEventsAbi = [...storeEventsAbi].sort((a, b) => a.name.localeCompare(b.name));
     expect(sortedStoreEventsAbi).toStrictEqual(expectedAbi);
   });
 });
