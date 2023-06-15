@@ -12,7 +12,10 @@ export function createAsyncErrorHandler() {
   }
 
   function expectNoAsyncErrors() {
-    expect(errors, "expect no async errors").toEqual([]);
+    // This is to properly print the errors in the test console
+    for (const error of errors) {
+      expect(error).toEqual("");
+    }
   }
 
   return { reportError, resetErrors, expectNoAsyncErrors };
