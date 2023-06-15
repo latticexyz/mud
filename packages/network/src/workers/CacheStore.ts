@@ -3,7 +3,6 @@ import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/ecs-snapshot";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
-import { normalizeEntityID } from "../utils";
 import { debug as parentDebug } from "./debug";
 import { Subject } from "rxjs";
 
@@ -45,8 +44,6 @@ export function storeEvent<Cm extends Components>(
     table,
   }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
-  const entityId = normalizeEntityID(entity);
-
   const { components, entities, componentToIndex, entityToIndex, state, keys, tables } = cacheStore;
 
   // Get component index
@@ -57,10 +54,10 @@ export function storeEvent<Cm extends Components>(
   }
 
   // Get entity index
-  let entityIndex = entityToIndex.get(entityId);
+  let entityIndex = entityToIndex.get(entity);
   if (entityIndex == null) {
-    entityIndex = entities.push(entityId) - 1;
-    entityToIndex.set(entityId, entityIndex);
+    entityIndex = entities.push(entity) - 1;
+    entityToIndex.set(entity, entityIndex);
   }
 
   // Store the key

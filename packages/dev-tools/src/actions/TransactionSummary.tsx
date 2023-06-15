@@ -60,6 +60,8 @@ export function TransactionSummary({ hash }: Props) {
           .filter(isDefined)
       : null;
 
+  const blockExplorer = publicClient?.chain.blockExplorers?.default.url;
+
   return (
     <details
       onToggle={(event) => {
@@ -80,11 +82,31 @@ export function TransactionSummary({ hash }: Props) {
           {functionData?.functionName}({functionData?.args?.map((value) => serialize(value)).join(", ")})
         </div>
         {transactionReceipt.status === "fulfilled" ? (
-          <div className="flex-none font-mono text-xs text-white/40">
+          <a
+            href={
+              blockExplorer ? `${blockExplorer}/block/${transactionReceipt.value.blockNumber.toString()}` : undefined
+            }
+            target="_blank"
+            className={twMerge(
+              "flex-none font-mono text-xs text-white/40",
+              blockExplorer ? "hover:text-white/60 hover:underline" : null
+            )}
+            title={transactionReceipt.value.blockNumber.toString()}
+          >
             block {transactionReceipt.value.blockNumber.toString()}
-          </div>
+          </a>
         ) : null}
-        <div className="flex-none font-mono text-xs text-white/40">tx {truncateHex(hash)}</div>
+        <a
+          href={blockExplorer ? `${blockExplorer}/tx/${hash}` : undefined}
+          target="_blank"
+          className={twMerge(
+            "flex-none font-mono text-xs text-white/40",
+            blockExplorer ? "hover:text-white/60 hover:underline" : null
+          )}
+          title={hash}
+        >
+          tx {truncateHex(hash)}
+        </a>
         <div className="flex-none inline-flex w-4 h-4 justify-center items-center font-bold">
           {isPending ? <PendingIcon /> : isRevert ? <>⚠</> : <>✓</>}
         </div>
