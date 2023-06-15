@@ -1,0 +1,29 @@
+name: Snapshot 🚀
+
+on:
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout Repo
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: "Setup"
+        uses: ./.github/actions/setup
+
+      - name: Publish to npm
+        uses: seek-oss/changesets-snapshot@v0
+        with:
+          pre-publish: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
