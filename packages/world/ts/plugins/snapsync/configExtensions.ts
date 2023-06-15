@@ -1,5 +1,5 @@
 import { extendMUDCoreConfig, resolveTableId } from "@latticexyz/config";
-import { zPluginStoreConfig } from "@latticexyz/store/config";
+import { zPluginStoreConfig } from "@latticexyz/store";
 import { zPluginWorldConfig } from "../../library";
 import { zSnapSyncPluginConfig } from "./plugin";
 

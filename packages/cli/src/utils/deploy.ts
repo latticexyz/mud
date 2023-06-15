@@ -8,7 +8,8 @@ import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/co
 import { resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/common/errors";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
+import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 

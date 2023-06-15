@@ -1,7 +1,8 @@
 import path from "path";
 import type { CommandModule } from "yargs";
 import { loadConfig } from "@latticexyz/config/node";
-import { StoreConfig, tablegen } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
+import { tablegen } from "@latticexyz/store/codegen";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 type Options = {

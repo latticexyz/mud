@@ -7,6 +7,7 @@ artifacts
 yarn-error.log
 API
 dist
+types/ethers-contracts
 
 # only check in ABIs
 abi/**/*.json
