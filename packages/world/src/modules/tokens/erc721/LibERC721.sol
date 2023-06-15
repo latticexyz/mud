@@ -82,7 +82,7 @@ library LibERC721 {
   }
 
   function tokenURI(IBaseWorld world, bytes16 namespace, uint256 tokenId) internal view returns (string memory) {
-    _requireMinted(namespace, tokenId);
+    _requireMinted(world, namespace, tokenId);
 
     string memory _tokenURI = ERC721Table.getUri(world, from(namespace, ERC721_T), tokenId);
 
