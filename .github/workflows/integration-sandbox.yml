@@ -17,7 +17,6 @@ jobs:
           POSTGRES_USER: runner
           POSTGRES_DB: mode_ephemeral
           POSTGRES_HOST_AUTH_METHOD: trust
-          POSTGRES_INITDB_ARGS: --wal-level=logical
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -26,6 +25,13 @@ jobs:
         ports:
           - 5432:5432
     steps:
+      - name: Setup PostgreSQL with replication
+        run: |
+          until pg_isready -h localhost -U runner; do sleep 1; done
+          psql -h localhost -U runner -d mode_ephemeral -c "ALTER SYSTEM SET wal_level = logical;"
+          psql -h localhost -U runner -d mode_ephemeral -c "ALTER SYSTEM SET max_replication_slots = 1;"
+          psql -h localhost -U runner -d mode_ephemeral -c "ALTER SYSTEM SET max_wal_senders = 2;"
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
