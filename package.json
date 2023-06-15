@@ -8,6 +8,11 @@
     "url": "https://github.com/latticexyz/mud.git"
   },
   "scripts": {
+    "// release": "pnpm install && lerna publish --no-private --force-publish",
+    "// release:canary": "lerna publish premajor --preid alpha.1 --canary --no-private --force-publish",
+    "// release:ci": "lerna publish --no-private --force-publish --yes",
+    "// release:manual": "pnpm --recursive --no-bail run release",
+    "// release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev --concurrency 100",
@@ -21,11 +26,8 @@
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,sol}'",
-    "release": "pnpm install && lerna publish --no-private --force-publish",
-    "release:canary": "lerna publish premajor --preid alpha.1 --canary --no-private --force-publish",
-    "release:ci": "lerna publish --no-private --force-publish --yes",
-    "release:manual": "pnpm --recursive --no-bail run release",
-    "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
+    "release": "pnpm install && lerna publish --no-private --force-publish && changeset publish",
+    "release:version": "changeset version && pnpm install --lockfile-only",
     "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'integration/*/package.json' 'integration/*/packages/*/package.json' 'docs/package.json'",
     "test": "pnpm recursive run test"
   },
@@ -33,6 +35,10 @@
     "*.{ts,tsx}": "eslint --cache --fix",
     "*.{ts,tsx,css,md,mdx,sol}": "prettier --write",
     "package.json": "pnpm sort-package-json"
+  },
+  "dependencies": {
+    "@changesets/changelog-github": "^0.4.8",
+    "@changesets/cli": "^2.26.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "5.46.1",

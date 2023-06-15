@@ -1,9 +1,7 @@
-name: Release 🚀
+name: Snapshot 🚀
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -21,17 +19,11 @@ jobs:
       - name: "Setup"
         uses: ./.github/actions/setup
 
-      # https://github.com/changesets/action#with-publishing
-      - name: Handle Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
+      - name: Publish to npm
+        uses: seek-oss/changesets-snapshot@v0
         with:
-          title: "🔖 chore: Version packages"
-          commit: "🔖 chore: Version packages"
-          publish: pnpm release
-          version: pnpm release:version
+          pre-publish: pnpm build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-
