@@ -5,9 +5,10 @@
 name: Release 🚀
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
+      - v1
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
