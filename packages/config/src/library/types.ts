@@ -7,7 +7,7 @@ import { Hook } from "tapable";
  */
 export interface MudPlugin<Input = any, Expanded = any> {
   id: string;
-  expandConfig: <C extends Input>(plugins: Plugins, config: C) => Expanded;
+  expandConfig: <C extends Input>(config: C) => Expanded;
   hooks: Record<string, Hook<unknown, unknown>>;
 }
 

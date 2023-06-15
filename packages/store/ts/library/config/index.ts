@@ -1,4 +1,5 @@
 export * from "./defaults";
+export * from "./plugin";
 export * from "./storeConfig";
 
 import { mudCoreConfig, Plugins, MergedPluginsInput } from "@latticexyz/config";

@@ -1,9 +1,9 @@
-import { defineMUDPlugin, fromZodErrorCustom, Plugins } from "@latticexyz/config";
+import { defineMUDPlugin, fromZodErrorCustom } from "@latticexyz/config";
 import { SyncHook } from "tapable";
 import { ZodError } from "zod";
 import { ExpandStoreUserConfig, StoreUserConfig, zPluginStoreConfig } from "./storeConfig";
 
-export function expandConfig<C extends StoreUserConfig>(plugins: Plugins, config: C) {
+export function expandConfig<C extends StoreUserConfig>(config: C) {
   // This function gets called within mudConfig.
   // The call order of config extenders depends on the order of their imports.
   // Any config validation and transformation should be placed here.
