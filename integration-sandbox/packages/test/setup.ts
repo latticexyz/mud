@@ -5,7 +5,16 @@ import { createServer } from "vite";
 import type { ViteDevServer } from "vite";
 
 export function startAnvil(port: number): ExecaChildProcess {
-  return execa("anvil", ["--block-base-fee-per-gas", "0", "--gas-limit", "20000000", "--port", String(port)]);
+  return execa("anvil", [
+    "-b",
+    "1",
+    "--block-base-fee-per-gas",
+    "0",
+    "--gas-limit",
+    "20000000",
+    "--port",
+    String(port),
+  ]);
 }
 
 export function deployContracts(rpc: string): ExecaChildProcess {

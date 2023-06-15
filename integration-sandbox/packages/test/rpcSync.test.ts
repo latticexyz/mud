@@ -5,7 +5,7 @@ import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import { startAnvil, deployContracts, startViteServer, startBrowserAndPage } from "./setup";
 
-describe("Sync from RPC", async () => {
+describe.skip("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;

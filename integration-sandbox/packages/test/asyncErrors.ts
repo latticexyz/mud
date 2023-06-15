@@ -18,5 +18,9 @@ export function createAsyncErrorHandler() {
     }
   }
 
-  return { reportError, resetErrors, expectNoAsyncErrors };
+  function getErrors() {
+    return errors;
+  }
+
+  return { reportError, resetErrors, expectNoAsyncErrors, getErrors };
 }
