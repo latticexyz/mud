@@ -1,7 +1,5 @@
 cache
-abi
 out
-types/ethers-contracts
 docs
 _docs
 DOCS.md
@@ -9,3 +7,7 @@ artifacts
 yarn-error.log
 API
 dist
+
+# only check in ABIs
+abi/**/*.json
+!abi/**/*.abi.json

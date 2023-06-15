@@ -68,7 +68,7 @@ library NamespaceOwner {
   /** Get owner */
   function get(bytes16 namespace) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (address(Bytes.slice20(_blob, 0)));
@@ -77,7 +77,7 @@ library NamespaceOwner {
   /** Get owner (using the specified store) */
   function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (address(Bytes.slice20(_blob, 0)));
@@ -86,7 +86,7 @@ library NamespaceOwner {
   /** Set owner */
   function set(bytes16 namespace, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)));
   }
@@ -94,7 +94,7 @@ library NamespaceOwner {
   /** Set owner (using the specified store) */
   function set(IStore _store, bytes16 namespace, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)));
   }
@@ -107,13 +107,13 @@ library NamespaceOwner {
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes16 namespace) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -121,7 +121,7 @@ library NamespaceOwner {
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes16 namespace) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((namespace));
+    _keyTuple[0] = bytes32(namespace);
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

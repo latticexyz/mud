@@ -10,7 +10,6 @@ export default {
   ecs: "ECS and MUD",
   plugins: "Plugins",
   tutorials: "Tutorials",
-  "ethglobal-hackathon": "ETHGlobal Hackathon",
   contribute: "Contribute",
   community: {
     title: "Community",

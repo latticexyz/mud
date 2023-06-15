@@ -78,7 +78,7 @@ contract KeysInTableModuleTest is Test {
 
   // This test is expected to fail because `getKeySchema()` on StoreCore reverts on singleton tables
   // TODO: we need to be able to determine whether a table is singleton vs. nonexistent
-  function testFailInstallSingleton() public {
+  function testInstallSingleton() public {
     _installKeysInTableModule();
 
     bytes32[] memory keyTuple = new bytes32[](0);
