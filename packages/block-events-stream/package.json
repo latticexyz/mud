@@ -1,0 +1,42 @@
+{
+  "name": "@latticexyz/block-events-stream",
+  "version": "1.42.0",
+  "description": "Create a stream of EVM block events",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/block-events-stream"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "test": "vitest typecheck --run && vitest --run"
+  },
+  "dependencies": {
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/config": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "abitype": "0.8.7",
+    "rxjs": "^7.5.5",
+    "viem": "1.0.6"
+  },
+  "devDependencies": {
+    "tsup": "^6.7.0",
+    "vitest": "0.31.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}

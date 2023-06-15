@@ -156,6 +156,9 @@ importers:
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.2)
+      '@latticexyz/block-events-stream':
+        specifier: link:../../../../packages/block-events-stream
+        version: link:../../../../packages/block-events-stream
       '@latticexyz/common':
         specifier: link:../../../../packages/common
         version: link:../../../../packages/common
@@ -180,6 +183,9 @@ importers:
       '@latticexyz/std-client':
         specifier: link:../../../../packages/std-client
         version: link:../../../../packages/std-client
+      '@latticexyz/store':
+        specifier: link:../../../../packages/store
+        version: link:../../../../packages/store
       '@latticexyz/utils':
         specifier: link:../../../../packages/utils
         version: link:../../../../packages/utils

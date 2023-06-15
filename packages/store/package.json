@@ -52,6 +52,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "abitype": "0.8.7",
     "ethers": "^5.7.2",
     "zod": "^3.21.4"
   },

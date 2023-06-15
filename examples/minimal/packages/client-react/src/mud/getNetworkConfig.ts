@@ -1,6 +1,7 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
 import worldsJson from "contracts/worlds.json";
 import { supportedChains } from "./supportedChains";
+import { Chain } from "@wagmi/chains";
 
 const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
@@ -8,6 +9,7 @@ type NetworkConfig = SetupContractConfig & {
   privateKey: string;
   faucetServiceUrl?: string;
   snapSync?: boolean;
+  chain?: Chain;
 };
 
 export async function getNetworkConfig(): Promise<NetworkConfig> {
@@ -49,5 +51,6 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     initialBlockNumber,
     snapSync: params.get("snapSync") === "true",
     disableCache: params.get("cache") === "false",
+    chain,
   };
 }

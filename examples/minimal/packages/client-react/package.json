@@ -12,6 +12,7 @@
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
+    "@latticexyz/block-events-stream": "link:../../../../packages/block-events-stream",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/network": "link:../../../../packages/network",
@@ -20,6 +21,7 @@
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/services": "link:../../../../packages/services",
     "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "@wagmi/chains": "^0.2.22",
