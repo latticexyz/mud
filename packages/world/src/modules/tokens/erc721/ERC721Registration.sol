@@ -4,14 +4,11 @@ pragma solidity >=0.8.0;
 import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { ERC721Proxy } from "./ERC721Proxy.sol";
 
-import { console } from "forge-std/console.sol";
-
-import { ERC721_S, ERC721_T, METADATA_T, BALANCE_T, ALLOWANCE_T } from "../common/constants.sol";
+import { ERC721_T, METADATA_T, BALANCE_T, ALLOWANCE_T } from "../common/constants.sol";
 import { BalanceTable } from "../common/BalanceTable.sol";
 import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
 import { ERC721Table } from "./ERC721Table.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
 
 library ERC721Registration {
   function install(IBaseWorld world, bytes16 namespace, string memory _name, string memory _symbol) internal {
@@ -27,7 +24,6 @@ library ERC721Registration {
     MetadataTable.setSymbol(world, metadataTableId, _symbol);
 
     proxyAddress = MetadataTable.getProxy(world, metadataTableId);
-    console.log("proxy: ", proxyAddress);
 
     // let the proxy contract modify tables directly
     world.grantAccess(namespace, METADATA_T, proxyAddress);

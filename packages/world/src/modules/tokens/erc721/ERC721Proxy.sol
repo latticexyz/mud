@@ -12,7 +12,7 @@ import { MetadataTable } from "../common/MetadataTable.sol";
 import { ERC721Table } from "./ERC721Table.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { LibERC721 } from "./LibERC721.sol";
-import { ERC721_T, ERC721_S, BALANCE_T, METADATA_T, ALLOWANCE_T } from "../common/constants.sol";
+import { ERC721_T, BALANCE_T, METADATA_T, ALLOWANCE_T } from "../common/constants.sol";
 import { SystemRegistry } from "../../core/tables/SystemRegistry.sol";
 
 contract ERC721Proxy is IERC721Proxy {

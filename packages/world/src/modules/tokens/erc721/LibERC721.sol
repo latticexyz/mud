@@ -7,13 +7,12 @@ import { AllowanceTable } from "../common/AllowanceTable.sol";
 import { MetadataTable } from "../common/MetadataTable.sol";
 import { ERC721Table } from "./ERC721Table.sol";
 import { ERC721Proxy } from "./ERC721Proxy.sol";
-import { ERC721Registration } from "../../tokens/erc721/ERC721Registration.sol";
 import { METADATA_T, ERC721_T, BALANCE_T, ALLOWANCE_T } from "../../tokens/common/constants.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { IERC721Receiver } from "./interfaces/IERC721Receiver.sol";
 
 library LibERC721 {
-  function from(bytes16 namespace, bytes16 _name) private view returns (bytes32) {
+  function from(bytes16 namespace, bytes16 _name) private pure returns (bytes32) {
     return ResourceSelector.from(namespace, _name);
   }
 
