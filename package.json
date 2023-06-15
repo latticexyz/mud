@@ -8,10 +8,6 @@
     "url": "https://github.com/latticexyz/mud.git"
   },
   "scripts": {
-    "// TODO make this use turob instead?  an we get rid of lerna?  link:packages": "lerna exec 'pnpm link --global'",
-    "// TODO what is this one?   Can we get rid of lerna?  entry:dist": "lerna run prepack",
-    "// TODO what is this one?   Can we get rid of lerna?  entry:src": "lerna run postpack",
-    "// TODO what is this one?release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
     "build": "turbo run build",
     "clean": "turbo run clean",
     "dev": "turbo run dev --concurrency 100",
@@ -42,7 +38,6 @@
     "eslint": "8.29.0",
     "husky": ">=6",
     "jq-cli-wrapper": "^1.6.1",
-    "lerna": "^6.6.1",
     "lint-staged": ">=10",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
