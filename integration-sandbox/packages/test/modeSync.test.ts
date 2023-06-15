@@ -81,7 +81,7 @@ describe("Sync from MODE", async () => {
     asyncErrorHandler.expectNoAsyncErrors();
   });
 
-  test.only("should throw browser error if MODE is down", async () => {
+  test("should throw browser error if MODE is down", async () => {
     modeProcess?.kill();
 
     await page.goto("http://localhost:3000?cache=false&mode=http://localhost:50092");
