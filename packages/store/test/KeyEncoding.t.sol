@@ -22,7 +22,6 @@ contract KeyEncodingTest is Test, StoreReadWithStubs {
   function testSetAndGet() public {
     KeyEncoding.registerSchema();
 
-    // !gasreport set KeyEncoding record
     KeyEncoding.set(
       42,
       -42,
@@ -33,7 +32,6 @@ contract KeyEncodingTest is Test, StoreReadWithStubs {
       true
     );
 
-    // !gasreport get KeyEncoding record
     bool value = KeyEncoding.get(
       42,
       -42,
@@ -49,7 +47,6 @@ contract KeyEncodingTest is Test, StoreReadWithStubs {
   function testKeyEncoding() public {
     KeyEncoding.registerSchema();
 
-    // !gasreport encode KeyEncoding key tuple
     bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(
       42,
       -42,
