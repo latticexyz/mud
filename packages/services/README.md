@@ -44,7 +44,7 @@ make mode
 ```yaml
 chains:
   - name: "localhost"
-    id: "371337"
+    id: "31337"
     rpc:
       http: "http://localhost:8545"
       ws: "ws://localhost:8545"
@@ -61,7 +61,7 @@ metrics:
   port: 6060
 ```
 
-7. If you're running with the default localhost / `371337` chain, make sure there is a local node running for the chain you want to connect to. For example, a hardhat node or an anvil node.
+7. If you're running with the default localhost / `31337` chain, make sure there is a local node running for the chain you want to connect to. For example, a hardhat node or an anvil node.
 8. Run the MODE service
 
 ```bash
@@ -80,10 +80,10 @@ make run-mode
 brew install grpcurl
 ```
 
-10. MODE exposes a `QueryLayer` gRPC server on port `50091` by default. You can use a gRPC client to interact with the service API. For example, to query for the current state of an indexed MUD world deployed at address `0xff738496c8cd898dC31b670D067162200C5c20A1` and on local chain with ID `371337`, you can use the `GetState` RPC endpoint:
+10. MODE exposes a `QueryLayer` gRPC server on port `50091` by default. You can use a gRPC client to interact with the service API. For example, to query for the current state of an indexed MUD world deployed at address `0xff738496c8cd898dC31b670D067162200C5c20A1` and on local chain with ID `31337`, you can use the `GetState` RPC endpoint:
 
 ```bash
-grpcurl -plaintext -d '{"chainTables": [], "worldTables": [], "namespace": {"chainId":"371337", "worldAddress": "0xff738496c8cd898dC31b670D067162200C5c20A1"}}' localhost:50091 mode.QueryLayer/GetState
+grpcurl -plaintext -d '{"chainTables": [], "worldTables": [], "namespace": {"chainId":"31337", "worldAddress": "0xff738496c8cd898dC31b670D067162200C5c20A1"}}' localhost:50091 mode.QueryLayer/GetState
 ```
 
 After the initial setup, to quickly re-build and run the MODE service, you can use
