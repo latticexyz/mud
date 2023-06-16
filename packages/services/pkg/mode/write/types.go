@@ -11,4 +11,5 @@ type WriteLayer struct {
 	logger *zap.Logger
 }
 
-type RowKV = map[string]string
+// TODO: rename into something more specific.
+type RowKV = map[string]interface{}

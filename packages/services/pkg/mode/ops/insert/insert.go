@@ -38,6 +38,63 @@ func (builder *InsertBuilder) Validate() error {
 	return nil
 }
 
+func stringyfiedArrayToArray(str string) []string {
+	return strings.Split(str, ",")
+}
+
+func arrayToStringyfiedArray(arr []string) string {
+	return strings.Join(arr, ",")
+}
+
+func hexFieldToBytea(hexField string) string {
+	if len(hexField) == 0 {
+		return ""
+	}
+	return "\\" + hexField[1:]
+}
+
+func hexArrayFieldToByteaArray(hexArrayField string) string {
+	hexArray := stringyfiedArrayToArray(hexArrayField)
+	byteaArray := make([]string, len(hexArray))
+	for i, hex := range hexArray {
+		byteaArray[i] = hexFieldToBytea(hex)
+	}
+	return arrayToStringyfiedArray(byteaArray)
+}
+
+func (builder *InsertBuilder) IsRowValueFieldArray(field string) bool {
+	return strings.Contains(builder.TableSchema.PostgresTypes[field], "[]")
+}
+
+func (builder *InsertBuilder) IsRowValueFieldBytea(field string) bool {
+	return builder.TableSchema.PostgresTypes[field] == "bytea"
+}
+
+func (builder *InsertBuilder) IsRowValueFieldByteaArray(field string) bool {
+	return builder.TableSchema.PostgresTypes[field] == "bytea[]"
+}
+
+func (builder *InsertBuilder) BuildInsertRowValueFieldArray(row map[string]string, field string) string {
+	if builder.IsRowValueFieldByteaArray(field) {
+		return hexArrayFieldToByteaArray(row[field])
+	} else {
+		return row[field]
+	}
+}
+
+func (builder *InsertBuilder) BuildInsertRowValueField(row map[string]string, field string) string {
+	if builder.IsRowValueFieldArray(field) {
+		// Handle arrays.
+		return `ARRAY['` + builder.BuildInsertRowValueFieldArray(row, field) + `']`
+	} else if builder.IsRowValueFieldBytea(field) {
+		// Handle bytea / hex.
+		return `'` + hexFieldToBytea(row[field]) + `'`
+	} else {
+		// Handle everything else.
+		return `'` + row[field] + `'`
+	}
+}
+
 // BuildInsertRowFromKV builds a string representation of a row of an INSERT statement using the specified row
 // and fieldNames. It returns the string representation of the row.
 //
@@ -50,17 +107,7 @@ func (builder *InsertBuilder) Validate() error {
 func (builder *InsertBuilder) BuildInsertRowFromKV(row map[string]string, fieldNames []string) string {
 	rowStr := ""
 	for idx, field := range fieldNames {
-
-		// Handle array fields.
-		if strings.Contains(builder.TableSchema.PostgresTypes[field], "[]") {
-			rowStr = rowStr + `ARRAY['` + row[field] + `']`
-		} else
-		// Handle bytea raw byte fields.
-		if builder.TableSchema.PostgresTypes[field] == "bytea" {
-			rowStr = rowStr + "'\\" + row[field][1:] + `'`
-		} else {
-			rowStr = rowStr + `'` + row[field] + `'`
-		}
+		rowStr = rowStr + builder.BuildInsertRowValueField(row, field)
 		if idx != len(fieldNames)-1 {
 			rowStr = rowStr + `, `
 		}

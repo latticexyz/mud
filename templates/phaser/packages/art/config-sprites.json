@@ -1,0 +1,21 @@
+{
+  "savePath": "../client/public/assets/atlases",
+  "folders": ["sprites"],
+  "images": [],
+  "packOptions": {
+    "allowTrim": false,
+    "textureName": "atlas",
+    "width": 2048,
+    "height": 2048,
+    "fixedSize": true,
+    "powerOfTwo": true,
+    "padding": 0,
+    "allowRotation": false,
+    "detectIdentical": true,
+    "exporter": "Phaser3",
+    "removeFileExtension": false,
+    "prependFolderName": true,
+    "packer": "MaxRectsPacker",
+    "method": "Smart"
+  }
+}

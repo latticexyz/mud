@@ -8,7 +8,7 @@ import { distinctUntilChanged, map } from "rxjs";
 // but at least it's giving correct results now. Will optimize later!
 
 /**
- * Returns all matching `EntityIndex`es for a given entity query,
+ * Returns all matching entities for a given entity query,
  * and triggers a re-render as new query results come in.
  *
  * @param fragments Query fragments to match against, executed from left to right.

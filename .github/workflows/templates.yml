@@ -6,13 +6,18 @@ on:
       - main
   pull_request:
 
+env:
+  # Fix OOM errors with sourcemaps in phaser client
+  # https://github.com/latticexyz/mud/issues/1019
+  NODE_OPTIONS: --max-old-space-size=8192
+
 jobs:
   build:
     name: Build template
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        template: [minimal, react]
+        template: [vanilla, react, phaser, threejs]
 
     steps:
       - name: Checkout
@@ -29,7 +34,11 @@ jobs:
 
       - name: Build template
         working-directory: ./templates/${{ matrix.template }}
-        run: pnpm build
+        run: pnpm run build
 
       - name: Outdated files, run `pnpm gas-report` and commit them
         uses: ./.github/actions/require-empty-diff
+
+      - name: Run tests
+        working-directory: ./templates/${{ matrix.template }}
+        run: pnpm run test

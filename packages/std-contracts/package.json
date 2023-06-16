@@ -18,7 +18,6 @@
     "clean:typechain": "rimraf types",
     "docs": "rimraf API && hardhat docgen",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "release": "npm publish --access=public",
     "test": "forge test"
   },
   "devDependencies": {

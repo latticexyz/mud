@@ -1,7 +1,7 @@
 import { arrayToHex } from "./arrayToHex";
 import { bytesToString } from "./bytesToString";
 import { hexToArray } from "./hexToArray";
-import { stringToBytes16 } from "./stringToBytes16";
+import { stringToBytes16 } from "./stringToBytes";
 
 export class TableId {
   namespace: string;
@@ -37,5 +37,13 @@ export class TableId {
     const namespace = bytesToString(tableIdBytes.slice(0, 16)).replace(/\0+$/, "");
     const name = bytesToString(tableIdBytes.slice(16, 32)).replace(/\0+$/, "");
     return new TableId(namespace, name);
+  }
+
+  /** @deprecated Don't use this! This is a temporary hack for v2<>v1 compatibility until we can write v2 client libraries. This is here so it stays close to the formatting of `toString()` above. */
+  static parse(tableIdString: string) {
+    const match = tableIdString.match(/^TableId<(.+?):(.+?)>$/);
+    if (!match) return null;
+    const [, namespace, name] = match;
+    return new TableId(namespace === "[empty]" ? "" : namespace, name === "[empty]" ? "" : name);
   }
 }

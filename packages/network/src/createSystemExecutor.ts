@@ -1,5 +1,5 @@
 import { Provider } from "@ethersproject/providers";
-import { Component, EntityIndex, getComponentEntities, getComponentValue, Type, World } from "@latticexyz/recs";
+import { Component, Entity, getComponentEntities, getComponentValue, Type, World } from "@latticexyz/recs";
 import { deferred, keccak256, toEthAddress } from "@latticexyz/utils";
 import { Contract, ContractInterface, Signer } from "ethers";
 import { observable, runInAction } from "mobx";
@@ -76,7 +76,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
   }
 
   function createSystemContract<C extends Contract>(
-    entity: EntityIndex,
+    entity: Entity,
     signerOrProvider?: Signer | Provider
   ): { id: string; contract: C } | undefined {
     const { value: hashedSystemId } = getComponentValue(systems, entity) || {};
@@ -88,7 +88,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     }
     return {
       id,
-      contract: new Contract(toEthAddress(world.entities[entity]), interfaces[id], signerOrProvider) as C,
+      contract: new Contract(toEthAddress(entity), interfaces[id], signerOrProvider) as C,
     };
   }
 }

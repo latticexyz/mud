@@ -1,12 +1,22 @@
 import { parse, visit } from "@solidity-parser/parser";
-import type { TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
-import { MUDError } from "@latticexyz/config";
+import type { SourceUnit, TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
+import { MUDError } from "../../errors";
 
 export interface ContractInterfaceFunction {
   name: string;
   parameters: string[];
   stateMutability: string;
   returnParameters: string[];
+}
+
+export interface ContractInterfaceError {
+  name: string;
+  parameters: string[];
+}
+
+interface SymbolImport {
+  symbol: string;
+  path: string;
 }
 
 /**
@@ -20,8 +30,9 @@ export function contractToInterface(data: string, contractName: string) {
   const ast = parse(data);
 
   let withContract = false;
-  let symbols: string[] = [];
+  let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
+  const errors: ContractInterfaceError[] = [];
 
   visit(ast, {
     ContractDefinition({ name }) {
@@ -49,7 +60,8 @@ export function contractToInterface(data: string, contractName: string) {
             });
 
             for (const { typeName } of parameters.concat(returnParameters ?? [])) {
-              symbols = symbols.concat(typeNameToExternalSymbols(typeName));
+              const symbols = typeNameToSymbols(typeName);
+              symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
             }
           }
         } catch (error: unknown) {
@@ -60,6 +72,17 @@ export function contractToInterface(data: string, contractName: string) {
         }
       }
     },
+    CustomErrorDefinition({ name, parameters }) {
+      errors.push({
+        name: name === null ? "" : name,
+        parameters: parameters.map(parseParameter),
+      });
+
+      for (const parameter of parameters) {
+        const symbols = typeNameToSymbols(parameter.typeName);
+        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
+      }
+    },
   });
 
   if (!withContract) {
@@ -68,7 +91,8 @@ export function contractToInterface(data: string, contractName: string) {
 
   return {
     functions,
-    symbols,
+    errors,
+    symbolImports,
   };
 }
 
@@ -112,7 +136,13 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
       stateMutability: null,
     };
   } else if (typeName.type === "ArrayTypeName") {
-    const length = typeName.length?.type === "NumberLiteral" ? typeName.length.number : "";
+    let length = "";
+    if (typeName.length?.type === "NumberLiteral") {
+      length = typeName.length.number;
+    } else if (typeName.length?.type === "Identifier") {
+      length = typeName.length.name;
+    }
+
     const { name, stateMutability } = flattenTypeName(typeName.baseTypeName);
     return {
       name: `${name}[${length}]`,
@@ -125,14 +155,60 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
 }
 
 // Get symbols that need to be imported for given typeName
-function typeNameToExternalSymbols(typeName: TypeName | null): string[] {
+function typeNameToSymbols(typeName: TypeName | null): string[] {
   if (typeName?.type === "UserDefinedTypeName") {
     // split is needed to get a library, if types are internal to it
     const symbol = typeName.namePath.split(".")[0];
     return [symbol];
   } else if (typeName?.type === "ArrayTypeName") {
-    return typeNameToExternalSymbols(typeName.baseTypeName);
+    const symbols = typeNameToSymbols(typeName.baseTypeName);
+    // array types can also use symbols (constants) for length
+    if (typeName.length?.type === "Identifier") {
+      const innerTypeName = typeName.length.name;
+      symbols.push(innerTypeName.split(".")[0]);
+    }
+    return symbols;
   } else {
     return [];
   }
+}
+
+// Get imports for given symbols.
+// To avoid circular dependencies of interfaces on their implementations,
+// symbols used for args/returns must always be imported from an auxiliary file.
+// To avoid parsing the entire project to build dependencies,
+// symbols must be imported with an explicit `import { symbol } from ...`
+function symbolsToImports(ast: SourceUnit, symbols: string[]) {
+  const imports: SymbolImport[] = [];
+
+  for (const symbol of symbols) {
+    let symbolImport: SymbolImport | undefined;
+
+    visit(ast, {
+      ImportDirective({ path, symbolAliases }) {
+        if (symbolAliases) {
+          for (const symbolAndAlias of symbolAliases) {
+            // either check the alias, or the original symbol if there's no alias
+            const symbolAlias = symbolAndAlias[1] || symbolAndAlias[0];
+            if (symbol === symbolAlias) {
+              symbolImport = {
+                // always use the original symbol for interface imports
+                symbol: symbolAndAlias[0],
+                path,
+              };
+              return;
+            }
+          }
+        }
+      },
+    });
+
+    if (symbolImport) {
+      imports.push(symbolImport);
+    } else {
+      throw new MUDError(`Symbol "${symbol}" has no explicit import`);
+    }
+  }
+
+  return imports;
 }

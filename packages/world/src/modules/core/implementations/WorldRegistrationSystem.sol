@@ -13,9 +13,10 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
-import { IErrors } from "../../../interfaces/IErrors.sol";
+import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
+import { SystemHooks } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
@@ -23,7 +24,7 @@ import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 /**
  * Functions related to registering resources in the World.
  */
-contract WorldRegistrationSystem is System, IErrors {
+contract WorldRegistrationSystem is System, IWorldErrors {
   using ResourceSelector for bytes32;
 
   /**
@@ -128,7 +129,11 @@ contract WorldRegistrationSystem is System, IErrors {
    * Register a hook for the system at the given namespace and name
    */
   function registerSystemHook(bytes16 namespace, bytes16 name, ISystemHook hook) public virtual {
-    // TODO implement (see https://github.com/latticexyz/mud/issues/444)
+    // Require caller to own the namespace
+    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+
+    // Register the hook
+    SystemHooks.push(resourceSelector, address(hook));
   }
 
   /**

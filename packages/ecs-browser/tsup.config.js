@@ -4,8 +4,8 @@ export default defineConfig({
   entry: ["src/index.ts"],
   outDir: "dist",
   format: ["esm"],
+  dts: false,
   sourcemap: true,
   clean: true,
-  dts: true,
-  noExternal: ["goober", "shiki"],
+  minify: true,
 });

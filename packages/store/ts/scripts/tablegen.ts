@@ -1,9 +1,10 @@
 import path from "path";
-import { loadStoreConfig } from "@latticexyz/config";
+import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { tablegen } from "../render-solidity";
+import { tablegen } from "../codegen";
+import { StoreConfig } from "..";
 
-const config = await loadStoreConfig();
+const config = (await loadConfig()) as StoreConfig;
 const srcDir = await getSrcDirectory();
 
 await tablegen(config, path.join(srcDir, config.codegenDirectory));

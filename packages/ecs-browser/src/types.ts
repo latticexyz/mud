@@ -1,8 +1,8 @@
-import { Component, ComponentValue, EntityIndex, Schema } from "@latticexyz/recs";
+import { Component, ComponentValue, Entity, Schema } from "@latticexyz/recs";
 import { AnyComponent } from "@latticexyz/recs";
 
 export type SetContractComponentFunction<T extends Schema> = (
-  entity: EntityIndex,
+  entity: Entity,
   component: Component<T, { contractId: string }>,
   newValue: ComponentValue<T>
 ) => void;
