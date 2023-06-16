@@ -12,7 +12,6 @@ import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
@@ -39,10 +38,10 @@ export interface DeploymentInfo {
 
 export async function deploy(
   mudConfig: StoreConfig & WorldConfig,
-  existingContracts: string[],
+  existingContractNames: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
-  const resolvedConfig = resolveWorldConfig(mudConfig, existingContracts);
+  const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
@@ -62,7 +61,7 @@ export async function deploy(
   // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
   let maxPriorityFeePerGas: number;
   let maxFeePerGas: BigNumber;
-  setInternalFeePerGas(priorityFeeMultiplier);
+  await setInternalFeePerGas(priorityFeeMultiplier);
 
   // Catch all to await any promises before exiting the script
   let promises: Promise<unknown>[] = [];
@@ -544,6 +543,10 @@ export async function deploy(
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
     if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
+    if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
+      throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
+If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
+    }
 
     // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
     maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);

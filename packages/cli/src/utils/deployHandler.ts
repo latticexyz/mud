@@ -1,6 +1,5 @@
 import chalk from "chalk";
-import glob from "glob";
-import path, { basename } from "path";
+import path from "path";
 import { MUDError } from "@latticexyz/common/errors";
 import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
@@ -9,6 +8,7 @@ import { deploy } from "../utils/deploy";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId";
+import { getExistingContracts } from "./getExistingContracts";
 
 export type DeployOptions = {
   configPath?: string;
@@ -27,7 +27,7 @@ export type DeployOptions = {
 };
 
 export async function deployHandler(args: DeployOptions) {
-  args.profile = args.profile ?? process.env.FOUNDRY_PROFILE;
+  args.profile ??= process.env.FOUNDRY_PROFILE;
   const { configPath, printConfig, profile, clean, skipBuild } = args;
 
   const rpc = args.rpc ?? (await getRpcUrl(profile));
@@ -44,10 +44,7 @@ export async function deployHandler(args: DeployOptions) {
 
   // Get a list of all contract names
   const srcDir = args?.srcDir ?? (await getSrcDirectory());
-  const existingContracts = glob
-    .sync(`${srcDir}/**/*.sol`)
-    // Get the basename of the file
-    .map((path) => basename(path, ".sol"));
+  const existingContractNames = getExistingContracts(srcDir).map(({ basename }) => basename);
 
   // Load the config
   const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
@@ -55,8 +52,13 @@ export async function deployHandler(args: DeployOptions) {
   if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(mudConfig, null, 2));
 
   const privateKey = process.env.PRIVATE_KEY;
-  if (!privateKey) throw new MUDError("Missing PRIVATE_KEY environment variable");
-  const deploymentInfo = await deploy(mudConfig, existingContracts, { ...args, rpc, privateKey });
+  if (!privateKey)
+    throw new MUDError(
+      `Missing PRIVATE_KEY environment variable.
+Run 'echo "PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" > .env'
+in your contracts directory to use the default anvil private key.`
+    );
+  const deploymentInfo = await deploy(mudConfig, existingContractNames, { ...args, rpc, privateKey });
 
   if (args.saveDeployment) {
     // Write deployment result to file (latest and timestamp)
