@@ -12,6 +12,33 @@ It adds critical tables and systems to the World, which are externalized to keep
 
 See [World internals](/world/internals) for table and system details.
 
+2. **`RegistrationModule`**
+
+The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
+
+#### **`UniqueEntityModule`**
+
+The [`UniqueEntityModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/uniqueentity/UniqueEntityModule.sol) installs a system that always returns a unique `bytes32` key. It is designed for tables that have one key (eg: ECS components).
+
+It exposes a single method:
+
+- `function getUniqueEntity() returns (bytes32 uniqueEntity)` increments and returns an entity nonce
+
+Using `getUniqueEntity` to create a new unit:
+
+```solidity
+import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
+import { Soldier } from "../codegen/tables/Soldier.sol";
+
+...
+
+function spawnSoldier() public {
+  bytes32 key = getUniqueEntity();
+
+  Soldier.setHealth(key, 100);
+}
+```
+
 ### Querying modules
 
 The `KeysInTableModule` and `KeysWithValueModule` modules index information about tables on-chain. Their functionality is leveraged in `SnapSyncModule` and `query` to allow on-chain querying.
@@ -34,7 +61,7 @@ Using `getKeysInTable` to retrieve all keys in the Player table:
 // { Player: "bool" }
 //
 import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
-import { Player, PlayerTableId } from "./tables/Player.sol";
+import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
 // get all players
 bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
 ```
@@ -46,7 +73,7 @@ Using `hasKey` to check if a key is in the Player table:
 // { Player: "bool" }
 //
 import { hasKey } from "@latticexyz/world/src/modules/keysintable/hasKey.sol";
-import { Player, PlayerTableId } from "./tables/Player.sol";
+import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
 bytes32[] memory keyTuple = new bytes32[](1);
 keyTuple[0] = "bob";
 // check if key "bob" is a player
@@ -77,7 +104,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 //   keySchema: { nftId: "uint256" }
 // }
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
-import { Owners, OwnersId } from "./tables/Owners.sol";
+import { Owners, OwnersId } from "../codegen/tables/Owners.sol";
 // get all nfts (as bytes, need to convert to uint256) owned by address 0x42
 bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
 ```

@@ -3,7 +3,8 @@ import { anvil, forge, getRpcUrl, getScriptDirectory, getSrcDirectory } from "@l
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
-import { StoreConfig, tablegen } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
+import { tablegen } from "@latticexyz/store/codegen";
 import path from "path";
 import { tsgen } from "../render-ts";
 import { debounce } from "throttle-debounce";

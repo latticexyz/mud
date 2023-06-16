@@ -78,7 +78,7 @@ The recommended use of Store is through libraries generated using the MUD code-g
 
 Unlike Solidity where all data structures in storage need to be created at compile time, You can create tables at runtime: this is particularly useful to extend the amount of state a contract stores over time, or even to rename tables and columns using migrations. Store brings some of the sanity of SQL database to Ethereum, without trading-off on gas cost.
 
-Store also allows you to register hooks on certain tables and rows to automatically create indexed views. For example: in case you’d want derived state like `balanceOf` in the ERC-721 spec, Store can recompute the corresponding row for an address every-time any piece of logic changes the owner of a token. It will decrease the balance of the sender and increase the balance of the receiver. There is no need to implement `onTransferHooks` : any piece of code that changes the `owner` column in the Token table will trigger a re-computation of the Balance table.
+Store also allows you to register hooks on certain tables and rows to automatically create indexed views. For example: in case you’d want derived state like `balanceOf` in the ERC-721 spec, Store can recompute the corresponding row for an address every time any piece of logic changes the owner of a token. It will decrease the balance of the sender and increase the balance of the receiver. There is no need to implement `onTransferHooks` : any piece of code that changes the `owner` column in the Token table will trigger a re-computation of the Balance table.
 
 [code for that]
 
@@ -92,7 +92,7 @@ Store uses a custom storage encoding called **Tight-coder**. It makes Store chea
 
 ### 2. Logic is stateless and partitioned across different contracts with custom permissions
 
-Along with Store, MUD recommends the use of World: an entry-point kernel that takes care of mediating access to the Store from different different contracts.
+Along with Store, MUD recommends the use of World: an entry-point kernel that takes care of mediating access to the Store from different contracts.
 
 World creates a Store at deployment time. Each table in the Store is registered under a namespace with a name, represented like a flat filesystem path. eg: `/mudswap/BalanceTable`. In this example, the namespace is `mudswap` and the name is `BalanceTable`.
 
@@ -137,4 +137,4 @@ With MUD, you define a list of queries on your Store state (the simplest being `
 
 If you use React, MUD provides React hooks to bind the Store state to your components and automatically re-render them when the onchain data changes.
 
-[diagram with a balance table → a frontend with a button to transfer and an addressed prefilled → a onchain tx to a system → balance table updates → frontend update]
+[diagram with a balance table → a frontend with a button to transfer and an addressed prefilled → an onchain tx to a system → balance table updates → frontend update]

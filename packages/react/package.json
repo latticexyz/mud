@@ -42,7 +42,7 @@
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
     "vite": "^4.3.6",
-    "vitest": "^0.31.0"
+    "vitest": "0.31.4"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
