@@ -14,6 +14,15 @@ The following services are available for use with MUD V2. For more details on ea
 
 ### 🏃 Quickstart
 
+#### Running MODE with Docker Compose
+
+(Only tested on MacOS for now.)
+
+1. Install Docker for Mac (https://docs.docker.com/docker-for-mac/install/)
+2. Install Docker Compose (https://docs.docker.com/compose/install/)
+3. Run `docker-compose -f docker-compose.mode.yaml up`. This will start services for both MODE and PostgresDB.
+4. By default it will connect to a local anvil node at `localhost:8545`. If you want to connect to a different node, you can change the `rpc.http` and `rpc.ws` fields in the `config.mode-docker.yaml` file.
+
 #### Running the MODE service
 
 1. Install Go
