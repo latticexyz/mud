@@ -7,7 +7,7 @@ import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js
 import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
 import { resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/common/errors";
-import { encodeSchema } from "@latticexyz/schema-type";
+import { encodeSchema } from "@latticexyz/schema-type/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";

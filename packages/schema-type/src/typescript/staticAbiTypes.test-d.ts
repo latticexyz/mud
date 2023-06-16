@@ -1,6 +1,6 @@
 import { describe, expectTypeOf, it } from "vitest";
-import { StaticAbiTypeToPrimitiveType } from "./staticAbiTypes";
 import { Hex } from "viem";
+import { StaticAbiTypeToPrimitiveType } from "./staticAbiTypes";
 
 describe("StaticAbiTypeToPrimitiveType", () => {
   it("maps uint8 to number", () => {

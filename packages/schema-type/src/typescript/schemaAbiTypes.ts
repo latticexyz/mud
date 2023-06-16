@@ -209,3 +209,6 @@ export type SchemaAbiType = (typeof schemaAbiTypes)[number];
 // These are defined here to keep the index position (98) consolidated, since we use it both in runtime code and type definition
 export const staticAbiTypes = schemaAbiTypes.slice(0, 98) as any as TupleSplit<typeof schemaAbiTypes, 98>[0];
 export const dynamicAbiTypes = schemaAbiTypes.slice(98) as any as TupleSplit<typeof schemaAbiTypes, 98>[1];
+
+export type StaticAbiType = (typeof staticAbiTypes)[number];
+export type DynamicAbiType = (typeof dynamicAbiTypes)[number];

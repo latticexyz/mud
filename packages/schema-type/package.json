@@ -10,19 +10,30 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/typescript/index.js"
+    ".": "./dist/typescript/index.js",
+    "./deprecated": "./dist/typescript/deprecated/index.js"
   },
-  "types": "src/typescript/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/typescript/index.ts"
+      ],
+      "deprecated": [
+        "./src/typescript/deprecated/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist/typescript",
     "dev": "tsup --watch",
-    "test": "tsc --noEmit && forge test"
+    "test": "vitest typecheck --run && vitest --run && forge test"
   },
   "dependencies": {
-    "abitype": "0.8.7"
+    "abitype": "0.8.7",
+    "viem": "1.0.6"
   },
   "devDependencies": {
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",

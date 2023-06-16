@@ -1,5 +1,5 @@
 import { ComponentValue } from "@latticexyz/recs";
-import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type";
+import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type/deprecated";
 import { QueryLayerClient } from "@latticexyz/services/mode";
 import { arrayToHex, TableId } from "@latticexyz/utils";
 import { Contract } from "ethers";

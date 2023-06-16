@@ -1,4 +1,4 @@
-import { getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
+import { getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type/deprecated";
 import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 

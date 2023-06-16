@@ -1,4 +1,4 @@
-import { SchemaTypeToAbiType } from "@latticexyz/schema-type";
+import { SchemaTypeToAbiType } from "@latticexyz/schema-type/deprecated";
 import { Schema } from "../common";
 import { decodeAbiParameters } from "viem";
 

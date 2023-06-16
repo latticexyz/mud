@@ -1,11 +1,7 @@
 import { Hex } from "viem";
-import { staticAbiTypes } from "./schemaAbiTypes";
+import { StaticAbiType } from "./schemaAbiTypes";
 
 // Fixed-length ABI types
-
-export { staticAbiTypes };
-
-export type StaticAbiType = (typeof staticAbiTypes)[number];
 
 export type StaticPrimitiveType = number | bigint | boolean | Hex;
 

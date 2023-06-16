@@ -1,4 +1,4 @@
-import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes, StaticArray } from "@latticexyz/schema-type";
+import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes, StaticArray } from "@latticexyz/schema-type/deprecated";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
 import type {
   AsDependent,

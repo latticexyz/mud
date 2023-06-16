@@ -1,5 +1,5 @@
 import path from "path";
-import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
+import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
 import {
   RelativeImportDatum,
   RenderDynamicField,

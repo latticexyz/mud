@@ -1,4 +1,9 @@
-import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
+import {
+  AbiTypeToSchemaType,
+  getStaticByteLength,
+  SchemaType,
+  SchemaTypeToAbiType,
+} from "@latticexyz/schema-type/deprecated";
 import { parseStaticArray } from "@latticexyz/config";
 import { RelativeImportDatum, RenderType } from "@latticexyz/common/codegen";
 import { StoreConfig } from "../config";
