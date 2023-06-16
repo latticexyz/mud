@@ -14,6 +14,7 @@ export function renderWorld(options: RenderWorldOptions) {
       ? [
           { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}interfaces/IWorldKernel.sol` },
+          { symbol: "IWorldEphemeral", path: `${worldImportPath}interfaces/IWorldEphemeral.sol` },
         ]
       : [
           {

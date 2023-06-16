@@ -122,14 +122,7 @@ func (il *IngressLayer) Run() {
 			}
 
 		case header := <-headers:
-			block, err := il.eth.BlockByHash(context.Background(), header.Hash())
-			if err != nil {
-				// Skip this header since BlockByHash failed in fetching the block.
-				il.logger.Error("failed to fetch block by hash", zap.Error(err))
-				continue
-			}
-
-			blockNumber := block.Number()
+			blockNumber := header.Number
 			il.logger.Info("received new block", zap.String("hash", header.Hash().String()), zap.String("number", blockNumber.String()))
 
 			// Get all events in this block, then process and filter out logs.

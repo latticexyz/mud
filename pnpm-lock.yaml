@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 importers:
 
@@ -172,13 +176,13 @@ importers:
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
       vitest:
-        specifier: 0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/common:
     dependencies:
@@ -209,10 +213,10 @@ importers:
         version: 0.2.23(typescript@4.9.5)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       vitest:
-        specifier: 0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/config:
     dependencies:
@@ -243,7 +247,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
 
   packages/create-mud:
     dependencies:
@@ -256,7 +260,7 @@ importers:
         version: 18.15.11
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -279,8 +283,8 @@ importers:
         specifier: workspace:*
         version: link:../world
       abitype:
-        specifier: ^0.8.2
-        version: 0.8.2(typescript@5.0.4)
+        specifier: 0.8.7
+        version: 0.8.7(typescript@5.0.4)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -300,8 +304,8 @@ importers:
         specifier: ^18.3.2
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: ^0.3.18
-        version: 0.3.18(typescript@5.0.4)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.0.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -328,8 +332,8 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       vitest:
-        specifier: 0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/ecs-browser:
     dependencies:
@@ -369,7 +373,7 @@ importers:
         version: 18.2.6
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
 
   packages/network:
     dependencies:
@@ -434,8 +438,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: ^0.3.18
-        version: 0.3.18(typescript@4.9.5)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@4.9.5)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -463,7 +467,7 @@ importers:
         version: 29.0.5(@babel/core@7.21.4)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
@@ -490,8 +494,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1(ethers@5.7.2)(hardhat@2.10.2)
       '@types/chai':
-        specifier: ^4.3.3
-        version: 4.3.4
+        specifier: ^4.3.5
+        version: 4.3.5
       '@types/node-fetch':
         specifier: ^2.6.2
         version: 2.6.2
@@ -512,7 +516,7 @@ importers:
         version: 0.10.3(buffer-lite@1.0.0)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       web3-utils:
         specifier: ^1.8.0
         version: 1.8.0
@@ -537,13 +541,41 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
       typedoc-plugin-markdown:
         specifier: ^3.13.6
         version: 3.14.0(typedoc@0.23.21)
+
+  packages/protocol-parser:
+    dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:*
+        version: link:../config
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      abitype:
+        specifier: 0.8.7
+        version: 0.8.7(typescript@5.0.4)
+      viem:
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.0.4)
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+      vitest:
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/react:
     dependencies:
@@ -589,7 +621,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
@@ -600,8 +632,8 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6(@types/node@18.15.11)
       vitest:
-        specifier: ^0.31.0
-        version: 0.31.0
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/recs:
     dependencies:
@@ -632,7 +664,7 @@ importers:
         version: 29.0.5(@babel/core@7.21.4)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       type-fest:
         specifier: ^2.14.0
         version: 2.14.0
@@ -646,8 +678,8 @@ importers:
   packages/schema-type:
     dependencies:
       abitype:
-        specifier: ^0.8.3
-        version: 0.8.3(typescript@5.0.4)
+        specifier: 0.8.7
+        version: 0.8.7(typescript@5.0.4)
     devDependencies:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -662,8 +694,8 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       vitest:
-        specifier: ^0.31.0
-        version: 0.31.0
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/services:
     dependencies:
@@ -685,7 +717,7 @@ importers:
         version: 1.146.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
 
   packages/solecs:
     dependencies:
@@ -733,15 +765,24 @@ importers:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
 
+  packages/solhint-config-mud:
+    devDependencies:
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(typescript@4.9.5)
+
   packages/solhint-plugin-mud:
     dependencies:
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
     devDependencies:
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
 
   packages/std-client:
     dependencies:
@@ -776,8 +817,8 @@ importers:
         specifier: workspace:*
         version: link:../world
       abitype:
-        specifier: ^0.8.2
-        version: 0.8.2(typescript@4.9.5)
+        specifier: 0.8.7
+        version: 0.8.7(typescript@4.9.5)(zod@3.21.4)
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
@@ -791,8 +832,8 @@ importers:
         specifier: ^7.5.5
         version: 7.5.6
       viem:
-        specifier: ^0.3.18
-        version: 0.3.18(typescript@4.9.5)
+        specifier: 1.0.6
+        version: 1.0.6(typescript@4.9.5)
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -811,7 +852,7 @@ importers:
         version: 8.3.4
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -822,8 +863,8 @@ importers:
         specifier: ^3.13.6
         version: 3.14.0(typedoc@0.23.21)
       vitest:
-        specifier: 0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/std-contracts:
     devDependencies:
@@ -884,6 +925,9 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
+      abitype:
+        specifier: 0.8.7
+        version: 0.8.7(typescript@4.9.5)(zod@3.21.4)
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
@@ -926,7 +970,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -937,8 +981,8 @@ importers:
         specifier: ^0.23.10
         version: 0.23.21(typescript@4.9.5)
       vitest:
-        specifier: 0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/store-cache:
     dependencies:
@@ -955,8 +999,8 @@ importers:
         specifier: workspace:*
         version: link:../store
       abitype:
-        specifier: ^0.8.0
-        version: 0.8.2(typescript@5.0.4)
+        specifier: 0.8.7
+        version: 0.8.7(typescript@5.0.4)
       tuple-database:
         specifier: ^2.2.0
         version: 2.2.0
@@ -965,8 +1009,8 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       vitest:
-        specifier: ^0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
   packages/utils:
     dependencies:
@@ -994,7 +1038,7 @@ importers:
         version: 29.0.5(@babel/core@7.21.4)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
@@ -1070,7 +1114,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+        version: 6.7.0(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1084,8 +1128,8 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
       vitest:
-        specifier: 0.30.1
-        version: 0.30.1
+        specifier: 0.31.4
+        version: 0.31.4
 
 packages:
 
@@ -3552,17 +3596,17 @@ packages:
   /@types/chai-as-promised@7.1.5:
     resolution: {integrity: sha512-jStwss93SITGBwt/niYrkf2C+/1KTeZCZl1LaeezTlqppAKeoQC7jxyqYuP72sxBGKCIbw7oHgbYssIRzT5FCQ==}
     dependencies:
-      '@types/chai': 4.3.4
+      '@types/chai': 4.3.5
     dev: true
 
   /@types/chai-subset@1.3.3:
     resolution: {integrity: sha512-frBecisrNGz+F4T6bcc+NLeolfiojh5FxW2klu669+8BARtyQv2C/GkNW6FUodVe4BroGMP/wER/YDGc7rEllw==}
     dependencies:
-      '@types/chai': 4.3.4
+      '@types/chai': 4.3.5
     dev: true
 
-  /@types/chai@4.3.4:
-    resolution: {integrity: sha512-KnRanxnpfpjUTqTCXslZSEdLfXExwgNxYPdiO2WGUj8+HDjFi8R3k5RVKPeSCzLjCcshCAtVO2QBbVuAV4kTnw==}
+  /@types/chai@4.3.5:
+    resolution: {integrity: sha512-mEo1sAde+UCE6b2hxn332f1g1E8WfYRu6p5SvTKr2ZKC1f7gFJXk4h5PyGP9Dt6gCaG8y8XhwnXWC6Iy2cmBng==}
     dev: true
 
   /@types/debug@4.1.7:
@@ -3950,105 +3994,44 @@ packages:
       - supports-color
     dev: true
 
-  /@vitest/expect@0.30.1:
-    resolution: {integrity: sha512-c3kbEtN8XXJSeN81iDGq29bUzSjQhjES2WR3aColsS4lPGbivwLtas4DNUe0jD9gg/FYGIteqOenfU95EFituw==}
+  /@vitest/expect@0.31.4:
+    resolution: {integrity: sha512-tibyx8o7GUyGHZGyPgzwiaPaLDQ9MMuCOrc03BYT0nryUuhLbL7NV2r/q98iv5STlwMgaKuFJkgBW/8iPKwlSg==}
     dependencies:
-      '@vitest/spy': 0.30.1
-      '@vitest/utils': 0.30.1
+      '@vitest/spy': 0.31.4
+      '@vitest/utils': 0.31.4
       chai: 4.3.7
     dev: true
 
-  /@vitest/expect@0.31.0:
-    resolution: {integrity: sha512-Jlm8ZTyp6vMY9iz9Ny9a0BHnCG4fqBa8neCF6Pk/c/6vkUk49Ls6UBlgGAU82QnzzoaUs9E/mUhq/eq9uMOv/g==}
+  /@vitest/runner@0.31.4:
+    resolution: {integrity: sha512-Wgm6UER+gwq6zkyrm5/wbpXGF+g+UBB78asJlFkIOwyse0pz8lZoiC6SW5i4gPnls/zUcPLWS7Zog0LVepXnpg==}
     dependencies:
-      '@vitest/spy': 0.31.0
-      '@vitest/utils': 0.31.0
-      chai: 4.3.7
-    dev: true
-
-  /@vitest/runner@0.30.1:
-    resolution: {integrity: sha512-W62kT/8i0TF1UBCNMRtRMOBWJKRnNyv9RrjIgdUryEe0wNpGZvvwPDLuzYdxvgSckzjp54DSpv1xUbv4BQ0qVA==}
-    dependencies:
-      '@vitest/utils': 0.30.1
+      '@vitest/utils': 0.31.4
       concordance: 5.0.4
       p-limit: 4.0.0
       pathe: 1.1.0
     dev: true
 
-  /@vitest/runner@0.31.0:
-    resolution: {integrity: sha512-H1OE+Ly7JFeBwnpHTrKyCNm/oZgr+16N4qIlzzqSG/YRQDATBYmJb/KUn3GrZaiQQyL7GwpNHVZxSQd6juLCgw==}
-    dependencies:
-      '@vitest/utils': 0.31.0
-      concordance: 5.0.4
-      p-limit: 4.0.0
-      pathe: 1.1.0
-    dev: true
-
-  /@vitest/snapshot@0.30.1:
-    resolution: {integrity: sha512-fJZqKrE99zo27uoZA/azgWyWbFvM1rw2APS05yB0JaLwUIg9aUtvvnBf4q7JWhEcAHmSwbrxKFgyBUga6tq9Tw==}
+  /@vitest/snapshot@0.31.4:
+    resolution: {integrity: sha512-LemvNumL3NdWSmfVAMpXILGyaXPkZbG5tyl6+RQSdcHnTj6hvA49UAI8jzez9oQyE/FWLKRSNqTGzsHuk89LRA==}
     dependencies:
       magic-string: 0.30.0
       pathe: 1.1.0
       pretty-format: 27.5.1
     dev: true
 
-  /@vitest/snapshot@0.31.0:
-    resolution: {integrity: sha512-5dTXhbHnyUMTMOujZPB0wjFjQ6q5x9c8TvAsSPUNKjp1tVU7i9pbqcKPqntyu2oXtmVxKbuHCqrOd+Ft60r4tg==}
-    dependencies:
-      magic-string: 0.30.0
-      pathe: 1.1.0
-      pretty-format: 27.5.1
-    dev: true
-
-  /@vitest/spy@0.30.1:
-    resolution: {integrity: sha512-YfJeIf37GvTZe04ZKxzJfnNNuNSmTEGnla2OdL60C8od16f3zOfv9q9K0nNii0NfjDJRt/CVN/POuY5/zTS+BA==}
+  /@vitest/spy@0.31.4:
+    resolution: {integrity: sha512-3ei5ZH1s3aqbEyftPAzSuunGICRuhE+IXOmpURFdkm5ybUADk+viyQfejNk6q8M5QGX8/EVKw+QWMEP3DTJDag==}
     dependencies:
       tinyspy: 2.1.0
     dev: true
 
-  /@vitest/spy@0.31.0:
-    resolution: {integrity: sha512-IzCEQ85RN26GqjQNkYahgVLLkULOxOm5H/t364LG0JYb3Apg0PsYCHLBYGA006+SVRMWhQvHlBBCyuByAMFmkg==}
-    dependencies:
-      tinyspy: 2.1.0
-    dev: true
-
-  /@vitest/utils@0.30.1:
-    resolution: {integrity: sha512-/c8Xv2zUVc+rnNt84QF0Y0zkfxnaGhp87K2dYJMLtLOIckPzuxLVzAtFCicGFdB4NeBHNzTRr1tNn7rCtQcWFA==}
+  /@vitest/utils@0.31.4:
+    resolution: {integrity: sha512-DobZbHacWznoGUfYU8XDPY78UubJxXfMNY1+SUdOp1NsI34eopSA6aZMeaGu10waSOeYwE8lxrd/pLfT0RMxjQ==}
     dependencies:
       concordance: 5.0.4
       loupe: 2.3.6
       pretty-format: 27.5.1
     dev: true
-
-  /@vitest/utils@0.31.0:
-    resolution: {integrity: sha512-kahaRyLX7GS1urekRXN2752X4gIgOGVX4Wo8eDUGUkTWlGpXzf5ZS6N9RUUS+Re3XEE8nVGqNyxkSxF5HXlGhQ==}
-    dependencies:
-      concordance: 5.0.4
-      loupe: 2.3.6
-      pretty-format: 27.5.1
-    dev: true
-
-  /@wagmi/chains@0.2.16(typescript@4.9.5):
-    resolution: {integrity: sha512-rkWaI2PxCnbD8G07ZZff5QXftnSkYL0h5f4DkHCG3fGYYr/ZDvmCL4bMae7j7A9sAif1csPPBmbCzHp3R5ogCQ==}
-    peerDependencies:
-      typescript: '>=4.9.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 4.9.5
-    dev: false
-
-  /@wagmi/chains@0.2.16(typescript@5.0.4):
-    resolution: {integrity: sha512-rkWaI2PxCnbD8G07ZZff5QXftnSkYL0h5f4DkHCG3fGYYr/ZDvmCL4bMae7j7A9sAif1csPPBmbCzHp3R5ogCQ==}
-    peerDependencies:
-      typescript: '>=4.9.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.0.4
-    dev: false
 
   /@wagmi/chains@0.2.23(typescript@4.9.5):
     resolution: {integrity: sha512-oIc4ZpUL6bH/HdS7ROPWlFnP5U3XBujO/OiX4csRIezyLjMQ9FNXQRZShhi5ddL0Kj1RDbyVLe9K/QotEm1vig==}
@@ -4059,6 +4042,28 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
+
+  /@wagmi/chains@1.1.0(typescript@4.9.5):
+    resolution: {integrity: sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 4.9.5
+    dev: false
+
+  /@wagmi/chains@1.1.0(typescript@5.0.4):
+    resolution: {integrity: sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: false
 
   /@yarnpkg/lockfile@1.1.0:
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -4109,8 +4114,8 @@ packages:
     engines: {node: '>=6', npm: '>=3'}
     dev: false
 
-  /abitype@0.8.2(typescript@4.9.5):
-    resolution: {integrity: sha512-B1ViNMGpfx/qjVQi0RTc2HEFHuR9uoCoTEkwELT5Y7pBPtBbctYijz9BK6+Kd0hQ3S70FhYTO2dWWk0QNUEXMA==}
+  /abitype@0.8.7(typescript@4.9.5)(zod@3.21.4):
+    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.19.1
@@ -4119,22 +4124,11 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
+      zod: 3.21.4
     dev: false
 
-  /abitype@0.8.2(typescript@5.0.4):
-    resolution: {integrity: sha512-B1ViNMGpfx/qjVQi0RTc2HEFHuR9uoCoTEkwELT5Y7pBPtBbctYijz9BK6+Kd0hQ3S70FhYTO2dWWk0QNUEXMA==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.0.4
-    dev: false
-
-  /abitype@0.8.3(typescript@5.0.4):
-    resolution: {integrity: sha512-ma+fOVhoLOq68Ht8ysPS+sEIModycx6oqxP9r1Cx79rzcEO7m0beo8o9dxIlZFLn8qv+PczL/Zs4whI5KmhVJg==}
+  /abitype@0.8.7(typescript@5.0.4):
+    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.19.1
@@ -12675,14 +12669,6 @@ packages:
       bn.js: 5.2.1
     dev: true
 
-  /rollup@3.20.6:
-    resolution: {integrity: sha512-2yEB3nQXp/tBQDN0hJScJQheXdvU2wFhh6ld7K/aiZ1vYcak6N/BKjY1QrU6BvO2JWYS8bEs14FRaxXosxy2zw==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
   /rollup@3.21.8:
     resolution: {integrity: sha512-SSFV2T2fWtQ/vvBip85u2Nr0GNKireabH9d7nXswBg+XSH+jbVDSYptRAEbCEsquhs503rpPA9POYAp0/Jhasw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
@@ -13737,13 +13723,8 @@ packages:
     dev: false
     optional: true
 
-  /tinybench@2.4.0:
-    resolution: {integrity: sha512-iyziEiyFxX4kyxSp+MtY1oCH/lvjH3PxFN8PGCDeqcZWAJ/i+9y+nL85w99PxVzrIvew/GSkSbDYtiGVa85Afg==}
-    dev: true
-
-  /tinypool@0.4.0:
-    resolution: {integrity: sha512-2ksntHOKf893wSAH4z/+JbPpi92esw8Gn9N2deXX+B0EO92hexAVI9GIZZPx7P5aYo5KULfeOSt3kMOmSOy6uA==}
-    engines: {node: '>=14.0.0'}
+  /tinybench@2.5.0:
+    resolution: {integrity: sha512-kRwSG8Zx4tjF9ZiyH4bhaebu+EDz1BOx9hOigYHlUW4xxI/wKIUQUqo018UlU4ar6ATPBsaMrdbKZ+tmPdohFA==}
     dev: true
 
   /tinypool@0.5.0:
@@ -14000,11 +13981,47 @@ packages:
       postcss: 8.4.23
       postcss-load-config: 3.1.4(postcss@8.4.23)
       resolve-from: 5.0.0
-      rollup: 3.20.6
+      rollup: 3.21.8
       source-map: 0.8.0-beta.0
       sucrase: 3.32.0
       tree-kill: 1.2.2
       typescript: 5.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+    dev: true
+
+  /tsup@6.7.0(typescript@4.9.5):
+    resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
+    engines: {node: '>=14.18'}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': ^1
+      postcss: ^8.4.12
+      typescript: '>=4.1.0'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      postcss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 4.0.1(esbuild@0.17.17)
+      cac: 6.7.14
+      chokidar: 3.5.3
+      debug: 4.3.4(supports-color@8.1.1)
+      esbuild: 0.17.17
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      postcss-load-config: 3.1.4(postcss@8.4.23)
+      resolve-from: 5.0.0
+      rollup: 3.21.8
+      source-map: 0.8.0-beta.0
+      sucrase: 3.32.0
+      tree-kill: 1.2.2
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -14524,16 +14541,16 @@ packages:
       builtins: 5.0.1
     dev: true
 
-  /viem@0.3.18(typescript@4.9.5):
-    resolution: {integrity: sha512-orgUHs4VblpNBAn7uoGk9sWXdrtaGHuwy6CqaA2nmLjjdoWPhgQnzaVbfxt6xmSDV6MiMAfigxu43DV1j05jmw==}
+  /viem@1.0.6(typescript@4.9.5):
+    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
-      '@wagmi/chains': 0.2.16(typescript@4.9.5)
-      abitype: 0.8.2(typescript@4.9.5)
+      '@wagmi/chains': 1.1.0(typescript@4.9.5)
+      abitype: 0.8.7(typescript@4.9.5)(zod@3.21.4)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       ws: 8.12.0
     transitivePeerDependencies:
@@ -14543,16 +14560,16 @@ packages:
       - zod
     dev: false
 
-  /viem@0.3.18(typescript@5.0.4):
-    resolution: {integrity: sha512-orgUHs4VblpNBAn7uoGk9sWXdrtaGHuwy6CqaA2nmLjjdoWPhgQnzaVbfxt6xmSDV6MiMAfigxu43DV1j05jmw==}
+  /viem@1.0.6(typescript@5.0.4):
+    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
-      '@wagmi/chains': 0.2.16(typescript@5.0.4)
-      abitype: 0.8.2(typescript@5.0.4)
+      '@wagmi/chains': 1.1.0(typescript@5.0.4)
+      abitype: 0.8.7(typescript@5.0.4)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       ws: 8.12.0
     transitivePeerDependencies:
@@ -14619,29 +14636,8 @@ packages:
       replace-ext: 0.0.1
     dev: true
 
-  /vite-node@0.30.1(@types/node@18.15.11):
-    resolution: {integrity: sha512-vTikpU/J7e6LU/8iM3dzBo8ZhEiKZEKRznEMm+mJh95XhWaPrJQraT/QsT2NWmuEf+zgAoMe64PKT7hfZ1Njmg==}
-    engines: {node: '>=v14.18.0'}
-    hasBin: true
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.4(supports-color@8.1.1)
-      mlly: 1.2.0
-      pathe: 1.1.0
-      picocolors: 1.0.0
-      vite: 4.3.6(@types/node@18.15.11)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
-  /vite-node@0.31.0(@types/node@18.15.11):
-    resolution: {integrity: sha512-8x1x1LNuPvE2vIvkSB7c1mApX5oqlgsxzHQesYF7l5n1gKrEmrClIiZuOFbFDQcjLsmcWSwwmrWrcGWm9Fxc/g==}
+  /vite-node@0.31.4(@types/node@18.15.11):
+    resolution: {integrity: sha512-uzL377GjJtTbuc5KQxVbDu2xfU/x0wVjUtXQR2ihS21q/NK6ROr4oG0rsSkBBddZUVCwzfx22in76/0ZZHXgkQ==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
     dependencies:
@@ -14694,8 +14690,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest@0.30.1:
-    resolution: {integrity: sha512-y35WTrSTlTxfMLttgQk4rHcaDkbHQwDP++SNwPb+7H8yb13Q3cu2EixrtHzF27iZ8v0XCciSsLg00RkPAzB/aA==}
+  /vitest@0.31.4:
+    resolution: {integrity: sha512-GoV0VQPmWrUFOZSg3RpQAPN+LPmHg2/gxlMNJlyxJihkz6qReHDV6b0pPDcqFLNEPya4tWJ1pgwUNP9MLmUfvQ==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
     peerDependencies:
@@ -14725,80 +14721,14 @@ packages:
       webdriverio:
         optional: true
     dependencies:
-      '@types/chai': 4.3.4
+      '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
       '@types/node': 18.15.11
-      '@vitest/expect': 0.30.1
-      '@vitest/runner': 0.30.1
-      '@vitest/snapshot': 0.30.1
-      '@vitest/spy': 0.30.1
-      '@vitest/utils': 0.30.1
-      acorn: 8.8.2
-      acorn-walk: 8.2.0
-      cac: 6.7.14
-      chai: 4.3.7
-      concordance: 5.0.4
-      debug: 4.3.4(supports-color@8.1.1)
-      local-pkg: 0.4.3
-      magic-string: 0.30.0
-      pathe: 1.1.0
-      picocolors: 1.0.0
-      source-map: 0.6.1
-      std-env: 3.3.2
-      strip-literal: 1.0.1
-      tinybench: 2.4.0
-      tinypool: 0.4.0
-      vite: 4.3.6(@types/node@18.15.11)
-      vite-node: 0.30.1(@types/node@18.15.11)
-      why-is-node-running: 2.2.2
-    transitivePeerDependencies:
-      - less
-      - sass
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-    dev: true
-
-  /vitest@0.31.0:
-    resolution: {integrity: sha512-JwWJS9p3GU9GxkG7eBSmr4Q4x4bvVBSswaCFf1PBNHiPx00obfhHRJfgHcnI0ffn+NMlIh9QGvG75FlaIBdKGA==}
-    engines: {node: '>=v14.18.0'}
-    hasBin: true
-    peerDependencies:
-      '@edge-runtime/vm': '*'
-      '@vitest/browser': '*'
-      '@vitest/ui': '*'
-      happy-dom: '*'
-      jsdom: '*'
-      playwright: '*'
-      safaridriver: '*'
-      webdriverio: '*'
-    peerDependenciesMeta:
-      '@edge-runtime/vm':
-        optional: true
-      '@vitest/browser':
-        optional: true
-      '@vitest/ui':
-        optional: true
-      happy-dom:
-        optional: true
-      jsdom:
-        optional: true
-      playwright:
-        optional: true
-      safaridriver:
-        optional: true
-      webdriverio:
-        optional: true
-    dependencies:
-      '@types/chai': 4.3.4
-      '@types/chai-subset': 1.3.3
-      '@types/node': 18.15.11
-      '@vitest/expect': 0.31.0
-      '@vitest/runner': 0.31.0
-      '@vitest/snapshot': 0.31.0
-      '@vitest/spy': 0.31.0
-      '@vitest/utils': 0.31.0
+      '@vitest/expect': 0.31.4
+      '@vitest/runner': 0.31.4
+      '@vitest/snapshot': 0.31.4
+      '@vitest/spy': 0.31.4
+      '@vitest/utils': 0.31.4
       acorn: 8.8.2
       acorn-walk: 8.2.0
       cac: 6.7.14
@@ -14811,10 +14741,10 @@ packages:
       picocolors: 1.0.0
       std-env: 3.3.2
       strip-literal: 1.0.1
-      tinybench: 2.4.0
+      tinybench: 2.5.0
       tinypool: 0.5.0
       vite: 4.3.6(@types/node@18.15.11)
-      vite-node: 0.31.0(@types/node@18.15.11)
+      vite-node: 0.31.4(@types/node@18.15.11)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less

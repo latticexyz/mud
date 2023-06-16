@@ -50,3 +50,17 @@ func DefaultFieldName(index int) string {
 func DefaultKeyName(index int) string {
 	return "key_" + fmt.Sprint(index)
 }
+
+/////////////////////////////////////////////////
+// Utilities for getting key and field schemas //
+/////////////////////////////////////////////////
+
+func GetKeySchema(schemaEventData []byte) []byte {
+	// Key schema is the last 32 bytes of the schema event data.
+	return schemaEventData[32:]
+}
+
+func GetFieldSchema(schemaEventData []byte) []byte {
+	// Key schema is the first 32 bytes of the schema event data.
+	return schemaEventData[:32]
+}

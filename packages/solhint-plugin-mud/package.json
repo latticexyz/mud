@@ -21,6 +21,7 @@
     "@solidity-parser/parser": "^0.16.0"
   },
   "devDependencies": {
+    "@types/node": "^18.15.11",
     "tsup": "^6.7.0"
   },
   "publishConfig": {
