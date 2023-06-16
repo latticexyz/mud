@@ -133,11 +133,11 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          keys0: RecsType.StringArray,
-          keys1: RecsType.StringArray,
-          keys2: RecsType.StringArray,
-          keys3: RecsType.StringArray,
-          keys4: RecsType.StringArray,
+          keyParts0: RecsType.StringArray,
+          keyParts1: RecsType.StringArray,
+          keyParts2: RecsType.StringArray,
+          keyParts3: RecsType.StringArray,
+          keyParts4: RecsType.StringArray,
         },
         {
           metadata: {
