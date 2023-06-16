@@ -1,0 +1,19 @@
+---
+chains:
+  - name: "localhost"
+    id: "31337"
+    rpc:
+      http: "http://host.docker.internal:8545"
+      ws: "ws://host.docker.internal:8545"
+db:
+  dsn: "postgresql://db:5432/mode_ephemeral?sslmode=disable&replication=database"
+  dsnGorm: "host=db dbname=mode_ephemeral port=5432 sslmode=disable"
+  wipe: true
+sync:
+  enabled: true
+  startBlock: 0
+  blockBatchCount: 10000
+ql:
+  port: 50091
+metrics:
+  port: 6060
