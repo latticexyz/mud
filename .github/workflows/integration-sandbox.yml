@@ -33,6 +33,9 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Build
+        uses: ./.github/actions/build
+
       - name: Install integration sandbox dependencies
         working-directory: ./integration-sandbox
         run: pnpm install
