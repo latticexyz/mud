@@ -8,7 +8,7 @@ chains:
 db:
   name: "mode_ephemeral"
   host: "localhost"
-  port: 5433
+  port: 5432
   wipe: true
 sync:
   enabled: true
