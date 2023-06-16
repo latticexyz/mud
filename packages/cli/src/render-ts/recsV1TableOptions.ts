@@ -1,4 +1,5 @@
-import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
+import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings";
 import { RecsV1TableOptions } from "./types";
 
