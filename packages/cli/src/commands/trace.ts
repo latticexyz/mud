@@ -9,9 +9,8 @@ import { TableId } from "@latticexyz/utils";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-import { getChainId, getExistingContracts } from "../utils";
-
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import { getChainId, getExistingContracts } from "../utils";
 
 const systemsTableId = new TableId("", "Systems");
 
@@ -73,9 +72,9 @@ const commandModule: CommandModule<Options, Options> = {
 
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
-      const tableId = new TableId(namespace, name);
+      const systemSelector = new TableId(namespace, name);
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId.toHexString(), [tableId.toHexString()], 0);
+      const address = await WorldContract.getField(systemsTableId.toHexString(), [systemSelector.toHexString()], 0);
       labels.push({ name, address });
     }
 
