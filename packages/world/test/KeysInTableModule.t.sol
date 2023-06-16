@@ -70,7 +70,6 @@ contract KeysInTableModuleTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys in table module
     world.installRootModule(keysInTableModule, abi.encode(tableId));
     world.installRootModule(keysInTableModule, abi.encode(singletonTableId));
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
@@ -121,7 +120,11 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testInstall(uint256 value) public {
-    _installKeysInTableModule();
+    tableId = world.registerTable(namespace, name, tableSchema, tableKeySchema);
+
+    // !gasreport install keys in table module
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
+
     // Set a value in the source table
     // !gasreport set a record on a table with keysInTableModule installed
     world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value));
