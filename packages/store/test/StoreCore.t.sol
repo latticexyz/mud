@@ -6,6 +6,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
+import { TableId } from "../src/TableId.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
@@ -68,12 +69,21 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32 table2 = keccak256("other.table");
     IStore(this).registerSchema(table, schema, defaultKeySchema);
 
-    StoreCore.hasTable(table);
-
-    StoreCore.hasTable(table2);
-
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
+
+    IStore(this).getSchema(table);
+    IStore(this).getKeySchema(table);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, TableId.toString(table2))
+    );
+    IStore(this).getSchema(table2);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, TableId.toString(table2))
+    );
+    IStore(this).getKeySchema(table2);
   }
 
   function testSetMetadata() public {

@@ -1,9 +1,7 @@
-import { afterAll, beforeAll, describe, test } from "vitest";
+import { afterEach, beforeEach, describe, test } from "vitest";
 import { createServer } from "vite";
 import type { ViteDevServer } from "vite";
-import { chromium } from "playwright";
-import type { Browser, Page } from "playwright";
-import { expect } from "@playwright/test";
+import { expect, chromium, Browser, Page } from "@playwright/test";
 import { deployHandler } from "@latticexyz/cli";
 import { execa, ExecaChildProcess } from "execa";
 
@@ -13,7 +11,7 @@ describe("arrays", async () => {
   let page: Page;
   let anvilProcess: ExecaChildProcess;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     // start anvil
     const anvilPort = 8545;
     const forkRpc = `http://127.0.0.1:${anvilPort}`;
@@ -52,9 +50,13 @@ describe("arrays", async () => {
     page.on("pageerror", (err) => {
       console.log("Browser page error:", err.message);
     });
+    // log browser's console logs
+    page.on("console", (msg) => {
+      console.log("Browser console:", msg.text());
+    });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await browser.close();
     await server.close();
     anvilProcess.kill();

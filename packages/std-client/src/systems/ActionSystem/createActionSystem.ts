@@ -67,7 +67,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
   function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): Entity {
     // Prevent the same actions from being scheduled multiple times
     const existingAction = world.hasEntity(actionRequest.id as Entity);
-    if (existingAction != null) {
+    if (existingAction) {
       console.warn(`Action with id ${actionRequest.id} is already requested.`);
       return actionRequest.id as Entity;
     }
@@ -160,7 +160,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       if (tx) {
         // Wait for all tx events to be reduced
         updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
-        const txConfirmed = tx.wait().catch(() => handleError(action)); // Also catch the error if not awaiting
+        const txConfirmed = tx.wait().catch((e) => handleError(e, action)); // Also catch the error if not awaiting
         await awaitStreamValue(txReduced$, (v) => v === tx.hash);
         updateComponent(Action, action.entity, { state: ActionState.TxReduced });
         if (action.awaitConfirmation) await txConfirmed;
@@ -168,7 +168,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
 
       updateComponent(Action, action.entity, { state: ActionState.Complete });
     } catch (e) {
-      handleError(action);
+      handleError(e, action);
     }
 
     // After the action is done executing (failed or completed), remove its actionData and remove the Action component
@@ -176,7 +176,8 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
   }
 
   // Set the action's state to ActionState.Failed
-  function handleError(action: ActionData) {
+  function handleError(e: unknown, action: ActionData) {
+    console.error(e);
     updateComponent(Action, action.entity, { state: ActionState.Failed });
     remove(action.id);
   }
@@ -203,7 +204,10 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    */
   function remove(actionId: string) {
     const action = actionData.get(actionId);
-    if (!action) throw new Error("Trying to remove an action that does not exist.");
+    if (!action) {
+      console.warn(`Trying to remove action ${actionId} that does not exist.`);
+      return;
+    }
 
     // Remove this action's pending updates
     const actionEntity = actionId as Entity;
