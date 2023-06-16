@@ -434,19 +434,4 @@ contract KeysInTableModuleTest is Test {
     // Assert that the list is correct
     assertEq(keyTuples.length, amount);
   }
-
-  // // NOTE: this test is expected to fail by setting too many keys
-  // function testGetKeysWithValueMany10000() public {
-  //   uint256 amount = 10000;
-  //   uint256 value = 1;
-
-  //   bytes32[] memory lastKey = setKeysHelper(amount, value);
-
-  //   world.setRecord(namespace, name, lastKey, abi.encodePacked(value));
-
-  //   bytes32[][] memory keyTuples = getKeysInTable(world, tableId);
-
-  //   // Assert that the list is correct
-  //   assertEq(keyTuples.length, amount);
-  // }
 }
