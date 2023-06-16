@@ -1,15 +1,14 @@
-version: '3.8'
+version: "3.8"
 services:
   db:
-    image: postgres:latest
+    image: ghcr.io/latticexyz/postgres-wal-logical:latest
     restart: always
-    volumes: 
+    volumes:
       - ./data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=mode_ephemeral
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-U", "postgres"]
       interval: 10s
