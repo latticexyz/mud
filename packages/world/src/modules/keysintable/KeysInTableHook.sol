@@ -23,11 +23,11 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key has not yet been set in the table...
     if (!UsedKeysIndex.getHas(tableId, keysHash)) {
-      uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
+      uint40 length = uint40(KeysInTable.lengthKeyParts0(tableId));
 
       // Push the key to the list of keys in this table
       for (uint8 fieldIndex = 0; fieldIndex < key.length; fieldIndex++) {
-        KeysInTableDynamicFieldIndex.pushKeys(fieldIndex, tableId, key[fieldIndex]);
+        KeysInTableDynamicFieldIndex.pushKeyParts(fieldIndex, tableId, key[fieldIndex]);
       }
 
       // Update the index to avoid duplicating this key in the array
@@ -54,7 +54,7 @@ contract KeysInTableHook is IStoreHook {
       // Delete the index as the key is not in the table
       UsedKeysIndex.deleteRecord(tableId, keysHash);
 
-      uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
+      uint40 length = uint40(KeysInTable.lengthKeyParts0(tableId));
 
       if (length == 1) {
         // Delete the list of keys in this table
@@ -63,12 +63,12 @@ contract KeysInTableHook is IStoreHook {
         bytes32[] memory lastKeyTuple = new bytes32[](key.length);
 
         for (uint8 fieldIndex = 0; fieldIndex < key.length; fieldIndex++) {
-          bytes32 lastKey = KeysInTableDynamicFieldIndex.getItemKeys(fieldIndex, tableId, length - 1);
+          bytes32 lastKey = KeysInTableDynamicFieldIndex.getItemKeyParts(fieldIndex, tableId, length - 1);
           lastKeyTuple[fieldIndex] = lastKey;
 
           // Remove the key from the list of keys in this table
-          KeysInTableDynamicFieldIndex.updateKeys(fieldIndex, tableId, index, lastKey);
-          KeysInTableDynamicFieldIndex.popKeys(fieldIndex, tableId);
+          KeysInTableDynamicFieldIndex.updateKeyParts(fieldIndex, tableId, index, lastKey);
+          KeysInTableDynamicFieldIndex.popKeyParts(fieldIndex, tableId);
         }
 
         // Update the index of lastKey after swapping it with the deleted key

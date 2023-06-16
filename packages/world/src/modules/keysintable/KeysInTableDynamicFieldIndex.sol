@@ -14,28 +14,28 @@ library KeysInTableDynamicFieldIndex {
   // Number of fields in KeysInTable, which is based on max allowed dynamic fields in PackedCounter
   uint256 internal constant FIELD_COUNT = 5;
 
-  function pushKeys(uint8 fieldIndex, bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeyParts(uint8 fieldIndex, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((sourceTable));
 
     StoreSwitch.pushToField(KeysInTableTableId, _keyTuple, fieldIndex, abi.encodePacked((_element)));
   }
 
-  function updateKeys(uint8 fieldIndex, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeyParts(uint8 fieldIndex, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((sourceTable));
 
     StoreSwitch.updateInField(KeysInTableTableId, _keyTuple, fieldIndex, _index * 32, abi.encodePacked((_element)));
   }
 
-  function popKeys(uint8 fieldIndex, bytes32 sourceTable) internal {
+  function popKeyParts(uint8 fieldIndex, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((sourceTable));
 
     StoreSwitch.popFromField(KeysInTableTableId, _keyTuple, fieldIndex, 32);
   }
 
-  function getItemKeys(uint8 fieldIndex, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeyParts(uint8 fieldIndex, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((sourceTable));
 

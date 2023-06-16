@@ -25,15 +25,15 @@ contract SnapSyncSystem is System {
       bytes32[] memory keyTuple = new bytes32[](numFields);
 
       if (numFields > 0) {
-        keyTuple[0] = KeysInTable.getItemKeys0(tableId, i);
+        keyTuple[0] = KeysInTable.getItemKeyParts0(tableId, i);
         if (numFields > 1) {
-          keyTuple[1] = KeysInTable.getItemKeys1(tableId, i);
+          keyTuple[1] = KeysInTable.getItemKeyParts1(tableId, i);
           if (numFields > 2) {
-            keyTuple[2] = KeysInTable.getItemKeys2(tableId, i);
+            keyTuple[2] = KeysInTable.getItemKeyParts2(tableId, i);
             if (numFields > 3) {
-              keyTuple[3] = KeysInTable.getItemKeys3(tableId, i);
+              keyTuple[3] = KeysInTable.getItemKeyParts3(tableId, i);
               if (numFields > 4) {
-                keyTuple[4] = KeysInTable.getItemKeys4(tableId, i);
+                keyTuple[4] = KeysInTable.getItemKeyParts4(tableId, i);
               }
             }
           }
@@ -46,6 +46,6 @@ contract SnapSyncSystem is System {
   }
 
   function getNumKeysInTable(bytes32 tableId) public view virtual returns (uint256) {
-    return KeysInTable.lengthKeys0(tableId);
+    return KeysInTable.lengthKeyParts0(tableId);
   }
 }

@@ -109,11 +109,11 @@ export default mudConfig({
       directory: "modules/keysintable/tables",
       keySchema: { sourceTable: "bytes32" },
       schema: {
-        keys0: "bytes32[]",
-        keys1: "bytes32[]",
-        keys2: "bytes32[]",
-        keys3: "bytes32[]",
-        keys4: "bytes32[]",
+        keyParts0: "bytes32[]",
+        keyParts1: "bytes32[]",
+        keyParts2: "bytes32[]",
+        keyParts3: "bytes32[]",
+        keyParts4: "bytes32[]",
       },
     },
     UsedKeysIndex: {
