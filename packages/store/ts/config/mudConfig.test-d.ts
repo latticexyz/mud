@@ -1,8 +1,10 @@
+import { MergeReturnType } from "@latticexyz/common/type-utils";
+import { expandConfig, ExpandConfig } from "@latticexyz/config";
 import { describe, expectTypeOf } from "vitest";
 import { mudConfig, TABLE_DEFAULTS } from ".";
 import { storePlugin } from "./plugin";
 
-type AutoExpandedConfig = ReturnType<
+type DefinedConfig = ReturnType<
   typeof mudConfig<
     { storePlugin: typeof storePlugin },
     {
@@ -28,6 +30,9 @@ type AutoExpandedConfig = ReturnType<
     }
   >
 >;
+
+const typedExpandConfig = expandConfig as ExpandConfig<DefinedConfig>;
+type AutoExpandedConfig = MergeReturnType<typeof typedExpandConfig<DefinedConfig>>;
 
 type ManuallyExpandedConfig = {
   enums: {
@@ -68,12 +73,14 @@ type ManuallyExpandedConfig = {
   codegenDirectory: "codegen";
 };
 
-const _test1: AutoExpandedConfig = {} as ManuallyExpandedConfig;
-// TODO fix weak types
-const _test2: ManuallyExpandedConfig = {} as AutoExpandedConfig;
-
 describe("mudConfig", () => {
   // Test possible inference confusion.
   // This would fail if you remove `AsDependent` from `MUDUserConfig`
   expectTypeOf<AutoExpandedConfig>().toEqualTypeOf<ManuallyExpandedConfig>();
 });
+
+// An extra test to be sure of type equality
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _test1: AutoExpandedConfig = {} as ManuallyExpandedConfig;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _test2: ManuallyExpandedConfig = {} as AutoExpandedConfig;

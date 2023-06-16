@@ -236,7 +236,7 @@ export const zEnumsConfig = z.object({
 /** MUDCoreUserConfig wrapper to use generics in some options for better type inference */
 export type MUDUserConfig<
   P extends Plugins,
-  C extends Omit<MergedPluginsInput<P>, "plugins">,
+  C extends MergedPluginsInput<P>,
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
 > = C &

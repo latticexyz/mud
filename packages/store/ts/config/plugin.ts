@@ -25,4 +25,4 @@ export const storePlugin = defineMUDPlugin({
     preTablegen: new SyncHook(["mudConfig"]),
     postTablegen: new SyncHook(["mudConfig"]),
   },
-});
+} as const);

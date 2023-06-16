@@ -21,3 +21,16 @@ export interface MudPlugin<Input = any, Expanded = any> {
  */
 export type Config = { plugins: Plugins };
 export type Plugins = Record<string, MudPlugin>;
+
+/*
+ * Helper type to turn a strongly typed config into a union of
+ * all `expandConfig` functions defined in the config
+ *
+ * Usage:
+ * ```
+ * const _typedExpandConfig = expandConfig as ExpandConfig<typeof config>;
+ * type ExpandedConfig = MergeReturnType<typeof _typedExpandConfig<typeof config>>;
+ * const expandedConfig = expandConfig(config) as ExpandedConfig;
+ * ```
+ */
+export type ExpandConfig<C extends { plugins: Plugins }> = C["plugins"][keyof C["plugins"]]["expandConfig"];

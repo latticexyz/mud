@@ -1,6 +1,8 @@
+import { MergeReturnType } from "@latticexyz/common/type-utils";
+import { ExpandConfig, expandConfig } from "@latticexyz/config";
 import { mudConfig, storePlugin } from "./ts";
 
-export default mudConfig({
+const config = mudConfig({
   plugins: { storePlugin },
   storeImportPath: "../../",
   namespace: "mudstore",
@@ -47,3 +49,7 @@ export default mudConfig({
     },
   },
 });
+
+const _typedExpandConfig = expandConfig as ExpandConfig<typeof config>;
+type ExpandedConfig = MergeReturnType<typeof _typedExpandConfig<typeof config>>;
+export default expandConfig(config) as ExpandedConfig;
