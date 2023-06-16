@@ -1,5 +1,5 @@
 import { AbiType } from "abitype";
-import { TupleSplit } from "../../../protocol-parser/src/utils";
+import { TupleSplit } from "./utils";
 
 // Keep this array in sync with SchemaType.sol enum
 
