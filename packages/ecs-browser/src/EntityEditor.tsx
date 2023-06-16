@@ -7,8 +7,8 @@ import {
   Component,
   Schema,
   World,
-  EntityID,
   getEntityComponents,
+  Entity,
 } from "@latticexyz/recs";
 import { Collapse, ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
@@ -24,7 +24,7 @@ export const EntityEditor = observer(
     world,
     clearDevHighlights,
   }: {
-    entityId: EntityID;
+    entityId: Entity;
     layers: Layers;
     setContractComponentValue?: SetContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
@@ -32,22 +32,20 @@ export const EntityEditor = observer(
     clearDevHighlights: () => void;
   }) => {
     const [opened, setOpened] = useState(false);
-    const entity = world.entityToIndex.get(entityId);
-    if (entity == null) return null;
 
     const [entityComponents, setEntityComponents] = useState<AnyComponent[]>([]);
     useEffect(() => {
       if (opened) {
-        const components = getEntityComponents(world, entity);
+        const components = getEntityComponents(world, entityId);
         setEntityComponents(components);
       }
-    }, [opened, world, entity, setEntityComponents]);
+    }, [opened, world, entityId, setEntityComponents]);
 
     return (
       <EntityEditorContainer
         onMouseEnter={() => {
           clearDevHighlights();
-          setComponent(devHighlightComponent, entity, {
+          setComponent(devHighlightComponent, entityId, {
             value: undefined,
           });
         }}
@@ -55,11 +53,11 @@ export const EntityEditor = observer(
       >
         <div onClick={() => setOpened(!opened)} style={{ cursor: "pointer" }}>
           <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-            <h3 style={{ color: "white" }}>Entity {entity}</h3>
+            <h3 style={{ color: "white" }}>Entity {entityId}</h3>
             <ComponentBrowserButton
               onClick={(e) => {
                 e.stopPropagation();
-                navigator.clipboard.writeText(world.entities[entity]);
+                navigator.clipboard.writeText(entityId);
               }}
             >
               Click to copy Entity ID
@@ -74,8 +72,8 @@ export const EntityEditor = observer(
             .filter((c) => c.id !== devHighlightComponent.id)
             .map((c) => (
               <ComponentEditor
-                key={`component-editor-${entity}-${c.id}`}
-                entity={entity}
+                key={`component-editor-${entityId}-${c.id}`}
+                entity={entityId}
                 component={c}
                 layers={layers}
                 setContractComponentValue={setContractComponentValue}

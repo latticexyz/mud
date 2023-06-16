@@ -1,7 +1,5 @@
 import {
   Component,
-  EntityID,
-  EntityIndex,
   getComponentValue,
   getComponentValueStrict,
   Has,
@@ -9,11 +7,11 @@ import {
   HasValue,
   runQuery,
   Type,
-  World,
   Schema,
   ComponentValue,
   componentValueEquals,
   Metadata,
+  Entity,
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
@@ -22,7 +20,6 @@ import { deferred } from "@latticexyz/utils";
 import { filter } from "rxjs";
 
 export function getCurrentTurn(
-  world: World,
   gameConfigComponent: Component<{
     startTime: Type.String;
     turnLength: Type.String;
@@ -30,11 +27,10 @@ export function getCurrentTurn(
   }>,
   clock: Clock
 ) {
-  return getTurnAtTime(world, gameConfigComponent, clock.currentTime / 1000);
+  return getTurnAtTime(gameConfigComponent, clock.currentTime / 1000);
 }
 
 export function getTurnAtTime(
-  world: World,
   gameConfigComponent: Component<{
     startTime: Type.String;
     turnLength: Type.String;
@@ -42,7 +38,7 @@ export function getTurnAtTime(
   }>,
   time: number
 ) {
-  const gameConfig = getGameConfig(world, gameConfigComponent);
+  const gameConfig = getGameConfig(gameConfigComponent);
   if (!gameConfig) return -1;
 
   const startTime = BigNumber.from(gameConfig.startTime);
@@ -52,13 +48,9 @@ export function getTurnAtTime(
 }
 
 export function getGameConfig(
-  world: World,
   gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String; actionCooldownLength: Type.String }>
 ) {
-  const singletonEntity = world.entityToIndex.get(SingletonID);
-  if (singletonEntity == null) return;
-
-  return getComponentValue(gameConfigComponent, singletonEntity);
+  return getComponentValue(gameConfigComponent, SingletonID);
 }
 
 export function isUntraversable(
@@ -75,12 +67,11 @@ export function isUntraversable(
 
 export function getPlayerEntity(
   address: string | undefined,
-  world: World,
   Player: Component<{ value: Type.Boolean }>
-): EntityIndex | undefined {
+): Entity | undefined {
   if (!address) return;
 
-  const playerEntity = world.entityToIndex.get(address as EntityID);
+  const playerEntity = address as Entity;
   if (playerEntity == null || !hasComponent(Player, playerEntity)) return;
 
   return playerEntity;
@@ -94,12 +85,10 @@ export function getPlayerEntity(
  */
 export function resolveRelationshipChain(
   relationshipComponent: Component<{ value: Type.Entity }>,
-  entity: EntityIndex
-): EntityIndex | undefined {
-  const { world } = relationshipComponent;
-
+  entity: Entity
+): Entity | undefined {
   while (hasComponent(relationshipComponent, entity)) {
-    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    const entityValue = getComponentValueStrict(relationshipComponent, entity).value;
     if (!entityValue) return;
     entity = entityValue;
   }
@@ -115,15 +104,13 @@ export function resolveRelationshipChain(
  */
 export function findEntityWithComponentInRelationshipChain(
   relationshipComponent: Component<{ value: Type.Entity }>,
-  entity: EntityIndex,
+  entity: Entity,
   searchComponent: Component
-): EntityIndex | undefined {
+): Entity | undefined {
   if (hasComponent(searchComponent, entity)) return entity;
 
-  const { world } = relationshipComponent;
-
   while (hasComponent(relationshipComponent, entity)) {
-    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    const entityValue = getComponentValueStrict(relationshipComponent, entity).value;
     if (entityValue == null) return;
     entity = entityValue;
 
@@ -142,15 +129,13 @@ export function findEntityWithComponentInRelationshipChain(
  */
 export function findInRelationshipChain(
   relationshipComponent: Component<{ value: Type.Entity }>,
-  entity: EntityIndex,
-  searchEntity: EntityIndex
+  entity: Entity,
+  searchEntity: Entity
 ): boolean {
   if (entity === searchEntity) return true;
 
-  const { world } = relationshipComponent;
-
   while (hasComponent(relationshipComponent, entity)) {
-    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    const entityValue = getComponentValueStrict(relationshipComponent, entity).value;
     if (entityValue == null) return false;
     entity = entityValue;
 
@@ -242,7 +227,7 @@ export function getStringColor(address: string) {
 
 export function waitForComponentValueIn<S extends Schema, T>(
   component: Component<S, Metadata, T>,
-  entity: EntityIndex,
+  entity: Entity,
   values: Partial<ComponentValue<S>>[]
 ): Promise<void> {
   const [resolve, , promise] = deferred<void>();
@@ -264,7 +249,7 @@ export function waitForComponentValueIn<S extends Schema, T>(
 
 export async function waitForComponentValue<S extends Schema>(
   component: Component<S>,
-  entity: EntityIndex,
+  entity: Entity,
   value: Partial<ComponentValue<S>>
 ): Promise<void> {
   await waitForComponentValueIn(component, entity, [value]);

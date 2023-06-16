@@ -1,16 +1,14 @@
 import { Subject } from "rxjs";
 import { Type } from "./constants";
-import type { Opaque } from "type-fest";
+import { Opaque } from "type-fest";
 
 /**
- * Used to refer to the index of an entity in a {@link World}.
+ * Entities are represented as symbols internally for memory efficiency.
+ * To get the entity's string representation, use `getEntityString(entitySymbol)`
  */
-export type EntityIndex = Opaque<number, "EntityIndex">;
+export type EntitySymbol = Opaque<symbol, "EntitySymbol">;
 
-/**
- * Used to refer to the string id of an entity (independent from a {@link World}).
- */
-export type EntityID = Opaque<string, "EntityID">;
+export type Entity = Opaque<string, "Entity">;
 
 /**
  * Used to define the schema of a {@link Component}.
@@ -41,16 +39,16 @@ export type ValueType<T = undefined> = {
   [Type.NumberArray]: number[];
   [Type.BigIntArray]: bigint[];
   [Type.StringArray]: string[];
-  [Type.Entity]: EntityID;
-  [Type.EntityArray]: EntityID[];
+  [Type.Entity]: Entity;
+  [Type.EntityArray]: Entity[];
   [Type.OptionalNumber]: number | undefined;
   [Type.OptionalBigInt]: bigint | undefined;
   [Type.OptionalBigIntArray]: bigint[] | undefined;
   [Type.OptionalString]: string | undefined;
   [Type.OptionalNumberArray]: number[] | undefined;
   [Type.OptionalStringArray]: string[] | undefined;
-  [Type.OptionalEntity]: EntityID | undefined;
-  [Type.OptionalEntityArray]: EntityID[] | undefined;
+  [Type.OptionalEntity]: Entity | undefined;
+  [Type.OptionalEntityArray]: Entity[] | undefined;
   [Type.T]: T;
   [Type.OptionalT]: T | undefined;
 };
@@ -66,7 +64,7 @@ export type ComponentValue<S extends Schema = Schema, T = undefined> = {
  * Type of a component update corresponding to a given {@link Schema}.
  */
 export type ComponentUpdate<S extends Schema = Schema, T = undefined> = {
-  entity: EntityIndex;
+  entity: Entity;
   value: [ComponentValue<S, T> | undefined, ComponentValue<S, T> | undefined];
   component: Component<S, Metadata, T>;
 };
@@ -76,10 +74,10 @@ export type ComponentUpdate<S extends Schema = Schema, T = undefined> = {
  */
 export interface Component<S extends Schema = Schema, M extends Metadata = Metadata, T = undefined> {
   id: string;
-  values: { [key in keyof S]: Map<EntityIndex, ValueType<T>[S[key]]> };
+  values: { [key in keyof S]: Map<EntitySymbol, ValueType<T>[S[key]]> };
   schema: S;
   metadata: M;
-  entities: () => IterableIterator<EntityIndex>;
+  entities: () => IterableIterator<Entity>;
   world: World;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   update$: Subject<ComponentUpdate<S, T>> & { observers: any };
@@ -89,7 +87,7 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
  * Type of indexer returned by {@link createIndexer}.
  */
 export type Indexer<S extends Schema, M extends Metadata = Metadata, T = undefined> = Component<S, M, T> & {
-  getEntitiesWithValue: (value: ComponentValue<S, T>) => Set<EntityIndex>;
+  getEntitiesWithValue: (value: ComponentValue<S, T>) => Set<Entity>;
 };
 
 export type Components = {
@@ -97,7 +95,7 @@ export type Components = {
 };
 
 export interface ComponentWithStream<S extends Schema, T = undefined> extends Component<S, Metadata, T> {
-  stream$: Subject<{ entity: EntityIndex; value: ComponentValue<S, T> | undefined }>;
+  stream$: Subject<{ entity: Entity; value: ComponentValue<S, T> | undefined }>;
 }
 
 export type AnyComponentValue = ComponentValue<Schema>;
@@ -108,15 +106,15 @@ export type AnyComponent = Component<Schema>;
  * Type of World returned by {@link createWorld}.
  */
 export type World = {
-  registerEntity: (options?: { id?: EntityID; idSuffix?: string }) => EntityIndex;
+  registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
   registerComponent: (component: Component) => void;
   components: Component[];
-  entities: EntityID[];
-  entityToIndex: Map<EntityID, EntityIndex>;
-  getEntityIndexStrict: (entity: EntityID) => EntityIndex;
+  getEntities: () => IterableIterator<Entity>;
   dispose: () => void;
   registerDisposer: (disposer: () => void) => void;
-  hasEntity: (entity: EntityID) => boolean;
+  hasEntity: (entity: Entity) => boolean;
+  deleteEntity: (entity: Entity) => void;
+  entitySymbols: Set<EntitySymbol>;
 };
 
 export enum QueryFragmentType {
@@ -183,7 +181,7 @@ export type QueryFragments = QueryFragment<Schema>[];
 export type SchemaOf<C extends Component<Schema>> = C extends Component<infer S> ? S : never;
 
 export type Override<S extends Schema, T = undefined> = {
-  entity: EntityIndex;
+  entity: Entity;
   value: Partial<ComponentValue<S, T>> | null;
 };
 

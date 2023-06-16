@@ -4,7 +4,17 @@ import { TableSchema } from "../common";
 
 export function decodeSchema(rawSchema: string): TableSchema {
   const isEmpty = !rawSchema || rawSchema === "0x";
-  const schemaBytes = new DataView(isEmpty ? new Uint8Array(32).buffer : hexToArray(rawSchema).buffer);
+  const buffer = isEmpty ? new Uint8Array(64).buffer : hexToArray(rawSchema).buffer;
+  const valueSchemaBytes = new DataView(buffer); // First 32 bytes of the raw schema are the value schema
+  const keySchemaBytes = new DataView(buffer.slice(32)); // Last 32 bytes of the raw schema are the key schema
+
+  const valueSchema = { ...decodeSchemaBytes(valueSchemaBytes), rawSchema, isEmpty };
+  const keySchema = { ...decodeSchemaBytes(keySchemaBytes), rawSchema, isEmpty };
+
+  return { valueSchema, keySchema };
+}
+
+function decodeSchemaBytes(schemaBytes: DataView) {
   const staticDataLength = schemaBytes.getUint16(0);
   const numStaticFields = schemaBytes.getUint8(2);
   const numDynamicFields = schemaBytes.getUint8(3);
@@ -23,7 +33,7 @@ export function decodeSchema(rawSchema: string): TableSchema {
     console.error("Schema static data length mismatch! Is `getStaticByteLength` outdated?", {
       schemaStaticDataLength: staticDataLength,
       actualStaticDataLength,
-      rawSchema,
+      schemaBytes,
     });
     throw new Error("Schema static data length mismatch! Is `getStaticByteLength` outdated?");
   }
@@ -31,5 +41,5 @@ export function decodeSchema(rawSchema: string): TableSchema {
   const abiTypes = [...staticFields, ...dynamicFields].map((type) => SchemaTypeToAbiType[type]);
   const abi = `(${abiTypes.join(",")})`;
 
-  return { staticDataLength, staticFields, dynamicFields, rawSchema, abi, isEmpty };
+  return { staticDataLength, staticFields, dynamicFields, abi };
 }

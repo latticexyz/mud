@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "jsx": "react-jsx",
     "module": "esnext",
-    "rootDir": "./src",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "declaration": true,
@@ -13,7 +11,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
   },
-  "exclude": ["dist"]
+  "include": ["src"]
 }

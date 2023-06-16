@@ -1,13 +1,16 @@
-import { storeConfig } from "@latticexyz/config";
+import { mudConfig } from "./ts/register";
 
-export default storeConfig({
+export default mudConfig({
   storeImportPath: "../../",
   namespace: "mudstore",
+  enums: {
+    ExampleEnum: ["None", "First", "Second", "Third"],
+  },
   tables: {
     Hooks: "address[]",
     Callbacks: "bytes24[]",
     StoreMetadata: {
-      primaryKeys: {
+      keySchema: {
         tableId: "bytes32",
       },
       schema: {
@@ -15,6 +18,7 @@ export default storeConfig({
         abiEncodedFieldNames: "bytes",
       },
     },
+    // TODO: move these test tables to a separate mud config
     Mixed: {
       schema: {
         u32: "uint32",
@@ -28,6 +32,17 @@ export default storeConfig({
         x: "uint32",
         y: "uint32",
       },
+    },
+    KeyEncoding: {
+      keySchema: {
+        k1: "uint256",
+        k2: "int32",
+        k3: "bytes16",
+        k4: "address",
+        k5: "bool",
+        k6: "ExampleEnum",
+      },
+      schema: "bool",
     },
   },
 });

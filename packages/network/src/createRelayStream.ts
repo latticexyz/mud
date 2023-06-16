@@ -18,7 +18,7 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
   const wsClient = createClient(ECSRelayServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
 
   const recoverWorker = await spawn(
-    new Worker(new URL("./workers/Recover.worker.ts", import.meta.url), { type: "module" })
+    new Worker(new URL("./workers/Recover.worker.js", import.meta.url), { type: "module" })
   );
 
   // Signature that should be used to prove identity

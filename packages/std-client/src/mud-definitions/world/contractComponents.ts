@@ -81,6 +81,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    SystemHooks: (() => {
+      const tableId = new TableId("", "SystemHooks");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.StringArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     ResourceType: (() => {
       const tableId = new TableId("", "ResourceType");
       return defineComponent(
@@ -97,13 +112,48 @@ export function defineContractComponents(world: World) {
       );
     })(),
     FunctionSelectors: (() => {
-      const tableId = new TableId("", "funcSelectors");
+      const tableId = new TableId("", "FunctionSelector");
       return defineComponent(
         world,
         {
           namespace: RecsType.String,
           name: RecsType.String,
           systemFunctionSelector: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    KeysInTable: (() => {
+      const tableId = new TableId("", "KeysInTable");
+      return defineComponent(
+        world,
+        {
+          keys0: RecsType.StringArray,
+          keys1: RecsType.StringArray,
+          keys2: RecsType.StringArray,
+          keys3: RecsType.StringArray,
+          keys4: RecsType.StringArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    UsedKeysIndex: (() => {
+      const tableId = new TableId("", "UsedKeysIndex");
+      return defineComponent(
+        world,
+        {
+          has: RecsType.Boolean,
+          index: RecsType.Number,
         },
         {
           metadata: {

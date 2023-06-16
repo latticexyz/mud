@@ -1,0 +1,5 @@
+## Gas efficiency
+
+Store is being very tightly optimized for gas efficiency. It comes with a lot of flexibility when it comes to turning features on/off and navigating the different trade-offs (eg: table creation cost vs table usage cost).
+
+This section will more fleshed out when the internal design stabilizes and we can make good benchmarks. Currently, Store is about ~5 to 10% more expensive than native Solidity for storing data, and costs about the same when adding events and access control (which most projects need to do for state-reconstruction client/indexer side, and security).

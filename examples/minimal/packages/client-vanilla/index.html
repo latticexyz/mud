@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>a minimal MUD client</title>
+  </head>
+  <body>
+    <script type="module" src="/src/index.ts"></script>
+    <div>
+      <div>Counter: <span id="counter">0</span></div>
+      <button onclick="window.increment()">Increment</button>
+      <button onclick="window.willRevert()">Revert</button>
+    </div>
+
+    <div>
+      <h1>Live Chat</h1>
+      <textarea id="chat-output" cols="40" rows="10" readonly></textarea>
+      <br />
+      <form id="chat-form">
+        <input id="chat-input" type="text" />
+        <button onclick="window.sendMessage()">Send</button>
+      </form>
+    </div>
+  </body>
+</html>

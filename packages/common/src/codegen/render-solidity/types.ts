@@ -1,4 +1,4 @@
-export interface ImportDatum {
+export interface AbsoluteImportDatum {
   symbol: string;
   path: string;
 }
@@ -8,6 +8,8 @@ export interface RelativeImportDatum {
   fromPath: string;
   usedInPath: string;
 }
+
+export type ImportDatum = AbsoluteImportDatum | RelativeImportDatum;
 
 export interface StaticResourceData {
   /** Name of the table id constant to render. */
@@ -33,7 +35,7 @@ export interface RenderType {
   internalTypeId: string;
 }
 
-export interface RenderPrimaryKey extends RenderType {
+export interface RenderKeyTuple extends RenderType {
   name: string;
   isDynamic: false;
 }

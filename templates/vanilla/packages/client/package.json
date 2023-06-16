@@ -1,0 +1,31 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "wait-port localhost:8545 && vite",
+    "preview": "vite preview",
+    "test": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@latticexyz/common": "link:../../../../packages/common",
+    "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
+    "@latticexyz/network": "link:../../../../packages/network",
+    "@latticexyz/recs": "link:../../../../packages/recs",
+    "@latticexyz/schema-type": "link:../../../../packages/schema-type",
+    "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/utils": "link:../../../../packages/utils",
+    "@latticexyz/world": "link:../../../../packages/world",
+    "@wagmi/chains": "^0.2.22",
+    "contracts": "workspace:*",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "vite": "^4.2.1",
+    "wait-port": "^1.0.4"
+  }
+}

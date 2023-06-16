@@ -1,5 +1,13 @@
 import path from "path";
-import { ImportDatum, RelativeImportDatum, StaticResourceData, RenderPrimaryKey, RenderType } from "./types";
+import {
+  AbsoluteImportDatum,
+  RelativeImportDatum,
+  ImportDatum,
+  StaticResourceData,
+  RenderKeyTuple,
+  RenderType,
+} from "./types";
+import { posixPath } from "../utils";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -23,24 +31,21 @@ export function renderArguments(args: (string | undefined)[]) {
 
 export function renderCommonData({
   staticResourceData,
-  primaryKeys,
+  keyTuple,
 }: {
   staticResourceData?: StaticResourceData;
-  primaryKeys: RenderPrimaryKey[];
+  keyTuple: RenderKeyTuple[];
 }) {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "bytes32 _tableId";
 
-  const _keyArgs = renderArguments(primaryKeys.map(({ name }) => name));
-  const _typedKeyArgs = renderArguments(primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
+  const _keyArgs = renderArguments(keyTuple.map(({ name }) => name));
+  const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
-  const _primaryKeysDefinition = `
-    bytes32[] memory _primaryKeys = new bytes32[](${primaryKeys.length});
-    ${renderList(
-      primaryKeys,
-      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
-    )}
+  const _keyTupleDefinition = `
+    bytes32[] memory _keyTuple = new bytes32[](${keyTuple.length});
+    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
   `;
 
   return {
@@ -48,7 +53,7 @@ export function renderCommonData({
     _typedTableId,
     _keyArgs,
     _typedKeyArgs,
-    _primaryKeysDefinition,
+    _keyTupleDefinition,
   };
 }
 
@@ -64,8 +69,27 @@ export function solidityRelativeImportPath(fromPath: string, usedInPath: string)
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
+export function renderImports(imports: ImportDatum[]) {
+  return renderAbsoluteImports(
+    imports.map((importDatum) => {
+      if ("path" in importDatum) {
+        return importDatum;
+      } else {
+        return {
+          symbol: importDatum.symbol,
+          path: solidityRelativeImportPath(importDatum.fromPath, importDatum.usedInPath),
+        };
+      }
+    })
+  );
+}
+
+/**
+ * Aggregates, deduplicates and renders imports for symbols per path.
+ * Identical symbols from different paths are NOT handled, they should be checked before rendering.
+ */
 export function renderRelativeImports(imports: RelativeImportDatum[]) {
-  return renderImports(
+  return renderAbsoluteImports(
     imports.map(({ symbol, fromPath, usedInPath }) => ({
       symbol,
       path: solidityRelativeImportPath(fromPath, usedInPath),
@@ -77,7 +101,7 @@ export function renderRelativeImports(imports: RelativeImportDatum[]) {
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
-export function renderImports(imports: ImportDatum[]) {
+export function renderAbsoluteImports(imports: AbsoluteImportDatum[]) {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
   for (const { symbol, path } of imports) {
@@ -90,7 +114,7 @@ export function renderImports(imports: ImportDatum[]) {
   const renderedImports = [];
   for (const [path, symbols] of aggregatedImports) {
     const renderedSymbols = [...symbols].join(", ");
-    renderedImports.push(`import { ${renderedSymbols} } from "${path}";`);
+    renderedImports.push(`import { ${renderedSymbols} } from "${posixPath(path)}";`);
   }
   return renderedImports.join("\n");
 }
@@ -127,18 +151,19 @@ export function renderTableId(staticResourceData: StaticResourceData) {
   };
 }
 
-function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderType) {
-  const bits = staticByteLength * 8;
-  const innerText = `${typeUnwrap}(${name})`;
+export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTypeId }: RenderType) {
+  const innerText = typeUnwrap.length ? `${typeUnwrap}(${name})` : name;
 
-  if (internalTypeId.match(/^uint\d{1,3}$/)) {
-    return `bytes32(uint256(${innerText}))`;
-  } else if (internalTypeId.match(/^int\d{1,3}$/)) {
-    return `bytes32(uint256(uint${bits}(${innerText})))`;
+  if (internalTypeId === "bytes32") {
+    return innerText;
   } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
     return `bytes32(${innerText})`;
+  } else if (internalTypeId.match(/^uint\d{1,3}$/)) {
+    return `bytes32(uint256(${innerText}))`;
+  } else if (internalTypeId.match(/^int\d{1,3}$/)) {
+    return `bytes32(uint256(int256(${innerText})))`;
   } else if (internalTypeId === "address") {
-    return `bytes32(bytes20(${innerText}))`;
+    return `bytes32(uint256(uint160(${innerText})))`;
   } else if (internalTypeId === "bool") {
     return `_boolToBytes32(${innerText})`;
   } else {

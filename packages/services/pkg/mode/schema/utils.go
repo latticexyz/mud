@@ -34,7 +34,9 @@ func TableNameToTableId(tableName string) string {
 	if len(parts) != 2 {
 		panic("Invalid table name: " + tableName)
 	}
-	return "0x" + common.Bytes2Hex(append(common.FromHex("0x"+parts[0]), common.FromHex("0x"+parts[1])...))
+	pad1 := common.RightPadBytes([]byte(parts[0]), 16)
+	pad2 := common.RightPadBytes([]byte(parts[1]), 16)
+	return "0x" + common.Bytes2Hex(append(pad1, pad2...))
 }
 
 /////////////////////////////////////////
@@ -47,4 +49,18 @@ func DefaultFieldName(index int) string {
 
 func DefaultKeyName(index int) string {
 	return "key_" + fmt.Sprint(index)
+}
+
+/////////////////////////////////////////////////
+// Utilities for getting key and field schemas //
+/////////////////////////////////////////////////
+
+func GetKeySchema(schemaEventData []byte) []byte {
+	// Key schema is the last 32 bytes of the schema event data.
+	return schemaEventData[32:]
+}
+
+func GetFieldSchema(schemaEventData []byte) []byte {
+	// Key schema is the first 32 bytes of the schema event data.
+	return schemaEventData[:32]
 }

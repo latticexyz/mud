@@ -1,4 +1,4 @@
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "./ts/register";
 
 export default mudConfig({
   worldImportPath: "../",
@@ -12,7 +12,7 @@ export default mudConfig({
      *
      ************************************************************************/
     NamespaceOwner: {
-      primaryKeys: {
+      keySchema: {
         namespace: "bytes16",
       },
       schema: {
@@ -20,7 +20,7 @@ export default mudConfig({
       },
     },
     ResourceAccess: {
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
         caller: "address",
       },
@@ -29,7 +29,7 @@ export default mudConfig({
       },
     },
     InstalledModules: {
-      primaryKeys: {
+      keySchema: {
         moduleName: "bytes16",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
@@ -49,7 +49,7 @@ export default mudConfig({
      ************************************************************************/
     Systems: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: {
@@ -60,16 +60,23 @@ export default mudConfig({
     },
     SystemRegistry: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         system: "address",
       },
       schema: {
         resourceSelector: "bytes32",
       },
     },
+    SystemHooks: {
+      directory: "modules/core/tables",
+      keySchema: {
+        resourceSelector: "bytes32",
+      },
+      schema: "address[]",
+    },
     ResourceType: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: {
@@ -78,8 +85,7 @@ export default mudConfig({
     },
     FunctionSelectors: {
       directory: "modules/core/tables",
-      name: "funcSelectors",
-      primaryKeys: {
+      keySchema: {
         functionSelector: "bytes4",
       },
       schema: {
@@ -91,7 +97,7 @@ export default mudConfig({
     },
     KeysWithValue: {
       directory: "modules/keyswithvalue/tables",
-      primaryKeys: {
+      keySchema: {
         valueHash: "bytes32",
       },
       schema: {
@@ -99,9 +105,29 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    KeysInTable: {
+      directory: "modules/keysintable/tables",
+      keySchema: { sourceTable: "bytes32" },
+      schema: {
+        keys0: "bytes32[]",
+        keys1: "bytes32[]",
+        keys2: "bytes32[]",
+        keys3: "bytes32[]",
+        keys4: "bytes32[]",
+      },
+    },
+    UsedKeysIndex: {
+      directory: "modules/keysintable/tables",
+      keySchema: {
+        sourceTable: "bytes32",
+        keysHash: "bytes32",
+      },
+      schema: { has: "bool", index: "uint40" },
+      dataStruct: false,
+    },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
-      primaryKeys: {},
+      keySchema: {},
       schema: "uint256",
       tableIdArgument: true,
       storeArgument: true,
@@ -113,7 +139,7 @@ export default mudConfig({
      ************************************************************************/
     Bool: {
       directory: "../test/tables",
-      primaryKeys: {},
+      keySchema: {},
       schema: {
         value: "bool",
       },
@@ -136,6 +162,8 @@ export default mudConfig({
     // (see https://github.com/latticexyz/mud/pull/584)
     "UniqueEntitySystem",
 
+    "SnapSyncSystem",
+
     // Worldgen currently does not support systems inheriting logic
     // from other contracts, so all parts of CoreSystem are named
     // System too to be included in the IBaseWorld interface.
@@ -144,5 +172,7 @@ export default mudConfig({
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
+    // Similar overlap occurs for IEphemeralRecordSystem. IWorldEphemeral is included instead.
+    "EphemeralRecordSystem",
   ],
 });

@@ -14,6 +14,9 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	gorm_logger "gorm.io/gorm/logger"
 )
 
 // connectToDatabase creates a connection to a PostgreSQL database using the specified DSN.
@@ -35,6 +38,30 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	logger.GetLogger().Info("connected to db", zap.String("name", dbName))
+
+	return db, nil
+}
+
+// gorm__connectToDatabase creates a connection to a PostgreSQL database using the specified DSN
+// via GORM.
+//
+// Parameters:
+//   - dsn (string): The Data Source Name to connect to the database.
+//
+// Returns:
+//   - (*gorm.DB): A pointer to the connected database instance via GORM.
+//   - (error): An error if any occurred during the connection process.
+func gorm__connectToDatabase(dsn string) (*gorm.DB, error) {
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var dbName string
+	db.Raw("SELECT current_database()").Scan(&dbName)
 	logger.GetLogger().Info("connected to db", zap.String("name", dbName))
 
 	return db, nil
@@ -91,12 +118,18 @@ func wipeSchemas(db *sql.DB, logger *zap.Logger) error {
 func NewDatabaseLayer(
 	ctx context.Context,
 	dsn string,
+	gorm__dsn string,
 	wipe bool,
 	logger *zap.Logger,
 ) *DatabaseLayer {
 
 	// Connect to the database using sqlx so we can use the sqlx package.
 	db, err := connectToDatabase(dsn)
+	if err != nil {
+		logger.Fatal("failed to connect to database", zap.Error(err))
+	}
+
+	gorm__db, err := gorm__connectToDatabase(gorm__dsn)
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
 	}
@@ -110,7 +143,7 @@ func NewDatabaseLayer(
 	// If running with wipe ON, wipe the database.
 	if wipe {
 		logger.Info("wiping the database")
-		err := wipeSchemas(db.DB, logger)
+		err = wipeSchemas(db.DB, logger)
 		if err != nil {
 			logger.Error("failed to wipe the database", zap.Error(err))
 		}
@@ -130,6 +163,7 @@ func NewDatabaseLayer(
 
 	return &DatabaseLayer{
 		db:          db,
+		gorm__db:    gorm__db,
 		conn:        conn,
 		walConfig:   walConfig,
 		multiplexer: multiplexer,
