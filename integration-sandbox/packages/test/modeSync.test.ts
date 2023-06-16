@@ -86,7 +86,7 @@ describe("Sync from MODE", async () => {
 
     expect(asyncErrorHandler.getErrors()).toHaveLength(1);
     expect(asyncErrorHandler.getErrors()[0]).toContain(
-      "MODE Error:  ClientError: /mode.QueryLayer/Single__GetState UNKNOWN: Response closed without headers"
+      "MODE Error:  ClientError: /mode.QueryLayer/GetPartialState UNKNOWN: Response closed without headers"
     );
   });
 });
