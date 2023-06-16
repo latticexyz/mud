@@ -106,7 +106,9 @@ export function syncMODE(reportError: (error: string) => void) {
     }
     if (data.toString().includes("finished syncing")) {
       console.log(chalk.magenta("[mode]:"), "done syncing");
-      resolve();
+      // Wait for 2s after MODE is done syncing to avoid race conditions
+      // with the first block number not being available yet
+      setTimeout(resolve, 2000);
     }
     console.log(chalk.magentaBright("[mode ingress]:", dataString));
   });
