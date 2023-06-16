@@ -5,7 +5,7 @@ import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
-import { cast, forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId";
 import { getExistingContracts } from "./getExistingContracts";
@@ -80,13 +80,6 @@ in your contracts directory to use the default anvil private key.`
     console.log(
       chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${mudConfig.worldsFile} and ${outputDir}): \n`))
     );
-
-    // Reset base fee back to 0 if deploying to a local chain.
-    // This is a temporary workaround until the issue is fixed upstream,
-    // see https://github.com/foundry-rs/foundry/issues/5161
-    if ((await getChainId(rpc)) === 31337) {
-      cast(["rpc", "anvil_setNextBlockBaseFeePerGas", "0"]);
-    }
   }
 
   console.log(deploymentInfo);
