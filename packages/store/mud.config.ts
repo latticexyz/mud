@@ -1,4 +1,4 @@
-import { mudConfig, storePlugin } from "./ts/library";
+import { mudConfig, storePlugin } from "./ts";
 
 export default mudConfig({
   plugins: { storePlugin },

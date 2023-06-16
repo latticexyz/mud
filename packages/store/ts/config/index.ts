@@ -17,6 +17,5 @@ export function mudConfig<
   config: MUDUserConfig<P, C, EnumNames, StaticUserTypes> & { plugins: Plugins }
 ): MergeReturnType<P[keyof P]["expandConfig"]> &
   ExpandStoreUserConfig<MUDUserConfig<P, C, EnumNames, StaticUserTypes> & { plugins: Plugins }> {
-  const { plugins, ...configWithoutPlugins } = config;
-  return mudCoreConfig(plugins, configWithoutPlugins);
+  return mudCoreConfig(config);
 }
