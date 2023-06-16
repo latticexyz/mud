@@ -239,27 +239,29 @@ export type MUDUserConfig<
   C extends MergedPluginsInput<P>,
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = C &
-  EnumsConfig<EnumNames> & {
-    /**
-     * Configuration for each table.
-     *
-     * The key is the table name (capitalized).
-     *
-     * The value:
-     *  - abi or user type for a single-value table.
-     *  - FullTableConfig object for multi-value tables (or for customizable options).
-     */
-    tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
-    /** The namespace for table ids. Default is "" (ROOT) */
-    namespace?: string;
-    /** Path for store package imports. Default is "@latticexyz/store/src/" */
-    storeImportPath?: string;
-    /** Path to the file where common user types will be generated and imported from. Default is "Types" */
-    userTypesPath?: string;
-    /** Path to the directory where generated files will be placed. (Default is "codegen") */
-    codegenDirectory?: string;
-  };
+> =
+  // omit some keys to remove an inferred fallback type so typehints work correctly
+  Omit<C, "enums" | "tables"> &
+    EnumsConfig<EnumNames> & {
+      /**
+       * Configuration for each table.
+       *
+       * The key is the table name (capitalized).
+       *
+       * The value:
+       *  - abi or user type for a single-value table.
+       *  - FullTableConfig object for multi-value tables (or for customizable options).
+       */
+      tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
+      /** The namespace for table ids. Default is "" (ROOT) */
+      namespace?: string;
+      /** Path for store package imports. Default is "@latticexyz/store/src/" */
+      storeImportPath?: string;
+      /** Path to the file where common user types will be generated and imported from. Default is "Types" */
+      userTypesPath?: string;
+      /** Path to the directory where generated files will be placed. (Default is "codegen") */
+      codegenDirectory?: string;
+    };
 
 const StoreConfigUnrefined = z
   .object({

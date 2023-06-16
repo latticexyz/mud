@@ -17,5 +17,5 @@ export function mudConfig<
   EnumNames extends StringForUnion = never,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
 >(config: { plugins: P } & MUDUserConfig<P, C, EnumNames, StaticUserTypes>): { plugins: P } & C {
-  return config;
+  return config as any;
 }
