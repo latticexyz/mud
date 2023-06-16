@@ -1,5 +1,5 @@
 import { TableData } from "@latticexyz/services/mode";
-import { SchemaType } from "@latticexyz/schema-type";
+import { SchemaType } from "@latticexyz/schema-type/deprecated";
 import { decodeValue } from "../schemas/decodeValue";
 
 export function getBlockNumberFromModeTable(tableData: TableData): number {
