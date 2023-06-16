@@ -32,6 +32,10 @@ jobs:
         working-directory: ./examples/${{ matrix.example }}
         run: pnpm install
 
+      - name: Clean example
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm run clean
+
       - name: Build example
         working-directory: ./examples/${{ matrix.example }}
         run: pnpm run build

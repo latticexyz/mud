@@ -1,7 +1,8 @@
 import path from "path";
 import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { tablegen, StoreConfig } from "../library";
+import { tablegen } from "../codegen";
+import { StoreConfig } from "..";
 
 const config = (await loadConfig()) as StoreConfig;
 const srcDir = await getSrcDirectory();
