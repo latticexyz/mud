@@ -7,58 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
 
-// RpcConfig defines the configuration for an RPC endpoint.
-type RpcConfig struct {
-	Http string `yaml:"http"`
-	Ws   string `yaml:"ws"`
-}
-
-// ChainConfig defines the configuration for a chain.
-type ChainConfig struct {
-	Name string    `yaml:"name"`
-	Id   string    `yaml:"id"`
-	Rpc  RpcConfig `yaml:"rpc"`
-}
-
-// DbConfig defines the configuration for a database.
-type DbConfig struct {
-	Dsn     string `yaml:"dsn"`
-	DsnGorm string `yaml:"dsnGorm"`
-	Wipe    bool   `yaml:"wipe"`
-}
-
-// SyncConfig defines the configuration for the synchronization process.
-type SyncConfig struct {
-	Enabled         bool   `yaml:"enabled"`
-	StartBlock      uint64 `yaml:"startBlock"`
-	BlockBatchCount uint64 `yaml:"blockBatchCount"`
-}
-
-// QlConfig defines the configuration for the query layer.
-type QlConfig struct {
-	Port int `yaml:"port"`
-}
-
-// MetricsConfig defines the configuration for the metrics endpoint.
-type MetricsConfig struct {
-	Port int `yaml:"port"`
-}
-
-// Config defines the application configuration.
-type Config struct {
-	Chains  []ChainConfig `yaml:"chains"`
-	Db      DbConfig      `yaml:"db"`
-	Sync    SyncConfig    `yaml:"sync"`
-	Ql      QlConfig      `yaml:"ql"`
-	Metrics MetricsConfig `yaml:"metrics"`
-}
-
 // FromFile parses the configuration from a file.
-func FromFile(configFile string, logger *zap.Logger) (*Config, error) {
+func FromFile(configFile string) (*Config, error) {
 	config := &Config{}
 	data, err := os.ReadFile(configFile)
 	if err != nil {
@@ -74,7 +27,8 @@ func FromFile(configFile string, logger *zap.Logger) (*Config, error) {
 
 // FromFlags parses the configuration from command-line flags.
 func FromFlags(
-	chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn, dbDsnGorm string,
+	chainNames, chainIDs, chainRPCsHTTP, chainRPCsWS, dbName, dbHost string,
+	dbPort uint64,
 	dbWipe bool,
 	syncEnabled bool,
 	syncStartBlock, syncBlockBatchCount uint64,
@@ -82,10 +36,11 @@ func FromFlags(
 ) (*Config, error) {
 	config := &Config{
 		Chains: make([]ChainConfig, 0),
-		Db: DbConfig{
-			Dsn:     dbDsn,
-			DsnGorm: dbDsnGorm,
-			Wipe:    dbWipe,
+		DB: DBConfig{
+			Name: dbName,
+			Host: dbHost,
+			Port: dbPort,
+			Wipe: dbWipe,
 		},
 		Sync: SyncConfig{
 			Enabled:         syncEnabled,
@@ -100,28 +55,28 @@ func FromFlags(
 		},
 	}
 	// Validate chain parameters.
-	if chainNames == "" || chainIds == "" || chainRpcsHttp == "" || chainRpcsWs == "" {
+	if chainNames == "" || chainIDs == "" || chainRPCsHTTP == "" || chainRPCsWS == "" {
 		return nil, fmt.Errorf("chain parameters cannot be empty")
 	}
 
 	// Parse chain names.
 	chainNamesList := strings.Split(chainNames, ",")
-	chainIdsList := strings.Split(chainIds, ",")
-	chainRpcsHttpList := strings.Split(chainRpcsHttp, ",")
-	chainRpcsWsList := strings.Split(chainRpcsWs, ",")
+	chainIDsList := strings.Split(chainIDs, ",")
+	chainRPCsHTTPList := strings.Split(chainRPCsHTTP, ",")
+	chainRPCsWSList := strings.Split(chainRPCsWS, ",")
 
 	// Create chain configs and add them to the config.
 	for i, chainName := range chainNamesList {
-		chainId := chainIdsList[i]
-		chainRpcHttp := chainRpcsHttpList[i]
-		chainRpcWs := chainRpcsWsList[i]
+		chainID := chainIDsList[i]
+		chainRPCHTTP := chainRPCsHTTPList[i]
+		chainRPCWS := chainRPCsWSList[i]
 
 		chainConfig := ChainConfig{
 			Name: chainName,
-			Id:   chainId,
-			Rpc: RpcConfig{
-				Http: chainRpcHttp,
-				Ws:   chainRpcWs,
+			ID:   chainID,
+			RPC: RPCConfig{
+				HTTP: chainRPCHTTP,
+				WS:   chainRPCWS,
 			},
 		}
 		config.Chains = append(config.Chains, chainConfig)

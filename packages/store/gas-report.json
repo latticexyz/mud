@@ -97,27 +97,9 @@
   },
   {
     "source": "test/KeyEncoding.t.sol",
-    "name": "encode KeyEncoding key tuple",
-    "functionCall": "bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third)",
-    "gasUsed": 680
-  },
-  {
-    "source": "test/KeyEncoding.t.sol",
     "name": "register KeyEncoding schema",
     "functionCall": "KeyEncoding.registerSchema()",
     "gasUsed": 64695
-  },
-  {
-    "source": "test/KeyEncoding.t.sol",
-    "name": "set KeyEncoding record",
-    "functionCall": "KeyEncoding.set(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third, true)",
-    "gasUsed": 41889
-  },
-  {
-    "source": "test/KeyEncoding.t.sol",
-    "name": "get KeyEncoding record",
-    "functionCall": "bool value = KeyEncoding.get(42, -42, bytes16(hex\"1234\"), 0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF, true, ExampleEnum.Third)",
-    "gasUsed": 5244
   },
   {
     "source": "test/Mixed.t.sol",
@@ -441,7 +423,7 @@
     "source": "test/StoreCoreGas.t.sol",
     "name": "delete record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 24545
+    "gasUsed": 24553
   },
   {
     "source": "test/StoreCoreGas.t.sol",
@@ -459,7 +441,7 @@
     "source": "test/StoreCoreGas.t.sol",
     "name": "set (dynamic) field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 1, arrayDataBytes)",
-    "gasUsed": 34919
+    "gasUsed": 34927
   },
   {
     "source": "test/StoreCoreGas.t.sol",
@@ -495,7 +477,7 @@
     "source": "test/StoreCoreGas.t.sol",
     "name": "StoreCore: get key schema (warm)",
     "functionCall": "StoreCore.getKeySchema(table)",
-    "gasUsed": 1204
+    "gasUsed": 2330
   },
   {
     "source": "test/StoreCoreGas.t.sol",

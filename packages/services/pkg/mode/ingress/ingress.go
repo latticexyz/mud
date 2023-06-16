@@ -3,10 +3,11 @@ package ingress
 import (
 	"context"
 	"latticexyz/mud/packages/services/pkg/eth"
+	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/mode/read"
-	"latticexyz/mud/packages/services/pkg/mode/schema"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
+	"latticexyz/mud/packages/services/pkg/mode/tablestore"
 	"latticexyz/mud/packages/services/pkg/mode/write"
 	"latticexyz/mud/packages/services/pkg/utils"
 	"math/big"
@@ -16,66 +17,56 @@ import (
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"go.uber.org/zap"
 )
 
-type IngressLayer struct {
-	eth *ethclient.Client
-	wl  *write.WriteLayer
-	rl  *read.ReadLayer
-
-	schemaCache *schema.SchemaCache
-	chainConfig *config.ChainConfig
-	syncConfig  *config.SyncConfig
-
-	syncing                  bool
-	syncLogBuffer            [][]types.Log
-	syncLogBufferBlockNumber []uint64
-
-	logger *zap.Logger
-}
-
-// New creates a new IngressLayer instance connected to an Ethereum execution client.
+// New creates a new Layer instance connected to an Ethereum execution client.
 //
 // Parameters:
 // - chainConfig (*config.ChainConfig): The configuration for the chain to index.
 // - syncConfig (*config.SyncConfig): The configuration for the syncing process.
-// - wl (*write.WriteLayer): The WriteLayer instance to use for writing data to the database.
-// - rl (*read.ReadLayer): The ReadLayer instance to use for reading data from the database.
-// - schemaCache (*schema.SchemaCache): The SchemaCache instance to use for caching table schemas.
+// - wl (*write.Layer): The write Layer instance to use for writing data to the database.
+// - rl (*read.Layer): The read Layer instance to use for reading data from the database.
+// - tableStore (*tablestore.Store): The table Store instance to use for storing tables.
 // - logger (*zap.Logger): The logger to use for logging messages.
 //
 // Returns:
-// - (*IngressLayer): A pointer to the new IngressLayer instance.
-func New(chainConfig *config.ChainConfig, syncConfig *config.SyncConfig, wl *write.WriteLayer, rl *read.ReadLayer, schemaCache *schema.SchemaCache, logger *zap.Logger) *IngressLayer {
-	logger.Info("creating ingress layer connected to websocket", zap.String("ws", chainConfig.Rpc.Ws))
+// - (*Layer): A pointer to the new ingress Layer instance.
+func New(
+	chainConfig config.ChainConfig,
+	syncConfig config.SyncConfig,
+	wl *write.Layer,
+	rl *read.Layer,
+	tableStore *tablestore.Store,
+	logger *zap.Logger,
+) *Layer {
+	logger.Info("creating ingress layer connected to websocket", zap.String("ws", chainConfig.RPC.WS))
 
 	// Create a connection to an Ethereum execution client.
-	eth := eth.GetEthereumClient(chainConfig.Rpc.Ws, logger)
+	eth := eth.GetEthereumClient(chainConfig.RPC.WS, logger)
 
 	// Perform chain-specific actions on the write layer.
 	// Create a table that stores the schemas for every table on the chain that this ingress layer is indexing.
-	err := wl.CreateTable(schema.Internal__SchemaTableSchema(chainConfig.Id))
+	err := wl.CreateTable(mode.SchemasTable(chainConfig.ID))
 	if err != nil {
-		logger.Fatal("failed to create Internal__SchemaTable", zap.Error(err))
+		logger.Fatal("failed to create SchemasTable", zap.Error(err))
 	}
 	// Create a table that stores the current block number on the chain that this ingress layer is indexing.
-	err = wl.CreateTable(schema.Internal__BlockNumberTableSchema(chainConfig.Id))
+	err = wl.CreateTable(mode.BlockNumberTable(chainConfig.ID))
 	if err != nil {
-		logger.Fatal("failed to create Internal__BlockNumberTable", zap.Error(err))
+		logger.Fatal("failed to create BlockNumber", zap.Error(err))
 	}
 	// Create a table that stores the current sync status of this ingress layer.
-	err = wl.CreateTable(schema.Internal__SyncStatusTableSchema(chainConfig.Id))
+	err = wl.CreateTable(mode.SyncStatusTable(chainConfig.ID))
 	if err != nil {
-		logger.Fatal("failed to create Internal__SyncStatusTable", zap.Error(err))
+		logger.Fatal("failed to create SyncStatus", zap.Error(err))
 	}
 
-	return &IngressLayer{
+	return &Layer{
 		eth:                      eth,
 		wl:                       wl,
 		rl:                       rl,
-		schemaCache:              schemaCache,
+		tableStore:               tableStore,
 		chainConfig:              chainConfig,
 		syncConfig:               syncConfig,
 		syncLogBuffer:            make([][]types.Log, 0),
@@ -90,7 +81,7 @@ func New(chainConfig *config.ChainConfig, syncConfig *config.SyncConfig, wl *wri
 //
 // Returns:
 // - void.
-func (il *IngressLayer) Run() {
+func (il *Layer) Run() {
 	// Get an instance of a websocket subscription to the client.
 	headers := make(chan *types.Header)
 	sub, err := eth.GetEthereumSubscription(il.eth, headers)
@@ -101,16 +92,16 @@ func (il *IngressLayer) Run() {
 	// The loop is: react to block headers (new blocks) and parse each block.
 	for {
 		select {
-		case err := <-sub.Err():
-			il.logger.Error("failed to receive event from subscription", zap.Error(err))
+		case subErr := <-sub.Err():
+			il.logger.Error("failed to receive event from subscription", zap.Error(subErr))
 
-			var retrying bool = false
+			var retrying bool
 			resubErr := retry.Do(
 				func() error {
-					var err error
-					sub, err = eth.GetEthereumSubscription(il.eth, headers)
-					utils.LogErrorWhileRetrying("failed to subscribe to new blockchain head", err, &retrying, il.logger)
-					return err
+					var retryErr error
+					sub, retryErr = eth.GetEthereumSubscription(il.eth, headers)
+					utils.LogErrorWhileRetrying("failed to subscribe to new blockchain head", retryErr, &retrying, il.logger)
+					return retryErr
 				},
 				utils.ServiceDelayType,
 				utils.ServiceRetryAttempts,
@@ -123,7 +114,10 @@ func (il *IngressLayer) Run() {
 
 		case header := <-headers:
 			blockNumber := header.Number
-			il.logger.Info("received new block", zap.String("hash", header.Hash().String()), zap.String("number", blockNumber.String()))
+			il.logger.Info("received new block",
+				zap.String("hash", header.Hash().String()),
+				zap.String("number", blockNumber.String()),
+			)
 
 			// Get all events in this block, then process and filter out logs.
 			filteredLogs := eth.FilterLogs(il.FetchEventsInBlock(blockNumber))
@@ -133,14 +127,13 @@ func (il *IngressLayer) Run() {
 				il.syncLogBuffer = append(il.syncLogBuffer, filteredLogs)
 				il.syncLogBufferBlockNumber = append(il.syncLogBufferBlockNumber, blockNumber.Uint64())
 				continue
-			} else {
-				// If the ingress layer is not syncing, then handle the logs immediately.
-				il.handleLogs(filteredLogs)
 			}
+			// If the ingress layer is not syncing, then handle the logs immediately.
+			il.handleLogs(filteredLogs)
 
 			// Now that logs have been handled, update the current block number in the database.
 			// TODO: consider moving the order of updates when buffering / syncing.
-			il.UpdateBlockNumber(il.chainConfig.Id, blockNumber)
+			il.UpdateBlockNumber(il.ChainID(), blockNumber)
 		}
 	}
 }
@@ -157,7 +150,7 @@ func (il *IngressLayer) Run() {
 //
 // Returns:
 // - void.
-func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
+func (il *Layer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 	// If the startBlockNumber is not provided, default to the genesis block number.
 	if startBlockNumber == nil {
 		startBlockNumber = big.NewInt(0)
@@ -166,21 +159,27 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 	if endBlockNumber == nil {
 		endBlockNumber = eth.GetCurrentBlockNumber(il.eth)
 	}
-	il.logger.Info("syncing from block", zap.String("start_block_number", startBlockNumber.String()), zap.String("end_block_number", endBlockNumber.String()))
+	il.logger.Info("syncing from block",
+		zap.String("start_block_number", startBlockNumber.String()),
+		zap.String("end_block_number", endBlockNumber.String()),
+	)
 
 	// Set the syncing status to true.
-	il.UpdateSyncStatus(il.chainConfig.Id, true)
+	il.UpdateSyncStatus(il.ChainID(), true)
 
 	// Get the block number that the state is currently at.
-	currentBlockNumber, err := il.rl.GetBlockNumber(il.chainConfig.Id)
+	currentBlockNumber, err := il.rl.GetBlockNumber(il.ChainID())
 	if err != nil {
 		il.logger.Error("failed to get current block number", zap.Error(err))
 	}
 
-	// If the current block number is greater than the start block number, then set the start block number to the current block number.
+	// If the current block number is greater than the start block number, then set the start block number to the
+	// current block number.
 	if currentBlockNumber != nil && currentBlockNumber.Cmp(startBlockNumber) == 1 {
 		startBlockNumber = currentBlockNumber
-		il.logger.Info("start block number is greater than current block number, setting start block number to current block number", zap.String("start_block_number", startBlockNumber.String()))
+		il.logger.Info("start block number > current block number, set start block number = current block number",
+			zap.String("start_block_number", startBlockNumber.String()),
+		)
 	}
 
 	// For each block from the start block number to the end block number, get the logs and handle them.
@@ -194,10 +193,16 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 		// Handle the logs.
 		il.handleLogs(filteredLogs)
 
-		il.logger.Info("synced block range", zap.String("start", blockNumberRangeStart.String()), zap.String("end", blockNumberRangeEnd.String()))
+		il.logger.Info("synced block range",
+			zap.String("start", blockNumberRangeStart.String()),
+			zap.String("end", blockNumberRangeEnd.String()),
+		)
 	}
 
-	il.logger.Info("done syncing from block", zap.String("start_block_number", startBlockNumber.String()), zap.String("end_block_number", endBlockNumber.String()))
+	il.logger.Info("done syncing from block",
+		zap.String("start_block_number", startBlockNumber.String()),
+		zap.String("end_block_number", endBlockNumber.String()),
+	)
 
 	// Now that the sync is done, handle the logs that were buffered during the sync.
 	// TODO: use channels.
@@ -207,60 +212,63 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 	}
 
 	// Set the syncing status to false.
-	il.UpdateSyncStatus(il.chainConfig.Id, false)
+	il.UpdateSyncStatus(il.ChainID(), false)
 	il.logger.Info("finished syncing")
 }
 
 // UpdateBlockNumber updates the block number for a given chain using the write layer.
 //
 // Parameters:
-// - chainId (string): The ID of the chain for which to update the block number.
+// - chainID (string): The ID of the chain for which to update the block number.
 // - blockNumber (*big.Int): The new block number to update.
 //
 // Returns:
 // - void.
-func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) {
+func (il *Layer) UpdateBlockNumber(chainID string, blockNumber *big.Int) {
 	// Build the row to update or insert (contains the block number).
-	row := write.RowKV{
+	row := mode.TableRow{
 		"block_number": blockNumber.String(),
-		"chain_id":     chainId,
+		"chain_id":     chainID,
 	}
 	// Insert the block number into the database.
-	tableSchema := schema.Internal__BlockNumberTableSchema(chainId)
-	err := il.wl.UpdateOrInsertRow(tableSchema, row, map[string]interface{}{
-		"chain_id": chainId,
+	table := mode.BlockNumberTable(chainID)
+	err := il.wl.UpdateOrInsertRow(table, row, map[string]interface{}{
+		"chain_id": chainID,
 	})
 	if err != nil {
 		il.logger.Error("failed to update or insert block number", zap.Error(err))
 	}
-	il.logger.Info("updated block number", zap.String("chain_id", chainId), zap.String("block_number", blockNumber.String()))
+	il.logger.Info("updated block number",
+		zap.String("chain_id", chainID),
+		zap.String("block_number", blockNumber.String()),
+	)
 }
 
 // UpdateSyncStatus updates the syncing status for a given chain using the write layer.
 //
 // Parameters:
-// - chainId (string): The ID of the chain for which to update the syncing status.
+// - chainID (string): The ID of the chain for which to update the syncing status.
 // - syncing (bool): The new syncing status to update.
 //
 // Returns:
 // - void.
-func (il *IngressLayer) UpdateSyncStatus(chainId string, syncing bool) {
+func (il *Layer) UpdateSyncStatus(chainID string, syncing bool) {
 	il.syncing = syncing
 
 	// Build the row to update or insert (contains the syncing status).
-	row := write.RowKV{
+	row := mode.TableRow{
 		"syncing":  strconv.FormatBool(syncing),
-		"chain_id": chainId,
+		"chain_id": chainID,
 	}
 	// Insert the syncing status into the database.
-	tableSchema := schema.Internal__SyncStatusTableSchema(chainId)
-	err := il.wl.UpdateOrInsertRow(tableSchema, row, map[string]interface{}{
-		"chain_id": chainId,
+	table := mode.SyncStatusTable(chainID)
+	err := il.wl.UpdateOrInsertRow(table, row, map[string]interface{}{
+		"chain_id": chainID,
 	})
 	if err != nil {
 		il.logger.Error("failed to update or insert syncing status", zap.Error(err))
 	}
-	il.logger.Info("updated syncing status", zap.String("chain_id", chainId), zap.Bool("syncing", syncing))
+	il.logger.Info("updated syncing status", zap.String("chain_id", chainID), zap.Bool("syncing", syncing))
 }
 
 // FetchEventsInBlock fetches the events that occurred in a specific block using the Ethereum client.
@@ -270,7 +278,7 @@ func (il *IngressLayer) UpdateSyncStatus(chainId string, syncing bool) {
 //
 // Returns:
 // - ([]types.Log): A slice of `types.Log` that contains the events that occurred in the block.
-func (il *IngressLayer) FetchEventsInBlock(blockNumber *big.Int) []types.Log {
+func (il *Layer) FetchEventsInBlock(blockNumber *big.Int) []types.Log {
 	return il.FetchEventsInBlockRange(blockNumber, blockNumber)
 }
 
@@ -282,7 +290,7 @@ func (il *IngressLayer) FetchEventsInBlock(blockNumber *big.Int) []types.Log {
 //
 // Returns:
 // - ([]types.Log): A slice of `types.Log` that contains the events that occurred in the block range.
-func (il *IngressLayer) FetchEventsInBlockRange(startBlockNumber *big.Int, endBlockNumber *big.Int) []types.Log {
+func (il *Layer) FetchEventsInBlockRange(startBlockNumber *big.Int, endBlockNumber *big.Int) []types.Log {
 	query := ethereum.FilterQuery{
 		FromBlock: startBlockNumber,
 		ToBlock:   endBlockNumber,
@@ -295,8 +303,16 @@ func (il *IngressLayer) FetchEventsInBlockRange(startBlockNumber *big.Int, endBl
 	}
 	logs, err := il.eth.FilterLogs(context.Background(), query)
 	if err != nil {
-		il.logger.Error("failed to get events in block range", zap.Uint64("startBlockNumber", startBlockNumber.Uint64()), zap.Uint64("endBlockNumber", endBlockNumber.Uint64()), zap.Error(err))
+		il.logger.Error("failed to get events in block range",
+			zap.Uint64("startBlockNumber", startBlockNumber.Uint64()),
+			zap.Uint64("endBlockNumber", endBlockNumber.Uint64()),
+			zap.Error(err),
+		)
 	}
 
 	return logs
+}
+
+func (il *Layer) ChainID() string {
+	return il.chainConfig.ID
 }

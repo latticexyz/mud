@@ -6,10 +6,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type WriteLayer struct {
+type Layer struct {
 	dl     *db.DatabaseLayer
 	logger *zap.Logger
 }
-
-// TODO: rename into something more specific.
-type RowKV = map[string]interface{}

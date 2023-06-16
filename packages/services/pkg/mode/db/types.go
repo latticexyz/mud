@@ -26,10 +26,10 @@ type WALConfig struct {
 
 // DatabaseLayer is the layer responsible for handling all low-level interactions with the PostgreSQL database.
 type DatabaseLayer struct {
-	// db is the connection to the database.
-	db *sqlx.DB
-	// gorm__db is the connection to the database via GORM.
-	gorm__db *gorm.DB
+	// sqlxDB is the connection to the database via SQLX.
+	sqlxDB *sqlx.DB
+	// gormDB is the connection to the database via GORM.
+	gormDB *gorm.DB
 
 	// conn is the low-level connection to the database.
 	conn *pgconn.PgConn
