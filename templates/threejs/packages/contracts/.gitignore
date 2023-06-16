@@ -1,0 +1,11 @@
+out/
+cache/
+node_modules/
+bindings/
+artifacts/
+abi/
+types/
+broadcast/
+
+# Ignore MUD deploy artifacts
+deploys/**/*.json

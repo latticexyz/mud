@@ -7,4 +7,5 @@ export default {
   spec: "Specification",
   "gas-efficiency": "Gas efficiency",
   "using-without-world": "Using Store without World",
+  "internals": "Internal tables",
 };

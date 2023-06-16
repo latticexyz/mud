@@ -3,13 +3,16 @@ import { anvil, forge, getRpcUrl, getScriptDirectory, getSrcDirectory } from "@l
 import chalk from "chalk";
 import chokidar from "chokidar";
 import { loadConfig, resolveConfigPath } from "@latticexyz/config/node";
-import { StoreConfig, tablegen } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
+import { tablegen } from "@latticexyz/store/codegen";
 import path from "path";
 import { tsgen } from "../render-ts";
 import { debounce } from "throttle-debounce";
 import { worldgenHandler } from "./worldgen";
 import { WorldConfig } from "@latticexyz/world";
 import { deployHandler, printMUD, worldtypes } from "../utils";
+import { homedir } from "os";
+import { rmSync } from "fs";
 
 type Options = {
   rpc?: string;
@@ -57,6 +60,10 @@ const commandModule: CommandModule<Options, Options> = {
 
     // Start an anvil instance in the background if no RPC url is provided
     if (!args.rpc) {
+      console.log(chalk.gray("Cleaning devnode cache"));
+      const userHomeDir = homedir();
+      rmSync(path.join(userHomeDir, ".foundry", "anvil", "tmp"), { recursive: true, force: true });
+
       const anvilArgs = ["--block-time", "1", "--block-base-fee-per-gas", "0"];
       anvil(anvilArgs);
     }

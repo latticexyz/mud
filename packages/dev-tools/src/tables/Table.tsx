@@ -3,7 +3,7 @@ import { serializeWithoutIndexedValues } from "./serializeWithoutIndexedValues";
 import { useParams } from "react-router-dom";
 import { useStore } from "../useStore";
 import { filter, distinctUntilChanged, map, of } from "rxjs";
-import { useObservableValue } from "../../../react/src";
+import { useObservableValue } from "@latticexyz/react";
 
 // TODO: use react-table or similar for better perf with lots of logs
 // TODO: this will need refactoring once we have better v2 client code, for now we're leaning on v1 cache store (ECS based)

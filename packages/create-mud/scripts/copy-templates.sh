@@ -11,7 +11,7 @@ find ./dist/templates/* -name "package.json" -type f | while read -r file; do
   cat "$file"
   # GPT-4 recommended perl to edit-in-place rather than sed, because sed wasn't working on CI
   perl -pi -e 's|"(?=@latticexyz)([^"]+)":\s*"link:[^"]+"|"\1": "{{mud-version}}"|g' "$file"
-  perl -pi -e 's|"(solhint-plugin-mud)":\s*"file:[^"]+"|"\1": "{{mud-version}}"|g' "$file"
+  perl -pi -e 's|"(solhint-[^"]+)":\s*"file:[^"]+"|"\1": "{{mud-version}}"|g' "$file"
   echo "After replacement in $file:"
   cat "$file"
   echo

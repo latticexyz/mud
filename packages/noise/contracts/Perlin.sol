@@ -58,7 +58,7 @@ struct H2 {
 /// @author alvarius
 /// @notice Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 library Perlin {
-  function noise2d(int256 _x, int256 _y, int256 denom, uint8 precision) public pure returns (int128) {
+  function noise2d(int256 _x, int256 _y, int256 denom, uint8 precision) internal pure returns (int128) {
     H2 memory h = H2(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
@@ -98,7 +98,7 @@ library Perlin {
     return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
   }
 
-  function noise(int256 _x, int256 _y, int256 _z, int256 denom, uint8 precision) public pure returns (int128) {
+  function noise(int256 _x, int256 _y, int256 _z, int256 denom, uint8 precision) internal pure returns (int128) {
     H memory h = H(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
@@ -155,32 +155,32 @@ library Perlin {
     return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
   }
 
-  function dec(int128 x) public pure returns (int128) {
+  function dec(int128 x) internal pure returns (int128) {
     return Math.sub(x, _1);
   }
 
-  function floor(int128 x) public pure returns (int128) {
+  function floor(int128 x) internal pure returns (int128) {
     return Math.fromInt(int256(Math.toInt(x)));
   }
 
   /**
    * Computes t * t * t * (t * (t * 6 - 15) + 10)
    **/
-  function fade(int128 t) public pure returns (int128) {
+  function fade(int128 t) internal pure returns (int128) {
     return Math.mul(t, Math.mul(t, Math.mul(t, (Math.add(Math.mul(t, (Math.sub(Math.mul(t, _6), _15))), _10)))));
   }
 
   /**
    * Computes a + t * (b - a)
    **/
-  function lerp(int128 t, int128 a, int128 b) public pure returns (int128) {
+  function lerp(int128 t, int128 a, int128 b) internal pure returns (int128) {
     return Math.add(a, Math.mul(t, (Math.sub(b, a))));
   }
 
   /**
    * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
    **/
-  function grad(int16 _hash, int128 x, int128 y, int128 z) public pure returns (int128) {
+  function grad(int16 _hash, int128 x, int128 y, int128 z) internal pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
     int16 h = _hash & 0xF;
 
@@ -226,7 +226,7 @@ library Perlin {
   /**
    * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
    **/
-  function grad2d(int16 _hash, int128 x, int128 y) public pure returns (int128) {
+  function grad2d(int16 _hash, int128 x, int128 y) internal pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
     int16 h = _hash & 0xF;
     if (h <= 0x7) {
@@ -271,7 +271,7 @@ library Perlin {
   /**
    * Returns the value at the given index from the ptable
    */
-  function p(int64 i) public pure returns (int64) {
+  function p(int64 i) internal pure returns (int64) {
     return int64(ptable(int256(i)) >> 8);
   }
 
@@ -279,21 +279,21 @@ library Perlin {
    * Returns an encoded tuple of the value at the given index and the subsequent value from the ptable.
    * Value of the requested index is at i0(result), subsequent value is at i1(result)
    */
-  function p2(int16 i) public pure returns (int16) {
+  function p2(int16 i) internal pure returns (int16) {
     return int16(ptable(int256(i)));
   }
 
   /**
    * Helper function to access value at index 0 from the encoded tuple returned by p2
    */
-  function i0(int16 tuple) public pure returns (int16) {
+  function i0(int16 tuple) internal pure returns (int16) {
     return tuple >> 8;
   }
 
   /**
    * Helper function to access value at index 1 from the encoded tuple returned by p2
    */
-  function i1(int16 tuple) public pure returns (int16) {
+  function i1(int16 tuple) internal pure returns (int16) {
     return tuple & 0xff;
   }
 

@@ -7,7 +7,6 @@
   "scripts": {
     "build": "vite build",
     "dev": "wait-port localhost:8545 && vite",
-    "initialize": "pnpm build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -36,7 +35,7 @@
     "react-dom": "^18.2.0",
     "rxjs": "^7.5.5",
     "threads": "^1.7.0",
-    "viem": "^0.3.18"
+    "viem": "1.0.6"
   },
   "devDependencies": {
     "@types/react": "^18.2.6",

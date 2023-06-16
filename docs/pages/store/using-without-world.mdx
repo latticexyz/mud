@@ -14,8 +14,7 @@ Install `@latticexyz/store` via npm, pnpm, or Yarn, and add the correct remappin
 
 If you store your contracts in `packages/contract`, this would look like this:
 
-```solidity
-// remappings.txt
+```solidity filename="remappings.txt"
 @latticexyz/=./node_modules/@latticexyz/
 ```
 
@@ -24,10 +23,10 @@ If you want to use code-generation for libraries, install the MUD cli: `pnpm ins
 Import Store and extend your contract with the `Store` contract:
 
 ```solidity
-// src/Contract.sol
 import { Store } from "@latticexyz/store/src/Store.sol";
+
 contract Contract is Store {
-	[...]
+  // ...
 }
 ```
 
@@ -37,8 +36,7 @@ Inheriting `Store` will bootstrap the internal tables in the contract’s constr
 
 create a MUD config at the root of your project named `mud.config.ts`
 
-```tsx
-// mud.config.ts
+```ts filename="mud.config.ts"
 import { mudConfig } from "@latticexyz/store/register";
 
 export default mudConfig({

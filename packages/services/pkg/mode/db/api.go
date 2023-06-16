@@ -87,7 +87,14 @@ func (dl *DatabaseLayer) Create(table string, record interface{}) error {
 
 // Updates updates a record in the specified table using the provided record struct and filter criteria.
 func (dl *DatabaseLayer) Updates(table string, record interface{}, filter map[string]interface{}) (*gorm.DB, error) {
-	updates := dl.gorm__db.Table(table).Where(filter).Updates(record)
+	var updates *gorm.DB
+	if len(filter) == 0 {
+		// If the WHERE clause is empty, then update all records in the table.
+		// This is to handle the case where the filter is not provided due to a singleton table.
+		updates = dl.gorm__db.Table(table).Where("true").Updates(record)
+	} else {
+		updates = dl.gorm__db.Table(table).Where(filter).Updates(record)
+	}
 	if err := updates.Error; err != nil {
 		panic(err)
 	}

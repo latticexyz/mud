@@ -72,27 +72,33 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   disposers.push(() => syncBlockSub?.unsubscribe());
 
   // Create viem clients
-  const chain = Object.values({
-    ...mudChains,
-    ...chains,
-  }).find((c) => c.id === config.chainId);
-  const publicClient = createPublicClient({
-    chain,
-    transport: fallback([webSocket(), http()]),
-    pollingInterval: config.provider.options?.pollingInterval ?? config.clock.period ?? 1000,
-  });
-  const burnerAccount = config.privateKey ? privateKeyToAccount(config.privateKey as Address) : null;
-  const burnerWalletClient = burnerAccount
-    ? createWalletClient({
-        account: burnerAccount,
-        chain,
-        transport: fallback([webSocket(), http()]),
-        pollingInterval: config.provider.options?.pollingInterval ?? config.clock.period ?? 1000,
-      })
-    : null;
+  try {
+    const possibleChains = Object.values({ ...mudChains, ...chains });
+    if (config.chainConfig) {
+      possibleChains.unshift(config.chainConfig);
+    }
+    const chain = possibleChains.find((c) => c.id === config.chainId);
 
-  devObservables.publicClient$.next(publicClient);
-  devObservables.walletClient$.next(burnerWalletClient);
+    const publicClient = createPublicClient({
+      chain,
+      transport: fallback([webSocket(), http()]),
+      pollingInterval: config.provider.options?.pollingInterval ?? config.clock.period ?? 1000,
+    });
+    const burnerAccount = config.privateKey ? privateKeyToAccount(config.privateKey as Address) : null;
+    const burnerWalletClient = burnerAccount
+      ? createWalletClient({
+          account: burnerAccount,
+          chain,
+          transport: fallback([webSocket(), http()]),
+          pollingInterval: config.provider.options?.pollingInterval ?? config.clock.period ?? 1000,
+        })
+      : null;
+
+    devObservables.publicClient$.next(publicClient);
+    devObservables.walletClient$.next(burnerWalletClient);
+  } catch (error) {
+    console.error("Could not initialize viem clients, dev tools may not work:", error);
+  }
 
   return {
     providers,

@@ -1,0 +1,13 @@
+## Internal tables of Store
+
+`StoreCore.initialize` creates all the internal tables.
+It is called within `StoreRead`'s constructor (which is implemented by `World`).
+
+### Tables
+
+- `SCHEMA_TABLE` - a very low-level table with no library for it.
+  All table schemas are stored here.
+  Directly using it is not recommended, table libraries generated via `tablegen` have schema methods like `registerSchema`.
+  Alternatively, `StoreCore` exposes `getSchema`, `getKeySchema`, `hasTable`, `registerSchema`, `setMetadata`, most of which are used by table libraries internally.
+- `Hooks` - maps tableId to an array of table hooks
+- `StoreMetadata` - maps tableId to optional metadata, like table and field names
