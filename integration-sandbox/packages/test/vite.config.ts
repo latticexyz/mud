@@ -8,5 +8,6 @@ export default defineConfig({
     hookTimeout: 80_000,
     // load .env for world deploy
     setupFiles: ["dotenv/config"],
+    singleThread: true,
   },
 });

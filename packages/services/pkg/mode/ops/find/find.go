@@ -14,7 +14,7 @@ type FindBuilder struct {
 	NamespaceString string
 }
 
-// New__FromFindRequest creates a new instance of FindBuilder with the specified FindRequest and namespace.
+// NewBuilderFromFindRequest creates a new instance of FindBuilder with the specified FindRequest and namespace.
 // It returns a pointer to the newly created FindBuilder instance.
 //
 // Parameters:
@@ -24,7 +24,7 @@ type FindBuilder struct {
 //
 // Returns:
 // - (*FindBuilder): A pointer to the newly created FindBuilder instance.
-func New__FromFindRequest(request *pb_mode.FindRequest, namespace string) *FindBuilder {
+func NewBuilderFromFindRequest(request *pb_mode.FindRequest, namespace string) *FindBuilder {
 	return &FindBuilder{
 		TableName:       request.From,
 		Filter:          request.Filter,
@@ -34,7 +34,7 @@ func New__FromFindRequest(request *pb_mode.FindRequest, namespace string) *FindB
 	}
 }
 
-// New__FromSingle__StateRequest creates a new instance of FindBuilder with the specified Single__StateRequest
+// NewBuilderFromPartialStateRequest creates a new instance of FindBuilder with the specified Single__StateRequest
 // and namespace. It returns a pointer to the newly created FindBuilder instance.
 //
 // Parameters:
@@ -44,7 +44,7 @@ func New__FromFindRequest(request *pb_mode.FindRequest, namespace string) *FindB
 //
 // Returns:
 // - (*FindBuilder): A pointer to the newly created FindBuilder instance.
-func New__FromSingle__StateRequest(request *pb_mode.Single__StateRequest, namespace string) *FindBuilder {
+func NewBuilderFromPartialStateRequest(request *pb_mode.PartialStateRequest, namespace string) *FindBuilder {
 	return &FindBuilder{
 		TableName:       request.Table,
 		Filter:          request.Filter,

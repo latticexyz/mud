@@ -8,7 +8,7 @@ import (
 
 func TestDecodeData(t *testing.T) {
 	encoding := "0x000000000000ac000000000c00000000a00000000000000000000000000000004d6573736167655461626c65000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000576616c7565000000000000000000000000000000000000000000000000000000"
-	schemaTypePair := SchemaTypePair{
+	schema := &Schema{
 		Static: []SchemaType{},
 		Dynamic: []SchemaType{
 			STRING,
@@ -20,7 +20,7 @@ func TestDecodeData(t *testing.T) {
 		STRING,
 		BYTES,
 	}
-	expectedValues := []DataSchemaType__Struct{
+	expectedValues := []DataWithSchemaType{
 		{
 			Data:       "MessageTable",
 			SchemaType: STRING,
@@ -31,10 +31,10 @@ func TestDecodeData(t *testing.T) {
 		},
 	}
 
-	decodedData := DecodeData(hexutil.MustDecode(encoding), schemaTypePair)
+	decodedData := schema.DecodeFieldData(hexutil.MustDecode(encoding))
 
-	if decodedData.Length() != schemaTypePair.Length() {
-		t.Errorf("Expected length to be %d, got %d", schemaTypePair.Length(), decodedData.Length())
+	if decodedData.Length() != schema.Length() {
+		t.Errorf("Expected length to be %d, got %d", schema.Length(), decodedData.Length())
 	}
 	for i := 0; i < decodedData.Length(); i++ {
 		if decodedData.types[i] != expectedTypes[i] {
@@ -59,7 +59,7 @@ func TestDecodeKeyData(t *testing.T) {
 		key = append(key, temp)
 	}
 
-	schemaTypePair := SchemaTypePair{
+	schema := &Schema{
 		Static: []SchemaType{
 			UINT32,
 			UINT32,
@@ -71,7 +71,7 @@ func TestDecodeKeyData(t *testing.T) {
 		UINT32,
 		UINT32,
 	}
-	expectedValues := []DataSchemaType__Struct{
+	expectedValues := []DataWithSchemaType{
 		{
 			Data:       uint32(12),
 			SchemaType: UINT32,
@@ -82,10 +82,10 @@ func TestDecodeKeyData(t *testing.T) {
 		},
 	}
 
-	decodedData := DecodeKeyData(key, schemaTypePair)
+	decodedData := schema.DecodeKeyData(key)
 
-	if decodedData.Length() != schemaTypePair.Length() {
-		t.Errorf("Expected length to be %d, got %d", schemaTypePair.Length(), decodedData.Length())
+	if decodedData.Length() != schema.Length() {
+		t.Errorf("Expected length to be %d, got %d", schema.Length(), decodedData.Length())
 	}
 	for i := 0; i < decodedData.Length(); i++ {
 		if decodedData.types[i] != expectedTypes[i] {

@@ -6,8 +6,9 @@ chains:
       http: "http://host.docker.internal:8545"
       ws: "ws://host.docker.internal:8545"
 db:
-  dsn: "postgresql://db:5432/mode_ephemeral?sslmode=disable&replication=database"
-  dsnGorm: "host=db dbname=mode_ephemeral port=5432 sslmode=disable"
+  name: "mode_ephemeral"
+  host: "db"
+  port: 5432
   wipe: true
 sync:
   enabled: true
