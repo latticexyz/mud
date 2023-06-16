@@ -195,13 +195,13 @@
     "source": "test/SnapSyncModule.t.sol",
     "name": "Call snap sync on a table with 1 record",
     "functionCall": "SyncRecord[] memory records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0)",
-    "gasUsed": 42689
+    "gasUsed": 43813
   },
   {
     "source": "test/SnapSyncModule.t.sol",
     "name": "Call snap sync on a table with 2 records",
     "functionCall": "records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0)",
-    "gasUsed": 61325
+    "gasUsed": 62449
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
