@@ -46,6 +46,10 @@ runs:
           ${{ runner.os }}-turbo-main-
           ${{ runner.os }}-turbo-
 
+    - name: Clean
+      shell: bash
+      run: pnpm turbo run clean --cache-dir=.turbo --concurrency 10
+
     - name: Build
       shell: bash
       run: pnpm turbo run build --cache-dir=.turbo --concurrency 10
