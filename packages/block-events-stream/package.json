@@ -28,10 +28,12 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "0.8.7",
+    "debug": "^4.3.4",
     "rxjs": "^7.5.5",
     "viem": "1.0.6"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },

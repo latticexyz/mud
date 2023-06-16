@@ -74,6 +74,9 @@ importers:
       abitype:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4(supports-color@8.1.1)
       rxjs:
         specifier: ^7.5.5
         version: 7.5.6
@@ -81,6 +84,9 @@ importers:
         specifier: 1.0.6
         version: 1.0.6(typescript@5.0.4)
     devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)

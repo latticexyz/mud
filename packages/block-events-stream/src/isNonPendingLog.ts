@@ -8,13 +8,12 @@ type NonPendingLog<TLog extends Log> = TLog & {
   transactionIndex: NonNullable<TLog["transactionIndex"]>;
 };
 
-export function excludePendingLogs<TLog extends Log>(logs: TLog[]): NonPendingLog<TLog>[] {
-  return logs.filter(
-    (log) =>
-      log.blockHash != null &&
-      log.blockNumber != null &&
-      log.logIndex != null &&
-      log.transactionHash != null &&
-      log.transactionIndex != null
-  ) as NonPendingLog<TLog>[];
+export function isNonPendingLog<TLog extends Log>(log: TLog): log is NonPendingLog<TLog> {
+  return (
+    log.blockHash != null &&
+    log.blockNumber != null &&
+    log.logIndex != null &&
+    log.transactionHash != null &&
+    log.transactionIndex != null
+  );
 }
