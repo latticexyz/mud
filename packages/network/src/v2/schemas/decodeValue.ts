@@ -1,4 +1,4 @@
-import { SchemaType, SchemaTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaType, SchemaTypeToPrimitiveType } from "@latticexyz/schema-type/deprecated";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 

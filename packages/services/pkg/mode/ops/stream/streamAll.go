@@ -2,12 +2,11 @@ package stream
 
 import (
 	"latticexyz/mud/packages/services/pkg/mode"
-	"latticexyz/mud/packages/services/pkg/mode/schema"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 )
 
-// StreamAllBuilder is a builder for streaming records from multiple tables.
-type StreamAllBuilder struct {
+// Builder is a builder for streaming records from multiple tables.
+type Builder struct {
 	// Namespaces.
 	QueryNamespace *pb_mode.Namespace
 	ChainNamespace *pb_mode.Namespace
@@ -28,7 +27,7 @@ type StreamAllBuilder struct {
 //
 // Returns:
 //   - (*StreamAllBuilder): A pointer to the newly created StreamAllBuilder.
-func NewStreamAllBuilder(queryNamespace *pb_mode.Namespace, chainTables []string, worldTables []string) *StreamAllBuilder {
+func NewBuilder(queryNamespace *pb_mode.Namespace, chainTables []string, worldTables []string) *Builder {
 	// Build a set of all tables that the client is interested in (if any).
 	tableSet := make(map[string]bool)
 	for _, tableName := range chainTables {
@@ -39,9 +38,9 @@ func NewStreamAllBuilder(queryNamespace *pb_mode.Namespace, chainTables []string
 	}
 
 	// Get sub-namespaces for the request. A namespace is a chainId and worldAddress pair.
-	chainNamespace, worldNamespace := schema.NamespaceToSubNamespaces(queryNamespace)
+	chainNamespace, worldNamespace := mode.NamespaceToSubNamespaces(queryNamespace)
 
-	return &StreamAllBuilder{
+	return &Builder{
 		QueryNamespace: queryNamespace,
 		ChainNamespace: chainNamespace,
 		WorldNamespace: worldNamespace,
@@ -60,8 +59,8 @@ func NewStreamAllBuilder(queryNamespace *pb_mode.Namespace, chainTables []string
 // Returns:
 //   - (bool): A boolean indicating whether or not the table schema passes the table and namespace filters specified in the
 //     StreamAllBuilder instance.
-func (builder *StreamAllBuilder) ShouldStream(tableSchema *mode.TableSchema) bool {
-	return builder.doesPassTableFilter(tableSchema.TableName) && builder.doesPassNamespaceFilter(tableSchema.Namespace)
+func (builder *Builder) ShouldStream(table *mode.Table) bool {
+	return builder.doesPassTableFilter(table.Name) && builder.doesPassNamespaceFilter(table.Namespace)
 }
 
 // doesPassTableFilter returns true if the specified table name is in the list of table names to be streamed, or if the list
@@ -73,7 +72,7 @@ func (builder *StreamAllBuilder) ShouldStream(tableSchema *mode.TableSchema) boo
 // Returns:
 //   - (bool): A boolean indicating whether or not the specified table name is in the list of table names to be streamed, or
 //     if the list of table names to be streamed is empty.
-func (builder *StreamAllBuilder) doesPassTableFilter(tableName string) bool {
+func (builder *Builder) doesPassTableFilter(tableName string) bool {
 	if len(builder.TablesSet) == 0 {
 		return true
 	} else {
@@ -91,16 +90,16 @@ func (builder *StreamAllBuilder) doesPassTableFilter(tableName string) bool {
 // Returns:
 //   - (bool): A boolean indicating whether or not the specified namespace string matches the namespace filter by the
 //     query.
-func (builder *StreamAllBuilder) doesPassNamespaceFilter(namespaceString string) bool {
+func (builder *Builder) doesPassNamespaceFilter(namespaceString string) bool {
 	// Convert a namespace string to a namespace object.
-	incomingEventTableNamespace, err := schema.NamespaceObjectFromNamespace(namespaceString)
+	incomingEventTableNamespace, err := mode.NamespaceObjectFromNamespace(namespaceString)
 	if err != nil {
 		return false
 	}
 	if incomingEventTableNamespace.WorldAddress != "" {
 		// If the incoming event is for a world table, then it must match the world address in the query.
-		return schema.IsNamespaceEqual(builder.WorldNamespace, incomingEventTableNamespace)
+		return mode.IsNamespaceEqual(builder.WorldNamespace, incomingEventTableNamespace)
 	}
 	// If the incoming event is for a chain table, then it must match the chainId in the query.
-	return schema.IsNamespaceEqual(builder.ChainNamespace, incomingEventTableNamespace)
+	return mode.IsNamespaceEqual(builder.ChainNamespace, incomingEventTableNamespace)
 }

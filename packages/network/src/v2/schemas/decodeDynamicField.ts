@@ -4,7 +4,7 @@ import {
   SchemaTypeArrayToElement,
   getStaticByteLength,
   SchemaTypeToPrimitiveType,
-} from "@latticexyz/schema-type";
+} from "@latticexyz/schema-type/deprecated";
 import { toHex, bytesToString } from "viem";
 import { decodeStaticField } from "./decodeStaticField";
 

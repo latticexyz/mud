@@ -1,6 +1,6 @@
 import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
-import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type/deprecated";
 
 type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveType<T> extends never
   ? T extends `${string}[${string}]` // FieldType might include Enums and Enum arrays, which are mapped to uint8/uint8[]

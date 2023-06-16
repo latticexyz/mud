@@ -12,7 +12,7 @@ import {
   KeyValue,
   ScanResult,
 } from "./types";
-import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
+import { getAbiTypeDefaultValue } from "@latticexyz/schema-type/deprecated";
 
 /**
  * Set the value for the given key

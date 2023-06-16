@@ -1,3 +1,5 @@
+import { Aside } from "../../components/Aside";
+
 **This spec is a work-in-progress**
 
 ## Standard events with enough information for Indexers to reconstruct the state
@@ -16,3 +18,25 @@ MUD comes with many libraries and services in order to reconstruct the state of 
 
 1. MODE is a service that mirrors the state of a Store in a Postgres database, and keeping it update to that with milliseconds of latency. It is then possible for clients to make queries on the Postgres database directly, thus sidestepping the Ethereum JSON-RCP.
 2. The MUD Networking stack can reconstruct the state of Store in the browser using a JSON-RPC or a MODE.
+
+### Data encoding
+
+`bytes data` uses custom encoding, which MUD networking stack decodes.
+Each event carries only data. To get a table's schema (information on how to decode it), use `IStore.getSchema(tableId)` or listen to `StoreSetRecord` updates of the schema table.
+
+Schema is a way to dynamically store solidity types.
+Use the [schema-type package](https://github.com/latticexyz/mud/tree/main/packages/schema-type) to work with it directly.
+It's needed because `abi.decode` requires statically hardcoded types, and ABI encoding is very inefficient.
+
+- `Schema` itself is a tightly packed list of types, like `uint256, bytes32, ...` in `abi.decode(data, (uint256, bytes32, ...))`, but the types aren't hardcoded.
+- `Record` data is multiple `Fields` together, with `PackedCounter` to tell where arrays end/begin.
+- `PackedCounter` contains lengths to tell arrays apart, packed tightly in 1 bytes32 word.
+- `Field` data is very similar to solidity's `abi.encodePacked`, but for arrays it has no element padding (this is how solidity internally packs data for storage, but [it doesn't expose this tight packing in any way](https://github.com/ethereum/solidity/issues/8441))
+
+![Schema diagram](./schema.png)
+
+<Aside emoji="ℹ️">
+  This diagram represents data in events. In storage it's similar, but PackedCounter and each field all have separate
+  slots (via hashed location, so not adjacent). And Schema comes from its own separate table, which is what
+  `IStore.getSchema(tableId)` reads.
+</Aside>

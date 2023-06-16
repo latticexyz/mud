@@ -1,4 +1,4 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { SchemaType } from "@latticexyz/schema-type/deprecated";
 
 export const schemaTypesToRecsTypeStrings: Record<SchemaType, string> = {
   [SchemaType.UINT8]: "RecsType.Number",

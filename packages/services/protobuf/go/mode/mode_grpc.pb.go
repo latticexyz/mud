@@ -19,24 +19,24 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	QueryLayer_GetState_FullMethodName            = "/mode.QueryLayer/GetState"
-	QueryLayer_StreamState_FullMethodName         = "/mode.QueryLayer/StreamState"
-	QueryLayer_Single__GetState_FullMethodName    = "/mode.QueryLayer/Single__GetState"
-	QueryLayer_Single__StreamState_FullMethodName = "/mode.QueryLayer/Single__StreamState"
+	QueryLayer_GetState_FullMethodName           = "/mode.QueryLayer/GetState"
+	QueryLayer_StreamState_FullMethodName        = "/mode.QueryLayer/StreamState"
+	QueryLayer_GetPartialState_FullMethodName    = "/mode.QueryLayer/GetPartialState"
+	QueryLayer_StreamPartialState_FullMethodName = "/mode.QueryLayer/StreamPartialState"
 )
 
 // QueryLayerClient is the client API for QueryLayer service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryLayerClient interface {
-	// Get state endpoint.
+	// Get entire state.
 	GetState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
-	// Stream state endpoint.
+	// Stream entire state.
 	StreamState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (QueryLayer_StreamStateClient, error)
-	// Get state from single table endpoint.
-	Single__GetState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
-	// Stream state from single table endpoint.
-	Single__StreamState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (QueryLayer_Single__StreamStateClient, error)
+	// Get state for a single table.
+	GetPartialState(ctx context.Context, in *PartialStateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
+	// Stream state for a single table.
+	StreamPartialState(ctx context.Context, in *PartialStateRequest, opts ...grpc.CallOption) (QueryLayer_StreamPartialStateClient, error)
 }
 
 type queryLayerClient struct {
@@ -88,21 +88,21 @@ func (x *queryLayerStreamStateClient) Recv() (*QueryLayerStateStreamResponse, er
 	return m, nil
 }
 
-func (c *queryLayerClient) Single__GetState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error) {
+func (c *queryLayerClient) GetPartialState(ctx context.Context, in *PartialStateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error) {
 	out := new(QueryLayerStateResponse)
-	err := c.cc.Invoke(ctx, QueryLayer_Single__GetState_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, QueryLayer_GetPartialState_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryLayerClient) Single__StreamState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (QueryLayer_Single__StreamStateClient, error) {
-	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[1], QueryLayer_Single__StreamState_FullMethodName, opts...)
+func (c *queryLayerClient) StreamPartialState(ctx context.Context, in *PartialStateRequest, opts ...grpc.CallOption) (QueryLayer_StreamPartialStateClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[1], QueryLayer_StreamPartialState_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &queryLayerSingle__StreamStateClient{stream}
+	x := &queryLayerStreamPartialStateClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -112,16 +112,16 @@ func (c *queryLayerClient) Single__StreamState(ctx context.Context, in *Single__
 	return x, nil
 }
 
-type QueryLayer_Single__StreamStateClient interface {
+type QueryLayer_StreamPartialStateClient interface {
 	Recv() (*QueryLayerStateStreamResponse, error)
 	grpc.ClientStream
 }
 
-type queryLayerSingle__StreamStateClient struct {
+type queryLayerStreamPartialStateClient struct {
 	grpc.ClientStream
 }
 
-func (x *queryLayerSingle__StreamStateClient) Recv() (*QueryLayerStateStreamResponse, error) {
+func (x *queryLayerStreamPartialStateClient) Recv() (*QueryLayerStateStreamResponse, error) {
 	m := new(QueryLayerStateStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -133,14 +133,14 @@ func (x *queryLayerSingle__StreamStateClient) Recv() (*QueryLayerStateStreamResp
 // All implementations must embed UnimplementedQueryLayerServer
 // for forward compatibility
 type QueryLayerServer interface {
-	// Get state endpoint.
+	// Get entire state.
 	GetState(context.Context, *StateRequest) (*QueryLayerStateResponse, error)
-	// Stream state endpoint.
+	// Stream entire state.
 	StreamState(*StateRequest, QueryLayer_StreamStateServer) error
-	// Get state from single table endpoint.
-	Single__GetState(context.Context, *Single__StateRequest) (*QueryLayerStateResponse, error)
-	// Stream state from single table endpoint.
-	Single__StreamState(*Single__StateRequest, QueryLayer_Single__StreamStateServer) error
+	// Get state for a single table.
+	GetPartialState(context.Context, *PartialStateRequest) (*QueryLayerStateResponse, error)
+	// Stream state for a single table.
+	StreamPartialState(*PartialStateRequest, QueryLayer_StreamPartialStateServer) error
 	mustEmbedUnimplementedQueryLayerServer()
 }
 
@@ -154,11 +154,11 @@ func (UnimplementedQueryLayerServer) GetState(context.Context, *StateRequest) (*
 func (UnimplementedQueryLayerServer) StreamState(*StateRequest, QueryLayer_StreamStateServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamState not implemented")
 }
-func (UnimplementedQueryLayerServer) Single__GetState(context.Context, *Single__StateRequest) (*QueryLayerStateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Single__GetState not implemented")
+func (UnimplementedQueryLayerServer) GetPartialState(context.Context, *PartialStateRequest) (*QueryLayerStateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPartialState not implemented")
 }
-func (UnimplementedQueryLayerServer) Single__StreamState(*Single__StateRequest, QueryLayer_Single__StreamStateServer) error {
-	return status.Errorf(codes.Unimplemented, "method Single__StreamState not implemented")
+func (UnimplementedQueryLayerServer) StreamPartialState(*PartialStateRequest, QueryLayer_StreamPartialStateServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamPartialState not implemented")
 }
 func (UnimplementedQueryLayerServer) mustEmbedUnimplementedQueryLayerServer() {}
 
@@ -212,42 +212,42 @@ func (x *queryLayerStreamStateServer) Send(m *QueryLayerStateStreamResponse) err
 	return x.ServerStream.SendMsg(m)
 }
 
-func _QueryLayer_Single__GetState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Single__StateRequest)
+func _QueryLayer_GetPartialState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartialStateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryLayerServer).Single__GetState(ctx, in)
+		return srv.(QueryLayerServer).GetPartialState(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: QueryLayer_Single__GetState_FullMethodName,
+		FullMethod: QueryLayer_GetPartialState_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryLayerServer).Single__GetState(ctx, req.(*Single__StateRequest))
+		return srv.(QueryLayerServer).GetPartialState(ctx, req.(*PartialStateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryLayer_Single__StreamState_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Single__StateRequest)
+func _QueryLayer_StreamPartialState_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(PartialStateRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(QueryLayerServer).Single__StreamState(m, &queryLayerSingle__StreamStateServer{stream})
+	return srv.(QueryLayerServer).StreamPartialState(m, &queryLayerStreamPartialStateServer{stream})
 }
 
-type QueryLayer_Single__StreamStateServer interface {
+type QueryLayer_StreamPartialStateServer interface {
 	Send(*QueryLayerStateStreamResponse) error
 	grpc.ServerStream
 }
 
-type queryLayerSingle__StreamStateServer struct {
+type queryLayerStreamPartialStateServer struct {
 	grpc.ServerStream
 }
 
-func (x *queryLayerSingle__StreamStateServer) Send(m *QueryLayerStateStreamResponse) error {
+func (x *queryLayerStreamPartialStateServer) Send(m *QueryLayerStateStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -263,8 +263,8 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QueryLayer_GetState_Handler,
 		},
 		{
-			MethodName: "Single__GetState",
-			Handler:    _QueryLayer_Single__GetState_Handler,
+			MethodName: "GetPartialState",
+			Handler:    _QueryLayer_GetPartialState_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
@@ -274,8 +274,8 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "Single__StreamState",
-			Handler:       _QueryLayer_Single__StreamState_Handler,
+			StreamName:    "StreamPartialState",
+			Handler:       _QueryLayer_StreamPartialState_Handler,
 			ServerStreams: true,
 		},
 	},

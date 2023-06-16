@@ -7,9 +7,9 @@ import (
 )
 
 // CreateBuilder is a builder for creating a table.
-type CreateBuilder struct {
-	Request     *pb_mode.CreateRequest
-	TableSchema *mode.TableSchema
+type Builder struct {
+	Request *pb_mode.CreateRequest
+	Table   *mode.Table
 }
 
 // NewCreateBuilder creates a new instance of CreateBuilder with the specified CreateRequest and
@@ -23,10 +23,10 @@ type CreateBuilder struct {
 //
 // Returns:
 // - (*CreateBuilder): A pointer to the newly created CreateBuilder instance.
-func NewCreateBuilder(request *pb_mode.CreateRequest, tableSchema *mode.TableSchema) *CreateBuilder {
-	return &CreateBuilder{
-		Request:     request,
-		TableSchema: tableSchema,
+func NewBuilder(request *pb_mode.CreateRequest, table *mode.Table) *Builder {
+	return &Builder{
+		Request: request,
+		Table:   table,
 	}
 }
 
@@ -35,7 +35,7 @@ func NewCreateBuilder(request *pb_mode.CreateRequest, tableSchema *mode.TableSch
 //
 // Returns:
 // - (error): An error, if the request is invalid, and nil otherwise.
-func (builder *CreateBuilder) Validate() error {
+func (builder *Builder) Validate() error {
 	return nil
 }
 
@@ -45,21 +45,21 @@ func (builder *CreateBuilder) Validate() error {
 //
 // Returns:
 // - (string): A string representation of key fields to be used in the CREATE TABLE statement.
-func (builder *CreateBuilder) BuildCreateTableKeyFields() string {
-	schema := builder.TableSchema
+func (builder *Builder) BuildCreateTableKeyFields() string {
+	table := builder.Table
 
-	if len(schema.KeyNames) == 0 {
+	if len(table.KeyNames) == 0 {
 		return ""
 	}
 	keyFields := ""
-	for idx, field := range schema.KeyNames {
-		postgresType := schema.PostgresTypes[field]
+	for idx, field := range table.KeyNames {
+		postgresType := table.PostgresTypes[field]
 		keyFields = keyFields + field + ` ` + postgresType
-		if field == schema.PrimaryKey {
-			keyFields = keyFields + ` PRIMARY KEY`
+		if field == table.PrimaryKey {
+			keyFields += ` PRIMARY KEY`
 		}
-		if idx != len(schema.KeyNames)-1 {
-			keyFields = keyFields + `, `
+		if idx != len(table.KeyNames)-1 {
+			keyFields += `, `
 		}
 	}
 	return keyFields
@@ -71,21 +71,21 @@ func (builder *CreateBuilder) BuildCreateTableKeyFields() string {
 //
 // Returns:
 // - (string): A string representation of value fields to be used in the CREATE TABLE statement.
-func (builder *CreateBuilder) BuildCreateTableValueFields() string {
-	schema := builder.TableSchema
+func (builder *Builder) BuildCreateTableValueFields() string {
+	table := builder.Table
 
-	if len(schema.FieldNames) == 0 {
+	if len(table.FieldNames) == 0 {
 		return ""
 	}
 	valueFields := ""
-	for idx, field := range schema.FieldNames {
-		postgresType := schema.PostgresTypes[field]
+	for idx, field := range table.FieldNames {
+		postgresType := table.PostgresTypes[field]
 		valueFields = valueFields + field + ` ` + postgresType
-		if field == schema.PrimaryKey {
-			valueFields = valueFields + ` PRIMARY KEY`
+		if field == table.PrimaryKey {
+			valueFields += ` PRIMARY KEY`
 		}
-		if idx != len(schema.FieldNames)-1 {
-			valueFields = valueFields + `, `
+		if idx != len(table.FieldNames)-1 {
+			valueFields += `, `
 		}
 	}
 	return valueFields
@@ -97,7 +97,7 @@ func (builder *CreateBuilder) BuildCreateTableValueFields() string {
 //
 // Returns:
 // - (string): A string representation of all fields to be used in the CREATE TABLE statement.
-func (builder *CreateBuilder) BuildCreateTableFields() string {
+func (builder *Builder) BuildCreateTableFields() string {
 	var str strings.Builder
 	keyFields := builder.BuildCreateTableKeyFields()
 	valueFields := builder.BuildCreateTableValueFields()
@@ -115,8 +115,8 @@ func (builder *CreateBuilder) BuildCreateTableFields() string {
 //
 // Returns:
 // - (string): A string representation of the CREATE TABLE statement.
-func (builder *CreateBuilder) BuildCreate() string {
-	return `CREATE TABLE IF NOT EXISTS ` + builder.TableSchema.NamespacedTableName() + ` (
+func (builder *Builder) BuildCreate() string {
+	return `CREATE TABLE IF NOT EXISTS ` + builder.Table.NamespacedName() + ` (
 	` + builder.BuildCreateTableFields() + `
 	);`
 }
@@ -126,10 +126,14 @@ func (builder *CreateBuilder) BuildCreate() string {
 //
 // Returns:
 // - (string): A string representation of the CREATE INDEX statements.
-func (builder *CreateBuilder) BuildIndex() string {
+func (builder *Builder) BuildIndex() string {
 	var indexStr strings.Builder
-	for _, field := range builder.TableSchema.FieldNames {
-		indexStr.WriteString(`CREATE INDEX IF NOT EXISTS ` + builder.TableSchema.TableName + `_` + field + `_idx ON ` + builder.TableSchema.NamespacedTableName() + `("` + field + `");`)
+	for _, field := range builder.Table.FieldNames {
+		indexStr.WriteString(
+			`CREATE INDEX IF NOT EXISTS ` + builder.Table.Name + `_` + field +
+				`_idx ON ` + builder.Table.NamespacedName() +
+				`("` + field + `");`,
+		)
 	}
 	return indexStr.String()
 }
@@ -140,8 +144,8 @@ func (builder *CreateBuilder) BuildIndex() string {
 //
 // Returns:
 // - (string): A string representation of the ALTER TABLE statement to modify for full identity.
-func (builder *CreateBuilder) BuildIndentityFullModifier() string {
-	return "ALTER TABLE " + builder.TableSchema.NamespacedTableName() + " REPLICA IDENTITY FULL;"
+func (builder *Builder) BuildIndentityFullModifier() string {
+	return "ALTER TABLE " + builder.Table.NamespacedName() + " REPLICA IDENTITY FULL;"
 }
 
 // ToSQLQueries validates the table schema and constructs the CREATE TABLE and CREATE INDEX statements
@@ -152,7 +156,7 @@ func (builder *CreateBuilder) BuildIndentityFullModifier() string {
 // Returns:
 //   - (string, string, error): A tuple of two strings: the CREATE TABLE statement and the CREATE INDEX statement,
 //     respectively, and an error, if there is one.
-func (builder *CreateBuilder) ToSQLQueries() (string, string, error) {
+func (builder *Builder) ToSQLQueries() (string, string, error) {
 	err := builder.Validate()
 	if err != nil {
 		return "", "", err

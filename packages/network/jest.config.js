@@ -11,6 +11,7 @@ export default {
     "^@latticexyz/common/chains$": "<rootDir>/../common/src/chains/index.ts",
     "^@latticexyz/recs$": "<rootDir>/../recs/src/index.ts",
     "^@latticexyz/schema-type$": "<rootDir>/../schema-type/src/typescript/index.ts",
+    "^@latticexyz/schema-type/deprecated$": "<rootDir>/../schema-type/src/typescript/deprecated/index.ts",
     "^@latticexyz/services/ecs-snapshot$": "<rootDir>/../services/protobuf/ts/ecs-snapshot/ecs-snapshot.ts",
     "^@latticexyz/services/ecs-stream$": "<rootDir>/../services/protobuf/ts/ecs-stream/ecs-stream.ts",
     "^@latticexyz/services/mode$": "<rootDir>/../services/protobuf/ts/mode/mode.ts",

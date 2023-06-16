@@ -1,4 +1,9 @@
-import { getStaticByteLength, SchemaType, SchemaTypeToPrimitiveType, StaticSchemaType } from "@latticexyz/schema-type";
+import {
+  getStaticByteLength,
+  SchemaType,
+  SchemaTypeToPrimitiveType,
+  StaticSchemaType,
+} from "@latticexyz/schema-type/deprecated";
 import { toHex, pad } from "viem";
 
 const unsupportedStaticField = (fieldType: never): never => {

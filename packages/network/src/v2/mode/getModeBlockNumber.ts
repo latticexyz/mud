@@ -3,7 +3,7 @@ import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
 
 export async function getModeBlockNumber(client: QueryLayerClient, chainId: number): Promise<number> {
   try {
-    const response = await client.single__GetState({
+    const response = await client.getPartialState({
       table: "block_number",
       namespace: {
         chainId: chainId.toString(),

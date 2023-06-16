@@ -1,12 +1,7 @@
-import { StaticAbiType } from "./staticAbiTypes";
 import { Hex } from "viem";
-import { dynamicAbiTypes } from "./schemaAbiTypes";
+import { StaticAbiType, DynamicAbiType } from "./schemaAbiTypes";
 
-// Variable-length ABI types, where their lengths are defined by a PackedCounter
-
-export { dynamicAbiTypes };
-
-export type DynamicAbiType = (typeof dynamicAbiTypes)[number];
+// Variable-length ABI types, where their lengths are encoded by a PackedCounter within the record
 
 export type DynamicPrimitiveType = number[] | bigint[] | Hex[] | boolean[] | Hex | string;
 

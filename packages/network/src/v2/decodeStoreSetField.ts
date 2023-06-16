@@ -6,7 +6,7 @@ import { registerMetadata } from "./schemas/tableMetadata";
 import { decodeField } from "./schemas/decodeField";
 import { TableSchema } from "./common";
 import { decodeStaticField } from "./schemas/decodeStaticField";
-import { DynamicSchemaType, StaticSchemaType } from "@latticexyz/schema-type";
+import { DynamicSchemaType, StaticSchemaType } from "@latticexyz/schema-type/deprecated";
 import { decodeDynamicField } from "./schemas/decodeDynamicField";
 import { decodeKeyTuple } from "./schemas/decodeKeyTuple";
 
