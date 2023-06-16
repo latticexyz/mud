@@ -85,21 +85,9 @@
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of keys with a given value",
     "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))",
-    "gasUsed": 7695
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 7692
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -111,31 +99,19 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 10 keys with a given value",
     "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
-    "gasUsed": 12156
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 12153
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the 100th key",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 192993
+    "gasUsed": 192994
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 100 keys with a given value",
     "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
-    "gasUsed": 57145
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 57127
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -147,13 +123,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 1000 keys with a given value",
     "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
-    "gasUsed": 571433
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
+    "gasUsed": 571256
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -165,7 +135,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 10000 keys with a given value",
     "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
-    "gasUsed": 12153155
+    "gasUsed": 12151397
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -187,15 +157,9 @@
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
     "name": "change a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value2))",
-    "gasUsed": 135364
+    "gasUsed": 135367
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -205,21 +169,15 @@
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
-    "name": "install keys with value module",
-    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 626500
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
     "name": "set a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1))",
-    "gasUsed": 173726
+    "gasUsed": 173713
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value2))",
-    "gasUsed": 138084
+    "gasUsed": 138083
   },
   {
     "source": "test/query.t.sol",

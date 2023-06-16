@@ -55,12 +55,15 @@ contract KeysWithValueModuleTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys with value module
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
   }
 
   function testInstall() public {
-    _installKeysWithValueModule();
+    // Register source table
+    sourceTableId = world.registerTable(namespace, sourceName, sourceTableSchema, sourceTableKeySchema);
+    // !gasreport install keys with value module
+    world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+
     // Set a value in the source table
     uint256 value = 1;
 
