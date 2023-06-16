@@ -47,7 +47,7 @@ export interface QueryLayerStateStreamResponse {
 }
 
 export interface Namespace {
-  chainId: string;
+  chainID: string;
   worldAddress: string;
 }
 
@@ -655,13 +655,13 @@ export const QueryLayerStateStreamResponse = {
 };
 
 function createBaseNamespace(): Namespace {
-  return { chainId: "", worldAddress: "" };
+  return { chainID: "", worldAddress: "" };
 }
 
 export const Namespace = {
   encode(message: Namespace, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.chainId !== "") {
-      writer.uint32(10).string(message.chainId);
+    if (message.chainID !== "") {
+      writer.uint32(10).string(message.chainID);
     }
     if (message.worldAddress !== "") {
       writer.uint32(18).string(message.worldAddress);
@@ -681,7 +681,7 @@ export const Namespace = {
             break;
           }
 
-          message.chainId = reader.string();
+          message.chainID = reader.string();
           continue;
         case 2:
           if (tag != 18) {
@@ -705,7 +705,7 @@ export const Namespace = {
 
   fromPartial(object: DeepPartial<Namespace>): Namespace {
     const message = createBaseNamespace();
-    message.chainId = object.chainId ?? "";
+    message.chainID = object.chainID ?? "";
     message.worldAddress = object.worldAddress ?? "";
     return message;
   },

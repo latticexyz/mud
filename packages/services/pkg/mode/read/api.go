@@ -93,10 +93,7 @@ func (rl *Layer) DoesRowExist(table *mode.Table, filter map[string]interface{}) 
 // builder using the table name, and then uses the builder's ToSQLQuery()
 // method to generate a SQL query. This query is then executed using the
 // Query() method of the database connection. If the query returns a row,
-// the function returns the block number as a big.Int object. If the query
-// returns no rows, the function returns nil, nil indicating that the block
-// number does not exist. If any error occurs while executing the query or
-// parsing the block number, it is returned as an error object.
+// the function returns the block number as a big.Int object.
 //
 // Parameters:
 //   - chainID (string): a string that represents the ID of the chain for
@@ -119,21 +116,20 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 
 	selectRowQuery, err := findBuilder.ToSQLQuery()
 	if err != nil {
-		rl.logger.Error("GetBlockNumber(): error while building query", zap.Error(err))
+		rl.logger.Error("error while building query", zap.Error(err))
 		return nil, err
 	}
 
-	// TODO: namespace
-	doesTableExist := rl.dl.TableExists(blockNumberTable.Namespace + "." + blockNumberTable.Name)
+	doesTableExist := rl.dl.TableExists(blockNumberTable.NamespacedName())
 	if !doesTableExist {
-		rl.logger.Warn("GetBlockNumber(): block number table does not exist")
-		return nil, nil
+		rl.logger.Error("block number table does not exist")
+		return nil, mode.ErrTableDoesNotExist
 	}
 
 	// Execute the query.
 	rows, err := rl.dl.Query(selectRowQuery)
 	if err != nil {
-		rl.logger.Error("GetBlockNumber(): error while executing query",
+		rl.logger.Error("error while executing query",
 			zap.String("query", selectRowQuery),
 			zap.Error(err),
 		)
@@ -141,17 +137,21 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 	}
 	defer rows.Close()
 
-	// If there are no rows, then the block number does not exist.
+	if err = rows.Err(); err != nil {
+		rl.logger.Error("error while iterating over rows", zap.Error(err))
+		return nil, err
+	}
+
 	if !rows.Next() {
-		rl.logger.Error("GetBlockNumber(): block number does not exist")
-		return nil, nil
+		rl.logger.Error("block number table has no rows")
+		return nil, mode.ErrTableIsEmpty
 	}
 
 	// If there is a row, then the block number exists.
 	var blockNumberStr string
 	err = rows.Scan(&blockNumberStr)
 	if err != nil {
-		rl.logger.Error("GetBlockNumber(): error while scanning row", zap.Error(err))
+		rl.logger.Error("error while scanning row", zap.Error(err))
 		return nil, err
 	}
 
@@ -159,9 +159,7 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 	blockNumberBase := 10
 	blockNumber, ok := new(big.Int).SetString(blockNumberStr, blockNumberBase)
 	if !ok {
-		rl.logger.Error("GetBlockNumber(): error while parsing block number",
-			zap.String("block_number", blockNumberStr),
-		)
+		rl.logger.Error("error while parsing block number", zap.String("block_number", blockNumberStr))
 		return nil, errors.New("error while parsing block number")
 	}
 
@@ -199,21 +197,26 @@ func (rl *Layer) GetSyncStatus(chainID string) (bool, error) {
 
 	selectRowQuery, err := findBuilder.ToSQLQuery()
 	if err != nil {
-		rl.logger.Error("GetSyncStatus(): error while building query", zap.Error(err))
+		rl.logger.Error("error while building query", zap.Error(err))
 		return false, err
 	}
 
 	// Execute the query.
 	rows, err := rl.dl.Query(selectRowQuery)
 	if err != nil {
-		rl.logger.Error("GetSyncStatus(): error while executing query", zap.String("query", selectRowQuery), zap.Error(err))
+		rl.logger.Error("error while executing query", zap.String("query", selectRowQuery), zap.Error(err))
 		return false, err
 	}
 	defer rows.Close()
 
+	if err = rows.Err(); err != nil {
+		rl.logger.Error("error while iterating over rows", zap.Error(err))
+		return false, err
+	}
+
 	// If there are no rows, then the sync status does not exist.
 	if !rows.Next() {
-		rl.logger.Error("GetSyncStatus(): sync status does not exist")
+		rl.logger.Error("sync status does not exist")
 		return false, nil
 	}
 
@@ -223,7 +226,7 @@ func (rl *Layer) GetSyncStatus(chainID string) (bool, error) {
 	},
 	)
 	if err != nil {
-		rl.logger.Error("GetSyncStatus(): error while building query", zap.Error(err))
+		rl.logger.Error("error while building query", zap.Error(err))
 		return false, err
 	}
 	var syncStatus SyncStatus

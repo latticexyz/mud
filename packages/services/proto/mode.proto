@@ -49,7 +49,7 @@ message QueryLayerStateStreamResponse {
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 message Namespace {
-    string chainId = 1;
+    string chainID = 1;
     string worldAddress = 2;
 }
 

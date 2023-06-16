@@ -2,6 +2,7 @@ package ingress
 
 import (
 	"context"
+	"errors"
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/config"
@@ -54,12 +55,12 @@ func New(
 	// Create a table that stores the current block number on the chain that this ingress layer is indexing.
 	err = wl.CreateTable(mode.BlockNumberTable(chainConfig.ID))
 	if err != nil {
-		logger.Fatal("failed to create BlockNumber", zap.Error(err))
+		logger.Fatal("failed to create BlockNumberTable", zap.Error(err))
 	}
 	// Create a table that stores the current sync status of this ingress layer.
 	err = wl.CreateTable(mode.SyncStatusTable(chainConfig.ID))
 	if err != nil {
-		logger.Fatal("failed to create SyncStatus", zap.Error(err))
+		logger.Fatal("failed to create SyncStatusTable", zap.Error(err))
 	}
 
 	return &Layer{
@@ -169,7 +170,7 @@ func (il *Layer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 
 	// Get the block number that the state is currently at.
 	currentBlockNumber, err := il.rl.GetBlockNumber(il.ChainID())
-	if err != nil {
+	if !errors.Is(err, mode.ErrTableDoesNotExist) && err != nil {
 		il.logger.Error("failed to get current block number", zap.Error(err))
 	}
 
@@ -192,6 +193,8 @@ func (il *Layer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 		filteredLogs := eth.FilterLogs(il.FetchEventsInBlockRange(blockNumberRangeStart, blockNumberRangeEnd))
 		// Handle the logs.
 		il.handleLogs(filteredLogs)
+		// Update the block number
+		il.UpdateBlockNumber(il.ChainID(), blockNumberRangeEnd)
 
 		il.logger.Info("synced block range",
 			zap.String("start", blockNumberRangeStart.String()),

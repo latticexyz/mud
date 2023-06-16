@@ -19,12 +19,14 @@ import (
 //
 // Returns:
 // - void.
+//
+//nolint:gocognit // log handling switch statement is long but necessary
 func (il *Layer) handleLogs(logs []types.Log) {
-	defer func() {
-		if err := recover(); err != nil {
-			il.logger.Error("failed to handle logs", zap.Any("error", err))
-		}
-	}()
+	// defer func() {
+	// 	if err := recover(); err != nil {
+	// 		il.logger.Error("failed to handle logs", zap.Any("error", err))
+	// 	}
+	// }()
 
 	// Process each log and handle events.
 	for _, vLog := range logs {
@@ -75,7 +77,7 @@ func (il *Layer) handleLogs(logs []types.Log) {
 // Returns:
 // - void.
 func (il *Layer) handleSetRecordEvent(event *storecore.StorecoreStoreSetRecord) error {
-	tableID := mode.TableIdToHex(event.TableId)
+	tableID := mode.TableIDToHex(event.TableId)
 	il.logger.Info("handling set record (StoreSetRecordEvent) event", zap.String("table_id", tableID))
 
 	// Handle the following scenarios:
@@ -84,9 +86,9 @@ func (il *Layer) handleSetRecordEvent(event *storecore.StorecoreStoreSetRecord) 
 	// 3. The table is a generic table. This means we need to update rows of an existing table.
 
 	switch tableID {
-	case mode.MUDStoreSchemaTableId():
+	case mode.MUDStoreSchemaTableID():
 		return il.handleSchemaTableEvent(event)
-	case mode.MUDStoreStoreMetadataTableId():
+	case mode.MUDStoreStoreMetadataTableID():
 		return il.handleMetadataTableEvent(event)
 	default:
 		return il.handleGenericTableEvent(event)
@@ -110,7 +112,7 @@ func (il *Layer) handleSetFieldEventUpdateRow(
 	filter map[string]interface{},
 ) error {
 	il.logger.Info("setField: start updating existing row",
-		zap.String("table_id", table.Id),
+		zap.String("table_id", table.ID),
 		zap.String("field_name", table.FieldNames[event.SchemaIndex]),
 	)
 
@@ -122,10 +124,14 @@ func (il *Layer) handleSetFieldEventUpdateRow(
 	row := table.RowFromDecodedData(nil, decodedFieldData)
 
 	// Update the row.
-	il.wl.UpdateRow(table, row, filter)
+	_, err := il.wl.UpdateRow(table, row, filter)
+	if err != nil {
+		il.logger.Error("setField: failed to update existing row", zap.Error(err))
+		return err
+	}
 
 	il.logger.Info("setField: finished updating existing row",
-		zap.String("table_id", table.Id),
+		zap.String("table_id", table.ID),
 		zap.String("field_name", table.FieldNames[event.SchemaIndex]),
 		zap.Any("row", row),
 	)
@@ -147,7 +153,7 @@ func (il *Layer) handleSetFieldEventInsertRow(
 	table *mode.Table,
 ) error {
 	il.logger.Info("setField: start inserting new row",
-		zap.String("table_id", table.Id),
+		zap.String("table_id", table.ID),
 		zap.String("field_name", table.FieldNames[event.SchemaIndex]),
 	)
 
@@ -160,10 +166,14 @@ func (il *Layer) handleSetFieldEventInsertRow(
 	row := table.RowFromDecodedData(decodedKeyData, decodedFieldData)
 
 	// Insert the row into the table.
-	il.wl.InsertRow(table, row)
+	err := il.wl.InsertRow(table, row)
+	if err != nil {
+		il.logger.Error("setField: failed to insert new row", zap.Error(err))
+		return err
+	}
 
 	il.logger.Info("setField: finished inserting new row",
-		zap.String("table_id", table.Id),
+		zap.String("table_id", table.ID),
 		zap.String("field_name", table.FieldNames[event.SchemaIndex]),
 		zap.Any("row", row),
 	)
@@ -182,10 +192,10 @@ func (il *Layer) handleSetFieldEventInsertRow(
 // Returns:
 // - void.
 func (il *Layer) handleSetFieldEvent(event *storecore.StorecoreStoreSetField) error {
-	tableID := mode.TableIdToHex(event.TableId)
+	tableID := mode.TableIDToHex(event.TableId)
 
 	// Get the target Table.
-	table, err := il.tableStore.GetTable(il.ChainID(), event.WorldAddress(), mode.TableIdToTableName(tableID))
+	table, err := il.tableStore.GetTable(il.ChainID(), event.WorldAddress(), mode.TableIDToTableName(tableID))
 	if err != nil {
 		il.logger.Error("setField: failed to get table", zap.Error(err))
 		return nil
@@ -223,11 +233,11 @@ func (il *Layer) handleSetFieldEvent(event *storecore.StorecoreStoreSetField) er
 // Returns:
 // - void.
 func (il *Layer) handleDeleteRecordEvent(event *storecore.StorecoreStoreDeleteRecord) error {
-	tableID := mode.TableIdToHex(event.TableId)
+	tableID := mode.TableIDToHex(event.TableId)
 	il.logger.Info("deleteRecord: start handling", zap.String("table_id", tableID))
 
 	// Fetch the target Table.
-	table, err := il.tableStore.GetTable(il.ChainID(), event.WorldAddress(), mode.TableIdToTableName(tableID))
+	table, err := il.tableStore.GetTable(il.ChainID(), event.WorldAddress(), mode.TableIDToTableName(tableID))
 	if err != nil {
 		il.logger.Error("failed to get table", zap.Error(err))
 		return err
@@ -236,7 +246,11 @@ func (il *Layer) handleDeleteRecordEvent(event *storecore.StorecoreStoreDeleteRe
 	// Build the "filter" from the deleteRecord key. This is used to find the actual row/record that
 	// we're deleting.
 	filter := table.KeyToFilter(event.Key)
-	il.wl.DeleteRow(table, filter)
+	err = il.wl.DeleteRow(table, filter)
+	if err != nil {
+		il.logger.Error("deleteRecord: failed to delete row", zap.Error(err))
+		return err
+	}
 
 	il.logger.Info("deleteRecord: finished handling", zap.String("table_id", tableID))
 	return nil
@@ -265,70 +279,42 @@ func (il *Layer) handleSchemaTableEvent(event *storecore.StorecoreStoreSetRecord
 	keySchema := storecore.DecodeSchema(keySchemaBytes32)
 
 	// Create a Table object that will be saved into the "schemas" table.
-	table := &mode.Table{
-		Id:                   tableID,
-		Name:                 mode.TableIdToTableName(tableID),
-		StoreCoreKeySchema:   keySchema,
-		StoreCoreFieldSchema: fieldsSchema,
-		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
-		Namespace: mode.Namespace(il.ChainID(), event.WorldAddress()),
-		// Keeping track of columns names as they are case sensitive coming from the chain.
-		OnChainColNames: map[string]string{},
-	}
+	table := mode.NewEmptyTable(
+		tableID,
+		mode.TableIDToTableName(tableID),
+		il.ChainID(),
+		event.WorldAddress(),
+	)
+	table.SetStoreCoreKeySchema(keySchema)
+	table.SetStoreCoreFieldSchema(fieldsSchema)
 
 	// Populate the schema with default values. First populate fields.
 	for idx, schemaType := range fieldsSchema.Flatten() {
 		columnName := mode.DefaultFieldName(idx)
 		table.FieldNames = append(table.FieldNames, columnName)
 
-		solidityType := schemaType.ToSolidityType()
-		postgresType := schemaType.ToPostgresType()
+		table.SetSolidityType(columnName, schemaType.ToSolidityType())
+		table.SetPostgresType(columnName, schemaType.ToPostgresType())
 
-		// TODO: refactor
-		if table.SolidityTypes == nil {
-			table.SolidityTypes = make(map[string]string)
-		}
-		table.SolidityTypes[columnName] = solidityType
-
-		if table.PostgresTypes == nil {
-			table.PostgresTypes = make(map[string]string)
-		}
-
-		if table.IsKey == nil {
-			table.IsKey = make(map[string]bool)
-		}
-		table.IsKey[columnName] = false
-
-		table.PostgresTypes[columnName] = postgresType
+		table.SetIsKey(columnName, false)
 	}
 	// Populate keys.
 	for idx, schemaType := range keySchema.Flatten() {
 		columnName := mode.DefaultKeyName(idx)
 		table.KeyNames = append(table.KeyNames, columnName)
 
-		solidityType := schemaType.ToSolidityType()
-		postgresType := schemaType.ToPostgresType()
+		table.SetSolidityType(columnName, schemaType.ToSolidityType())
+		table.SetPostgresType(columnName, schemaType.ToPostgresType())
 
-		// TODO: refactor
-		if table.SolidityTypes == nil {
-			table.SolidityTypes = make(map[string]string)
-		}
-		table.SolidityTypes[columnName] = solidityType
-
-		if table.PostgresTypes == nil {
-			table.PostgresTypes = make(map[string]string)
-		}
-
-		if table.IsKey == nil {
-			table.IsKey = make(map[string]bool)
-		}
-		table.IsKey[columnName] = true
-
-		table.PostgresTypes[columnName] = postgresType
+		table.SetIsKey(columnName, true)
 	}
 
 	// Create the table.
-	il.wl.CreateTable(table)
+	err := il.wl.CreateTable(table)
+	if err != nil {
+		il.logger.Error("setRecord: failed to create table", zap.Error(err))
+		return nil
+	}
 	tableJSON, _ := json.Marshal(table)
 
 	// Save the Table as a row with whatever information is known so far into the schemas table.
@@ -347,14 +333,18 @@ func (il *Layer) handleSchemaTableEvent(event *storecore.StorecoreStoreSetRecord
 		"namespace":     table.Namespace,
 		"table_name":    table.Name,
 	}
-	il.wl.UpdateOrInsertRow(schemaTable, row, filter)
+	err = il.wl.UpdateOrInsertRow(schemaTable, row, filter)
+	if err != nil {
+		il.logger.Error("setRecord: failed to update or insert row into schemas table", zap.Error(err))
+		return nil
+	}
 
 	// Now insert the record into the 'mudstore schema' table. (This is a separate table from the internal schema table
 	// and is actually the one that the event table ID identifies).
 	mudstoreSchemaTable := il.tableStore.MustGetTable(
 		il.ChainID(),
 		event.WorldAddress(),
-		mode.TableIdToTableName(mode.MUDStoreSchemaTableId()),
+		mode.TableIDToTableName(mode.MUDStoreSchemaTableID()),
 	)
 
 	// Decode the data directly into the table row.
@@ -370,7 +360,11 @@ func (il *Layer) handleSchemaTableEvent(event *storecore.StorecoreStoreSetRecord
 	mudstoreSchemaTableRow := mudstoreSchemaTable.RowFromDecodedData(decodedKeyData, decodedFieldData)
 
 	// Insert the row.
-	il.wl.InsertRow(mudstoreSchemaTable, mudstoreSchemaTableRow)
+	err = il.wl.InsertRow(mudstoreSchemaTable, mudstoreSchemaTableRow)
+	if err != nil {
+		il.logger.Error("setRecord: failed to insert row into mudstore schema table", zap.Error(err))
+		return nil
+	}
 
 	il.logger.Info("setRecord: finished handling table creation",
 		zap.String("world_address", event.WorldAddress()),
@@ -397,7 +391,7 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 	)
 
 	// Fetch the target Table (table to which the metadata is being added).
-	table, err := il.tableStore.GetTable(il.ChainID(), event.Raw.Address.Hex(), mode.TableIdToTableName(tableID))
+	table, err := il.tableStore.GetTable(il.ChainID(), event.Raw.Address.Hex(), mode.TableIDToTableName(tableID))
 	if err != nil {
 		il.logger.Error("failed to fetch schema for target table", zap.Error(err))
 		return nil
@@ -407,14 +401,14 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 	metadataTable := il.tableStore.MustGetTable(
 		il.ChainID(),
 		event.WorldAddress(),
-		mode.TableIdToTableName(mode.MUDStoreStoreMetadataTableId()),
+		mode.TableIDToTableName(mode.MUDStoreStoreMetadataTableID()),
 	)
 
 	// Decode the metadata.
 	decodedMetadata := metadataTable.StoreCoreFieldSchema.DecodeFieldData(event.Data)
 
 	// Since we know the structure of the metadata, we decode it directly into types and handle.
-	tableReadableName, _ := decodedMetadata.GetData(0).(string)
+	tableFormattedName, _ := decodedMetadata.GetData(0).(string)
 	tableColumnNamesHexString, _ := decodedMetadata.GetData(1).(string)
 	tableColumnNamesBytes, _ := hexutil.Decode(tableColumnNamesHexString)
 
@@ -435,7 +429,7 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 	//
 	// 1. Add the readable name.
 	// 2. Add the column names and types.
-	table.OnChainReadableName = tableReadableName
+	table.SetTableFormattedName(tableFormattedName)
 
 	// Keep a record of the old field names so we can update the table.
 	oldTableFieldNames := table.FieldNames
@@ -443,30 +437,15 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 	newTableFieldNames := []string{}
 
 	for idx, schemaType := range table.StoreCoreFieldSchema.Flatten() {
-		columnNameFromChain := outStruct.Cols[idx]
-		columnName := strings.ToLower(columnNameFromChain)
+		columnFormattedName := outStruct.Cols[idx]
+		columnName := strings.ToLower(columnFormattedName)
 		newTableFieldNames = append(newTableFieldNames, columnName)
 
-		solidityType := schemaType.ToSolidityType()
-		postgresType := schemaType.ToPostgresType()
+		// Update the solidity & postgres types to match the new field names (column names).
+		table.SetSolidityType(columnName, schemaType.ToSolidityType())
+		table.SetPostgresType(columnName, schemaType.ToPostgresType())
 
-		// Update the solidity types to match the new field names (column names).
-		if table.SolidityTypes == nil {
-			table.SolidityTypes = make(map[string]string)
-		}
-		table.SolidityTypes[columnName] = solidityType
-
-		// Update the postgres types to match the new field names (column names).
-		if table.PostgresTypes == nil {
-			table.PostgresTypes = make(map[string]string)
-		}
-		table.PostgresTypes[columnName] = postgresType
-
-		// Update the records of the column names as they are originally spelled.
-		if table.OnChainColNames == nil {
-			table.OnChainColNames = make(map[string]string)
-		}
-		table.OnChainColNames[columnName] = columnNameFromChain
+		table.SetColumnFormattedName(columnName, columnFormattedName)
 	}
 	// Update the field names in the schema.
 	table.FieldNames = newTableFieldNames
@@ -485,16 +464,24 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 		"namespace":     table.Namespace,
 		"table_name":    table.Name,
 	}
-	il.wl.UpdateOrInsertRow(schemasTable, row, filter)
+	err = il.wl.UpdateOrInsertRow(schemasTable, row, filter)
+	if err != nil {
+		il.logger.Error("setRecord: failed to update or insert row into schemas table", zap.Error(err))
+		return nil
+	}
 
 	// Update the table field names based on the new metadata.
-	il.wl.RenameTableFields(table, oldTableFieldNames, table.FieldNames)
+	err = il.wl.RenameTableFields(table, oldTableFieldNames, table.FieldNames)
+	if err != nil {
+		il.logger.Error("setRecord: failed to rename table fields", zap.Error(err))
+		return nil
+	}
 
 	// Now insert the record into the mudstore metadata table.
 	mudstoreMetadataTable := il.tableStore.MustGetTable(
 		il.ChainID(),
 		event.WorldAddress(),
-		mode.TableIdToTableName(mode.MUDStoreStoreMetadataTableId()),
+		mode.TableIDToTableName(mode.MUDStoreStoreMetadataTableID()),
 	)
 
 	// Decode the data directly into the table row.
@@ -510,7 +497,11 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 	mudstoreSchemaTableRow := mudstoreMetadataTable.RowFromDecodedData(decodedKeyData, decodedFieldData)
 
 	// Insert the row.
-	il.wl.InsertRow(mudstoreMetadataTable, mudstoreSchemaTableRow)
+	err = il.wl.InsertRow(mudstoreMetadataTable, mudstoreSchemaTableRow)
+	if err != nil {
+		il.logger.Error("setRecord: failed to insert row into mudstore metadata table", zap.Error(err))
+		return nil
+	}
 
 	il.logger.Info("setRecord: finished handling schema update",
 		zap.String("world_address", event.WorldAddress()),
@@ -529,14 +520,14 @@ func (il *Layer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetReco
 // Returns:
 // - void.
 func (il *Layer) handleGenericTableEvent(event *storecore.StorecoreStoreSetRecord) error {
-	tableID := mode.TableIdToHex(event.TableId)
+	tableID := mode.TableIDToHex(event.TableId)
 	il.logger.Info("setRecord: start handling generic table event",
 		zap.String("world_address", event.WorldAddress()),
 		zap.String("table_id", tableID),
 	)
 
 	// Fetch the target Table.
-	table, err := il.tableStore.GetTable(il.ChainID(), event.WorldAddress(), mode.TableIdToTableName(tableID))
+	table, err := il.tableStore.GetTable(il.ChainID(), event.WorldAddress(), mode.TableIDToTableName(tableID))
 	if err != nil {
 		il.logger.Error("setRecord: failed to get table schema", zap.Error(err))
 		return nil
@@ -553,7 +544,11 @@ func (il *Layer) handleGenericTableEvent(event *storecore.StorecoreStoreSetRecor
 	filter := table.KeyToFilter(event.Key)
 
 	// Insert or update the row in the table.
-	il.wl.UpdateOrInsertRow(table, row, filter)
+	err = il.wl.UpdateOrInsertRow(table, row, filter)
+	if err != nil {
+		il.logger.Error("setRecord: failed to insert or update row", zap.Error(err))
+		return nil
+	}
 
 	il.logger.Info("setRecord: finished handling generic table event",
 		zap.String("world_address", event.WorldAddress()),

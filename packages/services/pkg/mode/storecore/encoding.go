@@ -16,6 +16,7 @@ import (
 
 type SchemaType uint64
 
+//nolint:revive,stylecheck // auto-gen + readablity
 const (
 	UINT8 SchemaType = iota
 	UINT16
@@ -244,7 +245,7 @@ func (schemaType SchemaType) MapDecodedParameterBytes(value interface{}) interfa
 // MapDecodedParameterAddress takes in a value that is a common.Address and maps it to a format
 // that is compatible with MODE / Postgres (string).
 func (schemaType SchemaType) MapDecodedParameterAddress(value interface{}) interface{} {
-	v := value.(common.Address)
+	v, _ := value.(common.Address)
 	return handleAddress(v[:])
 }
 
@@ -252,6 +253,7 @@ func (schemaType SchemaType) MapDecodedParameterAddress(value interface{}) inter
 // compatible with MODE / Postgres.
 func (schemaType SchemaType) MapDecodedParameter(value interface{}) interface{} {
 	// Only address and bytes types need to be mapped.
+	//nolint:gocritic // no switch
 	if schemaType >= BYTES1 && schemaType <= BYTES32 {
 		return schemaType.MapDecodedParameterBytes(value)
 	} else if schemaType == ADDRESS {
@@ -449,7 +451,6 @@ func (schema *Schema) DecodeFieldDataAt(encoding []byte, fieldIndex uint8) *Deco
 	}
 	logger.GetLogger().Fatal("could not decode data field at index", zap.Uint8("fieldIndex", fieldIndex))
 	return nil
-
 }
 
 // DecodeKeyData decodes the given an array of byte slices `encodedKey` into a `DecodedData` object
@@ -494,7 +495,7 @@ func (schema *Schema) DecodeKeyData(encodedKey [][32]byte) *DecodedData {
 // Returns:
 // - (*DecodedData) - A pointer to the `DecodedData` object.
 func (schema *Schema) DecodeFieldData(encoding []byte) *DecodedData {
-	var bytesOffset uint64 = 0
+	var bytesOffset uint64
 
 	// Where the decoded data is stored.
 	data := NewDecodedDataFromSchema(schema)
@@ -521,13 +522,14 @@ func (schema *Schema) DecodeFieldData(encoding []byte) *DecodedData {
 		for i, fieldType := range schema.Dynamic {
 			// Decode the length of the data. MODE works with UINT56 decoded as a string from a BigInt
 			// since all uints are handled the same to handle those > Go uint64.
-			dataLengthString := packedCounterCounterType.DecodeStaticField(
+			dataLengthString, _ := packedCounterCounterType.DecodeStaticField(
 				dynamicDataSlice,
 				packedCounterAccumulatorType.StaticByteLength()+uint64(i)*packedCounterCounterType.StaticByteLength(),
 			).(string)
 
 			// Convert the length to a uint64.
-			dataLengthBigInt, success := new(big.Int).SetString(dataLengthString, 10)
+			dataLengthBase := 10
+			dataLengthBigInt, success := new(big.Int).SetString(dataLengthString, dataLengthBase)
 			if !success {
 				logger.GetLogger().Fatal("could not decode dynamic data length")
 			}
@@ -556,6 +558,7 @@ func (schema *Schema) DecodeFieldData(encoding []byte) *DecodedData {
 // Returns:
 // - (string): The decoded value of the dynamic field as a string.
 func (schemaType SchemaType) DecodeDynamicField(encodingSlice []byte) interface{} {
+	//nolint:exhaustive // auto-gen + readablity
 	switch schemaType {
 	case BYTES:
 		return handleBytes(encodingSlice)
@@ -563,7 +566,7 @@ func (schemaType SchemaType) DecodeDynamicField(encodingSlice []byte) interface{
 		return handleString(encodingSlice)
 	default:
 		// Try to decode as an array.
-		staticSchemaType := (schemaType - 98)
+		staticSchemaType := (schemaType - UINT8_ARRAY)
 
 		if staticSchemaType > 97 {
 			logger.GetLogger().Fatal("Unknown dynamic field type", zap.String("type", schemaType.String()))
@@ -675,6 +678,7 @@ func (schemaType SchemaType) DecodeStaticField(encoding []byte, bytesOffset uint
 
 	// UINT8 - UINT256 is the first range. We add one to the schema type to get the
 	// number of bytes to read, since enums start from 0 and UINT8 is the first one.
+	//nolint:gocritic,nestif // simplify
 	if schemaType >= UINT8 && schemaType <= UINT256 {
 		return handleUint(encoding[bytesOffset : bytesOffset+uint64(schemaType)+1])
 	} else
@@ -713,6 +717,7 @@ func (schemaType SchemaType) DecodeStaticField(encoding []byte, bytesOffset uint
 // Returns:
 // (uint64) - The number of bytes required for a static type schema.
 func (schemaType SchemaType) StaticByteLength() uint64 {
+	//nolint:gocritic // no switch
 	if schemaType < 32 {
 		// uint8-256
 		return uint64(schemaType) + 1
@@ -743,9 +748,8 @@ func (schemaType SchemaType) ToSolidityType() string {
 	if strings.Contains(schemaType.String(), "ARRAY") {
 		_type := strings.Split(schemaType.String(), "_")[0]
 		return fmt.Sprintf("%s[]", strings.ToLower(_type))
-	} else {
-		return strings.ToLower(schemaType.String())
 	}
+	return strings.ToLower(schemaType.String())
 }
 
 // SchemaTypeToPostgresType converts the specified SchemaType instance to the corresponding PostgreSQL type.
@@ -753,42 +757,51 @@ func (schemaType SchemaType) ToSolidityType() string {
 //
 // Returns:
 // (string) - A string representing the PostgreSQL type for the specified SchemaType instance.
+//
+//nolint:gocognit // auto-gen + readablity
 func (schemaType SchemaType) ToPostgresType() string {
+	const text = "text"
+	const jsonb = "jsonb"
+	const boolean = "boolean"
+
+	//nolint:gocritic,nestif // no switch, simplify
 	if (schemaType >= UINT8 && schemaType <= UINT32) || (schemaType >= INT8 && schemaType <= INT32) {
 		// Integer.
-		return "integer"
+		return text
 	} else if (schemaType >= UINT64 && schemaType <= UINT256) || (schemaType >= INT64 && schemaType <= INT256) {
 		// Big integer.
-		return "text"
+		return text
 	} else if (schemaType >= BYTES1 && schemaType <= BYTES32) || (schemaType == BYTES) {
 		// Bytes.
-		return "text"
+		return text
 	} else if schemaType == BOOL {
 		// Boolean.
-		return "boolean"
+		return boolean
 	} else if schemaType == ADDRESS {
 		// Address.
-		return "text"
+		return text
 	} else if schemaType == STRING {
 		// String.
-		return "text"
-	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) || (schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
+		return text
+	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) ||
+		(schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
 		// Integer array.
-		return "jsonb"
-	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) || (schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
+		return jsonb
+	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) ||
+		(schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
 		// Big integer array.
-		return "jsonb"
+		return jsonb
 	} else if schemaType >= BYTES1_ARRAY && schemaType <= BYTES32_ARRAY {
 		// Bytes array.
-		return "jsonb"
+		return jsonb
 	} else if schemaType == BOOL_ARRAY {
 		// Boolean array.
-		return "jsonb"
+		return jsonb
 	} else if schemaType == ADDRESS_ARRAY {
 		// Address array.
-		return "jsonb"
+		return jsonb
 	} else {
 		// Default to text.
-		return "text"
+		return text
 	}
 }
