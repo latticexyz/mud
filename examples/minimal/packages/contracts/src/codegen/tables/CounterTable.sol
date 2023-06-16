@@ -68,7 +68,7 @@ library CounterTable {
   /** Get value */
   function get(bytes32 key) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -77,7 +77,7 @@ library CounterTable {
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 key) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -86,7 +86,7 @@ library CounterTable {
   /** Set value */
   function set(bytes32 key, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
@@ -94,7 +94,7 @@ library CounterTable {
   /** Set value (using the specified store) */
   function set(IStore _store, bytes32 key, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
@@ -107,13 +107,13 @@ library CounterTable {
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keyTuple) {
     _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -121,7 +121,7 @@ library CounterTable {
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32((key));
+    _keyTuple[0] = key;
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

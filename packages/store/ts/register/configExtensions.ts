@@ -1,6 +1,6 @@
 import { extendMUDCoreConfig, fromZodErrorCustom } from "@latticexyz/config";
 import { ZodError } from "zod";
-import { zPluginStoreConfig } from "../library/config";
+import { zPluginStoreConfig } from "../config";
 
 extendMUDCoreConfig((config) => {
   // This function gets called within mudConfig.
