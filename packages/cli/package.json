@@ -38,6 +38,7 @@
     "@latticexyz/solecs": "workspace:*",
     "@latticexyz/std-contracts": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "chalk": "^5.0.1",

@@ -12,7 +12,6 @@ import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
@@ -39,10 +38,10 @@ export interface DeploymentInfo {
 
 export async function deploy(
   mudConfig: StoreConfig & WorldConfig,
-  existingContracts: string[],
+  existingContractNames: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
-  const resolvedConfig = resolveWorldConfig(mudConfig, existingContracts);
+  const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
