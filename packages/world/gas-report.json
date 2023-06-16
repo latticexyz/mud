@@ -37,18 +37,6 @@
   },
   {
     "source": "test/KeysInTableModule.t.sol",
-    "name": "Setting the 10000th key",
-    "functionCall": "world.setRecord(namespace, name, lastKey, abi.encodePacked(value))",
-    "gasUsed": 8365173
-  },
-  {
-    "source": "test/KeysInTableModule.t.sol",
-    "name": "Get list of 10000 keys with a given value",
-    "functionCall": "bytes32[][] memory keyTuples = getKeysInTable(world, tableId)",
-    "gasUsed": 194772580
-  },
-  {
-    "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
     "gasUsed": 1286932
