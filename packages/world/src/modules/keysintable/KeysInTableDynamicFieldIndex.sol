@@ -11,6 +11,9 @@ import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
  * Dynamic fieldIndex relies on all fields having the same schema type.
  */
 library KeysInTableDynamicFieldIndex {
+  // Number of fields in KeysInTable, which is based on max allowed dynamic fields in PackedCounter
+  uint256 internal constant FIELD_COUNT = 5;
+
   function pushKeys(uint8 fieldIndex, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32((sourceTable));

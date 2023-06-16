@@ -13,6 +13,8 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
+import { KeysInTableHook } from "../src/modules/keysintable/KeysInTableHook.sol";
+import { KeysInTableDynamicFieldIndex } from "../src/modules/keysintable/KeysInTableDynamicFieldIndex.sol";
 import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
@@ -367,5 +369,24 @@ contract KeysInTableModuleTest is Test {
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
     assertEq(keysInTable[0][0], key1);
+  }
+
+  function testKeyLengthOverflow() public {
+    _installKeysInTableModule();
+
+    uint256 keyLength = 1 + KeysInTableDynamicFieldIndex.FIELD_COUNT;
+    bytes32[] memory keyTuple = new bytes32[](keyLength);
+    for (uint256 i; i < keyLength; i++) {
+      keyTuple[i] = bytes32(i);
+    }
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        KeysInTableHook.KeyLengthOverflow.selector,
+        KeysInTableDynamicFieldIndex.FIELD_COUNT,
+        keyLength
+      )
+    );
+    world.setRecord(namespace, name, keyTuple, abi.encodePacked(uint256(123)));
   }
 }
