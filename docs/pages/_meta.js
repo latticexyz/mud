@@ -8,15 +8,9 @@ export default {
   mode: "MODE",
   cli: "CLI",
   ecs: "ECS and MUD",
-  "ethglobal-hackathon": "ETHGlobal Hackathon",
-  // blog: {
-  //   title: "Blog",
-  //   type: "page",
-  //   display: "hidden",
-  // },
-  // guides: "Guides",
-  // tutorials: "Tutorials",
-  // packages: "Packages",
+  plugins: "Plugins",
+  tutorials: "Tutorials",
+  contribute: "Contribute",
   community: {
     title: "Community",
     type: "page",
@@ -32,8 +26,7 @@ export default {
   discord: {
     title: "Discord",
     type: "page",
-    href: "https:/lattice.xyz/discord",
+    href: "https://lattice.xyz/discord",
     newWindow: true,
   },
-  contribute: "Contribute",
 };

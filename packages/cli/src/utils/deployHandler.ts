@@ -6,7 +6,7 @@ import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
-import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
+import { cast, forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId";
 
@@ -23,11 +23,12 @@ export type DeployOptions = {
   srcDir?: string;
   disableTxWait: boolean;
   pollInterval: number;
+  skipBuild?: boolean;
 };
 
 export async function deployHandler(args: DeployOptions) {
   args.profile = args.profile ?? process.env.FOUNDRY_PROFILE;
-  const { configPath, printConfig, profile, clean } = args;
+  const { configPath, printConfig, profile, clean, skipBuild } = args;
 
   const rpc = args.rpc ?? (await getRpcUrl(profile));
   console.log(
@@ -39,7 +40,7 @@ export async function deployHandler(args: DeployOptions) {
   if (clean) await forge(["clean"], { profile });
 
   // Run forge build
-  await forge(["build"], { profile });
+  if (!skipBuild) await forge(["build"], { profile });
 
   // Get a list of all contract names
   const srcDir = args?.srcDir ?? (await getSrcDirectory());
@@ -77,6 +78,13 @@ export async function deployHandler(args: DeployOptions) {
     console.log(
       chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${mudConfig.worldsFile} and ${outputDir}): \n`))
     );
+
+    // Reset base fee back to 0 if deploying to a local chain.
+    // This is a temporary workaround until the issue is fixed upstream,
+    // see https://github.com/foundry-rs/foundry/issues/5161
+    if ((await getChainId(rpc)) === 31337) {
+      cast(["rpc", "anvil_setNextBlockBaseFeePerGas", "0"]);
+    }
   }
 
   console.log(deploymentInfo);

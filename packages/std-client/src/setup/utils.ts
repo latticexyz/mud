@@ -224,7 +224,9 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
 function nameKeys(indexedRecord: Record<number, unknown>, keyNames: string[]) {
   const namedRecord: Record<string, unknown> = {};
   keyNames.forEach((key, index) => {
-    namedRecord[key] = indexedRecord[index];
+    if (index in indexedRecord) {
+      namedRecord[key] = indexedRecord[index];
+    }
   });
   return namedRecord;
 }

@@ -1,7 +1,7 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
-import { ExpandTablesConfig, StoreConfig, StoreUserConfig } from "../library/config";
-import { DEFAULTS, PATH_DEFAULTS } from "../library/config/defaults";
+import { ExpandTablesConfig, StoreConfig, StoreUserConfig } from "../config";
+import { DEFAULTS, PATH_DEFAULTS } from "../config/defaults";
 
 // Inject non-generic options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.

@@ -8,6 +8,7 @@ import {
   InputType,
   SingletonID,
   RawTableRecord,
+  keyTupleToEntityID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, defineComponent, Type, World } from "@latticexyz/recs";
@@ -143,8 +144,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   const singletonEntity = world.registerEntity({ id: SingletonID });
   // Register player entity
   const address = network.connectedAddress.get();
-  const playerEntityId = address;
-  const playerEntity = playerEntityId ? world.registerEntity({ id: playerEntityId }) : undefined;
+  const playerEntity = address ? world.registerEntity({ id: keyTupleToEntityID([address]) }) : undefined;
 
   // Create sync worker
   const ack$ = new Subject<Ack>();
@@ -164,7 +164,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
         provider: providerConfig,
         worldContract: contractsConfig.World,
         initialBlockNumber: initialBlockNumber ?? networkConfig.initialBlockNumber,
-        disableCache: networkConfig.disableCache, // Disable cache on local networks (hardhat / anvil)
+        disableCache: networkConfig.disableCache || [31337, 1337].includes(networkConfig.chainId), // Disable cache on local networks (hardhat / anvil)
         fetchSystemCalls,
         initialRecords,
       },
@@ -203,8 +203,6 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     components,
     singletonEntityId: SingletonID,
     singletonEntity,
-    /* @deprecated playerEntityId is equivalent to playerEntity */
-    playerEntityId,
     playerEntity,
     storeCache,
   };

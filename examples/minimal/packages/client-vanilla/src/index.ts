@@ -1,7 +1,10 @@
 import { setup } from "./mud/setup";
 import { mount as mountDevTools } from "@latticexyz/dev-tools";
 
-const { components, worldSend } = await setup();
+const {
+  components,
+  network: { worldSend },
+} = await setup();
 
 // Components expose a stream that triggers when the component is updated.
 components.CounterTable.update$.subscribe((update) => {

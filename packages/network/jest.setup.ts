@@ -1,7 +1,9 @@
-import { TextEncoder } from "util";
+import { TextEncoder as NodeTextEncoder, TextDecoder as NodeTextDecoder } from "util";
 
-// TextEncoder APIs are used by viem, but are not provided by
-// jsdom, all node versions supported provide these via the util module
 if (typeof globalThis.TextEncoder === "undefined") {
-  globalThis.TextEncoder = TextEncoder;
+  globalThis.TextEncoder = NodeTextEncoder as unknown as typeof TextEncoder;
+}
+
+if (typeof globalThis.TextDecoder === "undefined") {
+  globalThis.TextDecoder = NodeTextDecoder as unknown as typeof TextDecoder;
 }

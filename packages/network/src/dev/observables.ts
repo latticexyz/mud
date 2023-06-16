@@ -32,3 +32,5 @@ export const walletClient$: BehaviorSubject<(WalletClient & { chain: Chain }) | 
 >(null);
 
 export const cacheStore$ = new BehaviorSubject<CacheStore | null>(null);
+
+export const worldAddress$ = new BehaviorSubject<string | null>(null);

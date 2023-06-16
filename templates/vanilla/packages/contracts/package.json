@@ -4,20 +4,17 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "forge clean && forge build",
-    "deploy": "pnpm run initialize && mud deploy",
-    "deploy:testnet": "pnpm run initialize && mud deploy --profile=lattice-testnet",
-    "dev": "pnpm run deploy --disableTxWait",
-    "devnode": "mud devnode",
-    "initialize": "pnpm run tablegen && pnpm run worldgen && pnpm run build && pnpm run worldtypes && pnpm run tsgen",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
+    "build:abi": "forge clean && forge build",
+    "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+    "build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
+    "deploy": "pnpm run build && mud deploy",
+    "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
+    "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "tablegen": "mud tablegen",
-    "test": "tsc --noEmit && mud test",
-    "tsgen": "mud tsgen --configPath mud.config.ts --out ../client/src/mud",
-    "worldgen": "mud worldgen",
-    "worldtypes": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json"
+    "test": "tsc --noEmit && mud test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
@@ -38,6 +35,8 @@
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.7",
+    "solhint-config-mud": "file:../../../../packages/solhint-config-mud",
+    "solhint-plugin-mud": "file:../../../../packages/solhint-plugin-mud",
     "typechain": "^8.1.1"
   }
 }

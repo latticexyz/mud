@@ -1,4 +1,11 @@
-import { storeEvent$, transactionHash$, publicClient$, walletClient$, cacheStore$ } from "@latticexyz/network/dev";
+import {
+  storeEvent$,
+  transactionHash$,
+  publicClient$,
+  walletClient$,
+  cacheStore$,
+  worldAddress$,
+} from "@latticexyz/network/dev";
 import { PublicClient, WalletClient, Hex, Chain } from "viem";
 import { Abi } from "abitype";
 import { create } from "zustand";
@@ -17,6 +24,7 @@ export const useStore = create<{
   walletClient: (WalletClient & { chain: Chain }) | null;
   blockNumber: bigint | null;
   worldAbi: Abi;
+  worldAddress: string | null;
 }>(() => ({
   storeEvents: [],
   transactions: [], // TODO: populate from recent wallet txs?
@@ -25,6 +33,7 @@ export const useStore = create<{
   walletClient: null,
   blockNumber: null,
   worldAbi: IWorldKernel__factory.abi,
+  worldAddress: null,
 }));
 
 // TODO: clean up listeners
@@ -70,4 +79,8 @@ walletClient$.subscribe((walletClient) => {
 
 worldAbi$.subscribe((worldAbi) => {
   useStore.setState({ worldAbi: worldAbi ?? IWorldKernel__factory.abi });
+});
+
+worldAddress$.subscribe((worldAddress) => {
+  useStore.setState({ worldAddress });
 });

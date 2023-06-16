@@ -23,6 +23,7 @@ export const yDeployOptions = {
     desc: "Interval in miliseconds to use to poll for transaction receipts / block inclusion",
     default: 1000,
   },
+  skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
 } satisfies Record<keyof DeployOptions, Options>;
 
 const commandModule: CommandModule<DeployOptions, DeployOptions> = {

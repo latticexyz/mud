@@ -69,7 +69,7 @@ export default mudConfig({
     },
     SystemHooks: {
       directory: "modules/core/tables",
-      primaryKeys: {
+      keySchema: {
         resourceSelector: "bytes32",
       },
       schema: "address[]",
@@ -108,7 +108,13 @@ export default mudConfig({
     KeysInTable: {
       directory: "modules/keysintable/tables",
       keySchema: { sourceTable: "bytes32" },
-      schema: { length: "uint32", keys: "bytes32[]" }, // For now only indexes the first key of a key tuple
+      schema: {
+        keys0: "bytes32[]",
+        keys1: "bytes32[]",
+        keys2: "bytes32[]",
+        keys3: "bytes32[]",
+        keys4: "bytes32[]",
+      },
     },
     UsedKeysIndex: {
       directory: "modules/keysintable/tables",
@@ -116,7 +122,7 @@ export default mudConfig({
         sourceTable: "bytes32",
         keysHash: "bytes32",
       },
-      schema: { has: "bool", index: "uint32" },
+      schema: { has: "bool", index: "uint40" },
       dataStruct: false,
     },
     UniqueEntity: {
@@ -166,5 +172,7 @@ export default mudConfig({
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
+    // Similar overlap occurs for IEphemeralRecordSystem. IWorldEphemeral is included instead.
+    "EphemeralRecordSystem",
   ],
 });

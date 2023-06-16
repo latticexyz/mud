@@ -10,7 +10,9 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/library/index.js",
+    ".": "./dist/ts/index.js",
+    "./codegen": "./dist/ts/codegen/index.js",
+    "./config": "./dist/ts/config/index.js",
     "./register": "./dist/ts/register/index.js",
     "./abi/*": "./abi/*",
     "./*": "./dist/*"
@@ -18,7 +20,13 @@
   "typesVersions": {
     "*": {
       "index": [
-        "./ts/library/index.ts"
+        "./ts/index.ts"
+      ],
+      "codegen": [
+        "./ts/codegen/index.ts"
+      ],
+      "config": [
+        "./ts/config/index.ts"
       ],
       "register": [
         "./ts/register/index.ts"
@@ -48,6 +56,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "abitype": "0.8.7",
     "ethers": "^5.7.2",
     "zod": "^3.21.4"
   },
@@ -67,7 +76,7 @@
     "tsx": "^3.12.6",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10",
-    "vitest": "0.30.1"
+    "vitest": "0.31.4"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
