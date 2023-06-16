@@ -277,7 +277,7 @@ func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.
 	}
 }
 
-// Single__GetState returns the state for a single table specified in the request. The table name and namespace are
+// GetPartialState returns the state for a single table specified in the request. The table name and namespace are
 // specified in the request. A SQL query is built from the request using a builder, and the query is executed to
 // retrieve the state of the table. The retrieved state is then serialized into a GenericTable and returned as part of
 // the QueryLayerStateResponse.
@@ -292,42 +292,42 @@ func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.
 // Returns:
 // - (*pb_mode.QueryLayerStateResponse): The response containing the single table state.
 // - (error): An error encountered during validation, query building, or execution.
-func (ql *Layer) Single__GetState(
+func (ql *Layer) GetPartialState(
 	_ context.Context,
-	request *pb_mode.Single__StateRequest,
+	request *pb_mode.PartialStateRequest,
 ) (*pb_mode.QueryLayerStateResponse, error) {
 	if err := mode.ValidateNamespace__SingleState(request.Namespace); err != nil {
-		return nil, fmt.Errorf("invalid namespace for Single__GetState(): %w", err)
+		return nil, fmt.Errorf("invalid namespace for GetPartialState(): %w", err)
 	}
 
 	// Get a string namespace for the request.
 	namespace, err := mode.NamespaceFromNamespaceObject(request.Namespace)
 	if err != nil {
-		ql.logger.Error("Single__GetState(): error while getting namespace", zap.Error(err))
+		ql.logger.Error("GetPartialState(): error while getting namespace", zap.Error(err))
 		return nil, err
 	}
 
 	// Create a "builder" for the request.
-	builder := find.New__FromSingle__StateRequest(request, namespace)
+	builder := find.NewBuilderFromPartialStateRequest(request, namespace)
 
 	// Build a query from the request.
 	query, err := builder.ToSQLQuery()
 	if err != nil {
-		ql.logger.Error("Single__GetState(): error while building query", zap.Error(err))
+		ql.logger.Error("GetPartialState(): error while building query", zap.Error(err))
 		return nil, err
 	}
-	ql.logger.Info("Single__GetState(): built query from request", zap.String("query", query))
+	ql.logger.Info("GetPartialState(): built query from request", zap.String("query", query))
 
 	// Get the Table that the query is directed at and execute the built query.
 	table, err := ql.tableStore.GetTable(request.Namespace.ChainId, request.Namespace.WorldAddress, request.Table)
 	if err != nil {
-		ql.logger.Error("Single__GetState(): error while getting table schema", zap.Error(err))
+		ql.logger.Error("GetPartialState(): error while getting table schema", zap.Error(err))
 		return nil, err
 	}
 
 	serializedTable, err := ql.ExecuteSQL(query, table, builder.GetFieldProjections())
 	if err != nil {
-		ql.logger.Error("Single__GetState(): error while executing query", zap.String("query", query), zap.Error(err))
+		ql.logger.Error("GetPartialState(): error while executing query", zap.String("query", query), zap.Error(err))
 		return nil, err
 	}
 
@@ -335,7 +335,7 @@ func (ql *Layer) Single__GetState(
 	return StateResponseFromTable(serializedTable, request.Table, ql.tableStore.IsInternalTable(request.Table)), nil
 }
 
-// Single__StreamState streams incremental updates for a single table specified in the request. The table name and
+// StreamPartialState streams incremental updates for a single table specified in the request. The table name and
 // namespace are specified in the request. The function listens to the stream of events from the database layer and
 // serializes any events that match the table in the request. Once a block number event is encountered, all buffered
 // events are combined into a single response and sent to the client as part of the QueryLayerStateStreamResponse. If
@@ -343,13 +343,13 @@ func (ql *Layer) Single__GetState(
 //
 // Parameters:
 // - request (*pb_mode.Single__StateRequest): The request for a single table state.
-// - stateStream (pb_mode.QueryLayer_Single__StreamStateServer): The stream to send incremental updates to the client.
+// - stateStream (pb_mode.QueryLayer_StreamPartialStateServer): The stream to send incremental updates to the client.
 //
 // Returns:
 // - (error): An error encountered during validation or execution.
-func (ql *Layer) Single__StreamState(
-	request *pb_mode.Single__StateRequest,
-	stream pb_mode.QueryLayer_Single__StreamStateServer,
+func (ql *Layer) StreamPartialState(
+	request *pb_mode.PartialStateRequest,
+	stream pb_mode.QueryLayer_StreamPartialStateServer,
 ) error {
 	// TODO: implement
 	return nil

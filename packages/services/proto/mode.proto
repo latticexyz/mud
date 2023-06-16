@@ -69,7 +69,7 @@ message StateRequest {
     repeated string chainTables = 3;
 }
 
-message Single__StateRequest {
+message PartialStateRequest {
     // Namespace.
     Namespace namespace = 1;
 
@@ -180,15 +180,15 @@ message Filter {
 //////////////////////////
 
 service QueryLayer {
-    // Get state endpoint.
+    // Get entire state.
     rpc GetState(StateRequest) returns (QueryLayerStateResponse) {}
 
-    // Stream state endpoint.
+    // Stream entire state.
     rpc StreamState(StateRequest) returns (stream QueryLayerStateStreamResponse) {}
 
-    // Get state from single table endpoint.
-    rpc Single__GetState(Single__StateRequest) returns (QueryLayerStateResponse) {}
+    // Get state for a single table.
+    rpc GetPartialState(PartialStateRequest) returns (QueryLayerStateResponse) {}
 
-    // Stream state from single table endpoint.
-    rpc Single__StreamState(Single__StateRequest) returns (stream QueryLayerStateStreamResponse) {}
+    // Stream state for a single table.
+    rpc StreamPartialState(PartialStateRequest) returns (stream QueryLayerStateStreamResponse) {}
 }

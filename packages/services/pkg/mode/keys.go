@@ -63,8 +63,8 @@ func (table *Table) KeyToFilter(key [][32]byte) map[string]interface{} {
 
 	filter := make(map[string]interface{})
 
-	for idx, key_name := range table.KeyNames {
-		filter[key_name] = decodedKeyData.GetData(idx)
+	for idx, keyName := range table.KeyNames {
+		filter[keyName] = decodedKeyData.GetData(idx)
 	}
 	return filter
 }

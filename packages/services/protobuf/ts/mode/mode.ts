@@ -62,7 +62,7 @@ export interface StateRequest {
   chainTables: string[];
 }
 
-export interface SingleStateRequest {
+export interface PartialStateRequest {
   /** Namespace. */
   namespace: Namespace | undefined;
   /** Table. */
@@ -780,12 +780,12 @@ export const StateRequest = {
   },
 };
 
-function createBaseSingleStateRequest(): SingleStateRequest {
+function createBasePartialStateRequest(): PartialStateRequest {
   return { namespace: undefined, table: "", filter: [], project: [] };
 }
 
-export const SingleStateRequest = {
-  encode(message: SingleStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const PartialStateRequest = {
+  encode(message: PartialStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.namespace !== undefined) {
       Namespace.encode(message.namespace, writer.uint32(10).fork()).ldelim();
     }
@@ -801,10 +801,10 @@ export const SingleStateRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): SingleStateRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): PartialStateRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSingleStateRequest();
+    const message = createBasePartialStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -845,12 +845,12 @@ export const SingleStateRequest = {
     return message;
   },
 
-  create(base?: DeepPartial<SingleStateRequest>): SingleStateRequest {
-    return SingleStateRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<PartialStateRequest>): PartialStateRequest {
+    return PartialStateRequest.fromPartial(base ?? {});
   },
 
-  fromPartial(object: DeepPartial<SingleStateRequest>): SingleStateRequest {
-    const message = createBaseSingleStateRequest();
+  fromPartial(object: DeepPartial<PartialStateRequest>): PartialStateRequest {
+    const message = createBasePartialStateRequest();
     message.namespace =
       object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
     message.table = object.table ?? "";
@@ -1778,7 +1778,7 @@ export const QueryLayerDefinition = {
   name: "QueryLayer",
   fullName: "mode.QueryLayer",
   methods: {
-    /** Get state endpoint. */
+    /** Get entire state. */
     getState: {
       name: "GetState",
       requestType: StateRequest,
@@ -1787,7 +1787,7 @@ export const QueryLayerDefinition = {
       responseStream: false,
       options: {},
     },
-    /** Stream state endpoint. */
+    /** Stream entire state. */
     streamState: {
       name: "StreamState",
       requestType: StateRequest,
@@ -1796,19 +1796,19 @@ export const QueryLayerDefinition = {
       responseStream: true,
       options: {},
     },
-    /** Get state from single table endpoint. */
-    single__GetState: {
-      name: "Single__GetState",
-      requestType: SingleStateRequest,
+    /** Get state for a single table. */
+    getPartialState: {
+      name: "GetPartialState",
+      requestType: PartialStateRequest,
       requestStream: false,
       responseType: QueryLayerStateResponse,
       responseStream: false,
       options: {},
     },
-    /** Stream state from single table endpoint. */
-    single__StreamState: {
-      name: "Single__StreamState",
-      requestType: SingleStateRequest,
+    /** Stream state for a single table. */
+    streamPartialState: {
+      name: "StreamPartialState",
+      requestType: PartialStateRequest,
       requestStream: false,
       responseType: QueryLayerStateStreamResponse,
       responseStream: true,
@@ -1818,44 +1818,44 @@ export const QueryLayerDefinition = {
 } as const;
 
 export interface QueryLayerServiceImplementation<CallContextExt = {}> {
-  /** Get state endpoint. */
+  /** Get entire state. */
   getState(request: StateRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerStateResponse>>;
-  /** Stream state endpoint. */
+  /** Stream entire state. */
   streamState(
     request: StateRequest,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
-  /** Get state from single table endpoint. */
-  single__GetState(
-    request: SingleStateRequest,
+  /** Get state for a single table. */
+  getPartialState(
+    request: PartialStateRequest,
     context: CallContext & CallContextExt
   ): Promise<DeepPartial<QueryLayerStateResponse>>;
-  /** Stream state from single table endpoint. */
-  single__StreamState(
-    request: SingleStateRequest,
+  /** Stream state for a single table. */
+  streamPartialState(
+    request: PartialStateRequest,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
 }
 
 export interface QueryLayerClient<CallOptionsExt = {}> {
-  /** Get state endpoint. */
+  /** Get entire state. */
   getState(
     request: DeepPartial<StateRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<QueryLayerStateResponse>;
-  /** Stream state endpoint. */
+  /** Stream entire state. */
   streamState(
     request: DeepPartial<StateRequest>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<QueryLayerStateStreamResponse>;
-  /** Get state from single table endpoint. */
-  single__GetState(
-    request: DeepPartial<SingleStateRequest>,
+  /** Get state for a single table. */
+  getPartialState(
+    request: DeepPartial<PartialStateRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<QueryLayerStateResponse>;
-  /** Stream state from single table endpoint. */
-  single__StreamState(
-    request: DeepPartial<SingleStateRequest>,
+  /** Stream state for a single table. */
+  streamPartialState(
+    request: DeepPartial<PartialStateRequest>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<QueryLayerStateStreamResponse>;
 }

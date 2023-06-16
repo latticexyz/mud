@@ -98,7 +98,7 @@ func (store *Store) GetTable(chainID string, worldAddress string, tableName stri
 		},
 	}
 	// Query the DB for the schema.
-	builder := find.New__FromFindRequest(request, schemasTable.Namespace)
+	builder := find.NewBuilderFromFindRequest(request, schemasTable.Namespace)
 	query, err := builder.ToSQLQuery()
 	if err != nil {
 		store.logger.Error("failed to build query", zap.Error(err))

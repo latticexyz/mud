@@ -113,7 +113,7 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 	// Create a find builder.
 	blockNumberTable := mode.BlockNumberTable(chainID)
 
-	findBuilder := find.New__FromFindRequest(&pb_mode.FindRequest{
+	findBuilder := find.NewBuilderFromFindRequest(&pb_mode.FindRequest{
 		From: blockNumberTable.Name,
 	}, blockNumberTable.Namespace)
 
@@ -193,7 +193,7 @@ func (rl *Layer) GetSyncStatus(chainID string) (bool, error) {
 	// Create a find builder.
 	syncStatusTable := mode.SyncStatusTable(chainID)
 
-	findBuilder := find.New__FromFindRequest(&pb_mode.FindRequest{
+	findBuilder := find.NewBuilderFromFindRequest(&pb_mode.FindRequest{
 		From: syncStatusTable.Name,
 	}, syncStatusTable.Namespace)
 

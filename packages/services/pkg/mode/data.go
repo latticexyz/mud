@@ -117,6 +117,7 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 		var encodedField []byte
 		var encodingErr error
 
+		//nolint:gocritic // readibility
 		if FieldIsNil(field) {
 			// If the field is null, we just encode it as an empty string.
 			encodedField = []byte("")

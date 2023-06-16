@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-// type Schema struct {
-// 	Key   *SchemaTypePair `json:"key"`
-// 	Field *SchemaTypePair `json:"field"`
-// }
-
 type Schema struct {
 	Static           []SchemaType `json:"static"`
 	Dynamic          []SchemaType `json:"dynamic"`
