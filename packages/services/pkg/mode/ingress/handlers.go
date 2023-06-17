@@ -22,11 +22,11 @@ import (
 //
 //nolint:gocognit // log handling switch statement is long but necessary
 func (il *Layer) handleLogs(logs []types.Log) {
-	// defer func() {
-	// 	if err := recover(); err != nil {
-	// 		il.logger.Error("failed to handle logs", zap.Any("error", err))
-	// 	}
-	// }()
+	defer func() {
+		if err := recover(); err != nil {
+			il.logger.Error("failed to handle logs", zap.Any("error", err))
+		}
+	}()
 
 	// Process each log and handle events.
 	for _, vLog := range logs {
