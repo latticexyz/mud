@@ -11,6 +11,7 @@
         "bin/**",
         "protoc/**",
         "protobuf/**",
+        "src/codegen/**",
         "src/mud-definitions/**"
       ]
     },
@@ -34,6 +35,7 @@
         "bin/**",
         "protoc/**",
         "protobuf/**",
+        "src/codegen/**",
         "src/mud-definitions/**"
       ]
     }
