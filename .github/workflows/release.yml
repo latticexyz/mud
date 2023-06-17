@@ -2,7 +2,7 @@
 # When it detects that pr merged it  will release packages
 # for non official releases run the github action in `snapshot.yml`
 # https://github.com/changesets/action#with-publishing
-name: Release 🚀
+name: Snapshot Release 🚀
 
 on:
   workflow_dispatch:
@@ -47,7 +47,7 @@ jobs:
         with:
           title: "chore: Version packages 🔖"
           commit: "chore: Version packages 🔖"
-          publish: pnpm release
+          publish: pnpm release:snapshot
           version: pnpm release:version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
