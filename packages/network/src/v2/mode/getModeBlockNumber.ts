@@ -6,7 +6,7 @@ export async function getModeBlockNumber(client: QueryLayerClient, chainId: numb
     const response = await client.getPartialState({
       table: "block_number",
       namespace: {
-        chainId: chainId.toString(),
+        chainID: chainId.toString(),
       },
     });
     const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
