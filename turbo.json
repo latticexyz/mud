@@ -11,8 +11,7 @@
         "bin/**",
         "protoc/**",
         "protobuf/**",
-        "src/mud-definitions/**",
-        ".parcel-cache/**"
+        "src/mud-definitions/**"
       ]
     },
     "create-mud#build": {
@@ -26,7 +25,17 @@
       "persistent": true
     },
     "clean": {
-      "cache": false
+      "cache": false,
+      "outputs": [
+        "dist/**",
+        "abi/**",
+        "types/**",
+        "build/**",
+        "bin/**",
+        "protoc/**",
+        "protobuf/**",
+        "src/mud-definitions/**"
+      ]
     }
   }
 }
