@@ -1,19 +1,20 @@
-import { Subject } from "rxjs";
-import type { Hex, PublicClient } from "viem";
+import { BehaviorSubject, Subject, lastValueFrom } from "rxjs";
+import type { BlockNumber, Hex, PublicClient } from "viem";
 import type { AbiEvent } from "abitype";
-import { BlockEvents, BlockEventsStream, BlockNumberOrTag } from "./common";
+import { BlockEvents, BlockEventsStream, ReadonlySubject } from "./common";
 import { bigIntMin } from "./utils";
 import { isNonPendingLog } from "./isNonPendingLog";
 import { debug } from "./debug";
+import { createBlockNumberStream } from "./createBlockNumberStream";
 
 // TODO: add nice logging with debub lib or similar
-// TODO: make `toBlock` accept a `BehaviorSubject<BlockNumberOrTag>` or add `latestBlockStream` so we only need one listener/watcher/poller
+// TODO: make `toBlock` accept a `BehaviorSubject<BlockNumber>` or add `latestBlockStream` so we only need one listener/watcher/poller
 // TODO: consider excluding `pending` block tags so we can just assume all block numbers are present
 
 export type CreateBlockEventsStreamOptions<TAbiEvent extends AbiEvent> = {
   publicClient: PublicClient;
-  fromBlock?: BlockNumberOrTag; // defaults to "earliest"
-  toBlock?: Exclude<BlockNumberOrTag, "earliest">; // defaults to "latest"
+  fromBlock?: BlockNumber;
+  toBlock?: BlockNumber | ReadonlySubject<BehaviorSubject<BlockNumber>>;
   address?: Hex;
   events: readonly TAbiEvent[];
   maxBlockRange?: number; // defaults to 1000
@@ -21,37 +22,36 @@ export type CreateBlockEventsStreamOptions<TAbiEvent extends AbiEvent> = {
 
 export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
   publicClient,
-  fromBlock: initialFromBlock = "earliest",
-  toBlock: initialToBlock = "latest",
+  fromBlock: initialFromBlock,
+  toBlock: initialToBlock,
   address,
   events,
   maxBlockRange = 1000,
 }: CreateBlockEventsStreamOptions<TAbiEvent>): Promise<BlockEventsStream<TAbiEvent>> {
   debug("createBlockEventsStream", { initialFromBlock, initialToBlock, address, events, maxBlockRange });
 
-  debug("Getting first/last blocks");
-  const [firstBlock, lastBlock] = await Promise.all([
-    publicClient.getBlock(
-      typeof initialFromBlock === "bigint" ? { blockNumber: initialFromBlock } : { blockTag: initialFromBlock }
-    ),
-    publicClient.getBlock(
-      typeof initialToBlock === "bigint" ? { blockNumber: initialToBlock } : { blockTag: initialToBlock }
-    ),
-  ]);
-
-  if (firstBlock.number == null) {
-    // TODO: better error
-    throw new Error(`pending or missing fromBlock "${initialFromBlock}"`);
-  }
-  if (lastBlock.number == null) {
-    // TODO: better error
-    throw new Error(`pending or missing toBlock "${initialToBlock}"`);
+  if (initialFromBlock == null) {
+    debug("getting earliest block");
+    const earliestBlock = await publicClient.getBlock({ blockTag: "earliest" });
+    debug("earliest block", earliestBlock);
+    if (earliestBlock.number == null) {
+      // TODO: better error
+      throw new Error(`pending or missing earliest block`);
+    }
+    initialFromBlock = earliestBlock.number;
   }
 
-  debug("Got first/last blocks", { firstBlock, lastBlock });
+  if (initialToBlock == null) {
+    debug("creating latest block number stream");
+    initialToBlock = await createBlockNumberStream({ publicClient, blockTag: "latest" });
+  }
 
   const stream = new Subject<BlockEvents<TAbiEvent>>();
-  fetchBlockRange(firstBlock.number, maxBlockRange, lastBlock.number);
+  fetchBlockRange(
+    initialFromBlock,
+    maxBlockRange,
+    initialToBlock instanceof BehaviorSubject ? initialToBlock.value : initialToBlock
+  );
 
   async function fetchBlockRange(fromBlock: bigint, maxBlockRange: number, lastBlockNumber: bigint): Promise<void> {
     try {
@@ -105,34 +105,18 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
         return;
       }
 
-      if (typeof initialToBlock !== "bigint") {
-        debug("updating last block", { initialToBlock });
-        const lastBlock = await publicClient.getBlock({ blockTag: initialToBlock });
-        if (lastBlock.number == null) {
-          // TODO: better error
-          throw new Error(`pending or missing toBlock "${initialToBlock}"`);
-        }
-
-        debug("got last block", { lastBlock });
-        if (lastBlock.number > toBlock) {
-          fetchBlockRange(toBlock + 1n, maxBlockRange, lastBlock.number);
+      if (initialToBlock instanceof BehaviorSubject) {
+        if (initialToBlock.value > toBlock) {
+          fetchBlockRange(toBlock + 1n, maxBlockRange, initialToBlock.value);
           return;
         }
 
         debug("waiting for next block");
-        const unwatch = publicClient.watchBlocks({
-          blockTag: initialToBlock,
-          onBlock: (block) => {
-            debug("got next block", block);
-
-            if (block.number == null) {
-              // TODO: better error
-              throw new Error(`pending or missing toBlock "${initialToBlock}"`);
-            }
-
-            unwatch();
-            fetchBlockRange(toBlock + 1n, maxBlockRange, block.number);
-          },
+        const sub = initialToBlock.subscribe((blockNumber) => {
+          if (blockNumber > toBlock) {
+            sub.unsubscribe();
+            fetchBlockRange(toBlock + 1n, maxBlockRange, blockNumber);
+          }
         });
         return;
       }

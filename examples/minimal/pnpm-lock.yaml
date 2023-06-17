@@ -99,7 +99,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       rxjs:
-        specifier: ^7.5.5
+        specifier: 7.5.5
         version: 7.5.5
       simplex-noise:
         specifier: ^4.0.1
@@ -186,6 +186,9 @@ importers:
       '@latticexyz/store':
         specifier: link:../../../../packages/store
         version: link:../../../../packages/store
+      '@latticexyz/store-cache':
+        specifier: link:../../../../packages/store-cache
+        version: link:../../../../packages/store-cache
       '@latticexyz/utils':
         specifier: link:../../../../packages/utils
         version: link:../../../../packages/utils
@@ -226,7 +229,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
       rxjs:
-        specifier: ^7.5.5
+        specifier: 7.5.5
         version: 7.5.5
       threads:
         specifier: ^1.7.0
@@ -323,7 +326,7 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       rxjs:
-        specifier: ^7.5.5
+        specifier: 7.5.5
         version: 7.5.5
       threads:
         specifier: ^1.7.0

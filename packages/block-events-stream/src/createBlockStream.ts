@@ -1,7 +1,9 @@
 import { BehaviorSubject } from "rxjs";
 import type { Block, BlockTag, PublicClient } from "viem";
+import { ReadonlySubject } from "./common";
 
 // TODO: pass through viem's types, e.g. WatchBlocksParameters -> GetBlockReturnType
+// TODO: make stream closeable?
 
 export type CreateBlockStreamOptions = {
   publicClient: PublicClient;
@@ -11,23 +13,26 @@ export type CreateBlockStreamOptions = {
 export function createBlockStream({
   publicClient,
   blockTag,
-}: CreateBlockStreamOptions): Promise<BehaviorSubject<Block>> {
+}: CreateBlockStreamOptions): Promise<ReadonlySubject<BehaviorSubject<Block>>> {
   return new Promise((resolve, reject) => {
     let stream: BehaviorSubject<Block> | undefined;
+    // TODO: do something with unwatch?
     const unwatch = publicClient.watchBlocks({
       blockTag,
       emitOnBegin: true,
       onBlock: (block) => {
         if (!stream) {
           stream = new BehaviorSubject(block);
-          resolve(stream);
+          // TODO: return observable with a current value?
+          resolve(stream as ReadonlySubject<BehaviorSubject<Block>>);
         } else {
           stream.next(block);
         }
       },
-      onError: reject,
+      onError: (error) => {
+        reject(error);
+        stream?.error(error);
+      },
     });
-    // TODO: do something with `unwatch`?
-    // TODO: return readonly BehaviorSubject, something like an observable but with a current value
   });
 }

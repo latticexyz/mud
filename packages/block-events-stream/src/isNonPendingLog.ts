@@ -1,6 +1,6 @@
 import type { Log } from "viem";
 
-type NonPendingLog<TLog extends Log> = TLog & {
+export type NonPendingLog<TLog extends Log> = TLog & {
   blockHash: NonNullable<TLog["blockHash"]>;
   blockNumber: NonNullable<TLog["blockNumber"]>;
   logIndex: NonNullable<TLog["logIndex"]>;

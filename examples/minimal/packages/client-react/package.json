@@ -22,6 +22,7 @@
     "@latticexyz/services": "link:../../../../packages/services",
     "@latticexyz/std-client": "link:../../../../packages/std-client",
     "@latticexyz/store": "link:../../../../packages/store",
+    "@latticexyz/store-cache": "link:../../../../packages/store-cache",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "@wagmi/chains": "^0.2.22",
@@ -35,7 +36,7 @@
     "proxy-deep": "^3.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "rxjs": "^7.5.5",
+    "rxjs": "7.5.5",
     "threads": "^1.7.0",
     "viem": "1.0.6"
   },

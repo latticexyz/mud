@@ -78,8 +78,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       viem:
         specifier: 1.0.6
         version: 1.0.6(typescript@5.0.4)
@@ -332,8 +332,8 @@ importers:
         specifier: ^6.11.0
         version: 6.11.0(react-dom@18.2.0)(react@18.2.0)
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
@@ -469,8 +469,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(google-protobuf@3.21.2)
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       threads:
         specifier: ^1.7.0
         version: 1.7.0
@@ -573,8 +573,8 @@ importers:
         specifier: 3.60.0-beta.14
         version: 3.60.0-beta.14
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -635,8 +635,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       '@testing-library/react-hooks':
         specifier: ^8.0.1
@@ -684,8 +684,8 @@ importers:
         specifier: ^6.7.0
         version: 6.9.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -866,8 +866,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       viem:
         specifier: 1.0.6
         version: 1.0.6(typescript@4.9.5)
@@ -1061,8 +1061,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -8337,7 +8337,7 @@ packages:
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
-      rxjs: 7.8.0
+      rxjs: 7.5.5
       string-width: 4.2.3
       strip-ansi: 6.0.1
       through: 2.3.8
@@ -8358,7 +8358,7 @@ packages:
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
-      rxjs: 7.8.0
+      rxjs: 7.5.5
       string-width: 4.2.3
       strip-ansi: 6.0.1
       through: 2.3.8
@@ -12741,17 +12741,10 @@ packages:
     dependencies:
       tslib: 1.14.1
 
-  /rxjs@7.5.6:
-    resolution: {integrity: sha512-dnyv2/YsXhnm461G+R/Pe5bWP41Nm6LBXEYWI6eiFP4fiwx6WRI/CD0zbdVAudd9xwLEF2IDcKXLHit0FYjUzw==}
+  /rxjs@7.5.5:
+    resolution: {integrity: sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==}
     dependencies:
       tslib: 2.5.0
-    dev: false
-
-  /rxjs@7.8.0:
-    resolution: {integrity: sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==}
-    dependencies:
-      tslib: 2.5.0
-    dev: true
 
   /safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
