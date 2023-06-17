@@ -1,14 +1,10 @@
-# When this detects changesets it will create a `Release PR`
-# When it detects that pr merged it  will release packages
-# for non official releases run the github action in `snapshot.yml`
-# https://github.com/changesets/action#with-publishing
 name: Prerelease 🚀
 
 on:
   push:
     branches:
-      # Target v1 branch
-      - "v1"
+      # Target main branch
+      - "main"
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -56,18 +52,11 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'false' && !contains(github.event.head_commit.message, 'Exit prerelease')
         run: npx changeset pre enter next
 
-      - name: Create next release PR
-        uses: changesets/action@v1
+      - name: Create next version PR or publish 🚀
+        uses: changesets/action@v1 
         with:
           version: pnpm release:version
+          publish: pnpm release:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish prerelease
-        id: changesets
-        # Only run publish if we're still in pre mode and the last commit was
-        # via an automatically created Version Packages PR
-        if: steps.changesets.outcome == 'success'
-        run: pnpm release:publish
-
-        # TODO maybe add a direlease:scord notification here
