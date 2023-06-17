@@ -123,6 +123,10 @@ func (builder *Builder) BuildCreate() string {
 func (builder *Builder) BuildIndex() string {
 	var indexStr strings.Builder
 	for _, field := range builder.Table.FieldNames {
+		// Don't build index for any jsonb fields.
+		if builder.Table.GetPostgresType(field) == "jsonb" {
+			continue
+		}
 		indexStr.WriteString(
 			`CREATE INDEX IF NOT EXISTS ` + builder.Table.Name + `_` + field +
 				`_idx ON ` + builder.Table.NamespacedName() +
