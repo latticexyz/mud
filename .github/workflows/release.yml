@@ -61,9 +61,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build
-        uses: ./.github/actions/build
-
       - name: Generate gas reports
         run: pnpm gas-report
 
