@@ -1,0 +1,73 @@
+# When this detects changesets it will create a `Release PR`
+# When it detects that pr merged it  will release packages
+# for non official releases run the github action in `snapshot.yml`
+# https://github.com/changesets/action#with-publishing
+name: Prerelease 🚀
+
+on:
+  push:
+    branches:
+      # Target v1 branch
+      - "v1"
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  prerelease:
+    name: Changests Prerelease
+    if: github.repository == 'latticexyz/mud'
+    runs-on: ubuntu-latest
+    # Permissions necessary for Changesets to push a new branch and open PRs
+    # (for automated Version Packages PRs), and request the JWT for provenance.
+    # More info: https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#adding-permissions-settings
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v3
+        name: Checkout Repo
+        with:
+          submodules: recursive
+
+      - name: "Setup"
+        uses: ./.github/actions/setup
+        
+      - name: Generate gas reports
+        run: pnpm gas-report
+
+      - name: Outdated files, run `pnpm gas-report` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Set deployment token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          
+      - name: Check for pre.json file existence
+        id: check_files
+        uses: andstor/file-existence-action@v2.0.0
+        with:
+          files: ".changeset/pre.json"
+
+      - name: Enter next prerelease mode
+        # If .changeset/pre.json does not exist and we did not recently exit
+        # prerelease mode, enter prerelease mode with tag next
+        if: steps.check_files.outputs.files_exists == 'false' && !contains(github.event.head_commit.message, 'Exit prerelease')
+        run: npx changeset pre enter next
+
+      - name: Create next release PR
+        uses: changesets/action@v1
+        with:
+          version: pnpm release:version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish prerelease
+        id: changesets
+        # Only run publish if we're still in pre mode and the last commit was
+        # via an automatically created Version Packages PR
+        if: steps.changesets.outcome == 'success'
+        run: pnpm release:publish
+
+        # TODO maybe add a direlease:scord notification here

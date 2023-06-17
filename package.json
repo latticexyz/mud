@@ -18,8 +18,9 @@
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "prettier": "prettier --write '**/*.{ts,tsx,css,md,mdx,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,sol}'",
-    "release": "pnpm install && pnpm build && changeset publish",
     "release:canary": "lerna publish premajor --preid alpha.1 --canary --no-private --force-publish",
+    "release:check": "changeset status --verbose --since=origin/main",
+    "release:publish": "pnpm install && pnpm build && changeset publish",
     "release:version": "changeset version && pnpm install --lockfile-only",
     "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'integration/*/package.json' 'integration/*/packages/*/package.json' 'docs/package.json'",
     "test": "pnpm recursive run test"
