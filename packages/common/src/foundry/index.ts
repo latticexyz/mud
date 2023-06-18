@@ -112,8 +112,9 @@ export async function anvil(args: string[]): Promise<string> {
 async function execLog(command: string, args: string[], options?: Options<string>): Promise<string> {
   const commandString = `${command} ${args.join(" ")}`;
   try {
-    console.log(chalk.gray(`running "${commandString}"`));
+    console.log(chalk.gray(`[3] running "${commandString}"`));
     const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe", ...options });
+    console.log(`execute result ${command}`, stdout);
     return stdout;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

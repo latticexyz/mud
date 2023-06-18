@@ -495,13 +495,22 @@ export async function deploy(
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
-      console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
+      console.log(chalk.gray(`[2] executing transaction: ${functionName} with nonce ${nonce}`));
       const txPromise = contract[func]
         .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas }])
         .then((tx: any) => (confirmations === 0 ? tx : tx.wait(confirmations)));
       promises.push(txPromise);
+      // console.log("txpromise", txPromise.toString())
+      // const a = await txPromise;
+      // console.log(a);
+      // console.log("wait")
+      // console.log(await a.wait());
       return txPromise;
     } catch (error: any) {
+      console.log(
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+      );
+      console.log("error", error);
       if (debug) console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,

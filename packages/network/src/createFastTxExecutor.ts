@@ -40,7 +40,7 @@ export async function createFastTxExecutor(
     } = { retryCount: 0 }
   ): Promise<{ hash: string; tx: ReturnType<C[F]> }> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
-    console.log(`executing transaction: ${functionName} with nonce ${currentNonce.nonce}`);
+    console.log(`[1] executing transaction: ${functionName} with nonce ${currentNonce.nonce}`);
 
     try {
       // Separate potential overrides from the args to extend the overrides below
@@ -48,19 +48,27 @@ export async function createFastTxExecutor(
 
       // Estimate gas if no gas limit was provided
       const gasLimit = overrides.gasLimit ?? (await contract.estimateGas[func as string].apply(null, args));
+      console.log("gasLimit");
 
       // Apply default overrides
       const fullOverrides = { type: 2, gasLimit, nonce: currentNonce.nonce++, ...gasConfig, ...overrides };
+      console.log(contract.populateTransaction);
+      console.log(func);
+      console.log(argsWithoutOverrides);
+      console.log(fullOverrides);
 
       // Populate the transaction
       const populatedTx = await contract.populateTransaction[func as string](...argsWithoutOverrides, fullOverrides);
       populatedTx.chainId = chainId;
+      console.log("populatedTx");
 
       // Execute the transaction
       let hash: string;
       try {
         // Attempt to sign the transaction and send it raw for higher performance
+        console.log("trying to sign ", populatedTx);
         const signedTx = await signer.signTransaction(populatedTx);
+        console.log(signedTx);
         hash = await signer.provider.perform("sendTransaction", {
           signedTransaction: signedTx,
         });
@@ -69,6 +77,7 @@ export async function createFastTxExecutor(
         // so sign+send using the signer as a fallback
         console.warn("signing failed, falling back to sendTransaction", e);
         const tx = await signer.sendTransaction(populatedTx);
+        console.log(tx);
         hash = tx.hash;
       }
 
