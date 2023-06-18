@@ -545,7 +545,7 @@ export async function deploy(
     if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
     if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
       throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
-If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
+If you're deploying to the Lattice testnet, you can fund your account by running 'yarn mud faucet --address ${await signer.getAddress()}'`);
     }
 
     // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets

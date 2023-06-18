@@ -18,7 +18,7 @@ export function startAnvil(port: number): ExecaChildProcess {
 }
 
 export function deployContracts(rpc: string): ExecaChildProcess {
-  const deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", rpc], { cwd: "../contracts", stdio: "pipe" });
+  const deploymentProcess = execa("yarn", ["mud", "deploy", "--rpc", rpc], { cwd: "../contracts", stdio: "pipe" });
   deploymentProcess.stdout?.on("data", (data) => {
     console.log(chalk.blueBright("[mud deploy]:"), data.toString());
   });
