@@ -9,6 +9,8 @@ export async function worldtypes() {
   const cwd = process.cwd();
   const forgeOurDir = await getOutDirectory();
   const IWorldPath = path.join(process.cwd(), forgeOurDir, "IWorld.sol/IWorld.json");
+  console.log(cwd);
+  console.log(IWorldPath);
 
   await runTypeChain({
     cwd,

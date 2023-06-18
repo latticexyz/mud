@@ -49,6 +49,7 @@ export async function createFastTxExecutor(
       // Estimate gas if no gas limit was provided
       const gasLimit = overrides.gasLimit ?? (await contract.estimateGas[func as string].apply(null, args));
       console.log("gasLimit");
+      console.log(gasLimit);
 
       // Apply default overrides
       const fullOverrides = { type: 2, gasLimit, nonce: currentNonce.nonce++, ...gasConfig, ...overrides };
