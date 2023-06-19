@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import "solecs/System.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
+import { IWorldCore } from "solecs/interfaces/IWorldCore.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById, getSystemAddressById } from "solecs/utils.sol";
@@ -17,7 +17,7 @@ struct ECSEvent {
 }
 
 contract BulkSetStateSystem is System {
-  constructor(IWorld _world, address _components) System(_world, _components) {}
+  constructor(IWorldCore _world, address _components) System(_world, _components) {}
 
   function requirement(bytes memory) public view returns (bytes memory) {
     // NOTE: Make sure to not include this system in a production deployment, as anyone can change all component values

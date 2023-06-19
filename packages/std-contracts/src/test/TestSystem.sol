@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IWorld } from "solecs/interfaces/IWorld.sol";
+import { IWorldCore } from "solecs/interfaces/IWorldCore.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { System } from "solecs/System.sol";
 import { getAddressById } from "solecs/utils.sol";
@@ -10,7 +10,7 @@ uint256 constant ID = uint256(keccak256("lib.testSystem"));
 
 /// @dev Sets values of `entities` to `newValues` for the component with `componentId`
 contract TestSystem is System {
-  constructor(IWorld _world, address _components) System(_world, _components) {}
+  constructor(IWorldCore _world, address _components) System(_world, _components) {}
 
   function execute(bytes memory args) public returns (bytes memory) {
     (uint256 componentId, uint256[] memory entities, bytes[] memory newValues) = abi.decode(

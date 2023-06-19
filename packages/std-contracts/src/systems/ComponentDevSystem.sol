@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import "solecs/System.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
+import { IWorldCore } from "solecs/interfaces/IWorldCore.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
@@ -9,7 +9,7 @@ import { getAddressById } from "solecs/utils.sol";
 uint256 constant ID = uint256(keccak256("system.ComponentDev"));
 
 contract ComponentDevSystem is System {
-  constructor(IWorld _world, address _components) System(_world, _components) {}
+  constructor(IWorldCore _world, address _components) System(_world, _components) {}
 
   function requirement(bytes memory) public view returns (bytes memory) {
     // NOTE: Make sure to not include this system in a production deployment, as anyone can change all component values

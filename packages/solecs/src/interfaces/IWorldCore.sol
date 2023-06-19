@@ -13,7 +13,7 @@ struct WorldQueryFragment {
   bytes value;
 }
 
-interface IWorld {
+interface IWorldCore {
   function components() external view returns (IUint256Component);
 
   function systems() external view returns (IUint256Component);

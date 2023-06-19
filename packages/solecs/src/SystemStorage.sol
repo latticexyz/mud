@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
-import { IWorld } from "./interfaces/IWorld.sol";
+import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { getSystemAddressById, getAddressById } from "./utils.sol";
 
 /**
@@ -16,7 +16,7 @@ library SystemStorage {
   /** Data that the system stores */
   struct Layout {
     IUint256Component components;
-    IWorld world;
+    IWorldCore world;
   }
 
   /** Location in memory where the Layout struct will be stored */
@@ -39,7 +39,7 @@ library SystemStorage {
    * @param _components Address of the Components registry contract.
    * @dev This function must be called at the start of any contract that expects libraries to access SystemStorage!
    */
-  function init(IWorld _world, IUint256Component _components) internal {
+  function init(IWorldCore _world, IUint256Component _components) internal {
     Layout storage l = layout();
     l.world = _world;
     l.components = _components;
@@ -55,7 +55,7 @@ library SystemStorage {
   /**
    * @return World contract
    */
-  function world() public view returns (IWorld) {
+  function world() public view returns (IWorldCore) {
     return layout().world;
   }
 

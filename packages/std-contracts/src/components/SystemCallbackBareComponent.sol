@@ -6,7 +6,7 @@ import { LibTypes } from "solecs/LibTypes.sol";
 import { BareComponent } from "solecs/BareComponent.sol";
 
 // imports for `executeSystemCallback` helper
-import { IWorld } from "solecs/interfaces/IWorld.sol";
+import { IWorldCore } from "solecs/interfaces/IWorldCore.sol";
 import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { getAddressById } from "solecs/utils.sol";
 
@@ -42,7 +42,7 @@ contract SystemCallbackBareComponent is BareComponent {
  * @dev Queries `world.systems()` for `cb.systemId`,
  * then executes the system with `cb.args`.
  */
-function executeSystemCallback(IWorld world, SystemCallback memory cb) returns (bytes memory) {
+function executeSystemCallback(IWorldCore world, SystemCallback memory cb) returns (bytes memory) {
   ISystem system = ISystem(getAddressById(world.systems(), cb.systemId));
   return system.execute(cb.args);
 }

@@ -4,12 +4,12 @@ pragma solidity >=0.8.0;
 import { DSTest } from "ds-test/test.sol";
 import { World } from "../World.sol";
 import { IUint256Component } from "../interfaces/IUint256Component.sol";
-import { IWorld } from "../interfaces/IWorld.sol";
+import { IWorldCore } from "../interfaces/IWorldCore.sol";
 import { SystemStorage } from "../SystemStorage.sol";
 import { System } from "../System.sol";
 
 contract SampleSystem is System {
-  constructor(IWorld _world, address _components) System(_world, _components) {}
+  constructor(IWorldCore _world, address _components) System(_world, _components) {}
 
   function execute(bytes memory arguments) public returns (bytes memory) {}
 
@@ -18,7 +18,7 @@ contract SampleSystem is System {
   }
 
   // Note: These two getter functions are necessary to access the vars of SampleSystem
-  function getWorld() public view returns (IWorld) {
+  function getWorld() public view returns (IWorldCore) {
     return world;
   }
 

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
-import { IWorld } from "./interfaces/IWorld.sol";
+import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { BareComponent } from "./BareComponent.sol";
 
 import { Set } from "./Set.sol";

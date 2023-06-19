@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DSTest } from "ds-test/test.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
+import { IWorldCore } from "solecs/interfaces/IWorldCore.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { Vm } from "forge-std/Vm.sol";
 import { getAddressById } from "solecs/utils.sol";

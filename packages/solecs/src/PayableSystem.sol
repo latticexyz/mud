@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IPayableSystem } from "./interfaces/IPayableSystem.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
-import { IWorld } from "./interfaces/IWorld.sol";
+import { IWorldCore } from "./interfaces/IWorldCore.sol";
 
 import { Ownable } from "./Ownable.sol";
 
@@ -12,9 +12,9 @@ import { Ownable } from "./Ownable.sol";
  */
 abstract contract PayableSystem is IPayableSystem, Ownable {
   IUint256Component components;
-  IWorld world;
+  IWorldCore world;
 
-  constructor(IWorld _world, address _components) {
+  constructor(IWorldCore _world, address _components) {
     components = _components == address(0) ? _world.components() : IUint256Component(_components);
     world = _world;
   }

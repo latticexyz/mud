@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Set } from "./Set.sol";
 import { LibQuery } from "./LibQuery.sol";
-import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
+import { IWorldCore, WorldQueryFragment } from "./interfaces/IWorldCore.sol";
 import { QueryFragment } from "./interfaces/Query.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { Uint256Component } from "./components/Uint256Component.sol";
@@ -26,7 +26,7 @@ import { RegisterSystem, ID as registerSystemId, RegisterType } from "./systems/
  * Anyone can register new components and systems in the world (via the `registerComponent` and `registerSystem` methods).
  * Clients decide which components and systems they care about.
  */
-contract World is IWorld {
+contract World is IWorldCore {
   Set private entities = new Set();
   Uint256Component private _components;
   Uint256Component private _systems;

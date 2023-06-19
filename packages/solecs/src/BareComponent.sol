@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IWorld } from "./interfaces/IWorld.sol";
+import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IComponent } from "./interfaces/IComponent.sol";
 
 import { Set } from "./Set.sol";
@@ -40,7 +40,7 @@ abstract contract BareComponent is IComponent, OwnableWritable {
    */
   function registerWorld(address _world) public onlyOwner {
     world = _world;
-    IWorld(world).registerComponent(address(this), id);
+    IWorldCore(world).registerComponent(address(this), id);
   }
 
   /**
@@ -109,7 +109,7 @@ abstract contract BareComponent is IComponent, OwnableWritable {
     entityToValue[entity] = value;
 
     // Emit global event
-    IWorld(world).registerComponentValueSet(entity, value);
+    IWorldCore(world).registerComponentValueSet(entity, value);
   }
 
   /**
@@ -124,6 +124,6 @@ abstract contract BareComponent is IComponent, OwnableWritable {
     delete entityToValue[entity];
 
     // Emit global event
-    IWorld(world).registerComponentValueRemoved(entity);
+    IWorldCore(world).registerComponentValueRemoved(entity);
   }
 }
