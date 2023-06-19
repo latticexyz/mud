@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { StoreMetadata, StoreMetadataData } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract StoreMetadataTest is Test, StoreReadWithStubs {
+contract StoreMetadataTest is Test, GasReporter, StoreReadWithStubs {
   function testSetAndGet() public {
     bytes32 tableId = "1";
     string memory tableName = "firstTable";
@@ -15,11 +16,13 @@ contract StoreMetadataTest is Test, StoreReadWithStubs {
     fieldNames[0] = "firstField";
     fieldNames[1] = "secondField";
 
-    // !gasreport set record in StoreMetadataTable
+    startGasReport("set record in StoreMetadataTable");
     StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) });
+    endGasReport();
 
-    // !gasreport get record from StoreMetadataTable
+    startGasReport("get record from StoreMetadataTable");
     StoreMetadataData memory metadata = StoreMetadata.get(tableId);
+    endGasReport();
 
     assertEq(metadata.tableName, tableName);
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));

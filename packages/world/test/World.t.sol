@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
@@ -129,7 +131,7 @@ contract WorldTestSystemHook is ISystemHook {
   }
 }
 
-contract WorldTest is Test {
+contract WorldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
   event HelloWorld();
@@ -194,8 +196,9 @@ contract WorldTest is Test {
   }
 
   function testRegisterNamespace() public {
-    // !gasreport Register a new namespace
+    startGasReport("Register a new namespace");
     world.registerNamespace("test");
+    endGasReport();
 
     // Expect the caller to be the namespace owner
     assertEq(NamespaceOwner.get(world, "test"), address(this), "caller should be namespace owner");
@@ -215,8 +218,9 @@ contract WorldTest is Test {
     bytes16 namespace = "testNamespace";
     bytes16 table = "testTable";
 
-    // !gasreport Register a new table in the namespace
+    startGasReport("Register a new table in the namespace");
     bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema);
+    endGasReport();
 
     // Expect the namespace to be created and owned by the caller
     assertEq(NamespaceOwner.get(world, namespace), address(this));
@@ -256,8 +260,9 @@ contract WorldTest is Test {
     // Register a table
     world.registerTable(namespace, name, schema, defaultKeySchema);
 
-    // !gasreport Set metadata
+    startGasReport("Set metadata");
     world.setMetadata(namespace, name, tableName, fieldNames);
+    endGasReport();
 
     // Expect the metadata to be set
     StoreMetadataData memory metadata = StoreMetadata.get(world, tableId);
@@ -364,8 +369,9 @@ contract WorldTest is Test {
     // Register a new table
     bytes32 tableId = world.registerTable("testSetRecord", "testTable", Bool.getSchema(), defaultKeySchema);
 
-    // !gasreport Write data to the table
+    startGasReport("Write data to the table");
     Bool.set(world, tableId, true);
+    endGasReport();
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
@@ -386,8 +392,9 @@ contract WorldTest is Test {
     // Register a new table
     bytes32 tableId = world.registerTable(namespace, name, Bool.getSchema(), defaultKeySchema);
 
-    // !gasreport Write data to a table field
+    startGasReport("Write data to a table field");
     world.setField(namespace, name, singletonKey, 0, abi.encodePacked(true));
+    endGasReport();
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
@@ -425,8 +432,9 @@ contract WorldTest is Test {
     dataToPush[2] = address(bytes20(keccak256("another address")));
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
-    // !gasreport Push data to the table
+    startGasReport("Push data to the table");
     world.pushToField(namespace, name, keyTuple, 0, encodedData);
+    endGasReport();
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
@@ -464,8 +472,9 @@ contract WorldTest is Test {
     world.setRecord(namespace, name, singletonKey, abi.encodePacked(true));
     assertTrue(Bool.get(world, tableId));
 
-    // !gasreport Delete record
+    startGasReport("Delete record");
     world.deleteRecord(namespace, name, singletonKey);
+    endGasReport();
 
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
@@ -679,8 +688,9 @@ contract WorldTest is Test {
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(namespace, name, system, true);
 
-    // !gasreport Register a function selector
+    startGasReport("Register a function selector");
     bytes4 functionSelector = world.registerFunctionSelector(namespace, name, "msgSender", "()");
+    endGasReport();
 
     string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
     bytes4 expectedWorldFunctionSelector = bytes4(keccak256(abi.encodePacked(expectedWorldFunctionSignature)));
@@ -719,8 +729,9 @@ contract WorldTest is Test {
     vm.prank(address(world));
     world.registerRootFunctionSelector(namespace, name, "smth", "smth");
 
-    // !gasreport Register a root function selector
+    startGasReport("Register a root function selector");
     bytes4 functionSelector = world.registerRootFunctionSelector(namespace, name, worldFunc, sysFunc);
+    endGasReport();
 
     assertEq(functionSelector, worldFunc, "wrong function selector returned");
 
@@ -751,8 +762,9 @@ contract WorldTest is Test {
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(namespace, name, system, true);
 
-    // !gasreport Register a fallback system
+    startGasReport("Register a fallback system");
     bytes4 funcSelector1 = world.registerFunctionSelector(namespace, name, "", "");
+    endGasReport();
 
     // Call the system's fallback function
     vm.expectEmit(true, true, true, true);
@@ -762,8 +774,10 @@ contract WorldTest is Test {
 
     bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
 
-    // !gasreport Register a root fallback system
+    startGasReport("Register a root fallback system");
     bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, name, worldFunc, 0);
+    endGasReport();
+
     assertEq(funcSelector2, worldFunc, "wrong function selector returned");
 
     // Call the system's fallback function

@@ -47,7 +47,7 @@
     "clean:typechain": "rimraf types",
     "dev": "tsup --watch",
     "docs": "rimraf API && hardhat docgen",
-    "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
+    "gas-report": "../cli/dist/mud.js gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "tsc --noEmit && vitest --run && forge test"
   },
@@ -62,6 +62,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@latticexyz/std-contracts": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",

@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -28,7 +29,7 @@ interface ISnapSyncSystem {
   function snapSync_system_getNumKeysInTable(bytes32 tableId) external view returns (uint256);
 }
 
-contract SnapSyncModuleTest is Test {
+contract SnapSyncModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
   IBaseWorld world;
   KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
@@ -90,8 +91,9 @@ contract SnapSyncModuleTest is Test {
 
     uint256 limit = ISnapSyncSystem(address(world)).snapSync_system_getNumKeysInTable(tableId);
 
-    // !gasreport Call snap sync on a table with 1 record
+    startGasReport("Call snap sync on a table with 1 record");
     SyncRecord[] memory records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(records.length, 1);
@@ -103,8 +105,9 @@ contract SnapSyncModuleTest is Test {
 
     limit = ISnapSyncSystem(address(world)).snapSync_system_getNumKeysInTable(tableId);
 
-    // !gasreport Call snap sync on a table with 2 records
+    startGasReport("Call snap sync on a table with 2 records");
     records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, limit, 0);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(records.length, 2);
@@ -137,8 +140,9 @@ contract SnapSyncModuleTest is Test {
 
     uint256 limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
 
-    // !gasreport Call snap sync on a table with 1 record
+    startGasReport("Call snap sync on a table with 1 record");
     SyncRecord[] memory records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(records.length, 1);
@@ -152,8 +156,9 @@ contract SnapSyncModuleTest is Test {
 
     limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
 
-    // !gasreport Call snap sync on a table with 2 records
+    startGasReport("Call snap sync on a table with 2 records");
     records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(records.length, 2);
@@ -184,8 +189,9 @@ contract SnapSyncModuleTest is Test {
 
     uint256 limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
 
-    // !gasreport Call snap sync on a table with 1 record
+    startGasReport("Call snap sync on a table with 1 record");
     SyncRecord[] memory records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(records.length, 1);
@@ -199,8 +205,9 @@ contract SnapSyncModuleTest is Test {
 
     limit = syncSystem.snapSync_system_getNumKeysInTable(compositeTableId);
 
-    // !gasreport Call snap sync on a table with 2 records
+    startGasReport("Call snap sync on a table with 2 records");
     records = syncSystem.snapSync_system_getRecords(compositeTableId, limit, 0);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(records.length, 2);

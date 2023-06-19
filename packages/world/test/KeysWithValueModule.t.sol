@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -18,7 +19,7 @@ import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
 import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
 
-contract KeysWithValueModuleTest is Test {
+contract KeysWithValueModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
   IBaseWorld world;
   KeysWithValueModule keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
@@ -55,8 +56,9 @@ contract KeysWithValueModuleTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys with value module
+    startGasReport("install keys with value module");
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
+    endGasReport();
   }
 
   function testInstall() public {
@@ -64,8 +66,9 @@ contract KeysWithValueModuleTest is Test {
     // Set a value in the source table
     uint256 value = 1;
 
-    // !gasreport set a record on a table with KeysWithValueModule installed
+    startGasReport("set a record on a table with KeysWithValueModule installed");
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value));
+    endGasReport();
 
     // Get the list of entities with this value from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value)));
@@ -104,8 +107,9 @@ contract KeysWithValueModuleTest is Test {
     // Change the value of the first key
     uint256 value2 = 2;
 
-    // !gasreport change a record on a table with KeysWithValueModule installed
+    startGasReport("change a record on a table with KeysWithValueModule installed");
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value2));
+    endGasReport();
 
     // Get the list of entities with value1 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -122,8 +126,9 @@ contract KeysWithValueModuleTest is Test {
     assertEq(keysWithValue[0], key1, "8");
 
     // Delete the first key
-    // !gasreport delete a record on a table with KeysWithValueModule installed
+    startGasReport("delete a record on a table with KeysWithValueModule installed");
     world.deleteRecord(namespace, sourceName, keyTuple1);
+    endGasReport();
 
     // Get the list of entities with value2 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value2)));
@@ -138,8 +143,9 @@ contract KeysWithValueModuleTest is Test {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    // !gasreport set a field on a table with KeysWithValueModule installed
+    startGasReport("set a field on a table with KeysWithValueModule installed");
     world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1));
+    endGasReport();
 
     // Get the list of entities with value1 from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -151,8 +157,9 @@ contract KeysWithValueModuleTest is Test {
     uint256 value2 = 2;
 
     // Change the value using setField
-    // !gasreport change a field on a table with KeysWithValueModule installed
+    startGasReport("change a field on a table with KeysWithValueModule installed");
     world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value2));
+    endGasReport();
 
     // Get the list of entities with value1 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -169,8 +176,9 @@ contract KeysWithValueModuleTest is Test {
   }
 
   function testGetTargetTableSelector() public {
-    // !gasreport compute the target table selector
+    startGasReport("compute the target table selector");
     bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    endGasReport();
 
     // The first 8 bytes are the module namespace
     assertEq(bytes8(targetTableSelector), MODULE_NAMESPACE);
@@ -190,8 +198,9 @@ contract KeysWithValueModuleTest is Test {
 
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value1));
 
-    // !gasreport Get list of keys with a given value
+    startGasReport("Get list of keys with a given value");
     bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);

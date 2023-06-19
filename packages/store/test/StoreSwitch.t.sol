@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
@@ -24,14 +25,15 @@ contract StoreSwitchTestStore is StoreReadWithStubs {
 }
 
 // Mock system to wrap StoreSwitch.isDelegateCall()
-contract MockSystem {
-  function isDelegateCall() public view returns (bool isDelegate) {
-    // !gasreport check if delegatecall
+contract MockSystem is GasReporter {
+  function isDelegateCall() public returns (bool isDelegate) {
+    startGasReport("check if delegatecall");
     isDelegate = StoreSwitch.isDelegateCall();
+    endGasReport();
   }
 }
 
-contract StoreSwitchTest is Test {
+contract StoreSwitchTest is Test, GasReporter {
   StoreSwitchTestStore store;
 
   function setUp() public {
