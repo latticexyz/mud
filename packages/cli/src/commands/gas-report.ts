@@ -102,6 +102,7 @@ async function runGasReport(): Promise<GasReport> {
     // Run the generated file using forge
     const child = execa("forge", ["test", "-vvv"], {
       stdio: ["inherit", "pipe", "inherit"],
+      env: { GAS_REPORTER_ENABLED: "true" },
     });
     stdout = (await child).stdout;
   } catch (error: any) {

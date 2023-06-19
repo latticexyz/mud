@@ -10,6 +10,7 @@ contract GasReporter is Test {
   string[] private __gasReportNames;
 
   function startGasReport(string memory name) internal {
+    if (!vm.envOr("GAS_REPORTER_ENABLED", false)) return;
     require(
       bytes(__currentGasReportName).length == 0,
       string.concat(
@@ -18,7 +19,7 @@ contract GasReporter is Test {
         '" is already running and only one report can be run at a time'
       )
     );
-    require(__gasReports[name] == 0, string.concat('gas report name "', name, '" already used'));
+    require(__gasReports[name] == 0, string.concat('gas report "', name, '" already used for this test'));
     __currentGasReportName = name;
     vm.pauseGasMetering();
     __currentGasReportValue = gasleft();
@@ -27,9 +28,11 @@ contract GasReporter is Test {
 
   function endGasReport() internal {
     uint256 gas = gasleft();
-    // 160 is the gas used by the GasReporter itself
-    uint256 gasUsed = __currentGasReportValue - gas - 160;
-    require(gasUsed >= 0, "negative gas used, did you forget to call startGasReport?");
+    if (!vm.envOr("GAS_REPORTER_ENABLED", false)) return;
+    // subtract 160 gas used by the GasReporter itself
+    // add 1 gas so we can later check that this is set
+    uint256 gasUsed = __currentGasReportValue - gas - 160 + 1;
+    require(gasUsed > 0, "gas report didn't use gas");
     __gasReports[__currentGasReportName] = gasUsed;
     __gasReportNames.push(__currentGasReportName);
     printGasReport(__currentGasReportName);
@@ -43,6 +46,7 @@ contract GasReporter is Test {
   }
 
   function getGasUsed(string memory name) internal view returns (uint256) {
+    require(__gasReports[name] > 0, string.concat('gas report "', name, '" not found'));
     return __gasReports[name];
   }
 
