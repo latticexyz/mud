@@ -6,6 +6,7 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
+import { KeysInTableDynamicFieldIndex } from "./KeysInTableDynamicFieldIndex.sol";
 
 /**
  * Get a list of keys in the given table.
@@ -25,22 +26,10 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
-    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the schema
-
-    if (numFields > 0) {
-      keyTuples[i][0] = KeysInTable.getItemKeyParts0(tableId, i);
-      if (numFields > 1) {
-        keyTuples[i][1] = KeysInTable.getItemKeyParts1(tableId, i);
-        if (numFields > 2) {
-          keyTuples[i][2] = KeysInTable.getItemKeyParts2(tableId, i);
-          if (numFields > 3) {
-            keyTuples[i][3] = KeysInTable.getItemKeyParts3(tableId, i);
-            if (numFields > 4) {
-              keyTuples[i][4] = KeysInTable.getItemKeyParts4(tableId, i);
-            }
-          }
-        }
-      }
+    // the length of the key tuple depends on the schema
+    keyTuples[i] = new bytes32[](numFields);
+    for (uint8 fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
+      keyTuples[i][fieldIndex] = KeysInTableDynamicFieldIndex.getItemKeyParts(fieldIndex, tableId, i);
     }
   }
 }
@@ -60,22 +49,10 @@ function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][]
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
-    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the schema
-
-    if (numFields > 0) {
-      keyTuples[i][0] = KeysInTable.getItemKeyParts0(store, tableId, i);
-      if (numFields > 1) {
-        keyTuples[i][1] = KeysInTable.getItemKeyParts1(store, tableId, i);
-        if (numFields > 2) {
-          keyTuples[i][2] = KeysInTable.getItemKeyParts2(store, tableId, i);
-          if (numFields > 3) {
-            keyTuples[i][3] = KeysInTable.getItemKeyParts3(store, tableId, i);
-            if (numFields > 4) {
-              keyTuples[i][4] = KeysInTable.getItemKeyParts4(store, tableId, i);
-            }
-          }
-        }
-      }
+    // the length of the key tuple depends on the schema
+    keyTuples[i] = new bytes32[](numFields);
+    for (uint8 fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
+      keyTuples[i][fieldIndex] = KeysInTableDynamicFieldIndex.getItemKeyParts(fieldIndex, store, tableId, i);
     }
   }
 }
