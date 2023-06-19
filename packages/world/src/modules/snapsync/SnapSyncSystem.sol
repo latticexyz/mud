@@ -6,6 +6,7 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { getKeysInTable } from "../keysintable/getKeysInTable.sol";
 import { KeysInTable, KeysInTableTableId } from "../keysintable/tables/KeysInTable.sol";
+import { KeysInTableDynamicFieldIndex } from "../keysintable/KeysInTableDynamicFieldIndex.sol";
 import { SyncRecord } from "./SyncRecord.sol";
 
 function keyToTuple(bytes32 key) pure returns (bytes32[] memory keyTuple) {}
@@ -24,20 +25,8 @@ contract SnapSyncSystem is System {
     for (uint256 i = offset; i < limit + offset; i++) {
       bytes32[] memory keyTuple = new bytes32[](numFields);
 
-      if (numFields > 0) {
-        keyTuple[0] = KeysInTable.getItemKeyParts0(tableId, i);
-        if (numFields > 1) {
-          keyTuple[1] = KeysInTable.getItemKeyParts1(tableId, i);
-          if (numFields > 2) {
-            keyTuple[2] = KeysInTable.getItemKeyParts2(tableId, i);
-            if (numFields > 3) {
-              keyTuple[3] = KeysInTable.getItemKeyParts3(tableId, i);
-              if (numFields > 4) {
-                keyTuple[4] = KeysInTable.getItemKeyParts4(tableId, i);
-              }
-            }
-          }
-        }
+      for (uint8 fieldIndex = 0; fieldIndex < numFields; fieldIndex++) {
+        keyTuple[fieldIndex] = KeysInTableDynamicFieldIndex.getItemKeyParts(fieldIndex, tableId, i);
       }
 
       bytes memory value = StoreSwitch.getRecord(tableId, keyTuple);
