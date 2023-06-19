@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/Test.sol";
-import { StoreTest } from "./StoreTest.sol";
+import { Test, console } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
@@ -18,7 +18,7 @@ contract SomeContract {
   function doSomethingWithBytes(bytes memory data) public {}
 }
 
-contract GasTest is StoreTest {
+contract GasTest is Test, GasReporter {
   SomeContract someContract = new SomeContract();
 
   function testCompareAbiEncodeVsCustom() public {

@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
 
-contract StoreTest is Test {
+contract GasReporter is Test {
   string private __currentGasReportName;
   uint256 private __currentGasReportValue = gasleft();
   mapping(string => uint256) private __gasReports;
