@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+
 import { ResourceType } from "../core/tables/ResourceType.sol";
 import { Resource } from "../../Types.sol";
 
@@ -13,6 +15,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 import { KeysInTableHook } from "./KeysInTableHook.sol";
 import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
+import { KeysInTableDynamicFieldIndex } from "./KeysInTableDynamicFieldIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -27,6 +30,8 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
 contract KeysInTableModule is IModule, WorldContext {
   using ResourceSelector for bytes32;
 
+  error KeyLengthOverflow(uint256 max, uint256 received);
+
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
   KeysInTableHook immutable hook = new KeysInTableHook();
@@ -40,6 +45,12 @@ contract KeysInTableModule is IModule, WorldContext {
     bytes32 sourceTableId = abi.decode(args, (bytes32));
 
     IBaseWorld world = IBaseWorld(_world());
+
+    // Each key part is kept in a separate table field, and the number of fields is limited
+    Schema keySchema = world.getKeySchema(sourceTableId);
+    if (keySchema.numFields() > KeysInTableDynamicFieldIndex.FIELD_COUNT) {
+      revert KeyLengthOverflow(KeysInTableDynamicFieldIndex.FIELD_COUNT, keySchema.numFields());
+    }
 
     if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables

@@ -11,15 +11,8 @@ import { KeysInTableDynamicFieldIndex } from "./KeysInTableDynamicFieldIndex.sol
  * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysInTableHook is IStoreHook {
-  error KeyLengthOverflow(uint256 max, uint256 received);
-
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
     bytes32 keysHash = keccak256(abi.encode(key));
-
-    // Each key part is kept in a separate table field, and the number of fields is limited
-    if (key.length > KeysInTableDynamicFieldIndex.FIELD_COUNT) {
-      revert KeyLengthOverflow(KeysInTableDynamicFieldIndex.FIELD_COUNT, key.length);
-    }
 
     // If the key has not yet been set in the table...
     if (!UsedKeysIndex.getHas(tableId, keysHash)) {

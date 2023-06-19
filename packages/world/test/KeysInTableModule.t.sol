@@ -13,7 +13,6 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { KeysInTableHook } from "../src/modules/keysintable/KeysInTableHook.sol";
 import { KeysInTableDynamicFieldIndex } from "../src/modules/keysintable/KeysInTableDynamicFieldIndex.sol";
 import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
@@ -371,22 +370,35 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[0][0], key1);
   }
 
-  function testKeyLengthOverflow() public {
-    _installKeysInTableModule();
-
-    uint256 keyLength = 1 + KeysInTableDynamicFieldIndex.FIELD_COUNT;
-    bytes32[] memory keyTuple = new bytes32[](keyLength);
+  // edge case tests for key lengths differ only in keyLength and whether they revert or not
+  function _registerTableWithKeySchemaOfGivenLength(uint256 keyLength) internal {
+    SchemaType[] memory schemaTypes = new SchemaType[](keyLength);
     for (uint256 i; i < keyLength; i++) {
-      keyTuple[i] = bytes32(i);
+      schemaTypes[i] = SchemaType.BYTES32;
     }
+    Schema longKeySchema = SchemaLib.encode(schemaTypes);
 
+    tableId = world.registerTable(namespace, "longKeySchema", tableSchema, longKeySchema);
+  }
+
+  function testKeyLengthMaxValid() public {
+    uint256 keyLength = KeysInTableDynamicFieldIndex.FIELD_COUNT;
+    _registerTableWithKeySchemaOfGivenLength(keyLength);
+    // the module should be installed without errors
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
+  }
+
+  function testKeyLengthOverflow() public {
+    uint256 keyLength = 1 + KeysInTableDynamicFieldIndex.FIELD_COUNT;
+    _registerTableWithKeySchemaOfGivenLength(keyLength);
+    // max key length should be checked when the module is installed, since keySchema is immutable
     vm.expectRevert(
       abi.encodeWithSelector(
-        KeysInTableHook.KeyLengthOverflow.selector,
+        KeysInTableModule.KeyLengthOverflow.selector,
         KeysInTableDynamicFieldIndex.FIELD_COUNT,
         keyLength
       )
     );
-    world.setRecord(namespace, name, keyTuple, abi.encodePacked(uint256(123)));
+    world.installRootModule(keysInTableModule, abi.encode(tableId));
   }
 }
