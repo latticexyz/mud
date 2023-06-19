@@ -7,18 +7,21 @@ import stripAnsi from "strip-ansi";
 
 /**
  * Print the gas report to the console, save it to a file and compare it to a previous gas report if provided.
- * Requires forge to be installed, and gas test files including `// !gasreport` comments, like this:
+ *
+ * Requires foundry to be installed. Inherit from GasReporter and use startGasReport/endGasReport to measure gas used.
  *
  * ```solidity
- * contract GasTest is DSTestPlus {
+ * contract MyContractTest is Test, GasReporter {
  *   function testBuffer() public pure {
- *     // !gasreport allocate a buffer
+ *     startGasReport("allocate a buffer");
  *     Buffer buffer = Buffer_.allocate(32);
+ *     endGasReport();
  *
  *     bytes32 value = keccak256("some data");
  *
- *     // !gasreport append 32 bytes to a buffer
+ *     startGasReport("append 32 bytes to a buffer");
  *     buffer.append(value);
+ *     endGasReport();
  *  }
  * }
  * ```
