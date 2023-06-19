@@ -5,15 +5,15 @@ import { Vm } from "forge-std/Vm.sol";
 import { console } from "forge-std/console.sol";
 import { World } from "solecs/World.sol";
 
-import { BoolComponent } from "../components/BoolComponent.sol";
-import { BoolBareComponent } from "../components/BoolBareComponent.sol";
-import { Uint256Component } from "../components/Uint256Component.sol";
-import { Uint256BareComponent } from "../components/Uint256BareComponent.sol";
-import { CoordComponent, Coord } from "../components/CoordComponent.sol";
-import { CoordBareComponent, Coord as BareCoord } from "../components/CoordBareComponent.sol";
+import { BoolComponent } from "../src/components/BoolComponent.sol";
+import { BoolBareComponent } from "../src/components/BoolBareComponent.sol";
+import { Uint256Component } from "../src/components/Uint256Component.sol";
+import { Uint256BareComponent } from "../src/components/Uint256BareComponent.sol";
+import { CoordComponent, Coord } from "../src/components/CoordComponent.sol";
+import { CoordBareComponent, Coord as BareCoord } from "../src/components/CoordBareComponent.sol";
 
-import { TestComponent, TestStruct } from "./TestComponent.sol";
-import { TestBareComponent, TestStructBare } from "./TestBareComponent.sol";
+import { TestComponent, TestStruct } from "../src/test/TestComponent.sol";
+import { TestBareComponent, TestStructBare } from "../src/test/TestBareComponent.sol";
 
 contract ComponentTest is DSTestPlus {
   Vm internal immutable vm = Vm(HEVM_ADDRESS);

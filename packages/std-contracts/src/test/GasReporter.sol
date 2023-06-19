@@ -27,8 +27,9 @@ contract GasReporter is Test {
 
   function endGasReport() internal {
     uint256 gas = gasleft();
-    uint256 gasUsed = __currentGasReportValue - gas;
-    require(gasUsed > 0, "no or negative gas used, did you forget to call startGasReport?");
+    // 160 is the gas used by the GasReporter itself
+    uint256 gasUsed = __currentGasReportValue - gas - 160;
+    require(gasUsed >= 0, "negative gas used, did you forget to call startGasReport?");
     __gasReports[__currentGasReportName] = gasUsed;
     __gasReportNames.push(__currentGasReportName);
     printGasReport(__currentGasReportName);
@@ -39,6 +40,10 @@ contract GasReporter is Test {
     startGasReport(name);
     _;
     endGasReport();
+  }
+
+  function getGasUsed(string memory name) internal view returns (uint256) {
+    return __gasReports[name];
   }
 
   function printGasReport(string memory name) internal view {

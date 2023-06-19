@@ -6,10 +6,10 @@ import { Vm } from "forge-std/Vm.sol";
 import { console } from "forge-std/console.sol";
 
 import { World } from "solecs/World.sol";
-import { Uint256BareComponent } from "../components/Uint256BareComponent.sol";
-import { TestSystem } from "./TestSystem.sol";
-import { SystemCallbackComponent } from "../components/SystemCallbackComponent.sol";
-import { SystemCallbackBareComponent, SystemCallback, executeSystemCallback } from "../components/SystemCallbackBareComponent.sol";
+import { Uint256BareComponent } from "../src/components/Uint256BareComponent.sol";
+import { TestSystem } from "../src/test/TestSystem.sol";
+import { SystemCallbackComponent } from "../src/components/SystemCallbackComponent.sol";
+import { SystemCallbackBareComponent, SystemCallback, executeSystemCallback } from "../src/components/SystemCallbackBareComponent.sol";
 
 contract SystemCallbackComponentTest is DSTest {
   Vm internal immutable vm = Vm(HEVM_ADDRESS);
