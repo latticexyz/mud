@@ -23,7 +23,11 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
-      clean: { type: "boolean", desc: "Clear the worldgen directory before generating new interfaces" },
+      clean: {
+        type: "boolean",
+        desc: "Clear the worldgen directory before generating new interfaces (defaults to true)",
+        default: true,
+      },
     });
   },
 
