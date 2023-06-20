@@ -55,8 +55,17 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
+      - name: Clean
+        shell: bash
+        run: pnpm turbo run clean --force --concurrency 10
+
+      # Build without cache to ensure we release with the most accurate output
       - name: Build
-        uses: ./.github/actions/build
+        shell: bash
+        run: pnpm turbo run build --force --concurrency 10
+
+      - name: Outdated files, run `pnpm build` and commit them
+        uses: ./.github/actions/require-empty-diff
 
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
