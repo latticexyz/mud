@@ -12,12 +12,20 @@ contract StoreMetadataTest is Test, GasReporter, StoreReadWithStubs {
   function testSetAndGet() public {
     bytes32 tableId = "1";
     string memory tableName = "firstTable";
-    string[] memory fieldNames = new string[](2);
-    fieldNames[0] = "firstField";
-    fieldNames[1] = "secondField";
+    string[] memory valueSchemaNames = new string[](2);
+    valueSchemaNames[0] = "firstField";
+    valueSchemaNames[1] = "secondField";
+    string[] memory keySchemaNames = new string[](2);
+    keySchemaNames[0] = "firstKey";
+    keySchemaNames[1] = "secondKey";
 
     startGasReport("set record in StoreMetadataTable");
-    StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) });
+    StoreMetadata.set({
+      tableId: tableId,
+      tableName: tableName,
+      abiEncodedValueSchemaNames: abi.encode(valueSchemaNames),
+      abiEncodedKeySchemaNames: abi.encode(keySchemaNames)
+    });
     endGasReport();
 
     startGasReport("get record from StoreMetadataTable");
@@ -25,6 +33,7 @@ contract StoreMetadataTest is Test, GasReporter, StoreReadWithStubs {
     endGasReport();
 
     assertEq(metadata.tableName, tableName);
-    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+    assertEq(metadata.abiEncodedValueSchemaNames, abi.encode(valueSchemaNames));
+    assertEq(metadata.abiEncodedKeySchemaNames, abi.encode(keySchemaNames));
   }
 }

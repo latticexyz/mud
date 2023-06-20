@@ -49,10 +49,17 @@ library StoreCore {
     StoreMetadata.setMetadata();
 
     // Set metadata for the schema table
-    string[] memory fieldNames = new string[](2);
-    fieldNames[0] = "valueSchema";
-    fieldNames[1] = "keySchema";
-    StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(fieldNames));
+    string[] memory valueSchemaNames = new string[](2);
+    valueSchemaNames[0] = "valueSchema";
+    valueSchemaNames[1] = "keySchema";
+    string[] memory keySchemaNames = new string[](1);
+    keySchemaNames[0] = "tableId";
+    StoreMetadata.set(
+      StoreCoreInternal.SCHEMA_TABLE,
+      "schema",
+      abi.encode(valueSchemaNames),
+      abi.encode(keySchemaNames)
+    );
   }
 
   /************************************************************************
@@ -109,16 +116,26 @@ library StoreCore {
   /**
    * Set metadata for a given tableId
    */
-  function setMetadata(bytes32 tableId, string memory tableName, string[] memory fieldNames) internal {
+  function setMetadata(
+    bytes32 tableId,
+    string memory tableName,
+    string[] memory valueSchemaNames,
+    string[] memory keySchemaNames
+  ) internal {
     Schema schema = getSchema(tableId);
+    Schema keySchema = getKeySchema(tableId);
 
     // Verify the number of field names corresponds to the schema length
-    if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
-      revert IStoreErrors.StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
+    if (!(valueSchemaNames.length == 0 || valueSchemaNames.length == schema.numFields())) {
+      revert IStoreErrors.StoreCore_InvalidValueSchemaNamesLength(schema.numFields(), valueSchemaNames.length);
+    }
+    // Verify the number of field names corresponds to the schema length
+    if (!(keySchemaNames.length == 0 || keySchemaNames.length == keySchema.numFields())) {
+      revert IStoreErrors.StoreCore_InvalidKeySchemaNamesLength(keySchema.numFields(), keySchemaNames.length);
     }
 
     // Set metadata
-    StoreMetadata.set(tableId, tableName, abi.encode(fieldNames));
+    StoreMetadata.set(tableId, tableName, abi.encode(valueSchemaNames), abi.encode(keySchemaNames));
   }
 
   /************************************************************************

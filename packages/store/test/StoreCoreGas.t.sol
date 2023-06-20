@@ -68,15 +68,20 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
-    string[] memory fieldNames = new string[](2);
-    fieldNames[0] = "field1";
-    fieldNames[1] = "field2";
+    string[] memory valueSchemaNames = new string[](2);
+    valueSchemaNames[0] = "value1";
+    valueSchemaNames[1] = "value2";
+    string[] memory keySchemaNames = new string[](4);
+    keySchemaNames[0] = "key1";
+    keySchemaNames[1] = "key2";
+    keySchemaNames[2] = "key3";
+    keySchemaNames[3] = "key4";
 
     // Register table
     StoreCore.registerSchema(table, schema, keySchema);
 
     startGasReport("StoreCore: set table metadata");
-    StoreCore.setMetadata(table, tableName, fieldNames);
+    StoreCore.setMetadata(table, tableName, valueSchemaNames, keySchemaNames);
     endGasReport();
   }
 

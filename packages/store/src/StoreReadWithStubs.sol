@@ -24,7 +24,7 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function setMetadata(bytes32, string calldata, string[] calldata) public virtual {
+  function setMetadata(bytes32, string calldata, string[] calldata, string[] calldata) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 

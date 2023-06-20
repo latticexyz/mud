@@ -55,8 +55,13 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.registerSchema(table, schema, keySchema);
   }
 
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) public {
-    StoreCore.setMetadata(table, tableName, fieldNames);
+  function setMetadata(
+    bytes32 table,
+    string calldata tableName,
+    string[] calldata valueSchemaNames,
+    string[] calldata keySchemaNames
+  ) public {
+    StoreCore.setMetadata(table, tableName, valueSchemaNames, keySchemaNames);
   }
 
   // Register hook to be called when a record or field is set or deleted

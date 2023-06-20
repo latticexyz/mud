@@ -91,36 +91,54 @@ contract StoreCoreTest is Test, StoreMock {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
-    string[] memory fieldNames = new string[](2);
-    fieldNames[0] = "field1";
-    fieldNames[1] = "field2";
+    string[] memory valueSchemaNames = new string[](2);
+    valueSchemaNames[0] = "value1";
+    valueSchemaNames[1] = "value2";
+    string[] memory keySchemaNames = new string[](4);
+    keySchemaNames[0] = "key1";
+    keySchemaNames[1] = "key2";
+    keySchemaNames[2] = "key3";
+    keySchemaNames[3] = "key4";
 
     // Register table
     IStore(this).registerSchema(table, schema, keySchema);
 
-    IStore(this).setMetadata(table, tableName, fieldNames);
+    IStore(this).setMetadata(table, tableName, valueSchemaNames, keySchemaNames);
 
     // Get metadata for table
     StoreMetadataData memory metadata = StoreMetadata.get(table);
 
     assertEq(metadata.tableName, tableName);
-    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+    assertEq(metadata.abiEncodedValueSchemaNames, abi.encode(valueSchemaNames));
+    assertEq(metadata.abiEncodedKeySchemaNames, abi.encode(keySchemaNames));
   }
 
-  function testlSetMetadataRevert() public {
+  function testSetMetadataRevert() public {
     bytes32 table = keccak256("some.table");
     Schema schema = SchemaLib.encode(SchemaType.UINT8);
-    Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
-    string[] memory fieldNames = new string[](2);
-    fieldNames[0] = "field1";
-    fieldNames[1] = "field2";
+    string[] memory valueSchemaNames = new string[](1);
+    valueSchemaNames[0] = "value1";
+    string[] memory badValueSchemaNames = new string[](2);
+    badValueSchemaNames[0] = "value1";
+    badValueSchemaNames[1] = "value2";
+    string[] memory keySchemaNames = new string[](2);
+    keySchemaNames[0] = "key1";
+    keySchemaNames[1] = "key2";
+    string[] memory badKeySchemaNames = new string[](3);
+    badKeySchemaNames[0] = "key1";
+    badKeySchemaNames[1] = "key2";
+    badKeySchemaNames[1] = "key3";
 
     // Register table
     IStore(this).registerSchema(table, schema, keySchema);
 
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
-    IStore(this).setMetadata(table, tableName, fieldNames);
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidValueSchemaNamesLength.selector, 1, 2));
+    IStore(this).setMetadata(table, tableName, badValueSchemaNames, keySchemaNames);
+
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidKeySchemaNamesLength.selector, 2, 3));
+    IStore(this).setMetadata(table, tableName, valueSchemaNames, badKeySchemaNames);
   }
 
   function testSetAndGetDynamicDataLength() public {

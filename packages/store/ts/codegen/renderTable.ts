@@ -89,10 +89,12 @@ library ${libraryName} {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](${fields.length});
-    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
-    return ("${libraryName}", _fieldNames);
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _valueSchemaNames = new string[](${fields.length});
+    ${renderList(fields, (field, index) => `_valueSchemaNames[${index}] = "${field.name}";`)}
+    string[] memory _keySchemaNames = new string[](${keyTuple.length});
+    ${renderList(keyTuple, ({ name }, index) => `_keySchemaNames[${index}] = "${name}";`)}
+    return ("${libraryName}", _valueSchemaNames, _keySchemaNames);
   }
 
   ${renderWithStore(
@@ -109,8 +111,8 @@ library ${libraryName} {
     (_typedStore, _store, _commentSuffix) => `
     /** Set the table's metadata${_commentSuffix} */
     function setMetadata(${renderArguments([_typedStore, _typedTableId])}) internal {
-      (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-      ${_store}.setMetadata(_tableId, _tableName, _fieldNames);
+      (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+      ${_store}.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
     }
   `
   )}

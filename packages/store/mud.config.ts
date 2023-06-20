@@ -15,7 +15,8 @@ export default mudConfig({
       },
       schema: {
         tableName: "string",
-        abiEncodedFieldNames: "bytes",
+        abiEncodedValueSchemaNames: "bytes",
+        abiEncodedKeySchemaNames: "bytes",
       },
     },
     // TODO: move these test tables to a separate mud config
