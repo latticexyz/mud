@@ -22,7 +22,8 @@ interface IWorldRegistrationSystem {
     bytes16 namespace,
     bytes16 name,
     string calldata tableName,
-    string[] calldata fieldNames
+    string[] calldata valueSchemaNames,
+    string[] calldata keySchemaNames
   ) external;
 
   function registerHook(bytes16 namespace, bytes16 name, address hook) external;

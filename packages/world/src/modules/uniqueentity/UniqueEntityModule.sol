@@ -30,8 +30,9 @@ contract UniqueEntityModule is IModule, WorldContext {
     // Register table
     world.registerTable(NAMESPACE, TABLE_NAME, UniqueEntity.getSchema(), UniqueEntity.getKeySchema());
     // Set table's metadata
-    (string memory tableName, string[] memory fieldNames) = UniqueEntity.getMetadata();
-    world.setMetadata(NAMESPACE, TABLE_NAME, tableName, fieldNames);
+    (string memory tableName, string[] memory valueSchemaNames, string[] memory keySchemaNames) = UniqueEntity
+      .getMetadata();
+    world.setMetadata(NAMESPACE, TABLE_NAME, tableName, valueSchemaNames, keySchemaNames);
 
     // Register system
     world.registerSystem(NAMESPACE, SYSTEM_NAME, uniqueEntitySystem, true);

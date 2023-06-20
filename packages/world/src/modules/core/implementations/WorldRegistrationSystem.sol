@@ -78,20 +78,21 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * Register metadata (tableName, fieldNames) for the table at the given namespace and name.
+   * Register metadata (tableName, valueSchemaNames, keySchemaNames) for the table at the given namespace and name.
    * Requires the caller to own the namespace.
    */
   function setMetadata(
     bytes16 namespace,
     bytes16 name,
     string calldata tableName,
-    string[] calldata fieldNames
+    string[] calldata valueSchemaNames,
+    string[] calldata keySchemaNames
   ) public virtual {
     // Require caller to own the namespace
     bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Set the metadata
-    StoreCore.setMetadata(tableId, tableName, fieldNames);
+    StoreCore.setMetadata(tableId, tableName, valueSchemaNames, keySchemaNames);
   }
 
   /**

@@ -70,7 +70,12 @@
       },
       {
         "internalType": "string[]",
-        "name": "fieldNames",
+        "name": "valueSchemaNames",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "keySchemaNames",
         "type": "string[]"
       }
     ],
