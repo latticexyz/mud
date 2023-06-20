@@ -6,19 +6,7 @@ const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
 
 export const App = () => {
-  const {
-    storeCache,
-    // network: { worldSend },
-  } = useMUD();
-
-  async function worldSend(...args: any[]) {
-    // TODO
-    return {
-      wait: async () => {
-        // TODO
-      },
-    };
-  }
+  const { storeCache, world, publicClient } = useMUD();
 
   const counter = useRow(storeCache, {
     table: "CounterTable",
@@ -45,10 +33,10 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("increment", []);
+          const tx = await world.write.increment({ gasPrice: 0n });
 
           console.log("increment tx", tx);
-          console.log("increment result", await tx.wait());
+          console.log("increment result", await publicClient.waitForTransactionReceipt({ hash: tx }));
         }}
       >
         Increment
@@ -56,10 +44,9 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("willRevert", []);
+          const tx = await world.simulate.willRevert();
 
           console.log("willRevert tx", tx);
-          console.log("willRevert result", await tx.wait());
         }}
       >
         Fail gas estimate
@@ -68,10 +55,10 @@ export const App = () => {
         type="button"
         onClick={async () => {
           // set gas limit so we skip estimation and can test tx revert
-          const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
+          const tx = await world.write.willRevert({ gasPrice: 0n });
 
           console.log("willRevert tx", tx);
-          console.log("willRevert result", await tx.wait());
+          console.log("willRevert result", await publicClient.waitForTransactionReceipt({ hash: tx }));
         }}
       >
         Revert tx
@@ -84,7 +71,7 @@ export const App = () => {
         <form
           onSubmit={async (event) => {
             event.preventDefault();
-            await worldSend("sendMessage", [myMessage]);
+            await world.write.sendMessage([myMessage], { gasPrice: 0n });
             setMyMessage("");
           }}
         >
@@ -104,8 +91,7 @@ export const App = () => {
               key={item + index}
               type="button"
               onClick={async () => {
-                const tx = await worldSend("pickUp", [index, index]);
-                console.log("pick up tx", tx);
+                const tx = await world.write.pickUp([index, index], { gasPrice: 0n });
               }}
             >
               Pick up a {VARIANTS[index]} {item}
