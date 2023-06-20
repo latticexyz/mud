@@ -1,5 +1,5 @@
 import { createPublicClient, http, fallback, webSocket, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
-import { Schema, TableSchema, hexToTableSchema } from "@latticexyz/protocol-parser";
+import { Schema, TableSchema, decodeKeyTuple, hexToTableSchema } from "@latticexyz/protocol-parser";
 import {
   BlockEvents,
   createBlockEventsStream,
@@ -103,30 +103,42 @@ export async function setupViemNetwork() {
     registerSchemas(block);
 
     block.events.forEach((event) => {
-      const { table: tableId, key: keyTuple } = event.args;
-      const tableSchema = tableSchemas[tableId];
+      const { table: tableIdHex, key: keyTupleHex } = event.args;
+      const tableSchema = tableSchemas[tableIdHex];
       if (!tableSchema) {
         console.warn("no table schema found for event", event);
         return;
       }
-      const valueNames = tableValueNames[tableId];
+      const valueNames = tableValueNames[tableIdHex];
       if (!valueNames) {
         console.warn("no table metadata found for event", event);
         return;
       }
+      const tableId = TableId.fromHexString(tableIdHex);
+      const keyTupleValues = decodeKeyTuple(tableSchema.keySchema, keyTupleHex);
+      // TODO: add key names/metadata to registerSchema or setMetadata
+      const keyTupleNames = Object.getOwnPropertyNames(
+        mudConfig.tables[tableId.name as keyof typeof mudConfig.tables]?.keySchema ?? {}
+      );
+      const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [keyTupleNames[i] ?? i, value]));
 
-      if (event.eventName === "StoreSetRecord") {
+      if (event.eventName === "StoreSetRecord" || event.eventName === "StoreEphemeralRecord") {
         const values = tableSchema.valueSchema.decodeData(event.args.data);
         const record = Object.fromEntries(valueNames.map((name, i) => [name, values[i]]));
-
-        const table = TableId.fromHexString(tableId);
-        storeCache.set(table.namespace, table.name, keyTuple, record);
-        console.log("stored record", table.toString(), keyTuple, record);
+        storeCache.set(tableId.namespace, tableId.name, keyTuple, record);
+        console.log("stored record", tableId.toString(), keyTuple, record);
       }
 
       if (event.eventName === "StoreSetField") {
-        // const values = tableSchema.valueSchema.decodeData(event.args.data);
-        // const record = Object.fromEntries(valueNames.map((name, i) => [name, values[i]]));
+        const valueName = valueNames[event.args.schemaIndex];
+        const value = tableSchema.valueSchema.decodeField(event.args.schemaIndex, event.args.data);
+        storeCache.set(tableId.namespace, tableId.name, keyTuple, { [valueName]: value });
+        console.log("stored field", tableId.toString(), keyTuple, valueName, "=>", value);
+      }
+
+      if (event.eventName === "StoreDeleteRecord") {
+        storeCache.remove(tableId.namespace, tableId.name, keyTuple);
+        console.log("removed record", tableId.toString(), keyTuple);
       }
     });
   });

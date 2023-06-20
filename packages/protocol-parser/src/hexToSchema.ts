@@ -89,6 +89,12 @@ export function hexToSchema(data: Hex): Schema {
     return values;
   }
 
+  function decodeField(fieldIndex: number, data: Hex): StaticPrimitiveType | DynamicPrimitiveType {
+    return fieldIndex < staticFields.length
+      ? decodeStaticField(staticFields[fieldIndex], data)
+      : decodeDynamicField(dynamicFields[fieldIndex - staticFields.length], data);
+  }
+
   return {
     staticDataLength,
     staticFields,
@@ -96,5 +102,6 @@ export function hexToSchema(data: Hex): Schema {
     isEmpty: data === "0x",
     schemaData: data,
     decodeData,
+    decodeField,
   };
 }

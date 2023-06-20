@@ -8,8 +8,9 @@ export type SetupResult = Awaited<ReturnType<typeof setup>>;
 export async function setup() {
   const { storeCache } = await setupViemNetwork();
 
-  setInterval(() => console.log("inventory", storeCache.tables.Inventory.scan()), 2000);
-  // return {};
+  storeCache.tables.Inventory.subscribe((updates) => {
+    console.log("inventory updates", updates);
+  });
 
   const network = await setupNetwork();
   const components = createClientComponents(network);
