@@ -1,4 +1,4 @@
-import { useComponentValue, useRows } from "@latticexyz/react";
+import { useRow, useRows } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
 
@@ -7,15 +7,27 @@ const VARIANTS = ["yellow", "green", "red"];
 
 export const App = () => {
   const {
-    components: { CounterTable, MessageTable },
-    network: { singletonEntity, worldSend, storeCache },
+    storeCache,
+    // network: { worldSend },
   } = useMUD();
 
-  const counter = useComponentValue(CounterTable, singletonEntity);
+  async function worldSend(...args: any[]) {
+    // TODO
+    return {
+      wait: async () => {
+        // TODO
+      },
+    };
+  }
+
+  const counter = useRow(storeCache, {
+    table: "CounterTable",
+    key: { key: "0x000000000000000000000000000000000000000000000000000000000000060d" },
+  })?.value;
 
   const [myMessage, setMyMessage] = useState<string>("");
   const [messages, setMessages] = useState<string[]>([]);
-  const message = useComponentValue(MessageTable, singletonEntity);
+  const message = useRow(storeCache, { table: "MessageTable", key: {} })?.value;
 
   const inventory = useRows(storeCache, { table: "Inventory" });
 

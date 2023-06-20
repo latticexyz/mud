@@ -1,5 +1,5 @@
-import { createPublicClient, http, fallback, webSocket, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
-import { Schema, TableSchema, decodeKeyTuple, hexToTableSchema } from "@latticexyz/protocol-parser";
+import { PublicClient, Transport, Chain, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { TableSchema, decodeKeyTuple, hexToTableSchema } from "@latticexyz/protocol-parser";
 import {
   BlockEvents,
   createBlockEventsStream,
@@ -9,25 +9,18 @@ import {
 import { storeEventsAbi } from "@latticexyz/store";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
 import { TableId } from "@latticexyz/utils";
-import { getNetworkConfig } from "./getNetworkConfig";
 import mudConfig from "contracts/mud.config";
+import * as devObservables from "@latticexyz/network/dev";
 
 export const schemaTableId = new TableId("mudstore", "schema");
 export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
-export async function setupViemNetwork() {
-  const { chain } = await getNetworkConfig();
-  console.log("viem chain", chain);
-
-  const publicClient = createPublicClient({
-    chain,
-    // TODO: use fallback with websocket first once encoding issues are fixed
-    //       https://github.com/wagmi-dev/viem/issues/725
-    // transport: fallback([webSocket(), http()]),
-    transport: http(),
-    // TODO: do this per chain? maybe in the MUDChain config?
-    pollingInterval: 1000,
-  });
+export async function setupViemNetwork<TPublicClient extends PublicClient<Transport, Chain>>(
+  publicClient: TPublicClient,
+  worldAddress: Hex
+) {
+  devObservables.publicClient$.next(publicClient);
+  devObservables.worldAddress$.next(worldAddress);
 
   // Optional but recommended to avoid multiple instances of polling for blocks
   const latestBlock$ = await createBlockStream({ publicClient, blockTag: "latest" });
@@ -35,6 +28,7 @@ export async function setupViemNetwork() {
 
   const blockEvents$ = await createBlockEventsStream({
     publicClient,
+    address: worldAddress,
     events: storeEventsAbi,
     toBlock: latestBlockNumber$,
   });
@@ -127,6 +121,19 @@ export async function setupViemNetwork() {
         const record = Object.fromEntries(valueNames.map((name, i) => [name, values[i]]));
         storeCache.set(tableId.namespace, tableId.name, keyTuple, record);
         console.log("stored record", tableId.toString(), keyTuple, record);
+
+        devObservables.storeEvent$.next({
+          event: event.eventName,
+          chainId: publicClient.chain.id,
+          worldAddress,
+          blockNumber: Number(block.blockNumber),
+          logIndex: event.logIndex!,
+          transactionHash: event.transactionHash!,
+          table: tableId,
+          keyTuple: event.args.key,
+          indexedValues: Object.fromEntries(values.map((value, i) => [i, value])),
+          namedValues: record,
+        });
       }
 
       if (event.eventName === "StoreSetField") {
@@ -134,11 +141,35 @@ export async function setupViemNetwork() {
         const value = tableSchema.valueSchema.decodeField(event.args.schemaIndex, event.args.data);
         storeCache.set(tableId.namespace, tableId.name, keyTuple, { [valueName]: value });
         console.log("stored field", tableId.toString(), keyTuple, valueName, "=>", value);
+
+        devObservables.storeEvent$.next({
+          event: event.eventName,
+          chainId: publicClient.chain.id,
+          worldAddress,
+          blockNumber: Number(block.blockNumber),
+          logIndex: event.logIndex!,
+          transactionHash: event.transactionHash!,
+          table: tableId,
+          keyTuple: event.args.key,
+          indexedValues: { [event.args.schemaIndex]: value },
+          namedValues: { [valueName]: value },
+        });
       }
 
       if (event.eventName === "StoreDeleteRecord") {
         storeCache.remove(tableId.namespace, tableId.name, keyTuple);
         console.log("removed record", tableId.toString(), keyTuple);
+
+        devObservables.storeEvent$.next({
+          event: event.eventName,
+          chainId: publicClient.chain.id,
+          worldAddress,
+          blockNumber: Number(block.blockNumber),
+          logIndex: event.logIndex!,
+          transactionHash: event.transactionHash!,
+          table: tableId,
+          keyTuple: event.args.key,
+        });
       }
     });
   });
