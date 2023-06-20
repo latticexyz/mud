@@ -144,7 +144,7 @@ importers:
         specifier: 0.31.4
         version: 0.31.4(jsdom@22.0.0)
 
-  packages/test:
+  packages/sync-test:
     devDependencies:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
