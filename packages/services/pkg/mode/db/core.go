@@ -32,7 +32,13 @@ func createGormDsn(config *config.DBConfig) string {
 
 // Creates a base DSN for use with SQLX and GORM.
 func createBaseDsn(config *config.DBConfig) string {
-	return fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable", config.Host, config.Port, config.Name)
+	baseDsn := fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable", config.Host, config.Port, config.Name)
+	if config.User != "" && config.Password != "" {
+		baseDsn = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+			config.Host, config.Port, config.User, config.Password, config.Name)
+	}
+	return baseDsn
+	// return fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable", config.Host, config.Port, config.Name)
 }
 
 // connectViaSQLX creates a connection to a PostgreSQL database using the specified DSN via SQLX.
