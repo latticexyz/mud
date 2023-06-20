@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { SliceLib } from "../../src/Slice.sol";
 
-contract DecodeSliceTest is Test {
+contract DecodeSliceTest is Test, GasReporter {
   function testToBytes32Array() public {
     bytes memory input = new bytes(64);
     input[0] = 0x01;
@@ -12,8 +13,9 @@ contract DecodeSliceTest is Test {
     input[32] = 0x03;
     input[63] = 0x04;
 
-    // !gasreport decode packed bytes32[]
+    startGasReport("decode packed bytes32[]");
     bytes32[] memory output = SliceLib.fromBytes(input).decodeArray_bytes32();
+    endGasReport();
 
     assertEq(output.length, 2);
     assertEq(uint256(output[0]), 0x0100000000000000000000000000000000000000000000000000000000000002);
@@ -37,8 +39,9 @@ contract DecodeSliceTest is Test {
     uint32 num2 = 0x05060708;
     bytes memory input = abi.encodePacked(num1, num2);
 
-    // !gasreport decode packed uint32[]
+    startGasReport("decode packed uint32[]");
     uint32[] memory arr = SliceLib.fromBytes(input).decodeArray_uint32();
+    endGasReport();
 
     assertEq(arr.length, 2);
     assertEq(arr[0], num1);

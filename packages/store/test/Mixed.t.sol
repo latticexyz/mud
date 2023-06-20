@@ -1,19 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract MixedTest is Test, StoreReadWithStubs {
+contract MixedTest is Test, GasReporter, StoreReadWithStubs {
   MixedData private testMixed;
 
   function testRegisterAndGetSchema() public {
-    // !gasreport register Mixed schema
+    startGasReport("register Mixed schema");
     Mixed.registerSchema();
+    endGasReport();
 
     Schema registeredSchema = StoreCore.getSchema(MixedTableId);
     Schema declaredSchema = Mixed.getSchema();
@@ -30,11 +32,13 @@ contract MixedTest is Test, StoreReadWithStubs {
     a32[1] = 4;
     string memory s = "some string";
 
-    // !gasreport set record in Mixed
+    startGasReport("set record in Mixed");
     Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s });
+    endGasReport();
 
-    // !gasreport get record from Mixed
+    startGasReport("get record from Mixed");
     MixedData memory mixed = Mixed.get(key);
+    endGasReport();
 
     assertEq(mixed.u32, 1);
     assertEq(mixed.u128, 2);
@@ -48,7 +52,8 @@ contract MixedTest is Test, StoreReadWithStubs {
     mixed.a32[0] = 3;
     mixed.a32[1] = 4;
 
-    // !gasreport store Mixed struct in storage (native solidity)
+    startGasReport("store Mixed struct in storage (native solidity)");
     testMixed = mixed;
+    endGasReport();
   }
 }

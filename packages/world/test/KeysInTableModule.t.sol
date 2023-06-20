@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -16,7 +17,7 @@ import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.
 import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
-contract KeysInTableModuleTest is Test {
+contract KeysInTableModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
   IBaseWorld world;
   KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
@@ -70,8 +71,9 @@ contract KeysInTableModuleTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys in table module
+    startGasReport("install keys in table module");
     world.installRootModule(keysInTableModule, abi.encode(tableId));
+    endGasReport();
     world.installRootModule(keysInTableModule, abi.encode(singletonTableId));
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
   }
@@ -117,14 +119,16 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testInstallGas() public {
+    // call fuzzed test manually to get gas report
     testInstall(val1);
   }
 
   function testInstall(uint256 value) public {
     _installKeysInTableModule();
     // Set a value in the source table
-    // !gasreport set a record on a table with keysInTableModule installed
+    startGasReport("set a record on a table with keysInTableModule installed");
     world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value));
+    endGasReport();
 
     // Get the list of keys in this target table
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
@@ -141,8 +145,9 @@ contract KeysInTableModuleTest is Test {
     keyTuple[0] = keyA;
 
     // Set a value in the source table
-    // !gasreport set a record on a table with keysInTableModule installed
+    startGasReport("set a record on a table with keysInTableModule installed (first)");
     world.setRecord(namespace, name, keyTuple, abi.encodePacked(value1));
+    endGasReport();
 
     // Get the list of keys in the first target table
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
@@ -160,8 +165,9 @@ contract KeysInTableModuleTest is Test {
     keyTuple[0] = keyB;
 
     // Set a value in the source table
-    // !gasreport set a record on a table with keysInTableModule installed
+    startGasReport("set a record on a table with keysInTableModule installed (second)");
     world.setRecord(namespace, sourceFile2, keyTuple, abi.encodePacked(value2));
+    endGasReport();
 
     // Get the list of keys in the second target table
     keysInTable = getKeysInTable(world, sourceTableId2);
@@ -172,6 +178,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testSetAndDeleteRecordHookGas() public {
+    // call fuzzed test manually to get gas report
     testSetAndDeleteRecordHook(val1, val2);
   }
 
@@ -200,8 +207,9 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[1][0], key2, "4");
 
     // Change the value of the first key
-    // !gasreport change a record on a table with keysInTableModule installed
+    startGasReport("change a record on a table with keysInTableModule installed");
     world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value2));
+    endGasReport();
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, tableId);
@@ -212,8 +220,9 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[1][0], key2, "7");
 
     // Delete the first key
-    // !gasreport delete a record on a table with keysInTableModule installed
+    startGasReport("delete a record on a table with keysInTableModule installed");
     world.deleteRecord(namespace, name, keyTuple1);
+    endGasReport();
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, tableId);
@@ -224,6 +233,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testSetAndDeleteRecordHookCompositeGas() public {
+    // call fuzzed test manually to get gas report
     testSetAndDeleteRecordHookComposite(val1, val2);
   }
 
@@ -268,8 +278,9 @@ contract KeysInTableModuleTest is Test {
     }
 
     // Change the value of the first key
-    // !gasreport change a composite record on a table with keysInTableModule installed
+    startGasReport("change a composite record on a table with keysInTableModule installed");
     world.setRecord(namespace, compositeName, keyTupleA, abi.encodePacked(value2));
+    endGasReport();
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, compositeTableId);
@@ -284,8 +295,9 @@ contract KeysInTableModuleTest is Test {
     }
 
     // Delete the first key
-    // !gasreport delete a composite record on a table with keysInTableModule installed
+    startGasReport("delete a composite record on a table with keysInTableModule installed");
     world.deleteRecord(namespace, compositeName, keyTupleA);
+    endGasReport();
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, compositeTableId);
@@ -301,8 +313,9 @@ contract KeysInTableModuleTest is Test {
     _installKeysInTableModule();
 
     // Set a value in the source table
-    // !gasreport set a field on a table with keysInTableModule installed
+    startGasReport("set a field on a table with keysInTableModule installed");
     world.setField(namespace, name, keyTuple1, 0, abi.encodePacked(value1));
+    endGasReport();
 
     // Get the list of keys in the target table
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
@@ -312,8 +325,9 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[0][0], key1);
 
     // Change the value using setField
-    // !gasreport change a field on a table with keysInTableModule installed
+    startGasReport("change a field on a table with keysInTableModule installed");
     world.setField(namespace, name, keyTuple1, 0, abi.encodePacked(value2));
+    endGasReport();
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, tableId);
@@ -329,8 +343,9 @@ contract KeysInTableModuleTest is Test {
     // Set a value in the source table
     world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value1));
 
-    // !gasreport Get list of keys in a given table
+    startGasReport("Get list of keys in a given table");
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
+    endGasReport();
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);

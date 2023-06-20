@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
 import { Hooks } from "../../src/codegen/Tables.sol";
 
-contract HooksTest is Test, StoreReadWithStubs {
+contract HooksTest is Test, GasReporter, StoreReadWithStubs {
   function testSetAndGet() public {
     // Hooks schema is already registered by StoreCore
     bytes32 key = keccak256("somekey");
@@ -13,17 +14,20 @@ contract HooksTest is Test, StoreReadWithStubs {
     address[] memory addresses = new address[](1);
     addresses[0] = address(this);
 
-    // !gasreport set field in Hooks
+    startGasReport("set field in Hooks");
     Hooks.set(key, addresses);
+    endGasReport();
 
-    // !gasreport get field from Hooks (warm)
+    startGasReport("get field from Hooks (warm)");
     address[] memory returnedAddresses = Hooks.get(key);
+    endGasReport();
 
     assertEq(returnedAddresses.length, addresses.length);
     assertEq(returnedAddresses[0], addresses[0]);
 
-    // !gasreport push field to Hooks
+    startGasReport("push field to Hooks");
     Hooks.push(key, addresses[0]);
+    endGasReport();
 
     returnedAddresses = Hooks.get(key);
 

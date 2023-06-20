@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { Storage } from "../src/Storage.sol";
 import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 
-contract StorageTest is Test {
+contract StorageTest is Test, GasReporter {
   function testStoreLoad() public {
     bytes memory data1 = abi.encodePacked(
       bytes1(0x01),
@@ -26,15 +27,17 @@ contract StorageTest is Test {
 
     // First store some data to storage at the target slot and two slots after the target slot
 
-    // !gasreport store 1 storage slot
+    startGasReport("store 1 storage slot");
     Storage.store({ storagePointer: storagePointer, data: originalDataFirstSlot });
+    endGasReport();
 
     Storage.store({ storagePointer: storagePointerTwoSlotsAfter, data: originalDataLastSlot });
 
     // Then set the target slot, partially overwriting the first and third slot, but using safeTrail and offset
 
-    // !gasreport store 34 bytes over 3 storage slots (with offset and safeTrail))
+    startGasReport("store 34 bytes over 3 storage slots (with offset and safeTrail))");
     Storage.store({ storagePointer: storagePointer, offset: 31, data: data1 });
+    endGasReport();
 
     // Assert the first slot has the correct value
     assertEq(
@@ -56,8 +59,9 @@ contract StorageTest is Test {
 
     // Assert we can load the correct partial value from storage
 
-    // !gasreport load 34 bytes over 3 storage slots (with offset and safeTrail))
+    startGasReport("load 34 bytes over 3 storage slots (with offset and safeTrail))");
     bytes memory data = Storage.load({ storagePointer: storagePointer, length: 34, offset: 31 });
+    endGasReport();
 
     assertEq(Bytes.slice1(data, 0), bytes1(0x01));
     assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));

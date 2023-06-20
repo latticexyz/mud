@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
 import { Callbacks } from "../../src/codegen/Tables.sol";
 
-contract CallbacksTest is Test, StoreReadWithStubs {
+contract CallbacksTest is Test, GasReporter, StoreReadWithStubs {
   function testSetAndGet() public {
     Callbacks.registerSchema();
     bytes32 key = keccak256("somekey");
@@ -13,17 +14,20 @@ contract CallbacksTest is Test, StoreReadWithStubs {
     bytes24[] memory callbacks = new bytes24[](1);
     callbacks[0] = bytes24(abi.encode(this.testSetAndGet));
 
-    // !gasreport set field in Callbacks
+    startGasReport("set field in Callbacks");
     Callbacks.set(key, callbacks);
+    endGasReport();
 
-    // !gasreport get field from Callbacks (warm)
+    startGasReport("get field from Callbacks (warm)");
     bytes24[] memory returnedCallbacks = Callbacks.get(key);
+    endGasReport();
 
     assertEq(returnedCallbacks.length, callbacks.length);
     assertEq(returnedCallbacks[0], callbacks[0]);
 
-    // !gasreport push field to Callbacks
+    startGasReport("push field to Callbacks");
     Callbacks.push(key, callbacks[0]);
+    endGasReport();
 
     returnedCallbacks = Callbacks.get(key);
 

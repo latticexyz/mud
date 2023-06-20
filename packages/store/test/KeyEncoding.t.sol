@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
 import { ExampleEnum } from "../src/codegen/Types.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract KeyEncodingTest is Test, StoreReadWithStubs {
+contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
   function testRegisterAndGetSchema() public {
-    // !gasreport register KeyEncoding schema
+    startGasReport("register KeyEncoding schema");
     KeyEncoding.registerSchema();
+    endGasReport();
 
     Schema registeredSchema = StoreCore.getSchema(KeyEncodingTableId);
     Schema declaredSchema = KeyEncoding.getSchema();
