@@ -24,6 +24,7 @@
   "dependencies": {
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "0.8.7",

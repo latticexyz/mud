@@ -168,6 +168,9 @@ importers:
       '@latticexyz/network':
         specifier: link:../../../../packages/network
         version: link:../../../../packages/network
+      '@latticexyz/protocol-parser':
+        specifier: link:../../../../packages/protocol-parser
+        version: link:../../../../packages/protocol-parser
       '@latticexyz/react':
         specifier: link:../../../../packages/react
         version: link:../../../../packages/react

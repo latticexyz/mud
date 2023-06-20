@@ -67,6 +67,7 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
               event,
               fromBlock,
               toBlock,
+              strict: true,
             })
           )
         )

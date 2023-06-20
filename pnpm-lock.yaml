@@ -1029,6 +1029,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
+      '@latticexyz/protocol-parser':
+        specifier: workspace:*
+        version: link:../protocol-parser
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
