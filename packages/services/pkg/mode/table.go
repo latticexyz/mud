@@ -23,17 +23,13 @@ func NewTable(
 		ID:   tableID,
 		Name: tableName,
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
-		Namespace: Namespace(chainID, worldAddress),
-
-		KeyNames:   keyNames,
-		FieldNames: fieldNames,
-
-		SolidityTypes: solidityTypes,
-		PostgresTypes: postgresTypes,
-
+		Namespace:            Namespace(chainID, worldAddress),
+		KeyNames:             keyNames,
+		FieldNames:           fieldNames,
+		SolidityTypes:        solidityTypes,
+		PostgresTypes:        postgresTypes,
 		StoreCoreKeySchema:   keySchema,
 		StoreCoreFieldSchema: fieldsSchema,
-
 		// Metadata.
 		Metadata: &TableMetadata{
 			ColumnMetadata: make(map[string]*ColumnMetadata),
@@ -51,8 +47,13 @@ func NewEmptyTable(
 		ID:   tableID,
 		Name: tableName,
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
-		Namespace: Namespace(chainID, worldAddress),
-
+		Namespace:            Namespace(chainID, worldAddress),
+		KeyNames:             []string{},
+		FieldNames:           []string{},
+		SolidityTypes:        map[string]string{},
+		PostgresTypes:        map[string]string{},
+		StoreCoreKeySchema:   nil,
+		StoreCoreFieldSchema: nil,
 		// Metadata.
 		Metadata: &TableMetadata{
 			ColumnMetadata: make(map[string]*ColumnMetadata),
@@ -124,12 +125,12 @@ func (table *Table) SetIsKey(colName string, isKey bool) {
 	table.Metadata.SetIsKey(colName, isKey)
 }
 
-func (table *Table) SetSolidityType(colName string, solidityType string) {
-	table.SolidityTypes[colName] = solidityType
+func (table *Table) SetSolidityType(colName string, schemaType storecore.SchemaType) {
+	table.SolidityTypes[colName] = schemaType.ToSolidityType()
 }
 
-func (table *Table) SetPostgresType(colName string, postgresType string) {
-	table.PostgresTypes[colName] = postgresType
+func (table *Table) SetPostgresType(colName string, schemaType storecore.SchemaType) {
+	table.PostgresTypes[colName] = schemaType.ToPostgresType()
 }
 
 func (table *Table) SetColumnFormattedName(colName string, colFormattedName string) {

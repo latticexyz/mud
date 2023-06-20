@@ -1,7 +1,7 @@
 package read
 
 import (
-	"errors"
+	"fmt"
 	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/ops/find"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
@@ -33,7 +33,6 @@ func (rl *Layer) GetAllTables(namespace string) ([]string, error) {
 	query := "SELECT tablename FROM pg_tables WHERE schemaname = '" + namespace + "'"
 	rows, err := rl.dl.Query(query)
 	if err != nil {
-		rl.logger.Error("GetAllTables(): error while executing query", zap.String("query", query), zap.Error(err))
 		return tableNames, err
 	}
 	defer rows.Close()
@@ -42,13 +41,12 @@ func (rl *Layer) GetAllTables(namespace string) ([]string, error) {
 		var tableName string
 		scanErr := rows.Scan(&tableName)
 		if scanErr != nil {
-			rl.logger.Error("GetAllTables(): error while scanning row", zap.Error(scanErr))
+			rl.logger.Error("error while scanning row", zap.Error(scanErr))
 			continue
 		}
 		tableNames = append(tableNames, tableName)
 	}
 	if iterErr := rows.Err(); iterErr != nil {
-		rl.logger.Error("GetAllTables(): error while iterating over rows", zap.Error(iterErr))
 		return tableNames, iterErr
 	}
 
@@ -76,13 +74,9 @@ func (rl *Layer) GetAllTables(namespace string) ([]string, error) {
 //     as an error object. Otherwise, nil is returned.
 func (rl *Layer) DoesRowExist(table *mode.Table, filter map[string]interface{}) (bool, error) {
 	// Query the database layer to check if the row exists.
-	exists, err := rl.dl.Exists(table.Namespace+`."`+table.Name+`"`, filter)
+	exists, err := rl.dl.Exists(table.NamespacedName(), filter)
 
 	if err != nil {
-		rl.logger.Error("DoesRowExist(): error while executing query",
-			zap.String("table", table.NamespacedName()),
-			zap.Error(err),
-		)
 		return false, err
 	}
 	return exists, nil
@@ -116,34 +110,26 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 
 	selectRowQuery, err := findBuilder.ToSQLQuery()
 	if err != nil {
-		rl.logger.Error("error while building query", zap.Error(err))
 		return nil, err
 	}
 
 	doesTableExist := rl.dl.TableExists(blockNumberTable.NamespacedName())
 	if !doesTableExist {
-		rl.logger.Error("block number table does not exist")
 		return nil, mode.ErrTableDoesNotExist
 	}
 
 	// Execute the query.
 	rows, err := rl.dl.Query(selectRowQuery)
 	if err != nil {
-		rl.logger.Error("error while executing query",
-			zap.String("query", selectRowQuery),
-			zap.Error(err),
-		)
 		return nil, err
 	}
 	defer rows.Close()
 
 	if err = rows.Err(); err != nil {
-		rl.logger.Error("error while iterating over rows", zap.Error(err))
 		return nil, err
 	}
 
 	if !rows.Next() {
-		rl.logger.Error("block number table has no rows")
 		return nil, mode.ErrTableIsEmpty
 	}
 
@@ -151,7 +137,6 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 	var blockNumberStr string
 	err = rows.Scan(&blockNumberStr)
 	if err != nil {
-		rl.logger.Error("error while scanning row", zap.Error(err))
 		return nil, err
 	}
 
@@ -159,8 +144,7 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 	blockNumberBase := 10
 	blockNumber, ok := new(big.Int).SetString(blockNumberStr, blockNumberBase)
 	if !ok {
-		rl.logger.Error("error while parsing block number", zap.String("block_number", blockNumberStr))
-		return nil, errors.New("error while parsing block number")
+		return nil, fmt.Errorf("error while parsing block number %s", blockNumberStr)
 	}
 
 	return blockNumber, nil
@@ -197,36 +181,30 @@ func (rl *Layer) GetSyncStatus(chainID string) (bool, error) {
 
 	selectRowQuery, err := findBuilder.ToSQLQuery()
 	if err != nil {
-		rl.logger.Error("error while building query", zap.Error(err))
 		return false, err
 	}
 
 	// Execute the query.
 	rows, err := rl.dl.Query(selectRowQuery)
 	if err != nil {
-		rl.logger.Error("error while executing query", zap.String("query", selectRowQuery), zap.Error(err))
 		return false, err
 	}
 	defer rows.Close()
 
 	if err = rows.Err(); err != nil {
-		rl.logger.Error("error while iterating over rows", zap.Error(err))
 		return false, err
 	}
 
 	// If there are no rows, then the sync status does not exist.
 	if !rows.Next() {
-		rl.logger.Error("sync status does not exist")
-		return false, nil
+		return false, mode.ErrTableIsEmpty
 	}
 
 	// If there is a row, then the sync status exists.
 	query, err := rl.dl.Select(syncStatusTable.NamespacedName(), map[string]interface{}{
 		"chain_id": chainID,
-	},
-	)
+	})
 	if err != nil {
-		rl.logger.Error("error while building query", zap.Error(err))
 		return false, err
 	}
 	var syncStatus SyncStatus
