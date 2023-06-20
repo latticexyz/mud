@@ -2,77 +2,8 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "start",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "end",
-        "type": "uint256"
-      }
-    ],
-    "name": "Slice_OutOfBounds",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "expected",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "received",
-        "type": "uint256"
-      }
-    ],
-    "name": "StoreCore_InvalidDataLength",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "StoreCore_NotDynamicField",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "tableIdString",
-        "type": "string"
-      }
-    ],
-    "name": "StoreCore_TableNotFound",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "lowLevelData",
-        "type": "bytes"
-      }
-    ],
-    "name": "StoreSwitch_MissingOrInvalidStoreAddressFunction",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "sourceTableId",
+        "name": "table",
         "type": "bytes32"
       },
       {
@@ -82,12 +13,12 @@
       },
       {
         "internalType": "uint8",
-        "name": "",
+        "name": "schemaIndex",
         "type": "uint8"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "data",
         "type": "bytes"
       }
     ],
@@ -100,7 +31,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "sourceTableId",
+        "name": "table",
         "type": "bytes32"
       },
       {
@@ -110,12 +41,12 @@
       },
       {
         "internalType": "uint8",
-        "name": "",
+        "name": "schemaIndex",
         "type": "uint8"
       },
       {
         "internalType": "bytes",
-        "name": "",
+        "name": "data",
         "type": "bytes"
       }
     ],
@@ -128,7 +59,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "sourceTableId",
+        "name": "table",
         "type": "bytes32"
       },
       {
@@ -146,7 +77,7 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "sourceTableId",
+        "name": "table",
         "type": "bytes32"
       },
       {

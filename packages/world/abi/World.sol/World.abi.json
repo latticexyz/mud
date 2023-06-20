@@ -211,6 +211,17 @@
   {
     "inputs": [
       {
+        "internalType": "bytes",
+        "name": "lowLevelData",
+        "type": "bytes"
+      }
+    ],
+    "name": "StoreSwitch_MissingOrInvalidStoreAddressFunction",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "system",
         "type": "address"
@@ -591,244 +602,256 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "isStore",
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "byteLengthToPop",
+        "type": "uint256"
+      }
+    ],
+    "name": "popFromField",
     "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "byteLengthToPop",
+        "type": "uint256"
+      }
+    ],
+    "name": "popFromField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "dataToPush",
+        "type": "bytes"
+      }
+    ],
+    "name": "pushToField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "dataToPush",
+        "type": "bytes"
+      }
+    ],
+    "name": "pushToField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "setField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "setField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "setRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "setRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "storeAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "byteLengthToPop",
-        "type": "uint256"
-      }
-    ],
-    "name": "popFromField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "byteLengthToPop",
-        "type": "uint256"
-      }
-    ],
-    "name": "popFromField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes",
-        "name": "dataToPush",
-        "type": "bytes"
-      }
-    ],
-    "name": "pushToField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes",
-        "name": "dataToPush",
-        "type": "bytes"
-      }
-    ],
-    "name": "pushToField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "setField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "setField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "setRecord",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "setRecord",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

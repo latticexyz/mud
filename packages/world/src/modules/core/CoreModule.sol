@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Call } from "../../Call.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { WorldContext } from "../../WorldContext.sol";
+import { WorldConsumer } from "../../WorldConsumer.sol";
 import { Resource } from "../../Types.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -38,7 +38,7 @@ import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.s
  * This module is required to be delegatecalled (via `World.registerRootSystem`),
  * because it needs to install root tables, systems and function selectors.
  */
-contract CoreModule is IModule, WorldContext {
+contract CoreModule is IModule, WorldConsumer {
   // Since the CoreSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable coreSystem = address(new CoreSystem());

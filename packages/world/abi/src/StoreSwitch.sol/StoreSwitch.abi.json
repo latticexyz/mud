@@ -1,7 +1,13 @@
 [
   {
-    "inputs": [],
-    "name": "StoreSwitch_InvalidInsideConstructor",
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "lowLevelData",
+        "type": "bytes"
+      }
+    ],
+    "name": "StoreSwitch_MissingOrInvalidStoreAddressFunction",
     "type": "error"
   }
 ]

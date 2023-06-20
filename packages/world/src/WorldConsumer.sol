@@ -6,7 +6,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 // Similar to https://eips.ethereum.org/EIPS/eip-2771, but any contract can be the trusted forwarder.
 // This should only be used for contracts without own storage, like Systems.
-abstract contract WorldContext is StoreConsumer {
+abstract contract WorldConsumer is StoreConsumer {
   // Extract the trusted msg.sender value appended to the calldata
   function _msgSender() internal view returns (address sender) {
     assembly {
