@@ -1,5 +1,5 @@
 {
-  "name": "mud-integration-sandbox",
+  "name": "end-to-end-tests",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",

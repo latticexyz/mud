@@ -1,4 +1,4 @@
-name: Integration sandbox
+name: End-to-end tests
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   main:
-    name: Build/test integration sandbox
+    name: Run end-to-end tests
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -36,24 +36,24 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
 
-      - name: Install integration sandbox dependencies
-        working-directory: ./integration-sandbox
+      - name: Install end-to-end testing dependencies
+        working-directory: ./e2e
         run: pnpm install
 
       - name: Install Playwright Dependencies
         run: pnpx playwright install --with-deps chromium
 
-      - name: Clean integration sandbox
-        working-directory: ./integration-sandbox
+      - name: Clean end-to-end project
+        working-directory: ./e2e
         run: pnpm run clean
 
-      - name: Build integration sandbox
-        working-directory: ./integration-sandbox
+      - name: Build end-to-end project
+        working-directory: ./e2e
         run: pnpm run build
 
-      - name: Outdated files, run `pnpm run build` in `integration-sandbox` and commit them
+      - name: Outdated files, run `pnpm run build` in `e2e` and commit them
         uses: ./.github/actions/require-empty-diff
 
-      - name: Run tests
-        working-directory: ./integration-sandbox/packages/test
+      - name: Run sync tests
+        working-directory: ./e2e/packages/sync-test
         run: pnpm test
