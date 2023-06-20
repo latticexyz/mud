@@ -38,11 +38,13 @@ library Systems {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](2);
-    _fieldNames[0] = "system";
-    _fieldNames[1] = "publicAccess";
-    return ("Systems", _fieldNames);
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _valueSchemaNames = new string[](2);
+    _valueSchemaNames[0] = "system";
+    _valueSchemaNames[1] = "publicAccess";
+    string[] memory _keySchemaNames = new string[](1);
+    _keySchemaNames[0] = "resourceSelector";
+    return ("Systems", _valueSchemaNames, _keySchemaNames);
   }
 
   /** Register the table's schema */
@@ -57,14 +59,14 @@ library Systems {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Get system */

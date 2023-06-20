@@ -49,14 +49,16 @@ library KeysInTable {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](5);
-    _fieldNames[0] = "keys0";
-    _fieldNames[1] = "keys1";
-    _fieldNames[2] = "keys2";
-    _fieldNames[3] = "keys3";
-    _fieldNames[4] = "keys4";
-    return ("KeysInTable", _fieldNames);
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _valueSchemaNames = new string[](5);
+    _valueSchemaNames[0] = "keys0";
+    _valueSchemaNames[1] = "keys1";
+    _valueSchemaNames[2] = "keys2";
+    _valueSchemaNames[3] = "keys3";
+    _valueSchemaNames[4] = "keys4";
+    string[] memory _keySchemaNames = new string[](1);
+    _keySchemaNames[0] = "sourceTable";
+    return ("KeysInTable", _valueSchemaNames, _keySchemaNames);
   }
 
   /** Register the table's schema */
@@ -71,14 +73,14 @@ library KeysInTable {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Get keys0 */

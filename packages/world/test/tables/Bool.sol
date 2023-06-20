@@ -33,10 +33,12 @@ library Bool {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "value";
-    return ("Bool", _fieldNames);
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _valueSchemaNames = new string[](1);
+    _valueSchemaNames[0] = "value";
+    string[] memory _keySchemaNames = new string[](0);
+
+    return ("Bool", _valueSchemaNames, _keySchemaNames);
   }
 
   /** Register the table's schema */
@@ -51,14 +53,14 @@ library Bool {
 
   /** Set the table's metadata */
   function setMetadata(bytes32 _tableId) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store, bytes32 _tableId) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Get value */

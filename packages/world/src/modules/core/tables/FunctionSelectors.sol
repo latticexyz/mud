@@ -39,12 +39,14 @@ library FunctionSelectors {
   }
 
   /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](3);
-    _fieldNames[0] = "namespace";
-    _fieldNames[1] = "name";
-    _fieldNames[2] = "systemFunctionSelector";
-    return ("FunctionSelectors", _fieldNames);
+  function getMetadata() internal pure returns (string memory, string[] memory, string[] memory) {
+    string[] memory _valueSchemaNames = new string[](3);
+    _valueSchemaNames[0] = "namespace";
+    _valueSchemaNames[1] = "name";
+    _valueSchemaNames[2] = "systemFunctionSelector";
+    string[] memory _keySchemaNames = new string[](1);
+    _keySchemaNames[0] = "functionSelector";
+    return ("FunctionSelectors", _valueSchemaNames, _keySchemaNames);
   }
 
   /** Register the table's schema */
@@ -59,14 +61,14 @@ library FunctionSelectors {
 
   /** Set the table's metadata */
   function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+    (string memory _tableName, string[] memory _valueSchemaNames, string[] memory _keySchemaNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _valueSchemaNames, _keySchemaNames);
   }
 
   /** Get namespace */

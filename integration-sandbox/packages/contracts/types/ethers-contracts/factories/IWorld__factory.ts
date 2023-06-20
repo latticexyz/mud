@@ -134,7 +134,23 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidFieldNamesLength",
+    name: "StoreCore_InvalidKeySchemaNamesLength",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidValueSchemaNamesLength",
     type: "error",
   },
   {
@@ -1282,7 +1298,12 @@ const _abi = [
       },
       {
         internalType: "string[]",
-        name: "fieldNames",
+        name: "valueSchemaNames",
+        type: "string[]",
+      },
+      {
+        internalType: "string[]",
+        name: "keySchemaNames",
         type: "string[]",
       },
     ],
