@@ -4,7 +4,17 @@ pragma solidity >=0.8.0;
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
-interface IStoreRead {
+interface IStoreConsumer {
+  // TODO: benchmark this vs. using a known storage slot to determine the Store address
+  // (see https://github.com/latticexyz/mud/issues/444)
+  /**
+   * Returns the Store address used by this consumer (like Hooks, Store itself, World Systems, or tests/scripts)
+   * for StoreSwitch to determine how to interact with the Store.
+   */
+  function storeAddress(address msgSender) external view returns (address storeAddress);
+}
+
+interface IStoreRead is IStoreConsumer {
   function getSchema(bytes32 table) external view returns (Schema schema);
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);
@@ -35,11 +45,6 @@ interface IStoreRead {
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
-
-  // If this function exists on the contract, it is a store
-  // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
-  // (see https://github.com/latticexyz/mud/issues/444)
-  function isStore() external view;
 }
 
 interface IStoreWrite {
@@ -104,7 +109,7 @@ interface IStoreRegistration {
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
-interface IStoreHook {
+interface IStoreHook is IStoreConsumer {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;
 
   // Split onSetField into pre and post to simplify the implementation of hooks

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreRead, IStoreHook } from "./IStore.sol";
+import { IStoreRead } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -61,5 +61,7 @@ contract StoreRead is IStoreRead {
     return StoreCore.getFieldSlice(tableId, key, schemaIndex, schema, start, end);
   }
 
-  function isStore() public view {}
+  function storeAddress(address) public view returns (address) {
+    return address(this);
+  }
 }

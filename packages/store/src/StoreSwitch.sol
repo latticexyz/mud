@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook } from "./IStore.sol";
+import { IStore, IStoreHook, IStoreConsumer } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -9,13 +9,16 @@ import { Schema } from "./Schema.sol";
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
  */
 library StoreSwitch {
-  error StoreSwitch_InvalidInsideConstructor();
+  error StoreSwitch_MissingOrInvalidStoreAddressFunction(bytes lowLevelData);
 
   /**
    * Detect whether the current call is a delegatecall or regular call.
-   * (The isStore method doesn't return a value to save gas, but it if exists, the call will succeed.)
    */
-  function isDelegateCall() internal view returns (bool success) {
+  function isDelegateCall() internal view returns (bool) {
+    return storeAddress() == address(this);
+  }
+
+  function storeAddress() internal view returns (address) {
     // Detect calls from within a constructor
     uint256 codeSize;
     assembly {
@@ -23,18 +26,14 @@ library StoreSwitch {
     }
 
     // If the call is from within a constructor, use StoreCore to write to own storage
-    if (codeSize == 0) return true;
+    if (codeSize == 0) return address(this);
 
-    // Check whether this contract implements the IStore interface
-    try IStore(address(this)).isStore() {
-      success = true;
-    } catch {
-      success = false;
+    try IStoreConsumer(address(this)).storeAddress(msg.sender) returns (address _storeAddress) {
+      return _storeAddress;
+    } catch (bytes memory lowLevelData) {
+      // catch and rename the error, otherwise it's usually "EvmError: Revert" which is very unhelpful
+      revert StoreSwitch_MissingOrInvalidStoreAddressFunction(lowLevelData);
     }
-  }
-
-  function inferStoreAddress() internal view returns (address) {
-    return isDelegateCall() ? address(this) : msg.sender;
   }
 
   function registerStoreHook(bytes32 table, IStoreHook hook) internal {

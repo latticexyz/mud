@@ -132,6 +132,17 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "lowLevelData",
+        "type": "bytes"
+      }
+    ],
+    "name": "StoreSwitch_MissingOrInvalidStoreAddressFunction",
+    "type": "error"
+  },
+  {
     "anonymous": false,
     "inputs": [
       {
@@ -471,13 +482,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "isStore",
-    "outputs": [],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",
@@ -646,6 +650,25 @@
     "name": "setRecord",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "storeAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

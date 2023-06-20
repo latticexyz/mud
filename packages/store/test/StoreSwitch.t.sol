@@ -4,28 +4,29 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
+import { StoreConsumer } from "../src/StoreConsumer.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 
-// Mock Store to call MockSystem
+// Mock Store and its consumer
 contract StoreSwitchTestStore is StoreReadWithStubs {
-  MockSystem mockSystem = new MockSystem();
+  MockStoreConsumer mockConsumer = new MockStoreConsumer();
 
   function callViaDelegateCall() public returns (bool isDelegate) {
-    (bool success, bytes memory data) = address(mockSystem).delegatecall(abi.encodeWithSignature("isDelegateCall()"));
+    (bool success, bytes memory data) = address(mockConsumer).delegatecall(abi.encodeWithSignature("isDelegateCall()"));
     if (!success) revert("delegatecall failed");
     isDelegate = abi.decode(data, (bool));
   }
 
   function callViaCall() public returns (bool isDelegate) {
-    (bool success, bytes memory data) = address(mockSystem).call(abi.encodeWithSignature("isDelegateCall()"));
+    (bool success, bytes memory data) = address(mockConsumer).call(abi.encodeWithSignature("isDelegateCall()"));
     if (!success) revert("delegatecall failed");
     isDelegate = abi.decode(data, (bool));
   }
 }
 
-// Mock system to wrap StoreSwitch.isDelegateCall()
-contract MockSystem is GasReporter {
+// Mock consumer to wrap StoreSwitch.isDelegateCall()
+contract MockStoreConsumer is StoreConsumer, GasReporter {
   function isDelegateCall() public returns (bool isDelegate) {
     startGasReport("check if delegatecall");
     isDelegate = StoreSwitch.isDelegateCall();

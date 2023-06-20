@@ -108,11 +108,11 @@
     "outputs": [
       {
         "internalType": "address",
-        "name": "storeAddress",
+        "name": "",
         "type": "address"
       }
     ],
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "type": "function"
   }
 ]
