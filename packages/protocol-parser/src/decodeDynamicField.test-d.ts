@@ -1,6 +1,6 @@
 import { assertType, describe, it } from "vitest";
-import { decodeDynamicField } from "./decodeDynamicField";
 import { Hex } from "viem";
+import { decodeDynamicField } from "./decodeDynamicField";
 
 describe("decodeDynamicField", () => {
   it("returns a boolean array for bool[] ABI type", () => {

@@ -9,35 +9,35 @@ export interface Row {
   values: Uint8Array[];
 }
 
-/** A GenericTable is a representation of a table. */
-export interface GenericTable {
+/** TableData contains a representation of a table. */
+export interface TableData {
   cols: string[];
   rows: Row[];
   types: string[];
 }
 
 export interface QueryLayerResponse {
-  tables: { [key: string]: GenericTable };
+  tables: { [key: string]: TableData };
 }
 
 export interface QueryLayerResponse_TablesEntry {
   key: string;
-  value: GenericTable | undefined;
+  value: TableData | undefined;
 }
 
 export interface QueryLayerStateResponse {
-  chainTables: { [key: string]: GenericTable };
-  worldTables: { [key: string]: GenericTable };
+  chainTables: { [key: string]: TableData };
+  worldTables: { [key: string]: TableData };
 }
 
 export interface QueryLayerStateResponse_ChainTablesEntry {
   key: string;
-  value: GenericTable | undefined;
+  value: TableData | undefined;
 }
 
 export interface QueryLayerStateResponse_WorldTablesEntry {
   key: string;
-  value: GenericTable | undefined;
+  value: TableData | undefined;
 }
 
 export interface QueryLayerStateStreamResponse {
@@ -62,7 +62,7 @@ export interface StateRequest {
   chainTables: string[];
 }
 
-export interface SingleStateRequest {
+export interface PartialStateRequest {
   /** Namespace. */
   namespace: Namespace | undefined;
   /** Table. */
@@ -202,12 +202,12 @@ export const Row = {
   },
 };
 
-function createBaseGenericTable(): GenericTable {
+function createBaseTableData(): TableData {
   return { cols: [], rows: [], types: [] };
 }
 
-export const GenericTable = {
-  encode(message: GenericTable, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const TableData = {
+  encode(message: TableData, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.cols) {
       writer.uint32(10).string(v!);
     }
@@ -220,10 +220,10 @@ export const GenericTable = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GenericTable {
+  decode(input: _m0.Reader | Uint8Array, length?: number): TableData {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGenericTable();
+    const message = createBaseTableData();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -257,12 +257,12 @@ export const GenericTable = {
     return message;
   },
 
-  create(base?: DeepPartial<GenericTable>): GenericTable {
-    return GenericTable.fromPartial(base ?? {});
+  create(base?: DeepPartial<TableData>): TableData {
+    return TableData.fromPartial(base ?? {});
   },
 
-  fromPartial(object: DeepPartial<GenericTable>): GenericTable {
-    const message = createBaseGenericTable();
+  fromPartial(object: DeepPartial<TableData>): TableData {
+    const message = createBaseTableData();
     message.cols = object.cols?.map((e) => e) || [];
     message.rows = object.rows?.map((e) => Row.fromPartial(e)) || [];
     message.types = object.types?.map((e) => e) || [];
@@ -314,15 +314,12 @@ export const QueryLayerResponse = {
 
   fromPartial(object: DeepPartial<QueryLayerResponse>): QueryLayerResponse {
     const message = createBaseQueryLayerResponse();
-    message.tables = Object.entries(object.tables ?? {}).reduce<{ [key: string]: GenericTable }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[key] = GenericTable.fromPartial(value);
-        }
-        return acc;
-      },
-      {}
-    );
+    message.tables = Object.entries(object.tables ?? {}).reduce<{ [key: string]: TableData }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = TableData.fromPartial(value);
+      }
+      return acc;
+    }, {});
     return message;
   },
 };
@@ -337,7 +334,7 @@ export const QueryLayerResponse_TablesEntry = {
       writer.uint32(10).string(message.key);
     }
     if (message.value !== undefined) {
-      GenericTable.encode(message.value, writer.uint32(18).fork()).ldelim();
+      TableData.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -361,7 +358,7 @@ export const QueryLayerResponse_TablesEntry = {
             break;
           }
 
-          message.value = GenericTable.decode(reader, reader.uint32());
+          message.value = TableData.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) == 4 || tag == 0) {
@@ -380,7 +377,7 @@ export const QueryLayerResponse_TablesEntry = {
     const message = createBaseQueryLayerResponse_TablesEntry();
     message.key = object.key ?? "";
     message.value =
-      object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
+      object.value !== undefined && object.value !== null ? TableData.fromPartial(object.value) : undefined;
     return message;
   },
 };
@@ -442,19 +439,19 @@ export const QueryLayerStateResponse = {
 
   fromPartial(object: DeepPartial<QueryLayerStateResponse>): QueryLayerStateResponse {
     const message = createBaseQueryLayerStateResponse();
-    message.chainTables = Object.entries(object.chainTables ?? {}).reduce<{ [key: string]: GenericTable }>(
+    message.chainTables = Object.entries(object.chainTables ?? {}).reduce<{ [key: string]: TableData }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[key] = GenericTable.fromPartial(value);
+          acc[key] = TableData.fromPartial(value);
         }
         return acc;
       },
       {}
     );
-    message.worldTables = Object.entries(object.worldTables ?? {}).reduce<{ [key: string]: GenericTable }>(
+    message.worldTables = Object.entries(object.worldTables ?? {}).reduce<{ [key: string]: TableData }>(
       (acc, [key, value]) => {
         if (value !== undefined) {
-          acc[key] = GenericTable.fromPartial(value);
+          acc[key] = TableData.fromPartial(value);
         }
         return acc;
       },
@@ -474,7 +471,7 @@ export const QueryLayerStateResponse_ChainTablesEntry = {
       writer.uint32(10).string(message.key);
     }
     if (message.value !== undefined) {
-      GenericTable.encode(message.value, writer.uint32(18).fork()).ldelim();
+      TableData.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -498,7 +495,7 @@ export const QueryLayerStateResponse_ChainTablesEntry = {
             break;
           }
 
-          message.value = GenericTable.decode(reader, reader.uint32());
+          message.value = TableData.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) == 4 || tag == 0) {
@@ -517,7 +514,7 @@ export const QueryLayerStateResponse_ChainTablesEntry = {
     const message = createBaseQueryLayerStateResponse_ChainTablesEntry();
     message.key = object.key ?? "";
     message.value =
-      object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
+      object.value !== undefined && object.value !== null ? TableData.fromPartial(object.value) : undefined;
     return message;
   },
 };
@@ -532,7 +529,7 @@ export const QueryLayerStateResponse_WorldTablesEntry = {
       writer.uint32(10).string(message.key);
     }
     if (message.value !== undefined) {
-      GenericTable.encode(message.value, writer.uint32(18).fork()).ldelim();
+      TableData.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -556,7 +553,7 @@ export const QueryLayerStateResponse_WorldTablesEntry = {
             break;
           }
 
-          message.value = GenericTable.decode(reader, reader.uint32());
+          message.value = TableData.decode(reader, reader.uint32());
           continue;
       }
       if ((tag & 7) == 4 || tag == 0) {
@@ -575,7 +572,7 @@ export const QueryLayerStateResponse_WorldTablesEntry = {
     const message = createBaseQueryLayerStateResponse_WorldTablesEntry();
     message.key = object.key ?? "";
     message.value =
-      object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
+      object.value !== undefined && object.value !== null ? TableData.fromPartial(object.value) : undefined;
     return message;
   },
 };
@@ -783,12 +780,12 @@ export const StateRequest = {
   },
 };
 
-function createBaseSingleStateRequest(): SingleStateRequest {
+function createBasePartialStateRequest(): PartialStateRequest {
   return { namespace: undefined, table: "", filter: [], project: [] };
 }
 
-export const SingleStateRequest = {
-  encode(message: SingleStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const PartialStateRequest = {
+  encode(message: PartialStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.namespace !== undefined) {
       Namespace.encode(message.namespace, writer.uint32(10).fork()).ldelim();
     }
@@ -804,10 +801,10 @@ export const SingleStateRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): SingleStateRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): PartialStateRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseSingleStateRequest();
+    const message = createBasePartialStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -848,12 +845,12 @@ export const SingleStateRequest = {
     return message;
   },
 
-  create(base?: DeepPartial<SingleStateRequest>): SingleStateRequest {
-    return SingleStateRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<PartialStateRequest>): PartialStateRequest {
+    return PartialStateRequest.fromPartial(base ?? {});
   },
 
-  fromPartial(object: DeepPartial<SingleStateRequest>): SingleStateRequest {
-    const message = createBaseSingleStateRequest();
+  fromPartial(object: DeepPartial<PartialStateRequest>): PartialStateRequest {
+    const message = createBasePartialStateRequest();
     message.namespace =
       object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
     message.table = object.table ?? "";
@@ -1781,7 +1778,7 @@ export const QueryLayerDefinition = {
   name: "QueryLayer",
   fullName: "mode.QueryLayer",
   methods: {
-    /** Get state endpoint. */
+    /** Get entire state. */
     getState: {
       name: "GetState",
       requestType: StateRequest,
@@ -1790,7 +1787,7 @@ export const QueryLayerDefinition = {
       responseStream: false,
       options: {},
     },
-    /** Stream state endpoint. */
+    /** Stream entire state. */
     streamState: {
       name: "StreamState",
       requestType: StateRequest,
@@ -1799,19 +1796,19 @@ export const QueryLayerDefinition = {
       responseStream: true,
       options: {},
     },
-    /** Get state from single table endpoint. */
-    single__GetState: {
-      name: "Single__GetState",
-      requestType: SingleStateRequest,
+    /** Get state for a single table. */
+    getPartialState: {
+      name: "GetPartialState",
+      requestType: PartialStateRequest,
       requestStream: false,
       responseType: QueryLayerStateResponse,
       responseStream: false,
       options: {},
     },
-    /** Stream state from single table endpoint. */
-    single__StreamState: {
-      name: "Single__StreamState",
-      requestType: SingleStateRequest,
+    /** Stream state for a single table. */
+    streamPartialState: {
+      name: "StreamPartialState",
+      requestType: PartialStateRequest,
       requestStream: false,
       responseType: QueryLayerStateStreamResponse,
       responseStream: true,
@@ -1821,44 +1818,44 @@ export const QueryLayerDefinition = {
 } as const;
 
 export interface QueryLayerServiceImplementation<CallContextExt = {}> {
-  /** Get state endpoint. */
+  /** Get entire state. */
   getState(request: StateRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerStateResponse>>;
-  /** Stream state endpoint. */
+  /** Stream entire state. */
   streamState(
     request: StateRequest,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
-  /** Get state from single table endpoint. */
-  single__GetState(
-    request: SingleStateRequest,
+  /** Get state for a single table. */
+  getPartialState(
+    request: PartialStateRequest,
     context: CallContext & CallContextExt
   ): Promise<DeepPartial<QueryLayerStateResponse>>;
-  /** Stream state from single table endpoint. */
-  single__StreamState(
-    request: SingleStateRequest,
+  /** Stream state for a single table. */
+  streamPartialState(
+    request: PartialStateRequest,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
 }
 
 export interface QueryLayerClient<CallOptionsExt = {}> {
-  /** Get state endpoint. */
+  /** Get entire state. */
   getState(
     request: DeepPartial<StateRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<QueryLayerStateResponse>;
-  /** Stream state endpoint. */
+  /** Stream entire state. */
   streamState(
     request: DeepPartial<StateRequest>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<QueryLayerStateStreamResponse>;
-  /** Get state from single table endpoint. */
-  single__GetState(
-    request: DeepPartial<SingleStateRequest>,
+  /** Get state for a single table. */
+  getPartialState(
+    request: DeepPartial<PartialStateRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<QueryLayerStateResponse>;
-  /** Stream state from single table endpoint. */
-  single__StreamState(
-    request: DeepPartial<SingleStateRequest>,
+  /** Stream state for a single table. */
+  streamPartialState(
+    request: DeepPartial<PartialStateRequest>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<QueryLayerStateStreamResponse>;
 }

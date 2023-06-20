@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/multiplexer"
 	"time"
 
@@ -19,7 +20,19 @@ import (
 	gorm_logger "gorm.io/gorm/logger"
 )
 
-// connectToDatabase creates a connection to a PostgreSQL database using the specified DSN.
+func createSqlxDsn(config *config.DBConfig) string {
+	return fmt.Sprintf("%s replication=database", createBaseDsn(config))
+}
+
+func createGormDsn(config *config.DBConfig) string {
+	return createBaseDsn(config)
+}
+
+func createBaseDsn(config *config.DBConfig) string {
+	return fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable", config.Host, config.Port, config.Name)
+}
+
+// connectViaSQLX creates a connection to a PostgreSQL database using the specified DSN via SQLX.
 //
 // Parameters:
 //   - dsn (string): The Data Source Name to connect to the database.
@@ -27,7 +40,7 @@ import (
 // Returns:
 //   - (*sqlx.DB): A pointer to the connected database instance.
 //   - (error): An error if any occurred during the connection process.
-func connectToDatabase(dsn string) (*sqlx.DB, error) {
+func connectViaSQLX(dsn string) (*sqlx.DB, error) {
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		return nil, err
@@ -43,8 +56,7 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 	return db, nil
 }
 
-// gorm__connectToDatabase creates a connection to a PostgreSQL database using the specified DSN
-// via GORM.
+// connectViaGORM creates a connection to a PostgreSQL database using the specified DSN via GORM.
 //
 // Parameters:
 //   - dsn (string): The Data Source Name to connect to the database.
@@ -52,7 +64,7 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 // Returns:
 //   - (*gorm.DB): A pointer to the connected database instance via GORM.
 //   - (error): An error if any occurred during the connection process.
-func gorm__connectToDatabase(dsn string) (*gorm.DB, error) {
+func connectViaGORM(dsn string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
 	})
@@ -117,33 +129,34 @@ func wipeSchemas(db *sql.DB, logger *zap.Logger) error {
 // - (*DatabaseLayer): The new instance of the DatabaseLayer struct.
 func NewDatabaseLayer(
 	ctx context.Context,
-	dsn string,
-	gorm__dsn string,
-	wipe bool,
+	config *config.DBConfig,
 	logger *zap.Logger,
 ) *DatabaseLayer {
+	// Create the DSN for the database.
+	sqlxDSN := createSqlxDsn(config)
+	gormDSN := createGormDsn(config)
 
 	// Connect to the database using sqlx so we can use the sqlx package.
-	db, err := connectToDatabase(dsn)
+	sqlxDB, err := connectViaSQLX(sqlxDSN)
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
 	}
 
-	gorm__db, err := gorm__connectToDatabase(gorm__dsn)
+	gormDB, err := connectViaGORM(gormDSN)
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
 	}
 
 	// Connect to the database using pgconn so we can use the pglogrepl package.
-	conn, err := pgconn.Connect(ctx, dsn)
+	conn, err := pgconn.Connect(ctx, sqlxDSN)
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
 	}
 
 	// If running with wipe ON, wipe the database.
-	if wipe {
+	if config.Wipe {
 		logger.Info("wiping the database")
-		err = wipeSchemas(db.DB, logger)
+		err = wipeSchemas(sqlxDB.DB, logger)
 		if err != nil {
 			logger.Error("failed to wipe the database", zap.Error(err))
 		}
@@ -162,8 +175,8 @@ func NewDatabaseLayer(
 	multiplexer := multiplexer.NewMultiplexer()
 
 	return &DatabaseLayer{
-		db:          db,
-		gorm__db:    gorm__db,
+		sqlxDB:      sqlxDB,
+		gormDB:      gormDB,
 		conn:        conn,
 		walConfig:   walConfig,
 		multiplexer: multiplexer,

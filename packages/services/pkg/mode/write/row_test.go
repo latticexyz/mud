@@ -1,4 +1,4 @@
-package write
+package write_test
 
 import (
 	"latticexyz/mud/packages/services/pkg/mode"
@@ -7,8 +7,8 @@ import (
 )
 
 func TestRowFromDecodedData(t *testing.T) {
-	schema := &mode.TableSchema{
-		TableName: "test",
+	table := &mode.Table{
+		Name: "test",
 		KeyNames: []string{
 			"key1",
 		},
@@ -31,7 +31,7 @@ func TestRowFromDecodedData(t *testing.T) {
 	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{
 		storecore.STRING,
 	})
-	decodedKeyData.Add(&storecore.DataSchemaType__Struct{
+	decodedKeyData.Add(&storecore.DataWithSchemaType{
 		Data:       "0x1234",
 		SchemaType: storecore.STRING,
 	})
@@ -40,16 +40,16 @@ func TestRowFromDecodedData(t *testing.T) {
 		storecore.UINT32,
 		storecore.UINT32,
 	})
-	decodedFieldData.Add(&storecore.DataSchemaType__Struct{
+	decodedFieldData.Add(&storecore.DataWithSchemaType{
 		Data:       1,
 		SchemaType: storecore.UINT32,
 	})
-	decodedFieldData.Add(&storecore.DataSchemaType__Struct{
+	decodedFieldData.Add(&storecore.DataWithSchemaType{
 		Data:       2,
 		SchemaType: storecore.UINT32,
 	})
 
-	row := RowFromDecodedData(decodedKeyData, decodedFieldData, schema)
+	row := table.RowFromDecodedData(decodedKeyData, decodedFieldData)
 	if len(row) != 3 {
 		t.Errorf("Expected row to have 3 elements, got %d", len(row))
 	}

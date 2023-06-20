@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
+    "clean": "pnpm recursive run clean",
     "dev": "concurrently -n contracts,client -c cyan,magenta 'cd packages/contracts && pnpm run dev' 'cd packages/client-react && pnpm run dev'",
     "dev:client-phaser": "pnpm --filter 'client-phaser' run dev",
     "dev:client-react": "pnpm --filter 'client-react' run dev",

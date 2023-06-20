@@ -40,13 +40,14 @@
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
-    "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
+    "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
     "clean:js": "rimraf dist",
+    "clean:mud": "rimraf src/codegen",
     "clean:typechain": "rimraf types",
     "dev": "tsup --watch",
     "docs": "rimraf API && hardhat docgen",
-    "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
+    "gas-report": "../cli/dist/mud.js gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "tsc --noEmit && vitest --run && forge test"
   },
@@ -61,6 +62,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@latticexyz/std-contracts": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",

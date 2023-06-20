@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -15,7 +16,7 @@ import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol
 import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
-contract UniqueEntityModuleTest is Test {
+contract UniqueEntityModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
   IBaseWorld world;
@@ -28,11 +29,13 @@ contract UniqueEntityModuleTest is Test {
   }
 
   function testInstall() public {
-    // !gasreport install unique entity module
+    startGasReport("install unique entity module");
     world.installModule(uniqueEntityModule, new bytes(0));
+    endGasReport();
 
-    // !gasreport get a unique entity nonce (non-root module)
+    startGasReport("get a unique entity nonce (non-root module)");
     uint256 uniqueEntity = uint256(getUniqueEntity(world));
+    endGasReport();
 
     // Table must have the same entity set
     assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
@@ -42,11 +45,13 @@ contract UniqueEntityModuleTest is Test {
   }
 
   function testInstallRoot() public {
-    // !gasreport installRoot unique entity module
+    startGasReport("installRoot unique entity module");
     world.installRootModule(uniqueEntityModule, new bytes(0));
+    endGasReport();
 
-    // !gasreport get a unique entity nonce (root module)
+    startGasReport("get a unique entity nonce (root module)");
     uint256 uniqueEntity = uint256(getUniqueEntity(world));
+    endGasReport();
 
     // Table must have the same entity set
     assertEq(UniqueEntity.get(world, tableId), uniqueEntity);

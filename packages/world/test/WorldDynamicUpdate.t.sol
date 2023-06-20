@@ -2,6 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
@@ -22,7 +24,7 @@ import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
-contract UpdateInFieldTest is Test {
+contract UpdateInFieldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
   event HookCalled(bytes data);
@@ -87,8 +89,11 @@ contract UpdateInFieldTest is Test {
 
     // Pop 1 item
     uint256 byteLengthToPop = 20;
-    // !gasreport pop 1 address (cold)
+
+    startGasReport("pop 1 address (cold)");
     world.popFromField(namespace, name, keyTuple, 0, byteLengthToPop);
+    endGasReport();
+
     // Expect the data to be updated
     address[] memory loadedData = AddressArray.get(world, tableId, key);
     assertEq(loadedData.length, initData.length - 1);
@@ -98,8 +103,11 @@ contract UpdateInFieldTest is Test {
 
     // Pop 1 more item
     byteLengthToPop = 20;
-    // !gasreport pop 1 address (warm)
+
+    startGasReport("pop 1 address (warm)");
     world.popFromField(namespace, name, keyTuple, 0, byteLengthToPop);
+    endGasReport();
+
     // Expect the data to be updated
     loadedData = AddressArray.get(world, tableId, key);
     assertEq(loadedData.length, initData.length - 2);
@@ -142,10 +150,14 @@ contract UpdateInFieldTest is Test {
     // Update index 0
     address[] memory dataForUpdate = new address[](1);
     dataForUpdate[0] = address(bytes20(keccak256("address for update")));
-    // !gasreport updateInField 1 item (cold)
+
+    startGasReport("updateInField 1 item (cold)");
     world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
-    // !gasreport updateInField 1 item (warm)
+    endGasReport();
+
+    startGasReport("updateInField 1 item (warm)");
     world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+    endGasReport();
 
     // Expect the data to be updated
     initData[0] = dataForUpdate[0];

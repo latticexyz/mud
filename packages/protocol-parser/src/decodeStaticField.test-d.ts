@@ -1,6 +1,6 @@
 import { assertType, describe, it } from "vitest";
-import { decodeStaticField } from "./decodeStaticField";
 import { Hex } from "viem";
+import { decodeStaticField } from "./decodeStaticField";
 
 describe("decodeStaticField", () => {
   it("returns a boolean for bool ABI type", () => {

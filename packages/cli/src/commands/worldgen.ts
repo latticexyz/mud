@@ -4,9 +4,9 @@ import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { worldgen } from "@latticexyz/world/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import glob from "glob";
-import path, { basename } from "path";
+import path from "path";
 import { rmSync } from "fs";
+import { getExistingContracts } from "../utils";
 
 type Options = {
   configPath?: string;
@@ -23,7 +23,11 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
-      clean: { type: "boolean", desc: "Clear the worldgen directory before generating new interfaces" },
+      clean: {
+        type: "boolean",
+        desc: "Clear the worldgen directory before generating new interfaces (defaults to true)",
+        default: true,
+      },
     });
   },
 
@@ -36,11 +40,7 @@ const commandModule: CommandModule<Options, Options> = {
 export async function worldgenHandler(args: Options) {
   const srcDir = args.srcDir ?? (await getSrcDirectory());
 
-  // Get a list of all contract names
-  const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
-    path,
-    basename: basename(path, ".sol"),
-  }));
+  const existingContracts = getExistingContracts(srcDir);
 
   // Load the config
   const mudConfig = args.config ?? ((await loadConfig(args.configPath)) as StoreConfig & WorldConfig);

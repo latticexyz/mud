@@ -1,4 +1,4 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { SchemaType } from "@latticexyz/schema-type/deprecated";
 import { hexToArray } from "@latticexyz/utils";
 import { decodeStaticField } from "./decodeStaticField";
 

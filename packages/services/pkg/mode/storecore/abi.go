@@ -9,12 +9,12 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetABI() (storecoreAbi abi.ABI) {
-	storecoreAbi, err := abi.JSON(strings.NewReader(string(StorecoreABI)))
+func GetABI() abi.ABI {
+	storecoreAbi, err := abi.JSON(strings.NewReader(StorecoreABI))
 	if err != nil {
 		logger.GetLogger().Fatal("failed to parse the world ABI", zap.Error(err))
 	}
-	return
+	return storecoreAbi
 }
 
 // ComputeEventID returns a hash of a given event using the StoreCore ABI.

@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test, console } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 
 // TODO add tests for all schema types
-contract SchemaTest is Test {
+contract SchemaTest is Test, GasReporter {
   function testEncodeDecodeSchema() public {
     uint256 gas = gasleft();
     Schema schema = SchemaLib.encode(
@@ -20,8 +21,9 @@ contract SchemaTest is Test {
     gas = gas - gasleft();
     console.log("GAS REPORT: encode schema with 6 entries [SchemaLib.encode]: %s", gas);
 
-    // !gasreport get schema type at index
+    startGasReport("get schema type at index");
     SchemaType schemaType1 = schema.atIndex(0);
+    endGasReport();
 
     assertEq(uint8(schemaType1), uint8(SchemaType.UINT8));
     assertEq(uint8(schema.atIndex(1)), uint8(SchemaType.UINT16));
@@ -137,8 +139,9 @@ contract SchemaTest is Test {
       SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
 
-    // !gasreport get static data length from schema
+    startGasReport("get static data length from schema");
     uint256 length = schema.staticDataLength();
+    endGasReport();
 
     assertEq(length, 55);
   }
@@ -153,8 +156,9 @@ contract SchemaTest is Test {
       SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
 
-    // !gasreport get number of static fields from schema
+    startGasReport("get number of static fields from schema");
     uint256 num = schema.numStaticFields();
+    endGasReport();
 
     assertEq(num, 5);
   }
@@ -169,13 +173,14 @@ contract SchemaTest is Test {
       SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
 
-    // !gasreport get number of dynamic fields from schema
+    startGasReport("get number of dynamic fields from schema");
     uint256 num = schema.numDynamicFields();
+    endGasReport();
 
     assertEq(num, 1);
   }
 
-  function testValidate() public pure {
+  function testValidate() public {
     SchemaType[] memory schema = new SchemaType[](28);
     schema[0] = SchemaType.UINT256;
     schema[1] = SchemaType.UINT256;
@@ -207,8 +212,9 @@ contract SchemaTest is Test {
     schema[27] = SchemaType.UINT32_ARRAY;
     Schema encodedSchema = SchemaLib.encode(schema);
 
-    // !gasreport validate schema
+    startGasReport("validate schema");
     encodedSchema.validate({ allowEmpty: false });
+    endGasReport();
   }
 
   function testFailValidate() public pure {
@@ -219,8 +225,9 @@ contract SchemaTest is Test {
     SchemaType[] memory schema = new SchemaType[](0);
     Schema encodedSchema = SchemaLib.encode(schema);
 
-    // !gasreport check if schema is empty (empty schema)
+    startGasReport("check if schema is empty (empty schema)");
     bool empty = encodedSchema.isEmpty();
+    endGasReport();
 
     assertTrue(empty);
   }
@@ -228,8 +235,9 @@ contract SchemaTest is Test {
   function testIsEmptyFalse() public {
     Schema encodedSchema = SchemaLib.encode(SchemaType.UINT256);
 
-    // !gasreport check if schema is empty (non-empty schema)
+    startGasReport("check if schema is empty (non-empty schema)");
     bool empty = encodedSchema.isEmpty();
+    endGasReport();
 
     assertFalse(empty);
   }

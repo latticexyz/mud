@@ -19,8 +19,13 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Generate gas reports
-        run: pnpm gas-report
+      - name: Clean
+        shell: bash
+        run: pnpm turbo run clean --concurrency 10
 
-      - name: Outdated files, run `pnpm gas-report` and commit them
+      - name: Build
+        shell: bash
+        run: pnpm turbo run build --concurrency 10
+
+      - name: Outdated files, run `pnpm build` and commit them
         uses: ./.github/actions/require-empty-diff

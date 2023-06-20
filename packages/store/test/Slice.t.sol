@@ -1,22 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { Memory } from "../src/Memory.sol";
 import { Slice, SliceLib } from "../src/Slice.sol";
 
-contract SliceTest is Test {
+contract SliceTest is Test, GasReporter {
   function testFromBytes() public {
     bytes memory data = abi.encodePacked(bytes8(0x0102030405060708));
 
-    // !gasreport make Slice from bytes
+    startGasReport("make Slice from bytes");
     Slice slice = SliceLib.fromBytes(data);
+    endGasReport();
 
-    // !gasreport get Slice length
+    startGasReport("get Slice length");
     slice.length();
+    endGasReport();
 
-    // !gasreport get Slice pointer
+    startGasReport("get Slice pointer");
     slice.pointer();
+    endGasReport();
 
     assertEq(slice.length(), 8);
     assertEq(slice.pointer(), Memory.dataPointer(data));
@@ -36,8 +40,9 @@ contract SliceTest is Test {
     input[31] = 0x02;
     Slice slice = SliceLib.fromBytes(input);
 
-    // !gasreport Slice to bytes32
+    startGasReport("Slice to bytes32");
     bytes32 output = slice.toBytes32();
+    endGasReport();
 
     assertEq(uint256(output), 0x0100000000000000000000000000000000000000000000000000000000000002);
   }
@@ -52,28 +57,34 @@ contract SliceTest is Test {
     bytes memory data1024x1024 = new bytes(1024 * 1024);
 
     slice = SliceLib.fromBytes(data0);
-    // !gasreport Slice (0 bytes) to bytes memory
+    startGasReport("Slice (0 bytes) to bytes memory");
     bytes memory sliceData0 = slice.toBytes();
+    endGasReport();
 
     slice = SliceLib.fromBytes(data2);
-    // !gasreport Slice (2 bytes) to bytes memory
+    startGasReport("Slice (2 bytes) to bytes memory");
     bytes memory sliceData2 = slice.toBytes();
+    endGasReport();
 
     slice = SliceLib.fromBytes(data32);
-    // !gasreport Slice (32 bytes) to bytes memory
+    startGasReport("Slice (32 bytes) to bytes memory");
     bytes memory sliceData32 = slice.toBytes();
+    endGasReport();
 
     slice = SliceLib.fromBytes(data34);
-    // !gasreport Slice (34 bytes) to bytes memory
+    startGasReport("Slice (34 bytes) to bytes memory");
     bytes memory sliceData34 = slice.toBytes();
+    endGasReport();
 
     slice = SliceLib.fromBytes(data1024);
-    // !gasreport Slice (1024 bytes) to bytes memory
+    startGasReport("Slice (1024 bytes) to bytes memory");
     bytes memory sliceData1024 = slice.toBytes();
+    endGasReport();
 
     slice = SliceLib.fromBytes(data1024x1024);
-    // !gasreport Slice (1024x1024 bytes) to bytes memory
+    startGasReport("Slice (1024x1024 bytes) to bytes memory");
     bytes memory sliceData1024x1024 = slice.toBytes();
+    endGasReport();
 
     assertEq(sliceData0, data0);
     assertEq(sliceData2, data2);
@@ -88,11 +99,13 @@ contract SliceTest is Test {
     bytes memory data2 = hex"0405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f2021222324";
     bytes memory data = abi.encodePacked(hex"00", data1, data2);
 
-    // !gasreport subslice bytes (no copy) [1:4]
+    startGasReport("subslice bytes (no copy) [1:4]");
     Slice slice1 = SliceLib.getSubslice(data, 1, 1 + 3);
+    endGasReport();
 
-    // !gasreport subslice bytes (no copy) [4:37]
+    startGasReport("subslice bytes (no copy) [4:37]");
     Slice slice2 = SliceLib.getSubslice(data, 4, 4 + 33);
+    endGasReport();
 
     assertEq(slice1.length(), 3);
     assertEq(slice2.length(), 33);

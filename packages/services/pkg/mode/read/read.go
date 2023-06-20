@@ -17,8 +17,8 @@ import (
 //
 // Returns:
 // - (*ReadLayer): a pointer to a new ReadLayer object.
-func New(dl *db.DatabaseLayer, logger *zap.Logger) *ReadLayer {
-	rl := &ReadLayer{
+func New(dl *db.DatabaseLayer, logger *zap.Logger) *Layer {
+	rl := &Layer{
 		dl:     dl,
 		logger: logger,
 	}

@@ -27,11 +27,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Generate gas reports
-        run: pnpm gas-report
-
-      - name: Outdated files, run `pnpm gas-report` and commit them
-        uses: ./.github/actions/require-empty-diff
+      - name: Build
+        uses: ./.github/actions/build
 
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
@@ -58,10 +55,16 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Generate gas reports
-        run: pnpm gas-report
+      - name: Clean
+        shell: bash
+        run: pnpm turbo run clean --force --concurrency 10
 
-      - name: Outdated files, run `pnpm gas-report` and commit them
+      # Build without cache to ensure we release with the most accurate output
+      - name: Build
+        shell: bash
+        run: pnpm turbo run build --force --concurrency 10
+
+      - name: Outdated files, run `pnpm build` and commit them
         uses: ./.github/actions/require-empty-diff
 
       - name: Set deployment token

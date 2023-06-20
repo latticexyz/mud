@@ -1,5 +1,5 @@
 import { ComponentValue } from "@latticexyz/recs";
-import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type";
+import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type/deprecated";
 import { QueryLayerClient } from "@latticexyz/services/mode";
 import { arrayToHex, TableId } from "@latticexyz/utils";
 import { Contract } from "ethers";
@@ -10,7 +10,7 @@ import { keyTupleToEntityID } from "../keyTupleToEntityID";
 import { registerMetadata } from "../schemas/tableMetadata";
 import { registerSchema } from "../schemas/tableSchemas";
 import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
-import { decodeValueJSON } from "../schemas/decodeValue";
+import { decodeAbiParameters } from "viem";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
@@ -61,8 +61,12 @@ export async function syncTablesFromMode(
 
     for (const row of rows) {
       console.log(tableName, keyAbiTypes, fieldAbiTypes, row.values);
-      const keyTuple = row.values.slice(0, keyLength).map((bytes, _) => decodeValueJSON(bytes));
-      const values = row.values.slice(keyLength).map((bytes, _) => decodeValueJSON(bytes));
+      const keyTuple = row.values
+        .slice(0, keyLength)
+        .map((bytes, i) => decodeAbiParameters([{ type: keyAbiTypes[i] }], arrayToHex(bytes))[0]);
+      const values = row.values
+        .slice(keyLength)
+        .map((bytes, i) => decodeAbiParameters([{ type: fieldAbiTypes[i] }], arrayToHex(bytes))[0]);
 
       const key = keyTuple.reduce<Record<number, unknown>>((acc, curr, i) => ({ ...acc, [i]: curr }), {});
       const entity = keyTupleToEntityID(keyTuple);

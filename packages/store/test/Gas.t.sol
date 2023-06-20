@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test, console } from "forge-std/Test.sol";
+import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
@@ -17,7 +18,7 @@ contract SomeContract {
   function doSomethingWithBytes(bytes memory data) public {}
 }
 
-contract GasTest is Test {
+contract GasTest is Test, GasReporter {
   SomeContract someContract = new SomeContract();
 
   function testCompareAbiEncodeVsCustom() public {
@@ -26,25 +27,31 @@ contract GasTest is Test {
     mixed.a32[1] = 2;
     mixed.a32[2] = 3;
 
-    // !gasreport abi encode
+    startGasReport("abi encode");
     bytes memory abiEncoded = abi.encode(mixed);
+    endGasReport();
 
-    // !gasreport abi decode
+    startGasReport("abi decode");
     Mixed memory abiDecoded = abi.decode(abiEncoded, (Mixed));
+    endGasReport();
 
-    // !gasreport custom encode
+    startGasReport("custom encode");
     bytes memory customEncoded = customEncode(mixed);
+    endGasReport();
 
-    // !gasreport custom decode
+    startGasReport("custom decode");
     Mixed memory customDecoded = customDecode(customEncoded);
+    endGasReport();
 
     console.log("Length comparison: abi encode %s, custom %s", abiEncoded.length, customEncoded.length);
 
-    // !gasreport pass abi encoded bytes to external contract
+    startGasReport("pass abi encoded bytes to external contract");
     someContract.doSomethingWithBytes(abiEncoded);
+    endGasReport();
 
-    // !gasreport pass custom encoded bytes to external contract
+    startGasReport("pass custom encoded bytes to external contract");
     someContract.doSomethingWithBytes(customEncoded);
+    endGasReport();
 
     assertEq(keccak256(abi.encode(abiDecoded)), keccak256(abi.encode(customDecoded)));
   }
@@ -55,8 +62,6 @@ function customEncode(Mixed memory mixed) pure returns (bytes memory) {
 }
 
 function customDecode(bytes memory input) view returns (Mixed memory) {
-  console.log(input.length);
-
   return
     Mixed({
       u32: uint32(Bytes.slice4(input, 0)),

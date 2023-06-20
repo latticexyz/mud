@@ -1,8 +1,13 @@
 import { Hex, hexToNumber, sliceHex } from "viem";
+import {
+  StaticAbiType,
+  StaticPrimitiveType,
+  DynamicAbiType,
+  DynamicPrimitiveType,
+  staticAbiTypeToByteLength,
+  schemaAbiTypes,
+} from "@latticexyz/schema-type";
 import { Schema } from "./common";
-import { StaticAbiType, StaticPrimitiveType, staticAbiTypeToByteLength } from "./staticAbiTypes";
-import { DynamicAbiType, DynamicPrimitiveType } from "./dynamicAbiTypes";
-import { schemaAbiTypes } from "./schemaAbiTypes";
 import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";
 import { decodeStaticField } from "./decodeStaticField";
 import { hexToPackedCounter } from "./hexToPackedCounter";

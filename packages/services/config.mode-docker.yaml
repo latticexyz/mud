@@ -1,0 +1,20 @@
+---
+chains:
+  - name: "localhost"
+    id: "31337"
+    rpc:
+      http: "http://host.docker.internal:8545"
+      ws: "ws://host.docker.internal:8545"
+db:
+  name: "mode_ephemeral"
+  host: "db"
+  port: 5432
+  wipe: true
+sync:
+  enabled: true
+  startBlock: 0
+  blockBatchCount: 10000
+ql:
+  port: 50091
+metrics:
+  port: 6060
