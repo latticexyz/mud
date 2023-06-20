@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol"
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook, StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -99,7 +99,7 @@ contract PayableFallbackSystem is System {
   fallback() external payable {}
 }
 
-contract WorldTestTableHook is IStoreHook {
+contract WorldTestTableHook is StoreHook {
   event HookCalled(bytes data);
 
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
@@ -191,8 +191,8 @@ contract WorldTest is Test, GasReporter {
     assertTrue(ResourceAccess.get(world, ROOT_NAMESPACE, address(this)));
   }
 
-  function testIsStore() public view {
-    world.isStore();
+  function testStoreAddress() public {
+    assertEq(world.storeAddress(msg.sender), address(world));
   }
 
   function testRegisterNamespace() public {

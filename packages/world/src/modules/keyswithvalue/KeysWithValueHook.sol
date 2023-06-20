@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
@@ -20,7 +20,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  *
  * Note: if a table with composite keys is used, only the first key is indexed
  */
-contract KeysWithValueHook is IStoreHook {
+contract KeysWithValueHook is StoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
