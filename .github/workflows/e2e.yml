@@ -37,23 +37,23 @@ jobs:
         uses: ./.github/actions/build
 
       - name: Install integration sandbox dependencies
-        working-directory: ./e2e
+        working-directory: ./integration-sandbox
         run: pnpm install
 
       - name: Install Playwright Dependencies
         run: pnpx playwright install --with-deps chromium
 
       - name: Clean integration sandbox
-        working-directory: ./e2e
+        working-directory: ./integration-sandbox
         run: pnpm run clean
 
       - name: Build integration sandbox
-        working-directory: ./e2e
+        working-directory: ./integration-sandbox
         run: pnpm run build
 
-      - name: Outdated files, run `pnpm run build` in `e2e` and commit them
+      - name: Outdated files, run `pnpm run build` in `integration-sandbox` and commit them
         uses: ./.github/actions/require-empty-diff
 
-      - name: Run tests
-        working-directory: ./e2e/packages/test
+      - name: Run sync tests
+        working-directory: ./e2e/packages/sync-test
         run: pnpm test
