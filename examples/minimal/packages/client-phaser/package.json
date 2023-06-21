@@ -39,7 +39,7 @@
     "styled-components": "^5.3.10",
     "threads": "^1.7.0",
     "use-resize-observer": "^9.1.0",
-    "viem": "1.0.6",
+    "viem": "1.1.1",
     "vite": "^4.2.1",
     "zustand": "^4.3.8"
   },

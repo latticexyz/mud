@@ -30,7 +30,7 @@
     "abitype": "0.8.7",
     "debug": "^4.3.4",
     "rxjs": "7.5.5",
-    "viem": "1.0.6"
+    "viem": "1.1.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

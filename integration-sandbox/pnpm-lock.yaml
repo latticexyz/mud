@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -74,14 +74,14 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.8.1
+        specifier: 7.5.5
+        version: 7.5.5
       threads:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.1.3)
+        specifier: 1.1.1
+        version: 1.1.1(typescript@5.1.3)
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -1919,8 +1919,8 @@ packages:
     resolution: {integrity: sha512-APM0Gt1KoXBz0iIkkdB/kfvGOwC4UuJFeG/c+yV7wSc7q96cG/kJ0HiYCnzivD9SB53cLV1MlHFNfOuPaadYSw==}
     dev: true
 
-  /rxjs@7.8.1:
-    resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
+  /rxjs@7.5.5:
+    resolution: {integrity: sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==}
     dependencies:
       tslib: 2.5.0
     dev: false
@@ -2203,8 +2203,10 @@ packages:
     hasBin: true
     dev: true
 
-  /viem@1.0.6(typescript@5.1.3):
-    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
+  /viem@1.1.1(typescript@5.1.3):
+    resolution: {integrity: sha512-RVwDpDQYngaXRWnP3ZfmKHSis7ojN4q46mOApGRlfGrS/p56UD7/hA35zYxeq+X0dwVhCNhWuIqtV9XSsMtVfg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 1.0.0
@@ -2214,10 +2216,10 @@ packages:
       '@wagmi/chains': 1.1.0(typescript@5.1.3)
       abitype: 0.8.7(typescript@5.1.3)
       isomorphic-ws: 5.0.0(ws@8.12.0)
+      typescript: 5.1.3
       ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil
-      - typescript
       - utf-8-validate
       - zod
     dev: false
