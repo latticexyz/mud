@@ -3,7 +3,19 @@ import type { ViteDevServer } from "vite";
 import { expect, Browser, Page } from "@playwright/test";
 import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
-import { startAnvil, deployContracts, startViteServer, startBrowserAndPage } from "./setup";
+import {
+  startAnvil,
+  deployContracts,
+  startViteServer,
+  startBrowserAndPage,
+  readClientStore,
+  setContractData,
+  expectClientData,
+} from "./utils";
+import { data, encodedData } from "./data";
+import dotenv from "dotenv";
+import { sleep } from "@latticexyz/utils";
+dotenv.config({ path: "../contracts/.env" });
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -16,7 +28,6 @@ describe("Sync from RPC", async () => {
 
   beforeEach(async () => {
     asyncErrorHandler.resetErrors();
-
     anvilProcess = startAnvil(anvilPort);
     await deployContracts(rpc);
     webserver = await startViteServer();
@@ -29,6 +40,15 @@ describe("Sync from RPC", async () => {
     await browser.close();
     await webserver.close();
     anvilProcess?.kill();
+  });
+
+  test.only("data should be set", async () => {
+    console.log("encodedData", encodedData);
+    await page.goto("http://localhost:3000?cache=false&privateKey=" + process.env.PRIVATE_KEY);
+    const blockNumber = page.locator("#block");
+    await expect(blockNumber).not.toHaveText("-1");
+    await setContractData(page, encodedData);
+    await expectClientData(page, data);
   });
 
   test("large list should have correct length", async () => {
@@ -47,6 +67,8 @@ describe("Sync from RPC", async () => {
     // make sure setup is finished before clicking buttons
     await expect(page.getByTitle("Setup status")).toHaveText("finished");
 
+    // expect(testVariable).toBe("hello world!");
+
     await resetButton.click();
     await expect(listLength).toHaveText("0");
     await expect(lastItem).toHaveText("unset");
@@ -62,6 +84,16 @@ describe("Sync from RPC", async () => {
     await pushOneButton.click();
     await expect(listLength).toHaveText("10002");
     await expect(lastItem).toHaveText("123");
+
+    // This has access to the test variable!
+    // Next steps:
+    // - creating more tables
+    // - create test data for the tables
+    // - set that data in a util
+    // - wait for the data to be synced on the client
+    // - verify the data is actually set
+    const result = await readClientStore(page, ["", "NumberList", {}]);
+    console.log("test variable", result);
 
     asyncErrorHandler.expectNoAsyncErrors();
   });

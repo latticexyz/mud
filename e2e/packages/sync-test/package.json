@@ -8,11 +8,17 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
+    "@latticexyz/schema-type": "link:../../../packages/schema-type",
+    "@latticexyz/store": "link:../../../packages/store",
+    "@latticexyz/utils": "link:../../../packages/utils",
     "@playwright/test": "^1.35.0",
     "chalk": "^5.2.0",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
     "execa": "^7.1.1",
     "jsdom": "^22.0.0",
     "typescript": "^4.9.5",
+    "viem": "1.0.6",
     "vite": "^4.2.1",
     "vitest": "^0.31.0"
   }

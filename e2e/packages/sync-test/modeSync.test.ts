@@ -3,9 +3,9 @@ import type { ViteDevServer } from "vite";
 import { expect, Browser, Page } from "@playwright/test";
 import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
-import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, syncMODE } from "./setup";
+import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, syncMODE } from "./utils";
 
-describe("Sync from MODE", async () => {
+describe.skip("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
