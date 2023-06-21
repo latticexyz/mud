@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, getContract, http, isHex } from "viem";
+import { createPublicClient, createWalletClient, getContract, http, fallback, webSocket, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 // TODO: rewrite this util to work in node
 import { getBurnerWallet } from "@latticexyz/std-client";
@@ -30,10 +30,7 @@ export async function setup() {
 
   const publicClient = createPublicClient({
     chain,
-    // TODO: use fallback with websocket first once encoding issues are fixed
-    //       https://github.com/wagmi-dev/viem/issues/725
-    // transport: fallback([webSocket(), http()]),
-    transport: http(),
+    transport: fallback([webSocket(), http()]),
     // TODO: do this per chain? maybe in the MUDChain config?
     pollingInterval: 1000,
   });
@@ -42,7 +39,7 @@ export async function setup() {
   const burnerWalletClient = createWalletClient({
     account: burnerAccount,
     chain,
-    transport: http(),
+    transport: fallback([webSocket(), http()]),
     pollingInterval: 1000,
   });
 

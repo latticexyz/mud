@@ -1,12 +1,13 @@
 import { BehaviorSubject, Observable } from "rxjs";
-import type { BlockNumber, GetLogsReturnType, Hex } from "viem";
+import type { BlockNumber, Hex } from "viem";
 import type { AbiEvent } from "abitype";
 import { NonPendingLog } from "./isNonPendingLog";
+import { GetLogsReturnType } from "./getLogs";
 
 export type BlockEvents<TAbiEvent extends AbiEvent> = {
   blockNumber: BlockNumber;
   blockHash: Hex;
-  events: NonPendingLog<GetLogsReturnType<TAbiEvent, true>[number]>[];
+  events: NonPendingLog<GetLogsReturnType<TAbiEvent[]>>[];
 };
 
 export type BlockEventsStream<TAbiEvent extends AbiEvent> = Observable<BlockEvents<TAbiEvent>>;

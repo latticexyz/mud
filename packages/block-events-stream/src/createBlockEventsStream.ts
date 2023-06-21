@@ -6,6 +6,8 @@ import { bigIntMin } from "./utils";
 import { isNonPendingLog } from "./isNonPendingLog";
 import { debug } from "./debug";
 import { createBlockNumberStream } from "./createBlockNumberStream";
+import { getLogs } from "./getLogs";
+import { storeEventsAbi } from "@latticexyz/store";
 
 // TODO: add nice logging with debub lib or similar
 // TODO: make `toBlock` accept a `BehaviorSubject<BlockNumber>` or add `latestBlockStream` so we only need one listener/watcher/poller
@@ -58,20 +60,14 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
       const toBlock = bigIntMin(fromBlock + BigInt(maxBlockRange), lastBlockNumber);
       debug("fetching block range", { fromBlock, toBlock });
 
-      // TODO: convert to one `getLogs` call when viem supports multiple events or topics
-      const logs = (
-        await Promise.all(
-          events.map((event) =>
-            publicClient.getLogs({
-              address,
-              event,
-              fromBlock,
-              toBlock,
-              strict: true,
-            })
-          )
-        )
-      ).flat();
+      // TODO: swap this with viem `getLogs` call when viem supports multiple events: https://github.com/wagmi-dev/viem/pull/633
+      const logs = await getLogs({
+        publicClient,
+        address,
+        fromBlock,
+        toBlock,
+        events: storeEventsAbi,
+      });
 
       // TODO: do something other than just throwing out pending logs
       const nonPendingLogs = logs.filter(isNonPendingLog);
@@ -97,7 +93,8 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
             blockNumber,
             blockHash: blockLogs[0].blockHash,
             events: blockLogs,
-          });
+            // TODO: figure out why we need to cast this
+          } as any as BlockEvents<TAbiEvent>);
         }
       }
 
