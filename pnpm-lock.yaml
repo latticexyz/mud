@@ -880,9 +880,6 @@ importers:
       '@latticexyz/solecs':
         specifier: workspace:*
         version: link:../solecs
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
+import { MudTest } from "@latticexyz/store/src/MudTest.sol";
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
@@ -10,7 +10,7 @@ import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
 
 import { SingletonKey } from "../src/systems/IncrementSystem.sol";
 
-contract CounterTest is MudV2Test {
+contract CounterTest is MudTest {
   IWorld world;
 
   function setUp() public override {

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
-import { IStoreConsumer } from "@latticexyz/store/src/StoreConsumer.sol";
+import { Test } from "forge-std/Test.sol";
+import { IStoreConsumer } from "./StoreConsumer.sol";
 
-contract MudV2Test is Test, IStoreConsumer {
+contract MudTest is Test, IStoreConsumer {
   address worldAddress;
 
   function setUp() public virtual {

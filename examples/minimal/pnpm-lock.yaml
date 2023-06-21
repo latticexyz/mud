@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -356,9 +356,6 @@ importers:
       '@latticexyz/solecs':
         specifier: link:../../../../packages/solecs
         version: link:../../../../packages/solecs
-      '@latticexyz/std-contracts':
-        specifier: link:../../../../packages/std-contracts
-        version: link:../../../../packages/std-contracts
       '@latticexyz/store':
         specifier: link:../../../../packages/store
         version: link:../../../../packages/store
