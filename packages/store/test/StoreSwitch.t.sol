@@ -20,16 +20,16 @@ contract StoreSwitchTestStore is StoreReadWithStubs {
 
   function callViaCall() public returns (bool isDelegate) {
     (bool success, bytes memory data) = address(mockConsumer).call(abi.encodeWithSignature("isDelegateCall()"));
-    if (!success) revert("delegatecall failed");
+    if (!success) revert("call failed");
     isDelegate = abi.decode(data, (bool));
   }
 }
 
-// Mock consumer to wrap StoreSwitch.isDelegateCall()
+// Mock consumer to wrap StoreSwitch.storeAddress() comparison
 contract MockStoreConsumer is StoreConsumer, GasReporter {
   function isDelegateCall() public returns (bool isDelegate) {
     startGasReport("check if delegatecall");
-    isDelegate = StoreSwitch.isDelegateCall();
+    isDelegate = StoreSwitch.storeAddress() == address(this);
     endGasReport();
   }
 }

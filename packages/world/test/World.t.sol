@@ -72,7 +72,7 @@ contract WorldTestSystem is System {
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
     bytes32[] memory key = new bytes32[](0);
 
-    if (StoreSwitch.isDelegateCall()) {
+    if (StoreSwitch.storeAddress() == address(this)) {
       bytes32 tableId = ResourceSelector.from(namespace, name);
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
@@ -81,7 +81,7 @@ contract WorldTestSystem is System {
   }
 
   function emitCallType() public {
-    if (StoreSwitch.isDelegateCall()) {
+    if (StoreSwitch.storeAddress() == address(this)) {
       emit WorldTestSystemLog("delegatecall");
     } else {
       emit WorldTestSystemLog("call");
