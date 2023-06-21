@@ -1,7 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import type { Block, BlockNumber, BlockTag, PublicClient } from "viem";
-import { ReadonlySubject } from "./common";
 import { createBlockStream } from "./createBlockStream";
+import { ReadonlyBehaviorSubject } from "./common";
 
 // TODO: pass through viem's types, e.g. WatchBlocksParameters -> GetBlockReturnType
 // TODO: make stream closeable?
@@ -15,14 +15,14 @@ export type CreateBlockNumberStreamOptions =
   | {
       publicClient?: never;
       blockTag?: never;
-      block$: ReadonlySubject<BehaviorSubject<Block>>;
+      block$: ReadonlyBehaviorSubject<Block>;
     };
 
 export async function createBlockNumberStream({
   publicClient,
   blockTag,
   block$: initialBlock$,
-}: CreateBlockNumberStreamOptions): Promise<ReadonlySubject<BehaviorSubject<BlockNumber>>> {
+}: CreateBlockNumberStreamOptions): Promise<ReadonlyBehaviorSubject<BlockNumber>> {
   const block$ = initialBlock$ ?? (await createBlockStream({ publicClient, blockTag: blockTag as BlockTag }));
   const block = block$.value;
   if (!block.number) {

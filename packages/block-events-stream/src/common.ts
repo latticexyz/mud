@@ -1,15 +1,20 @@
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import type { BlockNumber, GetLogsReturnType, Hex } from "viem";
 import type { AbiEvent } from "abitype";
+import { NonPendingLog } from "./isNonPendingLog";
 
-// TODO: default to store abi events?
 export type BlockEvents<TAbiEvent extends AbiEvent> = {
   blockNumber: BlockNumber;
   blockHash: Hex;
-  events: GetLogsReturnType<TAbiEvent, true>; // TODO: refine to be a store event log
+  events: NonPendingLog<GetLogsReturnType<TAbiEvent, true>[number]>[];
 };
 
-// TODO: default to store abi events?
 export type BlockEventsStream<TAbiEvent extends AbiEvent> = Observable<BlockEvents<TAbiEvent>>;
 
-export type ReadonlySubject<TSubject> = Omit<TSubject, "next" | "error" | "complete">;
+export type ReadonlyBehaviorSubject<T> = Pick<BehaviorSubject<T>, "subscribe" | "value" | "getValue">;
+
+export type BlockEventsFromStream<TStream extends BlockEventsStream<AbiEvent>> = TStream extends BlockEventsStream<
+  infer TAbiEvent
+>
+  ? BlockEvents<TAbiEvent>
+  : never;

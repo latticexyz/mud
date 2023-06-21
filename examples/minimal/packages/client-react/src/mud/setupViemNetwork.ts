@@ -1,7 +1,7 @@
 import { PublicClient, Transport, Chain, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { TableSchema, decodeKeyTuple, hexToTableSchema } from "@latticexyz/protocol-parser";
 import {
-  BlockEvents,
+  BlockEventsFromStream,
   createBlockEventsStream,
   createBlockNumberStream,
   createBlockStream,
@@ -44,7 +44,7 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
 
   // TODO: emit both schema and metadata within the same event, to avoid this complexity
   // TODO: move this to protocol-parser or a separate "store events stream" lib/package
-  function registerSchemas(block: BlockEvents<(typeof storeEventsAbi)[number]>) {
+  function registerSchemas(block: BlockEventsFromStream<typeof blockEvents$>): void {
     // parse/store all schemas
     block.events.forEach((event) => {
       if (event.eventName !== "StoreSetRecord") return;
@@ -127,8 +127,8 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
           chainId: publicClient.chain.id,
           worldAddress,
           blockNumber: Number(block.blockNumber),
-          logIndex: event.logIndex!,
-          transactionHash: event.transactionHash!,
+          logIndex: event.logIndex,
+          transactionHash: event.transactionHash,
           table: tableId,
           keyTuple: event.args.key,
           indexedValues: Object.fromEntries(values.map((value, i) => [i, value])),
@@ -147,8 +147,8 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
           chainId: publicClient.chain.id,
           worldAddress,
           blockNumber: Number(block.blockNumber),
-          logIndex: event.logIndex!,
-          transactionHash: event.transactionHash!,
+          logIndex: event.logIndex,
+          transactionHash: event.transactionHash,
           table: tableId,
           keyTuple: event.args.key,
           indexedValues: { [event.args.schemaIndex]: value },
@@ -165,8 +165,8 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
           chainId: publicClient.chain.id,
           worldAddress,
           blockNumber: Number(block.blockNumber),
-          logIndex: event.logIndex!,
-          transactionHash: event.transactionHash!,
+          logIndex: event.logIndex,
+          transactionHash: event.transactionHash,
           table: tableId,
           keyTuple: event.args.key,
         });

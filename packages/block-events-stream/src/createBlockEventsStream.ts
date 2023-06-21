@@ -1,7 +1,7 @@
-import { BehaviorSubject, Subject, lastValueFrom } from "rxjs";
+import { BehaviorSubject, Subject, Subscribable } from "rxjs";
 import type { BlockNumber, Hex, PublicClient } from "viem";
 import type { AbiEvent } from "abitype";
-import { BlockEvents, BlockEventsStream, ReadonlySubject } from "./common";
+import { BlockEvents, BlockEventsStream } from "./common";
 import { bigIntMin } from "./utils";
 import { isNonPendingLog } from "./isNonPendingLog";
 import { debug } from "./debug";
@@ -14,7 +14,7 @@ import { createBlockNumberStream } from "./createBlockNumberStream";
 export type CreateBlockEventsStreamOptions<TAbiEvent extends AbiEvent> = {
   publicClient: PublicClient;
   fromBlock?: BlockNumber;
-  toBlock?: BlockNumber | ReadonlySubject<BehaviorSubject<BlockNumber>>;
+  toBlock?: BlockNumber | Subscribable<BlockNumber>;
   address?: Hex;
   events: readonly TAbiEvent[];
   maxBlockRange?: number; // defaults to 1000
@@ -122,7 +122,6 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
         return;
       }
 
-      // TODO: determine if we can/should start adjusting `lastBlock` (based on if we got a block tag for `initialToBlock`)
       stream.complete();
     } catch (error: unknown) {
       // TODO: do more specific error handling?
