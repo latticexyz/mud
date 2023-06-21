@@ -733,13 +733,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "isStore",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint32",
@@ -1375,6 +1368,25 @@ const _abi = [
     name: "staticArrayStringStruct",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "msgSender",
+        type: "address",
+      },
+    ],
+    name: "storeAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "storeAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

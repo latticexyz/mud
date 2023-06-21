@@ -30,19 +30,19 @@ contract CounterTest is MudV2Test {
   function testCounter() public {
     // Expect the counter to be 1 because it was incremented in the PostDeploy script.
     bytes32 key = SingletonKey;
-    uint32 counter = CounterTable.get(world, key);
+    uint32 counter = CounterTable.get(key);
     assertEq(counter, 1);
 
     // Expect the counter to be 2 after calling increment.
     world.increment();
-    counter = CounterTable.get(world, key);
+    counter = CounterTable.get(key);
     assertEq(counter, 2);
   }
 
   function testKeysWithValue() public {
     bytes32 key = SingletonKey;
-    uint32 counter = CounterTable.get(world, key);
-    bytes32[] memory keysWithValue = getKeysWithValue(world, CounterTableTableId, CounterTable.encode(counter));
+    uint32 counter = CounterTable.get(key);
+    bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
     assertEq(keysWithValue.length, 1);
   }
 }

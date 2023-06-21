@@ -56,7 +56,6 @@ export interface IWorldInterface extends utils.Interface {
     "increment()": FunctionFragment;
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
-    "isStore()": FunctionFragment;
     "pickUp(uint32,uint32)": FunctionFragment;
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256)": FunctionFragment;
@@ -82,6 +81,7 @@ export interface IWorldInterface extends utils.Interface {
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
     "staticArrayBytesStruct(tuple[1])": FunctionFragment;
     "staticArrayStringStruct(tuple[1])": FunctionFragment;
+    "storeAddress(address)": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "willRevert()": FunctionFragment;
@@ -107,7 +107,6 @@ export interface IWorldInterface extends utils.Interface {
       | "increment"
       | "installModule"
       | "installRootModule"
-      | "isStore"
       | "pickUp"
       | "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"
       | "popFromField(bytes32,bytes32[],uint8,uint256)"
@@ -133,6 +132,7 @@ export interface IWorldInterface extends utils.Interface {
       | "setRecord(bytes32,bytes32[],bytes)"
       | "staticArrayBytesStruct"
       | "staticArrayStringStruct"
+      | "storeAddress"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
       | "willRevert"
@@ -248,7 +248,6 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "installRootModule",
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
-  encodeFunctionData(functionFragment: "isStore", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pickUp",
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
@@ -441,6 +440,10 @@ export interface IWorldInterface extends utils.Interface {
     values: [[StringStructStruct]]
   ): string;
   encodeFunctionData(
+    functionFragment: "storeAddress",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -526,7 +529,6 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "installRootModule",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "isStore", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pickUp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)",
@@ -622,6 +624,10 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "staticArrayStringStruct",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "storeAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -847,8 +853,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    isStore(overrides?: CallOverrides): Promise<[void]>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -1029,6 +1033,11 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    storeAddress(
+      msgSender: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { storeAddress: string }>;
+
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1168,8 +1177,6 @@ export interface IWorld extends BaseContract {
     args: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
-
-  isStore(overrides?: CallOverrides): Promise<void>;
 
   pickUp(
     item: PromiseOrValue<BigNumberish>,
@@ -1351,6 +1358,11 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  storeAddress(
+    msgSender: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1488,8 +1500,6 @@ export interface IWorld extends BaseContract {
       args: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    isStore(overrides?: CallOverrides): Promise<void>;
 
     pickUp(
       item: PromiseOrValue<BigNumberish>,
@@ -1670,6 +1680,11 @@ export interface IWorld extends BaseContract {
       arg0: [StringStructStruct],
       overrides?: CallOverrides
     ): Promise<void>;
+
+    storeAddress(
+      msgSender: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
@@ -1856,8 +1871,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    isStore(overrides?: CallOverrides): Promise<BigNumber>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -2036,6 +2049,11 @@ export interface IWorld extends BaseContract {
     staticArrayStringStruct(
       arg0: [StringStructStruct],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    storeAddress(
+      msgSender: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
@@ -2179,8 +2197,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    isStore(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     pickUp(
       item: PromiseOrValue<BigNumberish>,
       itemVariant: PromiseOrValue<BigNumberish>,
@@ -2359,6 +2375,11 @@ export interface IWorld extends BaseContract {
     staticArrayStringStruct(
       arg0: [StringStructStruct],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    storeAddress(
+      msgSender: PromiseOrValue<string>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
