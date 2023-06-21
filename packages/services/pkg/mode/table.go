@@ -8,9 +8,9 @@ import (
 )
 
 func NewTable(
-	tableID string,
+	tableId string,
 	tableName string,
-	chainID string,
+	chainId string,
 	worldAddress string,
 	keyNames []string,
 	fieldNames []string,
@@ -20,10 +20,10 @@ func NewTable(
 	fieldsSchema *storecore.Schema,
 ) *Table {
 	return &Table{
-		ID:   tableID,
+		Id:   tableId,
 		Name: tableName,
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
-		Namespace:            Namespace(chainID, worldAddress),
+		Namespace:            Namespace(chainId, worldAddress),
 		KeyNames:             keyNames,
 		FieldNames:           fieldNames,
 		SolidityTypes:        solidityTypes,
@@ -38,16 +38,16 @@ func NewTable(
 }
 
 func NewEmptyTable(
-	tableID string,
+	tableId string,
 	tableName string,
-	chainID string,
+	chainId string,
 	worldAddress string,
 ) *Table {
 	return &Table{
-		ID:   tableID,
+		Id:   tableId,
 		Name: tableName,
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
-		Namespace:            Namespace(chainID, worldAddress),
+		Namespace:            Namespace(chainId, worldAddress),
 		KeyNames:             []string{},
 		FieldNames:           []string{},
 		SolidityTypes:        map[string]string{},

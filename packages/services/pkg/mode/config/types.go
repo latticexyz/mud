@@ -9,7 +9,7 @@ type RPCConfig struct {
 // ChainConfig defines the configuration for a chain.
 type ChainConfig struct {
 	Name string    `yaml:"name"`
-	ID   string    `yaml:"id"`
+	Id   string    `yaml:"id"`
 	RPC  RPCConfig `yaml:"rpc"`
 }
 

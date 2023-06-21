@@ -48,17 +48,17 @@ func New(
 
 	// Perform chain-specific actions on the write layer.
 	// Create a table that stores the schemas for every table on the chain that this ingress layer is indexing.
-	err := wl.CreateTable(mode.SchemasTable(chainConfig.ID))
+	err := wl.CreateTable(mode.SchemasTable(chainConfig.Id))
 	if err != nil {
 		logger.Fatal("failed to create SchemasTable", zap.Error(err))
 	}
 	// Create a table that stores the current block number on the chain that this ingress layer is indexing.
-	err = wl.CreateTable(mode.BlockNumberTable(chainConfig.ID))
+	err = wl.CreateTable(mode.BlockNumberTable(chainConfig.Id))
 	if err != nil {
 		logger.Fatal("failed to create BlockNumberTable", zap.Error(err))
 	}
 	// Create a table that stores the current sync status of this ingress layer.
-	err = wl.CreateTable(mode.SyncStatusTable(chainConfig.ID))
+	err = wl.CreateTable(mode.SyncStatusTable(chainConfig.Id))
 	if err != nil {
 		logger.Fatal("failed to create SyncStatusTable", zap.Error(err))
 	}
@@ -134,7 +134,7 @@ func (il *Layer) Run() {
 
 			// Now that logs have been handled, update the current block number in the database.
 			// TODO: consider moving the order of updates when buffering / syncing.
-			il.UpdateBlockNumber(il.ChainID(), blockNumber)
+			il.UpdateBlockNumber(il.ChainId(), blockNumber)
 		}
 	}
 }
@@ -166,10 +166,10 @@ func (il *Layer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 	)
 
 	// Set the syncing status to true.
-	il.UpdateSyncStatus(il.ChainID(), true)
+	il.UpdateSyncStatus(il.ChainId(), true)
 
 	// Get the block number that the state is currently at.
-	currentBlockNumber, err := il.rl.GetBlockNumber(il.ChainID())
+	currentBlockNumber, err := il.rl.GetBlockNumber(il.ChainId())
 	if !errors.Is(err, mode.ErrTableDoesNotExist) && err != nil {
 		il.logger.Error("failed to get current block number", zap.Error(err))
 	}
@@ -194,7 +194,7 @@ func (il *Layer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 		// Handle the logs.
 		il.handleLogs(filteredLogs)
 		// Update the block number
-		il.UpdateBlockNumber(il.ChainID(), blockNumberRangeEnd)
+		il.UpdateBlockNumber(il.ChainId(), blockNumberRangeEnd)
 
 		il.logger.Info("synced block range",
 			zap.String("start", blockNumberRangeStart.String()),
@@ -215,34 +215,34 @@ func (il *Layer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 	}
 
 	// Set the syncing status to false.
-	il.UpdateSyncStatus(il.ChainID(), false)
+	il.UpdateSyncStatus(il.ChainId(), false)
 	il.logger.Info("finished syncing")
 }
 
 // UpdateBlockNumber updates the block number for a given chain using the write layer.
 //
 // Parameters:
-// - chainID (string): The ID of the chain for which to update the block number.
+// - chainId (string): The Id of the chain for which to update the block number.
 // - blockNumber (*big.Int): The new block number to update.
 //
 // Returns:
 // - void.
-func (il *Layer) UpdateBlockNumber(chainID string, blockNumber *big.Int) {
+func (il *Layer) UpdateBlockNumber(chainId string, blockNumber *big.Int) {
 	// Build the row to update or insert (contains the block number).
 	row := mode.TableRow{
 		"block_number": blockNumber.String(),
-		"chain_id":     chainID,
+		"chain_id":     chainId,
 	}
 	// Insert the block number into the database.
-	table := mode.BlockNumberTable(chainID)
+	table := mode.BlockNumberTable(chainId)
 	err := il.wl.UpdateOrInsertRow(table, row, map[string]interface{}{
-		"chain_id": chainID,
+		"chain_id": chainId,
 	})
 	if err != nil {
 		il.logger.Error("failed to update or insert block number", zap.Error(err))
 	}
 	il.logger.Info("updated block number",
-		zap.String("chain_id", chainID),
+		zap.String("chain_id", chainId),
 		zap.String("block_number", blockNumber.String()),
 	)
 }
@@ -250,28 +250,28 @@ func (il *Layer) UpdateBlockNumber(chainID string, blockNumber *big.Int) {
 // UpdateSyncStatus updates the syncing status for a given chain using the write layer.
 //
 // Parameters:
-// - chainID (string): The ID of the chain for which to update the syncing status.
+// - chainId (string): The Id of the chain for which to update the syncing status.
 // - syncing (bool): The new syncing status to update.
 //
 // Returns:
 // - void.
-func (il *Layer) UpdateSyncStatus(chainID string, syncing bool) {
+func (il *Layer) UpdateSyncStatus(chainId string, syncing bool) {
 	il.syncing = syncing
 
 	// Build the row to update or insert (contains the syncing status).
 	row := mode.TableRow{
 		"syncing":  strconv.FormatBool(syncing),
-		"chain_id": chainID,
+		"chain_id": chainId,
 	}
 	// Insert the syncing status into the database.
-	table := mode.SyncStatusTable(chainID)
+	table := mode.SyncStatusTable(chainId)
 	err := il.wl.UpdateOrInsertRow(table, row, map[string]interface{}{
-		"chain_id": chainID,
+		"chain_id": chainId,
 	})
 	if err != nil {
 		il.logger.Error("failed to update or insert syncing status", zap.Error(err))
 	}
-	il.logger.Info("updated syncing status", zap.String("chain_id", chainID), zap.Bool("syncing", syncing))
+	il.logger.Info("updated syncing status", zap.String("chain_id", chainId), zap.Bool("syncing", syncing))
 }
 
 // FetchEventsInBlock fetches the events that occurred in a specific block using the Ethereum client.
@@ -298,9 +298,9 @@ func (il *Layer) FetchEventsInBlockRange(startBlockNumber *big.Int, endBlockNumb
 		FromBlock: startBlockNumber,
 		ToBlock:   endBlockNumber,
 		Topics: [][]common.Hash{{
-			storecore.ComputeEventID("StoreSetRecord"),
-			storecore.ComputeEventID("StoreSetField"),
-			storecore.ComputeEventID("StoreDeleteRecord"),
+			storecore.ComputeEventId("StoreSetRecord"),
+			storecore.ComputeEventId("StoreSetField"),
+			storecore.ComputeEventId("StoreDeleteRecord"),
 		}},
 		Addresses: []common.Address{},
 	}
@@ -316,6 +316,6 @@ func (il *Layer) FetchEventsInBlockRange(startBlockNumber *big.Int, endBlockNumb
 	return logs
 }
 
-func (il *Layer) ChainID() string {
-	return il.chainConfig.ID
+func (il *Layer) ChainId() string {
+	return il.chainConfig.Id
 }

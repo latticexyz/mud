@@ -70,9 +70,9 @@ func (ql *Layer) GetNamespacedState(
 	worldNamespace *pb_mode.Namespace,
 ) ([]*pb_mode.TableData, []string, error) {
 	// Get a string representation of the query namespace.
-	queryNamespaceString := mode.Namespace(queryNamespace.ChainID, queryNamespace.WorldAddress)
+	queryNamespaceString := mode.Namespace(queryNamespace.ChainId, queryNamespace.WorldAddress)
 	// Get a string representation of the world namespace.
-	worldNamespaceString := mode.Namespace(worldNamespace.ChainID, worldNamespace.WorldAddress)
+	worldNamespaceString := mode.Namespace(worldNamespace.ChainId, worldNamespace.WorldAddress)
 
 	// An up-to-date list of all tables is used to return the full state, if requested.
 	tablesInNamespace, err := ql.rl.GetAllTables(queryNamespaceString)
@@ -106,7 +106,7 @@ func (ql *Layer) GetNamespacedState(
 	serializedTables := []*pb_mode.TableData{}
 	for idx, query := range queries {
 		// Fetch the Table that the query is directed at and execute the built query.
-		table, tableErr := ql.tableStore.GetTable(queryNamespace.ChainID, queryNamespace.WorldAddress, tableNameList[idx])
+		table, tableErr := ql.tableStore.GetTable(queryNamespace.ChainId, queryNamespace.WorldAddress, tableNameList[idx])
 		if tableErr != nil {
 			ql.logger.Error("GetState_Namespaced(): error while getting table", zap.Error(tableErr))
 			return nil, nil, tableErr
@@ -138,12 +138,12 @@ func (ql *Layer) GetState(
 	request *pb_mode.StateRequest,
 ) (*pb_mode.QueryLayerStateResponse, error) {
 	// Validate the namespace.
-	if err := mode.RequireChainID(request.Namespace); err != nil {
+	if err := mode.RequireChainId(request.Namespace); err != nil {
 		return nil, fmt.Errorf("invalid namespace for GetState(): %w", err)
 	}
 
 	// Check if request can be processed. We do not allow GetState() requests while syncing.
-	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainID)
+	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainId)
 	if err != nil {
 		ql.logger.Error("GetState(): error while getting sync status", zap.Error(err))
 		return nil, err
@@ -193,12 +193,12 @@ func (ql *Layer) GetState(
 //
 //nolint:gocognit // stream state loop
 func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.QueryLayer_StreamStateServer) error {
-	if err := mode.RequireChainID(request.Namespace); err != nil {
+	if err := mode.RequireChainId(request.Namespace); err != nil {
 		return fmt.Errorf("invalid namespace for StreamState(): %w", err)
 	}
 
 	// Check if request can be processed.
-	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainID)
+	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainId)
 	if err != nil {
 		ql.logger.Error("GetState(): error while getting sync status", zap.Error(err))
 		return err
@@ -232,9 +232,9 @@ func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.
 	// 2. send the stored events if the event is the block number
 	for event := range eventStream {
 		// Get the Table that the event is directed at.
-		table, tableErr := ql.tableStore.GetTable(request.Namespace.ChainID, request.Namespace.WorldAddress, event.TableName)
+		table, tableErr := ql.tableStore.GetTable(request.Namespace.ChainId, request.Namespace.WorldAddress, event.TableName)
 		if tableErr != nil {
-			ql.logger.Error("StreamState(): no table matching chainID, worldAddress, and table name", zap.Error(tableErr))
+			ql.logger.Error("StreamState(): no table matching chainId, worldAddress, and table name", zap.Error(tableErr))
 			continue
 		}
 		serializedTable, serializeErr := table.SerializeStreamEvent(event, make(map[string]string))
@@ -245,7 +245,7 @@ func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.
 
 		// Check if the event is for the block number table.
 		//nolint:nestif // readability
-		if ql.tableStore.IsBlockNumberTable(request.Namespace.ChainID, event.TableName) {
+		if ql.tableStore.IsBlockNumberTable(request.Namespace.ChainId, event.TableName) {
 			// Append the block number event to the response as a single update event.
 			updated.AddChainTable(serializedTable, table)
 
@@ -309,7 +309,7 @@ func (ql *Layer) GetPartialState(
 	_ context.Context,
 	request *pb_mode.PartialStateRequest,
 ) (*pb_mode.QueryLayerStateResponse, error) {
-	if err := mode.RequireChainID(request.Namespace); err != nil {
+	if err := mode.RequireChainId(request.Namespace); err != nil {
 		return nil, fmt.Errorf("invalid namespace %w", err)
 	}
 
@@ -332,7 +332,7 @@ func (ql *Layer) GetPartialState(
 	ql.logger.Info("GetPartialState(): built query from request", zap.String("query", query))
 
 	// Get the Table that the query is directed at and execute the built query.
-	table, err := ql.tableStore.GetTable(request.Namespace.ChainID, request.Namespace.WorldAddress, request.Table)
+	table, err := ql.tableStore.GetTable(request.Namespace.ChainId, request.Namespace.WorldAddress, request.Table)
 	if err != nil {
 		ql.logger.Error("GetPartialState(): error while getting table schema", zap.Error(err))
 		return nil, err

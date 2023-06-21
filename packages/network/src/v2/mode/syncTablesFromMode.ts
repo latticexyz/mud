@@ -24,7 +24,7 @@ export async function syncTablesFromMode(
     chainTables: [],
     worldTables: [],
     namespace: {
-      chainID: chainId.toString(),
+      chainId: chainId.toString(),
       worldAddress: world.address,
     },
   });

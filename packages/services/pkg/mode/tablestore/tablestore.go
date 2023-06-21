@@ -25,15 +25,15 @@ func InternalTables(chains []config.ChainConfig) map[string]*mode.Table {
 	tables := map[string]*mode.Table{}
 	for _, chain := range chains {
 		// Add the block number table.
-		blockNumberTableSchema := mode.BlockNumberTable(chain.ID)
+		blockNumberTableSchema := mode.BlockNumberTable(chain.Id)
 		tables[blockNumberTableSchema.Name] = blockNumberTableSchema
 
 		// Add the sync status table.
-		syncStatusTableSchema := mode.SyncStatusTable(chain.ID)
+		syncStatusTableSchema := mode.SyncStatusTable(chain.Id)
 		tables[syncStatusTableSchema.Name] = syncStatusTableSchema
 
 		// Add the schemas table.
-		schemasTableSchema := mode.SchemasTable(chain.ID)
+		schemasTableSchema := mode.SchemasTable(chain.Id)
 		tables[schemasTableSchema.Name] = schemasTableSchema
 	}
 	return tables
@@ -44,26 +44,26 @@ func (store *Store) IsInternalTable(tableName string) bool {
 	return ok
 }
 
-func (store *Store) IsBlockNumberTable(chainID string, tableName string) bool {
-	return tableName == mode.BlockNumberTable(chainID).Name
+func (store *Store) IsBlockNumberTable(chainId string, tableName string) bool {
+	return tableName == mode.BlockNumberTable(chainId).Name
 }
 
-func (store *Store) IsSyncStatusTable(chainID string, tableName string) bool {
-	return tableName == mode.SyncStatusTable(chainID).Name
+func (store *Store) IsSyncStatusTable(chainId string, tableName string) bool {
+	return tableName == mode.SyncStatusTable(chainId).Name
 }
 
-func (store *Store) IsSchemasTable(chainID string, tableName string) bool {
-	return tableName == mode.SchemasTable(chainID).Name
+func (store *Store) IsSchemasTable(chainId string, tableName string) bool {
+	return tableName == mode.SchemasTable(chainId).Name
 }
 
-func (store *Store) GetTable(chainID string, worldAddress string, tableName string) (*mode.Table, error) {
+func (store *Store) GetTable(chainId string, worldAddress string, tableName string) (*mode.Table, error) {
 	// If the table name is for an internal table, return schema directly.
 	if store.IsInternalTable(tableName) {
 		return store.internalTables[tableName], nil
 	}
 
 	// Otherwise lookup the schema from the schemas table.
-	schemasTable := mode.SchemasTable(chainID)
+	schemasTable := mode.SchemasTable(chainId)
 	schemasTableName := schemasTable.Name
 
 	// Create a request builder for the table schema query.
@@ -123,10 +123,10 @@ func (store *Store) GetTable(chainID string, worldAddress string, tableName stri
 	return tableSchema, nil
 }
 
-func (store *Store) GetTables(chainID string, worldAddress string, tableNames []string) ([]*mode.Table, error) {
+func (store *Store) GetTables(chainId string, worldAddress string, tableNames []string) ([]*mode.Table, error) {
 	tableSchemas := []*mode.Table{}
 	for _, tableName := range tableNames {
-		tableSchema, err := store.GetTable(chainID, worldAddress, tableName)
+		tableSchema, err := store.GetTable(chainId, worldAddress, tableName)
 		if err != nil {
 			return nil, err
 		}
@@ -135,8 +135,8 @@ func (store *Store) GetTables(chainID string, worldAddress string, tableNames []
 	return tableSchemas, nil
 }
 
-func (store *Store) MustGetTable(chainID string, worldAddress string, tableName string) *mode.Table {
-	tableSchema, err := store.GetTable(chainID, worldAddress, tableName)
+func (store *Store) MustGetTable(chainId string, worldAddress string, tableName string) *mode.Table {
+	tableSchema, err := store.GetTable(chainId, worldAddress, tableName)
 	if err != nil {
 		store.logger.Fatal("failed to get table", zap.Error(err))
 	}

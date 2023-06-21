@@ -12,8 +12,8 @@ const TABLE_PREFIX string = "mode"
 //nolint:revive,stylecheck // constants
 const DEFAULT_RIGHT_PAD_LENGTH int = 16
 
-// BlockNumberTable keeps track of the current block number on chain with `chainID`.
-func BlockNumberTable(chainID string) *Table {
+// BlockNumberTable keeps track of the current block number on chain with `chainId`.
+func BlockNumberTable(chainId string) *Table {
 	return &Table{
 		Name: "block_number",
 		KeyNames: []string{
@@ -30,7 +30,7 @@ func BlockNumberTable(chainID string) *Table {
 			"block_number": "uint256",
 			"chain_id":     "string",
 		},
-		Namespace: Namespace(chainID, ""),
+		Namespace: Namespace(chainId, ""),
 		Metadata: &TableMetadata{
 			ColumnMetadata: map[string]*ColumnMetadata{
 				"chain_id": {
@@ -42,8 +42,8 @@ func BlockNumberTable(chainID string) *Table {
 	}
 }
 
-// SyncStatusTable keeps track of whether the chain with `chainID` is currently syncing.
-func SyncStatusTable(chainID string) *Table {
+// SyncStatusTable keeps track of whether the chain with `chainId` is currently syncing.
+func SyncStatusTable(chainId string) *Table {
 	return &Table{
 		Name: "sync_status",
 		KeyNames: []string{
@@ -60,7 +60,7 @@ func SyncStatusTable(chainID string) *Table {
 			"syncing":  "bool",
 			"chain_id": "string",
 		},
-		Namespace: Namespace(chainID, ""),
+		Namespace: Namespace(chainId, ""),
 		Metadata: &TableMetadata{
 			ColumnMetadata: map[string]*ColumnMetadata{
 				"chain_id": {
@@ -72,8 +72,8 @@ func SyncStatusTable(chainID string) *Table {
 	}
 }
 
-// SchemasTable keeps track of the schemas for all tables synced on chain with `chainID`.
-func SchemasTable(chainID string) *Table {
+// SchemasTable keeps track of the schemas for all tables synced on chain with `chainId`.
+func SchemasTable(chainId string) *Table {
 	tableKeyNames := []string{
 		"world_address",
 		"namespace",
@@ -103,7 +103,7 @@ func SchemasTable(chainID string) *Table {
 			"fields_schema": "bytes32",
 			"table_json":    "bytes",
 		},
-		Namespace: Namespace(chainID, ""),
+		Namespace: Namespace(chainId, ""),
 		Metadata: &TableMetadata{
 			ColumnMetadata: map[string]*ColumnMetadata{},
 		},
@@ -116,10 +116,10 @@ func SchemasTable(chainID string) *Table {
 	return table
 }
 
-func MUDStoreSchemaTableID() string {
+func MUDStoreSchemaTableId() string {
 	return "0x" + common.Bytes2Hex(append(RightPadString("mudstore"), RightPadString("schema")...))
 }
 
-func MUDStoreStoreMetadataTableID() string {
+func MUDStoreStoreMetadataTableId() string {
 	return "0x" + common.Bytes2Hex(append(RightPadString("mudstore"), RightPadString("StoreMetadata")...))
 }

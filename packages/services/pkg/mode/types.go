@@ -6,7 +6,7 @@ import (
 )
 
 type Table struct {
-	ID        string `json:"id"`        // Table ID as it comes from chain
+	Id        string `json:"id"`        // Table Id as it comes from chain
 	Name      string `json:"name"`      // Table name
 	Namespace string `json:"namespace"` // Table DB namespace
 
@@ -35,7 +35,7 @@ type ColumnMetadata struct {
 func (table *Table) String() string {
 	var str strings.Builder
 	str.WriteString("Table{")
-	str.WriteString("ID: " + table.ID + ", ")
+	str.WriteString("Id: " + table.Id + ", ")
 	str.WriteString("Name: " + table.Name + ", ")
 	str.WriteString("KeyNames: " + strings.Join(table.KeyNames, ", ") + ", ")
 	str.WriteString("FieldNames: " + strings.Join(table.FieldNames, ", ") + ", ")

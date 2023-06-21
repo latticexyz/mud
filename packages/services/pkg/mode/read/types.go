@@ -7,7 +7,7 @@ import (
 )
 
 type SyncStatus struct {
-	ChainID string `db:"chain_id"`
+	ChainId string `db:"chain_id"`
 	Syncing bool   `db:"syncing"`
 }
 

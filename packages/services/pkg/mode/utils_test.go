@@ -6,11 +6,11 @@ import (
 )
 
 func MakeTests() []struct {
-	tableID   string
+	tableId   string
 	tableName string
 } {
 	return []struct {
-		tableID   string
+		tableId   string
 		tableName string
 	}{
 		{
@@ -24,22 +24,22 @@ func MakeTests() []struct {
 	}
 }
 
-func TestTableIDToTableName(t *testing.T) {
+func TestTableIdToTableName(t *testing.T) {
 	tests := MakeTests()
 	for _, test := range tests {
-		tableName := mode.TableIDToTableName(test.tableID)
+		tableName := mode.TableIdToTableName(test.tableId)
 		if tableName != test.tableName {
 			t.Errorf("Expected %s, got %s", test.tableName, tableName)
 		}
 	}
 }
 
-func TestTableNameToTableID(t *testing.T) {
+func TestTableNameToTableId(t *testing.T) {
 	tests := MakeTests()
 	for _, test := range tests {
-		tableID := mode.TableNameToTableID(test.tableName)
-		if tableID != test.tableID {
-			t.Errorf("Expected %s, got %s", test.tableID, tableID)
+		tableId := mode.TableNameToTableId(test.tableName)
+		if tableId != test.tableId {
+			t.Errorf("Expected %s, got %s", test.tableId, tableId)
 		}
 	}
 }

@@ -6,32 +6,32 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-// StoreSetRecordEvent returns the event ID for the "StoreSetRecord" event.
+// StoreSetRecordEvent returns the event Id for the "StoreSetRecord" event.
 //
 // Parameters: None.
 //
 // Returns:
-// - common.Hash: The event ID for the "StoreSetRecord" event.
+// - common.Hash: The event Id for the "StoreSetRecord" event.
 func StoreSetRecordEvent() common.Hash {
-	return storecore.ComputeEventID("StoreSetRecord")
+	return storecore.ComputeEventId("StoreSetRecord")
 }
 
-// StoreSetFieldEvent returns the event ID for the "StoreSetField" event.
+// StoreSetFieldEvent returns the event Id for the "StoreSetField" event.
 //
 // Parameters: None.
 //
 // Returns:
-// - common.Hash: The event ID for the "StoreSetField" event.
+// - common.Hash: The event Id for the "StoreSetField" event.
 func StoreSetFieldEvent() common.Hash {
-	return storecore.ComputeEventID("StoreSetField")
+	return storecore.ComputeEventId("StoreSetField")
 }
 
-// StoreDeleteRecordEvent returns the event ID for the "StoreDeleteRecord" event.
+// StoreDeleteRecordEvent returns the event Id for the "StoreDeleteRecord" event.
 //
 // Parameters: None.
 //
 // Returns:
-// - common.Hash: The event ID for the "StoreDeleteRecord" event.
+// - common.Hash: The event Id for the "StoreDeleteRecord" event.
 func StoreDeleteRecordEvent() common.Hash {
-	return storecore.ComputeEventID("StoreDeleteRecord")
+	return storecore.ComputeEventId("StoreDeleteRecord")
 }

@@ -82,7 +82,7 @@ func (rl *Layer) DoesRowExist(table *mode.Table, filter map[string]interface{}) 
 	return exists, nil
 }
 
-// GetBlockNumber retrieves the block number for the specified chain ID
+// GetBlockNumber retrieves the block number for the specified chain Id
 // from the internal 'block_number' table. The function constructs a find
 // builder using the table name, and then uses the builder's ToSQLQuery()
 // method to generate a SQL query. This query is then executed using the
@@ -90,19 +90,19 @@ func (rl *Layer) DoesRowExist(table *mode.Table, filter map[string]interface{}) 
 // the function returns the block number as a big.Int object.
 //
 // Parameters:
-//   - chainID (string): a string that represents the ID of the chain for
+//   - chainId (string): a string that represents the Id of the chain for
 //     which to retrieve the block number.
 //
 // Returns:
 //   - (*big.Int): a pointer to a big.Int object that represents the block
-//     number for the specified chain ID. If the block number
+//     number for the specified chain Id. If the block number
 //     does not exist, nil is returned.
 //   - (error): if any error occurs while executing the query or parsing the
 //     block number, it is returned as an error object. Otherwise,
 //     nil is returned.
-func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
+func (rl *Layer) GetBlockNumber(chainId string) (*big.Int, error) {
 	// Create a find builder.
-	blockNumberTable := mode.BlockNumberTable(chainID)
+	blockNumberTable := mode.BlockNumberTable(chainId)
 
 	findBuilder := find.NewBuilderFromFindRequest(&pb_mode.FindRequest{
 		From: blockNumberTable.Name,
@@ -150,7 +150,7 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 	return blockNumber, nil
 }
 
-// GetSyncStatus retrieves the sync status for the specified chain ID
+// GetSyncStatus retrieves the sync status for the specified chain Id
 // from the internal 'sync_status' table. The function constructs a find
 // builder using the table name, and then uses the builder's ToSQLQuery()
 // method to generate a SQL query. This query is then executed using the
@@ -161,19 +161,19 @@ func (rl *Layer) GetBlockNumber(chainID string) (*big.Int, error) {
 // scanning the row, it is returned as an error object.
 //
 // Parameters:
-//   - chainID (string): a string that represents the ID of the chain for
+//   - chainId (string): a string that represents the Id of the chain for
 //     which to retrieve the sync status.
 //
 // Returns:
 //   - (bool): a boolean value that represents the sync status for the
-//     specified chain ID. If the sync status does not exist,
+//     specified chain Id. If the sync status does not exist,
 //     false is returned.
 //   - (error): if any error occurs while executing the query or scanning
 //     the row, it is returned as an error object. Otherwise,
 //     nil is returned.
-func (rl *Layer) GetSyncStatus(chainID string) (bool, error) {
+func (rl *Layer) GetSyncStatus(chainId string) (bool, error) {
 	// Create a find builder.
-	syncStatusTable := mode.SyncStatusTable(chainID)
+	syncStatusTable := mode.SyncStatusTable(chainId)
 
 	findBuilder := find.NewBuilderFromFindRequest(&pb_mode.FindRequest{
 		From: syncStatusTable.Name,
@@ -202,7 +202,7 @@ func (rl *Layer) GetSyncStatus(chainID string) (bool, error) {
 
 	// If there is a row, then the sync status exists.
 	query, err := rl.dl.Select(syncStatusTable.NamespacedName(), map[string]interface{}{
-		"chain_id": chainID,
+		"chain_id": chainId,
 	})
 	if err != nil {
 		return false, err

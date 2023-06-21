@@ -17,19 +17,19 @@ func FieldToString(field *pb_mode.Field) string {
 	return field.TableName + "." + field.TableField
 }
 
-// Namespace returns the namespace string for the specified chain ID and world address.
+// Namespace returns the namespace string for the specified chain Id and world address.
 //
 // Parameters:
-// - chainID (string): The chain ID to include in the namespace.
+// - chainId (string): The chain Id to include in the namespace.
 // - worldAddress (string): The world address to include in the namespace.
 //
 // Returns:
-// (string) - A string representing the namespace for the specified chain ID and world address.
-func Namespace(chainID string, worldAddress string) string {
+// (string) - A string representing the namespace for the specified chain Id and world address.
+func Namespace(chainId string, worldAddress string) string {
 	var str strings.Builder
 	str.WriteString(TABLE_PREFIX)
-	if chainID != "" {
-		str.WriteString(CONNECTOR + chainID)
+	if chainId != "" {
+		str.WriteString(CONNECTOR + chainId)
 	}
 	if worldAddress != "" {
 		str.WriteString(CONNECTOR + strings.ToLower(worldAddress))
@@ -49,7 +49,7 @@ func NamespaceFromNamespaceObject(namespace *pb_mode.Namespace) (string, error) 
 	if err := RequireNamespace(namespace); err != nil {
 		return "", err
 	}
-	return Namespace(namespace.ChainID, namespace.WorldAddress), nil
+	return Namespace(namespace.ChainId, namespace.WorldAddress), nil
 }
 
 // NamespaceObjectFromNamespace converts the specified namespace string into a pb_mode.Namespace instance.
@@ -67,18 +67,18 @@ func NamespaceObjectFromNamespace(namespace string) (*pb_mode.Namespace, error) 
 	if !strings.HasPrefix(namespace, TABLE_PREFIX) {
 		return nil, fmt.Errorf("namespace does not start with %s", TABLE_PREFIX)
 	}
-	chainID := ""
+	chainId := ""
 	worldAddress := ""
 	components := strings.Split(namespace, CONNECTOR)
 	if len(components) > 1 {
-		chainID = components[1]
+		chainId = components[1]
 	}
 	//nolint:gomnd // 2 is the max number of components
 	if len(components) > 2 {
 		worldAddress = components[2]
 	}
 	return &pb_mode.Namespace{
-		ChainID:      chainID,
+		ChainId:      chainId,
 		WorldAddress: worldAddress,
 	}, nil
 }
@@ -98,7 +98,7 @@ func IsNamespaceEqual(namespace1 *pb_mode.Namespace, namespace2 *pb_mode.Namespa
 	if err := RequireNamespace(namespace2); err != nil {
 		return false
 	}
-	return strings.EqualFold(namespace1.ChainID, namespace2.ChainID) &&
+	return strings.EqualFold(namespace1.ChainId, namespace2.ChainId) &&
 		strings.EqualFold(namespace1.WorldAddress, namespace2.WorldAddress)
 }
 
@@ -113,11 +113,11 @@ func IsNamespaceEqual(namespace1 *pb_mode.Namespace, namespace2 *pb_mode.Namespa
 // (worldNamespace *pb_mode.Namespace) - A pointer to a Namespace instance representing the world address.
 func NamespaceToSubNamespaces(namespace *pb_mode.Namespace) (*pb_mode.Namespace, *pb_mode.Namespace) {
 	chainNamespace := &pb_mode.Namespace{
-		ChainID:      namespace.ChainID,
+		ChainId:      namespace.ChainId,
 		WorldAddress: "",
 	}
 	worldNamespace := &pb_mode.Namespace{
-		ChainID:      namespace.ChainID,
+		ChainId:      namespace.ChainId,
 		WorldAddress: namespace.WorldAddress,
 	}
 	return chainNamespace, worldNamespace
@@ -154,19 +154,19 @@ func RequireWorldAddress(namespace *pb_mode.Namespace) error {
 	return nil
 }
 
-// RequireChainID validates the chain ID in the given Namespace instance.
+// RequireChainId validates the chain Id in the given Namespace instance.
 //
 // Parameters:
 // - namespace (*pb_mode.Namespace): A pointer to the Namespace instance to validate.
 //
 // Returns:
 // (error) - An error, if any occurred during the validation.
-func RequireChainID(namespace *pb_mode.Namespace) error {
+func RequireChainId(namespace *pb_mode.Namespace) error {
 	if err := RequireNamespace(namespace); err != nil {
 		return err
 	}
-	if namespace.ChainID == "" {
-		return fmt.Errorf("chainID is empty")
+	if namespace.ChainId == "" {
+		return fmt.Errorf("chainId is empty")
 	}
 	return nil
 }
