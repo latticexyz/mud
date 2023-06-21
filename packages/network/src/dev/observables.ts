@@ -1,8 +1,9 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import type { PublicClient, WalletClient, Chain } from "viem";
+import type { PublicClient, WalletClient, Chain, Abi } from "viem";
 import type { CacheStore } from "../workers";
 import { TableId } from "@latticexyz/utils";
 import { StoreEvent, EphemeralEvent } from "../v2/common";
+import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 
 // TODO: connection status?
 // TODO: sync status (rpc vs mode vs cache)
@@ -34,3 +35,4 @@ export const walletClient$: BehaviorSubject<(WalletClient & { chain: Chain }) | 
 export const cacheStore$ = new BehaviorSubject<CacheStore | null>(null);
 
 export const worldAddress$ = new BehaviorSubject<string | null>(null);
+export const worldAbi$ = new BehaviorSubject<Abi>(IWorldKernel__factory.abi);

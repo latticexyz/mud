@@ -5,13 +5,12 @@ import {
   walletClient$,
   cacheStore$,
   worldAddress$,
+  worldAbi$,
 } from "@latticexyz/network/dev";
 import { PublicClient, WalletClient, Hex, Chain } from "viem";
 import { Abi } from "abitype";
 import { create } from "zustand";
-import { worldAbi$ } from "@latticexyz/std-client/dev";
 import { CacheStore } from "@latticexyz/network";
-import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 import { ObservedValueOf } from "rxjs";
 
 export type StoreEvent = ObservedValueOf<typeof storeEvent$>;
@@ -32,7 +31,7 @@ export const useStore = create<{
   publicClient: null,
   walletClient: null,
   blockNumber: null,
-  worldAbi: IWorldKernel__factory.abi,
+  worldAbi: worldAbi$.value,
   worldAddress: null,
 }));
 
@@ -78,7 +77,7 @@ walletClient$.subscribe((walletClient) => {
 });
 
 worldAbi$.subscribe((worldAbi) => {
-  useStore.setState({ worldAbi: worldAbi ?? IWorldKernel__factory.abi });
+  useStore.setState({ worldAbi });
 });
 
 worldAddress$.subscribe((worldAddress) => {

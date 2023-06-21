@@ -6,6 +6,9 @@ import { IWorld__factory } from "contracts/types/ethers-contracts";
 import { setupViemNetwork } from "./setupViemNetwork";
 import { supportedChains } from "./supportedChains";
 import { worlds } from "./worlds";
+import * as devObservables from "@latticexyz/network/dev";
+
+const worldAbi = IWorld__factory.abi;
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -46,17 +49,19 @@ export async function setup() {
   // TODO: get fromBlock from worlds and/or from URL params, pass to network setup
   const { storeCache } = await setupViemNetwork(publicClient, worldAddress);
 
+  devObservables.worldAbi$.next(worldAbi);
+
   return {
     chain,
     worldAddress,
-    worldAbi: IWorld__factory.abi,
+    worldAbi,
     publicClient,
     // TODO: consider another export name to make room for connected wallet account/client
     account: burnerAccount,
     walletClient: burnerWalletClient,
     world: getContract({
       address: worldAddress,
-      abi: IWorld__factory.abi,
+      abi: worldAbi,
       publicClient,
       walletClient: burnerWalletClient,
     }),

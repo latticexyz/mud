@@ -1,6 +1,7 @@
 import { useRow, useRows } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
+import * as devObservables from "@latticexyz/network/dev";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
@@ -34,6 +35,7 @@ export const App = () => {
         type="button"
         onClick={async () => {
           const tx = await world.write.increment({ gasPrice: 0n });
+          devObservables.transactionHash$.next(tx);
 
           console.log("increment tx", tx);
           console.log("increment result", await publicClient.waitForTransactionReceipt({ hash: tx }));
@@ -54,8 +56,9 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          // set gas limit so we skip estimation and can test tx revert
-          const tx = await world.write.willRevert({ gasPrice: 0n });
+          // TODO: figure out how to skip gas estimation
+          const tx = await world.write.willRevert({ gasPrice: 0n, gas: 1_000_000n });
+          devObservables.transactionHash$.next(tx);
 
           console.log("willRevert tx", tx);
           console.log("willRevert result", await publicClient.waitForTransactionReceipt({ hash: tx }));
@@ -71,7 +74,8 @@ export const App = () => {
         <form
           onSubmit={async (event) => {
             event.preventDefault();
-            await world.write.sendMessage([myMessage], { gasPrice: 0n });
+            const tx = await world.write.sendMessage([myMessage], { gasPrice: 0n });
+            devObservables.transactionHash$.next(tx);
             setMyMessage("");
           }}
         >
@@ -92,6 +96,7 @@ export const App = () => {
               type="button"
               onClick={async () => {
                 const tx = await world.write.pickUp([index, index], { gasPrice: 0n });
+                devObservables.transactionHash$.next(tx);
               }}
             >
               Pick up a {VARIANTS[index]} {item}
