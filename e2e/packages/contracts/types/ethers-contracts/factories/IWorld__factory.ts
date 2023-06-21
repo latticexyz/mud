@@ -719,13 +719,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "isStore",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "pop",
     outputs: [],
     stateMutability: "nonpayable",
@@ -1340,6 +1333,25 @@ const _abi = [
     name: "setRecord",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "msgSender",
+        type: "address",
+      },
+    ],
+    name: "storeAddress",
+    outputs: [
+      {
+        internalType: "address",
+        name: "storeAddress",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
