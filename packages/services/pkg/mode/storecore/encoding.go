@@ -763,11 +763,12 @@ func (schemaType SchemaType) ToPostgresType() string {
 	const text = "text"
 	const jsonb = "jsonb"
 	const boolean = "boolean"
+	const integer = "integer"
 
 	//nolint:gocritic,nestif // no switch, simplify
 	if (schemaType >= UINT8 && schemaType <= UINT32) || (schemaType >= INT8 && schemaType <= INT32) {
 		// Integer.
-		return text
+		return integer
 	} else if (schemaType >= UINT64 && schemaType <= UINT256) || (schemaType >= INT64 && schemaType <= INT256) {
 		// Big integer.
 		return text
