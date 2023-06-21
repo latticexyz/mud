@@ -257,7 +257,21 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes16 name,
     bytes memory funcSelectorAndArgs
   ) external payable virtual returns (bytes memory) {
-    return _call(namespace, name, funcSelectorAndArgs, msg.value);
+    return _call(namespace, name, msg.sender, funcSelectorAndArgs, msg.value);
+  }
+
+  /**
+   * Call the system at the given namespace and name from the specified address.
+   * This address is passed on as the msgSender to the systems the call is forwarded to
+   * If the system is not public, the msgSender must have access to the namespace or name.
+   */
+  function callFrom(
+    bytes16 namespace,
+    bytes16 name,
+    address from,
+    bytes memory funcSelectorAndArgs
+  ) external payable virtual returns (bytes memory) {
+    return _call(namespace, name, from, funcSelectorAndArgs, msg.value);
   }
 
   /**
@@ -267,6 +281,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function _call(
     bytes16 namespace,
     bytes16 name,
+    address msgSender,
     bytes memory funcSelectorAndArgs,
     uint256 value
   ) internal virtual returns (bytes memory data) {
@@ -278,7 +293,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or name
-    if (!publicAccess) AccessControl.requireAccess(namespace, name, msg.sender);
+    if (!publicAccess) AccessControl.requireAccess(namespace, name, msgSender);
 
     // Get system hooks
     address[] memory hooks = SystemHooks.get(resourceSelector);
@@ -286,12 +301,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {
       ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onBeforeCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+      hook.onBeforeCallSystem(msgSender, systemAddress, funcSelectorAndArgs);
     }
 
     // Call the system and forward any return data
     data = Call.withSender({
-      msgSender: msg.sender,
+      msgSender: msgSender,
       target: systemAddress,
       funcSelectorAndArgs: funcSelectorAndArgs,
       delegate: namespace == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
@@ -301,7 +316,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // Call onAfterCallSystem hooks (after calling the system)
     for (uint256 i; i < hooks.length; i++) {
       ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onAfterCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+      hook.onAfterCallSystem(msgSender, systemAddress, funcSelectorAndArgs);
     }
   }
 
