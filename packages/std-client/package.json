@@ -37,6 +37,7 @@
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/cli": "workspace:*",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/network": "workspace:*",
     "@latticexyz/recs": "workspace:*",

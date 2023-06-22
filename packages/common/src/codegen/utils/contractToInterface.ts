@@ -26,7 +26,14 @@ interface SymbolImport {
  * @param contractName name of the contract
  * @returns interface data
  */
-export function contractToInterface(data: string, contractName: string) {
+export function contractToInterface(
+  data: string,
+  contractName: string
+): {
+  functions: ContractInterfaceFunction[];
+  errors: ContractInterfaceError[];
+  symbolImports: SymbolImport[];
+} {
   const ast = parse(data);
 
   let withContract = false;
@@ -178,7 +185,7 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
 // symbols used for args/returns must always be imported from an auxiliary file.
 // To avoid parsing the entire project to build dependencies,
 // symbols must be imported with an explicit `import { symbol } from ...`
-function symbolsToImports(ast: SourceUnit, symbols: string[]) {
+function symbolsToImports(ast: SourceUnit, symbols: string[]): SymbolImport[] {
   const imports: SymbolImport[] = [];
 
   for (const symbol of symbols) {

@@ -1,6 +1,7 @@
 import { decodeEventLog, decodeFunctionData, toBytes, Hex, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
-import { TableId, isDefined } from "@latticexyz/utils";
+import { isDefined } from "@latticexyz/common/utils";
+import { TableId } from "@latticexyz/utils";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { useStore } from "../useStore";
 import { PendingIcon } from "../icons/PendingIcon";

@@ -210,16 +210,19 @@ importers:
       prettier-plugin-solidity:
         specifier: ^1.1.2
         version: 1.1.2(prettier@2.8.4)
+      viem:
+        specifier: 1.0.6
+        version: 1.0.6(typescript@5.0.4)
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
         version: 18.15.11
       '@wagmi/chains':
         specifier: ^0.2.22
-        version: 0.2.23(typescript@4.9.5)
+        version: 0.2.23(typescript@5.0.4)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       vitest:
         specifier: 0.31.4
         version: 0.31.4
@@ -273,6 +276,9 @@ importers:
 
   packages/dev-tools:
     dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/network':
         specifier: workspace:*
         version: link:../network
@@ -801,6 +807,9 @@ importers:
       '@latticexyz/cli':
         specifier: workspace:*
         version: link:../cli
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
@@ -4057,6 +4066,18 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
+    dev: false
+
+  /@wagmi/chains@0.2.23(typescript@5.0.4):
+    resolution: {integrity: sha512-oIc4ZpUL6bH/HdS7ROPWlFnP5U3XBujO/OiX4csRIezyLjMQ9FNXQRZShhi5ddL0Kj1RDbyVLe9K/QotEm1vig==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: true
 
   /@wagmi/chains@1.1.0(typescript@4.9.5):
     resolution: {integrity: sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==}
