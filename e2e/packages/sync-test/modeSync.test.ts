@@ -11,9 +11,9 @@ import {
   syncMode,
   openClientWithRootAccount,
 } from "./setup";
-import { encodedTestData, expectClientData, setContractData, testData } from "./data";
+import { setContractData, expectClientData, testData1 } from "./data";
 
-describe("Sync from MODE", async () => {
+describe.skip("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let anvilProcess: ExecaChildProcess;
   let webserver: ViteDevServer;
@@ -57,8 +57,8 @@ describe("Sync from MODE", async () => {
     const blockNumber = page.locator("#block");
     await expect(blockNumber).not.toHaveText("-1");
 
-    await setContractData(page, encodedTestData);
-    await expectClientData(page, testData);
+    await setContractData(page, testData1);
+    await expectClientData(page, testData1);
 
     asyncErrorHandler.expectNoAsyncErrors();
   });

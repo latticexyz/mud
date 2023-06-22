@@ -1,8 +1,11 @@
 import { Page } from "@playwright/test";
-import { EncodedData } from "./testData";
+import { Data, EncodedData } from "./types";
+import { encodeTestData } from "./encodeTestData";
 
-export async function setContractData(page: Page, data: EncodedData) {
-  return page.evaluate((_data) => {
+export async function setContractData(page: Page, data: Data) {
+  const encodedData = encodeTestData(data);
+
+  return page.evaluate((_data: EncodedData<Data>) => {
     function stringToBytes16(str: string): Uint8Array {
       if (str.length > 16) throw new Error("string too long");
       return new Uint8Array(16).map((v, i) => str.charCodeAt(i));
@@ -23,7 +26,6 @@ export async function setContractData(page: Page, data: EncodedData) {
         promises.push(promise.then((tx) => tx.wait()));
       }
     }
-    console.log("done sending");
     return Promise.all(promises);
-  }, data);
+  }, encodedData);
 }

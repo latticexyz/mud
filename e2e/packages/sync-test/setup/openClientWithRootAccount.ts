@@ -2,7 +2,7 @@ import { Page } from "@playwright/test";
 import dotenv from "dotenv";
 
 // Load private key into `process.env.PRIVATE_KEY`
-dotenv.config({ path: "../contracts/.env", debug: true });
+dotenv.config({ path: "../contracts/.env" });
 
 export async function openClientWithRootAccount(page: Page, options?: { modeUrl?: string }) {
   const modeFragment = options?.modeUrl ? `&mode=${options.modeUrl}` : "";
