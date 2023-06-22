@@ -17,8 +17,12 @@ describe("Sync from RPC", async () => {
 
   beforeEach(async () => {
     asyncErrorHandler.resetErrors();
+
+    // Start chain and deploy contracts
     anvilProcess = startAnvil(anvilPort);
     await deployContracts(rpc);
+
+    // Start client and browser
     webserver = await startViteServer();
     const browserAndPage = await startBrowserAndPage(asyncErrorHandler.reportError);
     browser = browserAndPage.browser;
@@ -31,7 +35,7 @@ describe("Sync from RPC", async () => {
     anvilProcess?.kill();
   });
 
-  test.only("test data should be set", async () => {
+  test("test data should be set", async () => {
     await openClientWithRootAccount(page);
 
     // Wait for initial sync
