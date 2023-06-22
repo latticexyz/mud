@@ -1,7 +1,7 @@
-import { decodeEventLog, decodeFunctionData, toBytes, Hex, AbiEventSignatureNotFoundError } from "viem";
+import { decodeEventLog, decodeFunctionData, Hex, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { useStore } from "../useStore";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -136,7 +136,7 @@ export function TransactionSummary({ hash }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
-                const table = TableId.fromBytes32(toBytes((args as any).table));
+                const table = TableId.fromHex((args as any).table);
                 return (
                   <tr key={i}>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">

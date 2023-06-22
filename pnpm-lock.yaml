@@ -1035,6 +1035,9 @@ importers:
 
   packages/utils:
     dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       ethers:
         specifier: ^5.7.2
         version: 5.7.2

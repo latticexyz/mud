@@ -1,7 +1,7 @@
 import { BehaviorSubject, Subject } from "rxjs";
 import type { PublicClient, WalletClient, Chain } from "viem";
 import type { CacheStore } from "../workers";
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { StoreEvent, EphemeralEvent } from "../v2/common";
 
 // TODO: connection status?
