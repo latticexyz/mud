@@ -6,8 +6,6 @@ export default defineConfig({
     environment: "jsdom",
     testTimeout: 80_000,
     hookTimeout: 80_000,
-    // load .env for world deploy
-    setupFiles: ["dotenv/config"],
     singleThread: true,
   },
 });

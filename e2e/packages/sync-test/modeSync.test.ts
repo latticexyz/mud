@@ -3,7 +3,7 @@ import type { ViteDevServer } from "vite";
 import { expect, Browser, Page } from "@playwright/test";
 import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
-import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, syncMODE } from "./utils";
+import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, syncMode } from "./setup";
 
 describe.skip("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -29,7 +29,7 @@ describe.skip("Sync from MODE", async () => {
     page = browserAndPage.page;
 
     // Start MODE
-    const result = syncMODE(asyncErrorHandler.reportError);
+    const result = syncMode(asyncErrorHandler.reportError);
     modeProcess = result.process;
     await result.doneSyncing;
   });
