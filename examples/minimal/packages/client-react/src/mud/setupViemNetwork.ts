@@ -3,14 +3,10 @@ import { TableSchema } from "@latticexyz/protocol-parser";
 import { createBlockEventsStream, createBlockNumberStream, createBlockStream } from "@latticexyz/block-events-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
-import { TableId } from "@latticexyz/utils";
 import mudConfig from "contracts/mud.config";
 import * as devObservables from "@latticexyz/network/dev";
-import { blockEventsToStorage } from "./blockEventsToStorage";
-import { map, concatMap } from "rxjs";
-
-export const schemaTableId = new TableId("mudstore", "schema");
-export const metadataTableId = new TableId("mudstore", "StoreMetadata");
+import { blockEventsToStorage } from "@latticexyz/store-sync";
+import { concatMap } from "rxjs";
 
 export async function setupViemNetwork<TPublicClient extends PublicClient<Transport, Chain>>(
   publicClient: TPublicClient,

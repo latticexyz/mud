@@ -192,6 +192,9 @@ importers:
       '@latticexyz/store-cache':
         specifier: link:../../../../packages/store-cache
         version: link:../../../../packages/store-cache
+      '@latticexyz/store-sync':
+        specifier: link:../../../../packages/store-sync
+        version: link:../../../../packages/store-sync
       '@latticexyz/utils':
         specifier: link:../../../../packages/utils
         version: link:../../../../packages/utils

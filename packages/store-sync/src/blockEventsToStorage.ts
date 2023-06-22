@@ -4,10 +4,9 @@ import { StoreEventsAbiItem } from "@latticexyz/store";
 import { TableId } from "@latticexyz/utils";
 import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 
-// TODO: move this somewhere else?
-// TODO: replace console.log with debug when we move this to its own module
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event
 // TODO: support passing in a MUD config to get typed tables, values, etc.
+// TODO: consider if we should continue to group storage operations by block, allowing atomic sets (db txs) and collapsing operations per table+key
 
 // TODO: export these from store or world
 export const schemaTableId = new TableId("mudstore", "schema");
@@ -76,7 +75,6 @@ export function blockEventsToStorage({
   deleteRecord,
 }: BlockEventsToStorageOptions): (block: BlockEvents<StoreEventsAbiItem>) => Promise<void> {
   return async (block) => {
-    console.log("got block", block.blockNumber);
     // Find and register all new table schemas
     // Store schemas are immutable, so we can parallelize this
     await Promise.all(
@@ -86,7 +84,10 @@ export function blockEventsToStorage({
 
         const [tableForSchema, ...otherKeys] = event.args.key;
         if (otherKeys.length) {
-          console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", event);
+          console.warn(
+            "sync-store: registerSchema event is expected to have only one key in key tuple, but got multiple",
+            event
+          );
         }
 
         const tableId = TableId.fromHexString(tableForSchema);
@@ -112,7 +113,10 @@ export function blockEventsToStorage({
 
         const [tableForSchema, ...otherKeys] = event.args.key;
         if (otherKeys.length) {
-          console.warn("setMetadata event is expected to have only one key in key tuple, but got multiple", event);
+          console.warn(
+            "sync-store: setMetadata event is expected to have only one key in key tuple, but got multiple",
+            event
+          );
         }
 
         const tableId = TableId.fromHexString(tableForSchema);
@@ -130,11 +134,11 @@ export function blockEventsToStorage({
       const tableId = TableId.fromHexString(event.args.table);
       const [tableSchema, tableMetadata] = await Promise.all([getTableSchema(tableId), getTableMetadata(tableId)]);
       if (!tableSchema) {
-        console.warn("no table schema found for event, skipping", event);
+        console.warn("sync-store: no table schema found for event, skipping", event);
         continue;
       }
       if (!tableMetadata) {
-        console.warn("no table metadata found for event, skipping", event);
+        console.warn("sync-store: no table metadata found for event, skipping", event);
         continue;
       }
 
@@ -154,10 +158,8 @@ export function blockEventsToStorage({
       } else if (event.eventName === "StoreDeleteRecord") {
         await deleteRecord({ ...tableId, keyTuple });
       } else {
-        console.warn("unknown store event", event);
+        console.warn("sync-store: unknown store event, skipping", event);
       }
     }
-
-    console.log("finished block", block.blockNumber);
   };
 }

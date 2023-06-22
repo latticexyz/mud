@@ -24,6 +24,7 @@
     "@latticexyz/std-client": "link:../../../../packages/std-client",
     "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/store-cache": "link:../../../../packages/store-cache",
+    "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "@wagmi/chains": "^0.2.22",

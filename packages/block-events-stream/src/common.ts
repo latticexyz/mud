@@ -4,6 +4,8 @@ import type { AbiEvent } from "abitype";
 import { NonPendingLog } from "./isNonPendingLog";
 import { GetLogsReturnType } from "./getLogs";
 
+export type ReadonlyBehaviorSubject<T> = Pick<BehaviorSubject<T>, "subscribe" | "pipe" | "value" | "getValue">;
+
 export type BlockEvents<TAbiEvent extends AbiEvent> = {
   blockNumber: BlockNumber;
   blockHash: Hex;
@@ -11,8 +13,6 @@ export type BlockEvents<TAbiEvent extends AbiEvent> = {
 };
 
 export type BlockEventsStream<TAbiEvent extends AbiEvent> = Observable<BlockEvents<TAbiEvent>>;
-
-export type ReadonlyBehaviorSubject<T> = Pick<BehaviorSubject<T>, "subscribe" | "value" | "getValue">;
 
 export type BlockEventsFromStream<TStream extends BlockEventsStream<AbiEvent>> = TStream extends BlockEventsStream<
   infer TAbiEvent

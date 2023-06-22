@@ -18,5 +18,5 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
-  "include": ["src"]
+  "include": ["src", "../../../../packages/store-sync/src/blockEventsToStorage.ts"]
 }
