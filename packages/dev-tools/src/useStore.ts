@@ -12,6 +12,8 @@ import { Abi } from "abitype";
 import { create } from "zustand";
 import { CacheStore } from "@latticexyz/network";
 import { ObservedValueOf } from "rxjs";
+// TODO: fix, this store cache client is technically different than the one populated by store-cache itself (one is imported as part of the main package, the other as part of the /dev package)
+import { storeCacheClient$ } from "@latticexyz/store-cache/dev";
 
 export type StoreEvent = ObservedValueOf<typeof storeEvent$>;
 
@@ -19,6 +21,7 @@ export const useStore = create<{
   storeEvents: StoreEvent[];
   transactions: Hex[];
   cacheStore: CacheStore | null;
+  storeCacheClient: ObservedValueOf<typeof storeCacheClient$> | null;
   publicClient: (PublicClient & { chain: Chain }) | null;
   walletClient: (WalletClient & { chain: Chain }) | null;
   blockNumber: bigint | null;
@@ -28,6 +31,7 @@ export const useStore = create<{
   storeEvents: [],
   transactions: [], // TODO: populate from recent wallet txs?
   cacheStore: null,
+  storeCacheClient: null,
   publicClient: null,
   walletClient: null,
   blockNumber: null,
@@ -58,6 +62,10 @@ transactionHash$.subscribe((hash) => {
 
 cacheStore$.subscribe((cacheStore) => {
   useStore.setState({ cacheStore });
+});
+
+storeCacheClient$.subscribe((storeCacheClient) => {
+  useStore.setState({ storeCacheClient });
 });
 
 publicClient$.subscribe((publicClient) => {

@@ -4,3 +4,6 @@ export const storeEvents = [
   "event StoreSetRecord(bytes32 table, bytes32[] key, bytes data)",
   "event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)",
 ] as const;
+
+export type StoreEvents = typeof storeEvents;
+export type StoreEvent = (typeof storeEvents)[number];

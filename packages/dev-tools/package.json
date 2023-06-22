@@ -25,6 +25,7 @@
     "@latticexyz/network": "workspace:*",
     "@latticexyz/react": "workspace:*",
     "@latticexyz/std-client": "workspace:*",
+    "@latticexyz/store-cache": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "abitype": "0.8.7",

@@ -3,6 +3,7 @@ import { DatabaseClient, Key, SetOptions, SubscriptionCallback, FilterOptions, V
 import { set, get, remove, getDefaultValue, subscribe, scan } from "./utils";
 import { StoreConfig } from "@latticexyz/store";
 import { curry } from "@latticexyz/common/utils";
+import * as devObservables from "./dev/observables";
 
 /**
  * Create a typed database client from a tuple database and a store config
@@ -40,5 +41,8 @@ export function createDatabaseClient<C extends StoreConfig>(database: TupleDatab
     };
   }
 
-  return { tables, _tupleDatabaseClient, ...utilsWithClient } as DatabaseClient<C>;
+  const client = { tables, _tupleDatabaseClient, ...utilsWithClient } as DatabaseClient<C>;
+  devObservables.storeCacheClient$.next(client as DatabaseClient<StoreConfig>);
+
+  return client;
 }

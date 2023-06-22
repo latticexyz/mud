@@ -319,6 +319,9 @@ importers:
       '@latticexyz/std-client':
         specifier: workspace:*
         version: link:../std-client
+      '@latticexyz/store-cache':
+        specifier: workspace:*
+        version: link:../store-cache
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
@@ -347,8 +350,8 @@ importers:
         specifier: ^18.3.2
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.1
+        version: 1.1.1(typescript@5.0.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -481,8 +484,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@4.9.5)
+        specifier: 1.1.1
+        version: 1.1.1(typescript@4.9.5)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -610,8 +613,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.1
+        version: 1.1.1(typescript@5.0.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -724,8 +727,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.1
+        version: 1.1.1(typescript@5.0.4)
     devDependencies:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -878,8 +881,8 @@ importers:
         specifier: 7.5.5
         version: 7.5.5
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@4.9.5)
+        specifier: 1.1.1
+        version: 1.1.1(typescript@4.9.5)
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -1053,6 +1056,9 @@ importers:
       abitype:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
+      rxjs:
+        specifier: 7.5.5
+        version: 7.5.5
       tuple-database:
         specifier: ^2.2.0
         version: 2.2.0
@@ -14601,8 +14607,10 @@ packages:
       builtins: 5.0.1
     dev: true
 
-  /viem@1.0.6(typescript@4.9.5):
-    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
+  /viem@1.1.1(typescript@4.9.5):
+    resolution: {integrity: sha512-RVwDpDQYngaXRWnP3ZfmKHSis7ojN4q46mOApGRlfGrS/p56UD7/hA35zYxeq+X0dwVhCNhWuIqtV9XSsMtVfg==}
+    peerDependencies:
+      typescript: '>=5.0.4'
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 1.0.0
@@ -14612,29 +14620,10 @@ packages:
       '@wagmi/chains': 1.1.0(typescript@4.9.5)
       abitype: 0.8.7(typescript@4.9.5)(zod@3.21.4)
       isomorphic-ws: 5.0.0(ws@8.12.0)
+      typescript: 4.9.5
       ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil
-      - typescript
-      - utf-8-validate
-      - zod
-    dev: false
-
-  /viem@1.0.6(typescript@5.0.4):
-    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
-    dependencies:
-      '@adraffy/ens-normalize': 1.9.0
-      '@noble/curves': 1.0.0
-      '@noble/hashes': 1.3.0
-      '@scure/bip32': 1.3.0
-      '@scure/bip39': 1.2.0
-      '@wagmi/chains': 1.1.0(typescript@5.0.4)
-      abitype: 0.8.7(typescript@5.0.4)
-      isomorphic-ws: 5.0.0(ws@8.12.0)
-      ws: 8.12.0
-    transitivePeerDependencies:
-      - bufferutil
-      - typescript
       - utf-8-validate
       - zod
     dev: false

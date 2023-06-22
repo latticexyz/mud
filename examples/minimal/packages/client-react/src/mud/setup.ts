@@ -1,6 +1,6 @@
 import { createPublicClient, createWalletClient, getContract, http, fallback, webSocket, isHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-// TODO: rewrite this util to work in node
+// TODO: rewrite getBurnerWallet to work in node
 import { getBurnerWallet } from "@latticexyz/std-client";
 import { IWorld__factory } from "contracts/types/ethers-contracts";
 import { setupViemNetwork } from "./setupViemNetwork";
@@ -34,7 +34,7 @@ export async function setup() {
   const publicClient = createPublicClient({
     chain,
     transport: fallback([webSocket(), http()]),
-    // TODO: do this per chain? maybe in the MUDChain config?
+    // TODO: configure polling per chain? maybe in the MUDChain config?
     pollingInterval: 1000,
   });
 
@@ -43,6 +43,7 @@ export async function setup() {
     account: burnerAccount,
     chain,
     transport: fallback([webSocket(), http()]),
+    // TODO: configure polling per chain? maybe in the MUDChain config?
     pollingInterval: 1000,
   });
 

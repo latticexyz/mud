@@ -1,17 +1,11 @@
-import { TableId, isDefined } from "@latticexyz/utils";
 import { useStore } from "../useStore";
 
 export function useTables() {
-  const cacheStore = useStore((state) => state.cacheStore);
-  if (!cacheStore) {
+  const storeCacheClient = useStore((state) => state.storeCacheClient);
+  console.log("storeCacheClient", storeCacheClient);
+  if (!storeCacheClient) {
     return [];
   }
-  return cacheStore.components
-    .map((component) => {
-      const tableId = TableId.parse(component);
-      if (!tableId) return;
-      return { component, tableId };
-    })
-    .filter(isDefined)
-    .sort((a, b) => a.component.localeCompare(b.component));
+  const tables = Object.keys(storeCacheClient.tables);
+  return tables.sort((a, b) => a.localeCompare(b));
 }
