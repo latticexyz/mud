@@ -51,9 +51,9 @@
     "lodash": "^4.17.21",
     "mobx": "^6.7.0",
     "nice-grpc-web": "^2.0.1",
-    "rxjs": "^7.5.5",
+    "rxjs": "7.5.5",
     "threads": "^1.7.0",
-    "viem": "1.0.6"
+    "viem": "1.1.4"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

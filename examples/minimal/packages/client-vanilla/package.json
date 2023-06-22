@@ -31,9 +31,9 @@
     "nice-grpc-web": "^2.0.1",
     "proxy-deep": "^3.1.1",
     "react": "^18.2.0",
-    "rxjs": "^7.5.5",
+    "rxjs": "7.5.5",
     "threads": "^1.7.0",
-    "viem": "1.0.6"
+    "viem": "1.1.4"
   },
   "devDependencies": {
     "vite": "^4.2.1",
