@@ -1,7 +1,7 @@
 import { Contract, utils } from "ethers";
 import { Log } from "@ethersproject/providers";
 import { LogDescription } from "@ethersproject/abi";
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";
@@ -20,7 +20,7 @@ export const ecsEventFromLog = async (
   const { blockNumber, transactionHash, logIndex } = log;
   const { args, name } = parsedLog;
 
-  const tableId = TableId.fromBytes32(utils.arrayify(args.table));
+  const tableId = TableId.fromHex(args.table);
   const component = tableId.toString();
   const entity = keyTupleToEntityID(args.key);
 

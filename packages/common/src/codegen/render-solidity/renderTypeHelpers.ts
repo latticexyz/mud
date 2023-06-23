@@ -1,6 +1,6 @@
 import { RenderField, RenderKeyTuple, RenderType } from "./types";
 
-export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }) {
+export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: RenderKeyTuple[] }): string {
   const { fields, keyTuple } = options;
 
   let result = "";
@@ -32,9 +32,9 @@ export function renderTypeHelpers(options: { fields: RenderField[]; keyTuple: Re
   return result;
 }
 
-function getWrappingHelpers(array: RenderType[]) {
-  const wrappers = new Map();
-  const unwrappers = new Map();
+function getWrappingHelpers(array: RenderType[]): string[] {
+  const wrappers = new Map<string, string>();
+  const unwrappers = new Map<string, string>();
   for (const { typeWrappingData, typeWrap, typeUnwrap, internalTypeId } of array) {
     if (!typeWrappingData) continue;
     const { kind } = typeWrappingData;
@@ -54,7 +54,7 @@ function renderWrapperStaticArray(
   elementType: string,
   staticLength: number,
   internalTypeId: string
-) {
+): string {
   // WARNING: ensure this still works if changing major solidity versions!
   // (the memory layout for static arrays may change)
   return `
@@ -76,7 +76,7 @@ function renderUnwrapperStaticArray(
   elementType: string,
   staticLength: number,
   internalTypeId: string
-) {
+): string {
   // byte length for memory copying (more efficient than a loop)
   const byteLength = staticLength * 32;
   // TODO to optimize memory usage consider generalizing TightEncoder to a render-time utility

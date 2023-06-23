@@ -6,6 +6,7 @@ export default {
   roots: ["tests"],
   moduleNameMapper: {
     // jest can't handle esm imports, so we import the typescript source instead
+    "^@latticexyz/common$": "<rootDir>/../common/src/index.ts",
     "^@latticexyz/utils$": "<rootDir>/../utils/src/index.ts",
   },
 };

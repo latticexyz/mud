@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { TableSchema } from "../common";
 import { decodeSchema } from "./decodeSchema";
 import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/IStore";
@@ -11,12 +11,12 @@ const schemaCache: Partial<Record<`${string}:${string}`, Promise<TableSchema>>> 
 // the Contract arguments below assume that they're bound to a provider
 
 export function getSchema(world: IStore, table: TableId): Promise<TableSchema> | undefined {
-  const cacheKey = `${world.address}:${table.toHexString()}` as const;
+  const cacheKey = `${world.address}:${table.toHex()}` as const;
   return schemaCache[cacheKey];
 }
 
 export function registerSchema(world: Contract, table: TableId, rawSchema?: string): Promise<TableSchema> {
-  const cacheKey = `${world.address}:${table.toHexString()}` as const;
+  const cacheKey = `${world.address}:${table.toHex()}` as const;
 
   const existingSchema = schemaCache[cacheKey];
   if (existingSchema) {
@@ -47,8 +47,8 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
 
   console.log("fetching schema for table", { table: table.toString(), world: world.address });
   const store = world as IStore;
-  const rawKeySchemaPromise = store.getKeySchema(table.toHexString());
-  const rawValueSchemaPromise = store.getSchema(table.toHexString());
+  const rawKeySchemaPromise = store.getKeySchema(table.toHex());
+  const rawValueSchemaPromise = store.getSchema(table.toHex());
   const rawSchemaPromise = Promise.all([rawKeySchemaPromise, rawValueSchemaPromise]).then(
     ([rawKeySchema, rawValueSchema]) => rawValueSchema + rawKeySchema.substring(2)
   );

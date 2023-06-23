@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
 import { NetworkComponentUpdate } from "../types";
 import orderBy from "lodash/orderBy";
-import { isDefined } from "@latticexyz/utils";
+import { isDefined } from "@latticexyz/common/utils";
 import { ephemeralEvents, storeEvents } from "./common";
 import { ecsEventFromLog } from "./ecsEventFromLog";
 
