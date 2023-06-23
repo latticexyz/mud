@@ -55,6 +55,8 @@ export type ModuleConfig = {
   root?: boolean;
   /** Arguments to be passed to the module's install method */
   args?: (ValueWithType | DynamicResolution)[];
+  /** The address of the existing module */
+  address?: string;
 };
 
 // zod doesn't preserve doc comments
