@@ -27,6 +27,7 @@ export interface DeployConfig {
   priorityFeeMultiplier: number;
   debug?: boolean;
   worldAddress?: string;
+  createNamespace: boolean;
   disableTxWait: boolean;
   pollInterval: number;
 }
@@ -45,8 +46,17 @@ export async function deploy(
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
-    deployConfig;
+  const {
+    profile,
+    rpc,
+    privateKey,
+    priorityFeeMultiplier,
+    debug,
+    worldAddress,
+    createNamespace,
+    disableTxWait,
+    pollInterval,
+  } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -89,42 +99,57 @@ export async function deploy(
   );
 
   // Deploy default World modules
-  const defaultModules: Record<string, Promise<string>> = {
-    // TODO: these only need to be deployed once per chain, add a check if they exist already
-    CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, disableTxWait, "CoreModule"),
-    KeysWithValueModule: deployContract(
-      KeysWithValueModuleData.abi,
-      KeysWithValueModuleData.bytecode,
-      disableTxWait,
-      "KeysWithValueModule"
-    ),
-    KeysInTableModule: deployContract(
-      KeysInTableModuleData.abi,
-      KeysInTableModuleData.bytecode,
-      disableTxWait,
-      "KeysInTableModule"
-    ),
-    UniqueEntityModule: deployContract(
-      UniqueEntityModuleData.abi,
-      UniqueEntityModuleData.bytecode,
-      disableTxWait,
-      "UniqueEntityModule"
-    ),
-    SnapSyncModule: deployContract(
-      SnapSyncModuleData.abi,
-      SnapSyncModuleData.bytecode,
-      disableTxWait,
-      "SnapSyncModule"
-    ),
-  };
+  const defaultModules: Record<string, Promise<string>> = !createNamespace
+    ? {}
+    : {
+        // TODO: these only need to be deployed once per chain, add a check if they exist already
+        CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, disableTxWait, "CoreModule"),
+        KeysWithValueModule: deployContract(
+          KeysWithValueModuleData.abi,
+          KeysWithValueModuleData.bytecode,
+          disableTxWait,
+          "KeysWithValueModule"
+        ),
+        KeysInTableModule: deployContract(
+          KeysInTableModuleData.abi,
+          KeysInTableModuleData.bytecode,
+          disableTxWait,
+          "KeysInTableModule"
+        ),
+        UniqueEntityModule: deployContract(
+          UniqueEntityModuleData.abi,
+          UniqueEntityModuleData.bytecode,
+          disableTxWait,
+          "UniqueEntityModule"
+        ),
+        SnapSyncModule: deployContract(
+          SnapSyncModuleData.abi,
+          SnapSyncModuleData.bytecode,
+          disableTxWait,
+          "SnapSyncModule"
+        ),
+      };
 
   // Deploy user Modules
-  const modulePromises = mudConfig.modules
-    .filter((module) => !defaultModules[module.name]) // Only deploy user modules here, not default modules
-    .reduce<Record<string, Promise<string>>>((acc, module) => {
-      acc[module.name] = deployContractByName(module.name, disableTxWait);
-      return acc;
-    }, defaultModules);
+
+  // Note: when creating a new namespace, we want some default modules
+  // However, when deploying to an existing one, we may not want those (since they'd be already deployed)
+  // Over here, we enforce that when deploying to an existing namespace, you CANNOT deploy a new module
+  // and have to use an existing one, by passing in the module address
+  // TODO: However, a better way to do this is to check if the module exists, and if not, deploy it,
+  // otherwise, get the address of it and simply use that
+  const modulePromises = !createNamespace
+    ? mudConfig.modules.reduce<Record<string, Promise<string>>>((acc, module) => {
+        console.log(chalk.blue(`Using existing deployed module ${module.name}...`));
+        acc[module.name] = Promise.resolve(module.address);
+        return acc;
+      }, {})
+    : mudConfig.modules
+        .filter((module) => !defaultModules[module.name]) // Only deploy user modules here, not default modules
+        .reduce<Record<string, Promise<string>>>((acc, module) => {
+          acc[module.name] = deployContractByName(module.name, disableTxWait);
+          return acc;
+        }, defaultModules);
 
   // Combine all contracts into one object
   const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
@@ -142,7 +167,12 @@ export async function deploy(
   }
 
   // Register namespace
-  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  if (createNamespace && namespace) {
+    console.log(chalk.blue(`Registering namespace ${namespace}`));
+    await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  } else {
+    console.log(chalk.yellow("Skipping namespace registration"));
+  }
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};

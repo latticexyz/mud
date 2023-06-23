@@ -162,6 +162,7 @@ const commandModule: CommandModule<Options, Options> = {
       await deployHandler({
         configPath,
         skipBuild: true,
+        createNamespace: true,
         priorityFeeMultiplier: 1,
         disableTxWait: true,
         pollInterval: 1000,

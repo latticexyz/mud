@@ -33,6 +33,7 @@ const zModuleConfig = z.object({
   name: zModuleName,
   root: z.boolean().default(false),
   args: z.array(z.union([zValueWithType, zDynamicResolution])).default([]),
+  address: z.string().optional(),
 });
 
 // The parsed world config is the result of parsing the user config
