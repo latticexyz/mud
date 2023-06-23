@@ -2,7 +2,7 @@ import { z } from "zod";
 import { DynamicResolution, ValueWithType } from "@latticexyz/config";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
-import { SYSTEM_DEFAULTS } from "./defaults";
+import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
@@ -89,6 +89,23 @@ export interface WorldUserConfig {
   /** Modules to in the World */
   modules?: ModuleConfig[];
 }
+
+export type ExpandWorldUserConfig<C extends WorldUserConfig> = OrDefaults<
+  C,
+  {
+    worldContractName: typeof WORLD_DEFAULTS.worldContractName;
+    worldInterfaceName: typeof WORLD_DEFAULTS.worldInterfaceName;
+    excludeSystems: typeof WORLD_DEFAULTS.excludeSystems;
+    postDeployScript: typeof WORLD_DEFAULTS.postDeployScript;
+    deploysDirectory: typeof WORLD_DEFAULTS.deploysDirectory;
+    worldsFile: typeof WORLD_DEFAULTS.worldsFile;
+    worldgenDirectory: typeof WORLD_DEFAULTS.worldgenDirectory;
+    worldImportPath: typeof WORLD_DEFAULTS.worldImportPath;
+    modules: typeof WORLD_DEFAULTS.modules;
+  }
+> & {
+  systems: ExpandSystemsConfig<C["systems"] extends Record<string, unknown> ? C["systems"] : Record<string, never>>;
+};
 
 export type WorldConfig = z.output<typeof zWorldConfig>;
 export type SystemConfig = WorldConfig["systems"][string];
