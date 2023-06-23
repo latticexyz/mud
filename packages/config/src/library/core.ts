@@ -43,7 +43,7 @@ export function mudCoreConfig<P extends Plugins, C extends MergedPluginsInput<P>
 export function expandConfig<C extends { plugins: Plugins }>(config: C): Record<string, unknown> {
   let expanded = config;
   for (const plugin of Object.values(config.plugins)) {
-    expanded = { ...expanded, ...plugin.expandConfig(config) };
+    expanded = { ...plugin.expandConfig(expanded) };
   }
   return expanded;
 }

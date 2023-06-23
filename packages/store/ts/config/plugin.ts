@@ -4,7 +4,7 @@ import { ExpandStoreUserConfig, StoreUserConfig, zPluginStoreConfig } from "./st
 
 export function expandConfig<C extends StoreUserConfig>(config: C) {
   // This function gets called within mudConfig.
-  // The call order of config extenders depends on the order of their imports.
+  // The call order of config extenders depends on their order in the `plugins` config option.
   // Any config validation and transformation should be placed here.
   try {
     return zPluginStoreConfig.parse(config) as ExpandStoreUserConfig<C>;
