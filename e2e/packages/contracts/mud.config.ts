@@ -10,5 +10,14 @@ export default mudConfig({
         value: "uint32",
       },
     },
+    Vector: {
+      keySchema: {
+        key: "uint32",
+      },
+      schema: {
+        x: "int32",
+        y: "int32",
+      },
+    },
   },
 });
