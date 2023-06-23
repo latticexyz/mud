@@ -24,7 +24,7 @@ export function renderList<T>(list: T[], renderItem: (item: T, index: number) =>
 /**
  * Renders a comma-separated list of arguments for solidity functions, ignoring empty and undefined ones
  */
-export function renderArguments(args: (string | undefined)[]) {
+export function renderArguments(args: (string | undefined)[] | readonly (string | undefined)[]) {
   const filteredArgs = args.filter((arg) => arg !== undefined && arg !== "") as string[];
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }

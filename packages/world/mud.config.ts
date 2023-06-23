@@ -2,7 +2,7 @@ import { mudConfig, storePlugin } from "@latticexyz/store";
 import { worldPlugin } from "./ts/library";
 
 export default mudConfig({
-  plugins: { storePlugin: storePlugin, worldPlugin: worldPlugin },
+  plugins: { storePlugin, worldPlugin },
   worldImportPath: "../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",

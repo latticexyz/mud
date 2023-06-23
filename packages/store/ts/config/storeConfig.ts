@@ -274,7 +274,9 @@ export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig
 export type StoreUserConfig = Omit<z.input<typeof zStoreConfig>, "enums"> & {
   enums?: Record<string, string[] | readonly string[]>;
 };
-export type StoreConfig = z.output<typeof zStoreConfig>;
+export type StoreConfig = Omit<z.output<typeof zStoreConfig>, "enums"> & {
+  enums: Record<string, string[] | readonly string[]>;
+};
 
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);

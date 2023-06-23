@@ -88,6 +88,13 @@ export interface WorldUserConfig {
   worldImportPath?: string;
   /** Modules to in the World */
   modules?: ModuleConfig[];
+
+  /**
+   * Workaround to avoid `Type ... has no properties in common with type 'WorldUserConfig'`
+   * because mudConfig may have no overlap with WorldUserConfig (which is a weak type)
+   * https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-4.html#weak-type-detection
+   */
+  [prop: string]: unknown;
 }
 
 export type ExpandWorldUserConfig<C extends WorldUserConfig> = OrDefaults<

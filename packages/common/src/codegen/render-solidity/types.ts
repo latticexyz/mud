@@ -62,5 +62,5 @@ export type RenderFieldTypeWrappingData = {
 
 export interface RenderEnum {
   name: string;
-  memberNames: string[];
+  memberNames: string[] | readonly string[];
 }

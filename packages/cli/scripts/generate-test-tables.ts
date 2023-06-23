@@ -1,16 +1,18 @@
 import path from "path";
-import { StoreConfig } from "@latticexyz/store";
-import { tablegen } from "@latticexyz/store/codegen";
-import { mudConfig } from "@latticexyz/world/register";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
+import { mudConfig, storePlugin } from "@latticexyz/store";
+import { tablegen } from "@latticexyz/store/codegen";
+import { worldPlugin } from "@latticexyz/world";
 import { logError } from "../src/utils/errors";
+import { ExpandConfig, expandConfig } from "@latticexyz/config";
+import { MergeReturnType } from "@latticexyz/common/type-utils";
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.mts` in cli package (could cause issues),
 // this also tests that mudConfig and tablegen can work as standalone functions
-let config;
-try {
-  config = mudConfig({
+function loadTestConfig() {
+  const config = mudConfig({
+    plugins: { storePlugin, worldPlugin },
     tables: {
       Statics: {
         keySchema: {
@@ -68,15 +70,20 @@ try {
       Enum1: ["E1", "E2", "E3"],
       Enum2: ["E1"],
     },
-  });
-} catch (error: unknown) {
-  logError(error);
+  } as const);
+
+  const _typedExpandConfig = expandConfig as ExpandConfig<typeof config>;
+  type ExpandedConfig = MergeReturnType<typeof _typedExpandConfig<typeof config>>;
+  const expandedConfig = expandConfig(config) as ExpandedConfig;
+
+  return expandedConfig;
 }
 
-const srcDirectory = await getSrcDirectory();
-
-if (config !== undefined) {
+try {
+  const srcDirectory = await getSrcDirectory();
+  const config = loadTestConfig();
   tablegen(config, path.join(srcDirectory, config.codegenDirectory));
-} else {
+} catch (error: unknown) {
+  logError(error);
   process.exit(1);
 }
