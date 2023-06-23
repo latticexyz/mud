@@ -20,6 +20,7 @@ export type DeployOptions = {
   saveDeployment: boolean;
   rpc?: string;
   worldAddress?: string;
+  createNamespace: boolean;
   srcDir?: string;
   disableTxWait: boolean;
   pollInterval: number;

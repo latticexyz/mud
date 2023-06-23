@@ -27,6 +27,7 @@ export interface DeployConfig {
   priorityFeeMultiplier: number;
   debug?: boolean;
   worldAddress?: string;
+  createNamespace: boolean;
   disableTxWait: boolean;
   pollInterval: number;
 }
@@ -45,8 +46,17 @@ export async function deploy(
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
-    deployConfig;
+  const {
+    profile,
+    rpc,
+    privateKey,
+    priorityFeeMultiplier,
+    debug,
+    worldAddress,
+    createNamespace,
+    disableTxWait,
+    pollInterval,
+  } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -142,7 +152,12 @@ export async function deploy(
   }
 
   // Register namespace
-  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  if (createNamespace && namespace) {
+    console.log(chalk.blue(`Registering namespace ${namespace}`));
+    await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  } else {
+    console.log(chalk.yellow("Skipping namespace registration"));
+  }
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
