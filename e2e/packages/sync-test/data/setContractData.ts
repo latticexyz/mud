@@ -2,6 +2,9 @@ import { Page } from "@playwright/test";
 import { Data, EncodedData } from "./types";
 import { encodeTestData } from "./encodeTestData";
 
+/**
+ * Writes contract data by calling `world.setRecord` via the client
+ */
 export async function setContractData(page: Page, data: Data) {
   const encodedData = encodeTestData(data);
 

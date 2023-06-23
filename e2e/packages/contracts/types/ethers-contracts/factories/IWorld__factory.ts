@@ -725,13 +725,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "pop",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "bytes16",
@@ -788,37 +781,6 @@ const _abi = [
       },
     ],
     name: "popFromField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "num",
-        type: "uint32",
-      },
-    ],
-    name: "push",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint32",
-        name: "start",
-        type: "uint32",
-      },
-      {
-        internalType: "uint32",
-        name: "end",
-        type: "uint32",
-      },
-    ],
-    name: "pushRange",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1162,19 +1124,6 @@ const _abi = [
       },
     ],
     name: "revokeAccess",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint32[]",
-        name: "list",
-        type: "uint32[]",
-      },
-    ],
-    name: "set",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -30,9 +30,6 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     ? Number(params.get("initialBlockNumber"))
     : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
 
-  const privateKey = params.get("privateKey") ?? getBurnerWallet().value;
-  console.log("private key", privateKey);
-
   return {
     clock: {
       period: 1000,
@@ -44,7 +41,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
       jsonRpcUrl: params.get("rpc") ?? chain.rpcUrls.default.http[0],
       wsRpcUrl: params.get("wsRpc") ?? chain.rpcUrls.default.webSocket?.[0],
     },
-    privateKey,
+    privateKey: params.get("privateKey") ?? getBurnerWallet().value,
     chainId,
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
