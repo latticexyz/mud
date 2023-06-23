@@ -16,7 +16,7 @@ export const yDeployOptions = {
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
-  createNamespace: { type: "boolean", desc: "Deploy to a new namespace", default: true },
+  createNamespace: { type: "boolean", desc: "Create and deploy to a new namespace", default: true },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
   pollInterval: {

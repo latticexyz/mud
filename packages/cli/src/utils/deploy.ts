@@ -131,10 +131,16 @@ export async function deploy(
       };
 
   // Deploy user Modules
+
+  // Note: when creating a new namespace, we want some default modules
+  // However, when deploying to an existing one, we may not want those (since they'd be already deployed)
+  // Over here, we enforce that when deploying to an existing namespace, you CANNOT deploy a new module
+  // and have to use an existing one, by passing in the module address
+  // TODO: However, a better way to do this is to check if the module exists, and if not, deploy it,
+  // otherwise, get the address of it and simply use that
   const modulePromises = !createNamespace
     ? mudConfig.modules.reduce<Record<string, Promise<string>>>((acc, module) => {
         console.log(chalk.blue(`Using existing deployed module ${module.name}...`));
-        console.log(module.address);
         acc[module.name] = Promise.resolve(module.address);
         return acc;
       }, {})
