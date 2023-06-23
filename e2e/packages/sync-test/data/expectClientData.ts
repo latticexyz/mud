@@ -1,5 +1,5 @@
 import { Page, expect } from "@playwright/test";
-import { Data } from "./testData";
+import { Data } from "./types";
 import { readClientStore } from "./readClientStore";
 import config from "../../contracts/mud.config";
 

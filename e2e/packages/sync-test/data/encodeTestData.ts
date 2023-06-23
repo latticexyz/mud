@@ -10,7 +10,9 @@ export function encodeTestData(testData: Data) {
   return mapObject(testData, (records, table) =>
     records
       ? records.map((record) => ({
-          key: Object.values(record.key).map((key) => encodeAbiParameters([{ type: "bytes32" }], [toHex(key as any)])),
+          key: Object.values(record.key).map((key) =>
+            encodeAbiParameters([{ type: "bytes32" }], [toHex(key as any, { size: 32 })])
+          ),
           value: encodePacked(Object.values(config.tables[table].schema), Object.values(record.value)),
         }))
       : undefined

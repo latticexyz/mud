@@ -4,6 +4,7 @@ const {
   network: {
     storeCache,
     network: { blockNumber$ },
+    worldSend,
     worldContract,
     components: { LoadingState },
   },
@@ -12,6 +13,7 @@ const {
 const _window = window as any;
 _window.storeCache = storeCache;
 _window.worldContract = worldContract;
+_window.worldSend = worldSend;
 
 // Update block number in the UI
 blockNumber$.subscribe((blockNumber) => {
