@@ -1,5 +1,6 @@
 import { Hex } from "viem";
 import { StaticAbiType } from "./schemaAbiTypes";
+import { LiteralToBroad } from "./utils";
 
 // Fixed-length ABI types
 
@@ -109,8 +110,9 @@ export const staticAbiTypeToDefaultValue = {
   address: "0x0000000000000000000000000000000000000000",
 } as const satisfies Record<StaticAbiType, StaticPrimitiveType>;
 
-export type StaticAbiTypeToPrimitiveType<TStaticAbiType extends StaticAbiType = StaticAbiType> =
-  (typeof staticAbiTypeToDefaultValue)[TStaticAbiType];
+export type StaticAbiTypeToPrimitiveType<TStaticAbiType extends StaticAbiType = StaticAbiType> = LiteralToBroad<
+  (typeof staticAbiTypeToDefaultValue)[TStaticAbiType]
+>;
 
 export const staticAbiTypeToByteLength = {
   uint8: 1,
