@@ -392,9 +392,6 @@ importers:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
-      run-pty:
-        specifier: ^4.0.3
-        version: 4.0.3
       solhint:
         specifier: ^3.4.1
         version: 3.4.1
@@ -3272,10 +3269,6 @@ packages:
       thenify-all: 1.6.0
     dev: true
 
-  /nan@2.17.0:
-    resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
-    dev: true
-
   /nanoid@3.3.6:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -3313,13 +3306,6 @@ packages:
       abort-controller-x: 0.4.1
       nice-grpc-common: 2.0.2
     dev: false
-
-  /node-pty@0.10.1:
-    resolution: {integrity: sha512-JTdtUS0Im/yRsWJSx7yiW9rtpfmxqxolrtnyKwPLI+6XqTAPW/O2MjS8FYL4I5TsMbH2lVgDb2VMjp+9LoQGNg==}
-    requiresBuild: true
-    dependencies:
-      nan: 2.17.0
-    dev: true
 
   /node-releases@2.0.10:
     resolution: {integrity: sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==}
@@ -3717,14 +3703,6 @@ packages:
       queue-microtask: 1.2.3
     dev: true
 
-  /run-pty@4.0.3:
-    resolution: {integrity: sha512-O8IWhjhChwLq7psyZZDY+Pv/CSEM7DLBXqUqEVWKMXGR18s2o2ma4IEanKWSSLBULNCpHn3n9RYvybc+7IaBig==}
-    hasBin: true
-    dependencies:
-      node-pty: 0.10.1
-      tiny-decoders: 7.0.1
-    dev: true
-
   /rxjs@7.5.5:
     resolution: {integrity: sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==}
     dependencies:
@@ -4038,10 +4016,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: false
-
-  /tiny-decoders@7.0.1:
-    resolution: {integrity: sha512-P1LaHTLASl/lCrdtwgAAVwxt4bEAPmxpf9HMQrlCkAseaT8oH8oxm8ndy4nx5rLTcL5U/Qxp1a+FDoQfS/ZgQQ==}
-    dev: true
 
   /tiny-worker@2.3.0:
     resolution: {integrity: sha512-pJ70wq5EAqTAEl9IkGzA+fN0836rycEuz2Cn6yeZ6FRzlVS5IDOkFHpIoEsksPRQV34GDqXm65+OlnZqUSyK2g==}
