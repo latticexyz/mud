@@ -145,14 +145,13 @@ importers:
         version: 0.31.4(jsdom@22.0.0)
 
   packages/sync-test:
-    dependencies:
-      dotenv:
-        specifier: ^16.0.3
-        version: 16.0.3
     devDependencies:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
+      '@latticexyz/network':
+        specifier: link:../../../packages/network
+        version: link:../../../packages/network
       '@latticexyz/schema-type':
         specifier: link:../../../packages/schema-type
         version: link:../../../packages/schema-type
@@ -168,6 +167,9 @@ importers:
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
@@ -1252,6 +1254,7 @@ packages:
   /dotenv@16.0.3:
     resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
     engines: {node: '>=12'}
+    dev: true
 
   /elliptic@6.5.4:
     resolution: {integrity: sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==}

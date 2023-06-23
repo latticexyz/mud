@@ -11,9 +11,9 @@ import {
   syncMode,
   openClientWithRootAccount,
 } from "./setup";
-import { setContractData, expectClientData, testData1 } from "./data";
+import { setContractData, expectClientData, testData1, mergeTestData, testData2, waitForInitialSync } from "./data";
 
-describe.skip("Sync from MODE", async () => {
+describe("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let anvilProcess: ExecaChildProcess;
   let webserver: ViteDevServer;
@@ -50,15 +50,22 @@ describe.skip("Sync from MODE", async () => {
     anvilProcess?.kill();
   });
 
-  test("test data should be set", async () => {
+  test("should sync test data", async () => {
     await openClientWithRootAccount(page, { modeUrl });
+    await waitForInitialSync(page);
 
-    // Wait for initial sync
-    const blockNumber = page.locator("#block");
-    await expect(blockNumber).not.toHaveText("-1");
-
+    // Write data to the contracts, expect the client to be synced
     await setContractData(page, testData1);
     await expectClientData(page, testData1);
+
+    // Write more data to the contracts, expect client to update
+    await setContractData(page, testData2);
+    await expectClientData(page, mergeTestData(testData1, testData2));
+
+    // Reload the page, expect all data to still be set
+    await page.reload();
+    await waitForInitialSync(page);
+    await expectClientData(page, mergeTestData(testData1, testData2));
 
     asyncErrorHandler.expectNoAsyncErrors();
   });
@@ -67,10 +74,7 @@ describe.skip("Sync from MODE", async () => {
     modeProcess?.kill();
 
     await openClientWithRootAccount(page, { modeUrl });
-
-    // Wait for initial sync
-    const blockNumber = page.locator("#block");
-    await expect(blockNumber).not.toHaveText("-1");
+    await waitForInitialSync(page);
 
     expect(asyncErrorHandler.getErrors()).toHaveLength(1);
     expect(asyncErrorHandler.getErrors()[0]).toContain(

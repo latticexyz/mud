@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, test } from "vitest";
 import type { ViteDevServer } from "vite";
-import { expect, Browser, Page } from "@playwright/test";
+import { Browser, Page } from "@playwright/test";
 import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
-import { setContractData, expectClientData, testData1, testData2, mergeTestData } from "./data";
+import { setContractData, expectClientData, testData1, testData2, mergeTestData, waitForInitialSync } from "./data";
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -37,10 +37,7 @@ describe("Sync from RPC", async () => {
 
   test("should sync test data", async () => {
     await openClientWithRootAccount(page);
-
-    // Wait for initial connection
-    const blockNumber = page.locator("#block");
-    await expect(blockNumber).not.toHaveText("-1");
+    await waitForInitialSync(page);
 
     // Write data to the contracts, expect the client to be synced
     await setContractData(page, testData1);
@@ -51,15 +48,10 @@ describe("Sync from RPC", async () => {
     await expectClientData(page, mergeTestData(testData1, testData2));
 
     // Reload the page, expect all data to still be set
-    const currentBlockNumber = Number(await blockNumber.innerText());
     await page.reload();
-    await waitForBlockNumber(currentBlockNumber);
-    // await expectClientData(page, mergeTestData(testData1, testData2));
+    await waitForInitialSync(page);
+    await expectClientData(page, mergeTestData(testData1, testData2));
 
     asyncErrorHandler.expectNoAsyncErrors();
   });
 });
-
-async function waitForBlockNumber(blockNumber: number) {
-  // TODO
-}
