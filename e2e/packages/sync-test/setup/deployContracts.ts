@@ -2,7 +2,10 @@ import chalk from "chalk";
 import { execa } from "execa";
 
 export function deployContracts(rpc: string) {
-  const deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", rpc], { cwd: "../contracts", stdio: "pipe" });
+  const deploymentProcess = execa("pnpm", ["mud", "deploy", "--rpc", rpc, "--disableTxWait"], {
+    cwd: "../contracts",
+    stdio: "pipe",
+  });
 
   deploymentProcess.stdout?.on("data", (data) => {
     console.log(chalk.blueBright("[mud deploy]:"), data.toString());
