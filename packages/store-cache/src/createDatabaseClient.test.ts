@@ -1,23 +1,32 @@
+import { MergeReturnType } from "@latticexyz/common/type-utils";
+import { expandConfig, ExpandConfig } from "@latticexyz/config";
+import { mudConfig, storePlugin } from "@latticexyz/store";
 import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { createDatabase, createDatabaseClient } from ".";
-import { mudConfig } from "@latticexyz/store/register";
 import { KeyValue } from "./types";
 
-const config = mudConfig({
-  namespace: "somenamespace",
-  tables: {
-    Counter: { keySchema: { first: "bytes32", second: "uint256" }, schema: "uint256" },
-    Position: { schema: { x: "int32", y: "int32" } },
-    MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
-    EnumTable: { keySchema: { first: "Enum1" }, schema: "Enum2" },
-    MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
-    BigInt: { keySchema: { first: "uint256" }, schema: "uint256" },
-  },
-  enums: {
-    Enum1: ["A1", "A2"],
-    Enum2: ["B1", "B2"],
-  },
-});
+const config = (() => {
+  const config = mudConfig({
+    plugins: { storePlugin },
+    namespace: "somenamespace",
+    tables: {
+      Counter: { keySchema: { first: "bytes32", second: "uint256" }, schema: "uint256" },
+      Position: { schema: { x: "int32", y: "int32" } },
+      MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
+      EnumTable: { keySchema: { first: "Enum1" }, schema: "Enum2" },
+      MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
+      BigInt: { keySchema: { first: "uint256" }, schema: "uint256" },
+    },
+    enums: {
+      Enum1: ["A1", "A2"],
+      Enum2: ["B1", "B2"],
+    },
+  } as const);
+
+  const _typedExpandConfig = expandConfig as ExpandConfig<typeof config>;
+  type ExpandedConfig = MergeReturnType<typeof _typedExpandConfig<typeof config>>;
+  return expandConfig(config) as ExpandedConfig;
+})();
 
 describe("createDatabaseClient", () => {
   let db: ReturnType<typeof createDatabase>;

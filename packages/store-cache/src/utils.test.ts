@@ -1,15 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createDatabase, createDatabaseClient } from ".";
-import { mudConfig } from "@latticexyz/store/register";
+import { MergeReturnType } from "@latticexyz/common/type-utils";
+import { expandConfig, ExpandConfig } from "@latticexyz/config";
+import { mudConfig, storePlugin } from "@latticexyz/store";
 import { scan, subscribe } from "./utils";
 import { KeyValue } from "./types";
 
-const config = mudConfig({
-  tables: {
-    MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
-    Position: { schema: { x: "int32", y: "int32" } },
-  },
-});
+const config = (() => {
+  const config = mudConfig({
+    plugins: { storePlugin },
+    tables: {
+      MultiKey: { keySchema: { first: "bytes32", second: "uint32" }, schema: "int32" },
+      Position: { schema: { x: "int32", y: "int32" } },
+    },
+  } as const);
+
+  const _typedExpandConfig = expandConfig as ExpandConfig<typeof config>;
+  type ExpandedConfig = MergeReturnType<typeof _typedExpandConfig<typeof config>>;
+  return expandConfig(config) as ExpandedConfig;
+})();
 
 describe("utils", () => {
   let db: ReturnType<typeof createDatabase>;
