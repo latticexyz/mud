@@ -532,7 +532,7 @@ export async function deploy(
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
-      if (debug) console.error(error);
+      console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
