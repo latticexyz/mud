@@ -1,27 +1,49 @@
-import { MUDCoreContext } from "./context";
+import { UnionToIntersection } from "@latticexyz/common/type-utils";
+import { MudPlugin, Plugins } from "./types";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface MUDCoreUserConfig {}
+// Helper type to infer the input types from a plugins config as union (InputA | InputB)
+type PluginsInput<P extends Plugins> = Parameters<P[keyof P]["expandConfig"]>[0];
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface MUDCoreConfig {}
+/**
+ * Infer the plugin input types as intersection (InputA & InputB)
+ */
+export type MergedPluginsInput<P extends Plugins> = UnionToIntersection<PluginsInput<P>>;
 
-export type MUDConfigExtender = (config: MUDCoreConfig) => Record<string, unknown>;
-
-/** Resolver that sequentially passes the config through all the plugins */
-export function mudCoreConfig(config: MUDCoreUserConfig): MUDCoreConfig {
-  // config types can change with plugins, `any` helps avoid errors when typechecking dependencies
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let configAsAny = config as any;
-  const context = MUDCoreContext.getContext();
-  for (const extender of context.configExtenders) {
-    configAsAny = extender(configAsAny);
-  }
-  return configAsAny;
+/**
+ * Helper function to typecheck a plugin definition.
+ */
+export function defineMUDPlugin<P extends MudPlugin>(plugin: P): P {
+  return plugin;
 }
 
-/** Utility for plugin developers to extend the core config */
-export function extendMUDCoreConfig(extender: MUDConfigExtender) {
-  const context = MUDCoreContext.getContext();
-  context.configExtenders.push(extender);
+/**
+ * Helper function to typecheck a config.
+ */
+export function mudCoreConfig<P extends Plugins, C extends MergedPluginsInput<P>>(config: { plugins: P } & C) {
+  return config;
+}
+
+/**
+ * Helper function to sequentially apply `expandConfig` of each plugin.
+ * Use ExpandConfig to strongly type the result.
+ *
+ * Usage:
+ * ```
+ * const _typedExpandConfig = expandConfig as ExpandConfig<typeof config>;
+ * type ExpandedConfig = MergeReturnType<typeof _typedExpandConfig<typeof config>>;
+ * const expandedConfig = expandConfig(config) as ExpandedConfig;
+ * ```
+ *
+ * This function can't just return `MergeReturnType<ExpandConfig<C><C>>`
+ * because typescript does not support higher-kinded types
+ * (same reason you can't have `expandConfig<C<R> extends { plugins: Plugins }>`).
+ * `typeof config` has a generic in it, a generic inside a generic would get flattened,
+ * so it must be expanded inline.
+ */
+export function expandConfig<C extends { plugins: Plugins }>(config: C): Record<string, unknown> {
+  let expanded = config;
+  for (const plugin of Object.values(config.plugins)) {
+    expanded = { ...expanded, ...plugin.expandConfig(config) };
+  }
+  return expanded;
 }

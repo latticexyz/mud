@@ -13,7 +13,6 @@
     ".": "./dist/ts/index.js",
     "./codegen": "./dist/ts/codegen/index.js",
     "./config": "./dist/ts/config/index.js",
-    "./register": "./dist/ts/register/index.js",
     "./abi/*": "./abi/*",
     "./*": "./dist/*"
   },
@@ -27,9 +26,6 @@
       ],
       "config": [
         "./ts/config/index.ts"
-      ],
-      "register": [
-        "./ts/register/index.ts"
       ]
     }
   },

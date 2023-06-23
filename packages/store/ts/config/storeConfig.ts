@@ -10,10 +10,10 @@ import type {
 import {
   // validation utils
   getDuplicates,
+  MergedPluginsInput,
   parseStaticArray,
+  Plugins,
   STORE_SELECTOR_MAX_LENGTH,
-  // config
-  MUDCoreUserConfig,
   // schemas
   zObjectName,
   zSelector,
@@ -198,7 +198,7 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
        *
        * (enums are inferred to be absent)
        */
-      enums?: Record<EnumNames, string[]>;
+      enums?: Record<EnumNames, string[] | readonly string[]>;
     }
   : StringForUnion extends EnumNames
   ? {
@@ -207,7 +207,7 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
        *
        * (enums aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
        */
-      enums?: Record<EnumNames, string[]>;
+      enums?: Record<EnumNames, string[] | readonly string[]>;
     }
   : {
       /**
@@ -215,12 +215,8 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
        *
        * Enums defined here can be used as types in table schemas/keys
        */
-      enums: Record<EnumNames, string[]>;
+      enums: Record<EnumNames, string[] | readonly string[]>;
     };
-
-export type FullEnumsConfig<EnumNames extends StringForUnion> = {
-  enums: Record<EnumNames, string[]>;
-};
 
 export const zEnumsConfig = z.object({
   enums: z.record(zUserEnumName, zUserEnum).default(DEFAULTS.enums),
@@ -235,10 +231,11 @@ export const zEnumsConfig = z.object({
 // zod doesn't preserve doc comments
 /** MUDCoreUserConfig wrapper to use generics in some options for better type inference */
 export type MUDUserConfig<
-  T extends MUDCoreUserConfig = MUDCoreUserConfig,
+  P extends Plugins,
+  C extends MergedPluginsInput<P>,
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = T &
+> = C &
   EnumsConfig<EnumNames> & {
     /**
      * Configuration for each table.
@@ -273,11 +270,27 @@ const StoreConfigUnrefined = z
 // finally validate global conditions
 export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
-export type StoreUserConfig = z.input<typeof zStoreConfig>;
+// arrays need custom types for `as const` to work (zod doesn't allow readonly arrays as inputs)
+export type StoreUserConfig = Omit<z.input<typeof zStoreConfig>, "enums"> & {
+  enums?: Record<string, string[] | readonly string[]>;
+};
 export type StoreConfig = z.output<typeof zStoreConfig>;
 
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
+
+export type ExpandStoreUserConfig<C extends StoreUserConfig> = OrDefaults<
+  C,
+  {
+    enums: typeof DEFAULTS.enums;
+    namespace: typeof DEFAULTS.namespace;
+    storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
+    userTypesPath: typeof PATH_DEFAULTS.userTypesPath;
+    codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
+  }
+> & {
+  tables: ExpandTablesConfig<C["tables"]>;
+};
 
 /************************************************************************
  *

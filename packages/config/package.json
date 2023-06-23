@@ -11,16 +11,12 @@
   "type": "module",
   "exports": {
     ".": "./dist/library/index.js",
-    "./register": "./dist/register/index.js",
     "./node": "./dist/node/index.js"
   },
   "typesVersions": {
     "*": {
       "index": [
         "./src/library/index.ts"
-      ],
-      "register": [
-        "./src/register/index.ts"
       ],
       "node": [
         "./src/node/index.ts"

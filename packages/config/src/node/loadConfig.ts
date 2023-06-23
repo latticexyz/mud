@@ -7,8 +7,8 @@ import { pathToFileURL } from "url";
 import os from "os";
 
 // In order of preference files are checked
-const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.config.mts"];
-const TEMP_CONFIG = "mud.config.temp.mjs";
+const CONFIG_FILE = path.join(".mud", "expandedConfig.ts");
+const TEMP_CONFIG = path.join(".mud", "expandedConfig.temp.mjs");
 
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
@@ -40,7 +40,7 @@ export async function resolveConfigPath(configPath: string | undefined, toFileUR
 }
 
 async function getUserConfigPath() {
-  const tsConfigPath = await findUp(configFiles);
+  const tsConfigPath = await findUp(CONFIG_FILE);
   if (tsConfigPath === undefined) {
     throw new NotInsideProjectError();
   }

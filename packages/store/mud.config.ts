@@ -1,6 +1,7 @@
-import { mudConfig } from "./ts/register";
+import { mudConfig, storePlugin } from "./ts";
 
 export default mudConfig({
+  plugins: { storePlugin },
   storeImportPath: "../../",
   namespace: "mudstore",
   enums: {
@@ -45,4 +46,4 @@ export default mudConfig({
       schema: "bool",
     },
   },
-});
+} as const);
