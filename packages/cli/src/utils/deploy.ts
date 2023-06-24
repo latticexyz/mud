@@ -28,6 +28,7 @@ export interface DeployConfig {
   debug?: boolean;
   worldAddress?: string;
   createNamespace: boolean;
+  estimateGas: boolean;
   disableTxWait: boolean;
   pollInterval: number;
 }
@@ -54,6 +55,7 @@ export async function deploy(
     debug,
     worldAddress,
     createNamespace,
+    estimateGas,
     disableTxWait,
     pollInterval,
   } = deployConfig;
@@ -524,7 +526,11 @@ export async function deploy(
   ): Promise<Awaited<ReturnType<Awaited<ReturnType<C[F]>>["wait"]>>> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
-      const gasLimit = await contract.estimateGas[func].apply(null, args);
+      // We are manually specifying a high gasLimit since deploying large STORE tables is expensive
+      // and the estimateGas function cannot properly estimate gas usage
+      // Since this is used in the cli only for deployment, it's okay to use a high gasLimit
+      const gasLimit = estimateGas ? await contract.estimateGas[func].apply(null, args) : 10_000_000;
+
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
       const txPromise = contract[func]
         .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas }])
