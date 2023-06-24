@@ -22,7 +22,7 @@ export async function worldgen(
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
     const data = readFileSync(system.path, "utf8");
-    // get external funcions from a contract
+    // get external functions from a contract
     const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
     const imports = symbolImports.map((symbolImport) => {
       if (symbolImport.path[0] === ".") {

@@ -17,6 +17,11 @@ export const yDeployOptions = {
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   createNamespace: { type: "boolean", desc: "Create and deploy to a new namespace", default: true },
+  estimateGas: {
+    type: "boolean",
+    desc: "Estimate gas required before deploying a contract. If false, a high gas estimate is used instead. Useful for deploying large contracts/STORE tables where you can't estimate gas.",
+    default: false,
+  },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
   pollInterval: {
