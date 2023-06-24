@@ -20,7 +20,7 @@ export const yDeployOptions = {
   estimateGas: {
     type: "boolean",
     desc: "Estimate gas required before deploying a contract. If false, a high gas estimate is used instead. Useful for deploying large contracts/STORE tables where you can't estimate gas.",
-    default: true,
+    default: false,
   },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
