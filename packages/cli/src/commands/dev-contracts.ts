@@ -163,7 +163,7 @@ const commandModule: CommandModule<Options, Options> = {
         configPath,
         skipBuild: true,
         createNamespace: true,
-        estimateGas: false,
+        estimateGas: true,
         priorityFeeMultiplier: 1,
         disableTxWait: true,
         pollInterval: 1000,
