@@ -51,5 +51,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    Multi: (() => {
+      const tableId = new TableId("", "Multi");
+      return defineComponent(
+        world,
+        {
+          num: RecsType.BigInt,
+          value: RecsType.Boolean,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHex(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }
