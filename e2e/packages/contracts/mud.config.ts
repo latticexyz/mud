@@ -19,5 +19,11 @@ export default mudConfig({
         y: "int32",
       },
     },
+    NumberList: {
+      keySchema: {},
+      schema: {
+        value: "uint32[]",
+      },
+    },
   },
 });

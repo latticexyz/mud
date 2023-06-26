@@ -11,7 +11,18 @@ import {
   syncMode,
   openClientWithRootAccount,
 } from "./setup";
-import { setContractData, expectClientData, testData1, mergeTestData, testData2, waitForInitialSync } from "./data";
+import {
+  setContractData,
+  expectClientData,
+  testData1,
+  mergeTestData,
+  testData2,
+  waitForInitialSync,
+  push,
+  pushRange,
+  pop,
+} from "./data";
+import { range } from "@latticexyz/utils";
 
 describe("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -80,5 +91,26 @@ describe("Sync from MODE", async () => {
     expect(asyncErrorHandler.getErrors()[0]).toContain(
       "MODE Error:  ClientError: /mode.QueryLayer/GetPartialState UNKNOWN: Response closed without headers"
     );
+  });
+
+  test("should sync number list modified via system", async () => {
+    await openClientWithRootAccount(page);
+    await waitForInitialSync(page);
+
+    // Push one element to the array
+    await push(page, 42);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42] } }] });
+
+    // Push 5000 elements to the array
+    await pushRange(page, 0, 5000);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(5000, 1, 0)] } }] });
+
+    // Pop one element from the array
+    await pop(page);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
+
+    // Should not have thrown errors
+    // TODO: uncomment once https://github.com/latticexyz/mud/pull/1048 is merged
+    // asyncErrorHandler.expectNoAsyncErrors();
   });
 });
