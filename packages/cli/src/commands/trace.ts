@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
@@ -74,7 +74,7 @@ const commandModule: CommandModule<Options, Options> = {
     for (const name of names) {
       const systemSelector = new TableId(namespace, name);
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId.toHexString(), [systemSelector.toHexString()], 0);
+      const address = await WorldContract.getField(systemsTableId.toHex(), [systemSelector.toHex()], 0);
       labels.push({ name, address });
     }
 

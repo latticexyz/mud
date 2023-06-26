@@ -1,4 +1,4 @@
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { Contract, utils } from "ethers";
 import { metadataTableId, schemaTableId, TableMetadata } from "../common";
 import { decodeData } from "./decodeData";
@@ -12,7 +12,7 @@ export const metadataCache: Partial<Record<`${string}:${string}`, Promise<TableM
 // the Contract arguments below assume that they're bound to a provider
 
 export function getMetadata(world: Contract, table: TableId): Promise<TableMetadata> | undefined {
-  const cacheKey = `${world.address}:${table.toHexString()}` as const;
+  const cacheKey = `${world.address}:${table.toHex()}` as const;
   return metadataCache[cacheKey];
 }
 
@@ -21,7 +21,7 @@ export function registerMetadata(
   table: TableId,
   metadata?: TableMetadata
 ): Promise<TableMetadata | undefined> {
-  const cacheKey = `${world.address}:${table.toHexString()}` as const;
+  const cacheKey = `${world.address}:${table.toHex()}` as const;
 
   const cachedMetadataPromise = metadataCache[cacheKey];
   if (cachedMetadataPromise) {
@@ -50,7 +50,7 @@ export function registerMetadata(
   // TODO: populate from ECS cache before fetching from RPC
 
   // Skip lazily fetching internal tables
-  if (table.toHexString() === schemaTableId.toHexString() || table.toHexString() === metadataTableId.toHexString()) {
+  if (table.toHex() === schemaTableId.toHex() || table.toHex() === metadataTableId.toHex()) {
     return Promise.resolve(undefined);
   }
 
@@ -59,7 +59,7 @@ export function registerMetadata(
     registerSchema(world, metadataTableId),
     // TODO: figure out how to pass in rawSchema, it was giving me "incorrect length" errors before
     //       we still have to do both calls though, and this is a getter, so this should be fine
-    (world as IStore)["getRecord(bytes32,bytes32[])"](metadataTableId.toHexString(), [table.toHexString()]),
+    (world as IStore)["getRecord(bytes32,bytes32[])"](metadataTableId.toHex(), [table.toHex()]),
   ]).then(([{ valueSchema }, metadataRecord]) => {
     if (valueSchema.isEmpty) {
       console.warn("Metadata schema not found", { table: metadataTableId.toString(), world: world.address });

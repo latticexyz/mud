@@ -2,6 +2,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
   entry: {
+    index: "src/index.ts",
     codegen: "src/codegen/index.ts",
     foundry: "src/foundry/index.ts",
     "type-utils": "src/type-utils/index.ts",

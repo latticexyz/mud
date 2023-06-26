@@ -1,10 +1,11 @@
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { Contract, utils } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { registerMetadata } from "./schemas/tableMetadata";
 import { decodeData } from "./schemas/decodeData";
 import { schemaTableId, metadataTableId } from "./common";
 import { decodeKeyTuple } from "./schemas/decodeKeyTuple";
+import { Hex } from "viem";
 
 export async function decodeStoreSetRecord(
   contract: Contract,
@@ -18,7 +19,7 @@ export async function decodeStoreSetRecord(
   namedKey?: Record<string, unknown>;
 }> {
   // registerSchema event
-  if (table.toHexString() === schemaTableId.toHexString()) {
+  if (table.toHex() === schemaTableId.toHex()) {
     const [tableForSchema, ...otherKeys] = keyTuple;
     if (otherKeys.length) {
       console.warn(
@@ -26,14 +27,14 @@ export async function decodeStoreSetRecord(
         { table, keyTuple }
       );
     }
-    registerSchema(contract, TableId.fromBytes32(utils.arrayify(tableForSchema)), data);
+    registerSchema(contract, TableId.fromHex(tableForSchema as Hex), data);
   }
 
   const { keySchema, valueSchema } = await registerSchema(contract, table);
   const indexedValues = decodeData(valueSchema, data);
   const indexedKey = decodeKeyTuple(keySchema, keyTuple);
 
-  if (table.toHexString() === metadataTableId.toHexString()) {
+  if (table.toHex() === metadataTableId.toHex()) {
     const [tableForMetadata, ...otherKeys] = keyTuple;
     if (otherKeys.length) {
       console.warn(
@@ -43,7 +44,7 @@ export async function decodeStoreSetRecord(
     }
     const tableName = indexedValues[0];
     const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], indexedValues[1]);
-    registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), { tableName, fieldNames });
+    registerMetadata(contract, TableId.fromHex(tableForMetadata as Hex), { tableName, fieldNames });
   }
 
   const metadata = await registerMetadata(contract, table);

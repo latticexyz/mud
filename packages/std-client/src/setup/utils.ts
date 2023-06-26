@@ -23,7 +23,8 @@ import {
   updateComponent,
   Entity,
 } from "@latticexyz/recs";
-import { isDefined, toEthAddress } from "@latticexyz/utils";
+import { isDefined } from "@latticexyz/common/utils";
+import { toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.json";
 import { Contract, BigNumber, Signer } from "ethers";

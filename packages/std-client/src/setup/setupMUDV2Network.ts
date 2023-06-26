@@ -13,7 +13,8 @@ import {
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
-import { keccak256, TableId } from "@latticexyz/utils";
+import { keccak256 } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
 import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
 import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 import { defineStringComponent } from "../components";
@@ -80,7 +81,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     { valueSchema: Type.String, keySchema: Type.String },
     {
       metadata: {
-        contractId: storeSchemaTableId.toHexString(),
+        contractId: storeSchemaTableId.toHex(),
         tableId: storeSchemaTableId.toString(),
       },
     }

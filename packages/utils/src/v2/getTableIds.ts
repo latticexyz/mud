@@ -1,4 +1,4 @@
-import { TableId } from "./TableId";
+import { TableId } from "@latticexyz/common";
 
 const STORE_SELECTOR_MAX_LENGTH = 16;
 
