@@ -17,14 +17,14 @@ pragma solidity >=0.8.0;
 /**
  * Renders a list of lines
  */
-export function renderList<T>(list: T[], renderItem: (item: T, index: number) => string) {
+export function renderList<T>(list: T[], renderItem: (item: T, index: number) => string): string {
   return internalRenderList("", list, renderItem);
 }
 
 /**
  * Renders a comma-separated list of arguments for solidity functions, ignoring empty and undefined ones
  */
-export function renderArguments(args: (string | undefined)[] | readonly (string | undefined)[]) {
+export function renderArguments(args: (string | undefined)[] | readonly (string | undefined)[]): string {
   const filteredArgs = args.filter((arg) => arg !== undefined && arg !== "") as string[];
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }
@@ -35,7 +35,13 @@ export function renderCommonData({
 }: {
   staticResourceData?: StaticResourceData;
   keyTuple: RenderKeyTuple[];
-}) {
+}): {
+  _tableId: string;
+  _typedTableId: string;
+  _keyArgs: string;
+  _typedKeyArgs: string;
+  _keyTupleDefinition: string;
+} {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "bytes32 _tableId";
@@ -58,7 +64,7 @@ export function renderCommonData({
 }
 
 /** For 2 paths which are relative to a common root, create a relative import path from one to another */
-export function solidityRelativeImportPath(fromPath: string, usedInPath: string) {
+export function solidityRelativeImportPath(fromPath: string, usedInPath: string): string {
   // 1st "./" must be added because path strips it,
   // but solidity expects it unless there's "../" ("./../" is fine).
   // 2nd and 3rd "./" forcefully avoid absolute paths (everything is relative to `src`).
@@ -69,7 +75,7 @@ export function solidityRelativeImportPath(fromPath: string, usedInPath: string)
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
-export function renderImports(imports: ImportDatum[]) {
+export function renderImports(imports: ImportDatum[]): string {
   return renderAbsoluteImports(
     imports.map((importDatum) => {
       if ("path" in importDatum) {
@@ -88,7 +94,7 @@ export function renderImports(imports: ImportDatum[]) {
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
-export function renderRelativeImports(imports: RelativeImportDatum[]) {
+export function renderRelativeImports(imports: RelativeImportDatum[]): string {
   return renderAbsoluteImports(
     imports.map(({ symbol, fromPath, usedInPath }) => ({
       symbol,
@@ -101,7 +107,7 @@ export function renderRelativeImports(imports: RelativeImportDatum[]) {
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
-export function renderAbsoluteImports(imports: AbsoluteImportDatum[]) {
+export function renderAbsoluteImports(imports: AbsoluteImportDatum[]): string {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
   for (const { symbol, path } of imports) {
@@ -127,7 +133,7 @@ export function renderWithStore(
     _commentSuffix: string,
     _untypedStore: string | undefined
   ) => string
-) {
+): string {
   let result = "";
   result += callback(undefined, "StoreSwitch", "", undefined);
 
@@ -138,7 +144,10 @@ export function renderWithStore(
   return result;
 }
 
-export function renderTableId(staticResourceData: StaticResourceData) {
+export function renderTableId(staticResourceData: StaticResourceData): {
+  hardcodedTableId: string;
+  tableIdDefinition: string;
+} {
   const hardcodedTableId = `bytes32(abi.encodePacked(bytes16("${staticResourceData.namespace}"), bytes16("${staticResourceData.name}")))`;
 
   const tableIdDefinition = `
@@ -151,7 +160,7 @@ export function renderTableId(staticResourceData: StaticResourceData) {
   };
 }
 
-export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTypeId }: RenderType) {
+export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTypeId }: RenderType): string {
   const innerText = typeUnwrap.length ? `${typeUnwrap}(${name})` : name;
 
   if (internalTypeId === "bytes32") {
@@ -171,7 +180,11 @@ export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTyp
   }
 }
 
-function internalRenderList<T>(lineTerminator: string, list: T[], renderItem: (item: T, index: number) => string) {
+function internalRenderList<T>(
+  lineTerminator: string,
+  list: T[],
+  renderItem: (item: T, index: number) => string
+): string {
   return list
     .map((item, index) => renderItem(item, index) + (index === list.length - 1 ? "" : lineTerminator))
     .join("\n");

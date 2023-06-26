@@ -37,6 +37,7 @@
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/cli": "workspace:*",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/network": "workspace:*",
     "@latticexyz/recs": "workspace:*",
@@ -49,8 +50,8 @@
     "ethers": "^5.7.2",
     "mobx": "^6.7.0",
     "react": "^18.2.0",
-    "rxjs": "^7.5.5",
-    "viem": "1.0.6"
+    "rxjs": "7.5.5",
+    "viem": "1.1.7"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",

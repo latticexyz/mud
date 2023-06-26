@@ -2,7 +2,7 @@ import chalk from "chalk";
 import prettier from "prettier";
 import prettierPluginSolidity from "prettier-plugin-solidity";
 
-export async function formatSolidity(content: string, prettierConfigPath?: string) {
+export async function formatSolidity(content: string, prettierConfigPath?: string): Promise<string> {
   let config;
   if (prettierConfigPath) {
     config = await prettier.resolveConfig(prettierConfigPath);
@@ -32,7 +32,7 @@ export async function formatSolidity(content: string, prettierConfigPath?: strin
   }
 }
 
-export async function formatTypescript(content: string) {
+export async function formatTypescript(content: string): Promise<string> {
   return prettier.format(content, {
     parser: "typescript",
   });

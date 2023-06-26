@@ -8,7 +8,6 @@ yarn.lock
 .parcel-cache
 .docs
 lerna-debug.log
-.retype
 yarn-error.log
 .turbo
 

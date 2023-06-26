@@ -1,5 +1,6 @@
 import { Hex } from "viem";
 import { StaticAbiType, DynamicAbiType } from "./schemaAbiTypes";
+import { LiteralToBroad } from "./utils";
 
 // Variable-length ABI types, where their lengths are encoded by a PackedCounter within the record
 
@@ -112,8 +113,9 @@ export const dynamicAbiTypeToDefaultValue = {
   string: "",
 } as const satisfies Record<DynamicAbiType, DynamicPrimitiveType>;
 
-export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType = DynamicAbiType> =
-  (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType];
+export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType = DynamicAbiType> = LiteralToBroad<
+  (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType]
+>;
 
 export type ArrayAbiTypeToStaticAbiType<T extends string> = T extends `${infer StaticAbiType}[]`
   ? StaticAbiType
