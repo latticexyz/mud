@@ -11,20 +11,12 @@ describe("TableId", () => {
 
   it("throws when converting namespaces >16 bytes", () => {
     const tableId = new TableId("AVeryLongNamespace", "name");
-    expect(() => tableId.toHex()).toThrowErrorMatchingInlineSnapshot(`
-      "Size cannot exceed 16 bytes. Given size: 18 bytes.
-
-      Version: viem@1.0.6"
-    `);
+    expect(() => tableId.toHex()).toThrow("Size cannot exceed 16 bytes. Given size: 18 bytes.");
   });
 
   it("throws when converting names >16 bytes", () => {
     const tableId = new TableId("namespace", "AnUnnecessarilyLongName");
-    expect(() => tableId.toHex()).toThrowErrorMatchingInlineSnapshot(`
-      "Size cannot exceed 16 bytes. Given size: 23 bytes.
-
-      Version: viem@1.0.6"
-    `);
+    expect(() => tableId.toHex()).toThrow("Size cannot exceed 16 bytes. Given size: 23 bytes.");
   });
 
   it("can convert from hex string", () => {

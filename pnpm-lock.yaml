@@ -199,8 +199,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(prettier@2.8.4)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.7
+        version: 1.1.7(typescript@5.0.4)
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -295,8 +295,8 @@ importers:
         specifier: ^6.11.0
         version: 6.11.0(react-dom@18.2.0)(react@18.2.0)
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       tailwind-merge:
         specifier: ^1.12.0
         version: 1.12.0
@@ -304,8 +304,8 @@ importers:
         specifier: ^18.3.2
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.7
+        version: 1.1.7(typescript@5.0.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -432,14 +432,14 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1(google-protobuf@3.21.2)
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       threads:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@4.9.5)
+        specifier: 1.1.7
+        version: 1.1.7(typescript@4.9.5)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -536,8 +536,8 @@ importers:
         specifier: 3.60.0-beta.14
         version: 3.60.0-beta.14
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -567,8 +567,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.7
+        version: 1.1.7(typescript@5.0.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -598,8 +598,8 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       '@testing-library/react-hooks':
         specifier: ^8.0.1
@@ -647,8 +647,8 @@ importers:
         specifier: ^6.7.0
         version: 6.9.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -681,8 +681,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@5.0.4)
+        specifier: 1.1.7
+        version: 1.1.7(typescript@5.0.4)
     devDependencies:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -835,11 +835,11 @@ importers:
         specifier: ^18.2.0
         version: 18.2.0
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
       viem:
-        specifier: 1.0.6
-        version: 1.0.6(typescript@4.9.5)
+        specifier: 1.1.7
+        version: 1.1.7(typescript@4.9.5)
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -1036,8 +1036,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
+        specifier: 7.5.5
+        version: 7.5.5
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -4058,8 +4058,8 @@ packages:
       typescript: 5.0.4
     dev: true
 
-  /@wagmi/chains@1.1.0(typescript@4.9.5):
-    resolution: {integrity: sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==}
+  /@wagmi/chains@1.2.0(typescript@4.9.5):
+    resolution: {integrity: sha512-dmDRipsE54JfyudOBkuhEexqQWcrZqxn/qiujG8SBzMh/az/AH5xlJSA+j1CPWTx9+QofSMF3B7A4gb6XRmSaQ==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
@@ -4069,8 +4069,8 @@ packages:
       typescript: 4.9.5
     dev: false
 
-  /@wagmi/chains@1.1.0(typescript@5.0.4):
-    resolution: {integrity: sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==}
+  /@wagmi/chains@1.2.0(typescript@5.0.4):
+    resolution: {integrity: sha512-dmDRipsE54JfyudOBkuhEexqQWcrZqxn/qiujG8SBzMh/az/AH5xlJSA+j1CPWTx9+QofSMF3B7A4gb6XRmSaQ==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
@@ -7704,7 +7704,7 @@ packages:
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
-      rxjs: 7.8.0
+      rxjs: 7.5.5
       string-width: 4.2.3
       strip-ansi: 6.0.1
       through: 2.3.8
@@ -7725,7 +7725,7 @@ packages:
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
-      rxjs: 7.8.0
+      rxjs: 7.5.5
       string-width: 4.2.3
       strip-ansi: 6.0.1
       through: 2.3.8
@@ -11529,17 +11529,10 @@ packages:
     dependencies:
       tslib: 1.14.1
 
-  /rxjs@7.5.6:
-    resolution: {integrity: sha512-dnyv2/YsXhnm461G+R/Pe5bWP41Nm6LBXEYWI6eiFP4fiwx6WRI/CD0zbdVAudd9xwLEF2IDcKXLHit0FYjUzw==}
+  /rxjs@7.5.5:
+    resolution: {integrity: sha512-sy+H0pQofO95VDmFLzyaw9xNJU4KTRSwQIGM6+iG3SypAtCiLDzpeG8sJrNCWn2Up9km+KhkvTdbkrdy+yzZdw==}
     dependencies:
       tslib: 2.5.0
-    dev: false
-
-  /rxjs@7.8.0:
-    resolution: {integrity: sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==}
-    dependencies:
-      tslib: 2.5.0
-    dev: true
 
   /safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -13158,40 +13151,44 @@ packages:
       builtins: 5.0.1
     dev: true
 
-  /viem@1.0.6(typescript@4.9.5):
-    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
+  /viem@1.1.7(typescript@4.9.5):
+    resolution: {integrity: sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
-      '@wagmi/chains': 1.1.0(typescript@4.9.5)
+      '@wagmi/chains': 1.2.0(typescript@4.9.5)
       abitype: 0.8.7(typescript@4.9.5)(zod@3.21.4)
       isomorphic-ws: 5.0.0(ws@8.12.0)
+      typescript: 4.9.5
       ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil
-      - typescript
       - utf-8-validate
       - zod
     dev: false
 
-  /viem@1.0.6(typescript@5.0.4):
-    resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
+  /viem@1.1.7(typescript@5.0.4):
+    resolution: {integrity: sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==}
+    peerDependencies:
+      typescript: '>=5.0.4'
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
-      '@wagmi/chains': 1.1.0(typescript@5.0.4)
+      '@wagmi/chains': 1.2.0(typescript@5.0.4)
       abitype: 0.8.7(typescript@5.0.4)
       isomorphic-ws: 5.0.0(ws@8.12.0)
+      typescript: 5.0.4
       ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil
-      - typescript
       - utf-8-validate
       - zod
     dev: false
