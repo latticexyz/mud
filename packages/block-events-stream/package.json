@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@viem/anvil": "^0.0.6",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },
