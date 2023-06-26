@@ -25,5 +25,17 @@ export default mudConfig({
         value: "uint32[]",
       },
     },
+    Multi: {
+      keySchema: {
+        a: "uint32",
+        b: "bool",
+        c: "uint256",
+        d: "int120",
+      },
+      schema: {
+        num: "int256",
+        value: "bool",
+      },
+    },
   },
 });
