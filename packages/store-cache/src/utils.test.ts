@@ -237,7 +237,7 @@ describe("utils", () => {
       const callback = vi.fn();
 
       // Subscribe to all updates
-      subscribe(config, client._tupleDatabaseClient, callback);
+      await subscribe(config, client._tupleDatabaseClient, callback);
 
       // Set values in the tables
       const tx = client._tupleDatabaseClient.transact();
@@ -247,7 +247,7 @@ describe("utils", () => {
       for (const update of multiKeyUpdates) {
         await client.tables.MultiKey.set(update.key, update.value, { transaction: tx });
       }
-      tx.commit();
+      await tx.commit();
 
       // Expect the callback to have been called with all set updates (in a single transaction)
       expect(callback).toHaveBeenNthCalledWith(1, [
@@ -263,7 +263,7 @@ describe("utils", () => {
       for (const update of multiKeyUpdates) {
         await client.tables.MultiKey.remove(update.key, { transaction: tx2 });
       }
-      tx2.commit();
+      await tx2.commit();
 
       // Expect the callback to have called with all remove updates (in a single transaction)
       expect(callback).toHaveBeenNthCalledWith(2, [

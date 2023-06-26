@@ -36,7 +36,7 @@ export type DatabaseClient<C extends StoreConfig> = {
         callback: SubscriptionCallback<C, Table>,
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => Unsubscribe;
+      ) => Promise<Unsubscribe>;
       scan: <Table extends string = keyof C["tables"] & string>(
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
       ) => Promise<ScanResult<C, Table>>;
@@ -65,7 +65,7 @@ export type DatabaseClient<C extends StoreConfig> = {
   subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
     filter?: FilterOptions<C, Table>
-  ) => Unsubscribe;
+  ) => Promise<Unsubscribe>;
   scan: <Table extends string = keyof C["tables"] & string>(
     filter?: FilterOptions<C, Table>
   ) => Promise<ScanResult<C, Table>>;

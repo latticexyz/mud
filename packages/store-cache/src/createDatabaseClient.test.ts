@@ -398,7 +398,7 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe to all Position table updates
-      const unsubscribe = tables.Position.subscribe(callback);
+      const unsubscribe = await tables.Position.subscribe(callback);
 
       // Set values in the tables
       await tables.Position.set(positionUpdates[0].key, positionUpdates[0].value);
