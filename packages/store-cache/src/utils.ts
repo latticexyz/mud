@@ -254,7 +254,7 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
  * (see https://github.com/ccorcos/tuple-database/issues/25)
  * For now only `bigint` needs serialization.
  */
-function serializeKey(key: SchemaPrimitiveType): Omit<SchemaPrimitiveType, "bigint"> {
+function serializeKey(key: string | number | bigint | boolean): string | number | boolean {
   if (typeof key === "bigint") return `${key.toString()}n`;
   return key;
 }
