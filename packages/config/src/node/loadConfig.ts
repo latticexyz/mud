@@ -13,7 +13,14 @@ const TEMP_CONFIG = path.join(".mud", "expandedConfig.temp.mjs");
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
   try {
-    await esbuild.build({ entryPoints: [configPath], format: "esm", outfile: TEMP_CONFIG });
+    // TODO properly externalize all external dependencies
+    await esbuild.build({
+      entryPoints: [configPath],
+      format: "esm",
+      outfile: TEMP_CONFIG,
+      bundle: true,
+      external: ["@latticexyz/config", "@latticexyz/common", "@latticexyz/store", "@latticexyz/world"],
+    });
     configPath = await resolveConfigPath(TEMP_CONFIG, true);
     // Node.js caches dynamic imports, so without appending a cache breaking
     // param like `?update={Date.now()}` this import always returns the same config
