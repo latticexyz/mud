@@ -14,17 +14,20 @@ export function useRows<C extends StoreConfig, T extends keyof C["tables"] & str
   const filterMemo = useDeepMemo(filter);
 
   useEffect(() => {
-    setRows(storeCache.scan(filter));
+    let unsubscribe: () => void;
 
-    const unsubscribe = storeCache.subscribe(() => {
-      // very naive implementation for now, but easier and probably more efficient than
-      // manually looping through the `rows` array for every update event
-      setRows(storeCache.scan(filter));
-    }, filter);
+    (async () => {
+      setRows(await storeCache.scan(filterMemo));
 
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterMemo]);
+      unsubscribe = await storeCache.subscribe(async () => {
+        // very naive implementation for now, but easier and probably more efficient than
+        // manually looping through the `rows` array for every update event
+        setRows(await storeCache.scan(filterMemo));
+      }, filterMemo);
+    })();
+
+    return () => unsubscribe?.();
+  }, [filterMemo, storeCache]);
 
   return rows;
 }
