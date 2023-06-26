@@ -58,7 +58,7 @@
     "execa": "^7.0.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
-    "viem": "1.1.1"
+    "viem": "1.1.7"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
