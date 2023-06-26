@@ -31,15 +31,13 @@ export default mudConfig({
 Next, add the `SnapSync` plugin. This will automatically install the necessary [smart contract modules](/world/modules#snapsyncmodule).
 
 ```tsx
-import { mudConfig } from "@latticexyz/world/register";
 import { resolveTableId } from "@latticexyz/config";
-/**
- * Importing this enables "snap sync mode".
- * It allows clients to sync the latest state of the world using view functions.
- */
-import "@latticexyz/world/snapsync";
+import { mudConfig, storePlugin } from "@latticexyz/store";
+import { worldPlugin } from "@latticexyz/world";
+import { snapSyncPlugin } from "@latticexyz/world/snapsync";
 
 export default mudConfig({
+  plugins: { storePlugin, worldPlugin, snapSyncPlugin },
   snapSync: true,
   tables: {
     Karma: "int32",
