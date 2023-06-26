@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { encodeTestData } from "./encodeTestData";
 
 describe("encodeTestData", () => {
-  it("should encode test data", () => {
+  it("should encode numbers", () => {
     expect(encodeTestData({ Number: [{ key: { key: 42 }, value: { value: 1337 } }] })).toStrictEqual({
       Number: [{ key: ["0x000000000000000000000000000000000000000000000000000000000000002a"], value: "0x00000539" }],
     });

@@ -1,5 +1,6 @@
 import { mapObject } from "@latticexyz/utils";
 import { Data, Datum } from "./types";
+import { serialize } from "./utils";
 
 /**
  * Merges an array of test data by merging and filtering the records for each table,
@@ -12,7 +13,7 @@ export function mergeTestData(...testDatas: Data[]) {
     for (const [table, records] of Object.entries(testData)) {
       recordsByTableByKeys[table] ??= {};
       for (const record of records) {
-        recordsByTableByKeys[table][JSON.stringify(record.key)] = record;
+        recordsByTableByKeys[table][serialize(record.key)] = record;
       }
     }
   }
