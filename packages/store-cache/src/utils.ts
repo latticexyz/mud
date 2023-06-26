@@ -111,12 +111,12 @@ export async function scan<C extends StoreConfig = StoreConfig, T extends keyof 
  * }
  * @returns Function to unsubscribe
  */
-export async function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
   client: AsyncTupleDatabaseClient,
   callback: SubscriptionCallback<C, T>,
   filter?: FilterOptions<C, T>
-): Promise<Unsubscribe> {
+): Unsubscribe {
   const scanArgs = getScanArgsFromFilter(config, filter);
 
   return client.subscribe(scanArgs, (write) => {
