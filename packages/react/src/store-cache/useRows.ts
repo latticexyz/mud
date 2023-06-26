@@ -14,19 +14,21 @@ export function useRows<C extends StoreConfig, T extends keyof C["tables"] & str
   const filterMemo = useDeepMemo(filter);
 
   useEffect(() => {
-    let unsubscribe: () => void;
+    let unsubscribePromise: Promise<() => void>;
 
     (async () => {
       setRows(await storeCache.scan(filterMemo));
 
-      unsubscribe = await storeCache.subscribe(async () => {
+      unsubscribePromise = storeCache.subscribe(async () => {
         // very naive implementation for now, but easier and probably more efficient than
         // manually looping through the `rows` array for every update event
         setRows(await storeCache.scan(filterMemo));
       }, filterMemo);
     })();
 
-    return () => unsubscribe?.();
+    return () => {
+      unsubscribePromise?.then((unsubscribe) => unsubscribe());
+    };
   }, [filterMemo, storeCache]);
 
   return rows;
