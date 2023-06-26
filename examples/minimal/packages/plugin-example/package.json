@@ -5,16 +5,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/library/index.js",
-    "./register": "./dist/ts/register/index.js"
+    ".": "./dist/ts/library/index.js"
   },
   "typesVersions": {
     "*": {
       "index": [
         "./ts/library/index.ts"
-      ],
-      "register": [
-        "./ts/register/index.ts"
       ]
     }
   },
