@@ -185,15 +185,17 @@ function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"
 
   // Transform scan args
   if (table) {
-    scanArgs.gte = key?.gte && recordToTuple(key.gte, getKeyOrder(config, table));
-    scanArgs.gt = key?.gt && recordToTuple(key.gt, getKeyOrder(config, table));
-    scanArgs.lte = key?.lte && recordToTuple(key.lte, getKeyOrder(config, table));
-    scanArgs.lt = key?.lt && recordToTuple(key.lt, getKeyOrder(config, table));
+    scanArgs.gte =
+      key?.gte && recordToTuple(key.gte as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+    scanArgs.gt = key?.gt && recordToTuple(key.gt as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+    scanArgs.lte =
+      key?.lte && recordToTuple(key.lte as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+    scanArgs.lt = key?.lt && recordToTuple(key.lt as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
 
     // Override gte and lte if eq is set
     if (key?.eq) {
-      scanArgs.gte = recordToTuple(key.eq, getKeyOrder(config, table));
-      scanArgs.lte = recordToTuple(key.eq, getKeyOrder(config, table));
+      scanArgs.gte = recordToTuple(key.eq as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+      scanArgs.lte = recordToTuple(key.eq as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
     }
   }
 
@@ -209,7 +211,11 @@ function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof 
   table: T & string,
   key: Key<C, T>
 ): Tuple {
-  return [namespace, table, ...recordToTuple(key, getKeyOrder(config, table))] satisfies Tuple;
+  return [
+    namespace,
+    table,
+    ...recordToTuple(key as Record<string, StaticPrimitiveType>, getKeyOrder(config, table)),
+  ] satisfies Tuple;
 }
 
 /**
