@@ -1,11 +1,4 @@
-import {
-  ScanArgs,
-  Tuple,
-  AsyncTupleDatabaseClient,
-  AsyncTupleRootTransactionApi,
-  KeyValuePair,
-  Unsubscribe,
-} from "tuple-database";
+import { ScanArgs, Tuple, AsyncTupleDatabaseClient, Unsubscribe } from "tuple-database";
 import { StoreConfig } from "@latticexyz/store";
 import {
   Key,

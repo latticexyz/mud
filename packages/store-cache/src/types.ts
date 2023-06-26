@@ -29,17 +29,17 @@ export type DatabaseClient<C extends StoreConfig> = {
   /** Utils for every table with the table argument prefilled */
   tables: {
     [Table in keyof C["tables"]]: {
-      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => AsyncTupleRootTransactionApi;
-      get: (key: Key<C, Table>) => Value<C, Table>;
-      remove: (key: Key<C, Table>, options?: RemoveOptions) => AsyncTupleRootTransactionApi;
+      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => Promise<void>;
+      get: (key: Key<C, Table>) => Promise<Value<C, Table>>;
+      remove: (key: Key<C, Table>, options?: RemoveOptions) => Promise<void>;
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => Unsubscribe;
+      ) => Promise<Unsubscribe>;
       scan: <Table extends string = keyof C["tables"] & string>(
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => ScanResult<C, Table>;
+      ) => Promise<ScanResult<C, Table>>;
     };
   };
 } & {
@@ -50,23 +50,25 @@ export type DatabaseClient<C extends StoreConfig> = {
     key: Key<C, Table>,
     value: Partial<Value<C, Table>>,
     options?: SetOptions
-  ) => AsyncTupleRootTransactionApi;
+  ) => Promise<void>;
   get: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
     table: Table,
     key: Key<C, Table>
-  ) => Value<C, Table>;
+  ) => Promise<Value<C, Table>>;
   remove: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
     table: Table,
     key: Key<C, Table>,
     options?: RemoveOptions
-  ) => AsyncTupleRootTransactionApi;
+  ) => Promise<void>;
   subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
     filter?: FilterOptions<C, Table>
-  ) => Unsubscribe;
-  scan: <Table extends string = keyof C["tables"] & string>(filter?: FilterOptions<C, Table>) => ScanResult<C, Table>;
+  ) => Promise<Unsubscribe>;
+  scan: <Table extends string = keyof C["tables"] & string>(
+    filter?: FilterOptions<C, Table>
+  ) => Promise<ScanResult<C, Table>>;
   _tupleDatabaseClient: AsyncTupleDatabaseClient;
 };
 
