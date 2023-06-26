@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge clean && forge build",
-    "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client-vanilla/src/mud && mud tsgen --configPath mud.config.ts --out ../client-react/src/mud && mud tsgen --configPath mud.config.ts --out ../client-phaser/src/mud",
+    "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath .mud/expandedConfig.ts --out ../client-vanilla/src/mud && mud tsgen --configPath .mud/expandedConfig.ts --out ../client-react/src/mud && mud tsgen --configPath .mud/expandedConfig.ts --out ../client-phaser/src/mud",
     "build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
@@ -23,6 +23,7 @@
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/cli": "link:../../../../packages/cli",
+    "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/config": "link:../../../../packages/config",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/solecs": "link:../../../../packages/solecs",

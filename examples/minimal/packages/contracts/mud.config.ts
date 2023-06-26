@@ -1,16 +1,17 @@
-import { mudConfig } from "@latticexyz/world/register";
-
+import { resolveTableId } from "@latticexyz/config";
+import { mudConfig, storePlugin } from "@latticexyz/store";
+import { worldPlugin } from "@latticexyz/world";
 /**
- * Importing this enables "snap sync mode".
+ * This plugin adds a flag to enable "snap sync mode".
  * It allows clients to sync the latest state of the world using view functions.
  * This is a simple way to quickly sync without the use of an external indexer.
  * This could lead to expensive queries on live RPCs if the world is large,
  * so we suggest using MODE for production deployments.
  */
-import "@latticexyz/world/snapsync";
-import { resolveTableId } from "@latticexyz/config";
+import { snapSyncPlugin } from "@latticexyz/world/snapsync";
 
 export default mudConfig({
+  plugins: { storePlugin, worldPlugin, snapSyncPlugin },
   snapSync: true,
   systems: {
     IncrementSystem: {

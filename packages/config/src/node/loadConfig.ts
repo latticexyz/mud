@@ -19,7 +19,14 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
       format: "esm",
       outfile: TEMP_CONFIG,
       bundle: true,
-      external: ["@latticexyz/config", "@latticexyz/common", "@latticexyz/store", "@latticexyz/world"],
+      external: [
+        "zod",
+        "@latticexyz/schema-type",
+        "@latticexyz/config",
+        "@latticexyz/common",
+        "@latticexyz/store",
+        "@latticexyz/world",
+      ],
     });
     configPath = await resolveConfigPath(TEMP_CONFIG, true);
     // Node.js caches dynamic imports, so without appending a cache breaking
