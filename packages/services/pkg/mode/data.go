@@ -185,7 +185,7 @@ func (table *Table) SerializeRows(rows *sqlx.Rows, fieldProjections map[string]s
 	)
 
 	return &mode.TableData{
-		Cols:  table.ToOnChainColNames(colNames),
+		Cols:  table.FormatColNames(colNames),
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,
 	}, nil
@@ -223,7 +223,7 @@ func (table *Table) SerializeStreamEvent(
 	}
 
 	return &mode.TableData{
-		Cols:  table.ToOnChainColNames(colNames),
+		Cols:  table.FormatColNames(colNames),
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,
 	}, nil
@@ -236,15 +236,15 @@ func (table *Table) SerializeStreamEvent(
 //
 // Returns:
 //   - ([]string): A slice of converted column names.
-func (table *Table) ToOnChainColNames(colNames []string) []string {
-	onChainColNames := []string{}
+func (table *Table) FormatColNames(colNames []string) []string {
+	formattedColNames := []string{}
 	for _, colName := range colNames {
-		originalName := table.OnChainColNames[colName]
+		originalName := table.GetColumnFormattedName(colName)
 		if originalName != "" {
-			onChainColNames = append(onChainColNames, originalName)
+			formattedColNames = append(formattedColNames, originalName)
 		} else {
-			onChainColNames = append(onChainColNames, colName)
+			formattedColNames = append(formattedColNames, colName)
 		}
 	}
-	return onChainColNames
+	return formattedColNames
 }
