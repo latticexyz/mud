@@ -61,19 +61,18 @@ describe("Sync from MODE", async () => {
     await expect(listLength).toHaveText("0");
     await expect(lastItem).toHaveText("unset");
 
-    // TODO: fix MODE to be able to handle arrays of this length
-    // await pushManyButton.click();
-    // await expect(listLength).toHaveText("5000");
-    // await expect(lastItem).toHaveText("4999");
-    // await pushOneButton.click();
-    // await expect(listLength).toHaveText("5001");
-    // await expect(lastItem).toHaveText("123");
-    // await pushManyButton.click();
-    // await expect(listLength).toHaveText("10001");
-    // await expect(lastItem).toHaveText("4999");
-    // await pushOneButton.click();
-    // await expect(listLength).toHaveText("10002");
-    // await expect(lastItem).toHaveText("123");
+    await pushManyButton.click();
+    await expect(listLength).toHaveText("5000");
+    await expect(lastItem).toHaveText("4999");
+    await pushOneButton.click();
+    await expect(listLength).toHaveText("5001");
+    await expect(lastItem).toHaveText("123");
+    await pushManyButton.click();
+    await expect(listLength).toHaveText("10001");
+    await expect(lastItem).toHaveText("4999");
+    await pushOneButton.click();
+    await expect(listLength).toHaveText("10002");
+    await expect(lastItem).toHaveText("123");
 
     asyncErrorHandler.expectNoAsyncErrors();
   });

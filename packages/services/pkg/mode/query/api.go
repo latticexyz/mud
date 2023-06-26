@@ -36,6 +36,11 @@ func (ql *Layer) ExecuteSQL(
 
 	defer rows.Close()
 
+	if err = rows.Err(); err != nil {
+		ql.logger.Error("executeSQL(): error while iterating over rows", zap.Error(err))
+		return nil, err
+	}
+
 	// Serialize the rows into a GenericTable.
 	serializedTable, err := table.SerializeRows(rows, fieldProjections)
 	if err != nil {
@@ -45,7 +50,7 @@ func (ql *Layer) ExecuteSQL(
 	return serializedTable, nil
 }
 
-// GetState_Namespaced retrieves the state of the tables specified in the given `tablesFilter` for the given query and
+// GetWorldState retrieves the state of the tables specified in the given `tablesFilter` for the given query and
 // world namespaces.
 //
 // Parameters:
@@ -58,7 +63,7 @@ func (ql *Layer) ExecuteSQL(
 // - ([]*pb_mode.GenericTable): A list of serialized representations of the state of the requested tables.
 // - ([]string): A list of names of the tables whose state was retrieved.
 // - (error): Returns an error if there was an error while retrieving the state.
-func (ql *Layer) GetState_Namespaced(
+func (ql *Layer) GetNamespacedState(
 	_ context.Context,
 	tablesFilter []string,
 	queryNamespace *pb_mode.Namespace,
@@ -133,7 +138,7 @@ func (ql *Layer) GetState(
 	request *pb_mode.StateRequest,
 ) (*pb_mode.QueryLayerStateResponse, error) {
 	// Validate the namespace.
-	if err := mode.ValidateNamespace__State(request.Namespace); err != nil {
+	if err := mode.RequireChainId(request.Namespace); err != nil {
 		return nil, fmt.Errorf("invalid namespace for GetState(): %w", err)
 	}
 
@@ -151,8 +156,8 @@ func (ql *Layer) GetState(
 	// Get sub-namespaces for the request. A namespace is a chainId and worldAddress pair.
 	chainNamespace, worldNamespace := mode.NamespaceToSubNamespaces(request.Namespace)
 
-	// Execute GetState_Namespaced for each sub-namespace.
-	chainTables, chainTableNames, err := ql.GetState_Namespaced(
+	// Execute GetNamespacedState for each sub-namespace.
+	chainTables, chainTableNames, err := ql.GetNamespacedState(
 		ctx,
 		request.ChainTables,
 		chainNamespace,
@@ -162,7 +167,7 @@ func (ql *Layer) GetState(
 		ql.logger.Error("GetState(): error while executing GetState_Namespaced for chain namespace", zap.Error(err))
 		return nil, err
 	}
-	worldTables, worldTableNames, err := ql.GetState_Namespaced(
+	worldTables, worldTableNames, err := ql.GetNamespacedState(
 		ctx,
 		request.WorldTables,
 		worldNamespace,
@@ -185,8 +190,10 @@ func (ql *Layer) GetState(
 //
 // Returns:
 // - (error): Returns an error if there was an error while streaming the state.
+//
+//nolint:gocognit // stream state loop
 func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.QueryLayer_StreamStateServer) error {
-	if err := mode.ValidateNamespace__State(request.Namespace); err != nil {
+	if err := mode.RequireChainId(request.Namespace); err != nil {
 		return fmt.Errorf("invalid namespace for StreamState(): %w", err)
 	}
 
@@ -223,58 +230,64 @@ func (ql *Layer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.
 	// For each event, serialize the event and either
 	// 1. store and wait for block number event to send
 	// 2. send the stored events if the event is the block number
-	for {
-		select {
-		case event := <-eventStream:
-			// Get the Table that the event is directed at.
-			table, tableErr := ql.tableStore.GetTable(request.Namespace.ChainId, request.Namespace.WorldAddress, event.TableName)
-			if tableErr != nil {
-				ql.logger.Error("StreamState(): no table matching chainId, worldAddress, and table name", zap.Error(tableErr))
-				continue
+	for event := range eventStream {
+		// Get the Table that the event is directed at.
+		table, tableErr := ql.tableStore.GetTable(request.Namespace.ChainId, request.Namespace.WorldAddress, event.TableName)
+		if tableErr != nil {
+			ql.logger.Error("StreamState(): no table matching chainId, worldAddress, and table name", zap.Error(tableErr))
+			continue
+		}
+		serializedTable, serializeErr := table.SerializeStreamEvent(event, make(map[string]string))
+		if serializeErr != nil {
+			ql.logger.Error("StreamState(): error while serializing stream event", zap.Error(serializeErr))
+			continue
+		}
+
+		// Check if the event is for the block number table.
+		//nolint:nestif // readability
+		if ql.tableStore.IsBlockNumberTable(request.Namespace.ChainId, event.TableName) {
+			// Append the block number event to the response as a single update event.
+			updated.AddChainTable(serializedTable, table)
+
+			// Send the stored events as a single response. Every buffered event is combined into
+			// a single response and sent to the client.
+			err = stateStream.Send(StateStreamResponseFromTables(inserted, updated, deleted))
+			if err != nil {
+				ql.logger.Error("StreamState(): error while sending response", zap.Error(err))
+				return err
 			}
-			serializedTable, serializeErr := table.SerializeStreamEvent(event, make(map[string]string))
-			if serializeErr != nil {
-				ql.logger.Error("StreamState(): error while serializing stream event", zap.Error(serializeErr))
-				continue
-			}
 
-			// Check if the event is for the block number table.
-			if ql.tableStore.IsBlockNumberTable(request.Namespace.ChainId, event.TableName) {
-				// Append the block number event to the response as a single update event.
-				updated.AddChainTable(serializedTable, table)
-
-				// Send the stored events as a single response. Every buffered event is combined into
-				// a single response and sent to the client.
-				stateStream.Send(StateStreamResponseFromTables(inserted, updated, deleted))
-
-				// Clear the buffers.
-				inserted.Clear()
-				updated.Clear()
-				deleted.Clear()
+			// Clear the buffers.
+			inserted.Clear()
+			updated.Clear()
+			deleted.Clear()
+		} else {
+			// Process the event and store in a "buffer" awaiting the block number event. We append
+			// the serialized table to the appropriate list to differentiate between inserts, updates,
+			// and deletes.
+			if ql.tableStore.IsInternalTable(event.TableName) {
+				//nolint:gocritic // readibility
+				if event.Type == db.StreamEventTypeInsert {
+					inserted.AddChainTable(serializedTable, table)
+				} else if event.Type == db.StreamEventTypeUpdate {
+					updated.AddChainTable(serializedTable, table)
+				} else if event.Type == db.StreamEventTypeDelete {
+					deleted.AddChainTable(serializedTable, table)
+				}
 			} else {
-				// Process the event and store in a "buffer" awaiting the block number event. We append
-				// the serialized table to the appropriate list to differentiate between inserts, updates,
-				// and deletes.
-				if ql.tableStore.IsInternalTable(event.TableName) {
-					if event.Type == db.StreamEventTypeInsert {
-						inserted.AddChainTable(serializedTable, table)
-					} else if event.Type == db.StreamEventTypeUpdate {
-						updated.AddChainTable(serializedTable, table)
-					} else if event.Type == db.StreamEventTypeDelete {
-						deleted.AddChainTable(serializedTable, table)
-					}
-				} else {
-					if event.Type == db.StreamEventTypeInsert {
-						inserted.AddWorldTable(serializedTable, table)
-					} else if event.Type == db.StreamEventTypeUpdate {
-						updated.AddWorldTable(serializedTable, table)
-					} else if event.Type == db.StreamEventTypeDelete {
-						deleted.AddWorldTable(serializedTable, table)
-					}
+				//nolint:gocritic // readibility
+				if event.Type == db.StreamEventTypeInsert {
+					inserted.AddWorldTable(serializedTable, table)
+				} else if event.Type == db.StreamEventTypeUpdate {
+					updated.AddWorldTable(serializedTable, table)
+				} else if event.Type == db.StreamEventTypeDelete {
+					deleted.AddWorldTable(serializedTable, table)
 				}
 			}
 		}
 	}
+
+	return nil
 }
 
 // GetPartialState returns the state for a single table specified in the request. The table name and namespace are
@@ -296,8 +309,8 @@ func (ql *Layer) GetPartialState(
 	_ context.Context,
 	request *pb_mode.PartialStateRequest,
 ) (*pb_mode.QueryLayerStateResponse, error) {
-	if err := mode.ValidateNamespace__SingleState(request.Namespace); err != nil {
-		return nil, fmt.Errorf("invalid namespace for GetPartialState(): %w", err)
+	if err := mode.RequireChainId(request.Namespace); err != nil {
+		return nil, fmt.Errorf("invalid namespace %w", err)
 	}
 
 	// Get a string namespace for the request.
@@ -348,9 +361,8 @@ func (ql *Layer) GetPartialState(
 // Returns:
 // - (error): An error encountered during validation or execution.
 func (ql *Layer) StreamPartialState(
-	request *pb_mode.PartialStateRequest,
-	stream pb_mode.QueryLayer_StreamPartialStateServer,
+	_ *pb_mode.PartialStateRequest,
+	_ pb_mode.QueryLayer_StreamPartialStateServer,
 ) error {
-	// TODO: implement
-	return nil
+	return fmt.Errorf("not implemented")
 }

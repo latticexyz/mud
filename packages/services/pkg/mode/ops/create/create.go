@@ -53,11 +53,8 @@ func (builder *Builder) BuildCreateTableKeyFields() string {
 	}
 	keyFields := ""
 	for idx, field := range table.KeyNames {
-		postgresType := table.PostgresTypes[field]
+		postgresType := table.GetPostgresType(field)
 		keyFields = keyFields + field + ` ` + postgresType
-		if field == table.PrimaryKey {
-			keyFields += ` PRIMARY KEY`
-		}
 		if idx != len(table.KeyNames)-1 {
 			keyFields += `, `
 		}
@@ -79,11 +76,8 @@ func (builder *Builder) BuildCreateTableValueFields() string {
 	}
 	valueFields := ""
 	for idx, field := range table.FieldNames {
-		postgresType := table.PostgresTypes[field]
+		postgresType := table.GetPostgresType(field)
 		valueFields = valueFields + field + ` ` + postgresType
-		if field == table.PrimaryKey {
-			valueFields += ` PRIMARY KEY`
-		}
 		if idx != len(table.FieldNames)-1 {
 			valueFields += `, `
 		}
@@ -129,6 +123,10 @@ func (builder *Builder) BuildCreate() string {
 func (builder *Builder) BuildIndex() string {
 	var indexStr strings.Builder
 	for _, field := range builder.Table.FieldNames {
+		// Don't build index for any jsonb fields.
+		if builder.Table.GetPostgresType(field) == "jsonb" {
+			continue
+		}
 		indexStr.WriteString(
 			`CREATE INDEX IF NOT EXISTS ` + builder.Table.Name + `_` + field +
 				`_idx ON ` + builder.Table.NamespacedName() +

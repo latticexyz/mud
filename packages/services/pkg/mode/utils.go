@@ -12,9 +12,9 @@ import (
 /////////////////////////////////////////
 
 func TableIdToTableName(tableId string) string {
-	// Table ID comes in as a uint256 in string format comprised of two bytes16s
+	// Table Id comes in as a uint256 in string format comprised of two bytes16s
 	// concatenated.
-	// Get a byte array of the table ID.
+	// Get a byte array of the table Id.
 	tableIdBytes := []byte(tableId[2:])
 
 	b1 := tableIdBytes[:32]

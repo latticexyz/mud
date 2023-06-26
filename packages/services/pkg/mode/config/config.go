@@ -27,7 +27,7 @@ func FromFile(configFile string) (*Config, error) {
 
 // FromFlags parses the configuration from command-line flags.
 func FromFlags(
-	chainNames, chainIDs, chainRPCsHTTP, chainRPCsWS, dbName, dbHost string,
+	chainNames, chainIds, chainRPCsHTTP, chainRPCsWS, dbName, dbHost string,
 	dbPort uint64,
 	dbWipe bool,
 	syncEnabled bool,
@@ -55,25 +55,25 @@ func FromFlags(
 		},
 	}
 	// Validate chain parameters.
-	if chainNames == "" || chainIDs == "" || chainRPCsHTTP == "" || chainRPCsWS == "" {
+	if chainNames == "" || chainIds == "" || chainRPCsHTTP == "" || chainRPCsWS == "" {
 		return nil, fmt.Errorf("chain parameters cannot be empty")
 	}
 
 	// Parse chain names.
 	chainNamesList := strings.Split(chainNames, ",")
-	chainIDsList := strings.Split(chainIDs, ",")
+	chainIdsList := strings.Split(chainIds, ",")
 	chainRPCsHTTPList := strings.Split(chainRPCsHTTP, ",")
 	chainRPCsWSList := strings.Split(chainRPCsWS, ",")
 
 	// Create chain configs and add them to the config.
 	for i, chainName := range chainNamesList {
-		chainID := chainIDsList[i]
+		chainId := chainIdsList[i]
 		chainRPCHTTP := chainRPCsHTTPList[i]
 		chainRPCWS := chainRPCsWSList[i]
 
 		chainConfig := ChainConfig{
 			Name: chainName,
-			ID:   chainID,
+			Id:   chainId,
 			RPC: RPCConfig{
 				HTTP: chainRPCHTTP,
 				WS:   chainRPCWS,
