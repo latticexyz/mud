@@ -7,7 +7,6 @@ import { isNonPendingLog } from "./isNonPendingLog";
 import { debug } from "./debug";
 import { createBlockNumberStream } from "./createBlockNumberStream";
 import { getLogs } from "./getLogs";
-import { storeEventsAbi } from "@latticexyz/store";
 
 export type CreateBlockEventsStreamOptions<TAbiEvent extends AbiEvent> = {
   publicClient: PublicClient;
@@ -62,7 +61,7 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
         address,
         fromBlock,
         toBlock,
-        events: storeEventsAbi,
+        events,
       });
 
       // TODO: do something other than just throwing out pending logs

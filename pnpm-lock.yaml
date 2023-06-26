@@ -56,9 +56,6 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
       abitype:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
