@@ -1,4 +1,4 @@
-import { TupleDatabase, TupleDatabaseClient } from "tuple-database";
+import { AsyncTupleDatabase, AsyncTupleDatabaseClient } from "tuple-database";
 import { DatabaseClient, Key, SetOptions, SubscriptionCallback, FilterOptions, Value } from "./types";
 import { set, get, remove, getDefaultValue, subscribe, scan } from "./utils";
 import { StoreConfig } from "@latticexyz/store";
@@ -7,8 +7,11 @@ import { curry } from "@latticexyz/common/utils";
 /**
  * Create a typed database client from a tuple database and a store config
  */
-export function createDatabaseClient<C extends StoreConfig>(database: TupleDatabase, config: C) {
-  const _tupleDatabaseClient = new TupleDatabaseClient(database);
+export function createDatabaseClient<C extends StoreConfig>(
+  database: AsyncTupleDatabase,
+  config: C
+): DatabaseClient<C> {
+  const _tupleDatabaseClient = new AsyncTupleDatabaseClient(database);
   const { namespace } = config;
   const tables: Record<string, unknown> = {};
 
