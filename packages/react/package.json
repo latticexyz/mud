@@ -32,6 +32,8 @@
     "rxjs": "7.5.5"
   },
   "devDependencies": {
+    "@latticexyz/common": "workspace:^",
+    "@latticexyz/config": "workspace:^",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react": "^18.2.6",
     "@vitejs/plugin-react": "^4.0.0",

@@ -601,6 +601,12 @@ importers:
         specifier: 7.5.5
         version: 7.5.5
     devDependencies:
+      '@latticexyz/common':
+        specifier: workspace:^
+        version: link:../common
+      '@latticexyz/config':
+        specifier: workspace:^
+        version: link:../config
       '@testing-library/react-hooks':
         specifier: ^8.0.1
         version: 8.0.1(@types/react@18.2.6)(react-test-renderer@18.2.0)(react@18.2.0)

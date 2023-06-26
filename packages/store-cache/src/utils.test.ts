@@ -6,6 +6,7 @@ import { mudConfig, storePlugin } from "@latticexyz/store";
 import { scan, subscribe } from "./utils";
 import { KeyValue } from "./types";
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const config = (() => {
   const config = mudConfig({
     plugins: { storePlugin },

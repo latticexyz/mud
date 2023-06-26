@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { createDatabase, createDatabaseClient } from ".";
 import { KeyValue } from "./types";
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 const config = (() => {
   const config = mudConfig({
     plugins: { storePlugin },
