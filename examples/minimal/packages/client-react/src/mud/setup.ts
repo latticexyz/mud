@@ -7,6 +7,7 @@ import { setupViemNetwork } from "./setupViemNetwork";
 import { supportedChains } from "./supportedChains";
 import { worlds } from "./worlds";
 import * as devObservables from "@latticexyz/network/dev";
+import { mudTransportWrapper } from "./mudTransportWrapper";
 
 const worldAbi = IWorld__factory.abi;
 
@@ -33,7 +34,7 @@ export async function setup() {
 
   const publicClient = createPublicClient({
     chain,
-    transport: fallback([webSocket(), http()]),
+    transport: mudTransportWrapper(fallback([webSocket(), http()])),
     // TODO: configure polling per chain? maybe in the MUDChain config?
     pollingInterval: 1000,
   });
@@ -42,7 +43,7 @@ export async function setup() {
   const burnerWalletClient = createWalletClient({
     account: burnerAccount,
     chain,
-    transport: fallback([webSocket(), http()]),
+    transport: mudTransportWrapper(fallback([webSocket(), http()])),
     // TODO: configure polling per chain? maybe in the MUDChain config?
     pollingInterval: 1000,
   });
