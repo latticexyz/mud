@@ -30,7 +30,7 @@ describe("utils", () => {
   });
 
   describe("scan", () => {
-    it("should return a list of all database entries", () => {
+    it("should return a list of all database entries", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -46,10 +46,14 @@ describe("utils", () => {
       ];
 
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
 
-      const rows = scan(config, client._tupleDatabaseClient);
+      const rows = await scan(config, client._tupleDatabaseClient);
 
       expect(rows.length).toBe(positionUpdates.length + multiKeyUpdates.length);
       expect(rows).toEqual([
@@ -58,7 +62,7 @@ describe("utils", () => {
       ]);
     });
 
-    it("should return a list of all entries of the Position table", () => {
+    it("should return a list of all entries of the Position table", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -74,10 +78,14 @@ describe("utils", () => {
       ];
 
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
 
-      const rows = scan(config, client._tupleDatabaseClient, { namespace: "", table: "Position" });
+      const rows = await scan(config, client._tupleDatabaseClient, { namespace: "", table: "Position" });
 
       expect(rows.length).toBe(positionUpdates.length);
       expect(rows).toEqual([
@@ -85,7 +93,7 @@ describe("utils", () => {
       ]);
     });
 
-    it("should return a list of all entries of the MultiKey table with keys greater than { first: 0x02, second: 0 } and less than { first: 0x03, second: 4 }", () => {
+    it("should return a list of all entries of the MultiKey table with keys greater than { first: 0x02, second: 0 } and less than { first: 0x03, second: 4 }", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -101,10 +109,14 @@ describe("utils", () => {
       ];
 
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
 
-      const rows = scan(config, client._tupleDatabaseClient, {
+      const rows = await scan(config, client._tupleDatabaseClient, {
         namespace: "",
         table: "MultiKey",
         key: { gt: { first: "0x02", second: 0 }, lt: { first: "0x03", second: 4 } },
@@ -116,7 +128,7 @@ describe("utils", () => {
       ]);
     });
 
-    it("should not matter in which order the key is passed in", () => {
+    it("should not matter in which order the key is passed in", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -132,10 +144,14 @@ describe("utils", () => {
       ];
 
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
 
-      const rows = scan(config, client._tupleDatabaseClient, {
+      const rows = await scan(config, client._tupleDatabaseClient, {
         namespace: "",
         table: "MultiKey",
         key: { gt: { second: 0, first: "0x02" }, lt: { first: "0x03", second: 4 } },
@@ -149,7 +165,7 @@ describe("utils", () => {
   });
 
   describe("subscribe", () => {
-    it("should subscribe to all table updates", () => {
+    it("should subscribe to all table updates", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -170,8 +186,12 @@ describe("utils", () => {
       subscribe(config, client._tupleDatabaseClient, callback);
 
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
 
       let i = 1;
 
@@ -188,8 +208,12 @@ describe("utils", () => {
       }
 
       // Remove all the table entries
-      for (const update of positionUpdates) client.tables.Position.remove(update.key);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.remove(update.key);
+      for (const update of positionUpdates) {
+        await client.tables.Position.remove(update.key);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.remove(update.key);
+      }
 
       // Expect the callback to have called with all remove updates
       for (const update of positionUpdates) {
@@ -204,7 +228,7 @@ describe("utils", () => {
       }
     });
 
-    it("should subscribe to table updates with multiple writes per transaction", () => {
+    it("should subscribe to table updates with multiple writes per transaction", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -222,13 +246,17 @@ describe("utils", () => {
       const callback = vi.fn();
 
       // Subscribe to all updates
-      subscribe(config, client._tupleDatabaseClient, callback);
+      await subscribe(config, client._tupleDatabaseClient, callback);
 
       // Set values in the tables
       const tx = client._tupleDatabaseClient.transact();
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value, { transaction: tx });
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value, { transaction: tx });
-      tx.commit();
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value, { transaction: tx });
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value, { transaction: tx });
+      }
+      await tx.commit();
 
       // Expect the callback to have been called with all set updates (in a single transaction)
       expect(callback).toHaveBeenNthCalledWith(1, [
@@ -238,9 +266,13 @@ describe("utils", () => {
 
       // Remove all the table entries
       const tx2 = client._tupleDatabaseClient.transact();
-      for (const update of positionUpdates) client.tables.Position.remove(update.key, { transaction: tx2 });
-      for (const update of multiKeyUpdates) client.tables.MultiKey.remove(update.key, { transaction: tx2 });
-      tx2.commit();
+      for (const update of positionUpdates) {
+        await client.tables.Position.remove(update.key, { transaction: tx2 });
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.remove(update.key, { transaction: tx2 });
+      }
+      await tx2.commit();
 
       // Expect the callback to have called with all remove updates (in a single transaction)
       expect(callback).toHaveBeenNthCalledWith(2, [
