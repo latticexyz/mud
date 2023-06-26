@@ -50,7 +50,13 @@ func main() {
 	// Setup logging.
 	logger.InitLogger()
 	logger := logger.GetLogger()
-	defer logger.Sync()
+
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	// Setup config.
 	var config *mode_config.Config
@@ -84,8 +90,9 @@ func main() {
 	go grpc.StartMetricsServer(config.Metrics.Port, logger)
 
 	// Run the DatabaseLayer.
-	dl := db.NewDatabaseLayer(context.Background(), &config.DB, logger)
-	go dl.RunDatabaseLayer(context.Background())
+	ctx := context.Background()
+	dl := db.New(ctx, &config.DB, logger)
+	go dl.Run()
 
 	// Create a WriteLayer for modifying the database.
 	wl := write.New(dl, logger)

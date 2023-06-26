@@ -17,14 +17,14 @@ func FieldToString(field *pb_mode.Field) string {
 	return field.TableName + "." + field.TableField
 }
 
-// Namespace returns the namespace string for the specified chain ID and world address.
+// Namespace returns the namespace string for the specified chain Id and world address.
 //
 // Parameters:
-// - chainId (string): The chain ID to include in the namespace.
+// - chainId (string): The chain Id to include in the namespace.
 // - worldAddress (string): The world address to include in the namespace.
 //
 // Returns:
-// (string) - A string representing the namespace for the specified chain ID and world address.
+// (string) - A string representing the namespace for the specified chain Id and world address.
 func Namespace(chainId string, worldAddress string) string {
 	var str strings.Builder
 	str.WriteString(TABLE_PREFIX)
@@ -46,7 +46,7 @@ func Namespace(chainId string, worldAddress string) string {
 // (string) - A string representing the namespace for the specified pb_mode.Namespace instance.
 // (error) - An error, if any occurred during the conversion.
 func NamespaceFromNamespaceObject(namespace *pb_mode.Namespace) (string, error) {
-	if err := ValidateNamespace(namespace); err != nil {
+	if err := RequireNamespace(namespace); err != nil {
 		return "", err
 	}
 	return Namespace(namespace.ChainId, namespace.WorldAddress), nil
@@ -73,6 +73,7 @@ func NamespaceObjectFromNamespace(namespace string) (*pb_mode.Namespace, error) 
 	if len(components) > 1 {
 		chainId = components[1]
 	}
+	//nolint:gomnd // 2 is the max number of components
 	if len(components) > 2 {
 		worldAddress = components[2]
 	}
@@ -91,10 +92,10 @@ func NamespaceObjectFromNamespace(namespace string) (*pb_mode.Namespace, error) 
 // Returns:
 // (bool) - A boolean value indicating whether the two namespaces are equal.
 func IsNamespaceEqual(namespace1 *pb_mode.Namespace, namespace2 *pb_mode.Namespace) bool {
-	if err := ValidateNamespace(namespace1); err != nil {
+	if err := RequireNamespace(namespace1); err != nil {
 		return false
 	}
-	if err := ValidateNamespace(namespace2); err != nil {
+	if err := RequireNamespace(namespace2); err != nil {
 		return false
 	}
 	return strings.EqualFold(namespace1.ChainId, namespace2.ChainId) &&
@@ -122,33 +123,30 @@ func NamespaceToSubNamespaces(namespace *pb_mode.Namespace) (*pb_mode.Namespace,
 	return chainNamespace, worldNamespace
 }
 
-// ValidateNamespace validates the given Namespace instance.
+// RequireNamespace validates the given Namespace instance.
 //
 // Parameters:
 // - namespace (*pb_mode.Namespace): A pointer to the Namespace instance to validate.
 //
 // Returns:
 // (error) - An error, if any occurred during the validation.
-func ValidateNamespace(namespace *pb_mode.Namespace) error {
+func RequireNamespace(namespace *pb_mode.Namespace) error {
 	if namespace == nil {
 		return fmt.Errorf("namespace is nil")
 	}
 	return nil
 }
 
-// ValidateNamespace__State validates the given Namespace instance for state-related operations.
+// RequireWorldAddress validates the world address in the given Namespace instance.
 //
 // Parameters:
 // - namespace (*pb_mode.Namespace): A pointer to the Namespace instance to validate.
 //
 // Returns:
 // (error) - An error, if any occurred during the validation.
-func ValidateNamespace__State(namespace *pb_mode.Namespace) error {
-	if err := ValidateNamespace(namespace); err != nil {
+func RequireWorldAddress(namespace *pb_mode.Namespace) error {
+	if err := RequireNamespace(namespace); err != nil {
 		return err
-	}
-	if namespace.ChainId == "" {
-		return fmt.Errorf("chainId is empty")
 	}
 	if namespace.WorldAddress == "" {
 		return fmt.Errorf("worldAddress is empty")
@@ -156,16 +154,15 @@ func ValidateNamespace__State(namespace *pb_mode.Namespace) error {
 	return nil
 }
 
-// ValidateNamespace__State validates the given Namespace instance for state-related operations on
-// a single table.
+// RequireChainId validates the chain Id in the given Namespace instance.
 //
 // Parameters:
 // - namespace (*pb_mode.Namespace): A pointer to the Namespace instance to validate.
 //
 // Returns:
 // (error) - An error, if any occurred during the validation.
-func ValidateNamespace__SingleState(namespace *pb_mode.Namespace) error {
-	if err := ValidateNamespace(namespace); err != nil {
+func RequireChainId(namespace *pb_mode.Namespace) error {
+	if err := RequireNamespace(namespace); err != nil {
 		return err
 	}
 	if namespace.ChainId == "" {

@@ -17,14 +17,14 @@ func GetABI() abi.ABI {
 	return storecoreAbi
 }
 
-// ComputeEventID returns a hash of a given event using the StoreCore ABI.
-func ComputeEventID(eventName string) common.Hash {
+// ComputeEventId returns a hash of a given event using the StoreCore ABI.
+func ComputeEventId(eventName string) common.Hash {
 	return GetABI().Events[eventName].ID
 }
 
-// ComputeEventFingerprint returns the EventID as computed by ComputeEventID but as a hex string.
+// ComputeEventFingerprint returns the EventId as computed by ComputeEventId but as a hex string.
 func ComputeEventFingerprint(eventName string) string {
-	return ComputeEventID(eventName).Hex()
+	return ComputeEventId(eventName).Hex()
 }
 
 func (event *StorecoreStoreSetRecord) WorldAddress() string {

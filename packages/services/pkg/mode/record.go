@@ -5,21 +5,19 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
-	dynamicstruct "github.com/ompluscator/dynamic-struct"
 )
 
-// BuildTag builds a gorm tag for a given key.
-func (table *Table) BuildTag(key string) string {
-	isKey := table.IsKey[key]
+// BuildTag builds a gorm tag for a given column.
+func (table *Table) BuildTag(col string) string {
+	isKey := table.GetIsKey(col)
 	var tag strings.Builder
 	if isKey {
 		tag.WriteString(`gorm:"primaryKey;`)
 	} else {
 		tag.WriteString(`gorm:"`)
 	}
-	tag.WriteString(`type:` + table.PostgresTypes[key] + `;`)
-	tag.WriteString(fmt.Sprintf(`column:%s"`, strings.ToLower(key)))
+	tag.WriteString(`type:` + table.GetPostgresType(col) + `;`)
+	tag.WriteString(fmt.Sprintf(`column:%s"`, strings.ToLower(col)))
 	return tag.String()
 }
 
@@ -66,33 +64,6 @@ func (table *Table) BuildRecord(recordRaw map[string]interface{}) (interface{}, 
 	}
 
 	return record, nil
-}
-
-// BuildRecord__Instance builds a struct for a given record.
-func (table *Table) BuildRecord__Instance(recordRaw map[string]interface{}) (interface{}, error) {
-	instance := dynamicstruct.NewStruct()
-
-	for _, key := range table.KeyNames {
-		// Skip if not in record.
-		if _, ok := recordRaw[key]; !ok {
-			continue
-		}
-		instance = instance.AddField(strings.ToTitle(key), reflect.TypeOf(recordRaw[key]), table.BuildTag(key))
-	}
-	// Add fields.
-	for _, field := range table.FieldNames {
-		// Skip if not in record.
-		if _, ok := recordRaw[field]; !ok {
-			continue
-		}
-		instance = instance.AddField(strings.ToTitle(field), reflect.TypeOf(recordRaw[field]), table.BuildTag(field))
-	}
-	instanceBuilt := instance.Build().New()
-
-	if err := Remarshal(&instanceBuilt, recordRaw); err != nil {
-		return nil, err
-	}
-	return instance, nil
 }
 
 // Remarshal remarshals a struct.
