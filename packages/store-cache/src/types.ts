@@ -1,12 +1,12 @@
 import { AsyncTupleDatabaseClient, AsyncTupleRootTransactionApi, Unsubscribe } from "tuple-database";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
-import { SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type/deprecated";
 
-type FieldTypeToPrimitiveType<T extends FieldData<string>> = SchemaAbiTypeToPrimitiveType<T> extends never
+type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveType<T> extends never
   ? T extends `${string}[${string}]` // FieldType might include Enums and Enum arrays, which are mapped to uint8/uint8[]
     ? number[] // Map enum arrays to `number[]`
     : number // Map enums to `number`
-  : SchemaAbiTypeToPrimitiveType<T>;
+  : AbiTypeToPrimitiveType<T>;
 
 /** Map a table schema like `{ value: "uint256 "}` to its primitive TypeScript types like `{ value: bigint }`*/
 export type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]: FieldTypeToPrimitiveType<T[key]> };
