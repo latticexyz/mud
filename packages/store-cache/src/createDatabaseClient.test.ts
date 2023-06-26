@@ -65,67 +65,67 @@ describe("createDatabaseClient", () => {
     });
   });
 
-  it("should set and get typed values", () => {
+  it("should set and get typed values", async () => {
     const key = { first: "0x00", second: BigInt(1) } as const;
     const value = { value: BigInt(2) };
 
     // Set a value
-    tables.Counter.set(key, value);
+    await tables.Counter.set(key, value);
 
     // Expect the value to be set
-    expect(tables.Counter.get(key)).toEqual(value);
+    expect(await tables.Counter.get(key)).toEqual(value);
   });
 
-  it("should initialize with Solidity default values", () => {
+  it("should initialize with Solidity default values", async () => {
     const key1 = { key: "0x00" } as const;
     const key2 = { first: "0x00", second: 1n } as const;
 
     // Set a partial value
-    tables.Position.set(key1, {});
+    await tables.Position.set(key1, {});
 
     // Expect the value to be initialized with default values
-    expect(tables.Position.get(key1)).toEqual({ x: 0, y: 0 });
+    expect(await tables.Position.get(key1)).toEqual({ x: 0, y: 0 });
 
     // Set a partial value and expect the value to be initialized with default values
-    tables.Counter.set(key2, {});
-    expect(tables.Counter.get(key2)).toEqual({ value: 0n });
+    await tables.Counter.set(key2, {});
+    expect(await tables.Counter.get(key2)).toEqual({ value: 0n });
 
     // Set a partial value and expect the value to be initialized with default values
-    tables.MultiTable.set(key1, {});
-    expect(tables.MultiTable.get(key1)).toEqual({ arr: [], str: "", bts: "0x" });
+    await tables.MultiTable.set(key1, {});
+    expect(await tables.MultiTable.get(key1)).toEqual({ arr: [], str: "", bts: "0x" });
   });
 
-  it("should partially update existing values", () => {
+  it("should partially update existing values", async () => {
     const key = { key: "0x00" } as const;
 
     // Set a partial value
-    tables.Position.set(key, { x: 1 });
+    await tables.Position.set(key, { x: 1 });
 
     // Expect the value to be set and extended with default values
-    expect(tables.Position.get(key)).toEqual({ x: 1, y: 0 });
+    expect(await tables.Position.get(key)).toEqual({ x: 1, y: 0 });
 
     // Set another partial value
-    tables.Position.set(key, { y: 2 });
+    await tables.Position.set(key, { y: 2 });
 
     // Expect the value to be partially updated
-    expect(tables.Position.get(key)).toEqual({ x: 1, y: 2 });
+    expect(await tables.Position.get(key)).toEqual({ x: 1, y: 2 });
   });
 
-  it("should remove values", () => {
+  it("should remove values", async () => {
     const key = { first: "0x00", second: BigInt(1) } as const;
     const value = { value: BigInt(2) };
 
     // Set the value
-    tables.Counter.set(key, value);
-    expect(tables.Counter.get(key)).toEqual(value);
+    await tables.Counter.set(key, value);
+    expect(await tables.Counter.get(key)).toEqual(value);
 
     // Remove the value
-    tables.Counter.remove(key);
-    expect(tables.Counter.get(key)).toBeUndefined();
+    await tables.Counter.remove(key);
+    expect(await tables.Counter.get(key)).toBeUndefined();
   });
 
   describe("scan", () => {
-    it("should return all the values of the selected table", () => {
+    it("should return all the values of the selected table", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -141,15 +141,19 @@ describe("createDatabaseClient", () => {
       ];
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await tables.MultiKey.set(update.key, update.value);
+      }
 
-      expect(tables.Position.scan()).toEqual(
+      expect(await tables.Position.scan()).toEqual(
         positionUpdates.map(({ key, value }) => ({ key, value, namespace: config.namespace, table: "Position" }))
       );
     });
 
-    it("should return a list of all database entries", () => {
+    it("should return a list of all database entries", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -165,10 +169,14 @@ describe("createDatabaseClient", () => {
       ];
 
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
 
-      const rows = client.scan();
+      const rows = await client.scan();
 
       expect(rows.length).toBe(positionUpdates.length + multiKeyUpdates.length);
       expect(rows).toEqual([
@@ -179,7 +187,7 @@ describe("createDatabaseClient", () => {
   });
 
   describe("subscribe", () => {
-    it("should subscribe to updates of the selected table", () => {
+    it("should subscribe to updates of the selected table", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -200,8 +208,12 @@ describe("createDatabaseClient", () => {
       tables.Position.subscribe(callback);
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await tables.MultiKey.set(update.key, update.value);
+      }
 
       let i = 1;
 
@@ -218,8 +230,12 @@ describe("createDatabaseClient", () => {
       }
 
       // Remove all the table entries
-      for (const update of positionUpdates) tables.Position.remove(update.key);
-      for (const update of multiKeyUpdates) tables.MultiKey.remove(update.key);
+      for (const update of positionUpdates) {
+        await tables.Position.remove(update.key);
+      }
+      for (const update of multiKeyUpdates) {
+        await tables.MultiKey.remove(update.key);
+      }
 
       // Expect the callback to only have been called with remove updates of the Position table
       for (const update of positionUpdates) {
@@ -234,7 +250,7 @@ describe("createDatabaseClient", () => {
       }
     });
 
-    it("should only subscribe to updates greater than the provided key", () => {
+    it("should only subscribe to updates greater than the provided key", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -248,7 +264,9 @@ describe("createDatabaseClient", () => {
       tables.Position.subscribe(callback, { key: { gt: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
 
       // Expect the callback to only have been called with updates of a key greater than 0x01
       expect(callback).toHaveBeenCalledTimes(2);
@@ -260,7 +278,7 @@ describe("createDatabaseClient", () => {
       ]);
     });
 
-    it("should only subscribe to updates greater than or equal to provided key", () => {
+    it("should only subscribe to updates greater than or equal to provided key", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -274,7 +292,9 @@ describe("createDatabaseClient", () => {
       tables.Position.subscribe(callback, { key: { gte: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
 
       // Expect the callback to only have been called with updates of a key greater than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(3);
@@ -289,7 +309,7 @@ describe("createDatabaseClient", () => {
       ]);
     });
 
-    it("should only subscribe to updates equal to the provided key", () => {
+    it("should only subscribe to updates equal to the provided key", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -303,7 +323,9 @@ describe("createDatabaseClient", () => {
       tables.Position.subscribe(callback, { key: { eq: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
 
       // Expect the callback to only have been called with updates of a key equal to 0x01
       expect(callback).toHaveBeenCalledTimes(1);
@@ -312,7 +334,7 @@ describe("createDatabaseClient", () => {
       ]);
     });
 
-    it("should only subscribe to updates less than or equal to the provided key", () => {
+    it("should only subscribe to updates less than or equal to the provided key", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -326,7 +348,9 @@ describe("createDatabaseClient", () => {
       tables.Position.subscribe(callback, { key: { lte: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
 
       // Expect the callback to only have been called with updates of a key less than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(2);
@@ -338,7 +362,7 @@ describe("createDatabaseClient", () => {
       ]);
     });
 
-    it("should only subscribe to updates less than the provided key", () => {
+    it("should only subscribe to updates less than the provided key", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -352,7 +376,9 @@ describe("createDatabaseClient", () => {
       tables.Position.subscribe(callback, { key: { lt: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await tables.Position.set(update.key, update.value);
+      }
 
       // Expect the callback to only have been called with updates of a key less than 0x01
       expect(callback).toHaveBeenCalledTimes(1);
@@ -361,7 +387,7 @@ describe("createDatabaseClient", () => {
       ]);
     });
 
-    it("should not subscribe to updates anymore after unsubscribing", () => {
+    it("should not subscribe to updates anymore after unsubscribing", async () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -372,18 +398,18 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe to all Position table updates
-      const unsubscribe = tables.Position.subscribe(callback);
+      const unsubscribe = await tables.Position.subscribe(callback);
 
       // Set values in the tables
-      tables.Position.set(positionUpdates[0].key, positionUpdates[0].value);
-      tables.Position.set(positionUpdates[1].key, positionUpdates[1].value);
+      await tables.Position.set(positionUpdates[0].key, positionUpdates[0].value);
+      await tables.Position.set(positionUpdates[1].key, positionUpdates[1].value);
 
       // Unsubscribe from updates
       unsubscribe();
 
       // Set more values in the tables
-      tables.Position.set(positionUpdates[2].key, positionUpdates[2].value);
-      tables.Position.set(positionUpdates[3].key, positionUpdates[3].value);
+      await tables.Position.set(positionUpdates[2].key, positionUpdates[2].value);
+      await tables.Position.set(positionUpdates[3].key, positionUpdates[3].value);
 
       // Expect the callback to only have been called with updates of a key less than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(2);
@@ -396,7 +422,7 @@ describe("createDatabaseClient", () => {
     });
   });
 
-  it("should expose global methods to modify values on any table", () => {
+  it("should expose global methods to modify values on any table", async () => {
     const namespace = "some-other-namespace";
     const table = "some-other-table";
     const key = { key: "0x00" };
@@ -406,11 +432,11 @@ describe("createDatabaseClient", () => {
 
     client.subscribe(mock);
 
-    client.set(namespace, table, key, value);
-    expect(client.get(namespace, table, key)).toStrictEqual(value);
+    await client.set(namespace, table, key, value);
+    expect(await client.get(namespace, table, key)).toStrictEqual(value);
 
-    client.remove(namespace, table, key);
-    expect(client.get(namespace, table, key)).toBe(undefined);
+    await client.remove(namespace, table, key);
+    expect(await client.get(namespace, table, key)).toBe(undefined);
 
     expect(mock).toHaveBeenCalledTimes(2);
     expect(mock).toHaveBeenNthCalledWith(1, [{ set: [{ key, value }], remove: [], table, namespace }]);
