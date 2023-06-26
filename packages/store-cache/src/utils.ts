@@ -20,7 +20,7 @@ import {
   ScanResult,
 } from "./types";
 import { getAbiTypeDefaultValue } from "@latticexyz/schema-type/deprecated";
-import { SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { SchemaPrimitiveType } from "@latticexyz/schema-type";
 
 /**
  * Set the value for the given key
@@ -231,7 +231,7 @@ function getKeyOrder(config: StoreConfig, table: string): string[] | undefined {
  * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
  * and sort it based on config's key order, as expected for keys in tuple-database
  */
-function recordToTuple(record: Record<string, SchemaAbiTypeToPrimitiveType>, keyOrder?: string[]): Tuple {
+function recordToTuple(record: Record<string, SchemaPrimitiveType>, keyOrder?: string[]): Tuple {
   const tuple = [];
   for (const key of keyOrder ?? Object.keys(record)) {
     tuple.push({ [key]: serializeKey(record[key]) });
@@ -261,7 +261,7 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
  * (see https://github.com/ccorcos/tuple-database/issues/25)
  * For now only `bigint` needs serialization.
  */
-function serializeKey(key: SchemaAbiTypeToPrimitiveType): Omit<SchemaAbiTypeToPrimitiveType, "bigint"> {
+function serializeKey(key: SchemaPrimitiveType): Omit<SchemaPrimitiveType, "bigint"> {
   if (typeof key === "bigint") return `${key.toString()}n`;
   return key;
 }
