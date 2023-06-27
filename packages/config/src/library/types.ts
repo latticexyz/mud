@@ -1,6 +1,5 @@
 /*
- * Every plugin defines an `Input`, an `Expanded<T = Input>` type,
- * and a `expandConfig` function to map from `Input` to `Expanded`.
+ * Every plugin accepts a generic config `C`, and an `expandConfig` function to expand `C`.
  * To distinguish plugins from each other in TypeScript, they also define a unique `id` string.
  */
 export interface MudPlugin {

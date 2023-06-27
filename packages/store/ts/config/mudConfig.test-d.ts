@@ -74,8 +74,9 @@ type ManuallyExpandedConfig = {
 };
 
 describe("mudConfig", () => {
-  // Test possible inference confusion.
-  // This would fail if you remove `AsDependent` from `MUDUserConfig`
+  // TODO more tests? Aside from simple expansion, this used to test possible inference confusion
+  // (which would fail if you remove `AsDependent` from `MUDUserConfig`, unclear how relevant it is now.
+  // AsDependent may not be needed)
   expectTypeOf<AutoExpandedConfig>().toEqualTypeOf<ManuallyExpandedConfig>();
 });
 
