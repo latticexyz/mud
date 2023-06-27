@@ -63,4 +63,20 @@ describe("schema", () => {
       'Schema "0x002502045f2381c3c4c500000000000000000000000000000000000000000000" static data length (37) did not match the summed length of all static fields (36). Is `staticAbiTypeToByteLength` up to date with Solidity schema types?'
     );
   });
+
+  it("can encode a record values to hex", () => {
+    const schema = new Schema(["uint32", "uint128"], ["uint32[]", "string"]);
+    const hex = schema.encodeRecord([1, 2n, [3, 4], "some string"]);
+    expect(hex).toBe(
+      "0x0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
+    );
+  });
+
+  it("can decode hex to record values", () => {
+    const schema = new Schema(["uint32", "uint128"], ["uint32[]", "string"]);
+    const values = schema.decodeRecord(
+      "0x0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
+    );
+    expect(values).toStrictEqual([1, 2n, [3, 4], "some string"]);
+  });
 });

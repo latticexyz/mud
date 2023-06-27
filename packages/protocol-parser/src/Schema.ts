@@ -151,10 +151,10 @@ export class Schema {
 
     const dynamicData = dynamicDataItems.join("");
 
-    const packedCounterData = `${encodeFieldData("uint56", dynamicTotalByteLength)}${dynamicFieldByteLengths.map(
-      (length) => encodeFieldData("uint40", length)
-    )}`;
+    const packedCounter = `${encodeFieldData("uint56", dynamicTotalByteLength)}${dynamicFieldByteLengths
+      .map((length) => encodeFieldData("uint40", length))
+      .join("")}`.padEnd(64, "0");
 
-    return `0x${staticData}${packedCounterData}${dynamicData}`;
+    return `0x${staticData}${packedCounter}${dynamicData}`;
   }
 }
