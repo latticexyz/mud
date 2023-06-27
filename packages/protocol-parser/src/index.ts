@@ -5,3 +5,4 @@ export * from "./decodeStaticField";
 export * from "./errors";
 export * from "./hexToPackedCounter";
 export * from "./hexToTableSchema";
+export * from "./Schema";

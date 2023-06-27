@@ -11,6 +11,7 @@ import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 import { hexToPackedCounter } from "./hexToPackedCounter";
 import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";
+import { encodeFieldData } from "./encodeField";
 
 export class Schema {
   readonly staticFields: readonly StaticAbiType[];
@@ -78,7 +79,7 @@ export class Schema {
       .padEnd(64, "0")}`;
   }
 
-  decodeData(data: Hex): (StaticPrimitiveType | DynamicPrimitiveType)[] {
+  decodeRecord(data: Hex): (StaticPrimitiveType | DynamicPrimitiveType)[] {
     const values: (StaticPrimitiveType | DynamicPrimitiveType)[] = [];
 
     let bytesOffset = 0;
@@ -135,5 +136,25 @@ export class Schema {
     return fieldIndex < this.staticFields.length
       ? decodeStaticField(this.staticFields[fieldIndex], data)
       : decodeDynamicField(this.dynamicFields[fieldIndex - this.staticFields.length], data);
+  }
+
+  encodeRecord(values: (StaticPrimitiveType | DynamicPrimitiveType)[]): Hex {
+    const staticValues = values.slice(0, this.staticFields.length) as StaticPrimitiveType[];
+    const dynamicValues = values.slice(this.staticFields.length) as DynamicPrimitiveType[];
+
+    const staticData = staticValues.map((value, i) => encodeFieldData(this.staticFields[i], value)).join("");
+
+    const dynamicDataItems = dynamicValues.map((value, i) => encodeFieldData(this.dynamicFields[i], value));
+
+    const dynamicFieldByteLengths = dynamicDataItems.map((value) => value.length / 2);
+    const dynamicTotalByteLength = dynamicFieldByteLengths.reduce((total, length) => total + BigInt(length), 0n);
+
+    const dynamicData = dynamicDataItems.join("");
+
+    const packedCounterData = `${encodeFieldData("uint56", dynamicTotalByteLength)}${dynamicFieldByteLengths.map(
+      (length) => encodeFieldData("uint40", length)
+    )}`;
+
+    return `0x${staticData}${packedCounterData}${dynamicData}`;
   }
 }

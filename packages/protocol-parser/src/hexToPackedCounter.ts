@@ -22,7 +22,7 @@ export function hexToPackedCounter(data: Hex): {
   // TODO: use schema to make sure we only parse as many as we need (rather than zeroes at the end)?
   const fieldByteLengths = decodeDynamicField("uint40[]", sliceHex(data, 7));
 
-  const summedLength = BigInt(fieldByteLengths.reduce((a, b) => a + b, 0));
+  const summedLength = BigInt(fieldByteLengths.reduce((total, length) => total + length, 0));
   if (summedLength !== totalByteLength) {
     throw new PackedCounterLengthMismatchError(data, totalByteLength, summedLength);
   }
