@@ -1,7 +1,7 @@
 import { Page, expect } from "@playwright/test";
 import { Data } from "./types";
 import { readClientStore } from "./readClientStore";
-import config from "../../contracts/mud.config";
+import config from "../../contracts/.mud/expandedConfig";
 
 /**
  * Confirms that the client state equals the given state by reading from the client's data store

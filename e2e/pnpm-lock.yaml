@@ -98,6 +98,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
+      '@latticexyz/common':
+        specifier: link:../../../packages/common
+        version: link:../../../packages/common
       '@latticexyz/config':
         specifier: link:../../../packages/config
         version: link:../../../packages/config

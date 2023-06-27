@@ -1,6 +1,7 @@
 // Note: this expects the config to not use shortcuts but the full definitions for table schemas
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import config from "../../contracts/mud.config";
+import config from "../../contracts/.mud/expandedConfig";
+
 type SchemaToPrimitive<Schema> = Schema extends Record<string, SchemaAbiType>
   ? { [key in keyof Schema]: SchemaAbiTypeToPrimitiveType<Schema[key]> }
   : never;

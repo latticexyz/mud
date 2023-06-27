@@ -1,7 +1,7 @@
 import { mapObject } from "@latticexyz/utils";
 import { Data, EncodedData } from "./types";
 import { encodeAbiParameters, toHex, encodePacked } from "viem";
-import config from "../../contracts/mud.config";
+import config from "../../contracts/.mud/expandedConfig";
 
 /**
  * Turns the typed data into encoded data in the format expected by `world.setRecord`

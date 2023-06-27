@@ -37,7 +37,7 @@ export function defineContractComponents(world: World) {
       );
     })(),
     NumberList: (() => {
-      const tableId = new TableId("undefined", "undefined");
+      const tableId = new TableId("", "NumberList");
       return defineComponent(
         world,
         {
