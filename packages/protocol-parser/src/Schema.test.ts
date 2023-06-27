@@ -2,9 +2,14 @@ import { describe, expect, it } from "vitest";
 import { Schema } from "./Schema";
 
 describe("schema", () => {
-  it("should serialize to JSON", () => {
-    const schema = new Schema([], []);
-    expect(JSON.stringify(schema)).toMatchInlineSnapshot('"{\\"staticFields\\":[],\\"dynamicFields\\":[]}"');
+  it("can serialize to JSON", () => {
+    const emptySchema = new Schema([], []);
+    expect(JSON.stringify(emptySchema)).toMatchInlineSnapshot('"{\\"staticFields\\":[],\\"dynamicFields\\":[]}"');
+
+    const mixedSchema = new Schema(["uint8", "address", "bool"], ["bytes32[]", "string", "bytes", "bool[]"]);
+    expect(JSON.stringify(mixedSchema)).toMatchInlineSnapshot(
+      '"{\\"staticFields\\":[\\"uint8\\",\\"address\\",\\"bool\\"],\\"dynamicFields\\":[\\"bytes32[]\\",\\"string\\",\\"bytes\\",\\"bool[]\\"]}"'
+    );
   });
 
   it("converts schema to hex", () => {
