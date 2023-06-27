@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { decodeKeyTuple } from "./decodeKeyTuple";
-import { abiTypesToSchema } from "./abiTypesToSchema";
+import { Schema } from "./Schema";
 
 describe("decodeKeyTuple", () => {
   it("can decode bool key tuple", () => {
     expect(
-      decodeKeyTuple(abiTypesToSchema(["bool"]), ["0x0000000000000000000000000000000000000000000000000000000000000000"])
+      decodeKeyTuple(new Schema(["bool"]), ["0x0000000000000000000000000000000000000000000000000000000000000000"])
     ).toStrictEqual([false]);
     expect(
-      decodeKeyTuple(abiTypesToSchema(["bool"]), ["0x0000000000000000000000000000000000000000000000000000000000000001"])
+      decodeKeyTuple(new Schema(["bool"]), ["0x0000000000000000000000000000000000000000000000000000000000000001"])
     ).toStrictEqual([true]);
   });
 
   it("can decode complex key tuple", () => {
     expect(
-      decodeKeyTuple(abiTypesToSchema(["uint256", "int32", "bytes16", "address", "bool", "int8"]), [
+      decodeKeyTuple(new Schema(["uint256", "int32", "bytes16", "address", "bool", "int8"]), [
         "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6",
         "0x1234000000000000000000000000000000000000000000000000000000000000",
