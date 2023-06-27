@@ -16,5 +16,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["mud.config.ts", "ts"]
+  "include": ["mud.config.ts", ".mud", "ts"]
 }

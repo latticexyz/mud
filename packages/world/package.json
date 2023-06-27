@@ -12,7 +12,6 @@
   "exports": {
     ".": "./dist/ts/library/index.js",
     "./node": "./dist/ts/node/index.js",
-    "./mud.config.js": "./dist/mud.config.js",
     "./.mud/*": "./dist/.mud/*",
     "./abi/*": "./abi/*",
     "./types/*": "./types/*",
