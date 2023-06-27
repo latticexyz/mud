@@ -12,7 +12,7 @@ import { InvalidHexLengthForPackedCounterError, PackedCounterLengthMismatchError
 
 export function hexToPackedCounter(data: Hex): {
   totalByteLength: bigint;
-  fieldByteLengths: number[];
+  fieldByteLengths: readonly number[];
 } {
   if (data.length !== 66) {
     throw new InvalidHexLengthForPackedCounterError(data);

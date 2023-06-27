@@ -79,7 +79,7 @@ export class Schema {
       .padEnd(64, "0")}`;
   }
 
-  decodeRecord(data: Hex): (StaticPrimitiveType | DynamicPrimitiveType)[] {
+  decodeRecord(data: Hex): readonly (StaticPrimitiveType | DynamicPrimitiveType)[] {
     const values: (StaticPrimitiveType | DynamicPrimitiveType)[] = [];
 
     let bytesOffset = 0;
@@ -138,9 +138,9 @@ export class Schema {
       : decodeDynamicField(this.dynamicFields[fieldIndex - this.staticFields.length], data);
   }
 
-  encodeRecord(values: (StaticPrimitiveType | DynamicPrimitiveType)[]): Hex {
-    const staticValues = values.slice(0, this.staticFields.length) as StaticPrimitiveType[];
-    const dynamicValues = values.slice(this.staticFields.length) as DynamicPrimitiveType[];
+  encodeRecord(values: readonly (StaticPrimitiveType | DynamicPrimitiveType)[]): Hex {
+    const staticValues = values.slice(0, this.staticFields.length) as readonly StaticPrimitiveType[];
+    const dynamicValues = values.slice(this.staticFields.length) as readonly DynamicPrimitiveType[];
 
     const staticData = staticValues.map((value, i) => encodeFieldData(this.staticFields[i], value)).join("");
 
