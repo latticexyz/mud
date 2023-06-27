@@ -1,7 +1,19 @@
 import { Hex, hexToNumber, sliceHex } from "viem";
-import { StaticAbiType, DynamicAbiType, staticAbiTypeToByteLength, schemaAbiTypes } from "@latticexyz/schema-type";
+import {
+  StaticAbiType,
+  StaticPrimitiveType,
+  DynamicAbiType,
+  DynamicPrimitiveType,
+  staticAbiTypeToByteLength,
+  schemaAbiTypes,
+} from "@latticexyz/schema-type";
 import { Schema } from "./common";
 import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";
+import { decodeStaticField } from "./decodeStaticField";
+import { hexToPackedCounter } from "./hexToPackedCounter";
+import { decodeDynamicField } from "./decodeDynamicField";
+
+// TODO: convert schema to class so that we can have static methods for decoding, etc.
 
 export function hexToSchema(data: Hex): Schema {
   if (data.length !== 66) {
@@ -29,11 +41,72 @@ export function hexToSchema(data: Hex): Schema {
     throw new SchemaStaticLengthMismatchError(data, staticDataLength, actualStaticDataLength);
   }
 
+  function decodeData(data: Hex): (StaticPrimitiveType | DynamicPrimitiveType)[] {
+    const values: (StaticPrimitiveType | DynamicPrimitiveType)[] = [];
+
+    let bytesOffset = 0;
+    staticFields.forEach((fieldType) => {
+      const fieldByteLength = staticAbiTypeToByteLength[fieldType];
+      const value = decodeStaticField(fieldType, sliceHex(data, bytesOffset, bytesOffset + fieldByteLength));
+      bytesOffset += fieldByteLength;
+      values.push(value);
+    });
+
+    // Warn user if static data length doesn't match the schema, because data corruption might be possible.
+    const actualStaticDataLength = bytesOffset;
+    if (actualStaticDataLength !== staticDataLength) {
+      console.warn(
+        "Decoded static data length does not match schema's expected static data length. Data may get corrupted. Is `getStaticByteLength` outdated?",
+        {
+          expectedLength: staticDataLength,
+          actualLength: actualStaticDataLength,
+          bytesOffset,
+        }
+      );
+    }
+
+    if (dynamicFields.length > 0) {
+      const dataLayout = hexToPackedCounter(sliceHex(data, bytesOffset, bytesOffset + 32));
+      bytesOffset += 32;
+
+      dynamicFields.forEach((fieldType, i) => {
+        const dataLength = dataLayout.fieldByteLengths[i];
+        const value = decodeDynamicField(fieldType, sliceHex(data, bytesOffset, bytesOffset + dataLength));
+        bytesOffset += dataLength;
+        values.push(value);
+      });
+
+      // Warn user if dynamic data length doesn't match the schema, because data corruption might be possible.
+      const actualDynamicDataLength = bytesOffset - 32 - actualStaticDataLength;
+      // TODO: refactor this so we don't break for bytes offsets >UINT40
+      if (BigInt(actualDynamicDataLength) !== dataLayout.totalByteLength) {
+        console.warn(
+          "Decoded dynamic data length does not match data layout's expected data length. Data may get corrupted. Did the data layout change?",
+          {
+            expectedLength: dataLayout.totalByteLength,
+            actualLength: actualDynamicDataLength,
+            bytesOffset,
+          }
+        );
+      }
+    }
+
+    return values;
+  }
+
+  function decodeField(fieldIndex: number, data: Hex): StaticPrimitiveType | DynamicPrimitiveType {
+    return fieldIndex < staticFields.length
+      ? decodeStaticField(staticFields[fieldIndex], data)
+      : decodeDynamicField(dynamicFields[fieldIndex - staticFields.length], data);
+  }
+
   return {
     staticDataLength,
     staticFields,
     dynamicFields,
     isEmpty: data === "0x",
     schemaData: data,
+    decodeData,
+    decodeField,
   };
 }
