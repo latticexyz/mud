@@ -14,7 +14,8 @@ export type CreateBlockEventsStreamOptions<TAbiEvent extends AbiEvent> = {
   toBlock?: BlockNumber | ReadonlyBehaviorSubject<BlockNumber>;
   address?: Hex;
   events: readonly TAbiEvent[];
-  maxBlockRange?: number; // defaults to 1000
+  /** Defaults to 1000 */
+  maxBlockRange?: number;
 };
 
 export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
