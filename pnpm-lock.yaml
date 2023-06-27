@@ -554,15 +554,9 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
       abitype:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.0.4)
