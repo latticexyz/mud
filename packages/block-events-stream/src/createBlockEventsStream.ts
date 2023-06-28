@@ -64,6 +64,8 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
       const toBlock = bigIntMin(fromBlock + BigInt(maxBlockRange), lastBlockNumber);
       debug("fetching block range", { fromBlock, toBlock });
 
+      // TODO: handle RPC block range errors
+      // TODO: handle RPC rate limit errors (hopefully via viem client retry policy)
       // TODO: swap this with viem `getLogs` call when viem supports multiple events: https://github.com/wagmi-dev/viem/pull/633
       const logs = await getLogs({
         publicClient,
@@ -78,9 +80,6 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
         // This is an edge case that shouldn't happen unless you are ignoring types or something weird happens with viem/RPC.
         console.warn("pending logs discarded");
       }
-
-      // TODO: handle RPC block range errors
-      // TODO: handle RPC rate limit errors (hopefully via client retry policy)
 
       const blockNumbers = Array.from(new Set(nonPendingLogs.map((log) => log.blockNumber)));
       blockNumbers.sort(bigIntSort);
