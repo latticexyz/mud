@@ -1,20 +1,24 @@
 import { describe, expect, it } from "vitest";
 import { decodeKeyTuple } from "./decodeKeyTuple";
-import { Schema } from "./Schema";
+import { Schema } from "./common";
 
 describe("decodeKeyTuple", () => {
   it("can decode bool key tuple", () => {
     expect(
-      decodeKeyTuple(new Schema(["bool"]), ["0x0000000000000000000000000000000000000000000000000000000000000000"])
+      decodeKeyTuple({ staticFields: ["bool"], dynamicFields: [] }, [
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+      ])
     ).toStrictEqual([false]);
     expect(
-      decodeKeyTuple(new Schema(["bool"]), ["0x0000000000000000000000000000000000000000000000000000000000000001"])
+      decodeKeyTuple({ staticFields: ["bool"], dynamicFields: [] }, [
+        "0x0000000000000000000000000000000000000000000000000000000000000001",
+      ])
     ).toStrictEqual([true]);
   });
 
   it("can decode complex key tuple", () => {
     expect(
-      decodeKeyTuple(new Schema(["uint256", "int32", "bytes16", "address", "bool", "int8"]), [
+      decodeKeyTuple({ staticFields: ["uint256", "int32", "bytes16", "address", "bool", "int8"], dynamicFields: [] }, [
         "0x000000000000000000000000000000000000000000000000000000000000002a",
         "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd6",
         "0x1234000000000000000000000000000000000000000000000000000000000000",

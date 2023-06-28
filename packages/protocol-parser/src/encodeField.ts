@@ -15,10 +15,3 @@ export function encodeField<TSchemaAbiType extends SchemaAbiType>(
   }
   return encodePacked([fieldType], [value]);
 }
-
-export function encodeFieldData<TSchemaAbiType extends SchemaAbiType>(
-  fieldType: TSchemaAbiType,
-  value: AbiParameterToPrimitiveType<{ type: TSchemaAbiType }>
-): string {
-  return encodeField(fieldType, value).replace(/^0x/, "");
-}
