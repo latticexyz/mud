@@ -112,6 +112,7 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
         }
 
         if (!initialToBlock.closed) {
+          debug("waiting for next block");
           const sub = initialToBlock.subscribe((blockNumber) => {
             if (blockNumber > toBlock) {
               sub.unsubscribe();
