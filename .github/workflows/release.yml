@@ -8,7 +8,7 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  release:
+  version:
     name: Release
     if: github.repository == 'latticexyz/mud'
     runs-on: ubuntu-latest
