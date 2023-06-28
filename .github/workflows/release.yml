@@ -17,8 +17,8 @@ jobs:
       pull-requests: write
       id-token: write
     steps:
-      - uses: actions/checkout@v3
-        name: Checkout Repo
+      - name: Checkout
+        uses: actions/checkout@v3
         with:
           submodules: recursive
 
