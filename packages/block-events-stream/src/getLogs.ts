@@ -64,6 +64,7 @@ export async function getLogs<TAbiEvents extends readonly AbiEvent[]>({
         return formatLog(log, { args, eventName });
       } catch (err) {
         // We're using strict mode, so just skip if there is an error decoding.
+        // https://viem.sh/docs/actions/public/getLogs.html#strict-mode
         return;
       }
     })

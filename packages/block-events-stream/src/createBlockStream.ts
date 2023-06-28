@@ -2,8 +2,6 @@ import { BehaviorSubject } from "rxjs";
 import type { Block, BlockTag, PublicClient } from "viem";
 import { ReadonlyBehaviorSubject } from "./common";
 
-// TODO: pass through viem's types, e.g. WatchBlocksParameters -> GetBlockReturnType
-
 export type CreateBlockStreamOptions = {
   publicClient: PublicClient;
   blockTag: BlockTag;
@@ -20,7 +18,6 @@ export function createBlockStream({
 }: CreateBlockStreamOptions): Promise<CreateBlockStreamResult> {
   return new Promise((resolve, reject) => {
     let stream: BehaviorSubject<Block> | undefined;
-    // TODO: do something with unwatch?
     const unwatch = publicClient.watchBlocks({
       blockTag,
       emitOnBegin: true,

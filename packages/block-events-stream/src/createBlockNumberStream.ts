@@ -4,8 +4,6 @@ import { createBlockStream } from "./createBlockStream";
 import { ReadonlyBehaviorSubject } from "./common";
 import { isNonPendingBlock } from "./isNonPendingBlock";
 
-// TODO: pass through viem's types, e.g. WatchBlocksParameters -> GetBlockReturnType
-
 export type CreateBlockNumberStreamOptions =
   | {
       publicClient: PublicClient;
@@ -40,7 +38,7 @@ export async function createBlockNumberStream({
   const block = block$.stream.value;
 
   if (!block.number) {
-    // TODO: better error
+    // This is an edge case that shouldn't happen unless you are ignoring types.
     throw new Error(`${blockTag} block missing or pending`);
   }
 

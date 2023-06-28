@@ -2,7 +2,7 @@ import { BehaviorSubject, Subject } from "rxjs";
 import type { BlockNumber, Hex, PublicClient } from "viem";
 import type { AbiEvent } from "abitype";
 import { BlockEvents, BlockEventsStream, ReadonlyBehaviorSubject } from "./common";
-import { bigIntMin } from "./utils";
+import { bigIntMin, bigIntSort } from "./utils";
 import { isNonPendingLog } from "./isNonPendingLog";
 import { debug } from "./debug";
 import { createBlockNumberStream } from "./createBlockNumberStream";
@@ -38,7 +38,7 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
     const earliestBlock = await publicClient.getBlock({ blockTag: "earliest" });
     debug("earliest block", earliestBlock);
     if (earliestBlock.number == null) {
-      // TODO: better error
+      // This is an edge case that shouldn't happen unless you are ignoring types or something weird happens with viem/RPC.
       throw new Error(`pending or missing earliest block`);
     }
     initialFromBlock = earliestBlock.number;
@@ -73,11 +73,9 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
         events,
       });
 
-      // TODO: do something other than just throwing out pending logs
       const nonPendingLogs = logs.filter(isNonPendingLog);
-
       if (logs.length !== nonPendingLogs.length) {
-        // TODO: better error
+        // This is an edge case that shouldn't happen unless you are ignoring types or something weird happens with viem/RPC.
         console.warn("pending logs discarded");
       }
 
@@ -85,7 +83,7 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
       // TODO: handle RPC rate limit errors (hopefully via client retry policy)
 
       const blockNumbers = Array.from(new Set(nonPendingLogs.map((log) => log.blockNumber)));
-      blockNumbers.sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+      blockNumbers.sort(bigIntSort);
 
       for (const blockNumber of blockNumbers) {
         const blockLogs = nonPendingLogs.filter((log) => log.blockNumber === blockNumber);
