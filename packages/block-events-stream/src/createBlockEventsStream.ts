@@ -18,6 +18,11 @@ export type CreateBlockEventsStreamOptions<TAbiEvent extends AbiEvent> = {
   maxBlockRange?: number;
 };
 
+export type CreateBlockEventsStreamResult<TAbiEvent extends AbiEvent> = {
+  stream: BlockEventsStream<TAbiEvent>;
+  close: () => void;
+};
+
 export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
   publicClient,
   fromBlock: initialFromBlock,
@@ -25,7 +30,7 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
   address,
   events,
   maxBlockRange = 1000,
-}: CreateBlockEventsStreamOptions<TAbiEvent>): Promise<BlockEventsStream<TAbiEvent>> {
+}: CreateBlockEventsStreamOptions<TAbiEvent>): Promise<CreateBlockEventsStreamResult<TAbiEvent>> {
   debug("createBlockEventsStream", { initialFromBlock, initialToBlock, address, events, maxBlockRange });
 
   if (initialFromBlock == null) {
@@ -39,9 +44,12 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
     initialFromBlock = earliestBlock.number;
   }
 
+  let closeInitialToBlock: (() => void) | undefined;
   if (initialToBlock == null) {
     debug("creating latest block number stream");
-    initialToBlock = await createBlockNumberStream({ publicClient, blockTag: "latest" });
+    const blockNumber$ = await createBlockNumberStream({ publicClient, blockTag: "latest" });
+    initialToBlock = blockNumber$.stream;
+    closeInitialToBlock = blockNumber$.close;
   }
 
   const stream = new Subject<BlockEvents<TAbiEvent>>();
@@ -105,14 +113,15 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
           return;
         }
 
-        debug("waiting for next block");
-        const sub = initialToBlock.subscribe((blockNumber) => {
-          if (blockNumber > toBlock) {
-            sub.unsubscribe();
-            fetchBlockRange(toBlock + 1n, maxBlockRange, blockNumber);
-          }
-        });
-        return;
+        if (!initialToBlock.closed) {
+          const sub = initialToBlock.subscribe((blockNumber) => {
+            if (blockNumber > toBlock) {
+              sub.unsubscribe();
+              fetchBlockRange(toBlock + 1n, maxBlockRange, blockNumber);
+            }
+          });
+          return;
+        }
       }
 
       stream.complete();
@@ -122,5 +131,14 @@ export async function createBlockEventsStream<TAbiEvent extends AbiEvent>({
     }
   }
 
-  return stream.asObservable();
+  return {
+    stream: stream.asObservable(),
+    close: (): void => {
+      stream.complete();
+      if (initialToBlock instanceof BehaviorSubject) {
+        initialToBlock.complete();
+      }
+      closeInitialToBlock?.();
+    },
+  };
 }

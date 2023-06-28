@@ -18,13 +18,26 @@ export type CreateBlockNumberStreamOptions =
       block$: ReadonlyBehaviorSubject<Block>;
     };
 
+export type CreateBlockNumberStreamResult = {
+  stream: ReadonlyBehaviorSubject<BlockNumber>;
+  close: () => void;
+};
+
 export async function createBlockNumberStream({
   publicClient,
   blockTag,
   block$: initialBlock$,
-}: CreateBlockNumberStreamOptions): Promise<ReadonlyBehaviorSubject<BlockNumber>> {
-  const block$ = initialBlock$ ?? (await createBlockStream({ publicClient, blockTag: blockTag as BlockTag }));
-  const block = block$.value;
+}: CreateBlockNumberStreamOptions): Promise<CreateBlockNumberStreamResult> {
+  const block$ = initialBlock$
+    ? {
+        stream: initialBlock$,
+        close: (): void => {
+          // don't close the user-provided stream
+        },
+      }
+    : await createBlockStream({ publicClient, blockTag: blockTag as BlockTag });
+
+  const block = block$.stream.value;
 
   if (!block.number) {
     // TODO: better error
@@ -33,12 +46,19 @@ export async function createBlockNumberStream({
 
   const blockNumber$ = new BehaviorSubject<BlockNumber>(block.number);
 
-  block$
+  const { unsubscribe } = block$.stream
     .pipe(
       filter(isNonPendingBlock),
       map((block) => block.number)
     )
     .subscribe(blockNumber$);
 
-  return blockNumber$;
+  return {
+    stream: blockNumber$,
+    close: (): void => {
+      unsubscribe();
+      blockNumber$.complete();
+      block$.close();
+    },
+  };
 }
