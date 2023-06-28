@@ -33,7 +33,7 @@ jobs:
         uses: ./.github/actions/require-empty-diff
 
       - name: Remove pre.json
-        run: npx rimraf .changeset/pre.json
+        run: pnpm changeset pre exit
 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
