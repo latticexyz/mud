@@ -3,7 +3,7 @@ name: Version 🔖
 on:
   push:
     branches:
-      - v1
+      - v2
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
