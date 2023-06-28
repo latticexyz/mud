@@ -68,7 +68,7 @@ export function solidityRelativeImportPath(fromPath: string, usedInPath: string)
   // 1st "./" must be added because path strips it,
   // but solidity expects it unless there's "../" ("./../" is fine).
   // 2nd and 3rd "./" forcefully avoid absolute paths (everything is relative to `src`).
-  return "./" + path.relative("./" + usedInPath, "./" + fromPath);
+  return posixPath("./" + path.relative("./" + usedInPath, "./" + fromPath));
 }
 
 /**
