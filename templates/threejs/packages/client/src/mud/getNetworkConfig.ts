@@ -12,17 +12,7 @@ type NetworkConfig = SetupContractConfig & {
 
 export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
-
-  let chainIdKey = "";
-  for (const key of params.keys()) {
-    // make chainId param case insensitive
-    if (key.toLowerCase() === "chainid") {
-      chainIdKey = key;
-      break;
-    }
-  }
-
-  const chainId = Number(params.get(chainIdKey) || import.meta.env.VITE_CHAIN_ID || 31337);
+  const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
   if (!chain) {
