@@ -1,10 +1,13 @@
 import { PublicClient, Transport, Chain, Hex, Log } from "viem";
 import { TableSchema } from "@latticexyz/protocol-parser";
 import {
+  BlockEvents,
+  bigIntSort,
   createBlockEventsStream,
   createBlockNumberStream,
   createBlockStream,
   getLogs,
+  isNonPendingLog,
 } from "@latticexyz/block-events-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
@@ -25,6 +28,7 @@ import {
   first,
   from,
   map,
+  mergeAll,
   of,
   retry,
   retryWhen,
@@ -36,6 +40,7 @@ import {
   timer,
 } from "rxjs";
 import { isNonPendingBlock, bigIntMin } from "@latticexyz/block-events-stream";
+import { isDefined } from "@latticexyz/common/utils";
 
 const maxBlockRange = 1000n;
 
@@ -59,12 +64,13 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
   async function getLogsWithSimulatedErrors(
     opts: Parameters<typeof getLogs>[0] & { fromBlock: bigint; toBlock: bigint }
   ): ReturnType<typeof getLogs> {
+    // simulate block range errors
     if (Math.random() < 0.2 && opts.toBlock - opts.fromBlock > 1n) {
       throw new Error("block range exceeded");
     }
-    if (opts.toBlock - opts.fromBlock > 500n) {
-      throw new Error("block range exceeded");
-    }
+    // if (opts.toBlock - opts.fromBlock > 500n) {
+    //   throw new Error("block range exceeded");
+    // }
     // simulate throttling
     if (Math.random() < 0.2) {
       throw new Error("too many requests");
@@ -119,28 +125,61 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
     }
   }
 
-  let fromBlock = 0n;
+  const blockRangeToLogs = (initialFromBlock: bigint) => {
+    let fromBlock = initialFromBlock;
+    return exhaustMap((latestBlockNumber: bigint) =>
+      from(
+        fetchLogs({
+          publicClient,
+          address: worldAddress,
+          events: storeEventsAbi,
+          fromBlock,
+          toBlock: latestBlockNumber,
+        })
+      ).pipe(
+        tap((result) => {
+          fromBlock = result.toBlock + 1n;
+        })
+      )
+    );
+  };
+
+  function groupLogsByBlockNumber(logs: Log[]) {
+    const nonPendingLogs = logs.filter(isNonPendingLog);
+    if (logs.length !== nonPendingLogs.length) {
+      // This is an edge case that shouldn't happen unless you are ignoring types or something weird happens with viem/RPC.
+      console.warn("pending logs discarded");
+    }
+
+    const blockNumbers = Array.from(new Set(nonPendingLogs.map((log) => log.blockNumber)));
+    blockNumbers.sort(bigIntSort);
+
+    return blockNumbers
+      .map((blockNumber) => {
+        const blockLogs = nonPendingLogs.filter((log) => log.blockNumber === blockNumber);
+        if (!blockLogs.length) return;
+        blockLogs.sort((a, b) => (a.logIndex < b.logIndex ? -1 : a.logIndex > b.logIndex ? 1 : 0));
+
+        if (!blockLogs.length) return;
+
+        return {
+          blockNumber,
+          blockHash: blockLogs[0].blockHash,
+          events: blockLogs,
+          // TODO: figure out why we need to cast this
+        };
+      })
+      .filter(isDefined);
+  }
 
   latestBlockNumber$
     .pipe(
-      exhaustMap((latestBlockNumber) => {
-        return from(
-          fetchLogs({
-            publicClient,
-            address: worldAddress,
-            events: storeEventsAbi,
-            fromBlock,
-            toBlock: latestBlockNumber,
-          })
-        ).pipe(
-          tap((result) => {
-            fromBlock = result.toBlock + 1n;
-          })
-        );
-      })
+      blockRangeToLogs(0n),
+      map(({ logs }) => from(groupLogsByBlockNumber(logs))),
+      mergeAll()
     )
-    .subscribe(({ fromBlock, toBlock, logs }) => {
-      console.log("got logs", fromBlock, toBlock, logs);
+    .subscribe((log) => {
+      console.log("got log", log);
     });
 
   //
