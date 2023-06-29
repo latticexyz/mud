@@ -15,9 +15,9 @@ export async function readClientStore(
   [namespace, table, key]: Parameters<StoreCache["get"]>
 ): Promise<Record<string, unknown> | undefined> {
   const selector = [namespace, table, serialize(key)];
-  const serializedValue = await page.evaluate((_selector) => {
+  const serializedValue = await page.evaluate(async (_selector) => {
     const [_namespace, _table, _key] = _selector;
-    const result = window["storeCache"].get(_namespace, _table, deserialize(_key));
+    const result = await window["storeCache"].get(_namespace, _table, deserialize(_key));
     return result ? serialize(result) : undefined;
 
     /**
