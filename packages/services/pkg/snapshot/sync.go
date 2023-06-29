@@ -3,9 +3,13 @@ package snapshot
 import (
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/utils"
+
 	"math"
 	"math/big"
 	"time"
+
+	"github.com/avast/retry-go"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -85,9 +89,25 @@ func processEventBatch(client *ethclient.Client, state ChainECSState, startBlock
 
 	logs, err := eth.GetAllEventsInRange(client, startBlock, endBlock, worldAddresses)
 	if err != nil {
-		logger.Fatal("failed to fetch events to catch up on",
+		logger.Error("failed to fetch events to catch up on, retrying",
 			zap.Error(err),
 		)
+		var retrying bool = false
+		refetchError := retry.Do(
+			func() error {
+				var err error
+				logs, err = eth.GetAllEventsInRange(client, startBlock, endBlock, worldAddresses)
+				utils.LogErrorWhileRetrying("failed to fetch events", err, &retrying, logger)
+				return err
+			},
+			utils.ServiceDelayType,
+			utils.ServiceRetryAttempts,
+			utils.ServiceRetryDelay,
+		)
+
+		if refetchError != nil {
+			logger.Fatal("failed while retrying to fetch events")
+		}
 	}
 	logger.Info("catching up on events", zap.String("category", "Initial sync"), zap.Int("numEvents", len(logs)))
 
