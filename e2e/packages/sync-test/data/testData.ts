@@ -13,6 +13,7 @@ export const testData1 = {
       value: { num: BigInt(1337), value: true },
     },
   ],
+  NumberList: [{ key: {}, value: { value: [1, 2, 3] } }],
 } satisfies Data;
 
 export const testData2 = {
@@ -34,4 +35,5 @@ export const testData2 = {
       value: { num: BigInt(0), value: true },
     },
   ],
+  NumberList: [{ key: {}, value: { value: [1, 2, 3] } }],
 } satisfies Data;

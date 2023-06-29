@@ -1,7 +1,9 @@
 import { mapObject } from "@latticexyz/utils";
 import { Data, EncodedData } from "./types";
-import { encodeAbiParameters, encodePacked } from "viem";
+import { encodeAbiParameters } from "viem";
+import { Schema, encodeRecord } from "@latticexyz/protocol-parser";
 import config from "../../contracts/mud.config";
+import { DynamicAbiType, SchemaAbiType, StaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type";
 
 /**
  * Turns the typed data into encoded data in the format expected by `world.setRecord`
@@ -9,12 +11,27 @@ import config from "../../contracts/mud.config";
 export function encodeTestData(testData: Data) {
   return mapObject(testData, (records, table) =>
     records
-      ? records.map((record) => ({
-          key: Object.entries(record.key).map(([keyName, keyValue]) => {
+      ? records.map((record) => {
+          const valueSchema = abiTypeArrayToSchema(Object.values(config.tables[table].schema));
+          const value = encodeRecord(valueSchema, Object.values(record.value));
+          const key = Object.entries(record.key).map(([keyName, keyValue]) => {
             return encodeAbiParameters([{ type: config.tables[table].keySchema[keyName] }], [keyValue]);
-          }),
-          value: encodePacked(Object.values(config.tables[table].schema), Object.values(record.value)),
-        }))
+          });
+          return {
+            key,
+            value,
+          };
+        })
       : undefined
   ) as EncodedData<typeof testData>;
+}
+
+function abiTypeArrayToSchema(abiTypes: SchemaAbiType[]): Schema {
+  const staticFields: StaticAbiType[] = [];
+  const dynamicFields: DynamicAbiType[] = [];
+  for (const abiType of abiTypes) {
+    if (isDynamicAbiType(abiType)) dynamicFields.push(abiType);
+    else staticFields.push(abiType);
+  }
+  return { staticFields, dynamicFields };
 }

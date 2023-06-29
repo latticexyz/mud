@@ -152,6 +152,9 @@ importers:
       '@latticexyz/network':
         specifier: link:../../../packages/network
         version: link:../../../packages/network
+      '@latticexyz/protocol-parser':
+        specifier: link:../../../packages/protocol-parser
+        version: link:../../../packages/protocol-parser
       '@latticexyz/schema-type':
         specifier: link:../../../packages/schema-type
         version: link:../../../packages/schema-type
