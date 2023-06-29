@@ -24,11 +24,15 @@ contract KeysWithValueHook is StoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
+  function _world() internal view returns (IBaseWorld) {
+    return IBaseWorld(storeAddress(msg.sender));
+  }
+
   function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
-    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key));
 
     // Return if the value hasn't changed
     if (previousValue == keccak256(data)) return;
@@ -42,21 +46,21 @@ contract KeysWithValueHook is StoreHook {
 
   function onBeforeSetField(bytes32 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }
 
   function onAfterSetField(bytes32 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
     // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, key));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, key[0]);
   }
 
   function onDeleteRecord(bytes32 sourceTableId, bytes32[] memory key) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }
