@@ -187,7 +187,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     let initialState = createCacheStore();
 
-    if (initialRecords) {
+    if (initialRecords?.length > 0) {
       console.log("Initial state from pre-loaded records");
       this.setLoadingState({ state: SyncState.INITIAL, msg: "Loading initial state", percentage: 0 });
       const events = await transformTableRecordsIntoEvents(storeContract, initialRecords, initialBlockNumber);
