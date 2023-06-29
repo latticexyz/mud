@@ -44,10 +44,12 @@ func Start(
 ) {
 	// Get an instance of a websocket subscription to the client.
 	headers := make(chan *types.Header)
+	logger.Info("Getting an Ethereum subscription")
 	sub, err := eth.GetEthereumSubscription(client, headers)
 	if err != nil {
 		logger.Fatal("failed to subscribe to new blockchain head", zap.Error(err))
 	}
+	logger.Info("Syncing live events from subscription")
 
 	for {
 		select {
@@ -72,10 +74,27 @@ func Start(
 			}
 
 		case header := <-headers:
+			logger.Info("Got new head", zap.String("blockHash", header.Hash().Hex()))
 			block, err := client.BlockByHash(context.Background(), header.Hash())
 			if err != nil {
-				// Skip this header since BlockByHash failed in fetching the block.
-				continue
+				var retrying bool = false
+				refetchError := retry.Do(
+					func() error {
+						var err error
+						block, err = client.BlockByHash(context.Background(), header.Hash())
+						utils.LogErrorWhileRetrying("failed to fetch block hash", err, &retrying, logger)
+						return err
+					},
+					utils.ServiceDelayType,
+					utils.ServiceRetryAttempts,
+					utils.ServiceRetryDelayBlockFetch,
+				)
+
+				if refetchError != nil {
+					logger.Info("failed while retrying to fetch block")
+					// Skip this header since BlockByHash failed in fetching the block.
+					continue
+				}
 			}
 
 			blockNumber := block.Number()

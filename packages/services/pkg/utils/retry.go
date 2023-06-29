@@ -13,6 +13,7 @@ var ServiceDelayType = retry.DelayType(func(n uint, err error, config *retry.Con
 
 var ServiceRetryAttempts = retry.Attempts(RetryAttempts)
 var ServiceRetryDelay = retry.Delay(RetryDelay)
+var ServiceRetryDelayBlockFetch = retry.Delay(RetryDelayBlockFetch)
 
 // LogErrorWhileRetrying is a wrapper for less verbose logging when retrying some actions, for
 // instance, reconnecting to an Ethereum client.

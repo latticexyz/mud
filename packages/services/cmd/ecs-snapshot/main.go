@@ -100,14 +100,17 @@ func main() {
 	go grpc.StartSnapshotServer(*port, *metricsPort, config, logger)
 
 	// 1. Prepare for service to run.
+	logger.Info("Starting bootup stage")
 	utils.EnsureDir(snapshot.SnapshotDir)
 
 	// 2. Kick off the service to catch up on state up to the current block number.
 	fromBlock := big.NewInt(*block)
 	toBlock := eth.GetCurrentBlockNumber(ethclient)
 
+	logger.Info("Starting sync stage")
 	initialState := snapshot.Sync(ethclient, fromBlock, toBlock, worlds, config)
 
 	// 3. Kick off the service to start syncing with new block heads from the current one.
+	logger.Info("Starting live stage")
 	snapshot.Start(initialState, ethclient, fromBlock, worlds, config, logger)
 }
