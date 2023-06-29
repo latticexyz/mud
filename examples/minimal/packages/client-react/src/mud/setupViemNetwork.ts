@@ -12,12 +12,17 @@ import mudConfig from "contracts/mud.config";
 import * as devObservables from "@latticexyz/network/dev";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
 import {
+  EMPTY,
+  Observable,
   catchError,
   concatMap,
+  defer,
   delay,
   delayWhen,
   exhaustMap,
+  expand,
   filter,
+  first,
   from,
   map,
   of,
@@ -32,16 +37,7 @@ import {
 } from "rxjs";
 import { isNonPendingBlock, bigIntMin } from "@latticexyz/block-events-stream";
 
-class BlockRangeError extends Error {
-  fromBlock: bigint;
-  toBlock: bigint;
-  constructor(opts: { fromBlock: bigint; toBlock: bigint; message: string }) {
-    super(opts.message);
-    this.name = "BlockRangeError";
-    this.fromBlock = opts.fromBlock;
-    this.toBlock = opts.toBlock;
-  }
-}
+const maxBlockRange = 1000n;
 
 export async function setupViemNetwork<TPublicClient extends PublicClient<Transport, Chain>>(
   publicClient: TPublicClient,
@@ -60,78 +56,98 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
     // startWith(latestBlock$.value.number)
   );
 
-  const maxBlockRange = 1000n;
-  const previousBlockRange = { fromBlock: -1n, toBlock: -1n, blockRange: maxBlockRange };
+  async function getLogsWithSimulatedErrors(
+    opts: Parameters<typeof getLogs>[0] & { fromBlock: bigint; toBlock: bigint }
+  ): ReturnType<typeof getLogs> {
+    if (Math.random() < 0.2 && opts.toBlock - opts.fromBlock > 1n) {
+      throw new Error("block range exceeded");
+    }
+    if (opts.toBlock - opts.fromBlock > 500n) {
+      throw new Error("block range exceeded");
+    }
+    // simulate throttling
+    if (Math.random() < 0.2) {
+      throw new Error("too many requests");
+    }
+    return await getLogs(opts);
+  }
+
+  async function fetchLogs(
+    opts: Parameters<typeof getLogs>[0] & { fromBlock: bigint; toBlock: bigint },
+    retryCount = 0
+  ): Promise<{
+    fromBlock: bigint;
+    toBlock: bigint;
+    logs: Awaited<ReturnType<typeof getLogs>>;
+  }> {
+    try {
+      const fromBlock = opts.fromBlock;
+      // TODO: make maxBlockRange an arg so we can adjust if we detect too many of the same block range exceeded errors
+      const blockRange = bigIntMin(maxBlockRange, opts.toBlock - fromBlock);
+      const toBlock = fromBlock + blockRange;
+
+      const logs = await getLogsWithSimulatedErrors({ ...opts, fromBlock, toBlock });
+      return { fromBlock, toBlock, logs };
+    } catch (error: unknown) {
+      if (!(error instanceof Error)) throw error;
+
+      if (error.message === "too many requests" && retryCount < 10) {
+        const seconds = 2 * retryCount;
+        console.warn(`too many requests, retrying in ${seconds}s`);
+        // TODO: move this to a util
+        await new Promise((resolve) => setTimeout(resolve, 1000 * seconds));
+        return await fetchLogs(opts, retryCount + 1);
+      }
+
+      if (error.message === "block range exceeded") {
+        const blockRange = opts.toBlock - opts.fromBlock;
+        const newBlockRange = blockRange / 2n;
+        if (newBlockRange <= 0n) {
+          throw new Error("can't reduce block range any further");
+        }
+        console.warn("block range exceeded, trying a smaller block range");
+        return await fetchLogs(
+          {
+            ...opts,
+            toBlock: opts.fromBlock + newBlockRange,
+          },
+          retryCount
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  let fromBlock = 0n;
 
   latestBlockNumber$
     .pipe(
-      exhaustMap((blockNumber) =>
-        of(blockNumber).pipe(
-          switchMap(async (blockNumber) => {
-            const fromBlock = previousBlockRange.toBlock + 1n;
-            const toBlock = bigIntMin(fromBlock + previousBlockRange.blockRange, blockNumber);
-            console.log("fetching block range", fromBlock, toBlock);
-
-            previousBlockRange.fromBlock = fromBlock;
-            previousBlockRange.toBlock = toBlock;
-            previousBlockRange.blockRange = toBlock - fromBlock;
-
-            // simulate block range error
-            if (Math.random() < 0.2 && toBlock - fromBlock > 1n) {
-              throw new Error("block range exceeded");
-            }
-            if (toBlock - fromBlock > 500n) {
-              throw new Error("block range exceeded");
-            }
-            // simulate throttling
-            if (Math.random() < 0.2) {
-              throw new Error("too many requests");
-            }
-
-            const logs = await getLogs({
-              publicClient,
-              events: storeEventsAbi,
-              address: worldAddress,
-              fromBlock,
-              toBlock,
-            });
-            return { fromBlock, toBlock, logs };
-          }),
-          retry({
-            count: 10,
-            delay: (error, retryCount) => {
-              if (error.message === "too many requests") {
-                const seconds = 2 * retryCount;
-                console.warn(`too many requests, retrying in ${seconds}s`);
-                return timer(1000 * seconds);
-              }
-              throw error;
-            },
-          }),
-          catchError((error, caught) => {
-            if (error.message === "block range exceeded") {
-              const blockRange = previousBlockRange.toBlock - previousBlockRange.fromBlock;
-              const newBlockRange = blockRange / 2n;
-              if (newBlockRange <= 0n) {
-                throw new Error("can't reduce block range any further");
-              }
-              console.warn("block range exceeded, trying a smaller block range");
-              previousBlockRange.blockRange = newBlockRange;
-              return caught;
-            }
-            throw error;
+      exhaustMap((latestBlockNumber) => {
+        return from(
+          fetchLogs({
+            publicClient,
+            address: worldAddress,
+            events: storeEventsAbi,
+            fromBlock,
+            toBlock: latestBlockNumber,
           })
-        )
-      ),
-      tap(({ fromBlock, toBlock }) => {
-        previousBlockRange.fromBlock = fromBlock;
-        previousBlockRange.toBlock = toBlock;
-        previousBlockRange.blockRange = maxBlockRange;
+        ).pipe(
+          tap((result) => {
+            fromBlock = result.toBlock + 1n;
+          })
+        );
       })
     )
     .subscribe(({ fromBlock, toBlock, logs }) => {
       console.log("got logs", fromBlock, toBlock, logs);
     });
+
+  //
+  //
+  //
+  //
+  //
 
   // const blockEvents$ = await createBlockEventsStream({
   //   publicClient,
@@ -140,10 +156,10 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
   //   toBlock: latestBlockNumber$,
   // });
 
-  // // TODO: create a cache per chain/world address
-  // // TODO: check for world deploy block hash, invalidate cache if it changes
-  // const db = createDatabase();
-  // const storeCache = createDatabaseClient(db, mudConfig);
+  // TODO: create a cache per chain/world address
+  // TODO: check for world deploy block hash, invalidate cache if it changes
+  const db = createDatabase();
+  const storeCache = createDatabaseClient(db, mudConfig);
 
   // // TODO: store these in store cache, load into memory
   // const tableSchemas: Record<string, TableSchema> = {};
@@ -197,8 +213,8 @@ export async function setupViemNetwork<TPublicClient extends PublicClient<Transp
   //   .subscribe();
 
   return {
-    // publicClient,
-    // storeCache,
+    publicClient,
+    storeCache,
     // latestBlock$,
     // latestBlockNumber$,
     // blockEvents$,
