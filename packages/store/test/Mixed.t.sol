@@ -56,4 +56,16 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
     testMixed = mixed;
     endGasReport();
   }
+
+  function testEncode() public {
+    uint32[] memory a32 = new uint32[](2);
+    a32[0] = 3;
+    a32[1] = 4;
+    string memory s = "some string";
+
+    assertEq(
+      Mixed.encode(1, 2, a32, s),
+      hex"0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
+    );
+  }
 }

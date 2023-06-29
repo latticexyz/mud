@@ -1,12 +1,11 @@
-import { Hex } from "viem";
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 
-export type Schema = Readonly<{
-  staticDataLength: number;
-  staticFields: StaticAbiType[];
-  dynamicFields: DynamicAbiType[];
-  isEmpty: boolean;
-  schemaData: Hex;
-}>;
+export type Schema = {
+  readonly staticFields: readonly StaticAbiType[];
+  readonly dynamicFields: readonly DynamicAbiType[];
+};
 
-export type TableSchema = { keySchema: Schema; valueSchema: Schema; isEmpty: boolean; schemaData: Hex };
+export type TableSchema = {
+  readonly keySchema: Schema; // TODO: refine to set dynamicFields to []
+  readonly valueSchema: Schema;
+};
