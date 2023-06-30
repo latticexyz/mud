@@ -1,7 +1,7 @@
 import { AbiEvent, Address } from "abitype";
 import { GetLogsResult, getLogs } from "./getLogs";
 import { bigIntMin, wait } from "./utils";
-import { PublicClient, BlockNumber, LimitExceededRpcError } from "viem";
+import { PublicClient, BlockNumber } from "viem";
 import { debug } from "./debug";
 
 export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
@@ -35,6 +35,7 @@ export async function fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
   } catch (error: unknown) {
     if (!(error instanceof Error)) throw error;
 
+    // TODO: replace this with a real error
     if (error.message === "rate limit" && retryCount < 10) {
       const seconds = 2 * retryCount;
       debug(`too many requests, retrying in ${seconds}s`, error);
