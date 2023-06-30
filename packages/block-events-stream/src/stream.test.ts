@@ -1,67 +1,56 @@
 import { BehaviorSubject, Observable, concatMap, from, pairwise } from "rxjs";
 import { describe, test } from "vitest";
 
-function createBlockRangeStream(from: number, to: number): Observable<{ blockNumber: number }> {
-  return new Observable((subscriber) => {
-    (async (): Promise<void> => {
-      for (let blockNumber = from; blockNumber <= to; blockNumber++) {
-        subscriber.next({ blockNumber });
-      }
-      subscriber.complete();
-    })();
-  });
+// mock fetch logs
+async function fetchLogs(from: number, to: number): Promise<any[]> {
+  await sleep(2000);
+  return [];
 }
 
-async function* createBlockRangeGenerator(from: number, to: number): AsyncGenerator<{ blockNumber: number }> {
-  for (let blockNumber = from; blockNumber <= to; blockNumber++) {
-    yield { blockNumber };
+const maxBlockRange = 500;
+
+async function* createBlockRangeGenerator(
+  initialFrom: number,
+  initialTo: number
+): AsyncGenerator<{ from: number; to: number; logs: any[] }> {
+  console.log("fetching logs", { initialFrom, initialTo });
+  let from = initialFrom;
+  let to = Math.min(initialTo, from + maxBlockRange);
+  while (from <= initialTo) {
+    const logs = await fetchLogs(from, to);
+    yield { from, to, logs };
+    from = to + 1;
+    to = Math.min(initialTo, from + maxBlockRange);
   }
+  console.log("done fetching logs", { initialFrom, initialTo });
 }
 
 describe("stream test", () => {
-  test.skip("block range with rxjs", () => {
-    const blocks$ = createBlockRangeStream(0, 10);
-    blocks$.subscribe((data) => console.log("observable", data));
-  });
-
   test.skip("block range with generator", () => {
     const blocks$ = from(createBlockRangeGenerator(0, 10));
     blocks$.subscribe((data) => console.log("generator", data));
   });
 
-  test("block stream with rxjs", async () => {
-    const sparseBlockNumber$ = new BehaviorSubject<number>(-1);
-
-    const denseBlockNumber$ = sparseBlockNumber$.pipe(
-      pairwise(),
-      concatMap(([lastBlock, currentBlock]) => createBlockRangeStream(lastBlock + 1, currentBlock))
-    );
-
-    denseBlockNumber$.subscribe((data) => console.log("observable", data));
-
-    sparseBlockNumber$.next(1);
-    sparseBlockNumber$.next(10);
-    sparseBlockNumber$.next(11);
-
-    await sleep(1000);
-  });
-
   test("block stream with generator", async () => {
     const sparseBlockNumber$ = new BehaviorSubject<number>(-1);
 
-    const denseBlockNumber$ = sparseBlockNumber$.pipe(
+    const logs$ = sparseBlockNumber$.pipe(
       pairwise(),
       concatMap(([lastBlock, currentBlock]) => from(createBlockRangeGenerator(lastBlock + 1, currentBlock)))
     );
 
-    denseBlockNumber$.subscribe((data) => console.log("generator", data));
+    logs$.subscribe((data) => console.log("logs$", data));
 
-    sparseBlockNumber$.next(1);
-    sparseBlockNumber$.next(10);
-    sparseBlockNumber$.next(11);
+    sparseBlockNumber$.next(1000);
+    // await sleep(1000);
+    sparseBlockNumber$.next(1001);
+    // await sleep(1000);
+    sparseBlockNumber$.next(1002);
+    // await sleep(1000);
+    sparseBlockNumber$.next(1003);
 
-    await sleep(1000);
-  });
+    await sleep(10000);
+  }, 60_000);
 });
 
 export function sleep<T>(timeout: number, returns?: T): Promise<T> {
