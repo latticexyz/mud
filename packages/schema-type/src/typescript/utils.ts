@@ -6,7 +6,9 @@ export type TupleSplit<T, N extends number, O extends readonly any[] = readonly 
   ? TupleSplit<readonly [...R], N, readonly [...O, F]>
   : [O, T];
 
-export type LiteralToBroad<T> = T extends Array<infer Element>
+export type LiteralToBroad<T> = T extends Readonly<Array<infer Element>>
+  ? readonly LiteralToBroad<Element>[]
+  : T extends Array<infer Element>
   ? LiteralToBroad<Element>[]
   : T extends number
   ? number

@@ -2,6 +2,7 @@ import { DatabaseClient, FilterOptions, ScanResult } from "@latticexyz/store-cac
 import { StoreConfig } from "@latticexyz/store";
 import { useEffect, useState } from "react";
 import { useDeepMemo } from "../utils/useDeepMemo";
+import { useMountedState } from "../utils/useMountedState";
 
 /**
  * Returns an array of all rows matching the provided filter
@@ -10,21 +11,22 @@ export function useRows<C extends StoreConfig, T extends keyof C["tables"] & str
   storeCache: DatabaseClient<C>,
   filter?: FilterOptions<C, T>
 ) {
-  const [rows, setRows] = useState<ScanResult<C, T>>([]);
+  const [rows, setRows] = useMountedState<ScanResult<C, T>>([]);
   const filterMemo = useDeepMemo(filter);
 
   useEffect(() => {
-    setRows(storeCache.scan(filter));
+    storeCache.scan(filterMemo).then(setRows);
 
-    const unsubscribe = storeCache.subscribe(() => {
+    const unsubscribePromise = storeCache.subscribe(() => {
       // very naive implementation for now, but easier and probably more efficient than
       // manually looping through the `rows` array for every update event
-      setRows(storeCache.scan(filter));
-    }, filter);
+      storeCache.scan(filterMemo).then(setRows);
+    }, filterMemo);
 
-    return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterMemo]);
+    return () => {
+      unsubscribePromise.then((unsubscribe) => unsubscribe());
+    };
+  }, [filterMemo, setRows, storeCache]);
 
   return rows;
 }
