@@ -7,7 +7,7 @@ import {
   createBlockStream,
   isNonPendingBlock,
   groupLogsByBlockNumber,
-  latestBlockNumberToLogs,
+  blockRangeToLogs,
 } from "@latticexyz/block-events-stream";
 
 const latestBlock$ = await createBlockStream({ publicClient, blockTag: "latest" });
@@ -19,11 +19,11 @@ const latestBlockNumber$ = latestBlock$.pipe(
 
 latestBlockNumber$
   .pipe(
-    latestBlockNumberToLogs({
+    map((latestBlockNumber) => [0n, latestBlockNumber])
+    blockRangeToLogs({
       publicClient,
       address,
       events,
-      fromBlock: 0n,
     }),
     map(({ logs }) => from(groupLogsByBlockNumber(logs))),
     mergeAll()

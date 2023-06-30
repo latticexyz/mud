@@ -3,41 +3,39 @@ import { FetchLogsResult, fetchLogs } from "./fetchLogs";
 import { AbiEvent, Address } from "abitype";
 import { BlockNumber, PublicClient } from "viem";
 
-export type LatestBlockNumberToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
+export type BlockRangeToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   publicClient: PublicClient;
   address?: Address | Address[];
   events: TAbiEvents;
-  fromBlock: BlockNumber;
   maxBlockRange?: bigint;
 };
 
-export type LatestBlockNumberToLogsResult<TAbiEvents extends readonly AbiEvent[]> = OperatorFunction<
-  BlockNumber,
+export type BlockRangeToLogsResult<TAbiEvents extends readonly AbiEvent[]> = OperatorFunction<
+  [BlockNumber, BlockNumber],
   FetchLogsResult<TAbiEvents>
 >;
 
-export function latestBlockNumberToLogs<TAbiEvents extends readonly AbiEvent[]>({
+export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
   publicClient,
   address,
   events,
-  fromBlock: initialFromBlock,
   maxBlockRange,
-}: LatestBlockNumberToLogsOptions<TAbiEvents>): LatestBlockNumberToLogsResult<TAbiEvents> {
-  let fromBlock = initialFromBlock;
-  return exhaustMap((latestBlockNumber: bigint) =>
-    from(
+}: BlockRangeToLogsOptions<TAbiEvents>): BlockRangeToLogsResult<TAbiEvents> {
+  return exhaustMap(([startBlock, endBlock]) => {
+    let fromBlock = startBlock;
+    return from(
       fetchLogs({
         publicClient,
         address,
         events,
         fromBlock,
-        toBlock: latestBlockNumber,
+        toBlock: endBlock,
         maxBlockRange,
       })
     ).pipe(
       tap((result) => {
         fromBlock = result.toBlock + 1n;
       })
-    )
-  );
+    );
+  });
 }
