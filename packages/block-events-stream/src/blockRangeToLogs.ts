@@ -21,8 +21,9 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
   events,
   maxBlockRange,
 }: BlockRangeToLogsOptions<TAbiEvents>): BlockRangeToLogsResult<TAbiEvents> {
+  let fromBlock: bigint | null = null;
   return exhaustMap(([startBlock, endBlock]) => {
-    let fromBlock = startBlock;
+    fromBlock ??= startBlock;
     return from(
       fetchLogs({
         publicClient,
