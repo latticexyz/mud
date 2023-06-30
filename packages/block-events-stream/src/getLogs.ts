@@ -23,13 +23,13 @@ export type GetLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   toBlock: BlockNumber | BlockTag;
 };
 
-export type GetLogsReturnType<TAbiEvents extends readonly AbiEvent[]> = Log<
+export type GetLogsResult<TAbiEvents extends readonly AbiEvent[]> = Log<
   bigint,
   number,
   TAbiEvents[number],
   true,
   TAbiEvents
->;
+>[];
 
 export async function getLogs<TAbiEvents extends readonly AbiEvent[]>({
   publicClient,
@@ -37,7 +37,7 @@ export async function getLogs<TAbiEvents extends readonly AbiEvent[]>({
   events,
   fromBlock,
   toBlock,
-}: GetLogsOptions<TAbiEvents>): Promise<GetLogsReturnType<TAbiEvents>[]> {
+}: GetLogsOptions<TAbiEvents>): Promise<GetLogsResult<TAbiEvents>> {
   const topics = [events.flatMap((event) => encodeEventTopics({ abi: [event], eventName: event.name }))];
 
   const logs = await publicClient.request({
@@ -68,5 +68,5 @@ export async function getLogs<TAbiEvents extends readonly AbiEvent[]>({
         return;
       }
     })
-    .filter(isDefined) as GetLogsReturnType<TAbiEvents>[];
+    .filter(isDefined) as GetLogsResult<TAbiEvents>;
 }

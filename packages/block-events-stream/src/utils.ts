@@ -11,3 +11,7 @@ export function bigIntMax(...args: bigint[]): bigint {
 export function bigIntSort(a: bigint, b: bigint): -1 | 0 | 1 {
   return a < b ? -1 : a > b ? 1 : 0;
 }
+
+export function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
