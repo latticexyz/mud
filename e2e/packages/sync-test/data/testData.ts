@@ -1,4 +1,5 @@
 import { Data } from "./types";
+import { toHex } from "viem";
 
 /**
  * Insert more test cases here
@@ -14,6 +15,20 @@ export const testData1 = {
     },
   ],
   NumberList: [{ key: {}, value: { value: [1, 2, 3] } }],
+  // -------------- WORDS3 DATA ----------------
+  GameConfig: [{ key: {}, value: { status: 1, maxWords: 42, wordsPlayed: 1337 } }],
+  MerkleRootConfig: [{ key: {}, value: { value: toHex(1234, { size: 32 }) } }],
+  VRGDAConfig: [
+    {
+      key: {},
+      value: { startTime: BigInt(4242), targetPrice: BigInt(-42), priceDecay: BigInt(9999), perDay: BigInt(-9999) },
+    },
+  ],
+  TileLetter: [{ key: { x: 31337, y: -31337 }, value: { value: 7 } }],
+  TilePlayer: [{ key: { x: 31337, y: -31337 }, value: { value: toHex(6969, { size: 20 }) } }],
+  Treasury: [{ key: {}, value: { value: BigInt(Number.MAX_SAFE_INTEGER) } }],
+  Points: [{ key: { player: toHex(4242, { size: 20 }) }, value: { value: 8080 } }],
+  LetterCount: [{ key: { letter: 0 }, value: { value: 99 } }],
 } satisfies Data;
 
 export const testData2 = {

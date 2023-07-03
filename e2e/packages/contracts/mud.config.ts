@@ -37,5 +37,60 @@ export default mudConfig({
         value: "bool",
       },
     },
+
+    // -------------- WORDS3 CONFIG ----------------
+    GameConfig: {
+      keySchema: {},
+      schema: {
+        status: "uint8",
+        maxWords: "uint16",
+        wordsPlayed: "uint16",
+      },
+    },
+    MerkleRootConfig: {
+      keySchema: {},
+      schema: {
+        value: "bytes32",
+      },
+    },
+    VRGDAConfig: {
+      keySchema: {},
+      schema: {
+        startTime: "uint256",
+        targetPrice: "int256",
+        priceDecay: "int256",
+        perDay: "int256",
+      },
+    },
+    TileLetter: {
+      keySchema: { x: "int32", y: "int32" },
+      schema: {
+        value: "uint8",
+      },
+    },
+    TilePlayer: {
+      keySchema: { x: "int32", y: "int32" },
+      schema: {
+        value: "address",
+      },
+    },
+    Treasury: {
+      keySchema: {},
+      schema: {
+        value: "uint256",
+      },
+    },
+    Points: {
+      keySchema: { player: "address" },
+      schema: {
+        value: "uint32",
+      },
+    },
+    LetterCount: {
+      keySchema: { letter: "uint8" },
+      schema: {
+        value: "uint32",
+      },
+    },
   },
 });
