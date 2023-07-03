@@ -1,7 +1,6 @@
 import { mapObject } from "@latticexyz/utils";
 import { Data, EncodedData } from "./types";
-import { encodeAbiParameters } from "viem";
-import { Schema, encodeRecord } from "@latticexyz/protocol-parser";
+import { Schema, encodeRecord, encodeKeyTuple } from "@latticexyz/protocol-parser";
 import config from "../../contracts/mud.config";
 import { DynamicAbiType, SchemaAbiType, StaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type";
 
@@ -13,10 +12,9 @@ export function encodeTestData(testData: Data) {
     records
       ? records.map((record) => {
           const valueSchema = abiTypesToSchema(Object.values(config.tables[table].schema));
+          const keySchema = abiTypesToSchema(Object.values(config.tables[table].keySchema));
           const value = encodeRecord(valueSchema, Object.values(record.value));
-          const key = Object.entries(record.key).map(([keyName, keyValue]) => {
-            return encodeAbiParameters([{ type: config.tables[table].keySchema[keyName] }], [keyValue]);
-          });
+          const key = encodeKeyTuple(keySchema, Object.values(record.key));
           return {
             key,
             value,
