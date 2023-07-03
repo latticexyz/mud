@@ -37,6 +37,14 @@ export default mudConfig({
         value: "bool",
       },
     },
+    Name: {
+      keySchema: { user: "address" },
+      schema: { name: "string" },
+    },
+    Bytes: {
+      keySchema: { key: "bytes32" },
+      schema: { value: "bytes" },
+    },
 
     // -------------- WORDS3 CONFIG ----------------
     GameConfig: {
