@@ -190,7 +190,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(targetTableSelector.getName(), sourceName);
   }
 
-  function testSetAndDeleteRecordHookGas() public {
+  function testGetKeysWithValueGas() public {
     // call fuzzed test manually to get gas report
     testGetKeysWithValue(1);
   }
