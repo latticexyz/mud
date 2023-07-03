@@ -11,7 +11,7 @@ export type BlockRangeToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
 };
 
 export type BlockRangeToLogsResult<TAbiEvents extends readonly AbiEvent[]> = OperatorFunction<
-  [BlockNumber, BlockNumber],
+  { startBlock: BlockNumber; endBlock: BlockNumber },
   FetchLogsResult<TAbiEvents>
 >;
 
@@ -22,7 +22,7 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
   maxBlockRange,
 }: BlockRangeToLogsOptions<TAbiEvents>): BlockRangeToLogsResult<TAbiEvents> {
   let fromBlock: bigint | null = null;
-  return exhaustMap(([startBlock, endBlock]) => {
+  return exhaustMap(({ startBlock, endBlock }) => {
     fromBlock ??= startBlock;
     return from(
       fetchLogs({

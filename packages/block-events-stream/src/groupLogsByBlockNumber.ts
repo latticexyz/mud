@@ -2,6 +2,7 @@ import { BlockNumber, Hex, Log } from "viem";
 import { NonPendingLog, isNonPendingLog } from "./isNonPendingLog";
 import { bigIntSort } from "./utils";
 import { isDefined } from "@latticexyz/common/utils";
+import { debug } from "./debug";
 
 export function groupLogsByBlockNumber<TLog extends Log>(
   logs: readonly TLog[]
@@ -9,7 +10,7 @@ export function groupLogsByBlockNumber<TLog extends Log>(
   // Pending logs don't have block numbers, so filter them out.
   const nonPendingLogs = logs.filter(isNonPendingLog);
   if (logs.length !== nonPendingLogs.length) {
-    console.warn(
+    debug(
       "pending logs discarded",
       logs.filter((log) => !isNonPendingLog(log))
     );
