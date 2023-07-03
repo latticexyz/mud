@@ -12,7 +12,7 @@ export function encodeTestData(testData: Data) {
   return mapObject(testData, (records, table) =>
     records
       ? records.map((record) => {
-          const valueSchema = abiTypeArrayToSchema(Object.values(config.tables[table].schema));
+          const valueSchema = abiTypesToSchema(Object.values(config.tables[table].schema));
           const value = encodeRecord(valueSchema, Object.values(record.value));
           const key = Object.entries(record.key).map(([keyName, keyValue]) => {
             return encodeAbiParameters([{ type: config.tables[table].keySchema[keyName] }], [keyValue]);
@@ -26,7 +26,7 @@ export function encodeTestData(testData: Data) {
   ) as EncodedData<typeof testData>;
 }
 
-function abiTypeArrayToSchema(abiTypes: SchemaAbiType[]): Schema {
+function abiTypesToSchema(abiTypes: SchemaAbiType[]): Schema {
   const staticFields: StaticAbiType[] = [];
   const dynamicFields: DynamicAbiType[] = [];
   for (const abiType of abiTypes) {
