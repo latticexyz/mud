@@ -61,18 +61,6 @@
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
-    "test": "testGetKeysWithValue",
-    "name": "install keys with value module",
-    "gasUsed": 626518
-  },
-  {
-    "file": "test/KeysWithValueModule.t.sol",
-    "test": "testGetKeysWithValue",
-    "name": "Get list of keys with a given value",
-    "gasUsed": 7716
-  },
-  {
-    "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetTargetTableSelector",
     "name": "compute the target table selector",
     "gasUsed": 2234
@@ -87,7 +75,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "set a record on a table with KeysWithValueModule installed",
-    "gasUsed": 165703
+    "gasUsed": 165629
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -99,13 +87,25 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "change a record on a table with KeysWithValueModule installed",
-    "gasUsed": 135356
+    "gasUsed": 135282
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "delete a record on a table with KeysWithValueModule installed",
     "gasUsed": 54297
+  },
+  {
+    "file": "test/KeysWithValueModule.t.sol",
+    "test": "testSetAndDeleteRecordHookGas",
+    "name": "install keys with value module",
+    "gasUsed": 626518
+  },
+  {
+    "file": "test/KeysWithValueModule.t.sol",
+    "test": "testSetAndDeleteRecordHookGas",
+    "name": "Get list of keys with a given value",
+    "gasUsed": 7716
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
