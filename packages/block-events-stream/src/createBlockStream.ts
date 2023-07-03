@@ -13,8 +13,8 @@ export function createBlockStream({ publicClient, blockTag }: CreateBlockStreamO
     return publicClient.watchBlocks({
       blockTag,
       emitOnBegin: true,
-      onBlock: subscriber.next,
-      onError: subscriber.error,
+      onBlock: (block) => subscriber.next(block),
+      onError: (error) => subscriber.error(error),
     });
   });
 }

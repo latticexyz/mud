@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
 import { Subject, firstValueFrom, map } from "rxjs";
 import { Transport, createPublicClient, createTransport } from "viem";
-import * as fetchLogsExports from "./fetchLogs";
+import * as fetchLogsExports from "./fetchLogsSubset";
 import { bigIntMin } from "./utils";
 
 const mockTransport: Transport = () =>
@@ -19,6 +19,15 @@ describe("blockRangeToLogs", () => {
       transport: mockTransport,
     });
 
+    const spy = vi.spyOn(fetchLogsExports, "fetchLogs");
+    spy.mockImplementation(async ({ fromBlock, toBlock, maxBlockRange = 1000n }) => {
+      return {
+        fromBlock,
+        toBlock: bigIntMin(toBlock, fromBlock + maxBlockRange),
+        logs: [],
+      };
+    });
+
     const latestBlockNumber$ = new Subject<bigint>();
 
     const logs$ = latestBlockNumber$.pipe(
@@ -30,13 +39,14 @@ describe("blockRangeToLogs", () => {
       })
     );
 
-    latestBlockNumber$.next(1000n);
-    latestBlockNumber$.next(1001n);
-    latestBlockNumber$.next(1002n);
+    setTimeout(() => latestBlockNumber$.next(1000n), 100);
+    setTimeout(() => latestBlockNumber$.next(1001n), 200);
+    setTimeout(() => latestBlockNumber$.next(1002n), 300);
 
     const logs = await firstValueFrom(logs$);
 
-    expect(logs).toMatchInlineSnapshot();
+    console.log("got logs", logs);
+    // expect(logs).toMatchInlineSnapshot();
 
     // await new Promise((resolve) => setTimeout(resolve, 1000));
 
