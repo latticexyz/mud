@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   EIP1193RequestFn,
   LimitExceededRpcError,
@@ -25,6 +25,10 @@ const publicClient = createPublicClient({
 });
 
 describe("fetchLogs", () => {
+  beforeEach(() => {
+    mockedTransportRequest.mockClear();
+  });
+
   it("yields chunks of logs for the block range", async () => {
     const requests: any[] = [];
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
@@ -137,10 +141,10 @@ describe("fetchLogs", () => {
       if (method !== "eth_getLogs") throw new Error("not implemented");
       requests.push(params);
 
-      if (hexToNumber(params[0].toBlock) - hexToNumber(params[0].fromBlock) > 500) {
+      if (hexToNumber((params as any)[0].toBlock) - hexToNumber((params as any)[0].fromBlock) > 500) {
         throw new LimitExceededRpcError(
           new RpcRequestError({
-            body: params[0],
+            body: (params as any)[0],
             url: "https://viem.sh",
             error: {
               code: -32005,
@@ -364,7 +368,7 @@ describe("fetchLogs", () => {
       if (requests.length < 3) {
         throw new LimitExceededRpcError(
           new RpcRequestError({
-            body: params[0],
+            body: (params as any)[0],
             url: "https://viem.sh",
             error: {
               code: -32005,

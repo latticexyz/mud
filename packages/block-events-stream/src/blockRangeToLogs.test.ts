@@ -1,31 +1,34 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
-import { Subject, firstValueFrom, map } from "rxjs";
-import { Transport, createPublicClient, createTransport } from "viem";
-import * as fetchLogsExports from "./fetchLogsSubset";
-import { bigIntMin } from "./utils";
+import { Subject, lastValueFrom, map, toArray } from "rxjs";
+import { EIP1193RequestFn, RpcLog, Transport, createPublicClient, createTransport } from "viem";
+import { wait } from "./utils";
 
+const mockedTransportRequest = vi.fn<Parameters<EIP1193RequestFn>, ReturnType<EIP1193RequestFn>>();
 const mockTransport: Transport = () =>
   createTransport({
     key: "mock",
     name: "Mock Transport",
-    request: vi.fn(() => null) as any,
+    request: mockedTransportRequest as any,
     type: "mock",
   });
 
-describe("blockRangeToLogs", () => {
-  it("processes block ranges in order", async () => {
-    const publicClient = createPublicClient({
-      transport: mockTransport,
-    });
+const publicClient = createPublicClient({
+  transport: mockTransport,
+});
 
-    const spy = vi.spyOn(fetchLogsExports, "fetchLogs");
-    spy.mockImplementation(async ({ fromBlock, toBlock, maxBlockRange = 1000n }) => {
-      return {
-        fromBlock,
-        toBlock: bigIntMin(toBlock, fromBlock + maxBlockRange),
-        logs: [],
-      };
+describe("blockRangeToLogs", () => {
+  beforeEach(() => {
+    mockedTransportRequest.mockClear();
+  });
+
+  it("processes block ranges in order", async () => {
+    const requests: any[] = [];
+    mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
+      requests.push(params);
+      if (method !== "eth_getLogs") throw new Error("not implemented");
+      await wait(400);
+      return [];
     });
 
     const latestBlockNumber$ = new Subject<bigint>();
@@ -36,33 +39,74 @@ describe("blockRangeToLogs", () => {
         publicClient,
         address: "0x",
         events: [],
-      })
+      }),
+      toArray()
     );
 
-    setTimeout(() => latestBlockNumber$.next(1000n), 100);
-    setTimeout(() => latestBlockNumber$.next(1001n), 200);
-    setTimeout(() => latestBlockNumber$.next(1002n), 300);
+    (async (): Promise<void> => {
+      for (let blockNumber = 1000n; blockNumber <= 1010n; blockNumber++) {
+        await wait(100);
+        latestBlockNumber$.next(blockNumber);
+      }
+      await wait(100);
+      latestBlockNumber$.complete();
+    })();
 
-    const logs = await firstValueFrom(logs$);
+    const results = await lastValueFrom(logs$);
 
-    console.log("got logs", logs);
-    // expect(logs).toMatchInlineSnapshot();
+    expect(requests).toMatchInlineSnapshot(`
+      [
+        [
+          {
+            "address": "0x",
+            "fromBlock": "0x0",
+            "toBlock": "0x3e8",
+            "topics": [
+              [],
+            ],
+          },
+        ],
+        [
+          {
+            "address": "0x",
+            "fromBlock": "0x3e9",
+            "toBlock": "0x3ec",
+            "topics": [
+              [],
+            ],
+          },
+        ],
+        [
+          {
+            "address": "0x",
+            "fromBlock": "0x3ed",
+            "toBlock": "0x3f0",
+            "topics": [
+              [],
+            ],
+          },
+        ],
+      ]
+    `);
 
-    // await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // // expect(spy).toHaveBeenCalledTimes(1);
-    // // expect(await firstValueFrom(logs$)).toMatchInlineSnapshot(``);
-    // expect(spy).toHaveBeenCalledTimes(1);
-    // expect(spy).toHaveBeenCalledWith({
-    //   address: "0x",
-    //   fromBlock: 0n,
-    //   toBlock: 1000n,
-    //   maxBlockRange: 1000n,
-    // });
-    // expect(await firstValueFrom(logs$)).toMatchObject({
-    //   fromBlock: 0n,
-    //   toBlock: 1000n,
-    //   logs: [],
-    // });
+    expect(results).toMatchInlineSnapshot(`
+      [
+        {
+          "fromBlock": 0n,
+          "logs": [],
+          "toBlock": 1000n,
+        },
+        {
+          "fromBlock": 1001n,
+          "logs": [],
+          "toBlock": 1004n,
+        },
+        {
+          "fromBlock": 1005n,
+          "logs": [],
+          "toBlock": 1008n,
+        },
+      ]
+    `);
   });
 });

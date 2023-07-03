@@ -1,5 +1,5 @@
 import { OperatorFunction, exhaustMap, from, tap } from "rxjs";
-import { FetchLogsResult, fetchLogs } from "./fetchLogsSubset";
+import { FetchLogsResult, fetchLogs } from "./fetchLogs";
 import { AbiEvent, Address } from "abitype";
 import { BlockNumber, PublicClient } from "viem";
 
