@@ -4,6 +4,8 @@ import { Subject, lastValueFrom, map, toArray } from "rxjs";
 import { EIP1193RequestFn, RpcLog, Transport, createPublicClient, createTransport } from "viem";
 import { wait } from "./utils";
 
+// TODO: there is a chance that these tests will need to be written differently with timers to avoid flakiness
+
 const mockedTransportRequest = vi.fn<Parameters<EIP1193RequestFn>, ReturnType<EIP1193RequestFn>>();
 const mockTransport: Transport = () =>
   createTransport({
