@@ -197,8 +197,8 @@ const multiKey = client.tables.MultiKey.get({ first: "0xDEAD", second: 42 });
 ```tsx
 import { useRow } from "@latticexyz/react";
 function ExampleComponent() {
-  const { storeCache } = useMUD;
-  const position = useRow(client, { table: "Position", key: { key: "0x01" } });
+  const { network: { storeCache } } = useMUD();
+  const position = useRow(storeCache, { table: "Position", key: { key: "0x01" } });
   // -> { namespace: "", table: "Position", key: { key: "0x01" }, value: { x: 1, y: 2 } }
   const { value } = position;
   return (
@@ -232,10 +232,10 @@ const positionsFiltered = client.tables.Position.scan({
 ```tsx
 import { useRows } from "@latticexyz/react";
 function ExampleComponent() {
-  const { storeCache } = useMUD;
-  const positions = useRows(client, { table: "Position" });
+  const { network: { storeCache } } = useMUD();
+  const positions = useRows(storeCache, { table: "Position" });
   // -> [{key: "0x00", value: {x: 10, y: 32}, namespace: config["namespace"], table: Position}, ...]
-  const positionsFiltered = useRows(client, { table: "Position", key: { gt: { key: "0x02" } } });
+  const positionsFiltered = useRows(storeCache, { table: "Position", key: { gt: { key: "0x02" } } });
   //-> [{key: "0x03", value: {x: 69, y: 4}, namespace: config["namespace"], table: Position}, ...]
   return (
     <div>
