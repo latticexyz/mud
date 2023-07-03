@@ -1,6 +1,6 @@
 import { mapObject } from "@latticexyz/utils";
 import { Data, EncodedData } from "./types";
-import { encodeAbiParameters, toHex, encodePacked, numberToHex } from "viem";
+import { encodeAbiParameters, encodePacked } from "viem";
 import config from "../../contracts/mud.config";
 
 /**
@@ -11,11 +11,7 @@ export function encodeTestData(testData: Data) {
     records
       ? records.map((record) => ({
           key: Object.entries(record.key).map(([keyName, keyValue]) => {
-            const signed = config.tables[table].keySchema[keyName]?.startsWith("int");
-            return encodeAbiParameters(
-              [{ type: "bytes32" }],
-              [signed ? numberToHex(keyValue as any, { size: 32, signed }) : toHex(keyValue as any, { size: 32 })]
-            );
+            return encodeAbiParameters([{ type: config.tables[table].keySchema[keyName] }], [keyValue]);
           }),
           value: encodePacked(Object.values(config.tables[table].schema), Object.values(record.value)),
         }))
