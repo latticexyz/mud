@@ -16,7 +16,7 @@ export const testData1 = {
   ],
   NumberList: [{ key: {}, value: { value: [1, 2, 3] } }],
   Name: [{ key: { user: toHex(1234, { size: 20 }) }, value: { name: "some-name" } }],
-  Bytes: [{ key: { key: toHex(1234, { size: 32 }) }, value: { value: toHex(1234, { size: 64 }) } }],
+  Data: [{ key: { key: toHex(1234, { size: 32 }) }, value: { value: toHex(1234, { size: 64 }) } }],
   // -------------- WORDS3 DATA ----------------
   GameConfig: [{ key: {}, value: { status: 1, maxWords: 42, wordsPlayed: 1337 } }],
   MerkleRootConfig: [{ key: {}, value: { value: toHex(1234, { size: 32 }) } }],

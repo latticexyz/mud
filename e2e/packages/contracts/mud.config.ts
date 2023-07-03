@@ -41,7 +41,7 @@ export default mudConfig({
       keySchema: { user: "address" },
       schema: { name: "string" },
     },
-    Bytes: {
+    Data: {
       keySchema: { key: "bytes32" },
       schema: { value: "bytes" },
     },

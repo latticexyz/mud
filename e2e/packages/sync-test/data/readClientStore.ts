@@ -20,6 +20,10 @@ export async function readClientStore(
     const _serialize = deserializeFunction(_serializeString);
     const _deserialize = deserializeFunction(_deserializeString);
     const value = await window["storeCache"].get(_namespace, _table, _deserialize(_key));
+
+    // TODO: remove log
+    console.log("reading value", value, _serialize(value), "for key", _key);
+
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;
 
@@ -30,6 +34,9 @@ export async function readClientStore(
       return eval(`(() => ${serializedFunction})()`);
     }
   }, args);
+
+  // TODO: remove log
+  console.log("deserialized", deserialize(serializedValue));
 
   return serializedValue ? deserialize(serializedValue) : undefined;
 }
