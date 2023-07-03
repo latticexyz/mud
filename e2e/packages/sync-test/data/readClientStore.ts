@@ -1,8 +1,8 @@
 import { Page } from "@playwright/test";
-
-// Extract the storeCache type directly from the client
 import { setup } from "../../client-vanilla/src/mud/setup";
 import { deserialize, serialize } from "./utils";
+
+// Extract the storeCache type directly from the client
 type StoreCache = Awaited<ReturnType<typeof setup>>["network"]["storeCache"];
 
 /**
@@ -14,41 +14,22 @@ export async function readClientStore(
   page: Page,
   [namespace, table, key]: Parameters<StoreCache["get"]>
 ): Promise<Record<string, unknown> | undefined> {
-  const selector = [namespace, table, serialize(key)];
-  const serializedValue = await page.evaluate(async (_selector) => {
-    const [_namespace, _table, _key] = _selector;
-    const result = await window["storeCache"].get(_namespace, _table, deserialize(_key));
-    return result ? serialize(result) : undefined;
+  const args = [namespace, table, serialize(key), serialize.toString(), deserialize.toString()];
+  const serializedValue = await page.evaluate(async (_args) => {
+    const [_namespace, _table, _key, _serializeString, _deserializeString] = _args;
+    const _serialize = deserializeFunction(_serializeString);
+    const _deserialize = deserializeFunction(_deserializeString);
+    const value = await window["storeCache"].get(_namespace, _table, _deserialize(_key));
+    const serializedValue = value ? _serialize(value) : undefined;
+    return serializedValue;
 
-    /**
-     * Helper to serialize values that are not natively serializable and therefore not transferrable to the page
-     * For now only `bigint` needs serialization.
-     */
-    function serialize(obj: unknown): string {
-      return JSON.stringify(obj, (_, v) => (typeof v === "bigint" ? `bigint(${v.toString()})` : v));
+    // Deserialize a serialized function by evaluating a function returning the serialized function.
+    // This is required to pass in serialized `serialize` and `deserialize` function to avoid having to
+    // duplicate their logic here.
+    function deserializeFunction(serializedFunction: string) {
+      return eval(`(() => ${serializedFunction})()`);
     }
-
-    /**
-     * Helper to deserialize values that were serialized by `serialize` (because they are not natively serializable).
-     * For now only `bigint` is serialized and need to be deserialized here.
-     */
-    function deserialize(blob: string): Record<string, unknown> {
-      const obj = JSON.parse(blob);
-
-      // Check whether the value matches the mattern `bigint(${number}n)`
-      // (serialization of bigint in `serialize`)
-      // and turn it back into a bigint
-      const regex = /^bigint\((\d+)n\)$/; // Regular expression pattern.
-      for (const [key, value] of Object.entries(obj)) {
-        const match = typeof value === "string" && value.match(regex); // Attempt to match the pattern.
-        if (match) {
-          obj[key] = BigInt(match[1]);
-        }
-      }
-
-      return obj;
-    }
-  }, selector);
+  }, args);
 
   return serializedValue ? deserialize(serializedValue) : undefined;
 }

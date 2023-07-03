@@ -13,10 +13,10 @@ export function serialize(obj: unknown): string {
 export function deserialize(blob: string): Record<string, unknown> {
   const obj = JSON.parse(blob);
 
-  // Check whether the value matches the mattern `${number}n`
+  // Check whether the value matches the mattern `bigint(${number}n)`
   // (serialization of bigint in `serialize`)
   // and turn it back into a bigint
-  const regex = /^bigint\((.*)\)$/; // Regular expression pattern.
+  const regex = /^bigint\((-?\d+)\)$/; // Regular expression pattern.
   for (const [key, value] of Object.entries(obj)) {
     const match = typeof value === "string" && value.match(regex); // Attempt to match the pattern.
     if (match) {
