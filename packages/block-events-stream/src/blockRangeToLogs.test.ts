@@ -29,7 +29,7 @@ describe("blockRangeToLogs", () => {
     mockedTransportRequest.mockImplementation(async ({ method, params }): Promise<RpcLog[]> => {
       requests.push(params);
       if (method !== "eth_getLogs") throw new Error("not implemented");
-      await wait(400);
+      await wait(450);
       return [];
     });
 
@@ -88,6 +88,16 @@ describe("blockRangeToLogs", () => {
             ],
           },
         ],
+        [
+          {
+            "address": "0x",
+            "fromBlock": "0x3f1",
+            "toBlock": "0x3f2",
+            "topics": [
+              [],
+            ],
+          },
+        ],
       ]
     `);
 
@@ -107,6 +117,11 @@ describe("blockRangeToLogs", () => {
           "fromBlock": 1005n,
           "logs": [],
           "toBlock": 1008n,
+        },
+        {
+          "fromBlock": 1009n,
+          "logs": [],
+          "toBlock": 1010n,
         },
       ]
     `);

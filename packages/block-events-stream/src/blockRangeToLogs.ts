@@ -1,4 +1,4 @@
-import { OperatorFunction, exhaustMap, from, tap } from "rxjs";
+import { EMPTY, OperatorFunction, concatMap, from, pipe, tap } from "rxjs";
 import { FetchLogsResult, fetchLogs } from "./fetchLogs";
 import { AbiEvent, Address } from "abitype";
 import { BlockNumber, PublicClient } from "viem";
@@ -21,22 +21,32 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
   events,
   maxBlockRange,
 }: BlockRangeToLogsOptions<TAbiEvents>): BlockRangeToLogsResult<TAbiEvents> {
-  let fromBlock: bigint | null = null;
-  return exhaustMap(({ startBlock, endBlock }) => {
-    fromBlock ??= startBlock;
-    return from(
-      fetchLogs({
-        publicClient,
-        address,
-        events,
-        fromBlock,
-        toBlock: endBlock,
-        maxBlockRange,
-      })
-    ).pipe(
-      tap((result) => {
-        fromBlock = result.toBlock + 1n;
-      })
-    );
-  });
+  let fromBlock: bigint;
+  let toBlock: bigint;
+
+  return pipe(
+    tap(({ endBlock, startBlock }) => {
+      fromBlock ??= startBlock;
+      toBlock = endBlock;
+    }),
+    // concatMap only processes the next emission once the inner observable completes,
+    // so it always uses the latest toBlock value.
+    concatMap(() => {
+      if (fromBlock > toBlock) return EMPTY;
+      return from(
+        fetchLogs({
+          publicClient,
+          address,
+          events,
+          fromBlock,
+          toBlock,
+          maxBlockRange,
+        })
+      ).pipe(
+        tap(({ toBlock }) => {
+          fromBlock = toBlock + 1n;
+        })
+      );
+    })
+  );
 }

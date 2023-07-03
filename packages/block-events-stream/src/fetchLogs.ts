@@ -29,7 +29,7 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
   let blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
   let retryCount = 0;
 
-  while (fromBlock < getLogsOpts.toBlock) {
+  while (fromBlock <= getLogsOpts.toBlock) {
     try {
       const toBlock = fromBlock + blockRange;
       const logs = await getLogs({ ...getLogsOpts, fromBlock, toBlock });
