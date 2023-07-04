@@ -19,7 +19,7 @@ import { debug } from "./debug";
  */
 export function groupLogsByBlockNumber<TLog extends Log>(
   logs: readonly TLog[]
-): { blockNumber: BlockNumber; blockHash: Hex; events: readonly NonPendingLog<TLog>[] }[] {
+): { blockNumber: BlockNumber; blockHash: Hex; logs: readonly NonPendingLog<TLog>[] }[] {
   // Pending logs don't have block numbers, so filter them out.
   const nonPendingLogs = logs.filter(isNonPendingLog);
   if (logs.length !== nonPendingLogs.length) {
@@ -43,7 +43,7 @@ export function groupLogsByBlockNumber<TLog extends Log>(
       return {
         blockNumber,
         blockHash: blockLogs[0].blockHash,
-        events: blockLogs,
+        logs: blockLogs,
       };
     })
     .filter(isDefined);

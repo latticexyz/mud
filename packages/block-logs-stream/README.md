@@ -1,4 +1,9 @@
-# Block events stream
+# Block logs stream
+
+A set of utilities for efficiently retrieving blockchain event logs. Built on top of [viem][0] and [RxJS][1].
+
+[0]: https://viem.sh/
+[1]: https://rxjs.dev/
 
 ## Example
 
@@ -10,7 +15,7 @@ import {
   isNonPendingBlock,
   groupLogsByBlockNumber,
   blockRangeToLogs,
-} from "@latticexyz/block-events-stream";
+} from "@latticexyz/block-logs-stream";
 
 const publicClient = createPublicClient({
   // your viem public client config here

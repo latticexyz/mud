@@ -54,7 +54,7 @@ describe("groupLogsByBlockNumber", () => {
         {
           "blockHash": "0x",
           "blockNumber": 1n,
-          "events": [
+          "logs": [
             {
               "blockHash": "0x",
               "blockNumber": 1n,
@@ -81,7 +81,7 @@ describe("groupLogsByBlockNumber", () => {
         {
           "blockHash": "0x",
           "blockNumber": 3n,
-          "events": [
+          "logs": [
             {
               "blockHash": "0x",
               "blockNumber": 3n,
@@ -94,7 +94,7 @@ describe("groupLogsByBlockNumber", () => {
         {
           "blockHash": "0x",
           "blockNumber": 5n,
-          "events": [
+          "logs": [
             {
               "blockHash": "0x",
               "blockNumber": 5n,

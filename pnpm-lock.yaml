@@ -45,7 +45,7 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
-  packages/block-events-stream:
+  packages/block-logs-stream:
     dependencies:
       '@latticexyz/common':
         specifier: workspace:*
