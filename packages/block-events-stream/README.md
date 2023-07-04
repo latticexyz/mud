@@ -19,7 +19,7 @@ const latestBlockNumber$ = latestBlock$.pipe(
 
 latestBlockNumber$
   .pipe(
-    map((latestBlockNumber) => [0n, latestBlockNumber]),
+    map((latestBlockNumber) => ({ startBlock: 0n, endBlock: latestBlockNumber })),
     blockRangeToLogs({
       publicClient,
       address,

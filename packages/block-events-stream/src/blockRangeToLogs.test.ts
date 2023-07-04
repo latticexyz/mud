@@ -41,8 +41,7 @@ describe("blockRangeToLogs", () => {
         publicClient,
         address: "0x",
         events: [],
-      }),
-      toArray()
+      })
     );
 
     (async (): Promise<void> => {
@@ -54,7 +53,7 @@ describe("blockRangeToLogs", () => {
       latestBlockNumber$.complete();
     })();
 
-    const results = await lastValueFrom(logs$);
+    const results = await lastValueFrom(logs$.pipe(toArray()));
 
     expect(requests).toMatchInlineSnapshot(`
       [
