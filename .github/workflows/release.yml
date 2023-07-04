@@ -52,8 +52,8 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'false'
         uses: changesets/action@v1
         with:
-          title: "chore: Version packages 🔖"
-          commit: "chore: Version packages 🔖"
+          title: "chore: version packages 🔖"
+          commit: "chore: version packages 🔖"
           publish: pnpm release:publish
           version: pnpm release:version
         env:
