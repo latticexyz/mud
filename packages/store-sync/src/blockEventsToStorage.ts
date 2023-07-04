@@ -95,7 +95,7 @@ export function blockEventsToStorage({
         if (otherKeys.length) {
           console.warn(
             "sync-store: registerSchema event is expected to have only one key in key tuple, but got multiple",
-            event
+            log
           );
         }
 
