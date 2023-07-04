@@ -11,6 +11,8 @@ export function encodeRecord(schema: Schema, values: readonly (StaticPrimitiveTy
     .map((value, i) => encodeField(schema.staticFields[i], value).replace(/^0x/, ""))
     .join("");
 
+  if (schema.dynamicFields.length === 0) return `0x${staticData}`;
+
   const dynamicDataItems = dynamicValues.map((value, i) =>
     encodeField(schema.dynamicFields[i], value).replace(/^0x/, "")
   );

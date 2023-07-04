@@ -30,9 +30,6 @@ contract KeysWithValueHook is IStoreHook {
     // Get the previous value
     bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
 
-    // Return if the value hasn't changed
-    if (previousValue == keccak256(data)) return;
-
     // Remove the key from the list of keys with the previous value
     _removeKeyFromList(targetTableId, key[0], previousValue);
 
