@@ -26,6 +26,7 @@
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "debug": "^4.3.4",

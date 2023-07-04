@@ -10,6 +10,13 @@ import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-l
 import { StoreEventsAbi } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
 import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
+import {
+  SchemaAbiType,
+  SchemaAbiTypeToPrimitiveType,
+  StaticAbiType,
+  StaticAbiTypeToPrimitiveType,
+} from "@latticexyz/schema-type";
+import { debug } from "./debug";
 
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event
 // TODO: support passing in a MUD config to get typed tables, values, etc.
@@ -37,30 +44,30 @@ export type StoredTableMetadata = {
 export type SetRecordOptions = {
   namespace: string;
   name: string;
-  // TODO: refine to at least the possible static primitive types, if not the actual key tuple types
-  keyTuple: Record<string, any>;
-  // TODO: refine to at least the possible primitive types, if not the actual table types
-  record: Record<string, any>;
+  // TODO: refine to actual key tuple types
+  keyTuple: Record<string, StaticAbiTypeToPrimitiveType<StaticAbiType>>;
+  // TODO: refine to actual table types
+  record: Record<string, SchemaAbiTypeToPrimitiveType<SchemaAbiType>>;
   // TODO: include schema, block/tx/event info?
 };
 
 export type SetFieldOptions = {
   namespace: string;
   name: string;
-  // TODO: refine to at least the possible static primitive types, if not the actual key tuple types
-  keyTuple: Record<string, any>;
+  // TODO: refine to actual key tuple types
+  keyTuple: Record<string, StaticAbiTypeToPrimitiveType<StaticAbiType>>;
   // TODO: standardize on calling these "fields" or "values" or maybe "columns"
   valueName: string;
-  // TODO: refine to at least the possible primitive types, if not the actual type based on fieldName
-  value: any;
+  // TODO: refine to actual type based on fieldName
+  value: SchemaAbiTypeToPrimitiveType<SchemaAbiType>;
   // TODO: include schema, block/tx/event info?
 };
 
 export type DeleteRecordOptions = {
   namespace: string;
   name: string;
-  // TODO: refine to at least the possible static primitive types, if not the actual key tuple types
-  keyTuple: Record<string, any>;
+  // TODO: refine to actual key tuple types
+  keyTuple: Record<string, StaticAbiTypeToPrimitiveType<StaticAbiType>>;
   // TODO: include schema, block/tx/event info?
 };
 
@@ -93,10 +100,7 @@ export function blockEventsToStorage({
 
         const [tableForSchema, ...otherKeys] = log.args.key;
         if (otherKeys.length) {
-          console.warn(
-            "sync-store: registerSchema event is expected to have only one key in key tuple, but got multiple",
-            log
-          );
+          debug("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
         }
 
         const tableId = TableId.fromHex(tableForSchema);
@@ -122,10 +126,7 @@ export function blockEventsToStorage({
 
         const [tableForSchema, ...otherKeys] = log.args.key;
         if (otherKeys.length) {
-          console.warn(
-            "sync-store: setMetadata event is expected to have only one key in key tuple, but got multiple",
-            log
-          );
+          debug("setMetadata event is expected to have only one key in key tuple, but got multiple", log);
         }
 
         const tableId = TableId.fromHex(tableForSchema);
@@ -143,11 +144,11 @@ export function blockEventsToStorage({
       const tableId = TableId.fromHex(log.args.table);
       const [tableSchema, tableMetadata] = await Promise.all([getTableSchema(tableId), getTableMetadata(tableId)]);
       if (!tableSchema) {
-        console.warn("sync-store: no table schema found for event, skipping", log);
+        debug("no table schema found for event, skipping", log);
         continue;
       }
       if (!tableMetadata) {
-        console.warn("sync-store: no table metadata found for event, skipping", log);
+        debug("no table metadata found for event, skipping", log);
         continue;
       }
 
@@ -170,7 +171,7 @@ export function blockEventsToStorage({
       } else if (log.eventName === "StoreDeleteRecord") {
         await deleteRecord({ ...tableId, keyTuple });
       } else {
-        console.warn("sync-store: unknown store event, skipping", log);
+        debug("unknown store event, skipping", log);
       }
     }
   };

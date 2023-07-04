@@ -1063,6 +1063,9 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
+      '@latticexyz/schema-type':
+        specifier: workspace:*
+        version: link:../schema-type
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
