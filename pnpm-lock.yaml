@@ -1054,6 +1054,9 @@ importers:
       '@latticexyz/block-events-stream':
         specifier: workspace:*
         version: link:../block-events-stream
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser

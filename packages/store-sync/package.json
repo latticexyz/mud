@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@latticexyz/block-events-stream": "workspace:*",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
