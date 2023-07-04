@@ -4,9 +4,23 @@ import { AbiEvent, Address } from "abitype";
 import { BlockNumber, PublicClient } from "viem";
 
 export type BlockRangeToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
+  /**
+   * [viem `PublicClient`][0] used for fetching logs from the RPC.
+   *
+   * [0]: https://viem.sh/docs/clients/public.html
+   */
   publicClient: PublicClient;
+  /**
+   * Optional contract address(es) to fetch logs for.
+   */
   address?: Address | Address[];
+  /**
+   * Events to fetch logs for.
+   */
   events: TAbiEvents;
+  /**
+   * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time.
+   */
   maxBlockRange?: bigint;
 };
 
@@ -15,6 +29,12 @@ export type BlockRangeToLogsResult<TAbiEvents extends readonly AbiEvent[]> = Ope
   FetchLogsResult<TAbiEvents>
 >;
 
+/**
+ * Takes in an observable of `Observable<{ startBlock: bigint, endBlock: bigint }>` and uses a viem `publicClient` to get logs for the contract `address` and matching `events` and emits the logs as they are fetched.
+ *
+ * @param {BlockRangeToLogsOptions<AbiEvent[]>} options See `BlockRangeToLogsOptions`.
+ * @returns {BlockRangeToLogsResult<AbiEvent[]>} An operator function that transforms a stream of block ranges into a stream of fetched logs.
+ */
 export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
   publicClient,
   address,
@@ -30,7 +50,7 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
       toBlock = endBlock;
     }),
     // concatMap only processes the next emission once the inner observable completes,
-    // so it always uses the latest toBlock value.
+    // so it always uses the latest`toBlock` value.
     concatMap(() => {
       if (fromBlock > toBlock) return EMPTY;
       return from(

@@ -4,6 +4,19 @@ import { bigIntSort } from "./utils";
 import { isDefined } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 
+/**
+ * Groups logs by their block number.
+ *
+ * @remarks
+ * This function takes an array of logs and returns a new array where each item corresponds to a distinct block number.
+ * Each item in the output array includes the block number, the block hash, and an array of all logs for that block.
+ * Pending logs are filtered out before processing, as they don't have block numbers.
+ *
+ * @param logs The logs to group by block number.
+ *
+ * @returns An array of objects where each object represents a distinct block and includes the block number,
+ * the block hash, and an array of logs for that block.
+ */
 export function groupLogsByBlockNumber<TLog extends Log>(
   logs: readonly TLog[]
 ): { blockNumber: BlockNumber; blockHash: Hex; events: readonly NonPendingLog<TLog>[] }[] {
