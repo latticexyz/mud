@@ -1,5 +1,5 @@
+import { StaticAbiType, DynamicAbiType, schemaAbiTypes, staticAbiTypeToByteLength } from "@latticexyz/schema-type";
 import { Hex, hexToNumber, sliceHex } from "viem";
-import { StaticAbiType, DynamicAbiType, staticAbiTypeToByteLength, schemaAbiTypes } from "@latticexyz/schema-type";
 import { Schema } from "./common";
 import { InvalidHexLengthForSchemaError, SchemaStaticLengthMismatchError } from "./errors";
 
@@ -29,11 +29,5 @@ export function hexToSchema(data: Hex): Schema {
     throw new SchemaStaticLengthMismatchError(data, staticDataLength, actualStaticDataLength);
   }
 
-  return {
-    staticDataLength,
-    staticFields,
-    dynamicFields,
-    isEmpty: data === "0x",
-    schemaData: data,
-  };
+  return { staticFields, dynamicFields };
 }

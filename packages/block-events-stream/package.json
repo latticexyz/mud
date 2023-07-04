@@ -26,7 +26,6 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/store": "workspace:*",
     "abitype": "0.8.7",
     "debug": "^4.3.4",
     "rxjs": "7.5.5",
