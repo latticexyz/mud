@@ -6,7 +6,7 @@ import {
   hexToTableSchema,
   schemaIndexToAbiType,
 } from "@latticexyz/protocol-parser";
-import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-events-stream";
+import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
 import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
@@ -87,11 +87,11 @@ export function blockEventsToStorage({
     // Find and register all new table schemas
     // Store schemas are immutable, so we can parallelize this
     await Promise.all(
-      block.events.map(async (event) => {
-        if (event.eventName !== "StoreSetRecord") return;
-        if (event.args.table !== schemaTableId.toHex()) return;
+      block.logs.map(async (log) => {
+        if (log.eventName !== "StoreSetRecord") return;
+        if (log.args.table !== schemaTableId.toHex()) return;
 
-        const [tableForSchema, ...otherKeys] = event.args.key;
+        const [tableForSchema, ...otherKeys] = log.args.key;
         if (otherKeys.length) {
           console.warn(
             "sync-store: registerSchema event is expected to have only one key in key tuple, but got multiple",
@@ -100,7 +100,7 @@ export function blockEventsToStorage({
         }
 
         const tableId = TableId.fromHex(tableForSchema);
-        const schema = hexToTableSchema(event.args.data);
+        const schema = hexToTableSchema(log.args.data);
 
         await registerTableSchema({ ...tableId, schema });
       })
@@ -116,20 +116,20 @@ export function blockEventsToStorage({
     // Table metadata is technically mutable, but all of our code assumes its immutable, so we'll continue that trend
     // TODO: rework contracts so schemas+tables are combined and immutable
     await Promise.all(
-      block.events.map(async (event) => {
-        if (event.eventName !== "StoreSetRecord") return;
-        if (event.args.table !== metadataTableId.toHex()) return;
+      block.logs.map(async (log) => {
+        if (log.eventName !== "StoreSetRecord") return;
+        if (log.args.table !== metadataTableId.toHex()) return;
 
-        const [tableForSchema, ...otherKeys] = event.args.key;
+        const [tableForSchema, ...otherKeys] = log.args.key;
         if (otherKeys.length) {
           console.warn(
             "sync-store: setMetadata event is expected to have only one key in key tuple, but got multiple",
-            event
+            log
           );
         }
 
         const tableId = TableId.fromHex(tableForSchema);
-        const [tableName, abiEncodedFieldNames] = decodeRecord(metadataTableSchema.schema.valueSchema, event.args.data);
+        const [tableName, abiEncodedFieldNames] = decodeRecord(metadataTableSchema.schema.valueSchema, log.args.data);
         const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
 
         // TODO: add key names to table registration when we refactor it
@@ -139,38 +139,38 @@ export function blockEventsToStorage({
 
     // Because storage operations are atomic, we need to do this serially
     // TODO: make this smarter, maybe parallelize by table?
-    for (const event of block.events) {
-      const tableId = TableId.fromHex(event.args.table);
+    for (const log of block.logs) {
+      const tableId = TableId.fromHex(log.args.table);
       const [tableSchema, tableMetadata] = await Promise.all([getTableSchema(tableId), getTableMetadata(tableId)]);
       if (!tableSchema) {
-        console.warn("sync-store: no table schema found for event, skipping", event);
+        console.warn("sync-store: no table schema found for event, skipping", log);
         continue;
       }
       if (!tableMetadata) {
-        console.warn("sync-store: no table metadata found for event, skipping", event);
+        console.warn("sync-store: no table metadata found for event, skipping", log);
         continue;
       }
 
-      const keyTupleValues = decodeKeyTuple(tableSchema.schema.keySchema, event.args.key);
+      const keyTupleValues = decodeKeyTuple(tableSchema.schema.keySchema, log.args.key);
       const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [tableMetadata.keyNames[i] ?? i, value]));
 
-      if (event.eventName === "StoreSetRecord" || event.eventName === "StoreEphemeralRecord") {
-        const values = decodeRecord(tableSchema.schema.valueSchema, event.args.data);
+      if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        const values = decodeRecord(tableSchema.schema.valueSchema, log.args.data);
         const record = Object.fromEntries(tableMetadata.valueNames.map((name, i) => [name, values[i]]));
         // TODO: decide if we should handle ephemeral records separately?
         //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
         await setRecord({ ...tableId, keyTuple, record });
-      } else if (event.eventName === "StoreSetField") {
-        const valueName = tableMetadata.valueNames[event.args.schemaIndex];
+      } else if (log.eventName === "StoreSetField") {
+        const valueName = tableMetadata.valueNames[log.args.schemaIndex];
         const value = decodeField(
-          schemaIndexToAbiType(tableSchema.schema.valueSchema, event.args.schemaIndex),
-          event.args.data
+          schemaIndexToAbiType(tableSchema.schema.valueSchema, log.args.schemaIndex),
+          log.args.data
         );
         await setField({ ...tableId, keyTuple, valueName, value });
-      } else if (event.eventName === "StoreDeleteRecord") {
+      } else if (log.eventName === "StoreDeleteRecord") {
         await deleteRecord({ ...tableId, keyTuple });
       } else {
-        console.warn("sync-store: unknown store event, skipping", event);
+        console.warn("sync-store: unknown store event, skipping", log);
       }
     }
   };

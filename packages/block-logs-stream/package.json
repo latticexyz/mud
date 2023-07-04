@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/block-events-stream",
+  "name": "@latticexyz/block-logs-stream",
   "version": "1.42.0",
-  "description": "Create a stream of EVM block events",
+  "description": "Create a stream of EVM block logs for events",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/block-events-stream"
+    "directory": "packages/block-logs-stream"
   },
   "license": "MIT",
   "type": "module",

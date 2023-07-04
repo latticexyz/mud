@@ -23,7 +23,7 @@
     "test": "vitest typecheck --run && vitest --run"
   },
   "dependencies": {
-    "@latticexyz/block-events-stream": "workspace:*",
+    "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/store": "workspace:*",

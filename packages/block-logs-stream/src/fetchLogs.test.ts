@@ -145,7 +145,7 @@ describe("fetchLogs", () => {
         throw new LimitExceededRpcError(
           new RpcRequestError({
             body: (params as any)[0],
-            url: "https://viem.sh",
+            url: "https://mud.dev",
             error: {
               code: -32005,
               message: "block range exceeded",

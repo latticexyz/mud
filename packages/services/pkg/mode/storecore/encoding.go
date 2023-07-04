@@ -760,30 +760,25 @@ func (schemaType SchemaType) ToSolidityType() string {
 //
 //nolint:gocognit // auto-gen + readablity
 func (schemaType SchemaType) ToPostgresType() string {
-	const text = "text"
+	// jsonb is used for storing arrays.
 	const jsonb = "jsonb"
-	const boolean = "boolean"
-	const integer = "integer"
 
 	//nolint:gocritic,nestif // no switch, simplify
-	if (schemaType >= UINT8 && schemaType <= UINT32) || (schemaType >= INT8 && schemaType <= INT32) {
-		// Integer.
-		return integer
-	} else if (schemaType >= UINT64 && schemaType <= UINT256) || (schemaType >= INT64 && schemaType <= INT256) {
-		// Big integer.
-		return text
+	if (schemaType >= UINT8 && schemaType <= UINT256) || (schemaType >= INT8 && schemaType <= INT256) {
+		// Integers.
+		return "numeric(78,0)"
 	} else if (schemaType >= BYTES1 && schemaType <= BYTES32) || (schemaType == BYTES) {
 		// Bytes.
-		return text
+		return "text"
 	} else if schemaType == BOOL {
 		// Boolean.
-		return boolean
+		return "boolean"
 	} else if schemaType == ADDRESS {
 		// Address.
-		return text
+		return "text"
 	} else if schemaType == STRING {
 		// String.
-		return text
+		return "text"
 	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) ||
 		(schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
 		// Integer array.
@@ -803,6 +798,6 @@ func (schemaType SchemaType) ToPostgresType() string {
 		return jsonb
 	} else {
 		// Default to text.
-		return text
+		return "text"
 	}
 }

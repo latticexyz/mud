@@ -110,7 +110,6 @@ describe("Sync from MODE", async () => {
     await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
 
     // Should not have thrown errors
-    // TODO: uncomment once https://github.com/latticexyz/mud/pull/1048 is merged
-    // asyncErrorHandler.expectNoAsyncErrors();
+    asyncErrorHandler.expectNoAsyncErrors();
   });
 });
