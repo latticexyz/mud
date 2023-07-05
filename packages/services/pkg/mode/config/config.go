@@ -28,6 +28,8 @@ func FromFile(configFile string) (*Config, error) {
 // FromFlags parses the configuration from command-line flags.
 func FromFlags(
 	chainNames, chainIds, chainRPCsHTTP, chainRPCsWS, dbName, dbHost string,
+	dbUser string,
+	dbPassword string,
 	dbPort uint64,
 	dbWipe bool,
 	syncEnabled bool,
@@ -37,10 +39,12 @@ func FromFlags(
 	config := &Config{
 		Chains: make([]ChainConfig, 0),
 		DB: DBConfig{
-			Name: dbName,
-			Host: dbHost,
-			Port: dbPort,
-			Wipe: dbWipe,
+			Name:     dbName,
+			Host:     dbHost,
+			User:     dbUser,
+			Password: dbPassword,
+			Port:     dbPort,
+			Wipe:     dbWipe,
 		},
 		Sync: SyncConfig{
 			Enabled:         syncEnabled,
