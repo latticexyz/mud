@@ -2,7 +2,7 @@
 "@latticexyz/protocol-parser": minor
 ---
 
-Add encodeKeyTuple: a util to encode key tuples in Typescript (equivalent to key tuple encoding in Solidity and inverse of `decodeKeyTuple`).
+feat: add `encodeKeyTuple`, a util to encode key tuples in Typescript (equivalent to key tuple encoding in Solidity and inverse of `decodeKeyTuple`).
 Example:
 
 ```ts
