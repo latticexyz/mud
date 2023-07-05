@@ -19,50 +19,9 @@ const mockedCallbacks = {
     Parameters<BlockEventsToStorageOptions["getTableMetadata"]>,
     ReturnType<BlockEventsToStorageOptions["getTableMetadata"]>
   >(),
-  setRecord: vi.fn<
-    Parameters<BlockEventsToStorageOptions["setRecord"]>,
-    ReturnType<BlockEventsToStorageOptions["setRecord"]>
-  >(),
-  setField: vi.fn<
-    Parameters<BlockEventsToStorageOptions["setField"]>,
-    ReturnType<BlockEventsToStorageOptions["setField"]>
-  >(),
-  deleteRecord: vi.fn<
-    Parameters<BlockEventsToStorageOptions["deleteRecord"]>,
-    ReturnType<BlockEventsToStorageOptions["deleteRecord"]>
-  >(),
 };
 
-const mockedDecode = blockEventsToStorage<typeof storeConfig>(
-  mockedCallbacks as any as BlockEventsToStorageOptions<typeof storeConfig>
-);
-
-const decode = blockEventsToStorage<typeof storeConfig>({
-  async registerTableSchema(opts) {
-    // do nothing
-  },
-  async registerTableMetadata(opts) {
-    // do nothing
-  },
-  async getTableSchema(opts) {
-    return undefined;
-  },
-  async getTableMetadata(opts) {
-    return undefined;
-  },
-  async setField({ namespace, name, keyTuple, valueName, value }) {
-    // do nothing
-  },
-  async deleteRecord({ namespace, name, keyTuple }) {
-    // do nothing
-  },
-  async setRecord({ namespace, name, keyTuple, record }) {
-    if (name === "StoreMetadata") {
-      keyTuple.tableId;
-      record.tableName;
-    }
-  },
-});
+const mockedDecode = blockEventsToStorage<typeof storeConfig>(mockedCallbacks as any as BlockEventsToStorageOptions);
 
 describe("blockEventsToStorage", () => {
   beforeEach(() => {
@@ -117,7 +76,7 @@ describe("blockEventsToStorage", () => {
       }
     });
 
-    await mockedDecode({
+    const operations = await mockedDecode({
       blockNumber: 5448n,
       blockHash: "0x03e962e7402b2ab295b92feac342a132111dd14b0d1fd4d4a0456fdc77981577",
       logs: [
@@ -146,20 +105,26 @@ describe("blockEventsToStorage", () => {
       ],
     });
 
-    expect(mockedCallbacks.setField.mock.lastCall).toMatchInlineSnapshot(`
-      [
-        {
-          "keyTuple": {
-            "item": 1,
-            "itemVariant": 1,
-            "owner": "0x796eb990A3F9C431C69149c7a168b91596D87F60",
+    expect(operations).toMatchInlineSnapshot(`
+      {
+        "blockHash": "0x03e962e7402b2ab295b92feac342a132111dd14b0d1fd4d4a0456fdc77981577",
+        "blockNumber": 5448n,
+        "operations": [
+          {
+            "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+            "keyTuple": {
+              "item": 1,
+              "itemVariant": 1,
+              "owner": "0x796eb990A3F9C431C69149c7a168b91596D87F60",
+            },
+            "name": "Inventory",
+            "namespace": "",
+            "type": "SetField",
+            "value": 8,
+            "valueName": "amount",
           },
-          "name": "Inventory",
-          "namespace": "",
-          "value": 8,
-          "valueName": "amount",
-        },
-      ]
+        ],
+      }
     `);
   });
 });
