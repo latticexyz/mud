@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { decodeKeyTuple } from "./decodeKeyTuple";
-import { Schema } from "./common";
 
 describe("decodeKeyTuple", () => {
   it("can decode bool key tuple", () => {
