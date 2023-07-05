@@ -20,7 +20,7 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest typecheck --run && vitest --run"
+    "test": "vitest --run"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",

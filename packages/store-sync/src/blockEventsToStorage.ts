@@ -21,6 +21,7 @@ import { debug } from "./debug";
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event
 // TODO: support passing in a MUD config to get typed tables, values, etc.
 // TODO: consider if we should continue to group storage operations by block, allowing atomic sets (db txs) and collapsing operations per table+key
+//       or potentially have a start/end transaction and pass in the tx to each storage operation
 
 // TODO: export these from store or world
 export const schemaTableId = new TableId("mudstore", "schema");
@@ -144,13 +145,19 @@ export function blockEventsToStorage({
       const tableId = TableId.fromHex(log.args.table);
       const [tableSchema, tableMetadata] = await Promise.all([getTableSchema(tableId), getTableMetadata(tableId)]);
       if (!tableSchema) {
-        debug("no table schema found for event, skipping", log);
+        debug("no table schema found for event, skipping", tableId.toString(), log);
         continue;
       }
       if (!tableMetadata) {
-        debug("no table metadata found for event, skipping", log);
+        debug("no table metadata found for event, skipping", tableId.toString(), log);
         continue;
       }
+
+      console.log("log", log, tableSchema, tableMetadata, {
+        blockNumber: block.blockNumber,
+        blockHash: block.blockHash,
+        logs: [log],
+      });
 
       const keyTupleValues = decodeKeyTuple(tableSchema.schema.keySchema, log.args.key);
       const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [tableMetadata.keyNames[i] ?? i, value]));
@@ -167,6 +174,7 @@ export function blockEventsToStorage({
           schemaIndexToAbiType(tableSchema.schema.valueSchema, log.args.schemaIndex),
           log.args.data
         );
+        console.log("setting field", { ...tableId, keyTuple, valueName, value });
         await setField({ ...tableId, keyTuple, valueName, value });
       } else if (log.eventName === "StoreDeleteRecord") {
         await deleteRecord({ ...tableId, keyTuple });
