@@ -38,7 +38,6 @@ func createBaseDsn(config *config.DBConfig) string {
 			config.Host, config.Port, config.User, config.Password, config.Name)
 	}
 	return baseDsn
-	// return fmt.Sprintf("host=%s port=%d dbname=%s sslmode=disable", config.Host, config.Port, config.Name)
 }
 
 // connectViaSQLX creates a connection to a PostgreSQL database using the specified DSN via SQLX.
