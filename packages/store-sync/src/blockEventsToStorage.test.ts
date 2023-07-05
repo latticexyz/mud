@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BlockEventsToStorageOptions, blockEventsToStorage } from "./blockEventsToStorage";
+import storeConfig from "@latticexyz/store/mud.config";
 
 const mockedCallbacks = {
   registerTableSchema: vi.fn<
@@ -32,7 +33,36 @@ const mockedCallbacks = {
   >(),
 };
 
-const mockedDecode = blockEventsToStorage(mockedCallbacks as any as BlockEventsToStorageOptions);
+const mockedDecode = blockEventsToStorage<typeof storeConfig>(
+  mockedCallbacks as any as BlockEventsToStorageOptions<typeof storeConfig>
+);
+
+const decode = blockEventsToStorage<typeof storeConfig>({
+  async registerTableSchema(opts) {
+    // do nothing
+  },
+  async registerTableMetadata(opts) {
+    // do nothing
+  },
+  async getTableSchema(opts) {
+    return undefined;
+  },
+  async getTableMetadata(opts) {
+    return undefined;
+  },
+  async setField({ namespace, name, keyTuple, valueName, value }) {
+    // do nothing
+  },
+  async deleteRecord({ namespace, name, keyTuple }) {
+    // do nothing
+  },
+  async setRecord({ namespace, name, keyTuple, record }) {
+    if (name === "StoreMetadata") {
+      keyTuple.tableId;
+      record.tableName;
+    }
+  },
+});
 
 describe("blockEventsToStorage", () => {
   beforeEach(() => {

@@ -28,6 +28,7 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-cache": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "debug": "^4.3.4",
     "viem": "1.1.7"
