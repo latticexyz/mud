@@ -41,7 +41,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
       jsonRpcUrl: params.get("rpc") ?? chain.rpcUrls.default.http[0],
       wsRpcUrl: params.get("wsRpc") ?? chain.rpcUrls.default.webSocket?.[0],
     },
-    privateKey: getBurnerWallet().value,
+    privateKey: params.get("privateKey") ?? getBurnerWallet().value,
     chainId,
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,

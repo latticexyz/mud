@@ -1,14 +1,12 @@
-import { StaticAbiType, DynamicAbiType, staticAbiTypeToByteLength } from "@latticexyz/schema-type";
+import { DynamicAbiType, SchemaAbiType, StaticAbiType, isDynamicAbiType } from "@latticexyz/schema-type";
 import { Schema } from "./common";
-import { abiTypesToSchemaData } from "./abiTypesToSchemaData";
 
-export function abiTypesToSchema(staticFields: StaticAbiType[], dynamicFields: DynamicAbiType[] = []): Schema {
-  const staticDataLength = staticFields.reduce((acc, fieldType) => acc + staticAbiTypeToByteLength[fieldType], 0);
-  return {
-    staticDataLength,
-    staticFields,
-    dynamicFields,
-    isEmpty: false,
-    schemaData: abiTypesToSchemaData(staticFields, dynamicFields),
-  };
+export function abiTypesToSchema(abiTypes: SchemaAbiType[]): Schema {
+  const staticFields: StaticAbiType[] = [];
+  const dynamicFields: DynamicAbiType[] = [];
+  for (const abiType of abiTypes) {
+    if (isDynamicAbiType(abiType)) dynamicFields.push(abiType);
+    else staticFields.push(abiType);
+  }
+  return { staticFields, dynamicFields };
 }

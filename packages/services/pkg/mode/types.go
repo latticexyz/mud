@@ -6,24 +6,30 @@ import (
 )
 
 type Table struct {
-	Id         string   `json:"id"`          // Table ID as it comes from chain.
-	Name       string   `json:"name"`        // Table name.
-	KeyNames   []string `json:"key_names"`   // Key names. Separate from field names and are used for searching.
-	FieldNames []string `json:"field_names"` // Field names.
+	Id        string `json:"id"`        // Table Id as it comes from chain
+	Name      string `json:"name"`      // Table name
+	Namespace string `json:"namespace"` // Table DB namespace
+
+	KeyNames   []string `json:"key_names"`   // Key names. Separate from field names and are used for searching
+	FieldNames []string `json:"field_names"` // Field names
 
 	SolidityTypes map[string]string `json:"solidity_types"` // Field name -> Solidity type
 	PostgresTypes map[string]string `json:"postgres_types"` // Field name -> Postgres type
 
-	IsKey map[string]bool `json:"is_key"` // Field name -> Is key?
-
 	StoreCoreKeySchema   *storecore.Schema `json:"storecore_key_schema"`
 	StoreCoreFieldSchema *storecore.Schema `json:"storecore_field_schema"`
 
-	// Auxiliary data about the table.
-	Namespace           string            `json:"namespace"`
-	PrimaryKey          string            `json:"primary_key"`
-	OnChainReadableName string            `json:"on_chain_readable_name"`
-	OnChainColNames     map[string]string `json:"on_chain_col_names"`
+	Metadata *TableMetadata `json:"metadata"` // Auxiliary data about the table.
+}
+
+type TableMetadata struct {
+	ColumnMetadata     map[string]*ColumnMetadata `json:"column_metadata"`     // Field name -> Column metadata
+	TableFormattedName string                     `json:"table_formated_name"` // Formatted name of the table
+}
+
+type ColumnMetadata struct {
+	IsKey               bool   `json:"is_key"`
+	ColumnFormattedName string `json:"column_formated_name"` // Formatted name of the column as it comes from chain
 }
 
 func (table *Table) String() string {

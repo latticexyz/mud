@@ -1,12 +1,14 @@
-package storecore
+package storecore_test
 
 import (
+	. "latticexyz/mud/packages/services/pkg/mode/storecore"
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func TestDecodeData(t *testing.T) {
+	//nolint:lll // test
 	encoding := "0x000000000000ac000000000c00000000a00000000000000000000000000000004d6573736167655461626c65000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000576616c7565000000000000000000000000000000000000000000000000000000"
 	schema := &Schema{
 		Static: []SchemaType{},
@@ -26,6 +28,7 @@ func TestDecodeData(t *testing.T) {
 			SchemaType: STRING,
 		},
 		{
+			//nolint:lll // test
 			Data:       "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000576616c7565000000000000000000000000000000000000000000000000000000",
 			SchemaType: BYTES,
 		},
@@ -37,19 +40,20 @@ func TestDecodeData(t *testing.T) {
 		t.Errorf("Expected length to be %d, got %d", schema.Length(), decodedData.Length())
 	}
 	for i := 0; i < decodedData.Length(); i++ {
-		if decodedData.types[i] != expectedTypes[i] {
-			t.Errorf("Expected type to be %s, got %s", expectedTypes[i], decodedData.types[i])
+		if decodedData.Types()[i] != expectedTypes[i] {
+			t.Errorf("Expected type to be %s, got %s", expectedTypes[i], decodedData.Types()[i])
 		}
-		if decodedData.values[i].Data.(string) != expectedValues[i].Data.(string) {
-			t.Errorf("Expected value to be %s, got %s", expectedValues[i].Data.(string), decodedData.values[i].Data.(string))
+		if decodedData.Values()[i].Data.(string) != expectedValues[i].Data.(string) {
+			t.Errorf("Expected value to be %s, got %s", expectedValues[i].Data.(string), decodedData.Values()[i].Data.(string))
 		}
-		if decodedData.values[i].SchemaType != expectedValues[i].SchemaType {
-			t.Errorf("Expected schema type to be %s, got %s", expectedValues[i].SchemaType, decodedData.values[i].SchemaType)
+		if decodedData.Values()[i].SchemaType != expectedValues[i].SchemaType {
+			t.Errorf("Expected schema type to be %s, got %s", expectedValues[i].SchemaType, decodedData.Values()[i].SchemaType)
 		}
 	}
 }
 
 func TestDecodeKeyData(t *testing.T) {
+	//nolint:lll // test
 	encoding := "0x000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000001"
 	encodingBytes := hexutil.MustDecode(encoding)
 	var key [][32]byte
@@ -88,14 +92,14 @@ func TestDecodeKeyData(t *testing.T) {
 		t.Errorf("Expected length to be %d, got %d", schema.Length(), decodedData.Length())
 	}
 	for i := 0; i < decodedData.Length(); i++ {
-		if decodedData.types[i] != expectedTypes[i] {
-			t.Errorf("Expected type to be %s, got %s", expectedTypes[i], decodedData.types[i])
+		if decodedData.Types()[i] != expectedTypes[i] {
+			t.Errorf("Expected type to be %s, got %s", expectedTypes[i], decodedData.Types()[i])
 		}
-		if decodedData.values[i].Data.(uint32) != expectedValues[i].Data.(uint32) {
-			t.Errorf("Expected value to be %d, got %d", expectedValues[i].Data.(uint32), decodedData.values[i].Data.(uint32))
+		if decodedData.Values()[i].Data.(uint32) != expectedValues[i].Data.(uint32) {
+			t.Errorf("Expected value to be %d, got %d", expectedValues[i].Data.(uint32), decodedData.Values()[i].Data.(uint32))
 		}
-		if decodedData.values[i].SchemaType != expectedValues[i].SchemaType {
-			t.Errorf("Expected schema type to be %s, got %s", expectedValues[i].SchemaType, decodedData.values[i].SchemaType)
+		if decodedData.Values()[i].SchemaType != expectedValues[i].SchemaType {
+			t.Errorf("Expected schema type to be %s, got %s", expectedValues[i].SchemaType, decodedData.Values()[i].SchemaType)
 		}
 	}
 }

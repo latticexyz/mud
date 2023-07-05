@@ -20,7 +20,7 @@ describe("useRows", () => {
     client = createDatabaseClient(db, config);
   });
 
-  it("should return all rows of the position table", () => {
+  it("should return all rows of the position table", async () => {
     const { result } = renderHook(() => useRows(client, { table: "Position" }));
     expect(result.current.length).toBe(0);
 
@@ -38,10 +38,14 @@ describe("useRows", () => {
       { key: { first: "0x03", second: 1 }, value: { value: 4 } },
     ];
 
-    act(() => {
+    await act(async () => {
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
     });
 
     expect(result.current.length).toBe(positionUpdates.length);
@@ -49,8 +53,10 @@ describe("useRows", () => {
       ...positionUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "Position" })),
     ]);
 
-    act(() => {
-      for (const update of positionUpdates.slice(0, 3)) client.tables.Position.remove(update.key);
+    await act(async () => {
+      for (const update of positionUpdates.slice(0, 3)) {
+        await client.tables.Position.remove(update.key);
+      }
     });
 
     expect(result.current.length).toBe(1);
@@ -59,13 +65,13 @@ describe("useRows", () => {
     ]);
   });
 
-  it("should re-render only when the position table changes", () => {
+  it("should re-render only when the position table changes", async () => {
     const { result } = renderHook(() => useRows(client, { namespace: config["namespace"], table: "Position" }));
-    expect(result.all.length).toBe(2);
+    expect(result.all.length).toBe(1);
 
     // Update the position table
-    act(() => {
-      client.tables.Position.set({ key: "0x00" }, { x: 1, y: 2 });
+    await act(async () => {
+      await client.tables.Position.set({ key: "0x00" }, { x: 1, y: 2 });
     });
     expect(result.all.length).toBe(3);
     expect(result.current).toEqual([
@@ -73,8 +79,8 @@ describe("useRows", () => {
     ]);
 
     // Update an unrelated table
-    act(() => {
-      client.tables.MultiKey.set({ first: "0x03", second: 1 }, { value: 4 });
+    await act(async () => {
+      await client.tables.MultiKey.set({ first: "0x03", second: 1 }, { value: 4 });
     });
     expect(result.all.length).toBe(3);
     expect(result.current).toEqual([
@@ -82,8 +88,8 @@ describe("useRows", () => {
     ]);
 
     // Update the position table
-    act(() => {
-      client.tables.Position.set({ key: "0x00" }, { x: 2, y: 2 });
+    await act(async () => {
+      await client.tables.Position.set({ key: "0x00" }, { x: 2, y: 2 });
     });
     expect(result.all.length).toBe(4);
     expect(result.current).toEqual([
@@ -91,8 +97,8 @@ describe("useRows", () => {
     ]);
 
     // Update an unrelated table
-    act(() => {
-      client.tables.MultiKey.remove({ first: "0x03", second: 1 });
+    await act(async () => {
+      await client.tables.MultiKey.remove({ first: "0x03", second: 1 });
     });
     expect(result.all.length).toBe(4);
     expect(result.current).toEqual([
@@ -100,19 +106,19 @@ describe("useRows", () => {
     ]);
 
     // Update the position table
-    act(() => {
-      client.tables.Position.remove({ key: "0x00" });
+    await act(async () => {
+      await client.tables.Position.remove({ key: "0x00" });
     });
     expect(result.all.length).toBe(5);
     expect(result.current).toEqual([]);
   });
 
-  it("should re-render when the filter changes", () => {
-    const { result, rerender } = renderHook(({ filter }) => useRows(client, filter), {
+  it("should re-render when the filter changes", async () => {
+    const { result, rerender, waitForNextUpdate } = renderHook(({ filter }) => useRows(client, filter), {
       initialProps: { filter: { table: "Position" as keyof (typeof config)["tables"] } },
     });
 
-    expect(result.all.length).toBe(2);
+    expect(result.all.length).toBe(1);
     expect(result.current.length).toBe(0);
 
     const positionUpdates: KeyValue<typeof config, "Position">[] = [
@@ -129,13 +135,17 @@ describe("useRows", () => {
       { key: { first: "0x03", second: 1 }, value: { value: 4 } },
     ];
 
-    act(() => {
+    await act(async () => {
       // Set values in the tables
-      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) {
+        await client.tables.Position.set(update.key, update.value);
+      }
+      for (const update of multiKeyUpdates) {
+        await client.tables.MultiKey.set(update.key, update.value);
+      }
     });
 
-    expect(result.all.length).toBe(3);
+    expect(result.all.length).toBe(6);
     expect(result.current.length).toBe(positionUpdates.length);
     expect(result.current).toEqual([
       ...positionUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "Position" })),
@@ -143,12 +153,13 @@ describe("useRows", () => {
 
     // Change the filter
     rerender({ filter: { table: "MultiKey" } });
+    await waitForNextUpdate();
 
     // Expect hook to rerender three times:
     // 1. New prop, everything else changes the same
     // 2. `filterMemo` is updated by `useDeepMemo` because of the new prop
     // 3. `useEffect` runs because of the new `filterMemo`, scan is executed, new rows are returned
-    expect(result.all.length).toBe(6);
+    expect(result.all.length).toBe(9);
     expect(result.current.length).toBe(multiKeyUpdates.length);
     expect(result.current).toEqual([
       ...multiKeyUpdates.map((row) => ({ ...row, namespace: config["namespace"], table: "MultiKey" })),

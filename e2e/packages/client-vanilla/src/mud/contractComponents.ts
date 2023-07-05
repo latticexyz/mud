@@ -5,12 +5,59 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 
 export function defineContractComponents(world: World) {
   return {
+    Number: (() => {
+      const tableId = new TableId("", "Number");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHex(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    Vector: (() => {
+      const tableId = new TableId("", "Vector");
+      return defineComponent(
+        world,
+        {
+          x: RecsType.Number,
+          y: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHex(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     NumberList: (() => {
       const tableId = new TableId("", "NumberList");
       return defineComponent(
         world,
         {
           value: RecsType.NumberArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHex(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    Multi: (() => {
+      const tableId = new TableId("", "Multi");
+      return defineComponent(
+        world,
+        {
+          num: RecsType.BigInt,
+          value: RecsType.Boolean,
         },
         {
           metadata: {
