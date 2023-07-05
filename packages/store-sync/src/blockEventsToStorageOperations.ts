@@ -13,6 +13,7 @@ import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 // TODO: move these type helpers into store?
 import { Key, Value } from "@latticexyz/store-cache";
+import { isDefined } from "@latticexyz/common/utils";
 
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event
 // TODO: support passing in a MUD config to get typed tables, values, etc.
@@ -39,21 +40,23 @@ export type StoredTableMetadata = {
   valueNames: readonly string[];
 };
 
-export type SetRecordOptions<
+export type SetRecordOperation<
   TConfig extends StoreConfig,
   TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>
 > = {
+  type: "SetRecord";
   namespace: string;
   name: TTableName;
   keyTuple: Key<TConfig, TTableName>;
   record: Value<TConfig, TTableName>;
 };
 
-export type SetFieldOptions<
+export type SetFieldOperation<
   TConfig extends StoreConfig,
   TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>,
   TValueName extends string = string & keyof Value<TConfig, TTableName>
 > = {
+  type: "SetField";
   namespace: string;
   name: string;
   keyTuple: Key<TConfig, TTableName>;
@@ -62,23 +65,26 @@ export type SetFieldOptions<
   value: Value<TConfig, TTableName>[TValueName];
 };
 
-export type DeleteRecordOptions<
+export type DeleteRecordOperation<
   TConfig extends StoreConfig,
   TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>
 > = {
+  type: "DeleteRecord";
   namespace: string;
   name: string;
   keyTuple: Key<TConfig, TTableName>;
 };
 
-export type BlockEventsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
+export type StorageOperation<TConfig extends StoreConfig> =
+  | SetRecordOperation<TConfig>
+  | SetFieldOperation<TConfig>
+  | DeleteRecordOperation<TConfig>;
+
+export type BlockEventsToStorageOptions = {
   registerTableSchema: (data: StoredTableSchema) => Promise<void>;
   registerTableMetadata: (data: StoredTableMetadata) => Promise<void>;
   getTableSchema: (opts: Pick<StoredTableSchema, "namespace" | "name">) => Promise<StoredTableSchema | undefined>;
   getTableMetadata: (opts: Pick<StoredTableMetadata, "namespace" | "name">) => Promise<StoredTableMetadata | undefined>;
-  setRecord: (opts: SetRecordOptions<TConfig>) => Promise<void>;
-  setField: (opts: SetFieldOptions<TConfig>) => Promise<void>;
-  deleteRecord: (opts: DeleteRecordOptions<TConfig>) => Promise<void>;
 };
 
 export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>({
@@ -86,10 +92,7 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
   registerTableSchema,
   getTableMetadata,
   getTableSchema,
-  setRecord,
-  setField,
-  deleteRecord,
-}: BlockEventsToStorageOptions<TConfig>): (block: BlockEvents) => Promise<void> {
+}: BlockEventsToStorageOptions): (block: BlockEvents) => Promise<StorageOperation<TConfig>[]> {
   return async (block) => {
     // Find and register all new table schemas
     // Store schemas are immutable, so we can parallelize this
@@ -138,54 +141,65 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
       })
     );
 
-    // Because storage operations are atomic, we need to do this serially
-    // TODO: make this smarter, maybe parallelize by table?
-    for (const log of block.logs) {
-      const tableId = TableId.fromHex(log.args.table);
-      const [tableSchema, tableMetadata] = await Promise.all([getTableSchema(tableId), getTableMetadata(tableId)]);
-      if (!tableSchema) {
-        debug("no table schema found for event, skipping", tableId.toString(), log);
-        continue;
-      }
-      if (!tableMetadata) {
-        debug("no table metadata found for event, skipping", tableId.toString(), log);
-        continue;
-      }
+    const tables = Array.from(new Set(block.logs.map((log) => log.args.table))).map((tableHex) =>
+      TableId.fromHex(tableHex)
+    );
+    // TODO: combine these once we refactor table registration
+    const tableSchemas = Object.fromEntries(
+      await Promise.all(tables.map(async (table) => [table.toHex(), await getTableSchema(table)]))
+    ) as Record<Hex, StoredTableSchema>;
+    const tableMetadatas = Object.fromEntries(
+      await Promise.all(tables.map(async (table) => [table.toHex(), await getTableMetadata(table)]))
+    ) as Record<Hex, StoredTableMetadata>;
 
-      console.log("log", log, tableSchema, tableMetadata, {
-        blockNumber: block.blockNumber,
-        blockHash: block.blockHash,
-        logs: [log],
-      });
+    return block.logs
+      .map((log): StorageOperation<TConfig> | undefined => {
+        const tableId = TableId.fromHex(log.args.table);
+        const tableSchema = tableSchemas[log.args.table];
+        const tableMetadata = tableMetadatas[log.args.table];
+        if (!tableSchema) {
+          debug("no table schema found for event, skipping", tableId.toString(), log);
+          return;
+        }
+        if (!tableMetadata) {
+          debug("no table metadata found for event, skipping", tableId.toString(), log);
+          return;
+        }
 
-      const keyTupleValues = decodeKeyTuple(tableSchema.schema.keySchema, log.args.key);
-      const keyTuple = Object.fromEntries(
-        keyTupleValues.map((value, i) => [tableMetadata.keyNames[i] ?? i, value])
-      ) as Key<TConfig, keyof TConfig["tables"]>;
+        const keyTupleValues = decodeKeyTuple(tableSchema.schema.keySchema, log.args.key);
+        const keyTuple = Object.fromEntries(
+          keyTupleValues.map((value, i) => [tableMetadata.keyNames[i] ?? i, value])
+        ) as Key<TConfig, keyof TConfig["tables"]>;
 
-      if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
-        const values = decodeRecord(tableSchema.schema.valueSchema, log.args.data);
-        const record = Object.fromEntries(tableMetadata.valueNames.map((name, i) => [name, values[i]])) as Value<
-          TConfig,
-          keyof TConfig["tables"]
-        >;
-        // TODO: decide if we should handle ephemeral records separately?
-        //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
-        await setRecord({ ...tableId, keyTuple, record });
-      } else if (log.eventName === "StoreSetField") {
-        const valueName = tableMetadata.valueNames[log.args.schemaIndex] as string &
-          keyof Value<TConfig, keyof TConfig["tables"]>;
-        const value = decodeField(
-          schemaIndexToAbiType(tableSchema.schema.valueSchema, log.args.schemaIndex),
-          log.args.data
-        ) as Value<TConfig, keyof TConfig["tables"]>[typeof valueName];
-        console.log("setting field", { ...tableId, keyTuple, valueName, value });
-        await setField({ ...tableId, keyTuple, valueName, value });
-      } else if (log.eventName === "StoreDeleteRecord") {
-        await deleteRecord({ ...tableId, keyTuple });
-      } else {
-        debug("unknown store event, skipping", log);
-      }
-    }
+        if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+          const values = decodeRecord(tableSchema.schema.valueSchema, log.args.data);
+          const record = Object.fromEntries(tableMetadata.valueNames.map((name, i) => [name, values[i]])) as Value<
+            TConfig,
+            keyof TConfig["tables"]
+          >;
+          // TODO: decide if we should handle ephemeral records separately?
+          //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
+          return { type: "SetRecord", ...tableId, keyTuple, record };
+        }
+
+        if (log.eventName === "StoreSetField") {
+          const valueName = tableMetadata.valueNames[log.args.schemaIndex] as string &
+            keyof Value<TConfig, keyof TConfig["tables"]>;
+          const value = decodeField(
+            schemaIndexToAbiType(tableSchema.schema.valueSchema, log.args.schemaIndex),
+            log.args.data
+          ) as Value<TConfig, keyof TConfig["tables"]>[typeof valueName];
+          console.log("setting field", { ...tableId, keyTuple, valueName, value });
+          return { type: "SetField", ...tableId, keyTuple, valueName, value };
+        }
+
+        if (log.eventName === "StoreDeleteRecord") {
+          return { type: "DeleteRecord", ...tableId, keyTuple };
+        }
+
+        debug("unknown store event or log, skipping", log);
+        return;
+      })
+      .filter(isDefined);
   };
 }
