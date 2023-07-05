@@ -61,6 +61,16 @@ describe("Sync from MODE", async () => {
     anvilProcess?.kill();
   });
 
+  test("should not throw errors during ingress or querying", async () => {
+    await openClientWithRootAccount(page, { modeUrl });
+    await waitForInitialSync(page);
+    await setContractData(page, testData1);
+    await page.reload();
+    await waitForInitialSync(page);
+
+    asyncErrorHandler.expectNoAsyncErrors();
+  });
+
   test("should sync test data", async () => {
     await openClientWithRootAccount(page, { modeUrl });
     await waitForInitialSync(page);
@@ -101,12 +111,27 @@ describe("Sync from MODE", async () => {
     await push(page, 42);
     await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42] } }] });
 
+    // Expect data to still be there after initial sync
+    await page.reload();
+    await waitForInitialSync(page);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42] } }] });
+
     // Push 5000 elements to the array
     await pushRange(page, 0, 5000);
     await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(5000, 1, 0)] } }] });
 
+    // Expect data to still be there after initial sync
+    await page.reload();
+    await waitForInitialSync(page);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(5000, 1, 0)] } }] });
+
     // Pop one element from the array
     await pop(page);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
+
+    // Expect data to still be there after initial sync
+    await page.reload();
+    await waitForInitialSync(page);
     await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
 
     // Should not have thrown errors

@@ -82,6 +82,11 @@ describe("Sync from RPC", async () => {
     await pop(page);
     await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
 
+    // Expect data to still be there after initial sync
+    await page.reload();
+    await waitForInitialSync(page);
+    await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
+
     // Should not have thrown errors
     asyncErrorHandler.expectNoAsyncErrors();
   });

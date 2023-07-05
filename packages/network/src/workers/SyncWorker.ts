@@ -118,7 +118,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     devObservables.worldAddress$.next(worldContract.address);
 
     // Set default values for cacheAgeThreshold and cacheInterval
-    const cacheAgeThreshold = config.cacheAgeThreshold || 100;
+    const cacheAgeThreshold = config.cacheAgeThreshold ?? 100;
     const cacheInterval = config.cacheInterval || 1;
 
     // Set up

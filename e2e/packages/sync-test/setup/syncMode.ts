@@ -21,7 +21,10 @@ export function syncMode(reportError: (error: string) => void) {
 
   modeProcess.stdout?.on("data", (data) => {
     const dataString = data.toString();
-    const errors = extractLineContaining("ERROR", dataString).join("\n");
+    const errors = [
+      ...extractLineContaining("ERROR", dataString),
+      ...extractLineContaining("error while serializing", dataString),
+    ].join("\n");
     if (errors) {
       console.log(chalk.magenta("[mode error]:", errors));
       reject(errors);
@@ -31,7 +34,10 @@ export function syncMode(reportError: (error: string) => void) {
 
   modeProcess.stderr?.on("data", (data) => {
     const dataString = data.toString();
-    const modeErrors = extractLineContaining("ERROR", dataString).join("\n");
+    const modeErrors = [
+      ...extractLineContaining("ERROR", dataString),
+      ...extractLineContaining("error while serializing", dataString),
+    ].join("\n");
     if (modeErrors) {
       const errorMessage = chalk.magenta("[mode error]:", modeErrors);
       console.log(errorMessage);
