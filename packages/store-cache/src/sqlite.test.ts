@@ -1,4 +1,4 @@
-import { describe, it } from "vitest";
+import { beforeAll, beforeEach, describe, it } from "vitest";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
@@ -22,7 +22,7 @@ const usersTable = sqliteTable("users", {
 async function createDb(): Promise<SQLJsDatabase> {
   const SQL = await initSqlJs();
   const client = new SQL.Database();
-  return drizzle(client, { logger: new DefaultLogger() });
+  return drizzle(client /* { logger: new DefaultLogger() } */);
 }
 
 /**
@@ -41,25 +41,58 @@ async function createReactiveView(): Promise<void> {
 }
 
 describe("sqlite", () => {
-  it("should work", async () => {
-    const db = await createDb();
+  let db: SQLJsDatabase;
 
-    // Create table
+  beforeAll(async () => {
+    db = await createDb();
+  });
+
+  beforeEach(async () => {
+    db.run(sql`drop table if exists ${usersTable}`);
+
     db.run(sql`
 		create table ${usersTable} (
 			id integer primary key,
 			name text not null
 		)`);
+  });
 
-    db.update(usersTable).set({ id: 1, name: "User1" });
-
-    // const tx = db
-    //   .insert(usersTable)
-    //   .values([{ id: 1, name: "User1" }])
-    //   .run();
-    // console.log(tx);
+  it("should work", async () => {
+    db.insert(usersTable)
+      .values([{ id: 1, name: "User1" }])
+      .run();
 
     const queryResult = db.select({ name: usersTable.name }).from(usersTable).get();
+
+    console.log(queryResult);
+  });
+
+  it("should be performant", async () => {
+    const NUM = 1_00000;
+
+    let time = Date.now();
+    for (let i = 0; i < NUM; i++) {
+      db.insert(usersTable)
+        .values([{ name: String(i) }])
+        .run();
+    }
+    console.log(`Time to insert ${NUM} items in separate transactions: ${Date.now() - time}`);
+
+    time = Date.now();
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < NUM; i++) {
+        tx.insert(usersTable)
+          .values([{ name: String(i) }])
+          .run();
+      }
+    });
+
+    console.log(`Time to insert ${NUM} items in one transactions: ${Date.now() - time}`);
+
+    time = Date.now();
+    const queryResult = db.select({ name: usersTable.name }).from(usersTable).all();
+    console.log(`Time to select ${NUM * 2} items: ${Date.now() - time}`);
+
     console.log(queryResult);
   });
 });
