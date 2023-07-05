@@ -92,6 +92,7 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
     partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
     initialValue?: ComponentValue<SchemaOf<C[key]>>;
     ephemeral?: boolean;
+    devEmit?: () => void;
   };
 }[keyof C] & {
   entity: Entity;

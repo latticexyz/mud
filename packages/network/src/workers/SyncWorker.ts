@@ -162,7 +162,14 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
         }
       }
 
-      this.output$.next(event as NetworkEvent<C>);
+      const networkEvent = event as NetworkEvent<C>;
+      if (isNetworkComponentUpdateEvent(networkEvent)) {
+        // Remove devEmit from event before passing it to the main thread
+        // because it is not serializable
+        delete networkEvent.devEmit;
+      }
+
+      this.output$.next(networkEvent);
     });
     const streamStartBlockNumberPromise = awaitStreamValue(blockNumber$);
 

@@ -16,7 +16,7 @@ export const ecsEventFromLog = async (
   log: Log,
   parsedLog: LogDescription,
   lastEventInTx: boolean
-): Promise<(NetworkComponentUpdate & { devEmit: () => void }) | undefined> => {
+): Promise<NetworkComponentUpdate | undefined> => {
   const { blockNumber, transactionHash, logIndex } = log;
   const { args, name } = parsedLog;
 
