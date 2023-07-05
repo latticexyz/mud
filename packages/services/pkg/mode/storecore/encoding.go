@@ -766,7 +766,7 @@ func (schemaType SchemaType) ToPostgresType() string {
 	//nolint:gocritic,nestif // no switch, simplify
 	if (schemaType >= UINT8 && schemaType <= UINT256) || (schemaType >= INT8 && schemaType <= INT256) {
 		// Integers.
-		return "numeric(78,0)"
+		return "text"
 	} else if (schemaType >= BYTES1 && schemaType <= BYTES32) || (schemaType == BYTES) {
 		// Bytes.
 		return "text"
