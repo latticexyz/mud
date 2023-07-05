@@ -1,3 +1,4 @@
+export * from "./abiTypesToSchema";
 export * from "./common";
 export * from "./decodeDynamicField";
 export * from "./decodeKeyTuple";
