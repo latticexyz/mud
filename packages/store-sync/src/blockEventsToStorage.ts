@@ -201,7 +201,6 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
             schemaIndexToAbiType(tableSchema.schema.valueSchema, log.args.schemaIndex),
             log.args.data
           ) as Value<TConfig, keyof TConfig["tables"]>[typeof valueName];
-          console.log("setting field", { ...tableId, keyTuple, valueName, value });
           return {
             address: log.address,
             type: "SetField",
