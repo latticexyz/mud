@@ -27,9 +27,13 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "0.8.7",
+    "drizzle-kit": "^0.19.3",
+    "drizzle-orm": "^0.27.0",
+    "sql.js": "^1.8.0",
     "tuple-database": "^2.2.0"
   },
   "devDependencies": {
+    "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },
