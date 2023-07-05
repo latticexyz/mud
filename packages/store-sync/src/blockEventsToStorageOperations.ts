@@ -16,7 +16,6 @@ import { Key, Value } from "@latticexyz/store-cache";
 import { isDefined } from "@latticexyz/common/utils";
 
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event
-// TODO: support passing in a MUD config to get typed tables, values, etc.
 // TODO: consider if we should continue to group storage operations by block, allowing atomic sets (db txs) and collapsing operations per table+key
 //       or potentially have a start/end transaction and pass in the tx to each storage operation
 
@@ -44,36 +43,45 @@ export type SetRecordOperation<
   TConfig extends StoreConfig,
   TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>
 > = {
-  type: "SetRecord";
-  namespace: string;
-  name: TTableName;
-  keyTuple: Key<TConfig, TTableName>;
-  record: Value<TConfig, TTableName>;
-};
+  [TTable in keyof ExpandTablesConfig<TConfig["tables"]>]: {
+    type: "SetRecord";
+    namespace: string;
+    name: TTable;
+    keyTuple: Key<TConfig, TTable>;
+    record: Value<TConfig, TTable>;
+  };
+}[TTableName];
 
 export type SetFieldOperation<
   TConfig extends StoreConfig,
   TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>,
   TValueName extends string = string & keyof Value<TConfig, TTableName>
 > = {
-  type: "SetField";
-  namespace: string;
-  name: string;
-  keyTuple: Key<TConfig, TTableName>;
-  // TODO: standardize on calling these "fields" or "values" or maybe "columns"
-  valueName: TValueName;
-  value: Value<TConfig, TTableName>[TValueName];
-};
+  [TTable in keyof ExpandTablesConfig<TConfig["tables"]>]: {
+    type: "SetField";
+    namespace: string;
+    name: TTable;
+    keyTuple: Key<TConfig, TTable>;
+  } & {
+    [TValue in keyof Value<TConfig, TTable>]: {
+      // TODO: standardize on calling these "fields" or "values" or maybe "columns"
+      valueName: TValue;
+      value: Value<TConfig, TTable>[TValue];
+    };
+  }[TValueName];
+}[TTableName];
 
 export type DeleteRecordOperation<
   TConfig extends StoreConfig,
   TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>
 > = {
-  type: "DeleteRecord";
-  namespace: string;
-  name: string;
-  keyTuple: Key<TConfig, TTableName>;
-};
+  [TTable in keyof ExpandTablesConfig<TConfig["tables"]>]: {
+    type: "DeleteRecord";
+    namespace: string;
+    name: TTable;
+    keyTuple: Key<TConfig, TTable>;
+  };
+}[TTableName];
 
 export type StorageOperation<TConfig extends StoreConfig> =
   | SetRecordOperation<TConfig>

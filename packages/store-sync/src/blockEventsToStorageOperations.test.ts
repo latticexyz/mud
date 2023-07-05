@@ -128,5 +128,11 @@ describe("blockEventsToStorage", () => {
         operation.record.tableName;
       }
     }
+
+    if (operation.type === "SetField") {
+      if (operation.name === "StoreMetadata") {
+        operation.valueName;
+      }
+    }
   });
 });
