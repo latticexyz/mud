@@ -7,7 +7,7 @@ import {
   schemaIndexToAbiType,
 } from "@latticexyz/protocol-parser";
 import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
-import { StoreEventsAbi, StoreConfig, ExpandTablesConfig } from "@latticexyz/store";
+import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
 import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { debug } from "./debug";
@@ -41,9 +41,9 @@ export type StoredTableMetadata = {
 
 export type SetRecordOperation<
   TConfig extends StoreConfig,
-  TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>
+  TTableName extends string = string & keyof TConfig["tables"]
 > = {
-  [TTable in keyof ExpandTablesConfig<TConfig["tables"]>]: {
+  [TTable in keyof TConfig["tables"]]: {
     type: "SetRecord";
     namespace: string;
     name: TTable;
@@ -54,10 +54,10 @@ export type SetRecordOperation<
 
 export type SetFieldOperation<
   TConfig extends StoreConfig,
-  TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>,
+  TTableName extends string = string & keyof TConfig["tables"],
   TValueName extends string = string & keyof Value<TConfig, TTableName>
 > = {
-  [TTable in keyof ExpandTablesConfig<TConfig["tables"]>]: {
+  [TTable in keyof TConfig["tables"]]: {
     type: "SetField";
     namespace: string;
     name: TTable;
@@ -73,9 +73,9 @@ export type SetFieldOperation<
 
 export type DeleteRecordOperation<
   TConfig extends StoreConfig,
-  TTableName extends string = string & keyof ExpandTablesConfig<TConfig["tables"]>
+  TTableName extends string = string & keyof TConfig["tables"]
 > = {
-  [TTable in keyof ExpandTablesConfig<TConfig["tables"]>]: {
+  [TTable in keyof TConfig["tables"]]: {
     type: "DeleteRecord";
     namespace: string;
     name: TTable;
