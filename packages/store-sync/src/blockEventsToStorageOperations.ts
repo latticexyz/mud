@@ -39,27 +39,22 @@ export type StoredTableMetadata = {
   valueNames: readonly string[];
 };
 
-export type SetRecordOperation<
-  TConfig extends StoreConfig,
-  TTableName extends string = string & keyof TConfig["tables"]
-> = {
+export type SetRecordOperation<TConfig extends StoreConfig> = {
+  type: "SetRecord";
+  namespace: string;
+} & {
   [TTable in keyof TConfig["tables"]]: {
-    type: "SetRecord";
-    namespace: string;
     name: TTable;
     keyTuple: Key<TConfig, TTable>;
     record: Value<TConfig, TTable>;
   };
-}[TTableName];
+}[keyof TConfig["tables"]];
 
-export type SetFieldOperation<
-  TConfig extends StoreConfig,
-  TTableName extends string = string & keyof TConfig["tables"],
-  TValueName extends string = string & keyof Value<TConfig, TTableName>
-> = {
+export type SetFieldOperation<TConfig extends StoreConfig> = {
+  type: "SetField";
+  namespace: string;
+} & {
   [TTable in keyof TConfig["tables"]]: {
-    type: "SetField";
-    namespace: string;
     name: TTable;
     keyTuple: Key<TConfig, TTable>;
   } & {
@@ -68,24 +63,22 @@ export type SetFieldOperation<
       valueName: TValue;
       value: Value<TConfig, TTable>[TValue];
     };
-  }[TValueName];
-}[TTableName];
+  }[keyof Value<TConfig, TTable>];
+}[keyof TConfig["tables"]];
 
-export type DeleteRecordOperation<
-  TConfig extends StoreConfig,
-  TTableName extends string = string & keyof TConfig["tables"]
-> = {
+export type DeleteRecordOperation<TConfig extends StoreConfig> = {
+  type: "DeleteRecord";
+  namespace: string;
+} & {
   [TTable in keyof TConfig["tables"]]: {
-    type: "DeleteRecord";
-    namespace: string;
     name: TTable;
     keyTuple: Key<TConfig, TTable>;
   };
-}[TTableName];
+}[keyof TConfig["tables"]];
 
 export type StorageOperation<TConfig extends StoreConfig> =
-  | SetRecordOperation<TConfig>
   | SetFieldOperation<TConfig>
+  | SetRecordOperation<TConfig>
   | DeleteRecordOperation<TConfig>;
 
 export type BlockEventsToStorageOptions = {
