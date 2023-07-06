@@ -3,6 +3,15 @@ import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { DefaultLogger, sql } from "drizzle-orm";
+import {
+  blockEventsToStorage,
+  BlockEventsToStorageOptions,
+  StoredTableSchema,
+  StoredTableMetadata,
+} from "@latticexyz/store-sync";
+import { SchemaAbiType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
+
+type StorageOperations = ReturnType<typeof blockEventsToStorage>;
 
 /**
  * Idea:
@@ -19,32 +28,76 @@ const usersTable = sqliteTable("users", {
   name: text("name").notNull(),
 });
 
-async function createDb(): Promise<SQLJsDatabase> {
+async function createDatabase(): Promise<SQLJsDatabase> {
   const SQL = await initSqlJs();
   const client = new SQL.Database();
-  return drizzle(client /* { logger: new DefaultLogger() } */);
+  return drizzle(client, { logger: new DefaultLogger() });
 }
 
-/**
- * Input: MUD schema
- * Output: sql to run to create the table, and drizzle schema object
- */
-async function createTableFromSchema(): Promise<void> {
-  // TODO
+function formatTableName({ namespace, name }: { namespace: string; name: string }): string {
+  return `${namespace}_${name}`;
 }
 
-/**
- * Define a query/view that returns an rxjs object with updates if a table updates
- */
-async function createReactiveView(): Promise<void> {
-  // TODO
+function abiTypeToSqliteType(abiType: SchemaAbiType): AnySQLiteColumnBuilder {
+  const defaultValue = schemaAbiTypeToDefaultValue[abiType];
+  switch (typeof defaultValue) {
+    case "bigint":
+      // TODO: need to hex encode bignumbers coming from the sync stream with the right size since they arrive as bigints
+      return text;
+    case "boolean":
+      // TODO: need to encode bools as intexers
+      return integer;
+    case "number":
+    // TODO: continue here
+    default:
+      throw new Error(`Type not compatible with sqlite: ${abiType} / ${typeof defaultValue}`);
+  }
 }
+
+function mudSchemaToDrizzleSchem({ namespace, name, schema }: StoredTableSchema): any {
+  // Turn schema into SQL to create a table with this schema
+
+  // One column for each key
+  // One column for each value
+  const columns = {};
+
+  for (const key of schema.keySchema.staticFields) {
+  }
+
+  return sqliteTable(formatTableName({ namespace, name }), columns, (table) =>
+    // Primary key: composite of all keys
+    ({})
+  );
+}
+
+function drizzleSchemaToMigration(drizzleSchema: any): any {
+  // Turn drizzle schema into corresponding SQL migration
+  // This is exactly what drizzle-kit does, but unfortunately drizzle-kit is closed source
+}
+
+const options: BlockEventsToStorageOptions = {
+  async registerTableSchema(schema) {
+    // Store schema in the Schema table
+    // Create a new table based on the schema
+  },
+  async registerTableMetadata(data) {
+    // Rename the table columns with the data
+  },
+  async getTableSchema(opts) {
+    // Return schema from the database
+    return {} as StoredTableSchema;
+  },
+  async getTableMetadata(opts) {
+    // Return metadata from the database
+    return {} as StoredTableMetadata;
+  },
+};
 
 describe("sqlite", () => {
   let db: SQLJsDatabase;
 
   beforeAll(async () => {
-    db = await createDb();
+    db = await createDatabase();
   });
 
   beforeEach(async () => {

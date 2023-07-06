@@ -29,6 +29,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-cache": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
@@ -39,7 +40,8 @@
     "@types/debug": "^4.1.7",
     "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
-    "vitest": "0.31.4"
+    "vitest": "0.31.4",
+    "drizzle-kit": "^0.19.3"
   },
   "publishConfig": {
     "access": "public"
