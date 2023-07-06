@@ -1106,6 +1106,9 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
+      tsx:
+        specifier: ^3.12.6
+        version: 3.12.6
       vitest:
         specifier: 0.31.4
         version: 0.31.4
