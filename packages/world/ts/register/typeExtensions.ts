@@ -1,6 +1,5 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
-import { MUDCoreUserConfig } from "@latticexyz/config";
-import { ExpandSystemsConfig, WorldConfig, WorldUserConfig, WORLD_DEFAULTS } from "../library";
+import { WorldConfig, WorldNamespacedUserConfig, WorldUserConfig, WORLD_DEFAULTS } from "../library";
 
 import "@latticexyz/store/register";
 
@@ -18,16 +17,15 @@ declare module "@latticexyz/config" {
   // Other plugins may receive this resolved config as their input.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface MUDCoreConfig extends WorldConfig {}
-}
 
-declare module "@latticexyz/store/register" {
+  // Finally extend the config expander type, which resolves the user type, using defaults where necessary.
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
     extends OrDefaults<
       T,
       {
         worldContractName: typeof WORLD_DEFAULTS.worldContractName;
         worldInterfaceName: typeof WORLD_DEFAULTS.worldInterfaceName;
-        excludeSystems: typeof WORLD_DEFAULTS.excludeSystems;
         postDeployScript: typeof WORLD_DEFAULTS.postDeployScript;
         deploysDirectory: typeof WORLD_DEFAULTS.deploysDirectory;
         worldsFile: typeof WORLD_DEFAULTS.worldsFile;
@@ -35,7 +33,10 @@ declare module "@latticexyz/store/register" {
         worldImportPath: typeof WORLD_DEFAULTS.worldImportPath;
         modules: typeof WORLD_DEFAULTS.modules;
       }
-    > {
-    systems: ExpandSystemsConfig<T["systems"] extends Record<string, unknown> ? T["systems"] : Record<string, never>>;
-  }
+    > {}
+}
+
+declare module "@latticexyz/store" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface NamespacedConfig extends WorldNamespacedUserConfig {}
 }

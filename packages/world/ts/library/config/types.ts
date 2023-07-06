@@ -30,6 +30,19 @@ export type SystemUserConfig =
         }
     );
 
+export interface WorldNamespacedUserConfig {
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemConfig object.
+   */
+  systems?: SystemsUserConfig;
+  /** Systems to exclude from automatic deployment */
+  excludeSystems?: string[];
+}
+
 export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName extends string>
   extends OrDefaults<
     T,
@@ -59,20 +72,12 @@ export type ModuleConfig = {
 
 // zod doesn't preserve doc comments
 export interface WorldUserConfig {
+  /** Namespace-specific configurations. The key is a namespace (lowercase) */
+  namespaces: Record<string, SystemsUserConfig>;
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
   /** The name of the World interface to generate. (Default `IWorld`) */
   worldInterfaceName?: string;
-  /**
-   * Contracts named *System will be deployed by default
-   * as public systems at `namespace/ContractName`, unless overridden
-   *
-   * The key is the system name (capitalized).
-   * The value is a SystemConfig object.
-   */
-  systems?: SystemsUserConfig;
-  /** Systems to exclude from automatic deployment */
-  excludeSystems?: string[];
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -91,4 +96,4 @@ export interface WorldUserConfig {
 }
 
 export type WorldConfig = z.output<typeof zWorldConfig>;
-export type SystemConfig = WorldConfig["systems"][string];
+export type SystemConfig = WorldConfig["namespaces"][string]["systems"][string];

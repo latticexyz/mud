@@ -7,12 +7,15 @@ export const SYSTEM_DEFAULTS = {
 export const WORLD_DEFAULTS = {
   worldContractName: undefined,
   worldInterfaceName: "IWorld",
-  systems: {} as Record<string, never>,
-  excludeSystems: [] as string[],
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
   worldsFile: "./worlds.json",
   worldgenDirectory: "world",
   worldImportPath: "@latticexyz/world/src/",
   modules: [] as [],
+} as const;
+
+export const NAMESPACED_DEFAULTS = {
+  systems: {} as Record<string, never>,
+  excludeSystems: [] as string[],
 } as const;
