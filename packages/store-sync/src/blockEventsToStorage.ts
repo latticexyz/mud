@@ -22,7 +22,8 @@ export const schemaTableId = new TableId("mudstore", "schema");
 export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
 // I don't love carrying all these types through. Ideally this should be the shape of the thing we want, rather than the specific return type from a function.
-export type BlockEvents = GroupLogsByBlockNumberResult<GetLogsResult<StoreEventsAbi>[number]>[number];
+export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
+export type BlockEvents = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type StoredTableSchema = {
   namespace: string;
@@ -37,45 +38,44 @@ export type StoredTableMetadata = {
   valueNames: readonly string[];
 };
 
-export type SetRecordOperation<TConfig extends StoreConfig> = {
+export type BaseStorageOperation = {
+  log: StoreEventsLog;
+  namespace: string;
+};
+
+export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
   type: "SetRecord";
-  address: string;
-  namespace: string;
 } & {
-  [TTable in keyof TConfig["tables"]]: {
-    name: TTable;
-    keyTuple: Key<TConfig, TTable>;
-    record: Value<TConfig, TTable>;
-  };
-}[keyof TConfig["tables"]];
-
-export type SetFieldOperation<TConfig extends StoreConfig> = {
-  type: "SetField";
-  address: string;
-  namespace: string;
-} & {
-  [TTable in keyof TConfig["tables"]]: {
-    name: TTable;
-    keyTuple: Key<TConfig, TTable>;
-  } & {
-    [TValue in keyof Value<TConfig, TTable>]: {
-      // TODO: standardize on calling these "fields" or "values" or maybe "columns"
-      valueName: TValue;
-      value: Value<TConfig, TTable>[TValue];
+    [TTable in keyof TConfig["tables"]]: {
+      name: TTable;
+      keyTuple: Key<TConfig, TTable>;
+      record: Value<TConfig, TTable>;
     };
-  }[keyof Value<TConfig, TTable>];
-}[keyof TConfig["tables"]];
+  }[keyof TConfig["tables"]];
 
-export type DeleteRecordOperation<TConfig extends StoreConfig> = {
-  type: "DeleteRecord";
-  address: string;
-  namespace: string;
+export type SetFieldOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
+  type: "SetField";
 } & {
-  [TTable in keyof TConfig["tables"]]: {
-    name: TTable;
-    keyTuple: Key<TConfig, TTable>;
-  };
-}[keyof TConfig["tables"]];
+    [TTable in keyof TConfig["tables"]]: {
+      name: TTable;
+      keyTuple: Key<TConfig, TTable>;
+    } & {
+      [TValue in keyof Value<TConfig, TTable>]: {
+        // TODO: standardize on calling these "fields" or "values" or maybe "columns"
+        valueName: TValue;
+        value: Value<TConfig, TTable>[TValue];
+      };
+    }[keyof Value<TConfig, TTable>];
+  }[keyof TConfig["tables"]];
+
+export type DeleteRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
+  type: "DeleteRecord";
+} & {
+    [TTable in keyof TConfig["tables"]]: {
+      name: TTable;
+      keyTuple: Key<TConfig, TTable>;
+    };
+  }[keyof TConfig["tables"]];
 
 export type StorageOperation<TConfig extends StoreConfig> =
   | SetFieldOperation<TConfig>
@@ -186,7 +186,7 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
           // TODO: decide if we should handle ephemeral records separately?
           //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
           return {
-            address: log.address,
+            log,
             type: "SetRecord",
             ...tableId,
             keyTuple,
@@ -202,7 +202,7 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
             log.args.data
           ) as Value<TConfig, keyof TConfig["tables"]>[typeof valueName];
           return {
-            address: log.address,
+            log,
             type: "SetField",
             ...tableId,
             keyTuple,
@@ -213,7 +213,7 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
 
         if (log.eventName === "StoreDeleteRecord") {
           return {
-            address: log.address,
+            log,
             type: "DeleteRecord",
             ...tableId,
             keyTuple,
