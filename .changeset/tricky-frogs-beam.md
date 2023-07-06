@@ -2,4 +2,4 @@
 "@latticexyz/network": patch
 ---
 
-fix: remove devEmit function when sending network events from SyncWorker
+Remove devEmit function when sending network events from SyncWorker because they can't be serialized across the web worker boundary.
