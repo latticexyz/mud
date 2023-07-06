@@ -38,7 +38,7 @@ const publicClient = createPublicClient({
 });
 
 // TODO: fetch the last updated block from the DB
-const startBlock = 18958033n;
+const startBlock = 0n; // 18958033n;
 
 const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 

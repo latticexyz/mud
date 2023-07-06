@@ -49,5 +49,6 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     initialBlockNumber,
     snapSync: params.get("snapSync") === "true",
     disableCache: params.get("cache") === "false",
+    indexer: { type: "trpc", url: "http://localhost:3001" },
   };
 }
