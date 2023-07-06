@@ -1,7 +1,6 @@
-import { DynamicAbiType, DynamicPrimitiveType, StaticPrimitiveType } from "@latticexyz/schema-type";
+import { DynamicAbiType, DynamicPrimitiveType, StaticAbiType, StaticPrimitiveType } from "@latticexyz/schema-type";
 import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
-import { StaticAbiType } from "@latticexyz/schema-type/deprecated";
 
 type TableRow = {
   keyTuple: Record<string, StaticPrimitiveType>;
