@@ -46,5 +46,17 @@ export const getTable = (
 };
 
 export const createTable = (chainId: ChainId, address: Address, table: Table): void => {
-  database.tables.set(`${chainId}:${address}`, new Map([[`${table.namespace}:${table.name}` as TableId, table]]));
+  const worldId: WorldId = `${chainId}:${address}`;
+  const tableId: TableId = `${table.namespace}:${table.name}`;
+
+  const tables = database.tables.get(worldId) ?? new Map<TableId, Table>();
+  if (!database.tables.has(worldId)) {
+    database.tables.set(worldId, tables);
+  }
+
+  if (tables.has(tableId)) {
+    throw new Error(`Table ${tableId} already exists`);
+  }
+
+  tables.set(tableId, table);
 };

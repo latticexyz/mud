@@ -87,21 +87,41 @@ blockLogs$
       })
     ),
     concatMap(async ({ blockNumber, blockHash, operations }) => {
-      // TODO: do this in a DB tx
+      // TODO: do this in a DB tx once we have a real DB
       for (const operation of operations) {
+        const table = getTable(chain.id, operation.log.address, operation.namespace, operation.name);
+        if (!table) {
+          console.log(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
+          continue;
+        }
+
+        const keyTuple = Object.values(operation.keyTuple);
+
         if (operation.type === "SetRecord") {
-          // TODO: store record
-          // await storeCache.set(operation.namespace, operation.name, operation.keyTuple, operation.record);
+          table.lastBlockNumber = blockNumber;
+          table.rows = [
+            ...table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":")),
+            {
+              keyTuple: Object.values(operation.keyTuple),
+              value: operation.record,
+            },
+          ];
           console.log("stored record", operation);
         } else if (operation.type === "SetField") {
-          // TODO: update record
-          // await storeCache.set(operation.namespace, operation.name, operation.keyTuple, {
-          //   [operation.valueName]: operation.value,
-          // });
+          const row = table.rows.find((row) => row.keyTuple.join(":") === keyTuple.join(":"));
+          if (!row) {
+            console.log(`row ${keyTuple.join(":")} not found for set field, skipping operation`, operation);
+            continue;
+          }
+          table.lastBlockNumber = blockNumber;
+          row.value = {
+            ...row.value,
+            [operation.valueName]: operation.value,
+          };
           console.log("stored field", operation);
         } else if (operation.type === "DeleteRecord") {
-          // TODO: delete reocrd
-          // await storeCache.remove(operation.namespace, operation.name, operation.keyTuple);
+          table.lastBlockNumber = blockNumber;
+          table.rows = table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":"));
           console.log("deleted record", operation);
         }
       }
