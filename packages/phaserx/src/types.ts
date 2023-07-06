@@ -137,9 +137,10 @@ export type SceneConfig<
   M extends MapsConfig<A, T>,
   Ans extends Animation<A>[]
 > = {
+  init?: (scene: Phaser.Scene, data: any) => void;
   preload?: (scene: Phaser.Scene) => void;
-  create?: (scene: Phaser.Scene) => void;
-  update?: (scene: Phaser.Scene) => void;
+  create?: (scene: Phaser.Scene, data: any) => void;
+  update?: (scene: Phaser.Scene, time: number, delta: number) => void;
   assets: A;
   sprites: S;
   tilesets: T;
