@@ -1,0 +1,45 @@
+{
+  "name": "@latticexyz/store-indexer",
+  "version": "1.42.0",
+  "description": "Minimal Typescript indexer for Store",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/store-indexer"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "@latticexyz/block-logs-stream": "workspace:*",
+    "@latticexyz/common": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-cache": "workspace:*",
+    "@latticexyz/utils": "workspace:*",
+    "debug": "^4.3.4",
+    "viem": "1.1.7"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "tsup": "^6.7.0",
+    "vitest": "0.31.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}
