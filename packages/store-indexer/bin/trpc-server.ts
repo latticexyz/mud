@@ -1,6 +1,7 @@
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "../src";
 import { z } from "zod";
+import cors from "cors";
 
 const env = z
   .object({
@@ -13,6 +14,7 @@ const env = z
   });
 
 const server = createHTTPServer({
+  middleware: cors(),
   router: appRouter,
 });
 

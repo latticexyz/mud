@@ -36,6 +36,7 @@
     "@latticexyz/utils": "workspace:*",
     "@trpc/server": "10.34.0",
     "@wagmi/chains": "^0.2.22",
+    "cors": "^2.8.5",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
     "rxjs": "7.5.5",
@@ -45,6 +46,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
     "@types/debug": "^4.1.7",
     "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
