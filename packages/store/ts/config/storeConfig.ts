@@ -178,56 +178,61 @@ export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
  *
  ************************************************************************/
 
-type NamespacedConfig<
+/**
+ * Inner interface for namespaced configuration options.
+ * More options can be merged into it by plugins.
+ */
+export interface NamespacedConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion
-> = Record<
-  string,
-  {
-    /**
-     * Configuration for each table.
-     *
-     * The key is the table name (capitalized).
-     *
-     * The value:
-     *  - abi or user type for a single-value table.
-     *  - FullTableConfig object for multi-value tables (or for customizable options).
-     */
-    tables: TablesConfig<UserTypes, StaticUserTypes>;
-  }
->;
+> {
+  /**
+   * Configuration for each table.
+   *
+   * The key is the table name (capitalized).
+   *
+   * The value:
+   *  - abi or user type for a single-value table.
+   *  - FullTableConfig object for multi-value tables (or for customizable options).
+   */
+  tables: TablesConfig<UserTypes, StaticUserTypes>;
+}
 
-const zNamespacedConfig = z
-  .record(
-    zSelector,
-    z.object({
-      tables: zTablesConfig,
-    })
-  )
-  .transform((namespacedConfig) => {
-    // assign defaults which depend on record keys
-    for (const namespace of Object.keys(namespacedConfig)) {
-      const tables = namespacedConfig[namespace].tables;
-      for (const tableName of Object.keys(tables)) {
-        const table = tables[tableName];
+type Namespaces<
+  UserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
+> = Record<string, NamespacedConfig<UserTypes, StaticUserTypes>>;
 
-        table.namespace = namespace.slice(0, STORE_SELECTOR_MAX_LENGTH);
-        table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
-      }
+const zNamespacedConfig = z.object({
+  tables: zTablesConfig,
+});
+
+const zNamespaces = z.record(zSelector, zNamespacedConfig).transform((namespacedConfig) => {
+  // assign defaults which depend on record keys
+  for (const namespace of Object.keys(namespacedConfig)) {
+    const tables = namespacedConfig[namespace].tables;
+    for (const tableName of Object.keys(tables)) {
+      const table = tables[tableName];
+
+      table.namespace = namespace.slice(0, STORE_SELECTOR_MAX_LENGTH);
+      table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
     }
+  }
 
-    return namespacedConfig as Record<
-      string,
-      {
-        tables: Record<string, RequireKeys<(typeof namespacedConfig)[string]["tables"][string], "namespace" | "name">>;
-      }
-    >;
-  });
+  return namespacedConfig as Record<
+    string,
+    {
+      tables: Record<string, RequireKeys<(typeof namespacedConfig)[string]["tables"][string], "namespace" | "name">>;
+    }
+  >;
+});
 
-type ExpandNamespacedConfig<T extends NamespacedConfig<string, string>> = {
-  [Namespace in keyof T]: {
-    tables: ExpandTablesConfig<T[Namespace]["tables"]>;
-  };
+export interface ExpandNamespacedConfig<T extends NamespacedConfig<string, string>> {
+  tables: ExpandTablesConfig<T["tables"]>;
+}
+
+type ExpandNamespaces<T extends Namespaces<string, string>> = {
+  [Namespace in keyof T]: ExpandNamespacedConfig<T[Namespace]>;
 };
 
 /************************************************************************
@@ -286,7 +291,7 @@ export type MUDUserConfig<
 > = T &
   EnumsConfig<EnumNames> & {
     /** Namespace-specific configurations. The key is a namespace (lowercase) */
-    namespaces: NamespacedConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
+    namespaces: Namespaces<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
     /** Path to the file where common user types will be generated and imported from. Default is "Types" */
@@ -297,7 +302,7 @@ export type MUDUserConfig<
 
 const StoreConfigUnrefined = z
   .object({
-    namespaces: zNamespacedConfig,
+    namespaces: zNamespaces,
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     userTypesPath: z.string().default(PATH_DEFAULTS.userTypesPath),
     codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
@@ -322,7 +327,7 @@ export type ExpandStoreUserConfig<C extends StoreUserConfig> = OrDefaults<
     codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
   }
 > & {
-  namespaces: ExpandNamespacedConfig<C["namespaces"]>;
+  namespaces: ExpandNamespaces<C["namespaces"]>;
 };
 
 /************************************************************************
@@ -359,7 +364,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     }
   }
 
-  // Table selectors (namespace + name) must be unique
+  // Table selectors (namespace:name) must be unique
   const tableSelectors = tables.map(({ namespace, name }) => `${namespace}:${name}`);
   const duplicateTableSelectors = getDuplicates(tableSelectors);
   if (duplicateTableSelectors.length > 0) {
