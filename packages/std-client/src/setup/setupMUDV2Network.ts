@@ -24,7 +24,7 @@ import { defineContractComponents as defineStoreComponents } from "../mud-defini
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
-import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
+import { DatabaseClient, createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
 import { StoreConfig } from "@latticexyz/store";
 import superjson from "superjson";
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
@@ -47,6 +47,27 @@ function setupIndexer(options: { type: "trpc"; url: string }) {
     transformer: superjson,
     links: [httpBatchLink({ url: options.url })],
   });
+}
+
+function applyInitialState(
+  tables: Table[],
+  database: { recsComponents?: ContractComponents; storeCache?: DatabaseClient<StoreConfig> }
+) {
+  const { recsComponents, storeCache } = database;
+
+  for (const table of tables) {
+    if (recsComponents) {
+      const componentId = new TableId(table.namespace, table.name).toString();
+      const component = recsComponents[componentId];
+      if (!component) {
+        console.warn(`Received update for unknown component: ${componentId}`);
+      }
+    }
+
+    if (storeCache) {
+      //
+    }
+  }
 }
 
 export async function setupMUDV2Network<C extends ContractComponents, S extends StoreConfig>({
@@ -131,17 +152,16 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   }
 
   // Sync initial events from indexer
-  let initialState: Table[] = [];
   if (networkConfig.indexer) {
     const indexer = setupIndexer(networkConfig.indexer);
     // TODO: should separately check the block number to avoid loading unnecessary data
     const result = await indexer.findAll.query({ chainId: networkConfig.chainId, address: networkConfig.worldAddress });
     if (result.blockNumber >= networkConfig.initialBlockNumber) {
-      initialState = result.tables;
       // Update block number from which the sync worker starts syncing from
       networkConfig.initialBlockNumber = Number(result.blockNumber + 1n);
+      console.log("got initial state from trpc indexer", result.blockNumber);
+      // TODO: apply this state locally
     }
-    console.log("got initial state from trpc indexer", initialState);
   }
 
   // TODO: pass initialState to applyNetworkUpdates and apply before the rest (or just apply manually here)
