@@ -1072,18 +1072,27 @@ importers:
       '@latticexyz/store-cache':
         specifier: workspace:*
         version: link:../store-cache
+      '@latticexyz/store-sync':
+        specifier: workspace:*
+        version: link:../store-sync
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
       '@trpc/server':
         specifier: ^10.33.1
         version: 10.33.1
+      '@wagmi/chains':
+        specifier: ^0.2.22
+        version: 0.2.23(typescript@5.0.4)
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
       drizzle-orm:
         specifier: ^0.27.0
         version: 0.27.0(@types/sql.js@1.4.4)(sql.js@1.8.0)
+      rxjs:
+        specifier: 7.5.5
+        version: 7.5.5
       sql.js:
         specifier: ^1.8.0
         version: 1.8.0
@@ -3827,7 +3836,6 @@ packages:
         optional: true
     dependencies:
       typescript: 5.0.4
-    dev: true
 
   /@wagmi/chains@1.2.0(typescript@4.9.5):
     resolution: {integrity: sha512-dmDRipsE54JfyudOBkuhEexqQWcrZqxn/qiujG8SBzMh/az/AH5xlJSA+j1CPWTx9+QofSMF3B7A4gb6XRmSaQ==}
