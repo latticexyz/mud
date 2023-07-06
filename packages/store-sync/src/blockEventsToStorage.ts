@@ -8,7 +8,7 @@ import {
 import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
-import { Hex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Address, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 // TODO: move these type helpers into store?
 import { Key, Value } from "@latticexyz/store-cache";
@@ -26,6 +26,7 @@ export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockEvents = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type StoredTable = {
+  address: Address;
   namespace: string;
   name: string;
   // TODO: replace with named key tuples once we have on chain key tuple names
@@ -80,7 +81,7 @@ export type StorageOperation<TConfig extends StoreConfig> =
 
 export type BlockEventsToStorageOptions = {
   registerTable: (data: StoredTable) => Promise<void>;
-  getTable: (opts: Pick<StoredTable, "namespace" | "name">) => Promise<StoredTable | undefined>;
+  getTable: (opts: Pick<StoredTable, "address" | "namespace" | "name">) => Promise<StoredTable | undefined>;
 };
 
 export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>({
@@ -105,7 +106,7 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         const tableId = TableId.fromHex(tableForSchema);
         const schema = hexToTableSchema(log.args.data);
 
-        return { tableId, schema };
+        return { address: log.address, tableId, schema };
       })
       .filter(isDefined);
 
@@ -130,23 +131,30 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
 
         // TODO: add key names to table registration when we refactor it
-        return { tableId, keyNames: [], valueNames };
+        return { address: log.address, tableId, keyNames: [], valueNames };
       })
       .filter(isDefined);
 
     const newTableIds = Array.from(
       new Set([
-        ...newSchemas.map(({ tableId }) => tableId.toHex()),
-        ...newMetadata.map(({ tableId }) => tableId.toHex()),
+        ...newSchemas.map(({ address, tableId }) => `${address}:${tableId.toHex()}`),
+        ...newMetadata.map(({ address, tableId }) => `${address}:${tableId.toHex()}`),
       ])
-    ).map((tableHex) => TableId.fromHex(tableHex));
+    ).map((addressAndTableHex) => {
+      const [address, tableHex] = addressAndTableHex.split(":") as Hex[];
+      return { address, tableId: TableId.fromHex(tableHex) };
+    });
 
     // register tables in parallel
     await Promise.all(
-      newTableIds.map(async (tableId) => {
-        const schema = newSchemas.find(({ tableId: schemaTableId }) => schemaTableId.toHex() === tableId.toHex());
+      newTableIds.map(async ({ address, tableId }) => {
+        const schema = newSchemas.find(
+          ({ address: schemaAddress, tableId: schemaTableId }) =>
+            schemaAddress === address && schemaTableId.toHex() === tableId.toHex()
+        );
         const metadata = newMetadata.find(
-          ({ tableId: metadataTableId }) => metadataTableId.toHex() === tableId.toHex()
+          ({ address: metadataAddress, tableId: metadataTableId }) =>
+            metadataAddress === address && metadataTableId.toHex() === tableId.toHex()
         );
         if (!schema) {
           debug(`no schema registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`);
@@ -162,6 +170,7 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         const valueAbiTypes = [...schema.schema.valueSchema.staticFields, ...schema.schema.valueSchema.dynamicFields];
 
         const table: StoredTable = {
+          address,
           namespace: schema.tableId.namespace,
           name: schema.tableId.name,
           keyTuple: schema.schema.keySchema.staticFields,
@@ -174,18 +183,28 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
 
     // TODO: create some WeakMap cache for tables so we only have to fetch once
 
-    const tableIds = Array.from(new Set(block.logs.map((log) => log.args.table))).map((tableHex) =>
-      TableId.fromHex(tableHex)
+    const tableIds = Array.from(
+      new Set(
+        block.logs.map((log) => ({
+          address: log.address,
+          tableId: TableId.fromHex(log.args.table),
+        }))
+      )
     );
     // TODO: combine these once we refactor table registration
     const tables = Object.fromEntries(
-      await Promise.all(tableIds.map(async (tableId) => [tableId.toHex(), await getTable(tableId)]))
+      await Promise.all(
+        tableIds.map(async ({ address, tableId }) => [
+          `${address}:${tableId.toHex()}`,
+          await getTable({ address, ...tableId }),
+        ])
+      )
     ) as Record<Hex, StoredTable>;
 
     const operations = block.logs
       .map((log): StorageOperation<TConfig> | undefined => {
         const tableId = TableId.fromHex(log.args.table);
-        const table = tables[log.args.table];
+        const table = tables[`${log.address}:${log.args.table}`];
         if (!table) {
           debug("no table found for event, skipping", tableId.toString(), log);
           return;
