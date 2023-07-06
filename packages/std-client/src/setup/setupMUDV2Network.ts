@@ -11,7 +11,7 @@ import {
   keyTupleToEntityID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { Components, defineComponent, Type, World } from "@latticexyz/recs";
+import { Components, ComponentValue, defineComponent, setComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { TableId } from "@latticexyz/common";
@@ -19,12 +19,12 @@ import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts
 import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
-import { applyNetworkUpdates, createEncoders } from "./utils";
+import { applyNetworkUpdates, createEncoders, nameKeys } from "./utils";
 import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
-import { DatabaseClient, createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
+import { DatabaseClient, Key, Value, createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
 import { StoreConfig } from "@latticexyz/store";
 import superjson from "superjson";
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
@@ -49,23 +49,50 @@ function setupIndexer(options: { type: "trpc"; url: string }) {
   });
 }
 
-function applyInitialState(
+async function applyInitialState<C extends Components, S extends StoreConfig>(
   tables: Table[],
-  database: { recsComponents?: ContractComponents; storeCache?: DatabaseClient<StoreConfig> }
+  database: { recsComponents?: C; storeCache?: DatabaseClient<S> },
+  config: StoreConfig,
+  mappings: Mappings<C>
 ) {
   const { recsComponents, storeCache } = database;
 
+  // apply updated to recs
   for (const table of tables) {
     if (recsComponents) {
       const componentId = new TableId(table.namespace, table.name).toString();
-      const component = recsComponents[componentId];
+      const componentKey = mappings[componentId];
+      const component = recsComponents[componentKey];
       if (!component) {
-        console.warn(`Received update for unknown component: ${componentId}`);
+        console.warn(
+          `Skipping update for unknown component: ${componentId}. Available components: ${Object.keys(recsComponents)}`
+        );
+        continue;
+      }
+      for (const row of table.rows) {
+        const entity = keyTupleToEntityID(row.keyTuple as unknown[]);
+        console.log("applying component update", componentId, entity, row.value);
+        setComponent(component, entity, row.value as ComponentValue);
       }
     }
+  }
 
-    if (storeCache) {
-      //
+  // apply updates to storeCache
+  if (storeCache) {
+    for (const table of tables) {
+      const tableConfig = config.tables[table.name];
+      if (!tableConfig) {
+        console.warn(
+          `Skipping update for unknown table: ${table.name}. Availables tables: ${Object.keys(config.tables)}`
+        );
+        continue;
+      }
+      const keyNames = Object.getOwnPropertyNames(tableConfig.keySchema);
+      for (const row of table.rows) {
+        const namedKey = nameKeys(row.keyTuple, keyNames) as Key<S, keyof S["tables"]>;
+        console.log("applying table update", new TableId(table.namespace, table.name).toString(), namedKey, row.value);
+        await storeCache.set(table.namespace, table.name, namedKey, row.value as Value<S, keyof S["tables"]>);
+      }
     }
   }
 }
@@ -151,6 +178,9 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     registerComponent(key, components[key]);
   }
 
+  const db = createDatabase();
+  const storeCache = createDatabaseClient(db, storeConfig);
+
   // Sync initial events from indexer
   if (networkConfig.indexer) {
     const indexer = setupIndexer(networkConfig.indexer);
@@ -159,12 +189,10 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     if (result.blockNumber >= networkConfig.initialBlockNumber) {
       // Update block number from which the sync worker starts syncing from
       networkConfig.initialBlockNumber = Number(result.blockNumber + 1n);
-      console.log("got initial state from trpc indexer", result.blockNumber);
-      // TODO: apply this state locally
+      console.log("got initial state from trpc indexer", result);
+      await applyInitialState(result.tables, { recsComponents: contractComponents, storeCache }, storeConfig, mappings);
     }
   }
-
-  // TODO: pass initialState to applyNetworkUpdates and apply before the rest (or just apply manually here)
 
   const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
@@ -217,9 +245,6 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
       },
     });
   }
-
-  const db = createDatabase();
-  const storeCache = createDatabaseClient(db, storeConfig);
 
   const { txReduced$ } = applyNetworkUpdates(
     world,

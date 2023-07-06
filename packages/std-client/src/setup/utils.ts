@@ -222,7 +222,7 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
   return { txReduced$: txReduced$.asObservable() };
 }
 
-function nameKeys(indexedRecord: Record<number, unknown>, keyNames: string[]) {
+export function nameKeys(indexedRecord: Record<number, unknown> | unknown[], keyNames: string[]) {
   const namedRecord: Record<string, unknown> = {};
   keyNames.forEach((key, index) => {
     if (index in indexedRecord) {

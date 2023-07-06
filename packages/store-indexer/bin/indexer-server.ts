@@ -86,8 +86,9 @@ blockLogs$
         },
       })
     ),
-    concatMap(async ({ blockNumber, blockHash, operations }) => {
+    concatMap(async ({ blockNumber, operations }) => {
       // TODO: do this in a DB tx once we have a real DB
+      database.lastBlockNumber = blockNumber;
       for (const operation of operations) {
         const table = getTable(chain.id, operation.log.address, operation.namespace, operation.name);
         if (!table) {
@@ -108,10 +109,14 @@ blockLogs$
           ];
           console.log("stored record", operation);
         } else if (operation.type === "SetField") {
-          const row = table.rows.find((row) => row.keyTuple.join(":") === keyTuple.join(":"));
+          let row = table.rows.find((row) => row.keyTuple.join(":") === keyTuple.join(":"));
           if (!row) {
-            console.log(`row ${keyTuple.join(":")} not found for set field, skipping operation`, operation);
-            continue;
+            console.log(`row ${keyTuple.join(":")} not found for set field, creating an empty row`);
+            row = {
+              keyTuple: Object.values(operation.keyTuple),
+              value: {},
+            };
+            table.rows = [...table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":")), row];
           }
           table.lastBlockNumber = blockNumber;
           row.value = {

@@ -1,6 +1,7 @@
 import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
-import { Table } from "./fakeDatabase";
+import { Table, database, getWorldId } from "./fakeDatabase";
+import { Hex } from "viem";
 
 export const appRouter = router({
   findAll: publicProcedure
@@ -14,8 +15,15 @@ export const appRouter = router({
       const { chainId, address } = opts.input;
 
       // TODO: fetch these from DB and return
+      console.log(database);
 
-      return { blockNumber: -1n, tables: [] };
+      const result = {
+        blockNumber: database.lastBlockNumber,
+        tables: Array.from(database.tables.get(getWorldId(chainId, address as Hex))?.values() ?? []),
+      };
+      console.log("findAll:", opts, result);
+
+      return result;
     }),
 });
 

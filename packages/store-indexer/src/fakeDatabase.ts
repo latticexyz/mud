@@ -1,5 +1,5 @@
 import { StaticPrimitiveType, DynamicPrimitiveType, DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 
 // This is just a fake database for now to get us started without all the SQL adapter stuff, so we can have a working TRPC -> Client pipeline. We'll swap this with a real database/backend later.
 
@@ -33,7 +33,7 @@ export type Table = {
 export const database = { tables: new Map<WorldId, Map<TableId, Table>>(), lastBlockNumber: -1n };
 
 export const getTables = (chainId: ChainId, address: Address): Table[] => {
-  return Array.from(database.tables.get(`${chainId}:${address}`)?.values() ?? []);
+  return Array.from(database.tables.get(getWorldId(chainId, address))?.values() ?? []);
 };
 
 export const getTable = (
@@ -42,11 +42,11 @@ export const getTable = (
   namespace: TableNamespace,
   name: TableName
 ): Table | undefined => {
-  return database.tables.get(`${chainId}:${address}`)?.get(`${namespace}:${name}`);
+  return database.tables.get(getWorldId(chainId, address))?.get(`${namespace}:${name}`);
 };
 
 export const createTable = (chainId: ChainId, address: Address, table: Table): void => {
-  const worldId: WorldId = `${chainId}:${address}`;
+  const worldId: WorldId = getWorldId(chainId, address);
   const tableId: TableId = `${table.namespace}:${table.name}`;
 
   const tables = database.tables.get(worldId) ?? new Map<TableId, Table>();
@@ -59,4 +59,8 @@ export const createTable = (chainId: ChainId, address: Address, table: Table): v
   }
 
   tables.set(tableId, table);
+};
+
+export const getWorldId = (chainId: ChainId, address: Address): WorldId => {
+  return `${chainId}:${getAddress(address)}`;
 };
