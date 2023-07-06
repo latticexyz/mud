@@ -47,7 +47,7 @@
     "@latticexyz/store-indexer": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@trpc/client": "^10.34.0",
+    "@trpc/client": "10.34.0",
     "abitype": "0.8.7",
     "ethers": "^5.7.2",
     "mobx": "^6.7.0",

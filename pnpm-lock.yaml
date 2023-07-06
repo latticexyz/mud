@@ -857,7 +857,7 @@ importers:
         specifier: workspace:*
         version: link:../world
       '@trpc/client':
-        specifier: ^10.34.0
+        specifier: 10.34.0
         version: 10.34.0(@trpc/server@10.34.0)
       abitype:
         specifier: 0.8.7
@@ -1088,8 +1088,8 @@ importers:
         specifier: workspace:*
         version: link:../utils
       '@trpc/server':
-        specifier: ^10.33.1
-        version: 10.33.1
+        specifier: 10.34.0
+        version: 10.34.0
       '@wagmi/chains':
         specifier: ^0.2.22
         version: 0.2.23(typescript@5.0.4)
@@ -3312,10 +3312,6 @@ packages:
       '@trpc/server': 10.34.0
     dependencies:
       '@trpc/server': 10.34.0
-    dev: false
-
-  /@trpc/server@10.33.1:
-    resolution: {integrity: sha512-ObMzyEALXhQ7QTVQdSJ+IL1wYB7UdLLoIhqHraYzqKb9sTTsL3+U64kK084KPsRd4b8R3yH/bzBOnCn8Hbrxkw==}
     dev: false
 
   /@trpc/server@10.34.0:

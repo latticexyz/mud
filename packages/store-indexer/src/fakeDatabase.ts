@@ -30,10 +30,10 @@ export type Table = {
   lastBlockNumber: bigint;
 };
 
-export const database = new Map<WorldId, Map<TableId, Table>>();
+export const database = { tables: new Map<WorldId, Map<TableId, Table>>(), lastBlockNumber: -1n };
 
 export const getTables = (chainId: ChainId, address: Address): Table[] => {
-  return Array.from(database.get(`${chainId}:${address}`)?.values() ?? []);
+  return Array.from(database.tables.get(`${chainId}:${address}`)?.values() ?? []);
 };
 
 export const getTable = (
@@ -42,9 +42,9 @@ export const getTable = (
   namespace: TableNamespace,
   name: TableName
 ): Table | undefined => {
-  return database.get(`${chainId}:${address}`)?.get(`${namespace}:${name}`);
+  return database.tables.get(`${chainId}:${address}`)?.get(`${namespace}:${name}`);
 };
 
 export const createTable = (chainId: ChainId, address: Address, table: Table): void => {
-  database.set(`${chainId}:${address}`, new Map([[`${table.namespace}:${table.name}` as TableId, table]]));
+  database.tables.set(`${chainId}:${address}`, new Map([[`${table.namespace}:${table.name}` as TableId, table]]));
 };

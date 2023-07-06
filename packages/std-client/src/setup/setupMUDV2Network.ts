@@ -27,8 +27,8 @@ import { Abi } from "abitype";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
 import { StoreConfig } from "@latticexyz/store";
 import superjson from "superjson";
-import { createTRPCProxyClient } from "@trpc/client";
-import type { AppRouter } from "@latticexyz/store-indexer";
+import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
+import type { AppRouter, Table } from "@latticexyz/store-indexer";
 
 type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfig> = {
   networkConfig: SetupContractConfig;
@@ -42,6 +42,13 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfi
   worldAbi: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };
 
+function setupIndexer(options: { type: "trpc"; url: string }) {
+  return createTRPCProxyClient<AppRouter>({
+    transformer: superjson,
+    links: [httpBatchLink({ url: options.url })],
+  });
+}
+
 export async function setupMUDV2Network<C extends ContractComponents, S extends StoreConfig>({
   networkConfig,
   world,
@@ -53,10 +60,6 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   syncStoreCache = true,
   worldAbi = IWorldKernel__factory.abi,
 }: SetupMUDV2NetworkOptions<C, S>) {
-  const client = createTRPCProxyClient<AppRouter>({
-    transformer: superjson,
-  });
-
   devObservables.worldAbi$.next(worldAbi);
 
   const SystemsRegistry = defineStringComponent(world, {
@@ -126,6 +129,22 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   for (const key of Object.keys(components)) {
     registerComponent(key, components[key]);
   }
+
+  // Sync initial events from indexer
+  let initialState: Table[] = [];
+  if (networkConfig.indexer) {
+    const indexer = setupIndexer(networkConfig.indexer);
+    // TODO: should separately check the block number to avoid loading unnecessary data
+    const result = await indexer.findAll.query({ chainId: networkConfig.chainId, address: networkConfig.worldAddress });
+    if (result.blockNumber >= networkConfig.initialBlockNumber) {
+      initialState = result.tables;
+      // Update block number from which the sync worker starts syncing from
+      networkConfig.initialBlockNumber = Number(result.blockNumber + 1n);
+    }
+    console.log("got initial state from trpc indexer", initialState);
+  }
+
+  // TODO: pass initialState to applyNetworkUpdates and apply before the rest (or just apply manually here)
 
   const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);

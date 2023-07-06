@@ -34,7 +34,7 @@
     "@latticexyz/store-cache": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
-    "@trpc/server": "^10.33.1",
+    "@trpc/server": "10.34.0",
     "@wagmi/chains": "^0.2.22",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",

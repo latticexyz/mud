@@ -2,7 +2,7 @@ import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
 import { Table } from "./fakeDatabase";
 
-const appRouter = router({
+export const appRouter = router({
   findAll: publicProcedure
     .input(
       z.object({
@@ -10,12 +10,12 @@ const appRouter = router({
         address: z.string(), // TODO: refine to hex
       })
     )
-    .query(async (opts): Promise<Table[]> => {
+    .query(async (opts): Promise<{ blockNumber: bigint; tables: Table[] }> => {
       const { chainId, address } = opts.input;
 
       // TODO: fetch these from DB and return
 
-      return [];
+      return { blockNumber: -1n, tables: [] };
     }),
 });
 

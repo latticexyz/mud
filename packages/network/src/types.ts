@@ -23,6 +23,10 @@ export interface NetworkConfig {
   encoders?: boolean;
   pruneOptions?: { playerAddress: string; hashedComponentId: string };
   chainConfig?: MUDChain;
+  indexer?: {
+    type: "trpc";
+    url: string;
+  };
 }
 
 export interface ClockConfig {
