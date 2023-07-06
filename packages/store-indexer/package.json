@@ -31,10 +31,13 @@
     "@latticexyz/store-cache": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "debug": "^4.3.4",
+    "drizzle-orm": "^0.27.0",
+    "sql.js": "^1.8.0",
     "viem": "1.1.7"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
+    "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },
