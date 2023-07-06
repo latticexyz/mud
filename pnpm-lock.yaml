@@ -61,7 +61,7 @@ importers:
         version: link:../schema-type
       abitype:
         specifier: 0.8.7
-        version: 0.8.7(typescript@5.0.4)
+        version: 0.8.7(typescript@5.0.4)(zod@3.21.4)
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
@@ -70,7 +70,7 @@ importers:
         version: 7.5.5
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -237,7 +237,7 @@ importers:
         version: 1.1.2(prettier@2.8.4)
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -321,7 +321,7 @@ importers:
         version: link:../world
       abitype:
         specifier: 0.8.7
-        version: 0.8.7(typescript@5.0.4)
+        version: 0.8.7(typescript@5.0.4)(zod@3.21.4)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -342,7 +342,7 @@ importers:
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -596,10 +596,10 @@ importers:
         version: link:../schema-type
       abitype:
         specifier: 0.8.7
-        version: 0.8.7(typescript@5.0.4)
+        version: 0.8.7(typescript@5.0.4)(zod@3.21.4)
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -710,10 +710,10 @@ importers:
     dependencies:
       abitype:
         specifier: 0.8.7
-        version: 0.8.7(typescript@5.0.4)
+        version: 0.8.7(typescript@5.0.4)(zod@3.21.4)
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
     devDependencies:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -1040,7 +1040,7 @@ importers:
         version: link:../store
       abitype:
         specifier: 0.8.7
-        version: 0.8.7(typescript@5.0.4)
+        version: 0.8.7(typescript@5.0.4)(zod@3.21.4)
       tuple-database:
         specifier: ^2.2.0
         version: 2.2.0
@@ -1075,6 +1075,9 @@ importers:
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
+      '@trpc/server':
+        specifier: ^10.33.1
+        version: 10.33.1
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
@@ -1084,9 +1087,15 @@ importers:
       sql.js:
         specifier: ^1.8.0
         version: 1.8.0
+      superjson:
+        specifier: ^1.12.4
+        version: 1.12.4
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -1129,7 +1138,7 @@ importers:
         version: 4.3.4(supports-color@8.1.1)
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.0.4)
+        version: 1.1.7(typescript@5.0.4)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -3276,6 +3285,10 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
+  /@trpc/server@10.33.1:
+    resolution: {integrity: sha512-ObMzyEALXhQ7QTVQdSJ+IL1wYB7UdLLoIhqHraYzqKb9sTTsL3+U64kK084KPsRd4b8R3yH/bzBOnCn8Hbrxkw==}
+    dev: false
+
   /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5):
     resolution: {integrity: sha512-ikaq0N/w9fABM+G01OFmU3U3dNnyRwEahkdvi9mqy1a3XwKiPZaF/lu54OcNaEWnpvEYyhhS0N7buCtLQqC92w==}
     peerDependencies:
@@ -3861,7 +3874,7 @@ packages:
       zod: 3.21.4
     dev: false
 
-  /abitype@0.8.7(typescript@5.0.4):
+  /abitype@0.8.7(typescript@5.0.4)(zod@3.21.4):
     resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -3871,6 +3884,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.0.4
+      zod: 3.21.4
     dev: false
 
   /abort-controller-x@0.4.1:
@@ -4885,6 +4899,13 @@ packages:
     resolution: {integrity: sha512-aSWTXFzaKWkvHO1Ny/s+ePFpvKsPnjc551iI41v3ny/ow6tBG5Vd+FuqGNhh1LxOmVzOlGUriIlOaokOvhaStA==}
     engines: {node: '>= 0.6'}
     dev: true
+
+  /copy-anything@3.0.5:
+    resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
+    engines: {node: '>=12.13'}
+    dependencies:
+      is-what: 4.1.15
+    dev: false
 
   /core-js-pure@3.30.0:
     resolution: {integrity: sha512-+2KbMFGeBU0ln/csoPqTe0i/yfHbrd2EUhNMObsGtXMKS/RTtlkYyi+/3twLcevbgNR0yM/r0Psa3TEoQRpFMQ==}
@@ -7120,6 +7141,11 @@ packages:
     dependencies:
       call-bind: 1.0.2
     dev: true
+
+  /is-what@4.1.15:
+    resolution: {integrity: sha512-uKua1wfy3Yt+YqsD6mTUEa2zSi3G1oPlqTflgaPJ7z63vUGN5pxFpnQfeSLMFnJDEsdvOtkp1rUWkYjB4YfhgA==}
+    engines: {node: '>=12.13'}
+    dev: false
 
   /is-windows@1.0.2:
     resolution: {integrity: sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==}
@@ -10207,6 +10233,13 @@ packages:
       ts-interface-checker: 0.1.13
     dev: true
 
+  /superjson@1.12.4:
+    resolution: {integrity: sha512-vkpPQAxdCg9SLfPv5GPC5fnGrui/WryktoN9O5+Zif/14QIMjw+RITf/5LbBh+9QpBFb3KNvJth+puz2H8o6GQ==}
+    engines: {node: '>=10'}
+    dependencies:
+      copy-anything: 3.0.5
+    dev: false
+
   /supports-color@2.0.0:
     resolution: {integrity: sha512-KKNVtd6pCYgPIKU4cp2733HWYCpplQhddZLBUryaAHou723x+FRzQ5Df824Fj+IyyuiQTRoub4SnIFfIcrp70g==}
     engines: {node: '>=0.8.0'}
@@ -11067,7 +11100,7 @@ packages:
       - zod
     dev: false
 
-  /viem@1.1.7(typescript@5.0.4):
+  /viem@1.1.7(typescript@5.0.4)(zod@3.21.4):
     resolution: {integrity: sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -11078,7 +11111,7 @@ packages:
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
       '@wagmi/chains': 1.2.0(typescript@5.0.4)
-      abitype: 0.8.7(typescript@5.0.4)
+      abitype: 0.8.7(typescript@5.0.4)(zod@3.21.4)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       typescript: 5.0.4
       ws: 8.12.0

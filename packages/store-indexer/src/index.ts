@@ -1,1 +1,1 @@
-// TODO: implement
+export * from "./appRouter";
