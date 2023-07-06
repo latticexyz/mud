@@ -4,6 +4,12 @@ import { bigIntSort } from "./utils";
 import { isDefined } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 
+export type GroupLogsByBlockNumberResult<TLog extends Log> = {
+  blockNumber: BlockNumber;
+  blockHash: Hex;
+  logs: readonly NonPendingLog<TLog>[];
+}[];
+
 /**
  * Groups logs by their block number.
  *
@@ -17,9 +23,7 @@ import { debug } from "./debug";
  * @returns An array of objects where each object represents a distinct block and includes the block number,
  * the block hash, and an array of logs for that block.
  */
-export function groupLogsByBlockNumber<TLog extends Log>(
-  logs: readonly TLog[]
-): { blockNumber: BlockNumber; blockHash: Hex; logs: readonly NonPendingLog<TLog>[] }[] {
+export function groupLogsByBlockNumber<TLog extends Log>(logs: readonly TLog[]): GroupLogsByBlockNumberResult<TLog> {
   // Pending logs don't have block numbers, so filter them out.
   const nonPendingLogs = logs.filter(isNonPendingLog);
   if (logs.length !== nonPendingLogs.length) {
