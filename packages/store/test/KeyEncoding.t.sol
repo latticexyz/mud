@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
-import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
+import { mudstore_KeyEncoding, mudstore_KeyEncodingTableId } from "../src/codegen/Tables.sol";
 import { ExampleEnum } from "../src/codegen/Types.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
@@ -12,19 +12,19 @@ import { Schema } from "../src/Schema.sol";
 contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
   function testRegisterAndGetSchema() public {
     startGasReport("register KeyEncoding schema");
-    KeyEncoding.registerSchema();
+    mudstore_KeyEncoding.registerSchema();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getSchema(KeyEncodingTableId);
-    Schema declaredSchema = KeyEncoding.getSchema();
+    Schema registeredSchema = StoreCore.getSchema(mudstore_KeyEncodingTableId);
+    Schema declaredSchema = mudstore_KeyEncoding.getSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
 
   function testSetAndGet() public {
-    KeyEncoding.registerSchema();
+    mudstore_KeyEncoding.registerSchema();
 
-    KeyEncoding.set(
+    mudstore_KeyEncoding.set(
       42,
       -42,
       bytes16(hex"1234"),
@@ -34,7 +34,7 @@ contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
       true
     );
 
-    bool value = KeyEncoding.get(
+    bool value = mudstore_KeyEncoding.get(
       42,
       -42,
       bytes16(hex"1234"),
@@ -47,9 +47,9 @@ contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
   }
 
   function testKeyEncoding() public {
-    KeyEncoding.registerSchema();
+    mudstore_KeyEncoding.registerSchema();
 
-    bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(
+    bytes32[] memory keyTuple = mudstore_KeyEncoding.encodeKeyTuple(
       42,
       -42,
       bytes16(hex"1234"),

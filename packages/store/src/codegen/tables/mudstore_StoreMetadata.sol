@@ -18,14 +18,14 @@ import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("StoreMetadata")));
-bytes32 constant StoreMetadataTableId = _tableId;
+bytes32 constant mudstore_StoreMetadataTableId = _tableId;
 
-struct StoreMetadataData {
+struct mudstore_StoreMetadataData {
   string tableName;
   bytes abiEncodedFieldNames;
 }
 
-library StoreMetadata {
+library mudstore_StoreMetadata {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
@@ -47,7 +47,7 @@ library StoreMetadata {
     string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "tableName";
     _fieldNames[1] = "abiEncodedFieldNames";
-    return ("StoreMetadata", _fieldNames);
+    return ("mudstore_StoreMetadata", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -316,7 +316,7 @@ library StoreMetadata {
   }
 
   /** Get the full data */
-  function get(bytes32 tableId) internal view returns (StoreMetadataData memory _table) {
+  function get(bytes32 tableId) internal view returns (mudstore_StoreMetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -325,7 +325,7 @@ library StoreMetadata {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 tableId) internal view returns (StoreMetadataData memory _table) {
+  function get(IStore _store, bytes32 tableId) internal view returns (mudstore_StoreMetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -354,17 +354,17 @@ library StoreMetadata {
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 tableId, StoreMetadataData memory _table) internal {
+  function set(bytes32 tableId, mudstore_StoreMetadataData memory _table) internal {
     set(tableId, _table.tableName, _table.abiEncodedFieldNames);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 tableId, StoreMetadataData memory _table) internal {
+  function set(IStore _store, bytes32 tableId, mudstore_StoreMetadataData memory _table) internal {
     set(_store, tableId, _table.tableName, _table.abiEncodedFieldNames);
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal view returns (StoreMetadataData memory _table) {
+  function decode(bytes memory _blob) internal view returns (mudstore_StoreMetadataData memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 

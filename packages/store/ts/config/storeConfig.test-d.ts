@@ -7,7 +7,9 @@ describe("StoreUserConfig", () => {
   expectTypeOf<MUDUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig>>();
 
   // type equality isn't deep for optionals
-  expectTypeOf<MUDUserConfig["tables"][string]>().toEqualTypeOf<z.input<typeof zStoreConfig>["tables"][string]>();
+  expectTypeOf<MUDUserConfig["namespaces"][string]["tables"][string]>().toEqualTypeOf<
+    z.input<typeof zStoreConfig>["namespaces"][string]["tables"][string]
+  >();
   expectTypeOf<NonNullable<MUDUserConfig["enums"]>[string]>().toEqualTypeOf<
     NonNullable<NonNullable<z.input<typeof zStoreConfig>>["enums"]>[string]
   >();

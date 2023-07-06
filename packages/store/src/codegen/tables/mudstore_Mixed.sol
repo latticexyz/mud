@@ -18,16 +18,16 @@ import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Mixed")));
-bytes32 constant MixedTableId = _tableId;
+bytes32 constant mudstore_MixedTableId = _tableId;
 
-struct MixedData {
+struct mudstore_MixedData {
   uint32 u32;
   uint128 u128;
   uint32[] a32;
   string s;
 }
 
-library Mixed {
+library mudstore_Mixed {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](4);
@@ -53,7 +53,7 @@ library Mixed {
     _fieldNames[1] = "u128";
     _fieldNames[2] = "a32";
     _fieldNames[3] = "s";
-    return ("Mixed", _fieldNames);
+    return ("mudstore_Mixed", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -383,7 +383,7 @@ library Mixed {
   }
 
   /** Get the full data */
-  function get(bytes32 key) internal view returns (MixedData memory _table) {
+  function get(bytes32 key) internal view returns (mudstore_MixedData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -392,7 +392,7 @@ library Mixed {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (MixedData memory _table) {
+  function get(IStore _store, bytes32 key) internal view returns (mudstore_MixedData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -421,17 +421,17 @@ library Mixed {
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 key, MixedData memory _table) internal {
+  function set(bytes32 key, mudstore_MixedData memory _table) internal {
     set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 key, MixedData memory _table) internal {
+  function set(IStore _store, bytes32 key, mudstore_MixedData memory _table) internal {
     set(_store, key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal view returns (MixedData memory _table) {
+  function decode(bytes memory _blob) internal view returns (mudstore_MixedData memory _table) {
     // 20 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
 

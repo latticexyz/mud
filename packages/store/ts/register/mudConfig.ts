@@ -1,7 +1,6 @@
-import { mudCoreConfig, MUDCoreUserConfig } from "@latticexyz/config";
+import { ExpandMUDUserConfig, mudCoreConfig, MUDCoreUserConfig } from "@latticexyz/config";
 import { ExtractUserTypes, StringForUnion } from "@latticexyz/common/type-utils";
 import { MUDUserConfig } from "..";
-import { ExpandMUDUserConfig } from "./typeExtensions";
 
 /** mudCoreConfig wrapper to use generics in some options for better type inference */
 export function mudConfig<

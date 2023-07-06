@@ -120,6 +120,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
 const zFullTableConfig = z
   .object({
     directory: z.string().default(TABLE_DEFAULTS.directory),
+    namespace: zSelector.optional(),
     name: zSelector.optional(),
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
@@ -159,21 +160,7 @@ export type TablesConfig<
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, TableConfig<UserTypes, StaticUserTypes> | FieldData<UserTypes>>;
 
-export const zTablesConfig = z.record(zTableName, zTableConfig).transform((tables) => {
-  // default name depends on tableName
-  for (const tableName of Object.keys(tables)) {
-    const table = tables[tableName];
-    table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
-
-    tables[tableName] = table;
-  }
-  return tables as Record<string, RequireKeys<(typeof tables)[string], "name">>;
-});
-
-export type FullTablesConfig<
-  UserTypes extends StringForUnion = StringForUnion,
-  StaticUserTypes extends StringForUnion = StringForUnion
-> = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
+export const zTablesConfig = z.record(zTableName, zTableConfig);
 
 export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
@@ -183,6 +170,64 @@ export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
     : // Weakly typed values get a weakly typed expansion.
       // This shouldn't normally happen within `mudConfig`, but can be manually triggered via `ExpandMUDUserConfig`
       ExpandTableConfig<TableConfig<string, string>, TableName extends string ? TableName : string>;
+};
+
+/************************************************************************
+ *
+ *    NAMESPACED CONFIG
+ *
+ ************************************************************************/
+
+type NamespacedConfig<
+  UserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
+> = Record<
+  string,
+  {
+    /**
+     * Configuration for each table.
+     *
+     * The key is the table name (capitalized).
+     *
+     * The value:
+     *  - abi or user type for a single-value table.
+     *  - FullTableConfig object for multi-value tables (or for customizable options).
+     */
+    tables: TablesConfig<UserTypes, StaticUserTypes>;
+  }
+>;
+
+const zNamespacedConfig = z
+  .record(
+    zSelector,
+    z.object({
+      tables: zTablesConfig,
+    })
+  )
+  .transform((namespacedConfig) => {
+    // assign defaults which depend on record keys
+    for (const namespace of Object.keys(namespacedConfig)) {
+      const tables = namespacedConfig[namespace].tables;
+      for (const tableName of Object.keys(tables)) {
+        const table = tables[tableName];
+
+        table.namespace = namespace.slice(0, STORE_SELECTOR_MAX_LENGTH);
+        table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
+      }
+    }
+
+    return namespacedConfig as Record<
+      string,
+      {
+        tables: Record<string, RequireKeys<(typeof namespacedConfig)[string]["tables"][string], "namespace" | "name">>;
+      }
+    >;
+  });
+
+type ExpandNamespacedConfig<T extends NamespacedConfig<string, string>> = {
+  [Namespace in keyof T]: {
+    tables: ExpandTablesConfig<T[Namespace]["tables"]>;
+  };
 };
 
 /************************************************************************
@@ -240,18 +285,8 @@ export type MUDUserConfig<
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
 > = T &
   EnumsConfig<EnumNames> & {
-    /**
-     * Configuration for each table.
-     *
-     * The key is the table name (capitalized).
-     *
-     * The value:
-     *  - abi or user type for a single-value table.
-     *  - FullTableConfig object for multi-value tables (or for customizable options).
-     */
-    tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
-    /** The namespace for table ids. Default is "" (ROOT) */
-    namespace?: string;
+    /** Namespace-specific configurations. The key is a namespace (lowercase) */
+    namespaces: NamespacedConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
     /** Path to the file where common user types will be generated and imported from. Default is "Types" */
@@ -262,9 +297,8 @@ export type MUDUserConfig<
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: zSelector.default(DEFAULTS.namespace),
+    namespaces: zNamespacedConfig,
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
-    tables: zTablesConfig,
     userTypesPath: z.string().default(PATH_DEFAULTS.userTypesPath),
     codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
   })
@@ -279,16 +313,41 @@ export type StoreConfig = z.output<typeof zStoreConfig>;
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
 
+export type ExpandStoreUserConfig<C extends StoreUserConfig> = OrDefaults<
+  C,
+  {
+    enums: typeof DEFAULTS.enums;
+    storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
+    userTypesPath: typeof PATH_DEFAULTS.userTypesPath;
+    codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
+  }
+> & {
+  namespaces: ExpandNamespacedConfig<C["namespaces"]>;
+};
+
 /************************************************************************
  *
  *    HELPERS
  *
  ************************************************************************/
 
+/** Get a flat list of tables, which is easier to map than a nested object */
+export function flattenTables(namespaces: z.output<typeof StoreConfigUnrefined>["namespaces"]) {
+  const flatTables = [];
+  for (const namespacedConfig of Object.values(namespaces)) {
+    for (const table of Object.values(namespacedConfig.tables)) {
+      flatTables.push(table);
+    }
+  }
+  return flatTables;
+}
+
 // Validate conditions that check multiple different config options simultaneously
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
+  const tables = flattenTables(config.namespaces);
+
   // Local table variables must be unique within the table
-  for (const table of Object.values(config.tables)) {
+  for (const table of tables) {
     const keySchemaNames = Object.keys(table.keySchema);
     const fieldNames = Object.keys(table.schema);
     const duplicateVariableNames = getDuplicates([...keySchemaNames, ...fieldNames]);
@@ -299,11 +358,21 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
       });
     }
   }
+
+  // Table selectors (namespace + name) must be unique
+  const tableSelectors = tables.map(({ namespace, name }) => `${namespace}:${name}`);
+  const duplicateTableSelectors = getDuplicates(tableSelectors);
+  if (duplicateTableSelectors.length > 0) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Table selectors (namespace:name) must be unique: ${duplicateTableSelectors.join(", ")}`,
+    });
+  }
+
   // Global names must be unique
-  const tableLibraryNames = Object.keys(config.tables);
   const staticUserTypeNames = Object.keys(config.enums);
   const userTypeNames = staticUserTypeNames;
-  const globalNames = [...tableLibraryNames, ...userTypeNames];
+  const globalNames = [...tableSelectors, ...userTypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {
     ctx.addIssue({
@@ -311,17 +380,9 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
       message: `Table library names, enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
     });
   }
-  // Table names used for tableId must be unique
-  const tableNames = Object.values(config.tables).map(({ name }) => name);
-  const duplicateTableNames = getDuplicates(tableNames);
-  if (duplicateTableNames.length > 0) {
-    ctx.addIssue({
-      code: ZodIssueCode.custom,
-      message: `Table names must be unique: ${duplicateTableNames.join(", ")}`,
-    });
-  }
+
   // User types must exist
-  for (const table of Object.values(config.tables)) {
+  for (const table of Object.values(tables)) {
     for (const keySchemaType of Object.values(table.keySchema)) {
       validateStaticAbiOrUserType(staticUserTypeNames, keySchemaType, ctx);
     }

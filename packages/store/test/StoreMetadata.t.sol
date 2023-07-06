@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
-import { StoreMetadata, StoreMetadataData } from "../src/codegen/Tables.sol";
+import { mudstore_StoreMetadata, mudstore_StoreMetadataData } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
@@ -17,11 +17,15 @@ contract StoreMetadataTest is Test, GasReporter, StoreReadWithStubs {
     fieldNames[1] = "secondField";
 
     startGasReport("set record in StoreMetadataTable");
-    StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) });
+    mudstore_StoreMetadata.set({
+      tableId: tableId,
+      tableName: tableName,
+      abiEncodedFieldNames: abi.encode(fieldNames)
+    });
     endGasReport();
 
     startGasReport("get record from StoreMetadataTable");
-    StoreMetadataData memory metadata = StoreMetadata.get(tableId);
+    mudstore_StoreMetadataData memory metadata = mudstore_StoreMetadata.get(tableId);
     endGasReport();
 
     assertEq(metadata.tableName, tableName);

@@ -8,7 +8,7 @@ import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
+import { mudstore_StoreMetadata, mudstore_Hooks, mudstore_HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { Utils } from "./Utils.sol";
@@ -43,16 +43,16 @@ library StoreCore {
     // then their metadata. This is because setMetadata (a store set record)
     // triggers a hook call, which uses getField, which will fail if the schema
     // is not registered yet.
-    Hooks.registerSchema();
-    StoreMetadata.registerSchema();
-    Hooks.setMetadata();
-    StoreMetadata.setMetadata();
+    mudstore_Hooks.registerSchema();
+    mudstore_StoreMetadata.registerSchema();
+    mudstore_Hooks.setMetadata();
+    mudstore_StoreMetadata.setMetadata();
 
     // Set metadata for the schema table
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "valueSchema";
     fieldNames[1] = "keySchema";
-    StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(fieldNames));
+    mudstore_StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(fieldNames));
   }
 
   /************************************************************************
@@ -118,7 +118,7 @@ library StoreCore {
     }
 
     // Set metadata
-    StoreMetadata.set(tableId, tableName, abi.encode(fieldNames));
+    mudstore_StoreMetadata.set(tableId, tableName, abi.encode(fieldNames));
   }
 
   /************************************************************************
@@ -131,7 +131,7 @@ library StoreCore {
    * Register hooks to be called when a record or field is set or deleted
    */
   function registerStoreHook(bytes32 tableId, IStoreHook hook) internal {
-    Hooks.push(tableId, address(hook));
+    mudstore_Hooks.push(tableId, address(hook));
   }
 
   /************************************************************************
@@ -155,7 +155,7 @@ library StoreCore {
     emit StoreSetRecord(tableId, key, data);
 
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetRecord(tableId, key, data);
@@ -205,7 +205,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, data);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
 
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
@@ -232,7 +232,7 @@ library StoreCore {
     emit StoreDeleteRecord(tableId, key);
 
     // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onDeleteRecord(tableId, key);
@@ -267,7 +267,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
@@ -300,7 +300,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
@@ -348,7 +348,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
@@ -384,7 +384,7 @@ library StoreCore {
     emit StoreEphemeralRecord(tableId, key, data);
 
     // Call onSetRecord hooks
-    address[] memory hooks = Hooks.get(tableId);
+    address[] memory hooks = mudstore_Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetRecord(tableId, key, data);

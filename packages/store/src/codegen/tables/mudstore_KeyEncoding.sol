@@ -21,9 +21,9 @@ import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 import { ExampleEnum } from "./../Types.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("KeyEncoding")));
-bytes32 constant KeyEncodingTableId = _tableId;
+bytes32 constant mudstore_KeyEncodingTableId = _tableId;
 
-library KeyEncoding {
+library mudstore_KeyEncoding {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -48,7 +48,7 @@ library KeyEncoding {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("KeyEncoding", _fieldNames);
+    return ("mudstore_KeyEncoding", _fieldNames);
   }
 
   /** Register the table's schema */

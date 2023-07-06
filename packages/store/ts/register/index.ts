@@ -10,4 +10,3 @@ import "./configExtensions";
 import "./typeExtensions";
 
 export { mudConfig } from "./mudConfig";
-export type { ExpandMUDUserConfig } from "./typeExtensions";

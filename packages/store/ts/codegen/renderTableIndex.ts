@@ -4,10 +4,10 @@ import { TableOptions } from "./tableOptions";
 export function renderTableIndex(options: TableOptions[]) {
   return `${renderedSolidityHeader}
 
-${renderList(options, ({ outputPath, tableName, renderOptions: { structName, staticResourceData } }) => {
-  const imports = [tableName];
+${renderList(options, ({ outputPath, selectorName, renderOptions: { structName, staticResourceData } }) => {
+  const imports = [selectorName];
   if (structName) imports.push(structName);
-  if (staticResourceData) imports.push(`${tableName}TableId`);
+  if (staticResourceData) imports.push(`${selectorName}TableId`);
 
   return `import { ${imports.join(", ")} } from "./${posixPath(outputPath)}";`;
 })}

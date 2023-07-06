@@ -15,7 +15,7 @@ import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
+import { mudstore_StoreMetadataData, mudstore_StoreMetadata } from "../src/codegen/Tables.sol";
 import { StoreMock } from "./StoreMock.sol";
 
 struct TestStruct {
@@ -101,7 +101,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setMetadata(table, tableName, fieldNames);
 
     // Get metadata for table
-    StoreMetadataData memory metadata = StoreMetadata.get(table);
+    mudstore_StoreMetadataData memory metadata = mudstore_StoreMetadata.get(table);
 
     assertEq(metadata.tableName, tableName);
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));

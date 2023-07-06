@@ -5,7 +5,6 @@ export const PATH_DEFAULTS = {
 } as const;
 
 export const DEFAULTS = {
-  namespace: "",
   enums: {} as Record<string, never>,
 } as const;
 

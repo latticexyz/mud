@@ -8,21 +8,22 @@ import {
   RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
-import { StoreConfig } from "../config";
+import { flattenTables, StoreConfig } from "../config";
 import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
 
 export interface TableOptions {
   outputPath: string;
-  tableName: string;
+  selectorName: string;
   renderOptions: RenderTableOptions;
 }
 
 export function getTableOptions(config: StoreConfig): TableOptions[] {
   const storeImportPath = config.storeImportPath;
+  const tables = flattenTables(config.namespaces);
 
   const options = [];
-  for (const tableName of Object.keys(config.tables)) {
-    const tableData = config.tables[tableName];
+  for (const tableData of tables) {
+    const selectorName = tableData.namespace === "" ? tableData.name : `${tableData.namespace}_${tableData.name}`;
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
@@ -40,7 +41,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
-      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
+      if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${selectorName}`);
 
       const keyTuple: RenderKeyTuple = {
         ...renderType,
@@ -77,20 +78,20 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         return;
       } else {
         return {
-          tableIdName: tableName + "TableId",
-          namespace: config.namespace,
+          tableIdName: selectorName + "TableId",
+          namespace: tableData.namespace,
           name: tableData.name,
         };
       }
     })();
 
     options.push({
-      outputPath: path.join(tableData.directory, `${tableName}.sol`),
-      tableName,
+      outputPath: path.join(tableData.directory, `${selectorName}.sol`),
+      selectorName,
       renderOptions: {
         imports,
-        libraryName: tableName,
-        structName: withStruct ? tableName + "Data" : undefined,
+        libraryName: selectorName,
+        structName: withStruct ? selectorName + "Data" : undefined,
         staticResourceData,
         storeImportPath,
         keyTuple,
