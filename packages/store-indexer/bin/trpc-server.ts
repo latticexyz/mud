@@ -6,10 +6,15 @@ const env = z
   .object({
     PORT: z.coerce.number().positive().default(3001),
   })
-  .parse(process.env);
+  .parse(process.env, {
+    errorMap: (issue) => ({
+      message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
+    }),
+  });
 
 const server = createHTTPServer({
   router: appRouter,
 });
 
-server.listen(env.PORT);
+const { port } = server.listen(env.PORT);
+console.log(`tRPC listening on http://127.0.0.1:${port}`);

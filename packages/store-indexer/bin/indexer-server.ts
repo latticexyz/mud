@@ -11,6 +11,7 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
+import { createTable, database, getTable } from "../src/fakeDatabase";
 
 export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 
@@ -19,7 +20,11 @@ const env = z
     CHAIN_ID: z.coerce.number().positive(),
     // TODO: database config
   })
-  .parse(process.env);
+  .parse(process.env, {
+    errorMap: (issue) => ({
+      message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
+    }),
+  });
 
 const chain = supportedChains.find((c) => c.id === env.CHAIN_ID);
 if (!chain) {
@@ -33,7 +38,7 @@ const publicClient = createPublicClient({
 });
 
 // TODO: fetch the last updated block from the DB
-const startBlock = 0n;
+const startBlock = 18958033n;
 
 const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
@@ -57,21 +62,27 @@ blockLogs$
   .pipe(
     concatMap(
       blockEventsToStorage({
-        async registerTableSchema({ namespace, name, schema }) {
-          // TODO: insert schema + create DB table
-          console.log("registered schema", `${namespace}:${name}`, schema);
+        async registerTable({ address, namespace, name, keyTuple, value }) {
+          createTable(chain.id, address, {
+            namespace,
+            name,
+            schema: { keyTuple, value },
+            rows: [],
+            lastBlockNumber: startBlock,
+          });
+          console.log("registered schema", `${namespace}:${name}`, keyTuple, value);
         },
-        async registerTableMetadata({ namespace, name, keyNames, valueNames }) {
-          // TODO: ugh this is gonna be a pain
-          console.log("registered metadata", `${namespace}:${name}`, valueNames);
-        },
-        async getTableSchema({ namespace, name }) {
-          // TODO: fetch table schema from DB
-          return undefined;
-        },
-        async getTableMetadata({ namespace, name }) {
-          // TODO: fetch table metadata from DB
-          return undefined;
+        async getTable({ address, namespace, name }) {
+          const table = getTable(chain.id, address, namespace, name);
+          return table
+            ? {
+                address,
+                namespace,
+                name,
+                keyTuple: table.schema.keyTuple,
+                value: table.schema.value,
+              }
+            : undefined;
         },
       })
     ),

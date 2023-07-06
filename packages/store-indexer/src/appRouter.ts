@@ -1,22 +1,6 @@
-import { DynamicAbiType, DynamicPrimitiveType, StaticAbiType, StaticPrimitiveType } from "@latticexyz/schema-type";
 import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
-
-type TableRow = {
-  keyTuple: Record<string, StaticPrimitiveType>;
-  value: Record<string, StaticPrimitiveType | DynamicPrimitiveType>;
-};
-
-type TableResult = {
-  namespace: string;
-  name: string;
-  schema: {
-    keyTuple: Record<string, StaticAbiType>;
-    value: Record<string, StaticAbiType | DynamicAbiType>;
-  };
-  rows: TableRow[];
-  lastBlockNumber: bigint;
-};
+import { Table } from "./fakeDatabase";
 
 const appRouter = router({
   findAll: publicProcedure
@@ -26,7 +10,7 @@ const appRouter = router({
         address: z.string(), // TODO: refine to hex
       })
     )
-    .query(async (opts): Promise<TableResult[]> => {
+    .query(async (opts): Promise<Table[]> => {
       const { chainId, address } = opts.input;
 
       // TODO: fetch these from DB and return

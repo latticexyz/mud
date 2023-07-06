@@ -20,6 +20,7 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
+    "start:combined": "tsx bin/combined-server",
     "start:indexer": "tsx bin/indexer-server",
     "start:trpc": "tsx bin/trpc-server",
     "test": "vitest --run"
