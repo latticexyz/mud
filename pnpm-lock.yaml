@@ -847,12 +847,18 @@ importers:
       '@latticexyz/store-cache':
         specifier: workspace:*
         version: link:../store-cache
+      '@latticexyz/store-indexer':
+        specifier: workspace:*
+        version: link:../store-indexer
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
       '@latticexyz/world':
         specifier: workspace:*
         version: link:../world
+      '@trpc/client':
+        specifier: ^10.34.0
+        version: 10.34.0(@trpc/server@10.34.0)
       abitype:
         specifier: 0.8.7
         version: 0.8.7(typescript@4.9.5)(zod@3.21.4)
@@ -868,6 +874,9 @@ importers:
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
+      superjson:
+        specifier: ^1.12.4
+        version: 1.12.4
       viem:
         specifier: 1.1.7
         version: 1.1.7(typescript@4.9.5)
@@ -3297,8 +3306,20 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
+  /@trpc/client@10.34.0(@trpc/server@10.34.0):
+    resolution: {integrity: sha512-nqtDTIqSY/9syo2EjSy4WWWXPU9GsamEh9Tsg698gLAh1nhgFc5+/YYeb+Ne1pbvWGZ5/3t9Dcz3h4wMyyJ9gQ==}
+    peerDependencies:
+      '@trpc/server': 10.34.0
+    dependencies:
+      '@trpc/server': 10.34.0
+    dev: false
+
   /@trpc/server@10.33.1:
     resolution: {integrity: sha512-ObMzyEALXhQ7QTVQdSJ+IL1wYB7UdLLoIhqHraYzqKb9sTTsL3+U64kK084KPsRd4b8R3yH/bzBOnCn8Hbrxkw==}
+    dev: false
+
+  /@trpc/server@10.34.0:
+    resolution: {integrity: sha512-2VMW44Fpaoyqb50dBtzdSWMhqt8lmoJiocEyBBeDb03R0W+XrzbVD5kU/wqKPlcp1DWeNCkOEIMtetMZCfo1hA==}
     dev: false
 
   /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5):

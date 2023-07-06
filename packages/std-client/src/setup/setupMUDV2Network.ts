@@ -26,6 +26,9 @@ import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
 import { StoreConfig } from "@latticexyz/store";
+import superjson from "superjson";
+import { createTRPCProxyClient } from "@trpc/client";
+import type { AppRouter } from "@latticexyz/store-indexer";
 
 type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfig> = {
   networkConfig: SetupContractConfig;
@@ -50,6 +53,10 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   syncStoreCache = true,
   worldAbi = IWorldKernel__factory.abi,
 }: SetupMUDV2NetworkOptions<C, S>) {
+  const client = createTRPCProxyClient<AppRouter>({
+    transformer: superjson,
+  });
+
   devObservables.worldAbi$.next(worldAbi);
 
   const SystemsRegistry = defineStringComponent(world, {

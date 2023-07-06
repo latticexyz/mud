@@ -18,7 +18,7 @@ type TableResult = {
   lastBlockNumber: bigint;
 };
 
-export const appRouter = router({
+const appRouter = router({
   findAll: publicProcedure
     .input(
       z.object({
