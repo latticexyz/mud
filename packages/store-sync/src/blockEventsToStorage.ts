@@ -1,10 +1,9 @@
 import {
-  TableSchema,
   decodeField,
   decodeKeyTuple,
   decodeRecord,
   hexToTableSchema,
-  schemaIndexToAbiType,
+  abiTypesToSchema,
 } from "@latticexyz/protocol-parser";
 import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
@@ -14,6 +13,7 @@ import { debug } from "./debug";
 // TODO: move these type helpers into store?
 import { Key, Value } from "@latticexyz/store-cache";
 import { isDefined } from "@latticexyz/common/utils";
+import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event
 
@@ -25,17 +25,13 @@ export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockEvents = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
-export type StoredTableSchema = {
+export type StoredTable = {
   namespace: string;
   name: string;
-  schema: TableSchema;
-};
-
-export type StoredTableMetadata = {
-  namespace: string;
-  name: string;
-  keyNames: readonly string[];
-  valueNames: readonly string[];
+  // TODO: replace with named key tuples once we have on chain key tuple names
+  // keyTuple: Record<string,StaticAbiType>;
+  keyTuple: readonly StaticAbiType[];
+  value: Record<string, SchemaAbiType>;
 };
 
 export type BaseStorageOperation = {
@@ -83,27 +79,21 @@ export type StorageOperation<TConfig extends StoreConfig> =
   | DeleteRecordOperation<TConfig>;
 
 export type BlockEventsToStorageOptions = {
-  registerTableSchema: (data: StoredTableSchema) => Promise<void>;
-  registerTableMetadata: (data: StoredTableMetadata) => Promise<void>;
-  getTableSchema: (opts: Pick<StoredTableSchema, "namespace" | "name">) => Promise<StoredTableSchema | undefined>;
-  getTableMetadata: (opts: Pick<StoredTableMetadata, "namespace" | "name">) => Promise<StoredTableMetadata | undefined>;
+  registerTable: (data: StoredTable) => Promise<void>;
+  getTable: (opts: Pick<StoredTable, "namespace" | "name">) => Promise<StoredTable | undefined>;
 };
 
 export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>({
-  registerTableMetadata,
-  registerTableSchema,
-  getTableMetadata,
-  getTableSchema,
+  registerTable,
+  getTable,
 }: BlockEventsToStorageOptions): (block: BlockEvents) => Promise<{
   blockNumber: BlockEvents["blockNumber"];
   blockHash: BlockEvents["blockHash"];
   operations: StorageOperation<TConfig>[];
 }> {
   return async (block) => {
-    // Find and register all new table schemas
-    // Store schemas are immutable, so we can parallelize this
-    await Promise.all(
-      block.logs.map(async (log) => {
+    const newSchemas = block.logs
+      .map((log) => {
         if (log.eventName !== "StoreSetRecord") return;
         if (log.args.table !== schemaTableId.toHex()) return;
 
@@ -115,21 +105,14 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         const tableId = TableId.fromHex(tableForSchema);
         const schema = hexToTableSchema(log.args.data);
 
-        await registerTableSchema({ ...tableId, schema });
+        return { tableId, schema };
       })
-    );
+      .filter(isDefined);
 
-    const metadataTableSchema = await getTableSchema(metadataTableId);
-    if (!metadataTableSchema) {
-      // TODO: better error
-      throw new Error("metadata table schema was not registered");
-    }
-
-    // Find and register all new table metadata
-    // Table metadata is technically mutable, but all of our code assumes its immutable, so we'll continue that trend
+    // Then find all metadata events. These should follow schema registration events and be in the same block (since they're in the same tx).
     // TODO: rework contracts so schemas+tables are combined and immutable
-    await Promise.all(
-      block.logs.map(async (log) => {
+    const newMetadata = block.logs
+      .map((log) => {
         if (log.eventName !== "StoreSetRecord") return;
         if (log.args.table !== metadataTableId.toHex()) return;
 
@@ -139,47 +122,89 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         }
 
         const tableId = TableId.fromHex(tableForSchema);
-        const [tableName, abiEncodedFieldNames] = decodeRecord(metadataTableSchema.schema.valueSchema, log.args.data);
+        const [tableName, abiEncodedFieldNames] = decodeRecord(
+          // TODO: this is hardcoded for now while metadata is separate from table registration
+          { staticFields: [], dynamicFields: ["string", "bytes"] },
+          log.args.data
+        );
         const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
 
         // TODO: add key names to table registration when we refactor it
-        await registerTableMetadata({ ...tableId, keyNames: [], valueNames });
+        return { tableId, keyNames: [], valueNames };
+      })
+      .filter(isDefined);
+
+    const newTableIds = Array.from(
+      new Set([
+        ...newSchemas.map(({ tableId }) => tableId.toHex()),
+        ...newMetadata.map(({ tableId }) => tableId.toHex()),
+      ])
+    ).map((tableHex) => TableId.fromHex(tableHex));
+
+    // register tables in parallel
+    await Promise.all(
+      newTableIds.map(async (tableId) => {
+        const schema = newSchemas.find(({ tableId: schemaTableId }) => schemaTableId.toHex() === tableId.toHex());
+        const metadata = newMetadata.find(
+          ({ tableId: metadataTableId }) => metadataTableId.toHex() === tableId.toHex()
+        );
+        if (!schema) {
+          debug(`no schema registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`);
+          return;
+        }
+        if (!metadata) {
+          debug(
+            `no metadata registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`
+          );
+          return;
+        }
+
+        const valueAbiTypes = [...schema.schema.valueSchema.staticFields, ...schema.schema.valueSchema.dynamicFields];
+
+        const table: StoredTable = {
+          namespace: schema.tableId.namespace,
+          name: schema.tableId.name,
+          keyTuple: schema.schema.keySchema.staticFields,
+          value: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
+        };
+
+        await registerTable(table);
       })
     );
 
-    const tables = Array.from(new Set(block.logs.map((log) => log.args.table))).map((tableHex) =>
+    // TODO: create some WeakMap cache for tables so we only have to fetch once
+
+    const tableIds = Array.from(new Set(block.logs.map((log) => log.args.table))).map((tableHex) =>
       TableId.fromHex(tableHex)
     );
     // TODO: combine these once we refactor table registration
-    const tableSchemas = Object.fromEntries(
-      await Promise.all(tables.map(async (table) => [table.toHex(), await getTableSchema(table)]))
-    ) as Record<Hex, StoredTableSchema>;
-    const tableMetadatas = Object.fromEntries(
-      await Promise.all(tables.map(async (table) => [table.toHex(), await getTableMetadata(table)]))
-    ) as Record<Hex, StoredTableMetadata>;
+    const tables = Object.fromEntries(
+      await Promise.all(tableIds.map(async (tableId) => [tableId.toHex(), await getTable(tableId)]))
+    ) as Record<Hex, StoredTable>;
 
     const operations = block.logs
       .map((log): StorageOperation<TConfig> | undefined => {
         const tableId = TableId.fromHex(log.args.table);
-        const tableSchema = tableSchemas[log.args.table];
-        const tableMetadata = tableMetadatas[log.args.table];
-        if (!tableSchema) {
-          debug("no table schema found for event, skipping", tableId.toString(), log);
-          return;
-        }
-        if (!tableMetadata) {
-          debug("no table metadata found for event, skipping", tableId.toString(), log);
+        const table = tables[log.args.table];
+        if (!table) {
+          debug("no table found for event, skipping", tableId.toString(), log);
           return;
         }
 
-        const keyTupleValues = decodeKeyTuple(tableSchema.schema.keySchema, log.args.key);
-        const keyTuple = Object.fromEntries(
-          keyTupleValues.map((value, i) => [tableMetadata.keyNames[i] ?? i, value])
-        ) as Key<TConfig, keyof TConfig["tables"]>;
+        const keyTupleValues = decodeKeyTuple({ staticFields: table.keyTuple, dynamicFields: [] }, log.args.key);
+        // TODO: add key names once we register them on chain
+        const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [i, value])) as Key<
+          TConfig,
+          keyof TConfig["tables"]
+        >;
+
+        const valueAbiTypes = Object.values(table.value);
+        const valueSchema = abiTypesToSchema(valueAbiTypes);
+        const valueNames = Object.keys(table.value);
 
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
-          const values = decodeRecord(tableSchema.schema.valueSchema, log.args.data);
-          const record = Object.fromEntries(tableMetadata.valueNames.map((name, i) => [name, values[i]])) as Value<
+          const values = decodeRecord(valueSchema, log.args.data);
+          const record = Object.fromEntries(valueNames.map((name, i) => [name, values[i]])) as Value<
             TConfig,
             keyof TConfig["tables"]
           >;
@@ -195,12 +220,11 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         }
 
         if (log.eventName === "StoreSetField") {
-          const valueName = tableMetadata.valueNames[log.args.schemaIndex] as string &
-            keyof Value<TConfig, keyof TConfig["tables"]>;
-          const value = decodeField(
-            schemaIndexToAbiType(tableSchema.schema.valueSchema, log.args.schemaIndex),
-            log.args.data
-          ) as Value<TConfig, keyof TConfig["tables"]>[typeof valueName];
+          const valueName = valueNames[log.args.schemaIndex] as string & keyof Value<TConfig, keyof TConfig["tables"]>;
+          const value = decodeField(valueAbiTypes[log.args.schemaIndex], log.args.data) as Value<
+            TConfig,
+            keyof TConfig["tables"]
+          >[typeof valueName];
           return {
             log,
             type: "SetField",

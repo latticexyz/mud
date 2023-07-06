@@ -3,21 +3,13 @@ import { BlockEventsToStorageOptions, blockEventsToStorage } from "./blockEvents
 import storeConfig from "@latticexyz/store/mud.config";
 
 const mockedCallbacks = {
-  registerTableSchema: vi.fn<
-    Parameters<BlockEventsToStorageOptions["registerTableSchema"]>,
-    ReturnType<BlockEventsToStorageOptions["registerTableSchema"]>
+  registerTable: vi.fn<
+    Parameters<BlockEventsToStorageOptions["registerTable"]>,
+    ReturnType<BlockEventsToStorageOptions["registerTable"]>
   >(),
-  registerTableMetadata: vi.fn<
-    Parameters<BlockEventsToStorageOptions["registerTableMetadata"]>,
-    ReturnType<BlockEventsToStorageOptions["registerTableMetadata"]>
-  >(),
-  getTableSchema: vi.fn<
-    Parameters<BlockEventsToStorageOptions["getTableSchema"]>,
-    ReturnType<BlockEventsToStorageOptions["getTableSchema"]>
-  >(),
-  getTableMetadata: vi.fn<
-    Parameters<BlockEventsToStorageOptions["getTableMetadata"]>,
-    ReturnType<BlockEventsToStorageOptions["getTableMetadata"]>
+  getTable: vi.fn<
+    Parameters<BlockEventsToStorageOptions["getTable"]>,
+    ReturnType<BlockEventsToStorageOptions["getTable"]>
   >(),
 };
 
@@ -29,49 +21,15 @@ describe("blockEventsToStorage", () => {
   });
 
   it("call setField with data properly decoded", async () => {
-    mockedCallbacks.getTableSchema.mockImplementation(async ({ namespace, name }) => {
-      if (namespace === "mudstore" && name === "StoreMetadata") {
-        return {
-          namespace: "mudstore",
-          name: "StoreMetadata",
-          schema: {
-            keySchema: {
-              staticFields: ["bytes32"],
-              dynamicFields: [],
-            },
-            valueSchema: {
-              staticFields: [],
-              dynamicFields: ["string", "bytes"],
-            },
-          },
-        };
-      }
-
+    mockedCallbacks.getTable.mockImplementation(async ({ namespace, name }) => {
       if (namespace === "" && name === "Inventory") {
         return {
           namespace: "",
           name: "Inventory",
-          schema: {
-            keySchema: {
-              staticFields: ["address", "uint32", "uint32"],
-              dynamicFields: [],
-            },
-            valueSchema: {
-              staticFields: ["uint32"],
-              dynamicFields: [],
-            },
+          keyTuple: ["address", "uint32", "uint32"],
+          value: {
+            amount: "uint32",
           },
-        };
-      }
-    });
-
-    mockedCallbacks.getTableMetadata.mockImplementation(async ({ namespace, name }) => {
-      if (namespace === "" && name === "Inventory") {
-        return {
-          namespace: "",
-          name: "Inventory",
-          keyNames: ["owner", "item", "itemVariant"],
-          valueNames: ["amount"],
         };
       }
     });
@@ -112,9 +70,9 @@ describe("blockEventsToStorage", () => {
         "operations": [
           {
             "keyTuple": {
-              "item": 1,
-              "itemVariant": 1,
-              "owner": "0x796eb990A3F9C431C69149c7a168b91596D87F60",
+              "0": "0x796eb990A3F9C431C69149c7a168b91596D87F60",
+              "1": 1,
+              "2": 1,
             },
             "log": {
               "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
