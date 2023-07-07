@@ -12,14 +12,14 @@ import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
 import { createTable, database, getTable } from "../src/fakeDatabase";
-import { TableId } from "@latticexyz/common";
 
 export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 
 const env = z
   .object({
     CHAIN_ID: z.coerce.number().positive(),
-    START_BLOCK: z.coerce.bigint().positive(),
+    START_BLOCK: z.coerce.bigint().positive().default(0n),
+    MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     // TODO: database config
   })
   .parse(process.env, {
@@ -55,6 +55,7 @@ const blockLogs$ = latestBlockNumber$.pipe(
   blockRangeToLogs({
     publicClient,
     events: storeEventsAbi,
+    maxBlockRange: env.MAX_BLOCK_RANGE,
   }),
   tap(({ logs }) => {
     console.log("logs", logs.length);
