@@ -18,7 +18,7 @@ export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 const env = z
   .object({
     CHAIN_ID: z.coerce.number().positive(),
-    START_BLOCK: z.coerce.bigint().positive().default(0n),
+    START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     // TODO: database config
   })
