@@ -17,7 +17,19 @@ export async function fetchStoreEvents(
   const topicSets = eventNames.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
 
   const logSets = await Promise.all(
-    topicSets.map((topics) => store.provider.getLogs({ address: store.address, topics, fromBlock, toBlock }))
+    topicSets.map(async function getLogRange(topics) {
+      const errors: any[] = [];
+      for (let retries = 3; retries > 0; retries--) {
+        try {
+          const logs = await store.provider.getLogs({ address: store.address, topics, fromBlock, toBlock });
+          return logs;
+        } catch (error) {
+          errors.push(error);
+          console.log("store getLogs failure, trying again", error);
+        }
+      }
+      throw errors[errors.length - 1];
+    })
   );
 
   const logs = orderBy(
