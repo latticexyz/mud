@@ -55,7 +55,9 @@ export const createTable = (chainId: ChainId, address: Address, table: Table): v
   }
 
   if (tables.has(tableId)) {
-    throw new Error(`Table ${tableId} already exists`);
+    // throw new Error(`Table ${tableId} already exists`);
+    console.warn(`Table ${tableId} already exists, skipping`);
+    return;
   }
 
   tables.set(tableId, table);

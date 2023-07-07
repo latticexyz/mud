@@ -12,6 +12,7 @@ import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
 import { createTable, database, getTable } from "../src/fakeDatabase";
+import { TableId } from "@latticexyz/common";
 
 export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 
@@ -55,8 +56,14 @@ const blockLogs$ = latestBlockNumber$.pipe(
     publicClient,
     events: storeEventsAbi,
   }),
-  mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs))),
-  tap((blockLogs) => console.log("block logs", blockLogs))
+  tap(({ logs }) => {
+    console.log("logs", logs.length);
+    logs.forEach((log) => {
+      // console.log("table", log.blockNumber, TableId.fromHex(log.args.table));
+    });
+  }),
+  mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
+  // tap((blockLogs) => console.log("block logs", blockLogs))
 );
 
 blockLogs$
@@ -108,14 +115,14 @@ blockLogs$
               value: operation.record,
             },
           ];
-          console.log("stored record", operation);
+          // console.log("stored record", operation);
         } else if (operation.type === "SetField") {
           let row = table.rows.find((row) => row.keyTuple.join(":") === keyTuple.join(":"));
           if (!row) {
-            console.log(`row ${keyTuple.join(":")} not found for set field, creating an empty row`);
+            // console.log(`row ${keyTuple.join(":")} not found for set field, creating an empty row`);
             row = {
               keyTuple: Object.values(operation.keyTuple),
-              value: {},
+              value: {}, // TODO: fill with default values
             };
             table.rows = [...table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":")), row];
           }
@@ -124,11 +131,11 @@ blockLogs$
             ...row.value,
             [operation.valueName]: operation.value,
           };
-          console.log("stored field", operation);
+          // console.log("stored field", operation);
         } else if (operation.type === "DeleteRecord") {
           table.lastBlockNumber = blockNumber;
           table.rows = table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":"));
-          console.log("deleted record", operation);
+          // console.log("deleted record", operation);
         }
       }
     })

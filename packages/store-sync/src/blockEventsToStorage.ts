@@ -4,6 +4,7 @@ import {
   decodeRecord,
   hexToTableSchema,
   abiTypesToSchema,
+  TableSchema,
 } from "@latticexyz/protocol-parser";
 import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
@@ -84,6 +85,18 @@ export type BlockEventsToStorageOptions = {
   getTable: (opts: Pick<StoredTable, "address" | "namespace" | "name">) => Promise<StoredTable | undefined>;
 };
 
+type TableNamespace = string;
+type TableName = string;
+type TableKey = `${Address}:${TableNamespace}:${TableName}`;
+
+// hacky fix for schema registration + metadata events spanning multiple blocks
+// TODO: remove this once schema registration+metadata is one event or tx
+const visitedSchemas = new Map<TableKey, { address: Address; tableId: TableId; schema: TableSchema }>();
+const visitedMetadata = new Map<
+  TableKey,
+  { address: Address; tableId: TableId; keyNames: readonly string[]; valueNames: readonly string[] }
+>();
+
 export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>({
   registerTable,
   getTable,
@@ -93,66 +106,67 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
   operations: StorageOperation<TConfig>[];
 }> {
   return async (block) => {
-    const newSchemas = block.logs
-      .map((log) => {
-        if (log.eventName !== "StoreSetRecord") return;
-        if (log.args.table !== schemaTableId.toHex()) return;
+    const newTableKeys = new Set<TableKey>();
 
-        const [tableForSchema, ...otherKeys] = log.args.key;
-        if (otherKeys.length) {
-          debug("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
-        }
+    block.logs.forEach((log) => {
+      if (log.eventName !== "StoreSetRecord") return;
+      if (log.args.table !== schemaTableId.toHex()) return;
 
-        const tableId = TableId.fromHex(tableForSchema);
-        const schema = hexToTableSchema(log.args.data);
+      const [tableForSchema, ...otherKeys] = log.args.key;
+      if (otherKeys.length) {
+        debug("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
+      }
 
-        return { address: log.address, tableId, schema };
-      })
-      .filter(isDefined);
+      const tableId = TableId.fromHex(tableForSchema);
+      const schema = hexToTableSchema(log.args.data);
+
+      const key: TableKey = `${log.address}:${tableId.namespace}:${tableId.name}`;
+      if (!visitedSchemas.has(key)) {
+        visitedSchemas.set(key, { address: log.address, tableId, schema });
+        newTableKeys.add(key);
+      }
+    });
 
     // Then find all metadata events. These should follow schema registration events and be in the same block (since they're in the same tx).
     // TODO: rework contracts so schemas+tables are combined and immutable
-    const newMetadata = block.logs
-      .map((log) => {
-        if (log.eventName !== "StoreSetRecord") return;
-        if (log.args.table !== metadataTableId.toHex()) return;
+    block.logs.forEach((log) => {
+      if (log.eventName !== "StoreSetRecord") return;
+      if (log.args.table !== metadataTableId.toHex()) return;
 
-        const [tableForSchema, ...otherKeys] = log.args.key;
-        if (otherKeys.length) {
-          debug("setMetadata event is expected to have only one key in key tuple, but got multiple", log);
-        }
+      const [tableForSchema, ...otherKeys] = log.args.key;
+      if (otherKeys.length) {
+        debug("setMetadata event is expected to have only one key in key tuple, but got multiple", log);
+      }
 
-        const tableId = TableId.fromHex(tableForSchema);
-        const [tableName, abiEncodedFieldNames] = decodeRecord(
-          // TODO: this is hardcoded for now while metadata is separate from table registration
-          { staticFields: [], dynamicFields: ["string", "bytes"] },
-          log.args.data
-        );
-        const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
+      const tableId = TableId.fromHex(tableForSchema);
+      const [tableName, abiEncodedFieldNames] = decodeRecord(
+        // TODO: this is hardcoded for now while metadata is separate from table registration
+        { staticFields: [], dynamicFields: ["string", "bytes"] },
+        log.args.data
+      );
+      const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
+      // TODO: add key names to table registration when we refactor it
 
-        // TODO: add key names to table registration when we refactor it
-        return { address: log.address, tableId, keyNames: [], valueNames };
-      })
-      .filter(isDefined);
+      const key: TableKey = `${log.address}:${tableId.namespace}:${tableName}`;
+      if (!visitedMetadata.has(key)) {
+        visitedMetadata.set(key, { address: log.address, tableId, keyNames: [], valueNames });
+        newTableKeys.add(key);
+      }
+    });
 
-    const newTableIds = Array.from(
-      new Set([
-        ...newSchemas.map(({ address, tableId }) => `${address}:${tableId.toHex()}`),
-        ...newMetadata.map(({ address, tableId }) => `${address}:${tableId.toHex()}`),
-      ])
-    ).map((addressAndTableHex) => {
-      const [address, tableHex] = addressAndTableHex.split(":") as Hex[];
-      return { address, tableId: TableId.fromHex(tableHex) };
+    const newTableIds = Array.from(newTableKeys).map((tableKey) => {
+      const [address, namespace, name] = tableKey.split(":");
+      return { address: address as Hex, tableId: new TableId(namespace, name) };
     });
 
     // register tables in parallel
     await Promise.all(
       newTableIds.map(async ({ address, tableId }) => {
-        const schema = newSchemas.find(
+        const schema = Array.from(visitedSchemas.values()).find(
           ({ address: schemaAddress, tableId: schemaTableId }) =>
             schemaAddress === address && schemaTableId.toHex() === tableId.toHex()
         );
-        const metadata = newMetadata.find(
+        const metadata = Array.from(visitedMetadata.values()).find(
           ({ address: metadataAddress, tableId: metadataTableId }) =>
             metadataAddress === address && metadataTableId.toHex() === tableId.toHex()
         );
@@ -180,8 +194,6 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         await registerTable(table);
       })
     );
-
-    // TODO: create some WeakMap cache for tables so we only have to fetch once
 
     const tableIds = Array.from(
       new Set(
