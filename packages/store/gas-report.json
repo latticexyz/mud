@@ -117,7 +117,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 112166
+    "gasUsed": 112160
   },
   {
     "file": "test/Mixed.t.sol",
@@ -333,25 +333,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromSecondField",
     "name": "pop from field (cold, 1 slot, 1 uint32 item)",
-    "gasUsed": 29291
+    "gasUsed": 29285
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromSecondField",
     "name": "pop from field (warm, 1 slot, 1 uint32 item)",
-    "gasUsed": 19346
+    "gasUsed": 19340
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (cold, 2 slots, 10 uint32 items)",
-    "gasUsed": 31174
+    "gasUsed": 31168
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (warm, 2 slots, 10 uint32 items)",
-    "gasUsed": 19229
+    "gasUsed": 19223
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -615,7 +615,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "set record in StoreMetadataTable",
-    "gasUsed": 250181
+    "gasUsed": 250175
   },
   {
     "file": "test/StoreMetadata.t.sol",
@@ -639,7 +639,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "set field in Callbacks",
-    "gasUsed": 63203
+    "gasUsed": 63197
   },
   {
     "file": "test/tables/Callbacks.t.sol",
@@ -651,7 +651,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "push field to Callbacks",
-    "gasUsed": 40890
+    "gasUsed": 40884
   },
   {
     "file": "test/tables/Hooks.t.sol",
@@ -735,7 +735,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "set Vector2 record",
-    "gasUsed": 38660
+    "gasUsed": 38654
   },
   {
     "file": "test/Vector2.t.sol",
