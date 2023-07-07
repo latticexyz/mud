@@ -20,7 +20,7 @@ import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
 
 import { Systems } from "./tables/Systems.sol";
-import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
+import { FuncSelectors } from "./tables/FuncSelectors.sol";
 import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
@@ -69,8 +69,8 @@ contract CoreModule is IModule, WorldContext {
     Systems.registerSchema();
     Systems.setMetadata();
 
-    FunctionSelectors.registerSchema();
-    FunctionSelectors.setMetadata();
+    FuncSelectors.registerSchema();
+    FuncSelectors.setMetadata();
 
     SystemHooks.registerSchema();
     SystemHooks.setMetadata();

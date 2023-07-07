@@ -10,7 +10,7 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
-import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/codegen/Tables.sol";
+import { mudstore_StoreMetadataData, mudstore_StoreMetadata } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
@@ -265,13 +265,13 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the metadata to be set
-    StoreMetadataData memory metadata = StoreMetadata.get(world, tableId);
+    mudstore_StoreMetadataData memory metadata = mudstore_StoreMetadata.get(world, tableId);
     assertEq(metadata.tableName, tableName);
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect it to be possible to change metadata
     world.setMetadata(namespace, name, "newTableName", fieldNames);
-    metadata = StoreMetadata.get(world, tableId);
+    metadata = mudstore_StoreMetadata.get(world, tableId);
     assertEq(metadata.tableName, "newTableName");
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 

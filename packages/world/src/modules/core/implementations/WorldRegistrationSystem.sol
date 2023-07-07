@@ -19,7 +19,7 @@ import { ResourceType } from "../tables/ResourceType.sol";
 import { SystemHooks } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { FuncSelectors } from "../tables/FuncSelectors.sol";
 
 /**
  * Functions related to registering resources in the World.
@@ -202,8 +202,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     );
 
     // Require the function selector to be globally unique
-    bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
-    bytes16 existingName = FunctionSelectors.getName(worldFunctionSelector);
+    bytes16 existingNamespace = FuncSelectors.getNamespace(worldFunctionSelector);
+    bytes16 existingName = FuncSelectors.getName(worldFunctionSelector);
 
     if (existingNamespace != 0 || existingName != 0) revert FunctionSelectorExists(worldFunctionSelector);
 
@@ -212,7 +212,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
       ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
       : bytes4(keccak256(systemFunctionSignature));
-    FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
+    FuncSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
   }
 
   /**
@@ -232,13 +232,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_NAME, _msgSender());
 
     // Require the function selector to be globally unique
-    bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
-    bytes16 existingName = FunctionSelectors.getName(worldFunctionSelector);
+    bytes16 existingNamespace = FuncSelectors.getNamespace(worldFunctionSelector);
+    bytes16 existingName = FuncSelectors.getName(worldFunctionSelector);
 
     if (!(existingNamespace == 0 && existingName == 0)) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
+    FuncSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
 
     return worldFunctionSelector;
   }

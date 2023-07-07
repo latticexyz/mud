@@ -1,5 +1,11 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
-import { WorldConfig, WorldNamespacedUserConfig, WorldUserConfig, WORLD_DEFAULTS } from "../library";
+import {
+  ExpandWorldNamespacedConfig,
+  WorldConfig,
+  WorldNamespacedConfig,
+  WorldUserConfig,
+  WORLD_DEFAULTS,
+} from "../library";
 
 import "@latticexyz/store/register";
 
@@ -10,13 +16,13 @@ declare module "@latticexyz/config" {
   // Extend the user config type, which represents the config as written by the users.
   // Most things are optional here.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface MUDCoreUserConfig extends WorldUserConfig {}
+  export interface MUDCoreUserConfig extends Omit<WorldUserConfig, "namespaces"> {}
 
   // Also extend the config type, which represents the configuration after it has been resolved.
   // It should not have any optional properties, with the default values applied instead.
   // Other plugins may receive this resolved config as their input.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface MUDCoreConfig extends WorldConfig {}
+  export interface MUDCoreConfig extends Omit<WorldConfig, "namespaces"> {}
 
   // Finally extend the config expander type, which resolves the user type, using defaults where necessary.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -38,5 +44,9 @@ declare module "@latticexyz/config" {
 
 declare module "@latticexyz/store" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface NamespacedConfig extends WorldNamespacedUserConfig {}
+  export interface NamespacedConfig extends WorldNamespacedConfig {}
+
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/no-unused-vars
+  export interface ExpandNamespacedConfig<T extends NamespacedConfig<string, string>, Namespace extends string>
+    extends ExpandWorldNamespacedConfig<T> {}
 }

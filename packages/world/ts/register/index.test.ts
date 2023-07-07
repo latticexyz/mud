@@ -6,19 +6,23 @@ test("resolveWorldConfig requires unique table and system names", () => {
   expect(() =>
     resolveWorldConfig(
       mudConfig({
-        tables: {
-          Selector: {
-            schema: "uint256",
-          },
-        },
-        systems: {
-          Selector: {
-            openAccess: false,
-            accessList: [],
+        namespaces: {
+          "": {
+            tables: {
+              Selector: {
+                schema: "uint256",
+              },
+            },
+            systems: {
+              Selector: {
+                openAccess: false,
+                accessList: [],
+              },
+            },
           },
         },
       }),
       ["Selector"]
     )
-  ).toThrowError("Table and system names must be unique: Selector");
+  ).toThrowError(`Table and system selectors must be unique: ":Selector"`);
 });

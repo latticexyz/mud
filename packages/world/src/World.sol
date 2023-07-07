@@ -21,7 +21,7 @@ import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+import { FuncSelectors } from "./modules/core/tables/FuncSelectors.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
@@ -320,7 +320,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Fallback function to call registered function selectors
    */
   fallback() external payable {
-    (bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
+    (bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) = FuncSelectors.get(msg.sig);
 
     if (namespace == 0 && name == 0) revert FunctionSelectorNotFound(msg.sig);
 

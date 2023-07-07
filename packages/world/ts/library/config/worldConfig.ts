@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { DynamicResolutionType, zEthereumAddress, zObjectName, zSelector } from "@latticexyz/config";
-import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
+import { NAMESPACED_DEFAULTS, SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
 
 const zSystemName = zObjectName;
 const zModuleName = zObjectName;
@@ -35,12 +35,9 @@ const zModuleConfig = z.object({
   args: z.array(z.union([zValueWithType, zDynamicResolution])).default([]),
 });
 
-// The parsed world config is the result of parsing the user config
-export const zWorldConfig = z.object({
+const zWorldGeneralConfig = z.object({
   worldContractName: z.string().optional(),
   worldInterfaceName: z.string().default(WORLD_DEFAULTS.worldInterfaceName),
-  systems: z.record(zSystemName, zSystemConfig).default(WORLD_DEFAULTS.systems),
-  excludeSystems: z.array(zSystemName).default(WORLD_DEFAULTS.excludeSystems),
   postDeployScript: z.string().default(WORLD_DEFAULTS.postDeployScript),
   deploysDirectory: z.string().default(WORLD_DEFAULTS.deploysDirectory),
   worldsFile: z.string().default(WORLD_DEFAULTS.worldsFile),
@@ -49,5 +46,23 @@ export const zWorldConfig = z.object({
   modules: z.array(zModuleConfig).default(WORLD_DEFAULTS.modules),
 });
 
-// Catchall preserves other plugins' options
-export const zPluginWorldConfig = zWorldConfig.catchall(z.any());
+const zWorldNamespacedConfig = z.object({
+  systems: z.record(zSystemName, zSystemConfig).default(NAMESPACED_DEFAULTS.systems),
+  excludeSystems: z.array(zSystemName).default(NAMESPACED_DEFAULTS.excludeSystems),
+});
+
+// The expanded user config
+export const zWorldConfig = zWorldGeneralConfig.merge(
+  z.object({
+    namespaces: z.record(zSelector, zWorldNamespacedConfig),
+  })
+);
+
+// Passthrough preserves other plugins' options
+export const zPluginWorldConfig = zWorldGeneralConfig
+  .merge(
+    z.object({
+      namespaces: z.record(zSelector, zWorldNamespacedConfig.passthrough()),
+    })
+  )
+  .passthrough();

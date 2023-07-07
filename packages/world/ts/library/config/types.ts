@@ -2,7 +2,7 @@ import { z } from "zod";
 import { DynamicResolution, ValueWithType } from "@latticexyz/config";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
-import { SYSTEM_DEFAULTS } from "./defaults";
+import { SYSTEM_DEFAULTS, NAMESPACED_DEFAULTS } from "./defaults";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
@@ -26,22 +26,9 @@ export type SystemUserConfig =
           /** If openAccess is false, only the addresses or systems in `access` can call the system */
           openAccess: false;
           /** An array of addresses or system names that can access the system */
-          accessList: string[];
+          accessList?: string[];
         }
     );
-
-export interface WorldNamespacedUserConfig {
-  /**
-   * Contracts named *System will be deployed by default
-   * as public systems at `namespace/ContractName`, unless overridden
-   *
-   * The key is the system name (capitalized).
-   * The value is a SystemConfig object.
-   */
-  systems?: SystemsUserConfig;
-  /** Systems to exclude from automatic deployment */
-  excludeSystems?: string[];
-}
 
 export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName extends string>
   extends OrDefaults<
@@ -55,11 +42,33 @@ export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName exten
   accessList: T extends { accessList: string[] } ? T["accessList"] : typeof SYSTEM_DEFAULTS.accessList;
 }
 
-export type SystemsUserConfig = Record<string, SystemUserConfig>;
+type SystemsUserConfig = Record<string, SystemUserConfig>;
 
-export type ExpandSystemsConfig<T extends SystemsUserConfig> = {
+type ExpandSystemsConfig<T extends SystemsUserConfig> = {
   [SystemName in keyof T]: ExpandSystemConfig<T[SystemName], SystemName extends string ? SystemName : never>;
 };
+
+export interface WorldNamespacedConfig {
+  /**
+   * Contracts named *System will be deployed by default
+   * as public systems at `namespace/ContractName`, unless overridden
+   *
+   * The key is the system name (capitalized).
+   * The value is a SystemConfig object.
+   */
+  systems?: SystemsUserConfig;
+  /** Systems to exclude from automatic deployment */
+  excludeSystems?: string[];
+}
+
+export interface ExpandWorldNamespacedConfig<T extends WorldNamespacedConfig> {
+  systems: T["systems"] extends SystemsUserConfig
+    ? ExpandSystemsConfig<T["systems"]>
+    : typeof NAMESPACED_DEFAULTS.systems;
+  excludeSystems: T["excludeSystems"] extends string[]
+    ? T["excludeSystems"]
+    : typeof NAMESPACED_DEFAULTS.excludeSystems;
+}
 
 export type ModuleConfig = {
   /** The name of the module */
@@ -73,7 +82,7 @@ export type ModuleConfig = {
 // zod doesn't preserve doc comments
 export interface WorldUserConfig {
   /** Namespace-specific configurations. The key is a namespace (lowercase) */
-  namespaces: Record<string, SystemsUserConfig>;
+  namespaces: Record<string, WorldNamespacedConfig>;
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
   /** The name of the World interface to generate. (Default `IWorld`) */

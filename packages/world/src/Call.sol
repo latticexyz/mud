@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { ResourceSelector } from "./ResourceSelector.sol";
 
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+import { FuncSelectors } from "./modules/core/tables/FuncSelectors.sol";
 import { Systems } from "./modules/core/tables/Systems.sol";
 
 library Call {

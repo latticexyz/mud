@@ -17,10 +17,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("FunctionSelector")));
-bytes32 constant FunctionSelectorsTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("FuncSelectors")));
+bytes32 constant FuncSelectorsTableId = _tableId;
 
-library FunctionSelectors {
+library FuncSelectors {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
@@ -44,7 +44,7 @@ library FunctionSelectors {
     _fieldNames[0] = "namespace";
     _fieldNames[1] = "name";
     _fieldNames[2] = "systemFunctionSelector";
-    return ("FunctionSelectors", _fieldNames);
+    return ("FuncSelectors", _fieldNames);
   }
 
   /** Register the table's schema */

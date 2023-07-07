@@ -17,19 +17,21 @@ export async function worldgen(
   );
 
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);
-  const systems = existingContracts.filter(({ basename }) => Object.keys(resolvedConfig.systems).includes(basename));
+  const systemContracts = existingContracts.filter(({ basename }) =>
+    Object.keys(resolvedConfig.systems).includes(basename)
+  );
 
   const systemInterfaceImports: RelativeImportDatum[] = [];
-  for (const system of systems) {
-    const data = readFileSync(system.path, "utf8");
+  for (const systemContract of systemContracts) {
+    const data = readFileSync(systemContract.path, "utf8");
     // get external funcions from a contract
-    const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
+    const { functions, errors, symbolImports } = contractToInterface(data, systemContract.basename);
     const imports = symbolImports.map((symbolImport) => {
       if (symbolImport.path[0] === ".") {
         // relative import
         return {
           symbol: symbolImport.symbol,
-          fromPath: path.join(path.dirname(system.path), symbolImport.path),
+          fromPath: path.join(path.dirname(systemContract.path), symbolImport.path),
           usedInPath: worldgenBaseDirectory,
         };
       } else {
@@ -40,12 +42,12 @@ export async function worldgen(
         };
       }
     });
-    const systemInterfaceName = `I${system.basename}`;
+    const systemInterfaceName = `I${systemContract.basename}`;
     // create an interface using the external functions and imports
-    const { name } = resolvedConfig.systems[system.basename];
+    const { namespace, name } = resolvedConfig.systems[systemContract.basename];
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${name}_`,
+      functionPrefix: namespace === "" ? "" : `${namespace}_${name}_`,
       functions,
       errors,
       imports,
