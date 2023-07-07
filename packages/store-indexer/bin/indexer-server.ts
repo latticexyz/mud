@@ -18,6 +18,7 @@ export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 const env = z
   .object({
     CHAIN_ID: z.coerce.number().positive(),
+    START_BLOCK: z.coerce.bigint().positive(),
     // TODO: database config
   })
   .parse(process.env, {
@@ -38,7 +39,7 @@ const publicClient = createPublicClient({
 });
 
 // TODO: fetch the last updated block from the DB
-const startBlock = 0n; // 18958033n;
+const startBlock = env.START_BLOCK;
 
 const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
