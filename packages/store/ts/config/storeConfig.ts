@@ -100,11 +100,15 @@ export type FullTableConfig<
   schema: FullSchemaConfig<UserTypes>;
 };
 
-export interface ExpandTableConfig<T extends TableConfig<string, string>, TableName extends string>
-  extends OrDefaults<
+export interface ExpandTableConfig<
+  T extends TableConfig<string, string>,
+  Namespace extends string,
+  TableName extends string
+> extends OrDefaults<
     T,
     {
       directory: typeof TABLE_DEFAULTS.directory;
+      namespace: Namespace;
       name: TableName;
       tableIdArgument: typeof TABLE_DEFAULTS.tableIdArgument;
       storeArgument: typeof TABLE_DEFAULTS.storeArgument;
@@ -162,14 +166,14 @@ export type TablesConfig<
 
 export const zTablesConfig = z.record(zTableName, zTableConfig);
 
-export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
+export type ExpandTablesConfig<T extends TablesConfig<string, string>, Namespace extends string> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
-    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, TableName extends string ? TableName : never>
+    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, Namespace, TableName extends string ? TableName : never>
     : T[TableName] extends TableConfig<string, string>
-    ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
+    ? ExpandTableConfig<T[TableName], Namespace, TableName extends string ? TableName : never>
     : // Weakly typed values get a weakly typed expansion.
       // This shouldn't normally happen within `mudConfig`, but can be manually triggered via `ExpandMUDUserConfig`
-      ExpandTableConfig<TableConfig<string, string>, TableName extends string ? TableName : string>;
+      ExpandTableConfig<TableConfig<string, string>, Namespace, TableName extends string ? TableName : string>;
 };
 
 /************************************************************************
@@ -203,9 +207,11 @@ type Namespaces<
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, NamespacedConfig<UserTypes, StaticUserTypes>>;
 
-const zNamespacedConfig = z.object({
-  tables: zTablesConfig,
-});
+const zNamespacedConfig = z
+  .object({
+    tables: zTablesConfig,
+  })
+  .passthrough();
 
 const zNamespaces = z.record(zSelector, zNamespacedConfig).transform((namespacedConfig) => {
   // assign defaults which depend on record keys
@@ -227,12 +233,12 @@ const zNamespaces = z.record(zSelector, zNamespacedConfig).transform((namespaced
   >;
 });
 
-export interface ExpandNamespacedConfig<T extends NamespacedConfig<string, string>> {
-  tables: ExpandTablesConfig<T["tables"]>;
+export interface ExpandNamespacedConfig<T extends NamespacedConfig<string, string>, Namespace extends string> {
+  tables: ExpandTablesConfig<T["tables"], Namespace>;
 }
 
 type ExpandNamespaces<T extends Namespaces<string, string>> = {
-  [Namespace in keyof T]: ExpandNamespacedConfig<T[Namespace]>;
+  [Namespace in keyof T]: ExpandNamespacedConfig<T[Namespace], Namespace extends string ? string : never>;
 };
 
 /************************************************************************
