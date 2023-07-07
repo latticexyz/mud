@@ -35,6 +35,21 @@ describe("hexToSchema", () => {
         ],
       }
     `);
+
+    expect(hexToSchema("0x00570800616100030700001f0000000000000000000000000000000000000000")).toMatchInlineSnapshot(`
+      {
+        "dynamicFields": [
+          "uint256[]",
+          "address[]",
+          "bytes",
+          "string",
+        ],
+        "staticFields": [
+          "bytes32",
+          "int32",
+        ],
+      }
+    `);
   });
 
   it("throws if schema hex data is not bytes32", () => {
