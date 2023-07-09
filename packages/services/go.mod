@@ -1,6 +1,6 @@
 module latticexyz/mud/packages/services
 
-go 1.18
+go 1.20
 
 replace github.com/ethereum/go-ethereum v1.10.21 => github.com/ethereum-optimism/op-geth v1.101105.1
 
