@@ -5,7 +5,7 @@ go 1.18
 replace github.com/ethereum/go-ethereum v1.10.21 => github.com/ethereum-optimism/op-geth v1.101105.1
 
 require (
-	github.com/andriidski/abiencode-go v0.0.0-00010101000000-000000000000
+	github.com/andriidski/abiencode-go v0.0.0-20230709002942-ad6b06528e3e
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/dghubble/go-twitter v0.0.0-20220816163853-8a0df96f1e6d
 	github.com/ethereum/go-ethereum v1.12.0
@@ -76,5 +76,3 @@ require (
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
-
-replace github.com/andriidski/abiencode-go => ../../../abiencode-go
