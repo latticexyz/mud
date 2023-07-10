@@ -42,7 +42,7 @@ export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimiti
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = dataLayout.fieldByteLengths[i];
-      if (dataLength) {
+      if (dataLength > 0) {
         const value = decodeDynamicField(fieldType, sliceHex(data, bytesOffset, bytesOffset + dataLength));
         bytesOffset += dataLength;
         values.push(value);
