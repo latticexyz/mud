@@ -27,11 +27,15 @@ import { StaticPrimitiveType } from "@latticexyz/schema-type";
  * }
  * @returns Transaction
  */
-export async function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export async function set<
+  C extends StoreConfig,
+  Namespace extends keyof C["namespaces"],
+  Name extends keyof C["namespaces"][Namespace]["tables"]
+>(
   config: C,
   client: AsyncTupleDatabaseClient,
-  namespace: C["namespace"],
-  table: T & string,
+  namespace: Namespace,
+  table: Name,
   key: Key<C, T>,
   value: Partial<Value<C, T>>,
   options?: SetOptions

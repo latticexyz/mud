@@ -12,34 +12,54 @@ type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveT
 export type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]: FieldTypeToPrimitiveType<T[key]> };
 
 export type Tables<C extends StoreConfig> = {
-  [key in keyof C["tables"]]: {
-    keyTuple: SchemaToPrimitives<C["tables"][key]["keySchema"]>;
-    value: SchemaToPrimitives<C["tables"][key]["schema"]>;
+  [Namespace in keyof C["namespaces"]]: {
+    [Name in keyof C["namespaces"][Namespace]["tables"]]: {
+      keyTuple: SchemaToPrimitives<C["namespaces"][Namespace]["tables"][Name]["keySchema"]>;
+      value: SchemaToPrimitives<C["namespaces"][Namespace]["tables"][Name]["schema"]>;
+    };
   };
 };
 
-export type Key<C extends StoreConfig, Table extends keyof Tables<C>> = Tables<C>[Table]["keyTuple"];
-export type Value<C extends StoreConfig, Table extends keyof Tables<C>> = Tables<C>[Table]["value"];
-export type KeyValue<C extends StoreConfig, Table extends keyof Tables<C>> = {
-  key: Key<C, Table>;
-  value: Value<C, Table>;
+export type Key<
+  C extends StoreConfig,
+  Namespace extends keyof Tables<C>,
+  Name extends keyof Tables<C>[Namespace]
+> = Tables<C>[Namespace][Name]["keyTuple"];
+export type Value<
+  C extends StoreConfig,
+  Namespace extends keyof Tables<C>,
+  Name extends keyof Tables<C>[Namespace]
+> = Tables<C>[Namespace][Name]["value"];
+export type KeyValue<
+  C extends StoreConfig,
+  Namespace extends keyof Tables<C>,
+  Name extends keyof Tables<C>[Namespace]
+> = {
+  key: Key<C, Namespace, Name>;
+  value: Value<C, Namespace, Name>;
 };
 
 export type DatabaseClient<C extends StoreConfig> = {
   /** Utils for every table with the table argument prefilled */
   tables: {
-    [Table in keyof C["tables"]]: {
-      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => Promise<void>;
-      get: (key: Key<C, Table>) => Promise<Value<C, Table>>;
-      remove: (key: Key<C, Table>, options?: RemoveOptions) => Promise<void>;
-      subscribe: (
-        callback: SubscriptionCallback<C, Table>,
-        // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
-        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => Promise<Unsubscribe>;
-      scan: <Table extends string = keyof C["tables"] & string>(
-        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => Promise<ScanResult<C, Table>>;
+    [Namespace in keyof C["namespaces"]]: {
+      [Name in keyof C["namespaces"][Namespace]["tables"]]: {
+        set: (
+          key: Key<C, Namespace, Name>,
+          value: Partial<Value<C, Namespace, Name>>,
+          options?: SetOptions
+        ) => Promise<void>;
+        get: (key: Key<C, Namespace, Name>) => Promise<Value<C, Namespace, Name>>;
+        remove: (key: Key<C, Namespace, Name>, options?: RemoveOptions) => Promise<void>;
+        subscribe: (
+          callback: SubscriptionCallback<C, Namespace, Name>,
+          // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
+          filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
+        ) => Promise<Unsubscribe>;
+        scan: <Table extends string = keyof C["tables"] & string>(
+          filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
+        ) => Promise<ScanResult<C, Table>>;
+      };
     };
   };
 } & {
