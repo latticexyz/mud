@@ -34,20 +34,34 @@ describe("sqlite", () => {
         database: {
           close: (): void => sqlDb.close(),
           prepare: (sql): SqliteStatement => {
+            if (/;/.test(sql)) {
+              // Not sure what to do with `reader` for multiple queries, so reject
+              throw new Error("Only one query supported");
+            }
+
             return {
-              // TODO: implement whether this statement returns data
-              reader: false,
+              // TODO: better way to detect if this is a select statement
+              reader: /select\s/i.test(sql),
               all: (params) => {
                 const results = sqlDb.exec(sql, params as any[]);
-                return results.map((result) =>
-                  result.values.map((row) => Object.fromEntries(row.map((value, i) => [result.columns[i], value])))
-                );
+                if (results.length > 1) {
+                  // Not sure what to do with `reader` for multiple queries, so reject
+                  throw new Error("Only one query supported");
+                }
+
+                const { columns, values: rows } = results[0];
+                return rows.map((values) => Object.fromEntries(values.map((value, i) => [columns[i], value])));
               },
               run: (params) => {
-                console.log(fromBytes(sqlDb.export(), "string"));
+                // console.log(fromBytes(sqlDb.export(), "string"));
                 const results = sqlDb.exec(sql, params as any[]);
-                console.log("run results", { results });
-                console.log(fromBytes(sqlDb.export(), "string"));
+                if (results.length > 1) {
+                  // Not sure what to do with `reader` for multiple queries, so reject
+                  throw new Error("Only one query supported");
+                }
+
+                // console.log("run results", JSON.stringify(results));
+                // console.log(fromBytes(sqlDb.export(), "string"));
                 return {
                   changes: sqlDb.getRowsModified(),
                   // TODO: figure out how to return the last insert id
@@ -73,7 +87,7 @@ describe("sqlite", () => {
       [
         InsertResult {
           "insertId": 0n,
-          "numInsertedOrUpdatedRows": 0n,
+          "numInsertedOrUpdatedRows": 1n,
         },
       ]
     `);
@@ -81,6 +95,13 @@ describe("sqlite", () => {
     const rows = await db.selectFrom("users").selectAll().execute();
 
     expect(rows).toHaveLength(1);
-    expect(rows).toMatchInlineSnapshot("[]");
+    expect(rows).toMatchInlineSnapshot(`
+      [
+        {
+          "id": 1000,
+          "name": "User1",
+        },
+      ]
+    `);
   });
 });
