@@ -8,7 +8,7 @@ import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/co
 import { resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/common/errors";
 import { encodeSchema } from "@latticexyz/schema-type/deprecated";
-import { StoreConfig } from "@latticexyz/store";
+import { flattenTables, StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
@@ -44,7 +44,7 @@ export async function deploy(
   const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
 
   const startTime = Date.now();
-  const { worldContractName, namespace, postDeployScript } = mudConfig;
+  const { worldContractName, postDeployScript } = mudConfig;
   const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
     deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
@@ -141,18 +141,26 @@ export async function deploy(
     console.log(chalk.green("Installed core World modules"));
   }
 
-  // Register namespace
-  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  // Register namespaces
+
+  const namespaceSet = new Set([
+    ...Object.keys(mudConfig.namespaces),
+    // Some systems can be absent from mudConfig, ensure their namespaces are included too
+    ...Object.values(resolvedConfig.systems).map(({ namespace }) => namespace),
+  ]);
+  for (const namespace of [...namespaceSet]) {
+    if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  }
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema }]) => {
-      console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
+    ...flattenTables(mudConfig.namespaces).map(async ({ namespace, name, schema, keySchema }) => {
+      console.log(chalk.blue(`Registering table ${namespace}/${name}`));
 
       // Store the tableId for later use
-      tableIds[tableName] = toResourceSelector(namespace, name);
+      tableIds[name] = toResourceSelector(namespace, name);
 
       // Register table
       const schemaTypes = Object.values(schema).map((abiOrUserType) => {
@@ -176,11 +184,11 @@ export async function deploy(
       await fastTxExecute(
         WorldContract,
         "setMetadata(bytes16,bytes16,string,string[])",
-        [toBytes16(namespace), toBytes16(name), tableName, Object.keys(schema)],
+        [toBytes16(namespace), toBytes16(name), name, Object.keys(schema)],
         confirmations
       );
 
-      console.log(chalk.green(`Registered table ${tableName} at ${name}`));
+      console.log(chalk.green(`Registered table ${namespace}/${name}`));
     }),
   ];
 
@@ -188,7 +196,7 @@ export async function deploy(
   promises = [
     ...promises,
     ...Object.entries(resolvedConfig.systems).map(
-      async ([systemName, { name, openAccess, registerFunctionSelectors }]) => {
+      async ([systemName, { namespace, name, openAccess, registerFunctionSelectors }]) => {
         // Register system at route
         console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${name}`));
         await fastTxExecute(
@@ -245,7 +253,9 @@ export async function deploy(
   promises = [];
 
   // Grant access to systems
-  for (const [systemName, { name, accessListAddresses, accessListSystems }] of Object.entries(resolvedConfig.systems)) {
+  for (const [systemName, { namespace, name, accessListAddresses, accessListSystems }] of Object.entries(
+    resolvedConfig.systems
+  )) {
     const resourceSelector = `${namespace}/${name}`;
 
     // Grant access to addresses

@@ -66,12 +66,8 @@ const commandModule: CommandModule<Options, Options> = {
     const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
     const WorldContract = new ethers.Contract(worldAddress, IBaseWorldData.abi, provider) as IBaseWorld;
 
-    // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-    const namespace = mudConfig.namespace;
-    const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
-
     const labels: { name: string; address: string }[] = [];
-    for (const name of names) {
+    for (const { namespace, name } of Object.values(resolvedConfig.systems)) {
       const systemSelector = new TableId(namespace, name);
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
       const address = await WorldContract.getField(systemsTableId.toHex(), [systemSelector.toHex()], 0);

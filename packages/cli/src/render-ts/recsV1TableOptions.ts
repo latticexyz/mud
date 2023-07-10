@@ -1,13 +1,11 @@
-import { StoreConfig } from "@latticexyz/store";
+import { flattenTables, StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings";
 import { RecsV1TableOptions } from "./types";
 
 export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
   const tableOptions = [];
-  for (const tableName of Object.keys(config.tables)) {
-    const tableData = config.tables[tableName];
-
+  for (const tableData of flattenTables(config.namespaces)) {
     const fields = Object.keys(tableData.schema).map((name) => {
       const abiOrUserType = tableData.schema[name];
       const { schemaType } = resolveAbiOrUserType(abiOrUserType, config);
@@ -23,12 +21,12 @@ export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
     // WARNING: skip tables without a static tableId
     if (tableData.tableIdArgument) continue;
     const staticResourceData = {
-      namespace: config.namespace,
+      namespace: tableData.namespace,
       name: tableData.name,
     };
 
     tableOptions.push({
-      tableName,
+      tableName: tableData.name,
       fields,
       staticResourceData,
     });
