@@ -57,8 +57,8 @@ const blockLogs$ = latestBlockNumber$.pipe(
     events: storeEventsAbi,
     maxBlockRange: env.MAX_BLOCK_RANGE,
   }),
-  tap(({ logs }) => {
-    console.log("logs", logs.length);
+  tap(({ fromBlock, toBlock, logs }) => {
+    console.log("found", logs.length, "logs for block", fromBlock, "-", toBlock);
     logs.forEach((log) => {
       // console.log("table", log.blockNumber, TableId.fromHex(log.args.table));
     });
