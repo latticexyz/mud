@@ -10,4 +10,15 @@ describe("decodeRecord", () => {
     );
     expect(values).toStrictEqual([1, 2n, [3, 4], "some string"]);
   });
+
+  it("can decode an empty record", () => {
+    const schema = { staticFields: [], dynamicFields: ["string", "string"] } as const;
+    const values = decodeRecord(schema, "0x0000000000000000000000000000000000000000000000000000000000000000");
+    expect(values).toMatchInlineSnapshot(`
+      [
+        "",
+        "",
+      ]
+    `);
+  });
 });

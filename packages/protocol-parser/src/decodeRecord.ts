@@ -1,4 +1,9 @@
-import { StaticPrimitiveType, DynamicPrimitiveType, staticAbiTypeToByteLength } from "@latticexyz/schema-type";
+import {
+  StaticPrimitiveType,
+  DynamicPrimitiveType,
+  staticAbiTypeToByteLength,
+  dynamicAbiTypeToDefaultValue,
+} from "@latticexyz/schema-type";
 import { Hex, sliceHex } from "viem";
 import { Schema } from "./common";
 import { decodeDynamicField } from "./decodeDynamicField";
@@ -37,9 +42,13 @@ export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimiti
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = dataLayout.fieldByteLengths[i];
-      const value = decodeDynamicField(fieldType, sliceHex(data, bytesOffset, bytesOffset + dataLength));
-      bytesOffset += dataLength;
-      values.push(value);
+      if (dataLength) {
+        const value = decodeDynamicField(fieldType, sliceHex(data, bytesOffset, bytesOffset + dataLength));
+        bytesOffset += dataLength;
+        values.push(value);
+      } else {
+        values.push(dynamicAbiTypeToDefaultValue[fieldType]);
+      }
     });
 
     // Warn user if dynamic data length doesn't match the schema, because data corruption might be possible.
