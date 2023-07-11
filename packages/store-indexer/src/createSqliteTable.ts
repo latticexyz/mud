@@ -1,8 +1,7 @@
 import { SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildSqliteColumn } from "./buildSqliteColumn";
-import { ColumnDataType, Kysely, SqliteDialect } from "kysely";
-import SqliteDatabase from "better-sqlite3";
+import { sqliteTableToSql } from "./sqliteTableToSql";
 
 type CreateSqliteTableOptions = {
   namespace: string;
@@ -11,22 +10,18 @@ type CreateSqliteTableOptions = {
   valueSchema: Record<string, SchemaAbiType>;
 };
 
+// TODO: refine type
 type CreateSqliteTableResult = {
-  // TODO: refine type
+  tableName: string;
   table: SQLiteTableWithColumns<any>;
-  createTableSql: string;
 };
 
-const db = new Kysely<any>({
-  dialect: new SqliteDialect({ database: new SqliteDatabase(":memory:") }),
-});
-
-export async function createSqliteTable({
+export function createSqliteTable({
   namespace,
   name,
   keySchema,
   valueSchema,
-}: CreateSqliteTableOptions): Promise<CreateSqliteTableResult> {
+}: CreateSqliteTableOptions): CreateSqliteTableResult {
   // TODO: colon-separated is okay in sqlite but maybe not in postgres, and maybe not as ergonomic?
   const tableName = `${namespace}:${name}`;
 
@@ -36,6 +31,7 @@ export async function createSqliteTable({
   const valueColumns = Object.fromEntries(
     Object.entries(valueSchema).map(([name, type]) => [name, buildSqliteColumn(name, type)])
   );
+
   const columns = {
     ...keyColumns,
     ...valueColumns,
@@ -43,20 +39,6 @@ export async function createSqliteTable({
 
   const table = sqliteTable(tableName, columns);
 
-  let query = db.schema.createTable(tableName);
-  const primaryKeys: string[] = [];
-  Object.keys(columns).forEach((columnName) => {
-    const column = table[columnName];
-    query = query.addColumn(columnName, column.getSQLType() as ColumnDataType, (col) => {
-      if (column.notNull) col = col.notNull();
-      if (column.hasDefault) col = col.defaultTo(column.default);
-      if (column.primary) primaryKeys.push(columnName);
-      return col;
-    });
-  });
-  query = query.addPrimaryKeyConstraint(`${tableName}__primary_key`, primaryKeys as any);
-
-  const { sql: createTableSql } = query.compile();
-
-  return { table, createTableSql };
+  // We have to return a table name because SQLiteTableWithColumns has no way to get it, even though its part of the contructor
+  return { tableName, table };
 }
