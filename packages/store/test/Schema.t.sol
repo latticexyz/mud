@@ -9,7 +9,7 @@ import { Schema, SchemaLib } from "../src/Schema.sol";
 // TODO add tests for all schema types
 contract SchemaTest is Test, GasReporter {
   function testEncodeDecodeSchema() public {
-    uint256 gas = gasleft();
+    startGasReport("encode schema with 6 entries [SchemaLib.encode]");
     Schema schema = SchemaLib.encode(
       SchemaType.UINT8, // 1 byte
       SchemaType.UINT16, // 2 bytes
@@ -18,8 +18,7 @@ contract SchemaTest is Test, GasReporter {
       SchemaType.UINT256, // 32 bytes
       SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
-    gas = gas - gasleft();
-    console.log("GAS REPORT: encode schema with 6 entries [SchemaLib.encode]: %s", gas);
+    endGasReport();
 
     startGasReport("get schema type at index");
     SchemaType schemaType1 = schema.atIndex(0);
