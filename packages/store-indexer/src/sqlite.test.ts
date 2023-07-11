@@ -1,8 +1,9 @@
 import { beforeAll, beforeEach, describe, it } from "vitest";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
 import { DefaultLogger, sql } from "drizzle-orm";
+import { createSqliteTable } from "./createSqliteTable";
 
 /**
  * Idea:
@@ -14,23 +15,10 @@ import { DefaultLogger, sql } from "drizzle-orm";
  * - might need a wrapper around insert (1. to match the interface of the sync stack and 2. to rerun views if tables change)
  */
 
-const usersTable = sqliteTable("users", {
-  id: integer("id").primaryKey(),
-  name: text("name").notNull(),
-});
-
 async function createDb(): Promise<SQLJsDatabase> {
   const SQL = await initSqlJs();
   const client = new SQL.Database();
   return drizzle(client /* { logger: new DefaultLogger() } */);
-}
-
-/**
- * Input: MUD schema
- * Output: sql to run to create the table, and drizzle schema object
- */
-async function createTableFromSchema(): Promise<void> {
-  // TODO
 }
 
 /**
@@ -42,19 +30,21 @@ async function createReactiveView(): Promise<void> {
 
 describe("sqlite", () => {
   let db: SQLJsDatabase;
-
-  beforeAll(async () => {
-    db = await createDb();
-  });
+  let usersTable: SQLiteTableWithColumns<any>;
 
   beforeEach(async () => {
-    db.run(sql`drop table if exists ${usersTable}`);
+    db = await createDb();
 
-    db.run(sql`
-		create table ${usersTable} (
-			id integer primary key,
-			name text not null
-		)`);
+    const { table, createTableSql } = await createSqliteTable({
+      namespace: "test",
+      name: "users",
+      keySchema: { id: "uint256" },
+      valueSchema: { name: "string" },
+    });
+
+    db.run(createTableSql);
+
+    usersTable = table;
   });
 
   it("should work", async () => {
@@ -73,7 +63,7 @@ describe("sqlite", () => {
     let time = Date.now();
     for (let i = 0; i < NUM; i++) {
       db.insert(usersTable)
-        .values([{ name: String(i) }])
+        .values([{ id: i, name: String(i) }])
         .run();
     }
     console.log(`Time to insert ${NUM} items in separate transactions: ${Date.now() - time}`);
@@ -82,7 +72,7 @@ describe("sqlite", () => {
     await db.transaction(async (tx) => {
       for (let i = 0; i < NUM; i++) {
         tx.insert(usersTable)
-          .values([{ name: String(i) }])
+          .values([{ id: i + NUM, name: String(i) }])
           .run();
       }
     });
