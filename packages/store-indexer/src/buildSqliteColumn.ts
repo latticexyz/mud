@@ -5,7 +5,7 @@ import { assertExhaustive } from "@latticexyz/common/utils";
 export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): AnySQLiteColumnBuilder {
   switch (schemaAbiType) {
     case "bool":
-      return integer(name, { mode: "boolean" }).default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return integer(name, { mode: "boolean" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
 
     case "uint8":
     case "uint16":
@@ -19,7 +19,7 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "int32":
     case "int40":
     case "int48":
-      return integer(name, { mode: "number" }).default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return integer(name, { mode: "number" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
 
     case "uint56":
     case "uint64":
@@ -73,7 +73,7 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "int240":
     case "int248":
     case "int256":
-      return blob(name, { mode: "bigint" }).default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return blob(name, { mode: "bigint" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
 
     case "bytes1":
     case "bytes2":
@@ -109,7 +109,7 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes32":
     case "address":
     case "bytes":
-      return blob(name).default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return blob(name).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
 
     case "uint8[]":
     case "uint16[]":
@@ -209,10 +209,10 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes32[]":
     case "bool[]":
     case "address[]":
-      return blob(name, { mode: "json" }).default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return blob(name, { mode: "json" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
 
     case "string":
-      return text(name).default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return text(name).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
 
     default:
       assertExhaustive(schemaAbiType, `Missing SQLite column type for schema ABI type ${schemaAbiType}`);

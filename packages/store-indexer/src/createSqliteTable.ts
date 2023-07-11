@@ -1,7 +1,8 @@
 import { SQLiteSyncDialect, SQLiteTableWithColumns, primaryKey, sqliteTable } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildSqliteColumn } from "./buildSqliteColumn";
-import { SQL, sql } from "drizzle-orm";
+import { ColumnDataType, Kysely, SqliteDialect } from "kysely";
+import SqliteDatabase from "better-sqlite3";
 
 type CreateSqliteTableOptions = {
   namespace: string;
@@ -13,11 +14,13 @@ type CreateSqliteTableOptions = {
 type CreateSqliteTableResult = {
   // TODO: refine type
   table: SQLiteTableWithColumns<any>;
-  // TODO: should this be SQL type from drizzle-orm?
-  createTableSql: SQL;
+  createTableSql: string;
 };
 
 const sqliteDialect = new SQLiteSyncDialect();
+const db = new Kysely<any>({
+  dialect: new SqliteDialect({ database: new SqliteDatabase(":memory:") }),
+});
 
 export async function createSqliteTable({
   namespace,
@@ -42,29 +45,18 @@ export async function createSqliteTable({
     primaryKey: primaryKey(...Object.keys(keyColumns).map((columnName) => tableConfig[columnName])),
   }));
 
-  const createTableSql = sql.raw(`CREATE TABLE [${tableName}] (\n`);
+  let query = db.schema.createTable(tableName);
   Object.keys(columns).forEach((columnName) => {
     const column = table[columnName];
-    createTableSql.append(sql.raw(`${columnName} ${column.getSQLType()} NOT NULL`));
-    if (column.notNull) {
-      createTableSql.append(sql.raw(` NOT NULL`));
-    }
-    if (column.hasDefault) {
-      // CREATE query doesn't seem to like parameterized values, so we escape them manually
-      // TODO: test this thoroughly or find a different approach
-      createTableSql.append(sql.raw(` DEFAULT "${sqliteDialect.escapeString((column.default as any).toString())}"`));
-    }
-    createTableSql.append(sql.raw(`,\n`));
+    query = query.addColumn(columnName, column.getSQLType() as ColumnDataType, (col) => {
+      if (column.notNull) col = col.notNull();
+      if (column.hasDefault) col = col.defaultTo(column.default);
+      return col;
+    });
   });
-  createTableSql.append(sql`PRIMARY KEY(`);
-  Object.keys(keyColumns).forEach((columnName, i) => {
-    if (i > 0) {
-      createTableSql.append(sql.raw(`, `));
-    }
-    createTableSql.append(sql.raw(`${columnName}`));
-  });
-  createTableSql.append(sql.raw(`)\n`));
-  createTableSql.append(sql.raw(`)`));
+  query = query.addPrimaryKeyConstraint(`${tableName}__primary_key`, Object.keys(keyColumns) as any);
+
+  const { sql: createTableSql } = query.compile();
 
   return { table, createTableSql };
 }

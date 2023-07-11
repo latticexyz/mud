@@ -42,7 +42,7 @@ describe("sqlite", () => {
       valueSchema: { name: "string" },
     });
 
-    db.run(createTableSql);
+    db.run(sql.raw(createTableSql));
 
     usersTable = table;
   });
