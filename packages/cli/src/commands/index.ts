@@ -1,6 +1,6 @@
 import { CommandModule } from "yargs";
 
-import gasReport from "@latticexyz/gas-reporter";
+import gasReport from "@latticexyz/gas-report";
 
 import devnode from "./devnode";
 import faucet from "./faucet";

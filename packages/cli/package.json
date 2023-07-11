@@ -33,7 +33,7 @@
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/gas-reporter": "workspace:*",
+    "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
     "@latticexyz/solecs": "workspace:*",

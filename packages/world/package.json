@@ -56,7 +56,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/gas-reporter": "workspace:*",
+    "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "ethers": "^5.7.2",

@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/gas-reporter",
+  "name": "@latticexyz/gas-report",
   "version": "1.42.0",
-  "description": "Gas Reporter",
+  "description": "Gas reporter for specific lines within forge tests",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/gas-reporter"
+    "directory": "packages/gas-report"
   },
   "license": "MIT",
   "type": "module",

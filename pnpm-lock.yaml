@@ -102,9 +102,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
-      '@latticexyz/gas-reporter':
+      '@latticexyz/gas-report':
         specifier: workspace:*
-        version: link:../gas-reporter
+        version: link:../gas-report
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -409,7 +409,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(typescript@4.9.5)
 
-  packages/gas-reporter:
+  packages/gas-report:
     dependencies:
       chalk:
         specifier: ^5.3.0
@@ -435,7 +435,7 @@ importers:
         version: 18.15.11
       '@types/yargs':
         specifier: ^17.0.10
-        version: 17.0.24
+        version: 17.0.23
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -999,9 +999,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
-      '@latticexyz/gas-reporter':
+      '@latticexyz/gas-report':
         specifier: workspace:*
-        version: link:../gas-reporter
+        version: link:../gas-report
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -1186,9 +1186,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
-      '@latticexyz/gas-reporter':
+      '@latticexyz/gas-report':
         specifier: workspace:*
-        version: link:../gas-reporter
+        version: link:../gas-report
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type

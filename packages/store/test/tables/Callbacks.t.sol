@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/gas-reporter/src/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
 import { Callbacks } from "../../src/codegen/Tables.sol";
 
