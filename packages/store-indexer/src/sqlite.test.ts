@@ -1,31 +1,14 @@
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
-import { sqliteTable, integer, text, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
-import { DefaultLogger, eq, sql } from "drizzle-orm";
+import { SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
+import { eq, sql } from "drizzle-orm";
 import { createSqliteTable } from "./createSqliteTable";
-
-/**
- * Idea:
- * - Users read data via views (or directly from tables), but not dynamic sql
- * - client defines views
- *   - if remote view: use materialized views on the indexer, propagate updates; later: only admin can create views, so views from the client are rejected if they don't exist yet
- *   - if local view: define view when starting up the client, rerun the view if a dependent table changes
- *
- * - might need a wrapper around insert (1. to match the interface of the sync stack and 2. to rerun views if tables change)
- */
 
 async function createDb(): Promise<SQLJsDatabase> {
   const SQL = await initSqlJs();
-  const client = new SQL.Database();
-  return drizzle(client /* { logger: new DefaultLogger() } */);
-}
-
-/**
- * Define a query/view that returns an rxjs object with updates if a table updates
- */
-async function createReactiveView(): Promise<void> {
-  // TODO
+  const db = new SQL.Database();
+  return drizzle(db);
 }
 
 describe("sqlite", () => {
