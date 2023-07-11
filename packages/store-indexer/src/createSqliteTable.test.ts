@@ -16,12 +16,11 @@ describe("createSqliteTable", () => {
     expect(sqliteDialect.sqlToQuery(createTableSql)).toMatchInlineSnapshot(`
       {
         "params": [],
-        "sql": "
-          CREATE TABLE [test:users] (
-            [id] blob NOT NULL, [name] text NOT NULL,
-            PRIMARY KEY([id])
-          )
-        ",
+        "sql": "CREATE TABLE [test:users] (
+      id blob NOT NULL DEFAULT \\"'0'\\",
+      name text NOT NULL DEFAULT \\"''\\",
+      PRIMARY KEY(id)
+      )",
       }
     `);
   });
