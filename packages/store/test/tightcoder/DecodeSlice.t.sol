@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-reporter/src/GasReporter.sol";
 import { SliceLib } from "../../src/Slice.sol";
 
 contract DecodeSliceTest is Test, GasReporter {
