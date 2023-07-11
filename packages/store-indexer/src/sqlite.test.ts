@@ -1,8 +1,8 @@
-import { beforeAll, beforeEach, describe, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
 import { sqliteTable, integer, text, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
-import { DefaultLogger, sql } from "drizzle-orm";
+import { DefaultLogger, eq, sql } from "drizzle-orm";
 import { createSqliteTable } from "./createSqliteTable";
 
 /**
@@ -38,8 +38,8 @@ describe("sqlite", () => {
     const { table, createTableSql } = await createSqliteTable({
       namespace: "test",
       name: "users",
-      keySchema: { id: "uint256" },
-      valueSchema: { name: "string" },
+      keySchema: { x: "uint32", y: "uint32" },
+      valueSchema: { name: "string", addr: "address" },
     });
 
     db.run(sql.raw(createTableSql));
@@ -49,12 +49,21 @@ describe("sqlite", () => {
 
   it("should work", async () => {
     db.insert(usersTable)
-      .values([{ id: 1, name: "User1" }])
+      .values([{ x: 1, y: 1, name: "User1" }])
       .run();
 
-    const queryResult = db.select({ name: usersTable.name }).from(usersTable).get();
+    const queryResult = db.select().from(usersTable).where(eq(usersTable.name, "User1")).all();
 
-    console.log(queryResult);
+    expect(queryResult).toMatchInlineSnapshot(`
+      [
+        {
+          "addr": "0x0000000000000000000000000000000000000000",
+          "name": "User1",
+          "x": 1,
+          "y": 1,
+        },
+      ]
+    `);
   });
 
   it("should be performant", async () => {
@@ -63,7 +72,7 @@ describe("sqlite", () => {
     let time = Date.now();
     for (let i = 0; i < NUM; i++) {
       db.insert(usersTable)
-        .values([{ id: i, name: String(i) }])
+        .values([{ x: i, y: i, name: String(i) }])
         .run();
     }
     console.log(`Time to insert ${NUM} items in separate transactions: ${Date.now() - time}`);
@@ -72,7 +81,7 @@ describe("sqlite", () => {
     await db.transaction(async (tx) => {
       for (let i = 0; i < NUM; i++) {
         tx.insert(usersTable)
-          .values([{ id: i + NUM, name: String(i) }])
+          .values([{ x: i + NUM, y: i + NUM, name: String(i) }])
           .run();
       }
     });

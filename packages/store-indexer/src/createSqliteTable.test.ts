@@ -6,12 +6,12 @@ describe("createSqliteTable", () => {
     const { createTableSql } = await createSqliteTable({
       namespace: "test",
       name: "users",
-      keySchema: { id: "uint256" },
-      valueSchema: { name: "string" },
+      keySchema: { x: "uint32", y: "uint32" },
+      valueSchema: { name: "string", addr: "address" },
     });
 
     expect(createTableSql).toMatchInlineSnapshot(
-      '"create table \\"test:users\\" (\\"id\\" blob default \'0\' not null, \\"name\\" text default \'\' not null, constraint \\"test:users__primary_key\\" primary key (\\"id\\"))"'
+      '"create table \\"test:users\\" (\\"x\\" integer default 0 not null, \\"y\\" integer default 0 not null, \\"name\\" text default \'\' not null, \\"addr\\" blob default \'0x0000000000000000000000000000000000000000\' not null, constraint \\"test:users__primary_key\\" primary key (\\"x\\", \\"y\\"))"'
     );
   });
 });
