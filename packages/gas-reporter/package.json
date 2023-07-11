@@ -1,0 +1,49 @@
+{
+  "name": "@latticexyz/gas-reporter",
+  "version": "1.42.0",
+  "description": "Gas Reporter",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/gas-reporter"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./ts/index.ts"
+      ]
+    }
+  },
+  "bin": {
+    "mud-gas-report": "./dist/mud-gas-report.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "dev": "tsup --watch",
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "dotenv": "^16.0.3",
+    "execa": "^7.0.0",
+    "strip-ansi": "^7.1.0",
+    "table": "^6.8.1",
+    "yargs": "^17.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@types/yargs": "^17.0.10",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
+    "rimraf": "^3.0.2",
+    "tsup": "^6.7.0",
+    "vitest": "0.31.4"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}

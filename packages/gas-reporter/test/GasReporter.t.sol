@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "../src/test/GasReporter.sol";
+import { GasReporter } from "../src/GasReporter.sol";
 
 contract GasReporterTest is Test, GasReporter {
   function testGasReporterGas() public {
