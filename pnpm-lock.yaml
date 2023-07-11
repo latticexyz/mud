@@ -1186,6 +1186,9 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
+      '@latticexyz/gas-reporter':
+        specifier: workspace:*
+        version: link:../gas-reporter
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
