@@ -164,4 +164,61 @@ describe("createSqliteTable", () => {
       }
     `);
   });
+
+  it("can create a singleton table", async () => {
+    const table = createSqliteTable({
+      namespace: "test",
+      name: "users",
+      keyTupleSchema: {},
+      valueSchema: { addrs: "address[]" },
+    });
+
+    expect(table).toMatchInlineSnapshot(`
+      {
+        "table": SQLiteTable {
+          "addrs": SQLiteBlobJson {
+            "config": {
+              "default": "[]",
+              "hasDefault": true,
+              "name": "addrs",
+              "notNull": true,
+              "primaryKey": false,
+            },
+            "default": "[]",
+            "hasDefault": true,
+            "name": "addrs",
+            "notNull": true,
+            "primary": false,
+            "table": [Circular],
+          },
+          Symbol(drizzle:Name): "test:users",
+          Symbol(drizzle:OriginalName): "test:users",
+          Symbol(drizzle:Schema): undefined,
+          Symbol(drizzle:Columns): {
+            "addrs": SQLiteBlobJson {
+              "config": {
+                "default": "[]",
+                "hasDefault": true,
+                "name": "addrs",
+                "notNull": true,
+                "primaryKey": false,
+              },
+              "default": "[]",
+              "hasDefault": true,
+              "name": "addrs",
+              "notNull": true,
+              "primary": false,
+              "table": [Circular],
+            },
+          },
+          Symbol(drizzle:BaseName): "test:users",
+          Symbol(drizzle:IsAlias): false,
+          Symbol(drizzle:ExtraConfigBuilder): undefined,
+          Symbol(drizzle:IsDrizzleTable): true,
+          Symbol(drizzle:SQLiteInlineForeignKeys): [],
+        },
+        "tableName": "test:users",
+      }
+    `);
+  });
 });

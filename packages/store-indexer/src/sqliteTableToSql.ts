@@ -9,9 +9,9 @@ const db = new Kysely<any>({
 // TODO: figure out how to extract table name from SQLiteTableWithColumns (it's in there just not exposed)
 export function sqliteTableToSql(tableName: string, table: SQLiteTableWithColumns<any>): string {
   const columnNames = Object.getOwnPropertyNames(table);
-  const primaryKeys = columnNames.filter((columnName) => table[columnName].primary);
 
-  let query = db.schema.createTable(tableName);
+  // sql.js doesn't like parallelism, so for now we just ignore duplicate tables
+  let query = db.schema.createTable(tableName).ifNotExists();
 
   columnNames.forEach((columnName) => {
     const column = table[columnName];
@@ -26,7 +26,10 @@ export function sqliteTableToSql(tableName: string, table: SQLiteTableWithColumn
     });
   });
 
-  query = query.addPrimaryKeyConstraint(`${tableName}__primary_key`, primaryKeys as any);
+  const primaryKeys = columnNames.filter((columnName) => table[columnName].primary);
+  if (primaryKeys.length) {
+    query = query.addPrimaryKeyConstraint(`${tableName}__primary_key`, primaryKeys as any);
+  }
 
   const { sql } = query.compile();
   return sql;

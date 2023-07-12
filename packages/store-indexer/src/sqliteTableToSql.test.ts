@@ -15,7 +15,20 @@ describe("sqliteTableToSql", () => {
     const sql = sqliteTableToSql(tableName, table);
 
     expect(sql).toMatchInlineSnapshot(
-      '"create table \\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" blob default \'1000\' not null, constraint \\"some table__primary_key\\" primary key (\\"x\\", \\"y\\"))"'
+      '"create table if not exists \\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" blob default \'1000\' not null, constraint \\"some table__primary_key\\" primary key (\\"x\\", \\"y\\"))"'
+    );
+  });
+
+  it("should return SQL to create singleton table with no primary keys", async () => {
+    const tableName = "some table";
+    const table = sqliteTable(tableName, {
+      name: text("name").notNull().default(""),
+    });
+
+    const sql = sqliteTableToSql(tableName, table);
+
+    expect(sql).toMatchInlineSnapshot(
+      '"create table if not exists \\"some table\\" (\\"name\\" text default \'\' not null)"'
     );
   });
 });

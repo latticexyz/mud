@@ -23,7 +23,8 @@
     "start:combined": "tsx bin/combined-server",
     "start:combined:local": "CHAIN_ID=31337 START_BLOCK=0 pnpm start:combined",
     "start:combined:testnet": "CHAIN_ID=4242 START_BLOCK=19037160 pnpm start:combined",
-    "start:indexer": "tsx bin/indexer-server",
+    "start:memory-indexer": "tsx bin/memory-indexer-server",
+    "start:sqlite-indexer": "tsx bin/sqlite-indexer-server",
     "start:trpc": "tsx bin/trpc-server",
     "test": "vitest --run"
   },

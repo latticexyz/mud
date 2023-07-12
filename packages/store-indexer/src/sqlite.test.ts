@@ -31,11 +31,17 @@ describe("sqlite", () => {
     const table = await getTable(db, "test", "users");
     expect(table).toMatchInlineSnapshot(`
       {
-        "keyTupleSchema": "{\\"x\\":\\"uint8\\",\\"y\\":\\"uint8\\"}",
+        "keyTupleSchema": {
+          "x": "uint8",
+          "y": "uint8",
+        },
         "lastBlockNumber": null,
         "name": "users",
         "namespace": "test",
-        "valueSchema": "{\\"name\\":\\"string\\",\\"addr\\":\\"address\\"}",
+        "valueSchema": {
+          "addr": "address",
+          "name": "string",
+        },
       }
     `);
   });

@@ -56,7 +56,9 @@ export async function getDatabase(chainId: ChainId, address: Address): Promise<S
   // TODO: allow swapping for better-sqlite3 DB that writes to disk
   // TODO: type DB to include mudStoreTables
   const SqlJs = await initSqlJs();
-  const db = drizzle(new SqlJs.Database(), { logger: new DefaultLogger() });
+  const db = drizzle(new SqlJs.Database(), {
+    /* logger: new DefaultLogger() */
+  });
 
   db.run(sql.raw(sqliteTableToSql(mudStoreTablesName, mudStoreTables)));
 
@@ -64,8 +66,7 @@ export async function getDatabase(chainId: ChainId, address: Address): Promise<S
   return db;
 }
 
-export async function getTables(chainId: ChainId, address: Address): Promise<Table[]> {
-  const db = await getDatabase(chainId, address);
+export async function getTables(db: SQLJsDatabase): Promise<Table[]> {
   const tables = db.select().from(mudStoreTables).all();
   return tables.map((table) => ({
     namespace: table.namespace,
@@ -105,17 +106,17 @@ export async function createTable(db: SQLJsDatabase, table: Table): Promise<Tabl
     valueSchema: table.valueSchema,
   });
 
-  // TODO: check if table exists?
-
   db.run(sql.raw(sqliteTableToSql(sqliteTable.tableName, sqliteTable.table)));
 
   db.insert(mudStoreTables)
     .values({
       namespace: table.namespace,
       name: table.name,
-      keyTupleSchema: JSON.stringify(table.keyTupleSchema),
-      valueSchema: JSON.stringify(table.valueSchema),
+      keyTupleSchema: table.keyTupleSchema,
+      valueSchema: table.valueSchema,
     })
+    // sql.js doesn't like parallelism, so for now we just ignore duplicate tables
+    .onConflictDoNothing()
     .run();
 
   return table;

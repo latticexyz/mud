@@ -1,6 +1,28 @@
-import { AnySQLiteColumnBuilder, blob, integer, text } from "drizzle-orm/sqlite-core";
+import {
+  AnySQLiteColumnBuilder,
+  blob,
+  integer,
+  text,
+  customType,
+  SQLiteCustomColumnBuilder,
+} from "drizzle-orm/sqlite-core";
 import { SchemaAbiType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
+import { ColumnBuilderBaseConfig } from "drizzle-orm";
+import superjson from "superjson";
+
+const json = <TData>(name: string): SQLiteCustomColumnBuilder<ColumnBuilderBaseConfig & { data: TData }> =>
+  customType<{ data: TData; driverData: string }>({
+    dataType() {
+      return "text";
+    },
+    toDriver(data: TData): string {
+      return superjson.stringify(data);
+    },
+    fromDriver(driverData: string): TData {
+      return superjson.parse(driverData);
+    },
+  })(name);
 
 export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): AnySQLiteColumnBuilder {
   switch (schemaAbiType) {
@@ -209,7 +231,10 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes32[]":
     case "bool[]":
     case "address[]":
-      return blob(name, { mode: "json" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      // TODO: figure out why we need to JSON.stringify this (would have expected mode:json to handle this)
+      // TODO: should this be a buffer instead instead of json string?
+      return json(name).notNull().default(JSON.stringify(schemaAbiTypeToDefaultValue[schemaAbiType]));
+    // return blob(name, { mode: "json" }).notNull().default(JSON.stringify(schemaAbiTypeToDefaultValue[schemaAbiType]));
 
     case "string":
       return text(name).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
