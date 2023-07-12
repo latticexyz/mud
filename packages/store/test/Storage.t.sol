@@ -4,7 +4,6 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Storage } from "../src/Storage.sol";
-import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 
 contract StorageTest is Test, GasReporter {
