@@ -4,6 +4,7 @@ import { Hex } from "viem";
 import { getDatabase, getTables } from "./sqlite";
 import { TableWithRows } from "../common";
 import { createSqliteTable } from "./createSqliteTable";
+import { bigIntMax } from "@latticexyz/common/utils";
 
 export const appRouter = router({
   findAll: publicProcedure
@@ -19,22 +20,30 @@ export const appRouter = router({
       const db = await getDatabase(chainId, address as Hex);
       const tables = await getTables(db);
 
+      const tablesWithRows = await Promise.all(
+        tables.map(async (table) => {
+          const { tableName, table: sqliteTable } = createSqliteTable(table);
+          const rows = db.select().from(sqliteTable).all();
+          // console.log("got rows for table", tableName, rows);
+          return {
+            ...table,
+            rows: rows.map((row) => ({
+              keyTuple: Object.fromEntries(Object.entries(table.keyTupleSchema).map(([name]) => [name, row[name]])),
+              value: Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, row[name]])),
+            })),
+          };
+        })
+      );
+
+      // TODO: store this in global table
+      const lastBlockNumber = tablesWithRows.reduce(
+        (blockNumber, table) => bigIntMax(blockNumber, table.lastBlockNumber ?? -1n),
+        -1n
+      );
+
       const result = {
-        blockNumber: -1n, // TODO
-        tables: await Promise.all(
-          tables.map(async (table) => {
-            const { tableName, table: sqliteTable } = createSqliteTable(table);
-            const rows = db.select().from(sqliteTable).all();
-            // console.log("got rows for table", tableName, rows);
-            return {
-              ...table,
-              rows: rows.map((row) => ({
-                keyTuple: Object.fromEntries(Object.entries(table.keyTupleSchema).map(([name]) => [name, row[name]])),
-                value: Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, row[name]])),
-              })),
-            };
-          })
-        ),
+        blockNumber: lastBlockNumber,
+        tables: tablesWithRows,
       };
 
       // console.log("findAll:", opts, result);

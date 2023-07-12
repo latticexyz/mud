@@ -1,7 +1,7 @@
 import { AbiEvent, Address } from "abitype";
 import { PublicClient, BlockNumber } from "viem";
 import { GetLogsResult, getLogs } from "./getLogs";
-import { bigIntMin, wait } from "./utils";
+import { bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 
 export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {

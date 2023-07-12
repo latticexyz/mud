@@ -1,7 +1,6 @@
 import { BlockNumber, Hex, Log } from "viem";
 import { NonPendingLog, isNonPendingLog } from "./isNonPendingLog";
-import { bigIntSort } from "./utils";
-import { isDefined } from "@latticexyz/common/utils";
+import { bigIntSort, isDefined } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 
 export type GroupLogsByBlockNumberResult<TLog extends Log> = {

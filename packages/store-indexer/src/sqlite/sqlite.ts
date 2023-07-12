@@ -77,6 +77,18 @@ export async function getTable(db: SQLJsDatabase, namespace: TableNamespace, nam
   };
 }
 
+export async function updateTableLastBlockNumber(
+  db: SQLJsDatabase,
+  namespace: TableNamespace,
+  name: TableName,
+  lastBlockNumber: bigint
+): Promise<void> {
+  db.update(mudStoreTables)
+    .set({ lastBlockNumber })
+    .where(and(eq(mudStoreTables.namespace, namespace), eq(mudStoreTables.name, name)))
+    .run();
+}
+
 export async function createTable(db: SQLJsDatabase, table: Table): Promise<Table> {
   const sqliteTable = createSqliteTable({
     namespace: table.namespace,

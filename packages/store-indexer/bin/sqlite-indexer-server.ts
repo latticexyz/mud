@@ -11,7 +11,7 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
-import { createTable, getDatabase, getTable } from "../src/sqlite/sqlite";
+import { createTable, getDatabase, getTable, updateTableLastBlockNumber } from "../src/sqlite/sqlite";
 import { createSqliteTable } from "../src/sqlite/createSqliteTable";
 import { and, eq } from "drizzle-orm";
 
@@ -128,6 +128,9 @@ blockLogs$
           console.log(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
           continue;
         }
+
+        // TODO: parallelize this to just once per table
+        await updateTableLastBlockNumber(db, operation.namespace, operation.name, blockNumber);
 
         // TODO: just do regular table operations once we have a consistent key schema + key for singleton tables
         //       see https://github.com/latticexyz/mud/issues/1125
