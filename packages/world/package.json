@@ -47,7 +47,7 @@
     "clean:typechain": "rimraf types",
     "dev": "tsup --watch",
     "docs": "rimraf API && hardhat docgen",
-    "gas-report": "../cli/dist/mud.js gas-report --save gas-report.json",
+    "gas-report": "mud-gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "tsc --noEmit && vitest --run && forge test"
   },
@@ -56,6 +56,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "ethers": "^5.7.2",
