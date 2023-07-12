@@ -1,7 +1,8 @@
-import { publicProcedure, router } from "./trpc";
+import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { Hex } from "viem";
-import { getDatabase, getTables, Table, TableRow } from "./sqlite";
+import { getDatabase, getTables } from "./sqlite";
+import { TableWithRows } from "../common";
 import { createSqliteTable } from "./createSqliteTable";
 
 export const appRouter = router({
@@ -12,7 +13,7 @@ export const appRouter = router({
         address: z.string(), // TODO: refine to hex
       })
     )
-    .query(async (opts): Promise<{ blockNumber: bigint; tables: (Table & { rows: TableRow[] })[] }> => {
+    .query(async (opts): Promise<{ blockNumber: bigint; tables: TableWithRows[] }> => {
       const { chainId, address } = opts.input;
 
       const db = await getDatabase(chainId, address as Hex);

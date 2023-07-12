@@ -11,7 +11,7 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
-import { createTable, database, getTable } from "../src/fakeDatabase";
+import { createTable, database, getTable } from "../src/memory/fakeDatabase";
 
 export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 
@@ -75,7 +75,8 @@ blockLogs$
           createTable(chain.id, address, {
             namespace,
             name,
-            schema: { keyTuple, value },
+            keyTupleSchema: keyTuple,
+            valueSchema: value,
             rows: [],
             lastBlockNumber: startBlock,
           });
@@ -88,8 +89,8 @@ blockLogs$
                 address,
                 namespace,
                 name,
-                keyTuple: table.schema.keyTuple,
-                value: table.schema.value,
+                keyTuple: table.keyTupleSchema,
+                value: table.valueSchema,
               }
             : undefined;
         },

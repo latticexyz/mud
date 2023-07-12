@@ -1,7 +1,8 @@
-import { publicProcedure, router } from "./trpc";
+import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
-import { Table, database, getWorldId } from "./fakeDatabase";
+import { database, getWorldId } from "./fakeDatabase";
 import { Hex } from "viem";
+import { TableWithRows } from "../common";
 
 export const appRouter = router({
   findAll: publicProcedure
@@ -11,7 +12,7 @@ export const appRouter = router({
         address: z.string(), // TODO: refine to hex
       })
     )
-    .query(async (opts): Promise<{ blockNumber: bigint; tables: Table[] }> => {
+    .query(async (opts): Promise<{ blockNumber: bigint; tables: TableWithRows[] }> => {
       const { chainId, address } = opts.input;
 
       // TODO: fetch these from DB and return

@@ -6,28 +6,7 @@ import { blob, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { DefaultLogger, and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
-
-// This is just a fake database for now to get us started without all the SQL adapter stuff, so we can have a working TRPC -> Client pipeline. We'll swap this with a real database/backend later.
-
-export type ChainId = number;
-export type WorldId = `${ChainId}:${Address}`;
-
-export type TableNamespace = string;
-export type TableName = string;
-export type TableId = `${TableNamespace}:${TableName}`;
-
-export type TableRow = {
-  keyTuple: Record<string, StaticPrimitiveType>;
-  value: Record<string, StaticPrimitiveType | DynamicPrimitiveType>;
-};
-
-export type Table = {
-  namespace: TableNamespace;
-  name: TableName;
-  keyTupleSchema: Record<string, StaticAbiType>;
-  valueSchema: Record<string, StaticAbiType | DynamicAbiType>;
-  lastBlockNumber: bigint | null;
-};
+import { ChainId, Table, TableName, TableNamespace, WorldId } from "../common";
 
 export const mudStoreTablesName = "__mud_store_tables";
 export const mudStoreTables = sqliteTable(mudStoreTablesName, {

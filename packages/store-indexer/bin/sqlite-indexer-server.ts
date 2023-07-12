@@ -11,8 +11,8 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
-import { createTable, getDatabase, getTable } from "../src/sqlite";
-import { createSqliteTable } from "../src/createSqliteTable";
+import { createTable, getDatabase, getTable } from "../src/sqlite/sqlite";
+import { createSqliteTable } from "../src/sqlite/createSqliteTable";
 import { and, eq } from "drizzle-orm";
 
 // TODO: align shared types (e.g. table, key+value schema)
