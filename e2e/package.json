@@ -4,7 +4,11 @@
   "scripts": {
     "build": "pnpm recursive run build",
     "clean": "pnpm recursive run clean",
+    "playwright-install": "pnpx playwright@1.35.1 install --with-deps chromium",
     "test": "pnpm recursive run test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.35.1"
   },
   "engines": {
     "node": "18.x",
