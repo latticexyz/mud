@@ -41,7 +41,7 @@ jobs:
         run: pnpm install
 
       - name: Install Playwright Dependencies
-        run: pnpx playwright@1.35.0 install --with-deps chromium
+        run: pnpx playwright@1.36.0 install --with-deps chromium
 
       - name: Clean end-to-end project
         working-directory: ./e2e
