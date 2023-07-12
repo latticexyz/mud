@@ -28,9 +28,9 @@ import { DatabaseClient, Key, Value, createDatabase, createDatabaseClient } from
 import { StoreConfig } from "@latticexyz/store";
 import superjson from "superjson";
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
-import type { AppRouter, Table } from "@latticexyz/store-indexer";
+import type { AppRouter, TableWithRows } from "@latticexyz/store-indexer";
 
-type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfig> = {
+type SetupMUDV2NetworkOptions<C extends Components, S extends StoreConfig> = {
   networkConfig: SetupContractConfig;
   world: World;
   contractComponents: C;
@@ -49,11 +49,11 @@ function setupIndexer(options: { type: "trpc"; url: string }) {
   });
 }
 
-async function applyInitialState<C extends Components, S extends StoreConfig>(
-  tables: Table[],
-  database: { recsComponents?: C; storeCache?: DatabaseClient<S> },
+async function applyInitialState<S extends StoreConfig>(
+  tables: TableWithRows[],
+  database: { recsComponents?: ContractComponents; storeCache?: DatabaseClient<S> },
   config: StoreConfig,
-  mappings: Mappings<C>
+  mappings: Mappings<ContractComponents>
 ) {
   const { recsComponents, storeCache } = database;
 
@@ -70,7 +70,7 @@ async function applyInitialState<C extends Components, S extends StoreConfig>(
         continue;
       }
       for (const row of table.rows) {
-        const entity = keyTupleToEntityID(row.keyTuple as unknown[]);
+        const entity = keyTupleToEntityID(Object.values(row.keyTuple) as unknown[]);
         console.log("applying component update", componentId, entity, row.value);
         setComponent(component, entity, row.value as ComponentValue);
       }
@@ -190,7 +190,12 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
       // Update block number from which the sync worker starts syncing from
       networkConfig.initialBlockNumber = Number(result.blockNumber + 1n);
       console.log("got initial state from trpc indexer", result);
-      await applyInitialState(result.tables, { recsComponents: contractComponents, storeCache }, storeConfig, mappings);
+      await applyInitialState(
+        result.tables,
+        { recsComponents: contractComponents as ContractComponents, storeCache },
+        storeConfig,
+        mappings as Mappings<ContractComponents>
+      );
     }
   }
 

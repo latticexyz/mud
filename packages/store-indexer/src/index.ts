@@ -1,2 +1,2 @@
 export * from "./sqlite/appRouter";
-export type { Table } from "./common";
+export type { Table, TableWithRows } from "./common";
