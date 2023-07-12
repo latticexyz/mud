@@ -30,9 +30,7 @@ export type StoredTable = {
   address: Address;
   namespace: string;
   name: string;
-  // TODO: replace with named key tuples once we have on chain key tuple names
-  // keyTuple: Record<string,StaticAbiType>;
-  keyTuple: readonly StaticAbiType[];
+  keyTuple: Record<string, StaticAbiType>;
   value: Record<string, SchemaAbiType>;
 };
 
@@ -187,7 +185,8 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
           address,
           namespace: schema.tableId.namespace,
           name: schema.tableId.name,
-          keyTuple: schema.schema.keySchema.staticFields,
+          // TODO: replace with proper named key tuple
+          keyTuple: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
           value: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
         };
 
@@ -222,9 +221,12 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
           return;
         }
 
-        const keyTupleValues = decodeKeyTuple({ staticFields: table.keyTuple, dynamicFields: [] }, log.args.key);
-        // TODO: add key names once we register them on chain
-        const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [i, value])) as Key<
+        const keyTupleNames = Object.keys(table.keyTuple);
+        const keyTupleValues = decodeKeyTuple(
+          { staticFields: Object.values(table.keyTuple), dynamicFields: [] },
+          log.args.key
+        );
+        const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [keyTupleNames[i], value])) as Key<
           TConfig,
           keyof TConfig["tables"]
         >;

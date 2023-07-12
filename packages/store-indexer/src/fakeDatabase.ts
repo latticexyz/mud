@@ -11,9 +11,7 @@ export type TableName = string;
 export type TableId = `${TableNamespace}:${TableName}`;
 
 export type TableRow = {
-  // TODO: we're temporarily using an array of keyTuple values instead of a record because we don't have key tuple names registered on chain yet
-  // keyTuple: Record<string, StaticPrimitiveType>;
-  keyTuple: readonly StaticPrimitiveType[];
+  keyTuple: Record<string, StaticPrimitiveType>;
   value: Record<string, StaticPrimitiveType | DynamicPrimitiveType>;
 };
 
@@ -21,9 +19,7 @@ export type Table = {
   namespace: TableNamespace;
   name: TableName;
   schema: {
-    // TODO: we're temporarily using an array of keyTuple types instead of a record because we don't have key tuple names registered on chain yet
-    // keyTuple: Record<string, StaticAbiType>;
-    keyTuple: readonly StaticAbiType[];
+    keyTuple: Record<string, StaticAbiType>;
     value: Record<string, StaticAbiType | DynamicAbiType>;
   };
   rows: TableRow[];

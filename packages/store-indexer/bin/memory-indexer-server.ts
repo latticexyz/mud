@@ -110,22 +110,25 @@ blockLogs$
         if (operation.type === "SetRecord") {
           table.lastBlockNumber = blockNumber;
           table.rows = [
-            ...table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":")),
+            ...table.rows.filter((row) => Object.values(row.keyTuple).join(":") !== keyTuple.join(":")),
             {
-              keyTuple: Object.values(operation.keyTuple),
+              keyTuple: operation.keyTuple,
               value: operation.record,
             },
           ];
           // console.log("stored record", operation);
         } else if (operation.type === "SetField") {
-          let row = table.rows.find((row) => row.keyTuple.join(":") === keyTuple.join(":"));
+          let row = table.rows.find((row) => Object.values(row.keyTuple).join(":") === keyTuple.join(":"));
           if (!row) {
             // console.log(`row ${keyTuple.join(":")} not found for set field, creating an empty row`);
             row = {
-              keyTuple: Object.values(operation.keyTuple),
+              keyTuple: operation.keyTuple,
               value: {}, // TODO: fill with default values
             };
-            table.rows = [...table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":")), row];
+            table.rows = [
+              ...table.rows.filter((row) => Object.values(row.keyTuple).join(":") !== keyTuple.join(":")),
+              row,
+            ];
           }
           table.lastBlockNumber = blockNumber;
           row.value = {
@@ -135,7 +138,7 @@ blockLogs$
           // console.log("stored field", operation);
         } else if (operation.type === "DeleteRecord") {
           table.lastBlockNumber = blockNumber;
-          table.rows = table.rows.filter((row) => row.keyTuple.join(":") !== keyTuple.join(":"));
+          table.rows = table.rows.filter((row) => Object.values(row.keyTuple).join(":") !== keyTuple.join(":"));
           // console.log("deleted record", operation);
         }
       }
