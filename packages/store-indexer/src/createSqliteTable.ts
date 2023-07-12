@@ -1,12 +1,11 @@
 import { SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildSqliteColumn } from "./buildSqliteColumn";
-import { sqliteTableToSql } from "./sqliteTableToSql";
 
 type CreateSqliteTableOptions = {
   namespace: string;
   name: string;
-  keySchema: Record<string, StaticAbiType>;
+  keyTupleSchema: Record<string, StaticAbiType>;
   valueSchema: Record<string, SchemaAbiType>;
 };
 
@@ -19,14 +18,14 @@ type CreateSqliteTableResult = {
 export function createSqliteTable({
   namespace,
   name,
-  keySchema,
+  keyTupleSchema,
   valueSchema,
 }: CreateSqliteTableOptions): CreateSqliteTableResult {
   // TODO: colon-separated is okay in sqlite but maybe not in postgres, and maybe not as ergonomic?
   const tableName = `${namespace}:${name}`;
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildSqliteColumn(name, type).primaryKey()])
+    Object.entries(keyTupleSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).primaryKey()])
   );
   const valueColumns = Object.fromEntries(
     Object.entries(valueSchema).map(([name, type]) => [name, buildSqliteColumn(name, type)])

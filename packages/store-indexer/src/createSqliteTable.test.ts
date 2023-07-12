@@ -6,7 +6,7 @@ describe("createSqliteTable", () => {
     const table = createSqliteTable({
       namespace: "test",
       name: "users",
-      keySchema: { x: "uint32", y: "uint32" },
+      keyTupleSchema: { x: "uint32", y: "uint32" },
       valueSchema: { name: "string", addr: "address" },
     });
 

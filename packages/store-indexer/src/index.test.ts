@@ -22,7 +22,7 @@ describe("sqlite", () => {
     const { tableName, table } = createSqliteTable({
       namespace: "test",
       name: "users",
-      keySchema: { x: "uint32", y: "uint32" },
+      keyTupleSchema: { x: "uint32", y: "uint32" },
       valueSchema: { name: "string", addr: "address" },
     });
 
@@ -49,6 +49,8 @@ describe("sqlite", () => {
       ]
     `);
   });
+
+  // TODO: convert this to a benchmark test https://vitest.dev/guide/features.html#benchmarking-experimental
 
   it("should be performant", async () => {
     const NUM = 10_000;
