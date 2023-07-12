@@ -6,7 +6,11 @@ settings:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@playwright/test':
+        specifier: 1.36.0
+        version: 1.36.0
 
   packages/client-vanilla:
     dependencies:
@@ -161,9 +165,6 @@ importers:
       '@latticexyz/utils':
         specifier: link:../../../packages/utils
         version: link:../../../packages/utils
-      '@playwright/test':
-        specifier: ^1.36.0
-        version: 1.36.0
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
