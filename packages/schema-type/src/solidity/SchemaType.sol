@@ -211,27 +211,20 @@ enum SchemaType {
  * Get the length of the data for the given schema type
  * (Because Solidity doesn't support constant arrays, we need to use a function)
  */
-function getStaticByteLength(SchemaType schemaType) pure returns (uint256) {
+function getStaticByteLength(SchemaType schemaType) pure returns (uint256 r) {
   uint256 index = uint8(schemaType);
 
-  if (index < 32) {
-    // uint8-256
-    return index + 1;
-  } else if (index < 64) {
-    // int8-256, offset by 32
-    return index + 1 - 32;
-  } else if (index < 96) {
-    // bytes1-32, offset by 64
-    return index + 1 - 64;
-  }
-
-  // Other static types
-  if (schemaType == SchemaType.BOOL) {
-    return 1;
+  if (index < 97) {
+    // SchemaType enum elements are cyclically ordered for optimal static length lookup
+    // indexes: 00-31, 32-63, 64-95, 96, 97, ...
+    // lengths: 01-32, 01-32, 01-32, 01, 20, (the rest are 0s)
+    unchecked {
+      return (index & 31) + 1;
+    }
   } else if (schemaType == SchemaType.ADDRESS) {
     return 20;
+  } else {
+    // Return 0 for all dynamic types
+    return 0;
   }
-
-  // Return 0 for all dynamic types
-  return 0;
 }
