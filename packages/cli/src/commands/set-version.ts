@@ -5,12 +5,15 @@ import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
 import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
+import glob from "glob";
 
 type Options = {
   backup?: boolean;
   force?: boolean;
   restore?: boolean;
   mudVersion?: string;
+  tag?: string;
+  commit?: string;
   link?: string;
 };
 
@@ -20,7 +23,7 @@ const MUD_PREFIX = "@latticexyz";
 const commandModule: CommandModule<Options, Options> = {
   command: "set-version",
 
-  describe: "Install a custom MUD version and optionally backup the previously installed version",
+  describe: "Set MUD version in all package.json files and optionally backup the previously installed version",
 
   builder(yargs) {
     return yargs.options({
@@ -30,25 +33,43 @@ const commandModule: CommandModule<Options, Options> = {
         description: `Backup fails if a "${BACKUP_FILE}" file is found, unless --force is provided`,
       },
       restore: { type: "boolean", description: `Restore the previous MUD versions from "${BACKUP_FILE}"` },
-      mudVersion: { alias: "v", type: "string", description: "The MUD version to install" },
+      mudVersion: { alias: "v", type: "string", description: "Set MUD to the given version" },
+      tag: {
+        alias: "t",
+        type: "string",
+        description: "Set MUD to the latest version with the given tag from npm",
+      },
+      commit: {
+        alias: "c",
+        type: "string",
+        description: "Set MUD to the version based on a given git commit hash from npm",
+      },
       link: { alias: "l", type: "string", description: "Relative path to the local MUD root directory to link" },
     });
   },
 
   async handler(options) {
     try {
-      if (!options.mudVersion && !options.link && !options.restore) {
-        throw new MUDError("`--mudVersion` or `--link` is required unless --restore is provided.");
+      const mutuallyExclusiveOptions = ["mudVersion", "link", "tag", "commit", "restore"];
+      const numMutuallyExclusiveOptions = mutuallyExclusiveOptions.reduce(
+        (acc, opt) => (options[opt] ? acc + 1 : acc),
+        0
+      );
+
+      if (numMutuallyExclusiveOptions === 0) {
+        throw new MUDError(`You need to provide one these options: ${mutuallyExclusiveOptions.join(", ")}`);
       }
 
-      // `link` and `mudVersion` are mutually exclusive
-      if (options.link && options.mudVersion) {
-        throw new MUDError("Options `--link` and `--mudVersion` are mutually exclusive");
+      if (numMutuallyExclusiveOptions > 1) {
+        throw new MUDError(`These options are mutually exclusive: ${mutuallyExclusiveOptions.join(", ")}`);
       }
 
-      // Resolve the `canary` version number if needed
-      options.mudVersion =
-        options.mudVersion === "canary" ? await getCanaryVersion(localPackageJson.name) : options.mudVersion;
+      // Resolve the version number from available options like `tag` or `commit`
+      options.mudVersion = await resolveVersion(options);
+
+      // Update all package.json below the current working directory (except in node_modules)
+      const packageJsons = glob.sync("**/package.json");
+      console.log("All package.jsons", packageJsons);
 
       // Read the current package.json
       const rootPath = "./package.json";
@@ -68,6 +89,41 @@ const commandModule: CommandModule<Options, Options> = {
     }
   },
 };
+
+async function resolveVersion(options: Options) {
+  // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
+  if (options.mudVersion === "canary") options.tag = "main";
+
+  try {
+    console.log(chalk.blue(`Fetching available versions`));
+    const npmResult = await (await fetch(`https://registry.npmjs.org/${localPackageJson.name}`)).json();
+
+    if (options.tag) {
+      const version = npmResult["dist-tags"][options.tag];
+      if (!version) {
+        throw new MUDError(`Could not find npm version with tag ${options.tag}`);
+      }
+      console.log(chalk.green(`Latest version with tag ${options.tag}: ${version}`));
+      return version;
+    }
+
+    if (options.commit) {
+      // Find a version with this commit hash
+      const commit = options.commit.substring(0, 8); // changesets uses the first 8 characters of the commit hash as version for prereleases/snapshot releases
+      const version = Object.values(npmResult["versions"]).find((v) => (v as string).includes(commit));
+      if (!version) {
+        throw new MUDError(`Could not find npm version from commit ${options.commit}`);
+      }
+      console.log(chalk.green(`Version from commit ${options.commit}: ${version}`));
+      return version;
+    }
+
+    // If neither a tag nor a commit option is given, return the `mudVersion`
+    return options.mudVersion;
+  } catch (e) {
+    throw new MUDError(`Could not fetch available MUD versions`);
+  }
+}
 
 function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
   const { restore, force, link } = options;
@@ -164,18 +220,6 @@ function readPackageJson(path: string): {
     return JSON.parse(jsonString);
   } catch {
     throw new MUDError("Could not read JSON at " + path);
-  }
-}
-
-async function getCanaryVersion(pkg: string) {
-  try {
-    console.log(chalk.blue("fetching MUD canary version..."));
-    const result = await (await fetch(`https://registry.npmjs.org/${pkg}`)).json();
-    const canary = result["dist-tags"].canary;
-    console.log(chalk.green("MUD canary version:", canary));
-    return canary;
-  } catch (e) {
-    throw new MUDError(`Could not fetch canary version of ${pkg}`);
   }
 }
 
