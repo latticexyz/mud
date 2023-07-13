@@ -735,7 +735,7 @@ library Dynamics1 {
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal view returns (Dynamics1Data memory _table) {
+  function decode(bytes memory _blob) internal pure returns (Dynamics1Data memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
@@ -774,7 +774,7 @@ library Dynamics1 {
     uint128[3] memory staticU128,
     address[4] memory staticAddrs,
     bool[5] memory staticBools
-  ) internal view returns (bytes memory) {
+  ) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](5);
     _counters[0] = uint40(staticB32.length * 32);
     _counters[1] = uint40(staticI32.length * 4);
@@ -852,7 +852,7 @@ function toStaticArray_bool_5(bool[] memory _value) pure returns (bool[5] memory
   }
 }
 
-function fromStaticArray_bytes32_1(bytes32[1] memory _value) view returns (bytes32[] memory _result) {
+function fromStaticArray_bytes32_1(bytes32[1] memory _value) pure returns (bytes32[] memory _result) {
   _result = new bytes32[](1);
   uint256 fromPointer;
   uint256 toPointer;
@@ -863,7 +863,7 @@ function fromStaticArray_bytes32_1(bytes32[1] memory _value) view returns (bytes
   Memory.copy(fromPointer, toPointer, 32);
 }
 
-function fromStaticArray_int32_2(int32[2] memory _value) view returns (int32[] memory _result) {
+function fromStaticArray_int32_2(int32[2] memory _value) pure returns (int32[] memory _result) {
   _result = new int32[](2);
   uint256 fromPointer;
   uint256 toPointer;
@@ -874,7 +874,7 @@ function fromStaticArray_int32_2(int32[2] memory _value) view returns (int32[] m
   Memory.copy(fromPointer, toPointer, 64);
 }
 
-function fromStaticArray_uint128_3(uint128[3] memory _value) view returns (uint128[] memory _result) {
+function fromStaticArray_uint128_3(uint128[3] memory _value) pure returns (uint128[] memory _result) {
   _result = new uint128[](3);
   uint256 fromPointer;
   uint256 toPointer;
@@ -885,7 +885,7 @@ function fromStaticArray_uint128_3(uint128[3] memory _value) view returns (uint1
   Memory.copy(fromPointer, toPointer, 96);
 }
 
-function fromStaticArray_address_4(address[4] memory _value) view returns (address[] memory _result) {
+function fromStaticArray_address_4(address[4] memory _value) pure returns (address[] memory _result) {
   _result = new address[](4);
   uint256 fromPointer;
   uint256 toPointer;
@@ -896,7 +896,7 @@ function fromStaticArray_address_4(address[4] memory _value) view returns (addre
   Memory.copy(fromPointer, toPointer, 128);
 }
 
-function fromStaticArray_bool_5(bool[5] memory _value) view returns (bool[] memory _result) {
+function fromStaticArray_bool_5(bool[5] memory _value) pure returns (bool[] memory _result) {
   _result = new bool[](5);
   uint256 fromPointer;
   uint256 toPointer;
