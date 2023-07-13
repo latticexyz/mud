@@ -8,7 +8,9 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [],
-  "useCalculatedVersion": true,
-  "prereleaseTemplate": "{tag}-{commit}"
+  "snapshot": {
+    "useCalculatedVersion": true,
+    "prereleaseTemplate": "{tag}-{commit}"
+  }
 }
 
