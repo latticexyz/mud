@@ -15,15 +15,15 @@ contract SliceTest is Test, GasReporter {
     endGasReport();
 
     startGasReport("get Slice length");
-    slice.length();
+    uint256 length = slice.length();
     endGasReport();
 
     startGasReport("get Slice pointer");
-    slice.pointer();
+    uint256 pointer = slice.pointer();
     endGasReport();
 
-    assertEq(slice.length(), 8);
-    assertEq(slice.pointer(), Memory.dataPointer(data));
+    assertEq(length, 8);
+    assertEq(pointer, Memory.dataPointer(data));
     assertEq(slice.toBytes(), data);
   }
 
