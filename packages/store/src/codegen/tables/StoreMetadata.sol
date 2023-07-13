@@ -364,7 +364,7 @@ library StoreMetadata {
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal view returns (StoreMetadataData memory _table) {
+  function decode(bytes memory _blob) internal pure returns (StoreMetadataData memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
@@ -385,7 +385,7 @@ library StoreMetadata {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal view returns (bytes memory) {
+  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](2);
     _counters[0] = uint40(bytes(tableName).length);
     _counters[1] = uint40(bytes(abiEncodedFieldNames).length);

@@ -174,7 +174,7 @@ library InstalledModules {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(address moduleAddress) internal view returns (bytes memory) {
+  function encode(address moduleAddress) internal pure returns (bytes memory) {
     return abi.encodePacked(moduleAddress);
   }
 
