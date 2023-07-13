@@ -211,7 +211,7 @@ enum SchemaType {
  * Get the length of the data for the given schema type
  * (Because Solidity doesn't support constant arrays, we need to use a function)
  */
-function getStaticByteLength(SchemaType schemaType) pure returns (uint256 r) {
+function getStaticByteLength(SchemaType schemaType) pure returns (uint256) {
   uint256 index = uint8(schemaType);
 
   if (index < 97) {
