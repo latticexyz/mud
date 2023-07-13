@@ -75,7 +75,7 @@ const blockLogs$ = latestBlockNumber$.pipe(
       // console.log("table", log.blockNumber, TableId.fromHex(log.args.table));
     });
   }),
-  mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
+  mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
   // tap((blockLogs) => console.log("block logs", blockLogs))
 );
 
