@@ -5,7 +5,7 @@ import { leftMask } from "./Utils.sol";
 
 library Memory {
   /**
-   * In dynamic arrays the first word stores the length of data, after which comes data.
+   * In dynamic arrays the first word stores the length of data, after which comes the data.
    * Example: 0x40 0x01 0x02
    *          ^len ^data
    */
@@ -16,21 +16,20 @@ library Memory {
   }
 
   function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal pure {
-    // copy 32-byte chunks
+    // Copy 32-byte chunks
     while (length >= 32) {
       /// @solidity memory-safe-assembly
       assembly {
         mstore(toPointer, mload(fromPointer))
       }
-      // safe because total addition will be <= length (ptr+len is implicitly safe)
+      // Safe because total addition will be <= length (ptr+len is implicitly safe)
       unchecked {
         toPointer += 32;
         fromPointer += 32;
         length -= 32;
       }
     }
-    // copy the 0-31 length tail
-    // (the rest is an inlined `mstoreN`)
+    // Copy the 0-31 length tail
     uint256 mask = leftMask(length);
     /// @solidity memory-safe-assembly
     assembly {
