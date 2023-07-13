@@ -1,9 +1,10 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { Hex } from "viem";
-import { getDatabase, getTables, mudIndexer } from "./sqlite";
+import { chainState, getDatabase, getInternalDatabase, getTables } from "./sqlite";
 import { TableWithRows } from "../common";
 import { createSqliteTable } from "./createSqliteTable";
+import { eq } from "drizzle-orm";
 
 export const appRouter = router({
   findAll: publicProcedure
@@ -34,9 +35,8 @@ export const appRouter = router({
         })
       );
 
-      // TODO: store this in global table
-      const metadata = db.select().from(mudIndexer).all();
-      console.log("metadata", metadata);
+      const internalDb = await getInternalDatabase();
+      const metadata = internalDb.select().from(chainState).where(eq(chainState.chainId, chainId)).all();
       const { lastUpdatedBlockNumber } = metadata[0] ?? {};
 
       const result = {

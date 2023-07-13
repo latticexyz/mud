@@ -1,4 +1,4 @@
-import { StaticPrimitiveType, DynamicPrimitiveType, DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { Address, getAddress } from "viem";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
@@ -7,30 +7,47 @@ import { DefaultLogger, and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { ChainId, Table, TableName, TableNamespace, WorldId } from "../common";
+import { json } from "./columnTypes";
 
-export const mudIndexerName = "__mud_indexer";
-export const mudIndexer = sqliteTable(mudIndexerName, {
+export const chainStateName = "__chainState";
+export const chainState = sqliteTable(chainStateName, {
+  chainId: integer("chainId").notNull().primaryKey(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
   // TODO: last block hash?
   lastError: text("last_error"),
-  __singleton: integer("__singleton", { mode: "boolean" }).notNull().default(true).primaryKey(),
 });
 
 export const mudStoreTablesName = "__mud_store_tables";
 export const mudStoreTables = sqliteTable(mudStoreTablesName, {
   namespace: text("namespace").notNull().primaryKey(),
   name: text("name").notNull().primaryKey(),
-  keyTupleSchema: blob("key_schema", { mode: "json" }).notNull(),
-  valueSchema: blob("value_schema", { mode: "json" }).notNull(),
+  keyTupleSchema: json("key_schema").notNull(),
+  valueSchema: json("value_schema").notNull(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
   // TODO: last block hash?
   lastError: text("last_error"),
 });
 
+export let internalDatabase: SQLJsDatabase | null = null;
 export const databases = new Map<WorldId, SQLJsDatabase>();
 
 export function destroy(): void {
   databases.clear();
+}
+
+export async function getInternalDatabase(): Promise<SQLJsDatabase> {
+  if (internalDatabase) {
+    return internalDatabase;
+  }
+
+  const SqlJs = await initSqlJs();
+  const db = drizzle(new SqlJs.Database(), {
+    // logger: new DefaultLogger(),
+  });
+
+  db.run(sql.raw(sqliteTableToSql(chainStateName, chainState)));
+
+  return (internalDatabase = db);
 }
 
 export async function getDatabase(chainId: ChainId, address: Address): Promise<SQLJsDatabase> {
@@ -44,10 +61,9 @@ export async function getDatabase(chainId: ChainId, address: Address): Promise<S
   // TODO: type DB to include mudStoreTables
   const SqlJs = await initSqlJs();
   const db = drizzle(new SqlJs.Database(), {
-    logger: new DefaultLogger(),
+    // logger: new DefaultLogger(),
   });
 
-  db.run(sql.raw(sqliteTableToSql(mudIndexerName, mudIndexer)));
   db.run(sql.raw(sqliteTableToSql(mudStoreTablesName, mudStoreTables)));
 
   databases.set(worldId, db);

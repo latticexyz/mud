@@ -26,19 +26,20 @@ export function createSqliteTable({
   const tableName = `${namespace}:${name}`;
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keyTupleSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).primaryKey()])
+    Object.entries(keyTupleSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull().primaryKey()])
   );
 
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildSqliteColumn(name, type)])
+    Object.entries(valueSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull()])
   );
 
   const metaColumns: Record<string, AnySQLiteColumnBuilder> = {
-    __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256"),
-    __isDeleted: buildSqliteColumn("__isDeleted", "bool"),
+    __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
+    // TODO: last updated block hash?
+    __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
   };
   if (Object.keys(keyTupleSchema).length === 0) {
-    metaColumns.__singleton = buildSqliteColumn("__singleton", "bool", true).primaryKey();
+    metaColumns.__singleton = buildSqliteColumn("__singleton", "bool").notNull().primaryKey();
   }
 
   // TODO: make sure there are no meta columns that overlap with key/value columns

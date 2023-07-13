@@ -11,9 +11,17 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
-import { createTable, getDatabase, getTable, mudIndexer, mudStoreTables } from "../src/sqlite/sqlite";
+import {
+  chainState,
+  createTable,
+  getDatabase,
+  getInternalDatabase,
+  getTable,
+  mudStoreTables,
+} from "../src/sqlite/sqlite";
 import { createSqliteTable } from "../src/sqlite/createSqliteTable";
 import { and, eq } from "drizzle-orm";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
 
 // TODO: align shared types (e.g. table, key+value schema)
 
@@ -70,6 +78,14 @@ const blockLogs$ = latestBlockNumber$.pipe(
   mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))
   // tap((blockLogs) => console.log("block logs", blockLogs))
 );
+
+function schemaToDefaults(
+  schema: Record<string, SchemaAbiType>
+): Record<string, SchemaAbiTypeToPrimitiveType<SchemaAbiType>> {
+  return Object.fromEntries(
+    Object.entries(schema).map(([key, abiType]) => [key, schemaAbiTypeToDefaultValue[abiType]])
+  );
+}
 
 blockLogs$
   .pipe(
@@ -138,20 +154,6 @@ blockLogs$
           );
 
           await db.transaction(async (tx) => {
-            await tx
-              .insert(mudIndexer)
-              .values({
-                lastUpdatedBlockNumber: blockNumber,
-                __singleton: true,
-              })
-              .onConflictDoUpdate({
-                target: mudIndexer.__singleton,
-                set: {
-                  lastUpdatedBlockNumber: blockNumber,
-                },
-              })
-              .run();
-
             for (const { namespace, name } of tables) {
               await tx
                 .update(mudStoreTables)
@@ -202,6 +204,7 @@ blockLogs$
                   .insert(sqliteTable)
                   .values({
                     ...operation.keyTuple,
+                    ...schemaToDefaults(table.valueSchema),
                     [operation.valueName]: operation.value,
                     __lastUpdatedBlockNumber: blockNumber,
                     __isDeleted: false,
@@ -242,6 +245,21 @@ blockLogs$
           });
         })
       );
+
+      const internalDb = await getInternalDatabase();
+      await internalDb
+        .insert(chainState)
+        .values({
+          chainId: chain.id,
+          lastUpdatedBlockNumber: blockNumber,
+        })
+        .onConflictDoUpdate({
+          target: chainState.chainId,
+          set: {
+            lastUpdatedBlockNumber: blockNumber,
+          },
+        })
+        .run();
     })
   )
   .subscribe();

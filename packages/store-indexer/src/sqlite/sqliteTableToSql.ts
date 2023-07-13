@@ -20,8 +20,8 @@ export function sqliteTableToSql(tableName: string, table: SQLiteTableWithColumn
         col = col.notNull();
       }
       if (column.hasDefault && typeof column.default !== "undefined") {
-        col = col.defaultTo(column.mapToDriverValue(column.default));
-        // col = col.defaultTo(column.default);
+        // col = col.defaultTo(column.mapToDriverValue(column.default));
+        col = col.defaultTo(column.default);
       }
       return col;
     });

@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createTable, destroy, getDatabase, getTable, mudIndexer, mudStoreTables } from "./sqlite";
+import { chainState, createTable, destroy, getDatabase, getInternalDatabase, getTable, mudStoreTables } from "./sqlite";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { createSqliteTable } from "./createSqliteTable";
+import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
+import { eq } from "drizzle-orm";
 
 describe("sqlite", () => {
   beforeEach(() => {
@@ -58,7 +60,14 @@ describe("sqlite", () => {
 
     const { table: sqliteTable } = createSqliteTable(table);
     db.insert(sqliteTable)
-      .values([{ x: 1, y: 1, name: "User1" }])
+      .values({
+        x: 1,
+        y: 1,
+        name: "User1",
+        addr: schemaAbiTypeToDefaultValue["address"],
+        __lastUpdatedBlockNumber: 0n,
+        __isDeleted: false,
+      })
       .run();
 
     expect(db.select().from(sqliteTable).all()).toMatchInlineSnapshot(`
@@ -76,22 +85,23 @@ describe("sqlite", () => {
   });
 
   it("should update singleton row", async () => {
-    const db = await getDatabase(4242, "0x0000000000000000000000000000000000000000");
+    const internalDb = await getInternalDatabase();
 
-    db.insert(mudIndexer)
+    internalDb
+      .insert(chainState)
       .values({
+        chainId: 4242,
         lastUpdatedBlockNumber: 1n,
-        // __singleton: true,
       })
       .onConflictDoUpdate({
-        target: mudIndexer.__singleton,
+        target: chainState.chainId,
         set: {
           lastUpdatedBlockNumber: 1n,
         },
       })
       .run();
 
-    expect(db.select().from(mudIndexer).all()).toMatchInlineSnapshot(`
+    expect(internalDb.select().from(chainState).all()).toMatchInlineSnapshot(`
       [
         {
           "__singleton": true,
@@ -101,33 +111,35 @@ describe("sqlite", () => {
       ]
     `);
 
-    db.insert(mudIndexer)
+    internalDb
+      .insert(chainState)
       .values({
+        chainId: 4242,
         lastUpdatedBlockNumber: 2n,
-        __singleton: true,
       })
       .onConflictDoUpdate({
-        target: mudIndexer.__singleton,
+        target: chainState.chainId,
         set: {
           lastUpdatedBlockNumber: 2n,
         },
       })
       .run();
 
-    db.insert(mudIndexer)
+    internalDb
+      .insert(chainState)
       .values({
+        chainId: 4242,
         lastUpdatedBlockNumber: 3n,
-        __singleton: true,
       })
       .onConflictDoUpdate({
-        target: mudIndexer.__singleton,
+        target: chainState.chainId,
         set: {
           lastUpdatedBlockNumber: 3n,
         },
       })
       .run();
 
-    expect(db.select().from(mudIndexer).all()).toMatchInlineSnapshot(`
+    expect(internalDb.select().from(chainState).all()).toMatchInlineSnapshot(`
       [
         {
           "__singleton": true,
