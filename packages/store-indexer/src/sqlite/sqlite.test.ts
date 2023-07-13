@@ -104,7 +104,7 @@ describe("sqlite", () => {
     expect(internalDb.select().from(chainState).all()).toMatchInlineSnapshot(`
       [
         {
-          "__singleton": true,
+          "chainId": 4242,
           "lastError": null,
           "lastUpdatedBlockNumber": 1n,
         },
@@ -142,7 +142,7 @@ describe("sqlite", () => {
     expect(internalDb.select().from(chainState).all()).toMatchInlineSnapshot(`
       [
         {
-          "__singleton": true,
+          "chainId": 4242,
           "lastError": null,
           "lastUpdatedBlockNumber": 3n,
         },
