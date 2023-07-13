@@ -9,16 +9,18 @@ type RPCConfig struct {
 // ChainConfig defines the configuration for a chain.
 type ChainConfig struct {
 	Name string    `yaml:"name"`
-	ID   string    `yaml:"id"`
+	Id   string    `yaml:"id"`
 	RPC  RPCConfig `yaml:"rpc"`
 }
 
 // DBConfig defines the configuration for a database.
 type DBConfig struct {
-	Name string `yaml:"name"`
-	Host string `yaml:"host"`
-	Port uint64 `yaml:"port"`
-	Wipe bool   `yaml:"wipe"`
+	Name     string `yaml:"name"`
+	Host     string `yaml:"host"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+	Port     uint64 `yaml:"port"`
+	Wipe     bool   `yaml:"wipe"`
 }
 
 // SyncConfig defines the configuration for the synchronization process.

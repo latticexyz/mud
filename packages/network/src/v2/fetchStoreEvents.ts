@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
 import { NetworkComponentUpdate } from "../types";
 import orderBy from "lodash/orderBy";
-import { isDefined } from "@latticexyz/utils";
+import { isDefined } from "@latticexyz/common/utils";
 import { ephemeralEvents, storeEvents } from "./common";
 import { ecsEventFromLog } from "./ecsEventFromLog";
 
@@ -42,7 +42,7 @@ export async function fetchStoreEvents(
   // We defer the emissions of dev events because `ecsEventFromLog` is async and emitting them
   // from within that function causes them to arrive out of order. It's better if our emitter
   // can guarantee ordering for now.
-  events.forEach((event) => event.devEmit());
+  events.forEach((event) => event?.devEmit && event.devEmit());
 
   return events;
 }

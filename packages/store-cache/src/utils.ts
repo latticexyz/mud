@@ -1,4 +1,4 @@
-import { ScanArgs, Tuple, TupleDatabaseClient } from "tuple-database";
+import { ScanArgs, Tuple, AsyncTupleDatabaseClient, Unsubscribe } from "tuple-database";
 import { StoreConfig } from "@latticexyz/store";
 import {
   Key,
@@ -13,10 +13,11 @@ import {
   ScanResult,
 } from "./types";
 import { getAbiTypeDefaultValue } from "@latticexyz/schema-type/deprecated";
+import { StaticPrimitiveType } from "@latticexyz/schema-type";
 
 /**
  * Set the value for the given key
- * @param client TupleDatabaseClient
+ * @param client AsyncTupleDatabaseClient
  * @param table Table to set the given key in
  * @param key Key to identify the record to set in the table
  * @param value Value to set for the given key
@@ -26,43 +27,42 @@ import { getAbiTypeDefaultValue } from "@latticexyz/schema-type/deprecated";
  * }
  * @returns Transaction
  */
-export function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export async function set<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  client: TupleDatabaseClient,
+  client: AsyncTupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>,
   value: Partial<Value<C, T>>,
   options?: SetOptions
-) {
+): Promise<void> {
   const keyTuple = databaseKey<C, T>(config, namespace, table, key);
-  const currentValue = client.get(keyTuple) ?? options?.defaultValue;
+  const currentValue = (await client.get(keyTuple)) ?? options?.defaultValue;
   const tx = options?.transaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
-  if (!options?.transaction) tx.commit();
-  return tx;
+  if (!options?.transaction) await tx.commit();
 }
 
 /**
  * Get the value for the given key
- * @param client TupleDatabaseClient
+ * @param client AsyncTupleDatabaseClient
  * @param table Table to get the given key from
  * @param key Key to identify the record to get from the table
  * @returns Value for the given key
  */
-export function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export async function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  client: TupleDatabaseClient,
+  client: AsyncTupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
-): Value<C, T> {
+): Promise<Value<C, T>> {
   return client.get(databaseKey<C, T>(config, namespace, table, key));
 }
 
 /**
  * Remove the value for the given key
- * @param client TupleDatabaseClient
+ * @param client AsyncTupleDatabaseClient
  * @param table Table to remove the given key from
  * @param key Key to identify the record to remove from the table
  * @param options {
@@ -71,27 +71,26 @@ export function get<C extends StoreConfig, T extends keyof C["tables"] = keyof C
  * }
  * @returns Transaction
  */
-export function remove<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export async function remove<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  client: TupleDatabaseClient,
+  client: AsyncTupleDatabaseClient,
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>,
   options?: RemoveOptions
-) {
+): Promise<void> {
   const tx = options?.transaction ?? client.transact();
   tx.remove(databaseKey<C, T>(config, namespace, table, key));
-  if (!options?.transaction) tx.commit();
-  return tx;
+  if (!options?.transaction) await tx.commit();
 }
 
-export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export async function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  client: TupleDatabaseClient,
+  client: AsyncTupleDatabaseClient,
   filter?: FilterOptions<C, T>
-): ScanResult<C, T> {
+): Promise<ScanResult<C, T>> {
   const scanArgs = getScanArgsFromFilter(config, filter);
-  const results = client.scan(scanArgs);
+  const results = await client.scan(scanArgs);
 
   return results.map(
     ({ key, value }) =>
@@ -104,7 +103,7 @@ export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tab
 
 /**
  * Subscribe to changes in the database
- * @param client TupleDatabaseClient
+ * @param client AsyncTupleDatabaseClient
  * @param callback Callback to be called when a change occurs
  * @param filter {
  *  table?: Table to subscribe to. If none is given, all tables are subscribed to
@@ -112,12 +111,12 @@ export function scan<C extends StoreConfig = StoreConfig, T extends keyof C["tab
  * }
  * @returns Function to unsubscribe
  */
-export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+export async function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  client: TupleDatabaseClient,
+  client: AsyncTupleDatabaseClient,
   callback: SubscriptionCallback<C, T>,
   filter?: FilterOptions<C, T>
-) {
+): Promise<Unsubscribe> {
   const scanArgs = getScanArgsFromFilter(config, filter);
 
   return client.subscribe(scanArgs, (write) => {
@@ -163,9 +162,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
 /**
  * Map a table schema to the corresponding default value
  */
-export function getDefaultValue<Schema extends Record<string, string>>(schema?: Schema) {
-  if (schema == null) return undefined;
-
+export function getDefaultValue<Schema extends Record<string, string>>(schema: Schema): SchemaToPrimitives<Schema> {
   // Map schema to its default values
   const defaultValue: Record<string, unknown> = {};
   for (const key in schema) {
@@ -178,7 +175,7 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
 function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
   filter?: FilterOptions<C, T>
-) {
+): ScanArgs<Tuple, Tuple> {
   const { table, key } = filter || {};
   // Default to the config namespace if a filter without namespace is provided
   const namespace = filter ? filter.namespace ?? config.namespace : undefined;
@@ -188,15 +185,17 @@ function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"
 
   // Transform scan args
   if (table) {
-    scanArgs.gte = key?.gte && recordToTuple(key.gte, getKeyOrder(config, table));
-    scanArgs.gt = key?.gt && recordToTuple(key.gt, getKeyOrder(config, table));
-    scanArgs.lte = key?.lte && recordToTuple(key.lte, getKeyOrder(config, table));
-    scanArgs.lt = key?.lt && recordToTuple(key.lt, getKeyOrder(config, table));
+    scanArgs.gte =
+      key?.gte && recordToTuple(key.gte as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+    scanArgs.gt = key?.gt && recordToTuple(key.gt as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+    scanArgs.lte =
+      key?.lte && recordToTuple(key.lte as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+    scanArgs.lt = key?.lt && recordToTuple(key.lt as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
 
     // Override gte and lte if eq is set
     if (key?.eq) {
-      scanArgs.gte = recordToTuple(key.eq, getKeyOrder(config, table));
-      scanArgs.lte = recordToTuple(key.eq, getKeyOrder(config, table));
+      scanArgs.gte = recordToTuple(key.eq as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
+      scanArgs.lte = recordToTuple(key.eq as Record<string, StaticPrimitiveType>, getKeyOrder(config, table));
     }
   }
 
@@ -211,14 +210,18 @@ function databaseKey<C extends StoreConfig, T extends keyof C["tables"] = keyof 
   namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
-) {
-  return [namespace, table, ...recordToTuple(key, getKeyOrder(config, table))] satisfies Tuple;
+): Tuple {
+  return [
+    namespace,
+    table,
+    ...recordToTuple(key as Record<string, StaticPrimitiveType>, getKeyOrder(config, table)),
+  ] satisfies Tuple;
 }
 
 /**
  * Get an array corresponding to the keys of the table's key schema
  */
-function getKeyOrder(config: StoreConfig, table: string) {
+function getKeyOrder(config: StoreConfig, table: string): string[] | undefined {
   const tableConfig = config.tables[table];
   return tableConfig ? Object.getOwnPropertyNames(tableConfig.keySchema) : undefined;
 }
@@ -227,7 +230,7 @@ function getKeyOrder(config: StoreConfig, table: string) {
  * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
  * and sort it based on config's key order, as expected for keys in tuple-database
  */
-function recordToTuple(record: Record<string, unknown>, keyOrder?: string[]): Tuple {
+function recordToTuple(record: Record<string, StaticPrimitiveType>, keyOrder?: string[]): Tuple {
   const tuple = [];
   for (const key of keyOrder ?? Object.keys(record)) {
     tuple.push({ [key]: serializeKey(record[key]) });
@@ -257,7 +260,7 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
  * (see https://github.com/ccorcos/tuple-database/issues/25)
  * For now only `bigint` needs serialization.
  */
-function serializeKey(key: unknown) {
+function serializeKey(key: string | number | bigint | boolean): string | number | boolean {
   if (typeof key === "bigint") return `${key.toString()}n`;
   return key;
 }
@@ -267,7 +270,7 @@ function serializeKey(key: unknown) {
  * (see https://github.com/ccorcos/tuple-database/issues/25)
  * For now only `bigint` is serialized and need to be deserialized here.
  */
-function deserializeKey(key: unknown): unknown {
+function deserializeKey(key: string): string | bigint {
   // Check whether the key matches the mattern `${number}n`
   // (serialization of bigint in `serializeKey`)
   // and turn it back into a bigint
@@ -280,6 +283,6 @@ function deserializeKey(key: unknown): unknown {
 /**
  * Helper to concat namespace and table with a separator
  */
-function toSelector(namespace: string, table: string) {
+function toSelector(namespace: string, table: string): string {
   return namespace + "/" + table;
 }

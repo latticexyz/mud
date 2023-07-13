@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
@@ -55,5 +55,17 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
     startGasReport("store Mixed struct in storage (native solidity)");
     testMixed = mixed;
     endGasReport();
+  }
+
+  function testEncode() public {
+    uint32[] memory a32 = new uint32[](2);
+    a32[0] = 3;
+    a32[1] = 4;
+    string memory s = "some string";
+
+    assertEq(
+      Mixed.encode(1, 2, a32, s),
+      hex"0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
+    );
   }
 }

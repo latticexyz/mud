@@ -1,4 +1,5 @@
-import { TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/common";
+import { Hex } from "viem";
 import snapSyncSystemAbi from "./snapSyncSystemAbi";
 import { Contract, Signer, providers } from "ethers";
 import { RawTableRecord } from "../../types";
@@ -12,7 +13,7 @@ export async function getSnapSyncRecords(
   const snapSyncContract = new Contract(worldAddress, snapSyncSystemAbi, signerOrProvider);
 
   const chunkSize = 100;
-  const tableIds = tables.map((table) => table.toHexString());
+  const tableIds = tables.map((table) => table.toHex());
   const tableRecords = [] as RawTableRecord[];
   for (const tableId of tableIds) {
     const numKeys = (
@@ -34,7 +35,7 @@ export async function getSnapSyncRecords(
       });
       const transformedRecords = records.map((record: [string, string[], string]) => {
         return {
-          tableId: TableId.fromHexString(record[0]),
+          tableId: TableId.fromHex(record[0] as Hex),
           keyTuple: record[1],
           value: record[2],
         };

@@ -13,7 +13,17 @@ const TEMP_CONFIG = "mud.config.temp.mjs";
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
   try {
-    await esbuild.build({ entryPoints: [configPath], format: "esm", outfile: TEMP_CONFIG });
+    await esbuild.build({
+      entryPoints: [configPath],
+      format: "esm",
+      outfile: TEMP_CONFIG,
+      // https://esbuild.github.io/getting-started/#bundling-for-node
+      platform: "node",
+      // bundle local imports (otherwise it may error, js can't import ts)
+      bundle: true,
+      // avoid bundling external imports (it's unnecessary and esbuild can't handle all node features)
+      packages: "external",
+    });
     configPath = await resolveConfigPath(TEMP_CONFIG, true);
     // Node.js caches dynamic imports, so without appending a cache breaking
     // param like `?update={Date.now()}` this import always returns the same config

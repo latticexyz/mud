@@ -181,7 +181,7 @@ library Systems {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(address system, bool publicAccess) internal view returns (bytes memory) {
+  function encode(address system, bool publicAccess) internal pure returns (bytes memory) {
     return abi.encodePacked(system, publicAccess);
   }
 

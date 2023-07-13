@@ -1,4 +1,4 @@
-import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
+import { AsyncTupleDatabaseClient, AsyncTupleRootTransactionApi, Unsubscribe } from "tuple-database";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type/deprecated";
 
@@ -29,17 +29,17 @@ export type DatabaseClient<C extends StoreConfig> = {
   /** Utils for every table with the table argument prefilled */
   tables: {
     [Table in keyof C["tables"]]: {
-      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => TupleRootTransactionApi;
-      get: (key: Key<C, Table>) => Value<C, Table>;
-      remove: (key: Key<C, Table>, options?: RemoveOptions) => TupleRootTransactionApi;
+      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => Promise<void>;
+      get: (key: Key<C, Table>) => Promise<Value<C, Table>>;
+      remove: (key: Key<C, Table>, options?: RemoveOptions) => Promise<void>;
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => Unsubscribe;
+      ) => Promise<Unsubscribe>;
       scan: <Table extends string = keyof C["tables"] & string>(
         filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
-      ) => ScanResult<C, Table>;
+      ) => Promise<ScanResult<C, Table>>;
     };
   };
 } & {
@@ -50,35 +50,37 @@ export type DatabaseClient<C extends StoreConfig> = {
     key: Key<C, Table>,
     value: Partial<Value<C, Table>>,
     options?: SetOptions
-  ) => TupleRootTransactionApi;
+  ) => Promise<void>;
   get: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
     table: Table,
     key: Key<C, Table>
-  ) => Value<C, Table>;
+  ) => Promise<Value<C, Table>>;
   remove: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
     table: Table,
     key: Key<C, Table>,
     options?: RemoveOptions
-  ) => TupleRootTransactionApi;
+  ) => Promise<void>;
   subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
     filter?: FilterOptions<C, Table>
-  ) => Unsubscribe;
-  scan: <Table extends string = keyof C["tables"] & string>(filter?: FilterOptions<C, Table>) => ScanResult<C, Table>;
-  _tupleDatabaseClient: TupleDatabaseClient;
+  ) => Promise<Unsubscribe>;
+  scan: <Table extends string = keyof C["tables"] & string>(
+    filter?: FilterOptions<C, Table>
+  ) => Promise<ScanResult<C, Table>>;
+  _tupleDatabaseClient: AsyncTupleDatabaseClient;
 };
 
 export type SetOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   defaultValue?: Value<C, T>;
   /** Transaction to append the set operation to. If provided, the transaction will not be committed. */
-  transaction?: TupleRootTransactionApi;
+  transaction?: AsyncTupleRootTransactionApi;
 };
 
 export type RemoveOptions = {
   /** Transaction to append the remove operation to. If provided, the transaction will not be committed. */
-  transaction?: TupleRootTransactionApi;
+  transaction?: AsyncTupleRootTransactionApi;
 };
 
 export type SubscriptionCallback<

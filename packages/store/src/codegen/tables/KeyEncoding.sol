@@ -152,7 +152,7 @@ library KeyEncoding {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bool value) internal view returns (bytes memory) {
+  function encode(bool value) internal pure returns (bytes memory) {
     return abi.encodePacked(value);
   }
 

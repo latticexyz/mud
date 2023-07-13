@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Memory } from "../src/Memory.sol";
 import { Slice, SliceLib } from "../src/Slice.sol";
 
@@ -15,15 +15,15 @@ contract SliceTest is Test, GasReporter {
     endGasReport();
 
     startGasReport("get Slice length");
-    slice.length();
+    uint256 length = slice.length();
     endGasReport();
 
     startGasReport("get Slice pointer");
-    slice.pointer();
+    uint256 pointer = slice.pointer();
     endGasReport();
 
-    assertEq(slice.length(), 8);
-    assertEq(slice.pointer(), Memory.dataPointer(data));
+    assertEq(length, 8);
+    assertEq(pointer, Memory.dataPointer(data));
     assertEq(slice.toBytes(), data);
   }
 

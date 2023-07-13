@@ -17,7 +17,7 @@ export interface ForgeConfig {
 /**
  * Get forge config as a parsed json object.
  */
-export async function getForgeConfig(profile?: string) {
+export async function getForgeConfig(profile?: string): Promise<ForgeConfig> {
   const { stdout } = await execa("forge", ["config", "--json"], {
     stdio: ["inherit", "pipe", "pipe"],
     env: { FOUNDRY_PROFILE: profile },
@@ -30,7 +30,7 @@ export async function getForgeConfig(profile?: string) {
  * Get the value of "src" from forge config.
  * The path to the contract sources relative to the root of the project.
  */
-export async function getSrcDirectory(profile?: string) {
+export async function getSrcDirectory(profile?: string): Promise<string> {
   return (await getForgeConfig(profile)).src;
 }
 
@@ -38,7 +38,7 @@ export async function getSrcDirectory(profile?: string) {
  * Get the value of "script" from forge config.
  * The path to the contract sources relative to the root of the project.
  */
-export async function getScriptDirectory(profile?: string) {
+export async function getScriptDirectory(profile?: string): Promise<string> {
   return (await getForgeConfig(profile)).script;
 }
 
@@ -46,7 +46,7 @@ export async function getScriptDirectory(profile?: string) {
  * Get the value of "test" from forge config.
  * The path to the test contract sources relative to the root of the project.
  */
-export async function getTestDirectory(profile?: string) {
+export async function getTestDirectory(profile?: string): Promise<string> {
   return (await getForgeConfig(profile)).test;
 }
 
@@ -54,7 +54,7 @@ export async function getTestDirectory(profile?: string) {
  * Get the value of "out" from forge config.
  * The path to put contract artifacts in, relative to the root of the project.
  */
-export async function getOutDirectory(profile?: string) {
+export async function getOutDirectory(profile?: string): Promise<string> {
   return (await getForgeConfig(profile)).out;
 }
 
@@ -63,7 +63,7 @@ export async function getOutDirectory(profile?: string) {
  * @param profile The foundry profile to use
  * @returns The rpc url
  */
-export async function getRpcUrl(profile?: string) {
+export async function getRpcUrl(profile?: string): Promise<string> {
   return (await getForgeConfig(profile)).eth_rpc_url || "http://127.0.0.1:8545";
 }
 

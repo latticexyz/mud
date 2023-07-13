@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -190,16 +190,19 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(targetTableSelector.getName(), sourceName);
   }
 
-  function testGetKeysWithValue() public {
+  function testGetKeysWithValueGas() public {
+    // call fuzzed test manually to get gas report
+    testGetKeysWithValue(1);
+  }
+
+  function testGetKeysWithValue(uint256 value) public {
     _installKeysWithValueModule();
 
     // Set a value in the source table
-    uint256 value1 = 1;
-
-    world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value1));
+    world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value));
 
     startGasReport("Get list of keys with a given value");
-    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));
+    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
     endGasReport();
 
     // Assert that the list is correct
@@ -207,10 +210,10 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
 
     // Set a another key with the same value
-    world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
+    world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value));
 
-    // Get the list of keys with value2 from the target table
-    keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));
+    // Get the list of keys with value from the target table
+    keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);

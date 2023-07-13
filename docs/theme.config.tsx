@@ -13,7 +13,7 @@ const config: DocsThemeConfig = {
   project: {
     link: "https://github.com/latticexyz/mud",
   },
-  docsRepositoryBase: "https://github.com/latticexyz/mud/blob/core/docs/pages",
+  docsRepositoryBase: "https://github.com/latticexyz/mud/tree/main/docs",
   head: (
     <>
       <meta property="title" content="MUD documentation" />

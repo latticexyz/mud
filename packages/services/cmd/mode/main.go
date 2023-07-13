@@ -30,10 +30,12 @@ var (
 	chainRpcsHttp = flag.String("chain-rpcs-http", "", "comma separated list of chain rpcs (http)")
 	chainRpcsWs   = flag.String("chain-rpcs-ws", "", "comma separated list of chain rpcs (ws)")
 	// Database flags.
-	dbName = flag.String("db-name", "", "database name")
-	dbHost = flag.String("db-host", "", "database host")
-	dbPort = flag.Uint64("db-port", 5433, "database port")
-	dbWipe = flag.Bool("db-wipe", false, "database wipe on launch")
+	dbName     = flag.String("db-name", "", "database name")
+	dbHost     = flag.String("db-host", "", "database host")
+	dbPort     = flag.Uint64("db-port", 5433, "database port")
+	dbUser     = flag.String("db-user", "", "database user")
+	dbPassword = flag.String("db-password", "", "database password")
+	dbWipe     = flag.Bool("db-wipe", false, "database wipe on launch")
 	// Sync flags.
 	syncEnabled         = flag.Bool("sync-enabled", false, "enable syncing")
 	syncStartBlock      = flag.Uint64("sync-start-block", 0, "start block for syncing")
@@ -50,7 +52,13 @@ func main() {
 	// Setup logging.
 	logger.InitLogger()
 	logger := logger.GetLogger()
-	defer logger.Sync()
+
+	defer func() {
+		err := logger.Sync()
+		if err != nil {
+			panic(err)
+		}
+	}()
 
 	// Setup config.
 	var config *mode_config.Config
@@ -67,6 +75,8 @@ func main() {
 			*chainRpcsWs,
 			*dbName,
 			*dbHost,
+			*dbUser,
+			*dbPassword,
 			*dbPort,
 			*dbWipe,
 			*syncEnabled,
@@ -84,8 +94,9 @@ func main() {
 	go grpc.StartMetricsServer(config.Metrics.Port, logger)
 
 	// Run the DatabaseLayer.
-	dl := db.NewDatabaseLayer(context.Background(), &config.DB, logger)
-	go dl.RunDatabaseLayer(context.Background())
+	ctx := context.Background()
+	dl := db.New(ctx, &config.DB, logger)
+	go dl.Run()
 
 	// Create a WriteLayer for modifying the database.
 	wl := write.New(dl, logger)

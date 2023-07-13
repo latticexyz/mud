@@ -11,7 +11,6 @@ import { Slice, SliceLib } from "./Slice.sol";
 import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
-import { Utils } from "./Utils.sol";
 import { TableId } from "./TableId.sol";
 
 library StoreCore {
@@ -437,7 +436,9 @@ library StoreCore {
     memoryPointer += staticLength;
 
     // Append the encoded dynamic length
-    Memory.store(memoryPointer, dynamicDataLength.unwrap());
+    assembly {
+      mstore(memoryPointer, dynamicDataLength)
+    }
     // Advance memoryPointer by the length of `dynamicDataLength` (1 word)
     memoryPointer += 0x20;
 

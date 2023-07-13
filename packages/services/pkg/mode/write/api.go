@@ -114,14 +114,11 @@ func (wl *Layer) CreateTable(table *mode.Table) error {
 	}
 	wl.logger.Info("created indexes on table", zap.String("table", table.NamespacedName()))
 
-	// TODO: refactor
-	if table.PrimaryKey == "" {
-		// If the table does not have a primary key, then we need to set the replica identity to FULL.
-		_, execErr := wl.dl.Exec(createBuilder.BuildIndentityFullModifier())
-		if execErr != nil {
-			wl.logger.Error("failed to set replica identity to FULL", zap.Error(err))
-			return err
-		}
+	// We set the replica identity to FULL for WAL.
+	_, execErr := wl.dl.Exec(createBuilder.BuildIndentityFullModifier())
+	if execErr != nil {
+		wl.logger.Error("failed to set replica identity to FULL", zap.Error(err))
+		return err
 	}
 
 	return nil
