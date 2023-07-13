@@ -755,6 +755,9 @@ importers:
         specifier: 1.1.7
         version: 1.1.7(typescript@5.0.4)
     devDependencies:
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
