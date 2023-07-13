@@ -68,19 +68,9 @@ const commandModule: CommandModule<Options, Options> = {
       options.mudVersion = await resolveVersion(options);
 
       // Update all package.json below the current working directory (except in node_modules)
-      const packageJsons = glob.sync("**/package.json");
-      console.log("All package.jsons", packageJsons);
-
-      // Read the current package.json
-      const rootPath = "./package.json";
-      const { workspaces } = updatePackageJson(rootPath, options);
-
-      // Load the package.json of each workspace
-      if (workspaces) {
-        for (const workspace of workspaces) {
-          const filePath = path.join(workspace, "/package.json");
-          updatePackageJson(filePath, options);
-        }
+      const packageJsons = glob.sync("**/package.json").filter((p) => !p.includes("node_modules"));
+      for (const packageJson of packageJsons) {
+        updatePackageJson(packageJson, options);
       }
     } catch (e) {
       logError(e);
