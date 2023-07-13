@@ -35,12 +35,12 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
         _typedKeyArgs,
         `${structName} memory _table`,
       ])}) internal {
-       emitEphemeral(${renderArguments([
-         _untypedStore,
-         _tableId,
-         _keyArgs,
-         renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-       ])});
+        emitEphemeral(${renderArguments([
+          _untypedStore,
+          _tableId,
+          _keyArgs,
+          renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
+        ])});
       }
     `
     );
