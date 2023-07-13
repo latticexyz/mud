@@ -2,11 +2,19 @@ import { StaticPrimitiveType, DynamicPrimitiveType, DynamicAbiType, StaticAbiTyp
 import { Address, getAddress } from "viem";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
-import { blob, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { DefaultLogger, and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { ChainId, Table, TableName, TableNamespace, WorldId } from "../common";
+
+export const mudIndexerName = "__mud_indexer";
+export const mudIndexer = sqliteTable(mudIndexerName, {
+  lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
+  // TODO: last block hash?
+  lastError: text("last_error"),
+  __singleton: integer("__singleton", { mode: "boolean" }).notNull().default(true).primaryKey(),
+});
 
 export const mudStoreTablesName = "__mud_store_tables";
 export const mudStoreTables = sqliteTable(mudStoreTablesName, {
@@ -14,7 +22,7 @@ export const mudStoreTables = sqliteTable(mudStoreTablesName, {
   name: text("name").notNull().primaryKey(),
   keyTupleSchema: blob("key_schema", { mode: "json" }).notNull(),
   valueSchema: blob("value_schema", { mode: "json" }).notNull(),
-  lastBlockNumber: blob("last_block_number", { mode: "bigint" }),
+  lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
   // TODO: last block hash?
   lastError: text("last_error"),
 });
@@ -36,9 +44,10 @@ export async function getDatabase(chainId: ChainId, address: Address): Promise<S
   // TODO: type DB to include mudStoreTables
   const SqlJs = await initSqlJs();
   const db = drizzle(new SqlJs.Database(), {
-    /* logger: new DefaultLogger() */
+    logger: new DefaultLogger(),
   });
 
+  db.run(sql.raw(sqliteTableToSql(mudIndexerName, mudIndexer)));
   db.run(sql.raw(sqliteTableToSql(mudStoreTablesName, mudStoreTables)));
 
   databases.set(worldId, db);
@@ -52,7 +61,7 @@ export async function getTables(db: SQLJsDatabase): Promise<Table[]> {
     name: table.name,
     keyTupleSchema: table.keyTupleSchema as Record<string, StaticAbiType>,
     valueSchema: table.valueSchema as Record<string, StaticAbiType | DynamicAbiType>,
-    lastBlockNumber: table.lastBlockNumber,
+    lastUpdatedBlockNumber: table.lastUpdatedBlockNumber,
   }));
 }
 
@@ -73,20 +82,8 @@ export async function getTable(db: SQLJsDatabase, namespace: TableNamespace, nam
     name: table.name,
     keyTupleSchema: table.keyTupleSchema as Record<string, StaticAbiType>,
     valueSchema: table.valueSchema as Record<string, StaticAbiType | DynamicAbiType>,
-    lastBlockNumber: table.lastBlockNumber,
+    lastUpdatedBlockNumber: table.lastUpdatedBlockNumber,
   };
-}
-
-export async function updateTableLastBlockNumber(
-  db: SQLJsDatabase,
-  namespace: TableNamespace,
-  name: TableName,
-  lastBlockNumber: bigint
-): Promise<void> {
-  db.update(mudStoreTables)
-    .set({ lastBlockNumber })
-    .where(and(eq(mudStoreTables.namespace, namespace), eq(mudStoreTables.name, name)))
-    .run();
 }
 
 export async function createTable(db: SQLJsDatabase, table: Table): Promise<Table> {

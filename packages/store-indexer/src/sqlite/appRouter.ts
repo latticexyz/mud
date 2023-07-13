@@ -1,10 +1,9 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { Hex } from "viem";
-import { getDatabase, getTables } from "./sqlite";
+import { getDatabase, getTables, mudIndexer } from "./sqlite";
 import { TableWithRows } from "../common";
 import { createSqliteTable } from "./createSqliteTable";
-import { bigIntMax } from "@latticexyz/common/utils";
 
 export const appRouter = router({
   findAll: publicProcedure
@@ -14,7 +13,7 @@ export const appRouter = router({
         address: z.string(), // TODO: refine to hex
       })
     )
-    .query(async (opts): Promise<{ blockNumber: bigint; tables: TableWithRows[] }> => {
+    .query(async (opts): Promise<{ blockNumber: bigint | null; tables: TableWithRows[] }> => {
       const { chainId, address } = opts.input;
 
       const db = await getDatabase(chainId, address as Hex);
@@ -36,13 +35,12 @@ export const appRouter = router({
       );
 
       // TODO: store this in global table
-      const lastBlockNumber = tablesWithRows.reduce(
-        (blockNumber, table) => bigIntMax(blockNumber, table.lastBlockNumber ?? -1n),
-        -1n
-      );
+      const metadata = db.select().from(mudIndexer).all();
+      console.log("metadata", metadata);
+      const { lastUpdatedBlockNumber } = metadata[0] ?? {};
 
       const result = {
-        blockNumber: lastBlockNumber,
+        blockNumber: lastUpdatedBlockNumber ?? null,
         tables: tablesWithRows,
       };
 

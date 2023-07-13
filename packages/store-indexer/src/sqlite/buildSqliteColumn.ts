@@ -6,7 +6,7 @@ import {
   customType,
   SQLiteCustomColumnBuilder,
 } from "drizzle-orm/sqlite-core";
-import { SchemaAbiType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import { ColumnBuilderBaseConfig } from "drizzle-orm";
 import superjson from "superjson";
@@ -24,10 +24,19 @@ const json = <TData>(name: string): SQLiteCustomColumnBuilder<ColumnBuilderBaseC
     },
   })(name);
 
-export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): AnySQLiteColumnBuilder {
+export function buildSqliteColumn<TSchemaAbiType extends SchemaAbiType>(
+  name: string,
+  schemaAbiType: TSchemaAbiType,
+  defaultValue?: SchemaAbiTypeToPrimitiveType<TSchemaAbiType>
+): AnySQLiteColumnBuilder {
+  // TODO: figure out why this type isn't being nice
+  defaultValue ??= schemaAbiTypeToDefaultValue[schemaAbiType] as any as SchemaAbiTypeToPrimitiveType<TSchemaAbiType>;
+
   switch (schemaAbiType) {
     case "bool":
-      return integer(name, { mode: "boolean" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return integer(name, { mode: "boolean" })
+        .notNull()
+        .default(defaultValue as boolean);
 
     case "uint8":
     case "uint16":
@@ -41,7 +50,9 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "int32":
     case "int40":
     case "int48":
-      return integer(name, { mode: "number" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return integer(name, { mode: "number" })
+        .notNull()
+        .default(defaultValue as number);
 
     case "uint56":
     case "uint64":
@@ -95,7 +106,9 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "int240":
     case "int248":
     case "int256":
-      return blob(name, { mode: "bigint" }).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return blob(name, { mode: "bigint" })
+        .notNull()
+        .default(defaultValue as bigint);
 
     case "bytes1":
     case "bytes2":
@@ -131,7 +144,9 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes32":
     case "address":
     case "bytes":
-      return blob(name).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return text(name)
+        .notNull()
+        .default(defaultValue as string);
 
     case "uint8[]":
     case "uint16[]":
@@ -231,13 +246,14 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes32[]":
     case "bool[]":
     case "address[]":
-      // TODO: figure out why we need to JSON.stringify this (would have expected mode:json to handle this)
-      // TODO: should this be a buffer instead instead of json string?
-      return json(name).notNull().default(JSON.stringify(schemaAbiTypeToDefaultValue[schemaAbiType]));
-    // return blob(name, { mode: "json" }).notNull().default(JSON.stringify(schemaAbiTypeToDefaultValue[schemaAbiType]));
+      // kysely doesn't know how to handle non-native types, so we have to handle it here
+      // return json(name).notNull().default(defaultValue);
+      return json(name).notNull().default(superjson.stringify(defaultValue));
 
     case "string":
-      return text(name).notNull().default(schemaAbiTypeToDefaultValue[schemaAbiType]);
+      return text(name)
+        .notNull()
+        .default(defaultValue as string);
 
     default:
       assertExhaustive(schemaAbiType, `Missing SQLite column type for schema ABI type ${schemaAbiType}`);

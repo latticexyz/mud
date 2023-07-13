@@ -17,7 +17,7 @@ export type Table = {
   name: TableName;
   keyTupleSchema: Record<string, StaticAbiType>;
   valueSchema: Record<string, StaticAbiType | DynamicAbiType>;
-  lastBlockNumber: bigint | null;
+  lastUpdatedBlockNumber: bigint | null;
 };
 
 export type TableWithRows = Table & { rows: TableRow[] };

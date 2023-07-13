@@ -11,7 +11,7 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
-import { createTable, getDatabase, getTable, updateTableLastBlockNumber } from "../src/sqlite/sqlite";
+import { createTable, getDatabase, getTable, mudIndexer, mudStoreTables } from "../src/sqlite/sqlite";
 import { createSqliteTable } from "../src/sqlite/createSqliteTable";
 import { and, eq } from "drizzle-orm";
 
@@ -93,7 +93,8 @@ blockLogs$
             // TODO: align these names?
             keyTupleSchema: keyTuple,
             valueSchema: value,
-            lastBlockNumber: startBlock,
+            // TODO: pass log and/or block number into registerTable
+            lastUpdatedBlockNumber: startBlock,
           });
           // console.log("registered table", `${namespace}:${name}`, keyTuple, value);
         },
@@ -114,92 +115,133 @@ blockLogs$
         },
       })
     ),
-    concatMap(async ({ blockNumber, operations }) => {
-      // TODO: add singleton table with chain-wide last block number
-      // database.lastBlockNumber = blockNumber;
+    concatMap(async ({ blockNumber, operations: chainOperations }) => {
+      // This is currently parallelized per world (each world has its own database).
+      // This may need to change if we decide to put multiple worlds into one DB (e.g. a namespace per world, but all under one DB).
+      // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
 
-      // TODO: do this in a DB tx
-      for (const operation of operations) {
-        // getDatabase does its own caching, and these DBs should have already been created above, so this should be fast
-        const db = await getDatabase(chain.id, operation.log.address);
+      const addresses = Array.from(new Set(chainOperations.map((operation) => operation.log.address)));
 
-        const table = await getTable(db, operation.namespace, operation.name);
-        if (!table) {
-          console.log(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
-          continue;
-        }
+      await Promise.all(
+        addresses.map(async (address) => {
+          const db = await getDatabase(chain.id, address);
+          const operations = chainOperations.filter((operation) => operation.log.address === address);
 
-        // TODO: parallelize this to just once per table
-        await updateTableLastBlockNumber(db, operation.namespace, operation.name, blockNumber);
+          const tables = await Promise.all(
+            Array.from(new Set(operations.map((operation) => JSON.stringify([operation.namespace, operation.name]))))
+              .map((json) => JSON.parse(json))
+              .map(async ([namespace, name]) => ({
+                namespace,
+                name,
+                table: await getTable(db, namespace, name),
+              }))
+          );
 
-        // TODO: just do regular table operations once we have a consistent key schema + key for singleton tables
-        //       see https://github.com/latticexyz/mud/issues/1125
-        const isSingleton = Object.keys(table.keyTupleSchema).length === 0;
-
-        const { table: sqliteTable } = createSqliteTable(table);
-
-        if (operation.type === "SetRecord") {
-          // TODO: handle singleton tables differently (right now they always insert rather than update)
-          // TODO: also store last block number
-          if (isSingleton) {
-            db.update(sqliteTable).set(operation.record).run();
-          } else {
-            db.insert(sqliteTable)
+          await db.transaction(async (tx) => {
+            await tx
+              .insert(mudIndexer)
               .values({
-                ...operation.keyTuple,
-                ...operation.record,
+                lastUpdatedBlockNumber: blockNumber,
+                __singleton: true,
               })
               .onConflictDoUpdate({
-                target: Object.keys(operation.keyTuple).map((columnName) => sqliteTable[columnName]),
-                set: operation.record,
-              })
-              .run();
-          }
-          // console.log("stored record", operation);
-        } else if (operation.type === "SetField") {
-          // TODO: handle singleton tables differently (right now they always insert rather than update)
-          // TODO: also store last block number
-          if (isSingleton) {
-            db.update(sqliteTable)
-              .set({
-                [operation.valueName]: operation.value,
-              })
-              .run();
-          } else {
-            db.insert(sqliteTable)
-              .values({
-                ...operation.keyTuple,
-                [operation.valueName]: operation.value,
-              })
-              .onConflictDoUpdate({
-                target: Object.keys(operation.keyTuple).map((columnName) => sqliteTable[columnName]),
+                target: mudIndexer.__singleton,
                 set: {
-                  [operation.valueName]: operation.value,
+                  lastUpdatedBlockNumber: blockNumber,
                 },
               })
               .run();
-          }
-          // console.log("stored field", operation);
-        } else if (operation.type === "DeleteRecord") {
-          // TODO: handle singleton tables differently (right now they always insert rather than update)
-          // TODO: mark as deleted instead of actually deleting, so we can figure out changes/diff for future streaming
-          // TODO: also store last block number
-          db.delete(sqliteTable)
-            .where(
-              isSingleton
-                ? undefined
-                : and(
-                    ...Object.entries(operation.keyTuple).map(([columnName, value]) =>
-                      eq(sqliteTable[columnName], value)
-                    )
-                  )
-            )
-            .run();
-          // console.log("deleted record", operation);
-        }
-      }
 
-      // TODO: update table last block number for all tables
+            for (const { namespace, name } of tables) {
+              await tx
+                .update(mudStoreTables)
+                .set({ lastUpdatedBlockNumber: blockNumber })
+                .where(and(eq(mudStoreTables.namespace, namespace), eq(mudStoreTables.name, name)))
+                .run();
+            }
+
+            for (const operation of operations) {
+              if (operation.log.address !== address) continue;
+
+              const table = tables.find(
+                (table) => table.namespace === operation.namespace && table.name === operation.name
+              )?.table;
+              if (!table) {
+                console.log(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
+                continue;
+              }
+
+              const isSingleton = Object.keys(table.keyTupleSchema).length === 0;
+
+              const { table: sqliteTable } = createSqliteTable(table);
+
+              if (operation.type === "SetRecord") {
+                await tx
+                  .insert(sqliteTable)
+                  .values({
+                    ...operation.keyTuple,
+                    ...operation.record,
+                    __lastUpdatedBlockNumber: blockNumber,
+                    __isDeleted: false,
+                    ...(isSingleton ? { __singleton: true } : {}),
+                  })
+                  .onConflictDoUpdate({
+                    target: isSingleton
+                      ? sqliteTable.__singleton
+                      : Object.keys(operation.keyTuple).map((columnName) => sqliteTable[columnName]),
+                    set: {
+                      ...operation.record,
+                      __lastUpdatedBlockNumber: blockNumber,
+                      __isDeleted: false,
+                    },
+                  })
+                  .run();
+                // console.log("stored record", operation);
+              } else if (operation.type === "SetField") {
+                await tx
+                  .insert(sqliteTable)
+                  .values({
+                    ...operation.keyTuple,
+                    [operation.valueName]: operation.value,
+                    __lastUpdatedBlockNumber: blockNumber,
+                    __isDeleted: false,
+                    ...(isSingleton ? { __singleton: true } : {}),
+                  })
+                  .onConflictDoUpdate({
+                    target: isSingleton
+                      ? sqliteTable.__singleton
+                      : Object.keys(operation.keyTuple).map((columnName) => sqliteTable[columnName]),
+                    set: {
+                      [operation.valueName]: operation.value,
+                      __lastUpdatedBlockNumber: blockNumber,
+                      __isDeleted: false,
+                    },
+                  })
+                  .run();
+                // console.log("stored field", operation);
+              } else if (operation.type === "DeleteRecord") {
+                await tx
+                  .update(sqliteTable)
+                  .set({
+                    __lastUpdatedBlockNumber: blockNumber,
+                    __isDeleted: true,
+                  })
+                  .where(
+                    isSingleton
+                      ? undefined
+                      : and(
+                          ...Object.entries(operation.keyTuple).map(([columnName, value]) =>
+                            eq(sqliteTable[columnName], value)
+                          )
+                        )
+                  )
+                  .run();
+                // console.log("deleted record", operation);
+              }
+            }
+          });
+        })
+      );
     })
   )
   .subscribe();

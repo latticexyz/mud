@@ -78,7 +78,7 @@ blockLogs$
             keyTupleSchema: keyTuple,
             valueSchema: value,
             rows: [],
-            lastBlockNumber: startBlock,
+            lastUpdatedBlockNumber: startBlock,
           });
           console.log("registered schema", `${namespace}:${name}`, keyTuple, value);
         },
@@ -109,7 +109,7 @@ blockLogs$
         const keyTuple = Object.values(operation.keyTuple);
 
         if (operation.type === "SetRecord") {
-          table.lastBlockNumber = blockNumber;
+          table.lastUpdatedBlockNumber = blockNumber;
           table.rows = [
             ...table.rows.filter((row) => Object.values(row.keyTuple).join(":") !== keyTuple.join(":")),
             {
@@ -131,14 +131,14 @@ blockLogs$
               row,
             ];
           }
-          table.lastBlockNumber = blockNumber;
+          table.lastUpdatedBlockNumber = blockNumber;
           row.value = {
             ...row.value,
             [operation.valueName]: operation.value,
           };
           // console.log("stored field", operation);
         } else if (operation.type === "DeleteRecord") {
-          table.lastBlockNumber = blockNumber;
+          table.lastUpdatedBlockNumber = blockNumber;
           table.rows = table.rows.filter((row) => Object.values(row.keyTuple).join(":") !== keyTuple.join(":"));
           // console.log("deleted record", operation);
         }
