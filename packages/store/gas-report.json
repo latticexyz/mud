@@ -81,7 +81,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 2124
+    "gasUsed": 2127
   },
   {
     "file": "test/Gas.t.sol",
@@ -123,7 +123,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "get record from Mixed",
-    "gasUsed": 13455
+    "gasUsed": 13458
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -231,37 +231,37 @@
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (0 bytes) to bytes memory",
-    "gasUsed": 473
+    "gasUsed": 476
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (2 bytes) to bytes memory",
-    "gasUsed": 508
+    "gasUsed": 511
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (32 bytes) to bytes memory",
-    "gasUsed": 507
+    "gasUsed": 724
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (34 bytes) to bytes memory",
-    "gasUsed": 585
+    "gasUsed": 727
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (1024 bytes) to bytes memory",
-    "gasUsed": 4849
+    "gasUsed": 7443
   },
   {
     "file": "test/Slice.t.sol",
     "test": "testToBytes",
     "name": "Slice (1024x1024 bytes) to bytes memory",
-    "gasUsed": 6616506
+    "gasUsed": 9205372
   },
   {
     "file": "test/Slice.t.sol",
@@ -339,25 +339,25 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromSecondField",
     "name": "pop from field (cold, 1 slot, 1 uint32 item)",
-    "gasUsed": 29291
+    "gasUsed": 29294
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromSecondField",
     "name": "pop from field (warm, 1 slot, 1 uint32 item)",
-    "gasUsed": 19346
+    "gasUsed": 19349
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (cold, 2 slots, 10 uint32 items)",
-    "gasUsed": 31174
+    "gasUsed": 31177
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (warm, 2 slots, 10 uint32 items)",
-    "gasUsed": 19229
+    "gasUsed": 19232
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -609,13 +609,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInField",
     "name": "update in field (1 slot, 1 uint32 item)",
-    "gasUsed": 16605
+    "gasUsed": 16611
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInField",
     "name": "push to field (2 slots, 6 uint64 items)",
-    "gasUsed": 17696
+    "gasUsed": 17702
   },
   {
     "file": "test/StoreMetadata.t.sol",
@@ -627,7 +627,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "get record from StoreMetadataTable",
-    "gasUsed": 12116
+    "gasUsed": 12689
   },
   {
     "file": "test/StoreSwitch.t.sol",

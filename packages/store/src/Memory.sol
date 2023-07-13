@@ -4,63 +4,45 @@ pragma solidity >=0.8.0;
 import { leftMask } from "./Utils.sol";
 
 library Memory {
-  function load(uint256 memoryPointer) internal pure returns (bytes32 data) {
-    assembly {
-      data := mload(memoryPointer)
-    }
-  }
-
-  function load(uint256 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
-    assembly {
-      data := mload(add(memoryPointer, offset))
-    }
-  }
-
+  /**
+   * In dynamic arrays the first word stores the length of data, after which comes data.
+   * Example: 0x40 0x01 0x02
+   *          ^len ^data
+   */
   function dataPointer(bytes memory data) internal pure returns (uint256 memoryPointer) {
     assembly {
       memoryPointer := add(data, 0x20)
     }
   }
 
-  function lengthPointer(bytes memory data) internal pure returns (uint256 memoryPointer) {
-    assembly {
-      memoryPointer := data
-    }
-  }
-
-  function store(uint256 memoryPointer, bytes32 value) internal pure {
-    assembly {
-      mstore(memoryPointer, value)
-    }
-  }
-
-  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal view {
-    if (length > 32) {
+  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal pure {
+    // copy 32-byte chunks
+    while (length >= 32) {
+      /// @solidity memory-safe-assembly
       assembly {
-        pop(
-          staticcall(
-            gas(), // gas (unused is returned)
-            0x04, // identity precompile address
-            fromPointer, // argsOffset
-            length, // argsSize: byte size to copy
-            toPointer, // retOffset
-            length // retSize: byte size to copy
-          )
-        )
+        mstore(toPointer, mload(fromPointer))
       }
-    } else {
-      uint256 mask = leftMask(length);
-      assembly {
-        mstore(
-          toPointer,
-          or(
-            // Store the left part
-            and(mload(fromPointer), mask),
-            // Preserve the right part
-            and(mload(toPointer), not(mask))
-          )
-        )
+      // safe because total addition will be <= length (ptr+len is implicitly safe)
+      unchecked {
+        toPointer += 32;
+        fromPointer += 32;
+        length -= 32;
       }
+    }
+    // copy the 0-31 length tail
+    // (the rest is an inlined `mstoreN`)
+    uint256 mask = leftMask(length);
+    /// @solidity memory-safe-assembly
+    assembly {
+      mstore(
+        toPointer,
+        or(
+          // store the left part
+          and(mload(fromPointer), mask),
+          // preserve the right part
+          and(mload(toPointer), not(mask))
+        )
+      )
     }
   }
 }

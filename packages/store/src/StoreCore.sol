@@ -436,7 +436,9 @@ library StoreCore {
     memoryPointer += staticLength;
 
     // Append the encoded dynamic length
-    Memory.store(memoryPointer, dynamicDataLength.unwrap());
+    assembly {
+      mstore(memoryPointer, dynamicDataLength)
+    }
     // Advance memoryPointer by the length of `dynamicDataLength` (1 word)
     memoryPointer += 0x20;
 

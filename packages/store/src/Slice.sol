@@ -85,7 +85,7 @@ library SliceInstance {
    * @dev Copies the slice to a new bytes array
    * The slice will NOT point to the new bytes array
    */
-  function toBytes(Slice self) internal view returns (bytes memory data) {
+  function toBytes(Slice self) internal pure returns (bytes memory data) {
     uint256 fromPointer = pointer(self);
     uint256 _length = length(self);
 
