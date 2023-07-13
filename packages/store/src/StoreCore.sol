@@ -11,7 +11,6 @@ import { Slice, SliceLib } from "./Slice.sol";
 import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
-import { Utils } from "./Utils.sol";
 import { TableId } from "./TableId.sol";
 
 library StoreCore {

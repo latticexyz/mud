@@ -152,6 +152,12 @@
   {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
+    "name": "encode schema with 6 entries [SchemaLib.encode]",
+    "gasUsed": 6040
+  },
+  {
+    "file": "test/Schema.t.sol",
+    "test": "testEncodeDecodeSchema",
     "name": "get schema type at index",
     "gasUsed": 185
   },

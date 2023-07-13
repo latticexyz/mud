@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Utils } from "./Utils.sol";
+import { leftMask } from "./Utils.sol";
 
 library Memory {
   function load(uint256 memoryPointer) internal pure returns (bytes32 data) {
@@ -49,7 +49,7 @@ library Memory {
         )
       }
     } else {
-      uint256 mask = Utils.leftMask(length);
+      uint256 mask = leftMask(length);
       assembly {
         mstore(
           toPointer,
