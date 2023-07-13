@@ -84,35 +84,36 @@ async function resolveVersion(options: Options) {
   // Backwards compatibility to previous behavior of this script where passing "canary" as the version resolved to the latest commit on main
   if (options.mudVersion === "canary") options.tag = "main";
 
+  let npmResult;
   try {
     console.log(chalk.blue(`Fetching available versions`));
-    const npmResult = await (await fetch(`https://registry.npmjs.org/${localPackageJson.name}`)).json();
-
-    if (options.tag) {
-      const version = npmResult["dist-tags"][options.tag];
-      if (!version) {
-        throw new MUDError(`Could not find npm version with tag ${options.tag}`);
-      }
-      console.log(chalk.green(`Latest version with tag ${options.tag}: ${version}`));
-      return version;
-    }
-
-    if (options.commit) {
-      // Find a version with this commit hash
-      const commit = options.commit.substring(0, 8); // changesets uses the first 8 characters of the commit hash as version for prereleases/snapshot releases
-      const version = Object.values(npmResult["versions"]).find((v) => (v as string).includes(commit));
-      if (!version) {
-        throw new MUDError(`Could not find npm version from commit ${options.commit}`);
-      }
-      console.log(chalk.green(`Version from commit ${options.commit}: ${version}`));
-      return version;
-    }
-
-    // If neither a tag nor a commit option is given, return the `mudVersion`
-    return options.mudVersion;
+    npmResult = await (await fetch(`https://registry.npmjs.org/${localPackageJson.name}`)).json();
   } catch (e) {
     throw new MUDError(`Could not fetch available MUD versions`);
   }
+
+  if (options.tag) {
+    const version = npmResult["dist-tags"][options.tag];
+    if (!version) {
+      throw new MUDError(`Could not find npm version with tag "${options.tag}"`);
+    }
+    console.log(chalk.green(`Latest version with tag ${options.tag}: ${version}`));
+    return version;
+  }
+
+  if (options.commit) {
+    // Find a version with this commit hash
+    const commit = options.commit.substring(0, 8); // changesets uses the first 8 characters of the commit hash as version for prereleases/snapshot releases
+    const version = Object.keys(npmResult["versions"]).find((v) => (v as string).includes(commit));
+    if (!version) {
+      throw new MUDError(`Could not find npm version based on commit "${options.commit}"`);
+    }
+    console.log(chalk.green(`Version from commit ${options.commit}: ${version}`));
+    return version;
+  }
+
+  // If neither a tag nor a commit option is given, return the `mudVersion`
+  return options.mudVersion;
 }
 
 function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
