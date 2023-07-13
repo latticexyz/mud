@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Utils } from "./Utils.sol";
+import { leftMask } from "./Utils.sol";
 
 /**
  * TODO Probably not fully optimized
@@ -45,7 +45,7 @@ library Storage {
         wordRemainder = 32 - offset;
       }
 
-      uint256 mask = Utils.leftMask(length);
+      uint256 mask = leftMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         // Load data from memory and offset it to match storage
@@ -91,7 +91,7 @@ library Storage {
 
     // For the last partial word, apply a mask to the end
     if (length > 0) {
-      uint256 mask = Utils.leftMask(length);
+      uint256 mask = leftMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         sstore(
@@ -151,7 +151,7 @@ library Storage {
         wordRemainder = 32 - offset;
       }
 
-      uint256 mask = Utils.leftMask(wordRemainder);
+      uint256 mask = leftMask(wordRemainder);
       /// @solidity memory-safe-assembly
       assembly {
         // Load data from storage and offset it to match memory
@@ -195,7 +195,7 @@ library Storage {
 
     // For the last partial word, apply a mask to the end
     if (length > 0) {
-      uint256 mask = Utils.leftMask(length);
+      uint256 mask = leftMask(length);
       /// @solidity memory-safe-assembly
       assembly {
         mstore(

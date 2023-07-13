@@ -103,7 +103,7 @@ library ResourceType {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(Resource resourceType) internal view returns (bytes memory) {
+  function encode(Resource resourceType) internal pure returns (bytes memory) {
     return abi.encodePacked(resourceType);
   }
 

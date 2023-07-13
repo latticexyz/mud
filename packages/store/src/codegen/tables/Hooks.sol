@@ -184,7 +184,7 @@ library Hooks {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(address[] memory value) internal view returns (bytes memory) {
+  function encode(address[] memory value) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](1);
     _counters[0] = uint40(value.length * 20);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);

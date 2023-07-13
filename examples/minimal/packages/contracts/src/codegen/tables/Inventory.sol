@@ -110,7 +110,7 @@ library Inventory {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 amount) internal view returns (bytes memory) {
+  function encode(uint32 amount) internal pure returns (bytes memory) {
     return abi.encodePacked(amount);
   }
 
