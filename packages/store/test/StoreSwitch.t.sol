@@ -4,7 +4,6 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreConsumer } from "../src/StoreConsumer.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 
@@ -26,7 +25,7 @@ contract StoreSwitchTestStore is StoreReadWithStubs {
 }
 
 // Mock consumer to wrap StoreSwitch.storeAddress() comparison
-contract MockStoreConsumer is StoreConsumer, GasReporter {
+contract MockStoreConsumer is GasReporter {
   function isDelegateCall() public returns (bool isDelegate) {
     startGasReport("check if delegatecall");
     isDelegate = StoreSwitch.storeAddress() == address(this);

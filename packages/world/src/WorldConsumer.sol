@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { StoreConsumer } from "@latticexyz/store/src/StoreConsumer.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 // Similar to https://eips.ethereum.org/EIPS/eip-2771, but any contract can be the trusted forwarder.
 // This should only be used for contracts without own storage, like Systems.
 // Systems also rely on `StoreConsumer.storeAddress` being msg.sender (the non-forwarded one) for access control.
-abstract contract WorldConsumer is StoreConsumer {
+abstract contract WorldConsumer {
   // Extract the trusted msg.sender value appended to the calldata
   function _msgSender() internal view returns (address sender) {
     assembly {

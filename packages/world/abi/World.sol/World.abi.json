@@ -211,17 +211,6 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "lowLevelData",
-        "type": "bytes"
-      }
-    ],
-    "name": "StoreSwitch_MissingOrInvalidStoreAddressFunction",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "address",
         "name": "system",
         "type": "address"
@@ -836,13 +825,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "storeAddress",
     "outputs": [
       {

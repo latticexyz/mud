@@ -648,13 +648,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "storeAddress",
     "outputs": [
       {

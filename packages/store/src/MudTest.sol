@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { IStoreConsumer } from "./StoreConsumer.sol";
+import { IStoreConsumer } from "./IStore.sol";
 
 contract MudTest is Test, IStoreConsumer {
   address worldAddress;
@@ -11,7 +11,7 @@ contract MudTest is Test, IStoreConsumer {
     worldAddress = vm.parseAddress(vm.readFile(".mudtest"));
   }
 
-  function storeAddress(address) public view returns (address) {
+  function storeAddress() public view returns (address) {
     return worldAddress;
   }
 }

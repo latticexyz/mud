@@ -600,13 +600,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "msgSender",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "name": "storeAddress",
     "outputs": [
       {

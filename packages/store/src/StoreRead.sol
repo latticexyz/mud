@@ -61,7 +61,7 @@ contract StoreRead is IStoreRead {
     return StoreCore.getFieldSlice(tableId, key, schemaIndex, schema, start, end);
   }
 
-  function storeAddress(address) public view returns (address) {
+  function storeAddress() public view returns (address) {
     return address(this);
   }
 }

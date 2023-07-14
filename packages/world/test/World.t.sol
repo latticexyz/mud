@@ -192,7 +192,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testStoreAddress() public {
-    assertEq(world.storeAddress(msg.sender), address(world));
+    assertEq(world.storeAddress(), address(world));
   }
 
   function testRegisterNamespace() public {

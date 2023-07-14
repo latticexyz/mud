@@ -11,7 +11,7 @@ interface IStoreConsumer {
    * Returns the Store address used by this consumer (like Hooks, Store itself, World Systems, or tests/scripts)
    * for StoreSwitch to determine how to interact with the Store.
    */
-  function storeAddress(address msgSender) external view returns (address storeAddress);
+  function storeAddress() external view returns (address storeAddress);
 }
 
 interface IStoreRead is IStoreConsumer {
@@ -109,7 +109,7 @@ interface IStoreRegistration {
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
-interface IStoreHook is IStoreConsumer {
+interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;
 
   // Split onSetField into pre and post to simplify the implementation of hooks

@@ -21,11 +21,10 @@ library StoreSwitch {
     // If the call is from within a constructor, use StoreCore to write to own storage
     if (codeSize == 0) return address(this);
 
-    try IStoreConsumer(address(this)).storeAddress(msg.sender) returns (address _storeAddress) {
+    try IStoreConsumer(address(this)).storeAddress() returns (address _storeAddress) {
       return _storeAddress;
-    } catch (bytes memory lowLevelData) {
-      // catch and rename the error, otherwise it's usually "EvmError: Revert" which is very unhelpful
-      revert StoreSwitch_MissingOrInvalidStoreAddressFunction(lowLevelData);
+    } catch {
+      return msg.sender;
     }
   }
 

@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -25,7 +26,7 @@ contract KeysWithValueHook is StoreHook {
   using ResourceSelector for bytes32;
 
   function _world() internal view returns (IBaseWorld) {
-    return IBaseWorld(storeAddress(msg.sender));
+    return IBaseWorld(StoreSwitch.storeAddress());
   }
 
   function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data) public {
