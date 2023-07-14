@@ -121,6 +121,32 @@ contract SnapSyncModuleTest is Test, GasReporter {
     testSnapSync(val1, val2);
   }
 
+  function testSnapSyncWithOffset(uint256 value1, uint256 value2) public {
+    _installModules();
+
+    // Set some values in the source table
+    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value1));
+    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value2));
+
+    startGasReport("Call snap sync on a table with 2 records, limit 1 and offset 0");
+    SyncRecord[] memory records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, 1, 0);
+    endGasReport();
+
+    // Assert that the list is correct
+    assertEq(records.length, 1);
+    assertEq(records[0].keyTuple[0], key1);
+    assertEq(records[0].value, abi.encodePacked(value1));
+
+    startGasReport("Call snap sync on a table with 2 records, limit 1 and offset 1");
+    records = ISnapSyncSystem(address(world)).snapSync_system_getRecords(tableId, 1, 1);
+    endGasReport();
+
+    // Assert that the list is correct
+    assertEq(records.length, 1);
+    assertEq(records[0].keyTuple[0], key2);
+    assertEq(records[0].value, abi.encodePacked(value2));
+  }
+
   function testSnapSyncComposite(uint256 value1, uint256 value2) public {
     _installModules();
 

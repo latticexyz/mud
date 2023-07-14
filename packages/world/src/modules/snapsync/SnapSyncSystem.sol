@@ -41,7 +41,7 @@ contract SnapSyncSystem is System {
       }
 
       bytes memory value = StoreSwitch.getRecord(tableId, keyTuple);
-      records[i] = SyncRecord({ tableId: tableId, keyTuple: keyTuple, value: value });
+      records[i - offset] = SyncRecord({ tableId: tableId, keyTuple: keyTuple, value: value });
     }
   }
 
