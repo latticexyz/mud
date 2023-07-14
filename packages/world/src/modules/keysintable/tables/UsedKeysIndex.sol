@@ -194,7 +194,7 @@ library UsedKeysIndex {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bool has, uint40 index) internal view returns (bytes memory) {
+  function encode(bool has, uint40 index) internal pure returns (bytes memory) {
     return abi.encodePacked(has, index);
   }
 

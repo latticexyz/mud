@@ -222,7 +222,7 @@ Now we can import our new table, and write something to it. Let’s write a func
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { Dog,DogData } from "../codegen/tables/Dog.sol"; // import table we created
+import { Dog, DogData } from "../codegen/tables/Dog.sol"; // import table we created
 contract MySystem is System {
   function addEntry(string memory name, string memory color) public returns (bytes32) {
     bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())); // creating a random key for the record

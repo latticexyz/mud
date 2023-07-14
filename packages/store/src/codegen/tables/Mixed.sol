@@ -431,7 +431,7 @@ library Mixed {
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal view returns (MixedData memory _table) {
+  function decode(bytes memory _blob) internal pure returns (MixedData memory _table) {
     // 20 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
 
@@ -456,7 +456,7 @@ library Mixed {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal view returns (bytes memory) {
+  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](2);
     _counters[0] = uint40(a32.length * 4);
     _counters[1] = uint40(bytes(s).length);
