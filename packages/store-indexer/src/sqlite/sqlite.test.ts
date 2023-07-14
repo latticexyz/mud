@@ -40,6 +40,7 @@ describe("sqlite", () => {
         "lastUpdatedBlockNumber": null,
         "name": "users",
         "namespace": "test",
+        "tableId": "0x7465737400000000000000000000000075736572730000000000000000000000",
         "valueSchema": {
           "addr": "address",
           "name": "string",

@@ -13,6 +13,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
 import { createTable, database, getTable } from "../src/memory/fakeDatabase";
 import { isDefined } from "@latticexyz/common/utils";
+import { TableId } from "@latticexyz/common";
 
 export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 
@@ -75,6 +76,7 @@ blockLogs$
         async registerTables(tables) {
           for (const table of tables) {
             createTable(chain.id, table.address, {
+              tableId: new TableId(table.namespace, table.name).toHex(),
               namespace: table.namespace,
               name: table.name,
               keyTupleSchema: table.keyTuple,

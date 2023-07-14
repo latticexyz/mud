@@ -21,15 +21,8 @@ import {
   mudStoreTables,
 } from "../src/sqlite/sqlite";
 import { createSqliteTable } from "../src/sqlite/createSqliteTable";
-import { and, eq, or } from "drizzle-orm";
-import {
-  DynamicAbiType,
-  SchemaAbiType,
-  SchemaAbiTypeToPrimitiveType,
-  StaticAbiType,
-  schemaAbiTypeToDefaultValue,
-} from "@latticexyz/schema-type";
-import { chunk } from "@latticexyz/common/utils";
+import { and, eq } from "drizzle-orm";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
 
 // TODO: align shared types (e.g. table, key+value schema)
 
@@ -140,16 +133,10 @@ blockLogs$
               addresses.map(async (address) => {
                 const db = await getDatabase(chain.id, address);
 
-                // Too many tables causes errors
-                //   Error: Expression tree is too large (maximum depth 1000)
-                // so split them into 100-table chunks
-                const chunks = [
-                  ...chunk(
-                    chainTables.filter((table) => table.address === address),
-                    100
-                  ),
-                ];
-                const tables = (await Promise.all(chunks.map((tables) => getTables(db, tables)))).flat();
+                const tables = await getTables(
+                  db,
+                  chainTables.filter((table) => table.address === address)
+                );
 
                 return tables.map((table) => ({
                   address,

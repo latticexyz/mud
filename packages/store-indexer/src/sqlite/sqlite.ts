@@ -1,13 +1,14 @@
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
-import { Address, getAddress } from "viem";
+import { Address, Hex, getAddress } from "viem";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
 import { SQLiteTransaction, blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { DefaultLogger, and, eq, or, sql } from "drizzle-orm";
+import { DefaultLogger, and, eq, inArray, or, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { ChainId, Table, TableName, TableNamespace, WorldId } from "../common";
 import { json } from "./columnTypes";
+import { TableId } from "@latticexyz/common";
 
 export const chainStateName = "__chainState";
 export const chainState = sqliteTable(chainStateName, {
@@ -19,8 +20,9 @@ export const chainState = sqliteTable(chainStateName, {
 
 export const mudStoreTablesName = "__mud_store_tables";
 export const mudStoreTables = sqliteTable(mudStoreTablesName, {
-  namespace: text("namespace").notNull().primaryKey(),
-  name: text("name").notNull().primaryKey(),
+  tableId: text("table_id").notNull().primaryKey(),
+  namespace: text("namespace").notNull(),
+  name: text("name").notNull(),
   keyTupleSchema: json("key_schema").notNull(),
   valueSchema: json("value_schema").notNull(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
@@ -70,18 +72,19 @@ export async function getDatabase(chainId: ChainId, address: Address): Promise<S
   return db;
 }
 
-export async function getTables(db: SQLJsDatabase, filter: Pick<Table, "namespace" | "name">[] = []): Promise<Table[]> {
-  const conditions = filter.map((table) =>
-    and(eq(mudStoreTables.namespace, table.namespace), eq(mudStoreTables.name, table.name))
-  );
-
+export async function getTables(
+  db: SQLJsDatabase,
+  conditions: Pick<Table, "namespace" | "name">[] = []
+): Promise<Table[]> {
+  const tableIds = conditions.map((condition) => new TableId(condition.namespace, condition.name).toHex());
   const tables = db
     .select()
     .from(mudStoreTables)
-    .where(conditions.length ? or(...conditions) : undefined)
+    .where(tableIds.length ? inArray(mudStoreTables.tableId, tableIds) : undefined)
     .all();
 
   return tables.map((table) => ({
+    tableId: new TableId(table.namespace, table.name).toHex(),
     namespace: table.namespace,
     name: table.name,
     keyTupleSchema: table.keyTupleSchema as Record<string, StaticAbiType>,
@@ -96,9 +99,10 @@ export async function getTable(db: SQLJsDatabase, namespace: TableNamespace, nam
 
 export async function createTable(
   dbOrTx: SQLJsDatabase | SQLiteTransaction<any, any, any, any>,
-  table: Table
+  table: Omit<Table, "tableId">
 ): Promise<Table> {
   return await dbOrTx.transaction(async (tx) => {
+    const tableId = new TableId(table.namespace, table.name).toHex();
     const sqliteTable = createSqliteTable({
       namespace: table.namespace,
       name: table.name,
@@ -111,6 +115,7 @@ export async function createTable(
     await tx
       .insert(mudStoreTables)
       .values({
+        tableId: new TableId(table.namespace, table.name).toHex(),
         namespace: table.namespace,
         name: table.name,
         keyTupleSchema: table.keyTupleSchema,
@@ -120,7 +125,10 @@ export async function createTable(
       // .onConflictDoNothing()
       .run();
 
-    return table;
+    return {
+      tableId,
+      ...table,
+    };
   });
 }
 

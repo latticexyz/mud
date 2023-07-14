@@ -1,5 +1,5 @@
 import { DynamicAbiType, DynamicPrimitiveType, StaticAbiType, StaticPrimitiveType } from "@latticexyz/schema-type";
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
@@ -13,6 +13,7 @@ export type TableRow = {
 };
 
 export type Table = {
+  tableId: Hex;
   namespace: TableNamespace;
   name: TableName;
   keyTupleSchema: Record<string, StaticAbiType>;
