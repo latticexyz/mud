@@ -9,8 +9,8 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
-import { AccessControl } from "./AccessControl.sol";
 import { Call } from "./Call.sol";
+import { Utils } from "./Utils.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
@@ -18,6 +18,8 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
+import { IBaseWorld } from "./interfaces/IBaseWorld.sol";
+import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
@@ -44,7 +46,11 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_NAME, msg.sender);
+    // Inline the access control logic for this method to avoid the bootstraping problem
+    // TODO: find a better solution
+    if (msg.sender != (address(this)) && msg.sender != NamespaceOwner.get(ROOT_NAMESPACE)) {
+      revert IWorldErrors.AccessDenied(ResourceSelector.from(ROOT_NAMESPACE).toString(), msg.sender);
+    }
 
     Call.withSender({
       msgSender: msg.sender,
@@ -70,7 +76,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function setRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, bytes calldata data) public virtual {
     // Require access to the namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, name, msg.sender);
 
     // Set the record
     StoreCore.setRecord(resourceSelector, key, data);
@@ -88,7 +94,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes calldata data
   ) public virtual {
     // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, name, msg.sender);
 
     // Set the field
     StoreCore.setField(resourceSelector, key, schemaIndex, data);
@@ -106,7 +112,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes calldata dataToPush
   ) public virtual {
     // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, name, msg.sender);
 
     // Push to the field
     StoreCore.pushToField(resourceSelector, key, schemaIndex, dataToPush);
@@ -124,7 +130,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint256 byteLengthToPop
   ) public virtual {
     // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, name, msg.sender);
 
     // Push to the field
     StoreCore.popFromField(resourceSelector, key, schemaIndex, byteLengthToPop);
@@ -143,7 +149,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes calldata dataToSet
   ) public virtual {
     // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, name, msg.sender);
 
     // Update data in the field
     StoreCore.updateInField(resourceSelector, key, schemaIndex, startByteIndex, dataToSet);
@@ -155,7 +161,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) public virtual {
     // Require access to namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, name, msg.sender);
 
     // Delete the record
     StoreCore.deleteRecord(resourceSelector, key);
@@ -278,7 +284,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or name
-    if (!publicAccess) AccessControl.requireAccess(namespace, name, msg.sender);
+    if (!publicAccess) _requireAccess(namespace, name, msg.sender);
 
     // Get system hooks
     address[] memory hooks = SystemHooks.get(resourceSelector);
@@ -302,6 +308,44 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     for (uint256 i; i < hooks.length; i++) {
       ISystemHook hook = ISystemHook(hooks[i]);
       hook.onAfterCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    }
+  }
+
+  /************************************************************************
+   *
+   *    INTERNAL ACCESS CONTROL
+   *
+   ************************************************************************/
+
+  /**
+   * Check for access at the given namespace or name.
+   * Skip the check if the call comes from within the own constructor to avoid bootstraping issues.
+   * Returns the resourceSelector if the caller has access.
+   * Reverts with AccessDenied if the caller has no access.
+   */
+  function _requireAccess(
+    bytes16 namespace,
+    bytes16 name,
+    address caller
+  ) public view returns (bytes32 resourceSelector) {
+    if (!Utils.isInConstructor()) {
+      return IBaseWorld(address(this)).requireAccess(namespace, name, caller);
+    }
+  }
+
+  /**
+   * Check for ownership of the given namespace and name (or a World internal call).
+   * Skip the check if the call comes from within the own constructor to avoid bootstraping issues.
+   * Returns the resourceSelector if the caller is the owner or World.
+   * Reverts with AccessDenied if the caller is not the owner or World.
+   */
+  function _requireOwnerOrWorld(
+    bytes16 namespace,
+    bytes16 name,
+    address caller
+  ) public view returns (bytes32 resourceSelector) {
+    if (!Utils.isInConstructor()) {
+      return IBaseWorld(address(this)).requireOwnerOrWorld(namespace, name, caller);
     }
   }
 

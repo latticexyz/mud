@@ -317,6 +317,64 @@
         "type": "bytes16"
       },
       {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "_requireAccess",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "_requireOwnerOrWorld",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
         "internalType": "bytes",
         "name": "funcSelectorAndArgs",
         "type": "bytes"

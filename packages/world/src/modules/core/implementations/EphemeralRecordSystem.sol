@@ -4,9 +4,9 @@ pragma solidity >=0.8.0;
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { IModule } from "../../../interfaces/IModule.sol";
 import { IWorldEphemeral } from "../../../interfaces/IWorldEphemeral.sol";
+import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { AccessControl } from "../../../AccessControl.sol";
 import { Call } from "../../../Call.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../../tables/InstalledModules.sol";
@@ -26,7 +26,7 @@ contract EphemeralRecordSystem is IStoreEphemeral, IWorldEphemeral, System {
     bytes calldata data
   ) public virtual {
     // Require access to the namespace or name
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+    bytes32 resourceSelector = IBaseWorld(_world()).requireAccess(namespace, name, msg.sender);
 
     // Set the record
     StoreCore.emitEphemeralRecord(resourceSelector, key, data);

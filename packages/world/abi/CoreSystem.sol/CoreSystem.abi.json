@@ -300,6 +300,35 @@
   {
     "inputs": [
       {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "hasAccess",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "contract IModule",
         "name": "module",
         "type": "address"
@@ -572,6 +601,64 @@
     "name": "registerTableHook",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "requireAccess",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "caller",
+        "type": "address"
+      }
+    ],
+    "name": "requireOwnerOrWorld",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

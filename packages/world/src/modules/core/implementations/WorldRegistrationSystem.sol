@@ -9,17 +9,22 @@ import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
-import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
+import { Call } from "../../../Call.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
 import { SystemHooks } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+
+import { CORE_SYSTEM_NAME } from "../constants.sol";
+
+import { AccessManagementSystem } from "./AccessManagementSystem.sol";
 
 /**
  * Functions related to registering resources in the World.
@@ -63,7 +68,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, ROOT_NAME, _msgSender());
+    else IBaseWorld(_world()).requireOwnerOrWorld(namespace, ROOT_NAME, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -88,7 +93,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     string[] calldata fieldNames
   ) public virtual {
     // Require caller to own the namespace
-    bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    bytes32 tableId = IBaseWorld(_world()).requireOwnerOrWorld(namespace, name, _msgSender());
 
     // Set the metadata
     StoreCore.setMetadata(tableId, tableName, fieldNames);
@@ -119,7 +124,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerTableHook(bytes16 namespace, bytes16 name, IStoreHook hook) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    bytes32 resourceSelector = IBaseWorld(_world()).requireOwnerOrWorld(namespace, name, _msgSender());
 
     // Register the hook
     StoreCore.registerStoreHook(resourceSelector, hook);
@@ -130,7 +135,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerSystemHook(bytes16 namespace, bytes16 name, ISystemHook hook) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    bytes32 resourceSelector = IBaseWorld(_world()).requireOwnerOrWorld(namespace, name, _msgSender());
 
     // Register the hook
     SystemHooks.push(resourceSelector, address(hook));
@@ -159,7 +164,23 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, ROOT_NAME, _msgSender());
+    else {
+      // Use call util for cheaper gas than call via function selector, and to avoid the
+      // bootstraping issue of registering the AccessManagementSystem.
+      (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
+      Call.withSender({
+        msgSender: _msgSender(),
+        target: systemAddress,
+        funcSelectorAndArgs: abi.encodeWithSelector(
+          AccessManagementSystem.requireOwnerOrWorld.selector,
+          namespace,
+          ROOT_NAME,
+          _msgSender()
+        ),
+        delegate: true,
+        value: 0
+      });
+    }
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -192,7 +213,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    IBaseWorld(_world()).requireOwnerOrWorld(namespace, name, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
@@ -228,8 +249,22 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
-    // Require the caller to own the root namespace
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_NAME, _msgSender());
+    // Require the caller to own the root namespace.
+    // Use call util for cheaper gas than call via function selector, and to avoid the
+    // bootstraping issue of registering a function selector for `requireOwnerOrWorld`.
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
+    Call.withSender({
+      msgSender: _msgSender(),
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        AccessManagementSystem.requireOwnerOrWorld.selector,
+        ROOT_NAMESPACE,
+        ROOT_NAME,
+        _msgSender()
+      ),
+      delegate: true,
+      value: 0
+    });
 
     // Require the function selector to be globally unique
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);

@@ -5,11 +5,10 @@ import { Test } from "forge-std/Test.sol";
 
 import { Utils } from "../src/Utils.sol";
 import { System } from "../src/System.sol";
-import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { setupWorld } from "./setupWorld.sol";
 
 contract UtilsTestSystem is System {
   function systemNamespace() public view returns (bytes16) {
@@ -22,8 +21,7 @@ contract UtilsTest is Test {
   IBaseWorld internal world;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world = setupWorld();
   }
 
   function _registerAndGetNamespace(bytes16 namespace) internal returns (bytes16 returnedNamespace) {

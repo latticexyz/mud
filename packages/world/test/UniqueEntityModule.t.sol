@@ -4,17 +4,17 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
 
 import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
+
+import { setupWorld } from "./setupWorld.sol";
 
 contract UniqueEntityModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
@@ -24,8 +24,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world = setupWorld();
   }
 
   function testInstall() public {

@@ -2,22 +2,6 @@
   {
     "inputs": [
       {
-        "internalType": "string",
-        "name": "resource",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "caller",
-        "type": "address"
-      }
-    ],
-    "name": "AccessDenied",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"

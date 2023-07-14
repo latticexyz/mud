@@ -7,15 +7,15 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { query, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
+
+import { setupWorld } from "./setupWorld.sol";
 
 contract QueryTest is Test, GasReporter {
   using ResourceSelector for bytes32;
@@ -45,8 +45,7 @@ contract QueryTest is Test, GasReporter {
   function setUp() public {
     tableSchema = SchemaLib.encode(SchemaType.UINT256);
     tableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-    world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world = setupWorld();
 
     key1[0] = "test1";
     key2[0] = "test2";

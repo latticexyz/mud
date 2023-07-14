@@ -21,4 +21,16 @@ library Utils {
       return ResourceSelector.getNamespace(resourceSelector);
     }
   }
+
+  /**
+   * Return true if the current call is coming from within the constructor
+   */
+  function isInConstructor() internal view returns (bool) {
+    uint256 codeSize;
+    assembly {
+      codeSize := extcodesize(address())
+    }
+    if (codeSize == 0) return true;
+    return false;
+  }
 }

@@ -12,17 +12,16 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
-import { World } from "../src/World.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
-
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+
+import { setupWorld } from "./setupWorld.sol";
 
 contract UpdateInFieldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
@@ -42,8 +41,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   bytes internal encodedData;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world = setupWorld();
 
     key = "testKey";
     keyTuple = new bytes32[](1);

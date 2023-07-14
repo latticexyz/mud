@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
-import { AccessControl } from "../../../AccessControl.sol";
 import { Call } from "../../../Call.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../../tables/InstalledModules.sol";

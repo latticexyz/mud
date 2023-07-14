@@ -7,17 +7,17 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
 import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
+
+import { setupWorld } from "./setupWorld.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
@@ -39,8 +39,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   function setUp() public {
     sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-    world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world = setupWorld();
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);

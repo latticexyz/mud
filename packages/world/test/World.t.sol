@@ -21,7 +21,6 @@ import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -30,6 +29,8 @@ import { ISystemHook } from "../src/interfaces/ISystemHook.sol";
 
 import { Bool } from "./tables/Bool.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
+
+import { setupWorld } from "./setupWorld.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;
@@ -147,8 +148,7 @@ contract WorldTest is Test, GasReporter {
   bytes32[] singletonKey;
 
   function setUp() public {
-    world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world = setupWorld();
 
     key = "testKey";
     keyTuple = new bytes32[](1);
