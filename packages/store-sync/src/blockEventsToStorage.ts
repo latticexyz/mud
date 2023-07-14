@@ -79,8 +79,8 @@ export type StorageOperation<TConfig extends StoreConfig> =
   | DeleteRecordOperation<TConfig>;
 
 export type BlockEventsToStorageOptions = {
-  registerTable: (data: StoredTable) => Promise<void>;
-  getTable: (opts: Pick<StoredTable, "address" | "namespace" | "name">) => Promise<StoredTable | undefined>;
+  registerTables: (data: StoredTable[]) => Promise<void>;
+  getTables: (opts: Pick<StoredTable, "address" | "namespace" | "name">[]) => Promise<StoredTable[]>;
 };
 
 type TableNamespace = string;
@@ -96,11 +96,10 @@ const visitedMetadata = new Map<
 >();
 
 export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>({
-  registerTable,
-  getTable,
+  registerTables,
+  getTables,
 }: BlockEventsToStorageOptions): (block: BlockEvents) => Promise<{
   blockNumber: BlockEvents["blockNumber"];
-  blockHash: BlockEvents["blockHash"];
   operations: StorageOperation<TConfig>[];
 }> {
   return async (block) => {
@@ -157,41 +156,42 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
       return { address: address as Hex, tableId: new TableId(namespace, name) };
     });
 
-    // register tables in parallel
-    await Promise.all(
-      newTableIds.map(async ({ address, tableId }) => {
-        const schema = Array.from(visitedSchemas.values()).find(
-          ({ address: schemaAddress, tableId: schemaTableId }) =>
-            schemaAddress === address && schemaTableId.toHex() === tableId.toHex()
-        );
-        const metadata = Array.from(visitedMetadata.values()).find(
-          ({ address: metadataAddress, tableId: metadataTableId }) =>
-            metadataAddress === address && metadataTableId.toHex() === tableId.toHex()
-        );
-        if (!schema) {
-          debug(`no schema registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`);
-          return;
-        }
-        if (!metadata) {
-          debug(
-            `no metadata registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`
+    await registerTables(
+      newTableIds
+        .map(({ address, tableId }) => {
+          const schema = Array.from(visitedSchemas.values()).find(
+            ({ address: schemaAddress, tableId: schemaTableId }) =>
+              schemaAddress === address && schemaTableId.toHex() === tableId.toHex()
           );
-          return;
-        }
+          const metadata = Array.from(visitedMetadata.values()).find(
+            ({ address: metadataAddress, tableId: metadataTableId }) =>
+              metadataAddress === address && metadataTableId.toHex() === tableId.toHex()
+          );
+          if (!schema) {
+            debug(
+              `no schema registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`
+            );
+            return;
+          }
+          if (!metadata) {
+            debug(
+              `no metadata registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`
+            );
+            return;
+          }
 
-        const valueAbiTypes = [...schema.schema.valueSchema.staticFields, ...schema.schema.valueSchema.dynamicFields];
+          const valueAbiTypes = [...schema.schema.valueSchema.staticFields, ...schema.schema.valueSchema.dynamicFields];
 
-        const table: StoredTable = {
-          address,
-          namespace: schema.tableId.namespace,
-          name: schema.tableId.name,
-          // TODO: replace with proper named key tuple
-          keyTuple: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
-          value: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
-        };
-
-        await registerTable(table);
-      })
+          return {
+            address,
+            namespace: schema.tableId.namespace,
+            name: schema.tableId.name,
+            // TODO: replace with proper named key tuple
+            keyTuple: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
+            value: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
+          };
+        })
+        .filter(isDefined)
     );
 
     const tableIds = Array.from(
@@ -204,12 +204,10 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
     );
     // TODO: combine these once we refactor table registration
     const tables = Object.fromEntries(
-      await Promise.all(
-        tableIds.map(async ({ address, tableId }) => [
-          `${address}:${tableId.toHex()}`,
-          await getTable({ address, ...tableId }),
-        ])
-      )
+      (await getTables(tableIds.map(({ address, tableId }) => ({ address, ...tableId })))).map((table) => [
+        `${table.address}:${new TableId(table.namespace, table.name).toHex()}`,
+        table,
+      ])
     ) as Record<Hex, StoredTable>;
 
     const operations = block.logs
@@ -284,7 +282,6 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
 
     return {
       blockNumber: block.blockNumber,
-      blockHash: block.blockHash,
       operations,
     };
   };

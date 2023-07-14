@@ -12,6 +12,7 @@ import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockEventsToStorage } from "@latticexyz/store-sync";
 import { createTable, database, getTable } from "../src/memory/fakeDatabase";
+import { isDefined } from "@latticexyz/common/utils";
 
 export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
 
@@ -71,28 +72,34 @@ blockLogs$
   .pipe(
     concatMap(
       blockEventsToStorage({
-        async registerTable({ address, namespace, name, keyTuple, value }) {
-          createTable(chain.id, address, {
-            namespace,
-            name,
-            keyTupleSchema: keyTuple,
-            valueSchema: value,
-            rows: [],
-            lastUpdatedBlockNumber: startBlock,
-          });
-          console.log("registered schema", `${namespace}:${name}`, keyTuple, value);
+        async registerTables(tables) {
+          for (const table of tables) {
+            createTable(chain.id, table.address, {
+              namespace: table.namespace,
+              name: table.name,
+              keyTupleSchema: table.keyTuple,
+              valueSchema: table.value,
+              rows: [],
+              lastUpdatedBlockNumber: startBlock,
+            });
+            console.log("registered schema", `${table.namespace}:${table.name}`, table.keyTuple, table.value);
+          }
         },
-        async getTable({ address, namespace, name }) {
-          const table = getTable(chain.id, address, namespace, name);
-          return table
-            ? {
-                address,
-                namespace,
-                name,
-                keyTuple: table.keyTupleSchema,
-                value: table.valueSchema,
-              }
-            : undefined;
+        async getTables(tables) {
+          return tables
+            .map(({ address, namespace, name }) => {
+              const table = getTable(chain.id, address, namespace, name);
+              return table
+                ? {
+                    address,
+                    namespace,
+                    name,
+                    keyTuple: table.keyTupleSchema,
+                    value: table.valueSchema,
+                  }
+                : undefined;
+            })
+            .filter(isDefined);
         },
       })
     ),

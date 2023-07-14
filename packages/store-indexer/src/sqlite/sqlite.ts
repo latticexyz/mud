@@ -2,8 +2,8 @@ import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { Address, getAddress } from "viem";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
-import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { DefaultLogger, and, eq, sql } from "drizzle-orm";
+import { SQLiteTransaction, blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { DefaultLogger, and, eq, or, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { ChainId, Table, TableName, TableNamespace, WorldId } from "../common";
@@ -70,8 +70,17 @@ export async function getDatabase(chainId: ChainId, address: Address): Promise<S
   return db;
 }
 
-export async function getTables(db: SQLJsDatabase): Promise<Table[]> {
-  const tables = db.select().from(mudStoreTables).all();
+export async function getTables(db: SQLJsDatabase, filter: Pick<Table, "namespace" | "name">[] = []): Promise<Table[]> {
+  const conditions = filter.map((table) =>
+    and(eq(mudStoreTables.namespace, table.namespace), eq(mudStoreTables.name, table.name))
+  );
+
+  const tables = db
+    .select()
+    .from(mudStoreTables)
+    .where(conditions.length ? or(...conditions) : undefined)
+    .all();
+
   return tables.map((table) => ({
     namespace: table.namespace,
     name: table.name,
@@ -82,48 +91,37 @@ export async function getTables(db: SQLJsDatabase): Promise<Table[]> {
 }
 
 export async function getTable(db: SQLJsDatabase, namespace: TableNamespace, name: TableName): Promise<Table | null> {
-  const tables = db
-    .select()
-    .from(mudStoreTables)
-    .where(and(eq(mudStoreTables.namespace, namespace), eq(mudStoreTables.name, name)))
-    .all();
-
-  const table = tables[0];
-  if (!table) {
-    return null;
-  }
-
-  return {
-    namespace: table.namespace,
-    name: table.name,
-    keyTupleSchema: table.keyTupleSchema as Record<string, StaticAbiType>,
-    valueSchema: table.valueSchema as Record<string, StaticAbiType | DynamicAbiType>,
-    lastUpdatedBlockNumber: table.lastUpdatedBlockNumber,
-  };
+  return (await getTables(db, [{ namespace, name }]))[0] ?? null;
 }
 
-export async function createTable(db: SQLJsDatabase, table: Table): Promise<Table> {
-  const sqliteTable = createSqliteTable({
-    namespace: table.namespace,
-    name: table.name,
-    keyTupleSchema: table.keyTupleSchema,
-    valueSchema: table.valueSchema,
-  });
-
-  db.run(sql.raw(sqliteTableToSql(sqliteTable.tableName, sqliteTable.table)));
-
-  db.insert(mudStoreTables)
-    .values({
+export async function createTable(
+  dbOrTx: SQLJsDatabase | SQLiteTransaction<any, any, any, any>,
+  table: Table
+): Promise<Table> {
+  return await dbOrTx.transaction(async (tx) => {
+    const sqliteTable = createSqliteTable({
       namespace: table.namespace,
       name: table.name,
       keyTupleSchema: table.keyTupleSchema,
       valueSchema: table.valueSchema,
-    })
-    // sql.js doesn't like parallelism, so for now we just ignore duplicate tables
-    .onConflictDoNothing()
-    .run();
+    });
 
-  return table;
+    await tx.run(sql.raw(sqliteTableToSql(sqliteTable.tableName, sqliteTable.table)));
+
+    await tx
+      .insert(mudStoreTables)
+      .values({
+        namespace: table.namespace,
+        name: table.name,
+        keyTupleSchema: table.keyTupleSchema,
+        valueSchema: table.valueSchema,
+      })
+      // sql.js doesn't like parallelism, so for now we just ignore duplicate tables
+      // .onConflictDoNothing()
+      .run();
+
+    return table;
+  });
 }
 
 export const getWorldId = (chainId: ChainId, address: Address): WorldId => {

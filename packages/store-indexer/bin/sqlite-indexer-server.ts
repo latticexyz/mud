@@ -17,11 +17,19 @@ import {
   getDatabase,
   getInternalDatabase,
   getTable,
+  getTables,
   mudStoreTables,
 } from "../src/sqlite/sqlite";
 import { createSqliteTable } from "../src/sqlite/createSqliteTable";
-import { and, eq } from "drizzle-orm";
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
+import { and, eq, or } from "drizzle-orm";
+import {
+  DynamicAbiType,
+  SchemaAbiType,
+  SchemaAbiTypeToPrimitiveType,
+  StaticAbiType,
+  schemaAbiTypeToDefaultValue,
+} from "@latticexyz/schema-type";
+import { chunk } from "@latticexyz/common/utils";
 
 // TODO: align shared types (e.g. table, key+value schema)
 
@@ -91,43 +99,69 @@ blockLogs$
   .pipe(
     concatMap(
       blockEventsToStorage({
-        // sql.js doesn't like parallelism and doesn't give us a promise/commitment for a write query, so for now we just ignore duplicate tables
-        // TODO: convert this to registerTables and do it all in a tx?
-        async registerTable({ address, namespace, name, keyTuple, value }) {
-          const db = await getDatabase(chain.id, address);
+        async registerTables(chainTables) {
+          const addresses = Array.from(new Set(chainTables.map((table) => table.address)));
 
-          const table = await getTable(db, namespace, name);
-          if (table) {
-            console.log(`table ${namespace}:${name} for world ${chain.id}:${address} already exists in DB, skipping`);
-            return;
-          }
+          await Promise.all(
+            addresses.map(async (address) => {
+              const db = await getDatabase(chain.id, address);
+              const tables = chainTables.filter((table) => table.address === address);
 
-          console.log(`creating table ${namespace}:${name} for world ${chain.id}:${address}`);
-          await createTable(db, {
-            namespace,
-            name,
-            // TODO: align these names?
-            keyTupleSchema: keyTuple,
-            valueSchema: value,
-            // TODO: pass log and/or block number into registerTable
-            lastUpdatedBlockNumber: startBlock,
-          });
-          // console.log("registered table", `${namespace}:${name}`, keyTuple, value);
+              await db.transaction(async (tx) => {
+                for (const table of tables) {
+                  const existingTable = await getTable(tx, table.namespace, table.name);
+                  if (existingTable) {
+                    console.log(
+                      `table ${table.namespace}:${table.name} for world ${chain.id}:${address} already exists in DB, skipping`
+                    );
+                    continue;
+                  }
+
+                  console.log(`creating table ${table.namespace}:${table.name} for world ${chain.id}:${address}`);
+                  await createTable(tx, {
+                    namespace: table.namespace,
+                    name: table.name,
+                    // TODO: align these names?
+                    keyTupleSchema: table.keyTuple,
+                    valueSchema: table.value,
+                    // TODO: pass log and/or block number into registerTable
+                    lastUpdatedBlockNumber: startBlock,
+                  });
+                }
+              });
+            })
+          );
         },
-        async getTable({ address, namespace, name }) {
-          const db = await getDatabase(chain.id, address);
-          const table = await getTable(db, namespace, name);
-          // TODO: align these types so we can just return table?
-          return table
-            ? {
-                address,
-                namespace,
-                name,
-                // TODO: align these names?
-                keyTuple: table.keyTupleSchema,
-                value: table.valueSchema,
-              }
-            : undefined;
+        async getTables(chainTables) {
+          const addresses = Array.from(new Set(chainTables.map((table) => table.address)));
+
+          return (
+            await Promise.all(
+              addresses.map(async (address) => {
+                const db = await getDatabase(chain.id, address);
+
+                // Too many tables causes errors
+                //   Error: Expression tree is too large (maximum depth 1000)
+                // so split them into 100-table chunks
+                const chunks = [
+                  ...chunk(
+                    chainTables.filter((table) => table.address === address),
+                    100
+                  ),
+                ];
+                const tables = (await Promise.all(chunks.map((tables) => getTables(db, tables)))).flat();
+
+                return tables.map((table) => ({
+                  address,
+                  namespace: table.namespace,
+                  name: table.name,
+                  // TODO: align these names?
+                  keyTuple: table.keyTupleSchema,
+                  value: table.valueSchema,
+                }));
+              })
+            )
+          ).flat();
         },
       })
     ),
