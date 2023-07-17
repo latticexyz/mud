@@ -21,11 +21,20 @@ library StoreSwitch {
     // If the call is from within a constructor, use StoreCore to write to own storage
     if (codeSize == 0) return address(this);
 
-    try IStoreConsumer(address(this)).storeAddress() returns (address _storeAddress) {
-      return _storeAddress;
-    } catch {
-      return msg.sender;
+    bytes4 storeAddressSelector = IStoreConsumer.storeAddress.selector;
+    address result;
+    assembly {
+      mstore(0x00, storeAddressSelector)
+      let success := staticcall(gas(), address(), 0x00, 4, 0x00, 0x20)
+      switch success
+      case 0 {
+        result := caller()
+      }
+      case 1 {
+        result := mload(0x00)
+      }
     }
+    return result;
   }
 
   function registerStoreHook(bytes32 table, IStoreHook hook) internal {

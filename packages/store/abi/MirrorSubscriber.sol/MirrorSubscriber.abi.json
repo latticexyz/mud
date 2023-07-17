@@ -76,17 +76,6 @@
   {
     "inputs": [
       {
-        "internalType": "bytes",
-        "name": "lowLevelData",
-        "type": "bytes"
-      }
-    ],
-    "name": "StoreSwitch_MissingOrInvalidStoreAddressFunction",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "",
         "type": "bytes32"
