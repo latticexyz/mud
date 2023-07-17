@@ -68,4 +68,11 @@ const blockLogs$ = latestBlockNumber$.pipe(
   // tap((blockLogs) => console.log("block logs", blockLogs))
 );
 
-blockLogs$.pipe(concatMap(blockLogsToSqlite({ publicClient }))).subscribe();
+blockLogs$
+  .pipe(
+    concatMap(blockLogsToSqlite({ publicClient })),
+    tap(({ blockNumber, operations }) => {
+      console.log("stored", operations.length, "operations for block", blockNumber);
+    })
+  )
+  .subscribe();
