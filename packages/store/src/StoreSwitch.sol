@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook, IStoreConsumer } from "./IStore.sol";
+import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
+import { getStoreAddress } from "./StoreConsumer.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -21,20 +22,12 @@ library StoreSwitch {
     // If the call is from within a constructor, use StoreCore to write to own storage
     if (codeSize == 0) return address(this);
 
-    bytes4 storeAddressSelector = IStoreConsumer.storeAddress.selector;
-    address result;
-    assembly {
-      mstore(0x00, storeAddressSelector)
-      let success := staticcall(gas(), address(), 0x00, 4, 0x00, 0x20)
-      switch success
-      case 0 {
-        result := caller()
-      }
-      case 1 {
-        result := mload(0x00)
-      }
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(0)) {
+      return msg.sender;
+    } else {
+      return _storeAddress;
     }
-    return result;
   }
 
   function registerStoreHook(bytes32 table, IStoreHook hook) internal {

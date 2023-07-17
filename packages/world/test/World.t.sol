@@ -191,10 +191,6 @@ contract WorldTest is Test, GasReporter {
     assertTrue(ResourceAccess.get(world, ROOT_NAMESPACE, address(this)));
   }
 
-  function testStoreAddress() public {
-    assertEq(world.storeAddress(), address(world));
-  }
-
   function testRegisterNamespace() public {
     startGasReport("Register a new namespace");
     world.registerNamespace("test");

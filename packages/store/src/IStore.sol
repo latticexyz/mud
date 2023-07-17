@@ -4,17 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
-interface IStoreConsumer {
-  // TODO: benchmark this vs. using a known storage slot to determine the Store address
-  // (see https://github.com/latticexyz/mud/issues/444)
-  /**
-   * Returns the Store address used by this consumer (like Hooks, Store itself, World Systems, or tests/scripts)
-   * for StoreSwitch to determine how to interact with the Store.
-   */
-  function storeAddress() external view returns (address storeAddress);
-}
-
-interface IStoreRead is IStoreConsumer {
+interface IStoreRead {
   function getSchema(bytes32 table) external view returns (Schema schema);
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);

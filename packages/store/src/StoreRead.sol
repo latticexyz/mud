@@ -4,10 +4,12 @@ pragma solidity >=0.8.0;
 import { IStoreRead } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
+import { setStoreAddress } from "./StoreConsumer.sol";
 
 contract StoreRead is IStoreRead {
   constructor() {
     StoreCore.initialize();
+    setStoreAddress(address(this));
   }
 
   function getSchema(bytes32 table) public view virtual returns (Schema schema) {
