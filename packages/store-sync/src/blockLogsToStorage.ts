@@ -79,8 +79,11 @@ export type StorageOperation<TConfig extends StoreConfig> =
   | DeleteRecordOperation<TConfig>;
 
 export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
-  registerTables: (tables: StoredTable[]) => Promise<void>;
-  getTables: (tables: Pick<StoredTable, "address" | "namespace" | "name">[]) => Promise<StoredTable[]>;
+  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: StoredTable[] }) => Promise<void>;
+  getTables: (opts: {
+    blockNumber: BlockLogs["blockNumber"];
+    tables: Pick<StoredTable, "address" | "namespace" | "name">[];
+  }) => Promise<StoredTable[]>;
   storeOperations: (opts: {
     blockNumber: BlockLogs["blockNumber"];
     operations: StorageOperation<TConfig>[];
@@ -163,8 +166,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       return { address: address as Hex, tableId: new TableId(namespace, name) };
     });
 
-    await registerTables(
-      newTableIds
+    await registerTables({
+      blockNumber: block.blockNumber,
+      tables: newTableIds
         .map(({ address, tableId }) => {
           const schema = Array.from(visitedSchemas.values()).find(
             ({ address: schemaAddress, tableId: schemaTableId }) =>
@@ -198,8 +202,8 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             value: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
           };
         })
-        .filter(isDefined)
-    );
+        .filter(isDefined),
+    });
 
     const tableIds = Array.from(
       new Set(
@@ -211,10 +215,12 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
     );
     // TODO: combine these once we refactor table registration
     const tables = Object.fromEntries(
-      (await getTables(tableIds.map(({ address, tableId }) => ({ address, ...tableId })))).map((table) => [
-        `${table.address}:${new TableId(table.namespace, table.name).toHex()}`,
-        table,
-      ])
+      (
+        await getTables({
+          blockNumber: block.blockNumber,
+          tables: tableIds.map(({ address, tableId }) => ({ address, ...tableId })),
+        })
+      ).map((table) => [`${table.address}:${new TableId(table.namespace, table.name).toHex()}`, table])
     ) as Record<Hex, StoredTable>;
 
     const operations = block.logs

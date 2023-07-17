@@ -29,7 +29,7 @@ describe("blockLogsToStorage", () => {
   });
 
   it("call setField with data properly decoded", async () => {
-    mockedCallbacks.getTables.mockImplementation(async (tables) => {
+    mockedCallbacks.getTables.mockImplementation(async ({ tables }) => {
       return tables
         .map((table) => {
           if (table.namespace === "" && table.name === "Inventory") {

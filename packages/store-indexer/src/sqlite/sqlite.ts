@@ -1,14 +1,16 @@
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
-import { Address, Hex, getAddress } from "viem";
+import { Address, Chain, PublicClient, Transport } from "viem";
 import initSqlJs from "sql.js";
 import { drizzle, SQLJsDatabase } from "drizzle-orm/sql-js";
 import { SQLiteTransaction, blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { DefaultLogger, and, eq, inArray, or, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
-import { ChainId, Table, TableName, TableNamespace, WorldId } from "../common";
+import { ChainId, Table, TableName, TableNamespace, WorldId, getWorldId, schemaToDefaults } from "../common";
 import { json } from "./columnTypes";
 import { TableId } from "@latticexyz/common";
+import { blockLogsToStorage } from "@latticexyz/store-sync";
+import { StoreConfig } from "@latticexyz/store";
 
 export const chainStateName = "__chainState";
 export const chainState = sqliteTable(chainStateName, {
@@ -18,7 +20,7 @@ export const chainState = sqliteTable(chainStateName, {
   lastError: text("last_error"),
 });
 
-export const mudStoreTablesName = "__mud_store_tables";
+export const mudStoreTablesName = "__mudStoreTables";
 export const mudStoreTables = sqliteTable(mudStoreTablesName, {
   tableId: text("table_id").notNull().primaryKey(),
   namespace: text("namespace").notNull(),
@@ -132,6 +134,207 @@ export async function createTable(
   });
 }
 
-export const getWorldId = (chainId: ChainId, address: Address): WorldId => {
-  return `${chainId}:${getAddress(address)}`;
-};
+export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
+  publicClient,
+}: {
+  publicClient: PublicClient<Transport, Chain>;
+  config?: TConfig;
+}): ReturnType<typeof blockLogsToStorage<TConfig>> {
+  return blockLogsToStorage({
+    async registerTables({ blockNumber, tables }) {
+      const addresses = Array.from(new Set(tables.map((table) => table.address)));
+
+      await Promise.all(
+        addresses.map(async (address) => {
+          const db = await getDatabase(publicClient.chain.id, address);
+          const storeTables = tables.filter((table) => table.address === address);
+
+          await db.transaction(async (tx) => {
+            for (const table of storeTables) {
+              const existingTable = await getTable(tx, table.namespace, table.name);
+              if (existingTable) {
+                console.log(
+                  `table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${address} already exists in DB, skipping`
+                );
+                continue;
+              }
+
+              console.log(
+                `creating table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${address}`
+              );
+              await createTable(tx, {
+                namespace: table.namespace,
+                name: table.name,
+                // TODO: align these names?
+                keyTupleSchema: table.keyTuple,
+                valueSchema: table.value,
+                // TODO: pass log and/or block number into registerTable
+                lastUpdatedBlockNumber: blockNumber,
+              });
+            }
+          });
+        })
+      );
+    },
+    async getTables({ tables }) {
+      const addresses = Array.from(new Set(tables.map((table) => table.address)));
+
+      return (
+        await Promise.all(
+          addresses.map(async (address) => {
+            const db = await getDatabase(publicClient.chain.id, address);
+
+            const storeTables = await getTables(
+              db,
+              tables.filter((table) => table.address === address)
+            );
+
+            // TODO: query from chain if not found in DB
+
+            return storeTables.map((table) => ({
+              address,
+              namespace: table.namespace,
+              name: table.name,
+              // TODO: align these names?
+              keyTuple: table.keyTupleSchema,
+              value: table.valueSchema,
+            }));
+          })
+        )
+      ).flat();
+    },
+    async storeOperations({ blockNumber, operations }) {
+      // This is currently parallelized per world (each world has its own database).
+      // This may need to change if we decide to put multiple worlds into one DB (e.g. a namespace per world, but all under one DB).
+      // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
+
+      const addresses = Array.from(new Set(operations.map((operation) => operation.log.address)));
+
+      await Promise.all(
+        addresses.map(async (address) => {
+          const db = await getDatabase(publicClient.chain.id, address);
+          const storeOperations = operations.filter((operation) => operation.log.address === address);
+
+          const tables = await Promise.all(
+            Array.from(
+              new Set(storeOperations.map((operation) => JSON.stringify([operation.namespace, operation.name])))
+            )
+              .map((json) => JSON.parse(json))
+              .map(async ([namespace, name]) => ({
+                namespace,
+                name,
+                table: await getTable(db, namespace, name),
+              }))
+          );
+
+          await db.transaction(async (tx) => {
+            for (const { namespace, name } of tables) {
+              await tx
+                .update(mudStoreTables)
+                .set({ lastUpdatedBlockNumber: blockNumber })
+                .where(and(eq(mudStoreTables.namespace, namespace), eq(mudStoreTables.name, name)))
+                .run();
+            }
+
+            for (const operation of storeOperations) {
+              const table = tables.find(
+                (table) => table.namespace === operation.namespace && table.name === operation.name
+              )?.table;
+              if (!table) {
+                console.log(
+                  `table ${operation.namespace}:${String(operation.name)} not found, skipping operation`,
+                  operation
+                );
+                continue;
+              }
+
+              const isSingleton = Object.keys(table.keyTupleSchema).length === 0;
+
+              const { table: sqliteTable } = createSqliteTable(table);
+
+              if (operation.type === "SetRecord") {
+                await tx
+                  .insert(sqliteTable)
+                  .values({
+                    ...operation.keyTuple,
+                    ...operation.record,
+                    __lastUpdatedBlockNumber: blockNumber,
+                    __isDeleted: false,
+                    ...(isSingleton ? { __singleton: true } : {}),
+                  })
+                  .onConflictDoUpdate({
+                    target: isSingleton
+                      ? sqliteTable.__singleton
+                      : Object.keys(operation.keyTuple).map((columnName) => sqliteTable[columnName]),
+                    set: {
+                      ...operation.record,
+                      __lastUpdatedBlockNumber: blockNumber,
+                      __isDeleted: false,
+                    },
+                  })
+                  .run();
+                // console.log("stored record", operation);
+              } else if (operation.type === "SetField") {
+                await tx
+                  .insert(sqliteTable)
+                  .values({
+                    ...operation.keyTuple,
+                    ...schemaToDefaults(table.valueSchema),
+                    [operation.valueName]: operation.value,
+                    __lastUpdatedBlockNumber: blockNumber,
+                    __isDeleted: false,
+                    ...(isSingleton ? { __singleton: true } : {}),
+                  })
+                  .onConflictDoUpdate({
+                    target: isSingleton
+                      ? sqliteTable.__singleton
+                      : Object.keys(operation.keyTuple).map((columnName) => sqliteTable[columnName]),
+                    set: {
+                      [operation.valueName]: operation.value,
+                      __lastUpdatedBlockNumber: blockNumber,
+                      __isDeleted: false,
+                    },
+                  })
+                  .run();
+                // console.log("stored field", operation);
+              } else if (operation.type === "DeleteRecord") {
+                await tx
+                  .update(sqliteTable)
+                  .set({
+                    __lastUpdatedBlockNumber: blockNumber,
+                    __isDeleted: true,
+                  })
+                  .where(
+                    isSingleton
+                      ? undefined
+                      : and(
+                          ...Object.entries(operation.keyTuple).map(([columnName, value]) =>
+                            eq(sqliteTable[columnName], value)
+                          )
+                        )
+                  )
+                  .run();
+                // console.log("deleted record", operation);
+              }
+            }
+          });
+        })
+      );
+
+      const internalDb = await getInternalDatabase();
+      await internalDb
+        .insert(chainState)
+        .values({
+          chainId: publicClient.chain.id,
+          lastUpdatedBlockNumber: blockNumber,
+        })
+        .onConflictDoUpdate({
+          target: chainState.chainId,
+          set: {
+            lastUpdatedBlockNumber: blockNumber,
+          },
+        })
+        .run();
+    },
+  });
+}
