@@ -42,7 +42,8 @@
     "build:protobuf": "make protoc-ts && prettier --write protobuf/ts/**/*.ts",
     "dev": "tsup --watch",
     "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
-    "test": "tsc --noEmit && echo 'todo: add tests'"
+    "test": "pnpm run test:go",
+    "test:go": "go test -v ./..."
   },
   "dependencies": {
     "long": "^5.2.1",

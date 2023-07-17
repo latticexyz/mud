@@ -117,8 +117,8 @@ func DecodeDynamicField(schemaType SchemaType, data string) interface{} {
 		BYTES30_ARRAY,
 		BYTES31_ARRAY,
 		BYTES32_ARRAY,
-		ADDRESS_ARRAY,
-		BOOL_ARRAY:
+		BOOL_ARRAY,
+		ADDRESS_ARRAY:
 		staticAbiType := ArrayAbiTypeToStaticAbiType(schemaType)
 		itemByteLength := staticAbiType.ByteLength()
 		if dataSize%itemByteLength != 0 {
