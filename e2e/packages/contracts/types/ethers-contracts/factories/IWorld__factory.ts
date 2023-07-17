@@ -1338,25 +1338,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "msgSender",
-        type: "address",
-      },
-    ],
-    name: "storeAddress",
-    outputs: [
-      {
-        internalType: "address",
-        name: "storeAddress",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "arg",
         type: "uint256",

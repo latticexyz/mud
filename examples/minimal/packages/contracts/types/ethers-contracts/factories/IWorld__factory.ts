@@ -1373,25 +1373,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "msgSender",
-        type: "address",
-      },
-    ],
-    name: "storeAddress",
-    outputs: [
-      {
-        internalType: "address",
-        name: "storeAddress",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",

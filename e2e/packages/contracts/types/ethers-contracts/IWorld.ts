@@ -70,7 +70,6 @@ export interface IWorldInterface extends utils.Interface {
     "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
-    "storeAddress(address)": FunctionFragment;
     "stub(uint256)": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
@@ -118,7 +117,6 @@ export interface IWorldInterface extends utils.Interface {
       | "setMetadata(bytes32,string,string[])"
       | "setRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setRecord(bytes32,bytes32[],bytes)"
-      | "storeAddress"
       | "stub"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
@@ -414,10 +412,6 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "storeAddress",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "stub",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -580,10 +574,6 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setRecord(bytes32,bytes32[],bytes)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "storeAddress",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "stub", data: BytesLike): Result;
@@ -974,11 +964,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    storeAddress(
-      msgSender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string] & { storeAddress: string }>;
-
     stub(
       arg: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -1285,11 +1270,6 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  storeAddress(
-    msgSender: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
   stub(
     arg: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -1593,11 +1573,6 @@ export interface IWorld extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    storeAddress(
-      msgSender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     stub(
       arg: PromiseOrValue<BigNumberish>,
@@ -1952,11 +1927,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    storeAddress(
-      msgSender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     stub(
       arg: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -2262,11 +2232,6 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    storeAddress(
-      msgSender: PromiseOrValue<string>,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     stub(
