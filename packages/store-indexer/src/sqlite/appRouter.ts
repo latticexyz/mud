@@ -1,6 +1,7 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
-import { chainState, getTables } from "./sqlite";
+import { getTables } from "./getTables";
+import { chainState } from "./internalTables";
 import { TableWithRows } from "../common";
 import { createSqliteTable } from "./createSqliteTable";
 import { eq } from "drizzle-orm";

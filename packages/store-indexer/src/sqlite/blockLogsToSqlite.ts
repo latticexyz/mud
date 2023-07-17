@@ -1,64 +1,16 @@
-import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
-import { Address, Chain, PublicClient, Transport } from "viem";
-import { BaseSQLiteDatabase, blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { Chain, PublicClient, Transport } from "viem";
+import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
+import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
-import { Table, schemaToDefaults } from "../common";
-import { json } from "./columnTypes";
+import { schemaToDefaults } from "../common";
 import { TableId } from "@latticexyz/common";
 import { blockLogsToStorage } from "@latticexyz/store-sync";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
-
-export const chainState = sqliteTable("__chainState", {
-  chainId: integer("chainId").notNull().primaryKey(),
-  lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
-  // TODO: last block hash?
-  lastError: text("last_error"),
-});
-
-export const mudStoreTables = sqliteTable("__mudStoreTables", {
-  id: text("id").notNull().primaryKey(),
-  address: text("address").notNull(),
-  tableId: text("table_id").notNull(),
-  namespace: text("namespace").notNull(),
-  name: text("name").notNull(),
-  keySchema: json("key_schema").notNull(),
-  valueSchema: json("value_schema").notNull(),
-  lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
-  // TODO: last block hash?
-  lastError: text("last_error"),
-});
-
-export function getTables(
-  db: BaseSQLiteDatabase<"sync", void>,
-  conditions: Pick<Table, "address" | "namespace" | "name">[] = []
-): Table[] {
-  const ids = Array.from(
-    new Set(conditions.map((condition) => getTableName(condition.address, condition.namespace, condition.name)))
-  );
-  const tables = db
-    .select()
-    .from(mudStoreTables)
-    .where(ids.length ? inArray(mudStoreTables.id, ids) : undefined)
-    .all();
-
-  return tables.map((table) => {
-    const tableId = new TableId(table.namespace, table.name).toHex();
-    return {
-      id: getTableName(table.address, table.namespace, table.name),
-      address: table.address as Address,
-      tableId,
-      namespace: table.namespace,
-      name: table.name,
-      keySchema: table.keySchema as Record<string, StaticAbiType>,
-      valueSchema: table.valueSchema as Record<string, StaticAbiType | DynamicAbiType>,
-      lastUpdatedBlockNumber: table.lastUpdatedBlockNumber,
-    };
-  });
-}
+import { chainState, mudStoreTables } from "./internalTables";
+import { getTables } from "./getTables";
 
 export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
   database: db,

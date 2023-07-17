@@ -10,7 +10,7 @@ import {
 } from "@latticexyz/block-logs-stream";
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
-import { blockLogsToSqlite } from "../src/sqlite/sqlite";
+import { blockLogsToSqlite } from "../src/sqlite/blockLogsToSqlite";
 import { getDatabase } from "../src/sqlite/getDatabase";
 
 // TODO: align shared types (e.g. table, key+value schema)

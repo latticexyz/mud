@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { blockLogsToSqlite, chainState, getTables, mudStoreTables } from "./sqlite";
+import { blockLogsToSqlite } from "./blockLogsToSqlite";
+import { getTables } from "./getTables";
+import { chainState, mudStoreTables } from "./internalTables";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { createSqliteTable } from "./createSqliteTable";
-import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
 import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
 import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
 
-describe("sqlite", async () => {
+describe("blockLogsToSqlite", async () => {
   const SqlJs = await initSqlJs();
   let db: BaseSQLiteDatabase<"sync", void>;
 
