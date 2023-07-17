@@ -38,8 +38,7 @@ library StoreSwitch {
 
   /**
    * Set the Store address for use by other StoreSwitch functions.
-   * 0x00 is a magic number for msg.sender
-   * (which means that uninitialized storeAddress is msg.sender by default)
+   * If it stays uninitialized, StoreSwitch falls back to calling store methods on msg.sender.
    */
   function setStoreAddress(address _storeAddress) internal {
     _layout().storeAddress = _storeAddress;
