@@ -11,6 +11,7 @@ import { json } from "./columnTypes";
 import { TableId } from "@latticexyz/common";
 import { blockLogsToStorage } from "@latticexyz/store-sync";
 import { StoreConfig } from "@latticexyz/store";
+import { debug } from "./debug";
 
 export const chainStateName = "__chainState";
 export const chainState = sqliteTable(chainStateName, {
@@ -153,15 +154,13 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
             for (const table of storeTables) {
               const existingTable = await getTable(tx, table.namespace, table.name);
               if (existingTable) {
-                console.log(
+                debug(
                   `table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${address} already exists in DB, skipping`
                 );
                 continue;
               }
 
-              console.log(
-                `creating table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${address}`
-              );
+              debug(`creating table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${address}`);
               await createTable(tx, {
                 namespace: table.namespace,
                 name: table.name,
@@ -241,7 +240,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
                 (table) => table.namespace === operation.namespace && table.name === operation.name
               )?.table;
               if (!table) {
-                console.log(
+                debug(
                   `table ${operation.namespace}:${String(operation.name)} not found, skipping operation`,
                   operation
                 );
@@ -253,6 +252,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
               const { table: sqliteTable } = createSqliteTable(table);
 
               if (operation.type === "SetRecord") {
+                debug("SetRecord", operation);
                 await tx
                   .insert(sqliteTable)
                   .values({
@@ -273,8 +273,8 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
                     },
                   })
                   .run();
-                // console.log("stored record", operation);
               } else if (operation.type === "SetField") {
+                debug("SetField", operation);
                 await tx
                   .insert(sqliteTable)
                   .values({
@@ -296,8 +296,8 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
                     },
                   })
                   .run();
-                // console.log("stored field", operation);
               } else if (operation.type === "DeleteRecord") {
+                debug("DeleteRecord", operation);
                 await tx
                   .update(sqliteTable)
                   .set({
@@ -314,7 +314,6 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
                         )
                   )
                   .run();
-                // console.log("deleted record", operation);
               }
             }
           });
