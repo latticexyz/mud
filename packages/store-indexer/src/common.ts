@@ -16,15 +16,16 @@ export type TableNamespace = string;
 export type TableName = string;
 
 export type TableRow = {
-  keyTuple: Record<string, StaticPrimitiveType>;
+  key: Record<string, StaticPrimitiveType>;
   value: Record<string, StaticPrimitiveType | DynamicPrimitiveType>;
 };
 
 export type Table = {
+  address: Address;
   tableId: Hex;
   namespace: TableNamespace;
   name: TableName;
-  keyTupleSchema: Record<string, StaticAbiType>;
+  keySchema: Record<string, StaticAbiType>;
   valueSchema: Record<string, StaticAbiType | DynamicAbiType>;
   lastUpdatedBlockNumber: bigint | null;
 };

@@ -11,6 +11,7 @@ import {
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
 import { blockLogsToSqlite } from "../src/sqlite/sqlite";
+import { getDatabase } from "../src/sqlite/getDatabase";
 
 // TODO: align shared types (e.g. table, key+value schema)
 
@@ -70,7 +71,7 @@ const blockLogs$ = latestBlockNumber$.pipe(
 
 blockLogs$
   .pipe(
-    concatMap(blockLogsToSqlite({ publicClient })),
+    concatMap(blockLogsToSqlite({ database: await getDatabase(), publicClient })),
     tap(({ blockNumber, operations }) => {
       console.log("stored", operations.length, "operations for block", blockNumber);
     })

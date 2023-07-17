@@ -1,11 +1,14 @@
 import { AnySQLiteColumnBuilder, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildSqliteColumn } from "./buildSqliteColumn";
+import { Address } from "viem";
+import { getTableName } from "./getTableName";
 
 type CreateSqliteTableOptions = {
+  address: Address;
   namespace: string;
   name: string;
-  keyTupleSchema: Record<string, StaticAbiType>;
+  keySchema: Record<string, StaticAbiType>;
   valueSchema: Record<string, SchemaAbiType>;
 };
 
@@ -17,16 +20,16 @@ type CreateSqliteTableResult = {
 };
 
 export function createSqliteTable({
+  address,
   namespace,
   name,
-  keyTupleSchema,
+  keySchema,
   valueSchema,
 }: CreateSqliteTableOptions): CreateSqliteTableResult {
-  // TODO: colon-separated is okay in sqlite but maybe not in postgres, and maybe not as ergonomic?
-  const tableName = `${namespace}:${name}`;
+  const tableName = getTableName(address, namespace, name);
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keyTupleSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull().primaryKey()])
+    Object.entries(keySchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull().primaryKey()])
   );
 
   const valueColumns = Object.fromEntries(
@@ -38,7 +41,7 @@ export function createSqliteTable({
     // TODO: last updated block hash?
     __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
   };
-  if (Object.keys(keyTupleSchema).length === 0) {
+  if (Object.keys(keySchema).length === 0) {
     metaColumns.__singleton = buildSqliteColumn("__singleton", "bool").notNull().primaryKey();
   }
 

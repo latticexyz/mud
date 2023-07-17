@@ -12,7 +12,7 @@ describe("sqliteTableToSql", () => {
       blockNumber: blob("block_number", { mode: "bigint" }).notNull().default(1000n),
     });
 
-    const sql = sqliteTableToSql(tableName, table);
+    const sql = sqliteTableToSql(table);
 
     expect(sql).toMatchInlineSnapshot(
       '"create table if not exists \\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" blob default \'1000\' not null, constraint \\"some table__primaryKey\\" primary key (\\"x\\", \\"y\\"))"'
@@ -25,7 +25,7 @@ describe("sqliteTableToSql", () => {
       name: text("name").notNull().default(""),
     });
 
-    const sql = sqliteTableToSql(tableName, table);
+    const sql = sqliteTableToSql(table);
 
     expect(sql).toMatchInlineSnapshot(
       '"create table if not exists \\"some table\\" (\\"name\\" text default \'\' not null)"'
@@ -38,7 +38,7 @@ describe("sqliteTableToSql", () => {
       camelCase: text("snake_case").notNull().default("").primaryKey(),
     });
 
-    const sql = sqliteTableToSql(tableName, table);
+    const sql = sqliteTableToSql(table);
 
     expect(sql).toMatchInlineSnapshot(
       '"create table if not exists \\"some table\\" (\\"snake_case\\" text default \'\' not null, constraint \\"some table__primaryKey\\" primary key (\\"snake_case\\"))"'

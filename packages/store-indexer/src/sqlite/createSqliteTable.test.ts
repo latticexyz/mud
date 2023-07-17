@@ -4,9 +4,10 @@ import { createSqliteTable } from "./createSqliteTable";
 describe("createSqliteTable", () => {
   it("should create table from schema", async () => {
     const table = createSqliteTable({
+      address: "0xffffffffffffffffffffffffffffffffffffffff",
       namespace: "test",
       name: "users",
-      keyTupleSchema: { x: "uint32", y: "uint32" },
+      keySchema: { x: "uint32", y: "uint32" },
       valueSchema: { name: "string", addr: "address" },
     });
 
@@ -119,8 +120,8 @@ describe("createSqliteTable", () => {
             "primary": true,
             "table": [Circular],
           },
-          Symbol(drizzle:Name): "test:users",
-          Symbol(drizzle:OriginalName): "test:users",
+          Symbol(drizzle:Name): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
+          Symbol(drizzle:OriginalName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
           Symbol(drizzle:Schema): undefined,
           Symbol(drizzle:Columns): {
             "__isDeleted": SQLiteBoolean {
@@ -226,22 +227,23 @@ describe("createSqliteTable", () => {
               "table": [Circular],
             },
           },
-          Symbol(drizzle:BaseName): "test:users",
+          Symbol(drizzle:BaseName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
           Symbol(drizzle:IsAlias): false,
           Symbol(drizzle:ExtraConfigBuilder): undefined,
           Symbol(drizzle:IsDrizzleTable): true,
           Symbol(drizzle:SQLiteInlineForeignKeys): [],
         },
-        "tableName": "test:users",
+        "tableName": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
       }
     `);
   });
 
   it("can create a singleton table", async () => {
     const table = createSqliteTable({
+      address: "0xffffffffffffffffffffffffffffffffffffffff",
       namespace: "test",
       name: "users",
-      keyTupleSchema: {},
+      keySchema: {},
       valueSchema: { addrs: "address[]" },
     });
 
@@ -327,8 +329,8 @@ describe("createSqliteTable", () => {
             "sqlName": "text",
             "table": [Circular],
           },
-          Symbol(drizzle:Name): "test:users",
-          Symbol(drizzle:OriginalName): "test:users",
+          Symbol(drizzle:Name): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
+          Symbol(drizzle:OriginalName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
           Symbol(drizzle:Schema): undefined,
           Symbol(drizzle:Columns): {
             "__isDeleted": SQLiteBoolean {
@@ -406,13 +408,13 @@ describe("createSqliteTable", () => {
               "table": [Circular],
             },
           },
-          Symbol(drizzle:BaseName): "test:users",
+          Symbol(drizzle:BaseName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
           Symbol(drizzle:IsAlias): false,
           Symbol(drizzle:ExtraConfigBuilder): undefined,
           Symbol(drizzle:IsDrizzleTable): true,
           Symbol(drizzle:SQLiteInlineForeignKeys): [],
         },
-        "tableName": "test:users",
+        "tableName": "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
       }
     `);
   });
