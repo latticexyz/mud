@@ -5,6 +5,7 @@
 ---
 
 `MudV2Test` has been renamed to `MudTest` and moved to another package.
+
 ```solidity
 // old import
 import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
