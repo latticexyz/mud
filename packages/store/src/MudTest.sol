@@ -11,8 +11,4 @@ contract MudTest is Test {
     worldAddress = vm.parseAddress(vm.readFile(".mudtest"));
     StoreSwitch.setStoreAddress(worldAddress);
   }
-
-  function storeAddress() public view returns (address) {
-    return worldAddress;
-  }
 }

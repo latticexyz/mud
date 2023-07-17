@@ -7,7 +7,7 @@ import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 
-// Mock Store and its consumer
+// Mock Store to call MockSystem
 contract StoreSwitchTestStore is StoreReadWithStubs {
   MockSystem mockSystem = new MockSystem();
 

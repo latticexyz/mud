@@ -60,8 +60,4 @@ contract StoreRead is IStoreRead {
   ) public view virtual returns (bytes memory) {
     return StoreCore.getFieldSlice(tableId, key, schemaIndex, schema, start, end);
   }
-
-  function storeAddress() public view returns (address) {
-    return address(this);
-  }
 }
