@@ -30,8 +30,8 @@ export type StoredTable = {
   address: Address;
   namespace: string;
   name: string;
-  keyTuple: Record<string, StaticAbiType>;
-  value: Record<string, SchemaAbiType>;
+  keySchema: Record<string, StaticAbiType>;
+  valueSchema: Record<string, SchemaAbiType>;
 };
 
 export type BaseStorageOperation = {
@@ -44,7 +44,7 @@ export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperati
 } & {
     [TTable in keyof TConfig["tables"]]: {
       name: TTable;
-      keyTuple: Key<TConfig, TTable>;
+      key: Key<TConfig, TTable>;
       record: Value<TConfig, TTable>;
     };
   }[keyof TConfig["tables"]];
@@ -54,7 +54,7 @@ export type SetFieldOperation<TConfig extends StoreConfig> = BaseStorageOperatio
 } & {
     [TTable in keyof TConfig["tables"]]: {
       name: TTable;
-      keyTuple: Key<TConfig, TTable>;
+      key: Key<TConfig, TTable>;
     } & {
       [TValue in keyof Value<TConfig, TTable>]: {
         // TODO: standardize on calling these "fields" or "values" or maybe "columns"
@@ -69,7 +69,7 @@ export type DeleteRecordOperation<TConfig extends StoreConfig> = BaseStorageOper
 } & {
     [TTable in keyof TConfig["tables"]]: {
       name: TTable;
-      keyTuple: Key<TConfig, TTable>;
+      key: Key<TConfig, TTable>;
     };
   }[keyof TConfig["tables"]];
 
@@ -198,8 +198,8 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             namespace: schema.tableId.namespace,
             name: schema.tableId.name,
             // TODO: replace with proper named key tuple
-            keyTuple: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
-            value: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
+            keySchema: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
+            valueSchema: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
           };
         })
         .filter(isDefined),
@@ -207,10 +207,12 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
 
     const tableIds = Array.from(
       new Set(
-        block.logs.map((log) => ({
-          address: log.address,
-          tableId: TableId.fromHex(log.args.table),
-        }))
+        block.logs.map((log) =>
+          JSON.stringify({
+            address: log.address,
+            ...TableId.fromHex(log.args.table),
+          })
+        )
       )
     );
     // TODO: combine these once we refactor table registration
@@ -218,7 +220,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       (
         await getTables({
           blockNumber: block.blockNumber,
-          tables: tableIds.map(({ address, tableId }) => ({ address, ...tableId })),
+          tables: tableIds.map((json) => JSON.parse(json)),
         })
       ).map((table) => [`${table.address}:${new TableId(table.namespace, table.name).toHex()}`, table])
     ) as Record<Hex, StoredTable>;
@@ -232,19 +234,19 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           return;
         }
 
-        const keyTupleNames = Object.keys(table.keyTuple);
-        const keyTupleValues = decodeKeyTuple(
-          { staticFields: Object.values(table.keyTuple), dynamicFields: [] },
+        const keyNames = Object.keys(table.keySchema);
+        const keyValues = decodeKeyTuple(
+          { staticFields: Object.values(table.keySchema), dynamicFields: [] },
           log.args.key
         );
-        const keyTuple = Object.fromEntries(keyTupleValues.map((value, i) => [keyTupleNames[i], value])) as Key<
+        const key = Object.fromEntries(keyValues.map((value, i) => [keyNames[i], value])) as Key<
           TConfig,
           keyof TConfig["tables"]
         >;
 
-        const valueAbiTypes = Object.values(table.value);
+        const valueAbiTypes = Object.values(table.valueSchema);
         const valueSchema = abiTypesToSchema(valueAbiTypes);
-        const valueNames = Object.keys(table.value);
+        const valueNames = Object.keys(table.valueSchema);
 
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
           const values = decodeRecord(valueSchema, log.args.data);
@@ -258,7 +260,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             log,
             type: "SetRecord",
             ...tableId,
-            keyTuple,
+            key,
             record,
           };
         }
@@ -273,7 +275,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             log,
             type: "SetField",
             ...tableId,
-            keyTuple,
+            key,
             valueName,
             value,
           };
@@ -284,7 +286,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             log,
             type: "DeleteRecord",
             ...tableId,
-            keyTuple,
+            key,
           };
         }
 
