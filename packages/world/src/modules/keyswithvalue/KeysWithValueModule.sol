@@ -6,7 +6,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
-import { WorldConsumer } from "../../WorldConsumer.sol";
+import { WorldContext } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
@@ -25,7 +25,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
-contract KeysWithValueModule is IModule, WorldConsumer {
+contract KeysWithValueModule is IModule, WorldContext {
   using ResourceSelector for bytes32;
 
   // The KeysWithValueHook is deployed once and infers the target table id

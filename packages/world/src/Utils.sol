@@ -14,7 +14,7 @@ library Utils {
    * because they're delegatecalled and the name isn't passed in calldata
    */
   function systemNamespace() internal view returns (bytes16) {
-    if (StoreSwitch.storeAddress() == address(this)) {
+    if (StoreSwitch.getStoreAddress() == address(this)) {
       return "";
     } else {
       bytes32 resourceSelector = SystemRegistry.get(address(this));

@@ -1234,19 +1234,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "storeAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "storeAddress",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "bytes32",

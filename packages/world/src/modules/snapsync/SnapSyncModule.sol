@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
-import { WorldConsumer } from "../../WorldConsumer.sol";
+import { WorldContext } from "../../WorldContext.sol";
 
 import { SnapSyncSystem } from "./SnapSyncSystem.sol";
 
@@ -15,7 +15,7 @@ import { NAMESPACE, MODULE_NAME, SYSTEM_NAME, TABLE_NAME } from "./constants.sol
  * This module registers a system that allows clients to load a snapshot of the World state
  * by using view functions.
  */
-contract SnapSyncModule is IModule, WorldConsumer {
+contract SnapSyncModule is IModule, WorldContext {
   // Since the SnapSyncSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   SnapSyncSystem private immutable snapSyncSystem = new SnapSyncSystem();

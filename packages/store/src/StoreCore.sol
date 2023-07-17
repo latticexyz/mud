@@ -12,6 +12,7 @@ import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { TableId } from "./TableId.sol";
+import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
   using TableId for bytes32;
@@ -29,6 +30,10 @@ library StoreCore {
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
+    // Use address(this) instead of msg.sender (the default) when using StoreSwitch
+    // from within the Store contract itself (e.g. during delegatecall)
+    StoreSwitch.setStoreAddress(address(this));
+
     // Register internal schema table
     registerSchema(
       StoreCoreInternal.SCHEMA_TABLE,

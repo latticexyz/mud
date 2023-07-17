@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook, StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -44,6 +44,10 @@ contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
   event WorldTestSystemLog(string log);
 
+  function getStoreAddress() public view returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
+
   function msgSender() public view returns (address) {
     return _msgSender();
   }
@@ -72,7 +76,7 @@ contract WorldTestSystem is System {
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
     bytes32[] memory key = new bytes32[](0);
 
-    if (StoreSwitch.storeAddress() == address(this)) {
+    if (StoreSwitch.getStoreAddress() == address(this)) {
       bytes32 tableId = ResourceSelector.from(namespace, name);
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
@@ -81,7 +85,7 @@ contract WorldTestSystem is System {
   }
 
   function emitCallType() public {
-    if (StoreSwitch.storeAddress() == address(this)) {
+    if (StoreSwitch.getStoreAddress() == address(this)) {
       emit WorldTestSystemLog("delegatecall");
     } else {
       emit WorldTestSystemLog("call");
@@ -99,7 +103,7 @@ contract PayableFallbackSystem is System {
   fallback() external payable {}
 }
 
-contract WorldTestTableHook is StoreHook {
+contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
@@ -192,7 +196,16 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testStoreAddress() public {
-    assertEq(world.storeAddress(), address(world));
+    // Register a system and use it to get storeAddress
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("namespace", "testSystem", system, false);
+    bytes memory result = world.call(
+      "namespace",
+      "testSystem",
+      abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector)
+    );
+
+    assertEq(abi.decode(result, (address)), address(world));
   }
 
   function testRegisterNamespace() public {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook, IStoreConsumer } from "./IStore.sol";
+import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -9,36 +9,44 @@ import { Schema } from "./Schema.sol";
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
  */
 library StoreSwitch {
-  error StoreSwitch_MissingOrInvalidStoreAddressFunction(bytes lowLevelData);
+  bytes32 private constant STORAGE_SLOT = keccak256("mud.store.storage.StoreSwitch");
 
-  function storeAddress() internal view returns (address) {
-    // Detect calls from within a constructor
-    uint256 codeSize;
+  struct StorageSlotLayout {
+    address storeAddress;
+  }
+
+  function _layout() private pure returns (StorageSlotLayout storage layout) {
+    bytes32 slot = STORAGE_SLOT;
     assembly {
-      codeSize := extcodesize(address())
+      layout.slot := slot
     }
+  }
 
-    // If the call is from within a constructor, use StoreCore to write to own storage
-    if (codeSize == 0) return address(this);
-
-    bytes4 storeAddressSelector = IStoreConsumer.storeAddress.selector;
-    address result;
-    assembly {
-      mstore(0x00, storeAddressSelector)
-      let success := staticcall(gas(), address(), 0x00, 4, 0x00, 0x20)
-      switch success
-      case 0 {
-        result := caller()
-      }
-      case 1 {
-        result := mload(0x00)
-      }
+  /**
+   * Get the Store address for use by other StoreSwitch functions.
+   * 0x00 is a magic number for msg.sender
+   * (which means that uninitialized storeAddress is msg.sender by default)
+   */
+  function getStoreAddress() internal view returns (address) {
+    address _storeAddress = _layout().storeAddress;
+    if (_storeAddress == address(0)) {
+      return msg.sender;
+    } else {
+      return _storeAddress;
     }
-    return result;
+  }
+
+  /**
+   * Set the Store address for use by other StoreSwitch functions.
+   * 0x00 is a magic number for msg.sender
+   * (which means that uninitialized storeAddress is msg.sender by default)
+   */
+  function setStoreAddress(address _storeAddress) internal {
+    _layout().storeAddress = _storeAddress;
   }
 
   function registerStoreHook(bytes32 table, IStoreHook hook) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.registerStoreHook(table, hook);
     } else {
@@ -47,7 +55,7 @@ library StoreSwitch {
   }
 
   function getSchema(bytes32 table) internal view returns (Schema schema) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       schema = StoreCore.getSchema(table);
     } else {
@@ -56,7 +64,7 @@ library StoreSwitch {
   }
 
   function getKeySchema(bytes32 table) internal view returns (Schema keySchema) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       keySchema = StoreCore.getKeySchema(table);
     } else {
@@ -65,7 +73,7 @@ library StoreSwitch {
   }
 
   function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.setMetadata(table, tableName, fieldNames);
     } else {
@@ -74,7 +82,7 @@ library StoreSwitch {
   }
 
   function registerSchema(bytes32 table, Schema schema, Schema keySchema) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.registerSchema(table, schema, keySchema);
     } else {
@@ -83,7 +91,7 @@ library StoreSwitch {
   }
 
   function setRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.setRecord(table, key, data);
     } else {
@@ -92,7 +100,7 @@ library StoreSwitch {
   }
 
   function setField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory data) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.setField(table, key, fieldIndex, data);
     } else {
@@ -101,7 +109,7 @@ library StoreSwitch {
   }
 
   function pushToField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.pushToField(table, key, fieldIndex, dataToPush);
     } else {
@@ -110,7 +118,7 @@ library StoreSwitch {
   }
 
   function popFromField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop);
     } else {
@@ -125,7 +133,7 @@ library StoreSwitch {
     uint256 startByteIndex,
     bytes memory dataToSet
   ) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
     } else {
@@ -134,7 +142,7 @@ library StoreSwitch {
   }
 
   function deleteRecord(bytes32 table, bytes32[] memory key) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.deleteRecord(table, key);
     } else {
@@ -143,7 +151,7 @@ library StoreSwitch {
   }
 
   function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.emitEphemeralRecord(table, key, data);
     } else {
@@ -152,7 +160,7 @@ library StoreSwitch {
   }
 
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(table, key);
     } else {
@@ -161,7 +169,7 @@ library StoreSwitch {
   }
 
   function getRecord(bytes32 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(table, key, schema);
     } else {
@@ -170,7 +178,7 @@ library StoreSwitch {
   }
 
   function getField(bytes32 table, bytes32[] memory key, uint8 fieldIndex) internal view returns (bytes memory) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getField(table, key, fieldIndex);
     } else {
@@ -184,7 +192,7 @@ library StoreSwitch {
     uint8 fieldIndex,
     Schema schema
   ) internal view returns (uint256) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getFieldLength(table, key, fieldIndex, schema);
     } else {
@@ -200,7 +208,7 @@ library StoreSwitch {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
-    address _storeAddress = storeAddress();
+    address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getFieldSlice(table, key, fieldIndex, schema, start, end);
     } else {

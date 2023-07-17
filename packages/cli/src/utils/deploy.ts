@@ -453,20 +453,16 @@ export async function deploy(
   async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
     const { abi } = await getContractData(contractName);
 
-    return (
-      abi
-        .filter((item) => ["fallback", "function"].includes(item.type))
-        // storeAddress is a special StoreConsumer function inherited by Systems, and shouldn't be registered
-        .filter((item) => !["storeAddress"].includes(item.name))
-        .map((item) => {
-          if (item.type === "fallback") return { functionName: "", functionArgs: "" };
+    return abi
+      .filter((item) => ["fallback", "function"].includes(item.type))
+      .map((item) => {
+        if (item.type === "fallback") return { functionName: "", functionArgs: "" };
 
-          return {
-            functionName: item.name,
-            functionArgs: parseComponents(item.inputs),
-          };
-        })
-    );
+        return {
+          functionName: item.name,
+          functionArgs: parseComponents(item.inputs),
+        };
+      });
   }
 
   /**

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -21,12 +21,12 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  *
  * Note: if a table with composite keys is used, only the first key is indexed
  */
-contract KeysWithValueHook is StoreHook {
+contract KeysWithValueHook is IStoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
   function _world() internal view returns (IBaseWorld) {
-    return IBaseWorld(StoreSwitch.storeAddress());
+    return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
   function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data) public {
