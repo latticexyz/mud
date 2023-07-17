@@ -24,7 +24,7 @@ export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
 // I don't love carrying all these types through. Ideally this should be the shape of the thing we want, rather than the specific return type from a function.
 export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
-export type BlockEvents = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
+export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type StoredTable = {
   address: Address;
@@ -78,10 +78,19 @@ export type StorageOperation<TConfig extends StoreConfig> =
   | SetRecordOperation<TConfig>
   | DeleteRecordOperation<TConfig>;
 
-export type BlockEventsToStorageOptions = {
-  registerTables: (data: StoredTable[]) => Promise<void>;
-  getTables: (opts: Pick<StoredTable, "address" | "namespace" | "name">[]) => Promise<StoredTable[]>;
+export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
+  registerTables: (tables: StoredTable[]) => Promise<void>;
+  getTables: (tables: Pick<StoredTable, "address" | "namespace" | "name">[]) => Promise<StoredTable[]>;
+  storeOperations: (opts: {
+    blockNumber: BlockLogs["blockNumber"];
+    operations: StorageOperation<TConfig>[];
+  }) => Promise<void>;
 };
+
+export type BlockLogsToStorageResult<TConfig extends StoreConfig = StoreConfig> = (block: BlockLogs) => Promise<{
+  blockNumber: BlockLogs["blockNumber"];
+  operations: StorageOperation<TConfig>[];
+}>;
 
 type TableNamespace = string;
 type TableName = string;
@@ -95,13 +104,11 @@ const visitedMetadata = new Map<
   { address: Address; tableId: TableId; keyNames: readonly string[]; valueNames: readonly string[] }
 >();
 
-export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>({
+export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
   registerTables,
   getTables,
-}: BlockEventsToStorageOptions): (block: BlockEvents) => Promise<{
-  blockNumber: BlockEvents["blockNumber"];
-  operations: StorageOperation<TConfig>[];
-}> {
+  storeOperations,
+}: BlockLogsToStorageOptions<TConfig>): BlockLogsToStorageResult<TConfig> {
   return async (block) => {
     const newTableKeys = new Set<TableKey>();
 
@@ -279,6 +286,8 @@ export function blockEventsToStorage<TConfig extends StoreConfig = StoreConfig>(
         return;
       })
       .filter(isDefined);
+
+    await storeOperations({ blockNumber: block.blockNumber, operations });
 
     return {
       blockNumber: block.blockNumber,

@@ -1,42 +1,56 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { BlockEventsToStorageOptions, blockEventsToStorage } from "./blockEventsToStorage";
+import { BlockLogsToStorageOptions, blockLogsToStorage } from "./blockLogsToStorage";
 import storeConfig from "@latticexyz/store/mud.config";
+import { isDefined } from "@latticexyz/common/utils";
+import { Hex } from "viem";
 
 const mockedCallbacks = {
-  registerTable: vi.fn<
-    Parameters<BlockEventsToStorageOptions["registerTable"]>,
-    ReturnType<BlockEventsToStorageOptions["registerTable"]>
+  registerTables: vi.fn<
+    Parameters<BlockLogsToStorageOptions["registerTables"]>,
+    ReturnType<BlockLogsToStorageOptions["registerTables"]>
   >(),
-  getTable: vi.fn<
-    Parameters<BlockEventsToStorageOptions["getTable"]>,
-    ReturnType<BlockEventsToStorageOptions["getTable"]>
+  getTables: vi.fn<
+    Parameters<BlockLogsToStorageOptions["getTables"]>,
+    ReturnType<BlockLogsToStorageOptions["getTables"]>
+  >(),
+  storeOperations: vi.fn<
+    Parameters<BlockLogsToStorageOptions["storeOperations"]>,
+    ReturnType<BlockLogsToStorageOptions["storeOperations"]>
   >(),
 };
 
-const mockedDecode = blockEventsToStorage<typeof storeConfig>(mockedCallbacks as any as BlockEventsToStorageOptions);
+const mockedDecode = blockLogsToStorage<typeof storeConfig>(
+  mockedCallbacks as any as BlockLogsToStorageOptions<typeof storeConfig>
+);
 
-describe("blockEventsToStorage", () => {
+describe("blockLogsToStorage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("call setField with data properly decoded", async () => {
-    mockedCallbacks.getTable.mockImplementation(async ({ namespace, name }) => {
-      if (namespace === "" && name === "Inventory") {
-        return {
-          namespace: "",
-          name: "Inventory",
-          keyTuple: ["address", "uint32", "uint32"],
-          value: {
-            amount: "uint32",
-          },
-        };
-      }
+    mockedCallbacks.getTables.mockImplementation(async (tables) => {
+      return tables
+        .map((table) => {
+          if (table.namespace === "" && table.name === "Inventory") {
+            return {
+              ...table,
+              keyTuple: {
+                owner: "address",
+                item: "uint32",
+                itemVariant: "uint32",
+              } as const,
+              value: {
+                amount: "uint32",
+              } as const,
+            };
+          }
+        })
+        .filter(isDefined);
     });
 
     const operations = await mockedDecode({
       blockNumber: 5448n,
-      blockHash: "0x03e962e7402b2ab295b92feac342a132111dd14b0d1fd4d4a0456fdc77981577",
       logs: [
         {
           address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
@@ -63,16 +77,18 @@ describe("blockEventsToStorage", () => {
       ],
     });
 
+    expect(mockedCallbacks.storeOperations).toHaveBeenCalledTimes(1);
+    // TODO: figure out if we can inline snapshot what storeOperations was called with?
+
     expect(operations).toMatchInlineSnapshot(`
       {
-        "blockHash": "0x03e962e7402b2ab295b92feac342a132111dd14b0d1fd4d4a0456fdc77981577",
         "blockNumber": 5448n,
         "operations": [
           {
             "keyTuple": {
-              "0": "0x796eb990A3F9C431C69149c7a168b91596D87F60",
-              "1": 1,
-              "2": 1,
+              "item": 1,
+              "itemVariant": 1,
+              "owner": "0x796eb990A3F9C431C69149c7a168b91596D87F60",
             },
             "log": {
               "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
