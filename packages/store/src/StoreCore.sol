@@ -30,8 +30,9 @@ library StoreCore {
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
-    // Use address(this) instead of msg.sender (the default) when using StoreSwitch
-    // from within the Store contract itself (e.g. during delegatecall)
+    // StoreSwitch uses the storeAddress to decide where to write data to.
+    // If StoreSwitch is called in the context of a Store contract (storeAddress == address(this)),
+    // StoreSwitch uses internal methods to write data instead of external calls.
     StoreSwitch.setStoreAddress(address(this));
 
     // Register internal schema table
