@@ -115,7 +115,7 @@ export async function subscribe<C extends StoreConfig = StoreConfig, T extends k
   config: C,
   client: AsyncTupleDatabaseClient,
   callback: SubscriptionCallback<C, T>,
-  filter?: FilterOptions<C, T>
+  filter?: FilterOptions<C, T> | undefined
 ): Promise<Unsubscribe> {
   const scanArgs = getScanArgsFromFilter(config, filter);
 
@@ -174,7 +174,7 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema: S
 
 function getScanArgsFromFilter<C extends StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   config: C,
-  filter?: FilterOptions<C, T>
+  filter?: FilterOptions<C, T> | undefined
 ): ScanArgs<Tuple, Tuple> {
   const { table, key } = filter || {};
   // Default to the config namespace if a filter without namespace is provided
