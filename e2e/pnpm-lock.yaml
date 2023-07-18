@@ -49,7 +49,7 @@ importers:
         version: link:../../../packages/world
       '@wagmi/chains':
         specifier: ^0.2.22
-        version: 0.2.23(typescript@5.1.3)
+        version: 0.2.23(typescript@5.1.6)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -85,7 +85,7 @@ importers:
         version: 1.7.0
       viem:
         specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.3)
+        version: 1.1.7(typescript@5.1.6)
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -116,7 +116,7 @@ importers:
         version: link:../../../packages/world
       '@typechain/ethers-v5':
         specifier: ^10.2.0
-        version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
+        version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -134,10 +134,10 @@ importers:
         version: 3.0.2
       typechain:
         specifier: ^8.1.1
-        version: 8.1.1(typescript@4.9.5)
+        version: 8.1.1(typescript@5.1.6)
       typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
+        specifier: 5.1.6
+        version: 5.1.6
       vite:
         specifier: ^4.2.1
         version: 4.3.5(@types/node@20.1.3)
@@ -178,11 +178,11 @@ importers:
         specifier: ^22.0.0
         version: 22.0.0
       typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
+        specifier: 5.1.6
+        version: 5.1.6
       viem:
         specifier: 1.0.6
-        version: 1.0.6(typescript@4.9.5)
+        version: 1.0.6(typescript@5.1.6)
       vite:
         specifier: ^4.2.1
         version: 4.3.5(@types/node@20.1.3)
@@ -711,7 +711,7 @@ packages:
     resolution: {integrity: sha512-eF2rxCRulEKXHTRiDrDy6erMYWqNw4LPdQ8UQA4huuxaQsVeRPFl2oM8oDGxMFhJUWZf9McpLtJasDDZb/Bpeg==}
     dev: true
 
-  /@morgan-stanley/ts-mocking-bird@0.6.4(typescript@4.9.5):
+  /@morgan-stanley/ts-mocking-bird@0.6.4(typescript@5.1.6):
     resolution: {integrity: sha512-57VJIflP8eR2xXa9cD1LUawh+Gh+BVQfVu0n6GALyg/AqV/Nz25kDRvws3i9kIe1PTrbsZZOYpsYp6bXPd6nVA==}
     peerDependencies:
       jasmine: 2.x || 3.x || 4.x
@@ -724,7 +724,7 @@ packages:
         optional: true
     dependencies:
       lodash: 4.17.21
-      typescript: 4.9.5
+      typescript: 5.1.6
       uuid: 7.0.3
     dev: true
 
@@ -811,7 +811,7 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
-  /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5):
+  /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6):
     resolution: {integrity: sha512-ikaq0N/w9fABM+G01OFmU3U3dNnyRwEahkdvi9mqy1a3XwKiPZaF/lu54OcNaEWnpvEYyhhS0N7buCtLQqC92w==}
     peerDependencies:
       '@ethersproject/abi': ^5.0.0
@@ -826,9 +826,9 @@ packages:
       '@ethersproject/providers': 5.7.2
       ethers: 5.7.2
       lodash: 4.17.21
-      ts-essentials: 7.0.3(typescript@4.9.5)
-      typechain: 8.1.1(typescript@4.9.5)
-      typescript: 4.9.5
+      ts-essentials: 7.0.3(typescript@5.1.6)
+      typechain: 8.1.1(typescript@5.1.6)
+      typescript: 5.1.6
     dev: true
 
   /@types/chai-subset@1.3.3:
@@ -891,7 +891,7 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@wagmi/chains@0.2.23(typescript@5.1.3):
+  /@wagmi/chains@0.2.23(typescript@5.1.6):
     resolution: {integrity: sha512-oIc4ZpUL6bH/HdS7ROPWlFnP5U3XBujO/OiX4csRIezyLjMQ9FNXQRZShhi5ddL0Kj1RDbyVLe9K/QotEm1vig==}
     peerDependencies:
       typescript: '>=4.9.4'
@@ -899,10 +899,10 @@ packages:
       typescript:
         optional: true
     dependencies:
-      typescript: 5.1.3
+      typescript: 5.1.6
     dev: false
 
-  /@wagmi/chains@1.1.0(typescript@4.9.5):
+  /@wagmi/chains@1.1.0(typescript@5.1.6):
     resolution: {integrity: sha512-pWZlxBk0Ql8E7DV8DwqlbBpOyUdaG9UDlQPBxJNALuEK1I0tbQ3AVvSDnlsEIt06UPmPo5o27gzs3hwPQ/A+UA==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -910,10 +910,10 @@ packages:
       typescript:
         optional: true
     dependencies:
-      typescript: 4.9.5
+      typescript: 5.1.6
     dev: true
 
-  /@wagmi/chains@1.2.0(typescript@5.1.3):
+  /@wagmi/chains@1.2.0(typescript@5.1.6):
     resolution: {integrity: sha512-dmDRipsE54JfyudOBkuhEexqQWcrZqxn/qiujG8SBzMh/az/AH5xlJSA+j1CPWTx9+QofSMF3B7A4gb6XRmSaQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -921,14 +921,14 @@ packages:
       typescript:
         optional: true
     dependencies:
-      typescript: 5.1.3
+      typescript: 5.1.6
     dev: false
 
   /abab@2.0.6:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
     dev: true
 
-  /abitype@0.8.7(typescript@4.9.5):
+  /abitype@0.8.7(typescript@5.1.6):
     resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -937,20 +937,7 @@ packages:
       zod:
         optional: true
     dependencies:
-      typescript: 4.9.5
-    dev: true
-
-  /abitype@0.8.7(typescript@5.1.3):
-    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.1.3
-    dev: false
+      typescript: 5.1.6
 
   /abort-controller-x@0.4.1:
     resolution: {integrity: sha512-lJ2ssrl3FoTK3cX/g15lRCkXFWKiwRTRtBjfwounO2EM/Q65rI/MEZsfsch1juWU2pH2aLSaq0HGowlDP/imrw==}
@@ -2131,11 +2118,11 @@ packages:
       punycode: 2.3.0
     dev: true
 
-  /ts-command-line-args@2.5.0(typescript@4.9.5):
+  /ts-command-line-args@2.5.0(typescript@5.1.6):
     resolution: {integrity: sha512-Ff7Xt04WWCjj/cmPO9eWTJX3qpBZWuPWyQYG1vnxJao+alWWYjwJBc5aYz3h5p5dE08A6AnpkgiCtP/0KXXBYw==}
     hasBin: true
     dependencies:
-      '@morgan-stanley/ts-mocking-bird': 0.6.4(typescript@4.9.5)
+      '@morgan-stanley/ts-mocking-bird': 0.6.4(typescript@5.1.6)
       chalk: 4.1.2
       command-line-args: 5.2.1
       command-line-usage: 6.1.3
@@ -2150,12 +2137,12 @@ packages:
     resolution: {integrity: sha512-tLJxacIQUM82IR7JO1UUkKlYuUTmoY9HBJAmNWFzheSlDS5SPMcNIepejHJa4BpPQLAcbRhRf3GDJzyj6rbKvA==}
     dev: false
 
-  /ts-essentials@7.0.3(typescript@4.9.5):
+  /ts-essentials@7.0.3(typescript@5.1.6):
     resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
     peerDependencies:
       typescript: '>=3.7.0'
     dependencies:
-      typescript: 4.9.5
+      typescript: 5.1.6
     dev: true
 
   /tslib@2.5.0:
@@ -2167,7 +2154,7 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /typechain@8.1.1(typescript@4.9.5):
+  /typechain@8.1.1(typescript@5.1.6):
     resolution: {integrity: sha512-uF/sUvnXTOVF2FHKhQYnxHk4su4JjZR8vr4mA2mBaRwHTbwh0jIlqARz9XJr1tA0l7afJGvEa1dTSi4zt039LQ==}
     hasBin: true
     peerDependencies:
@@ -2181,26 +2168,19 @@ packages:
       lodash: 4.17.21
       mkdirp: 1.0.4
       prettier: 2.8.8
-      ts-command-line-args: 2.5.0(typescript@4.9.5)
-      ts-essentials: 7.0.3(typescript@4.9.5)
-      typescript: 4.9.5
+      ts-command-line-args: 2.5.0(typescript@5.1.6)
+      ts-essentials: 7.0.3(typescript@5.1.6)
+      typescript: 5.1.6
     transitivePeerDependencies:
       - jasmine
       - jest
       - supports-color
     dev: true
 
-  /typescript@4.9.5:
-    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
-    dev: true
-
-  /typescript@5.1.3:
-    resolution: {integrity: sha512-XH627E9vkeqhlZFQuL+UsyAXEnibT0kWR2FWONlr4sTjvxyJYnyefgrkyECLzM5NenmKzRAy2rR/OlYLA1HkZw==}
+  /typescript@5.1.6:
+    resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: false
 
   /typical@4.0.0:
     resolution: {integrity: sha512-VAH4IvQ7BDFYglMd7BPRDfLgxZZX4O4TFcRDA6EN5X7erNJJq+McIEp8np9aVtxrCJ6qx4GTYVfOWNjcqwZgRw==}
@@ -2238,7 +2218,7 @@ packages:
     hasBin: true
     dev: true
 
-  /viem@1.0.6(typescript@4.9.5):
+  /viem@1.0.6(typescript@5.1.6):
     resolution: {integrity: sha512-NOVDREj8bWHajuP5Nw6edd0v3auuGWvLHGScmo9OOt1l7g3f1xMQxPA6JlhNmWXzoHjzzxt/5SorBn2DQ6N6Sg==}
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
@@ -2246,8 +2226,8 @@ packages:
       '@noble/hashes': 1.3.0
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
-      '@wagmi/chains': 1.1.0(typescript@4.9.5)
-      abitype: 0.8.7(typescript@4.9.5)
+      '@wagmi/chains': 1.1.0(typescript@5.1.6)
+      abitype: 0.8.7(typescript@5.1.6)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       ws: 8.12.0
     transitivePeerDependencies:
@@ -2257,7 +2237,7 @@ packages:
       - zod
     dev: true
 
-  /viem@1.1.7(typescript@5.1.3):
+  /viem@1.1.7(typescript@5.1.6):
     resolution: {integrity: sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -2267,10 +2247,10 @@ packages:
       '@noble/hashes': 1.3.0
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
-      '@wagmi/chains': 1.2.0(typescript@5.1.3)
-      abitype: 0.8.7(typescript@5.1.3)
+      '@wagmi/chains': 1.2.0(typescript@5.1.6)
+      abitype: 0.8.7(typescript@5.1.6)
       isomorphic-ws: 5.0.0(ws@8.12.0)
-      typescript: 5.1.3
+      typescript: 5.1.6
       ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil

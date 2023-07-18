@@ -2,6 +2,7 @@
 export default {
   preset: "ts-jest",
   testEnvironment: "node",
+  roots: ["src"],
   moduleNameMapper: {
     // jest can't handle esm imports, so we import the typescript source instead
     "^@latticexyz/common$": "<rootDir>/../common/src/index.ts",
