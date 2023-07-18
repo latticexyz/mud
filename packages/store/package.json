@@ -57,7 +57,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "0.8.7",
+    "abitype": "0.8.11",
     "ethers": "^5.7.2",
     "zod": "^3.21.4"
   },

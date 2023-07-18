@@ -58,11 +58,10 @@
     "execa": "^7.0.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
-    "viem": "1.2.3"
+    "viem": "1.3.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "@wagmi/chains": "^0.2.22",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },

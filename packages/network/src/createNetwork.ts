@@ -11,7 +11,7 @@ import { computedToStream } from "@latticexyz/utils";
 import { privateKeyToAccount } from "viem/accounts";
 import { Address, fallback, webSocket, http, createPublicClient, createWalletClient } from "viem";
 import * as mudChains from "@latticexyz/common/chains";
-import * as chains from "@wagmi/chains";
+import * as chains from "viem/chains";
 import * as devObservables from "./dev/observables";
 
 export type Network = Awaited<ReturnType<typeof createNetwork>>;
