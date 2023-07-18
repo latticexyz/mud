@@ -26,7 +26,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "0.8.7",
-    "viem": "1.1.7"
+    "viem": "1.2.3"
   },
   "devDependencies": {
     "tsup": "^6.7.0",

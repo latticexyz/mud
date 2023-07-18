@@ -69,8 +69,8 @@ importers:
         specifier: 7.5.5
         version: 7.5.5
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -233,8 +233,8 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(prettier@2.8.4)
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -335,8 +335,8 @@ importers:
         specifier: ^18.3.2
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -509,8 +509,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -620,8 +620,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.1.6)(zod@3.21.4)
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -722,8 +722,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(typescript@5.1.6)(zod@3.21.4)
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@latticexyz/gas-report':
         specifier: workspace:*
@@ -870,8 +870,8 @@ importers:
         specifier: 7.5.5
         version: 7.5.5
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -1059,8 +1059,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -3723,6 +3723,18 @@ packages:
   /abind@1.0.5:
     resolution: {integrity: sha512-dbaEZphdPje0ihqSdWg36Sb8S20TuqQomiz2593oIx+enQ9Q4vDZRjIzhnkWltGRKVKqC28kTribkgRLBexWVQ==}
     engines: {node: '>=6', npm: '>=3'}
+    dev: false
+
+  /abitype@0.8.11(typescript@5.1.6):
+    resolution: {integrity: sha512-bM4v2dKvX08sZ9IU38IN5BKmN+ZkOSd2oI4a9f0ejHYZQYV6cDr7j+d95ga0z2XHG36Y4jzoG5Z7qDqxp7fi/A==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.1.6
     dev: false
 
   /abitype@0.8.7(typescript@5.1.6)(zod@3.21.4):
@@ -10740,8 +10752,8 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /viem@1.1.7(typescript@5.1.6):
-    resolution: {integrity: sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==}
+  /viem@1.2.3(typescript@5.1.6):
+    resolution: {integrity: sha512-ffZr0EnknJ5M4BozukDZ6QAyKNbZ3csfZx2NPFqB29nHGwhPzFjR/pnbDmgcLOaI1pbAOuO//5ts6LA3XnSxTw==}
     peerDependencies:
       typescript: '>=5.0.4'
     dependencies:
@@ -10751,7 +10763,7 @@ packages:
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
       '@wagmi/chains': 1.2.0(typescript@5.1.6)
-      abitype: 0.8.7(typescript@5.1.6)(zod@3.21.4)
+      abitype: 0.8.11(typescript@5.1.6)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       typescript: 5.1.6
       ws: 8.12.0

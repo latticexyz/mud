@@ -114,8 +114,8 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(react-dom@18.2.0)(react@18.2.0)
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
       vite:
         specifier: ^4.2.1
         version: 4.2.1
@@ -226,8 +226,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       '@types/react':
         specifier: ^18.2.6
@@ -323,8 +323,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.1.7
-        version: 1.1.7(typescript@5.1.6)
+        specifier: 1.2.3
+        version: 1.2.3(typescript@5.1.6)
     devDependencies:
       vite:
         specifier: ^4.2.1
@@ -1654,8 +1654,8 @@ packages:
       typescript: 5.1.6
     dev: false
 
-  /abitype@0.8.7(typescript@5.1.6):
-    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
+  /abitype@0.8.11(typescript@5.1.6):
+    resolution: {integrity: sha512-bM4v2dKvX08sZ9IU38IN5BKmN+ZkOSd2oI4a9f0ejHYZQYV6cDr7j+d95ga0z2XHG36Y4jzoG5Z7qDqxp7fi/A==}
     peerDependencies:
       typescript: '>=5.0.4'
       zod: ^3 >=3.19.1
@@ -4242,8 +4242,8 @@ packages:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
     dev: true
 
-  /viem@1.1.7(typescript@5.1.6):
-    resolution: {integrity: sha512-3lBDRS0ejb4Eo9c/S+RBadwIHNK1RS0ffW7HkSt3pMtzl4nis1aF1tHrU6yqI+yCWqAPl36a48qGD4mEhxPuDw==}
+  /viem@1.2.3(typescript@5.1.6):
+    resolution: {integrity: sha512-ffZr0EnknJ5M4BozukDZ6QAyKNbZ3csfZx2NPFqB29nHGwhPzFjR/pnbDmgcLOaI1pbAOuO//5ts6LA3XnSxTw==}
     peerDependencies:
       typescript: '>=5.0.4'
     dependencies:
@@ -4253,7 +4253,7 @@ packages:
       '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
       '@wagmi/chains': 1.2.0(typescript@5.1.6)
-      abitype: 0.8.7(typescript@5.1.6)
+      abitype: 0.8.11(typescript@5.1.6)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       typescript: 5.1.6
       ws: 8.12.0
