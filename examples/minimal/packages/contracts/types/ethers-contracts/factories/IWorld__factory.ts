@@ -733,13 +733,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "isStore",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "uint32",

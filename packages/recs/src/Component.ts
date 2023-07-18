@@ -18,6 +18,10 @@ import {
 import { isFullComponentValue, isIndexer } from "./utils";
 import { getEntityString, getEntitySymbol } from "./Entity";
 
+function getComponentName(component: Component<any, any, any>) {
+  return component.metadata?.tableId ?? component.metadata?.contractId ?? component.id;
+}
+
 /**
  * Components contain state indexed by entities and are one of the fundamental building blocks in ECS.
  * Besides containing the state, components expose an rxjs update$ stream, that emits an event any time the value
@@ -86,7 +90,7 @@ export function setComponent<S extends Schema, T = undefined>(
         // Otherwise, we should let the user know we found undefined data.
         console.warn(
           "Component definition for",
-          component.metadata?.tableId ?? component.metadata?.contractId ?? component.id,
+          getComponentName(component),
           "is missing key",
           key,
           ", ignoring value",
@@ -127,7 +131,7 @@ export function updateComponent<S extends Schema, T = undefined>(
   const currentValue = getComponentValue(component, entity);
   if (currentValue === undefined) {
     if (initialValue === undefined) {
-      throw new Error("Can't update component without a current value or initial value");
+      throw new Error(`Can't update component ${getComponentName(component)} without a current value or initial value`);
     }
     setComponent(component, entity, { ...initialValue, ...value });
   } else {
@@ -211,7 +215,7 @@ export function getComponentValueStrict<S extends Schema, T = undefined>(
   entity: Entity
 ): ComponentValue<S, T> {
   const value = getComponentValue(component, entity);
-  if (!value) throw new Error(`No value for component ${component.id} on entity ${entity}`);
+  if (!value) throw new Error(`No value for component ${getComponentName(component)} on entity ${entity}`);
   return value;
 }
 
@@ -478,7 +482,7 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = undef
       setComponent(component, entity, value as ComponentValue<S, T>);
     }
 
-    console.info("Loading component", component.id, "from local cache.");
+    console.info("Loading component", getComponentName(component), "from local cache.");
   }
 
   // Flush the entire component to the local cache every time it updates.
@@ -492,8 +496,8 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = undef
     localStorage.setItem(cacheId, encoded);
     if (numUpdates > 200) {
       console.warn(
-        "Component with id",
-        component.id,
+        "Component",
+        getComponentName(component),
         "was locally cached",
         numUpdates,
         "times since",

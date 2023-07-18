@@ -256,11 +256,11 @@ Create a new file named `MySystemTest.t.sol` in the `test` folder.
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
+import { MudTest } from "@latticexyz/store/src/MudTest.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { Dog } from "../src/codegen/Tables.sol";
 
-contract MySystemTest is MudV2Test {
+contract MySystemTest is MudTest {
   IWorld world;
 
   function setUp() public override {
@@ -273,8 +273,8 @@ contract MySystemTest is MudV2Test {
     // this will call the addEntry function on MySystem
     bytes32 key = world.addEntry("bob", "blue");
     // Expect the value retrieved from the Dog at the corresponding key to match "bob" and "blue"
-    string memory name = Dog.getName(world, key);
-    string memory color = Dog.getColor(world, key);
+    string memory name = Dog.getName(key);
+    string memory color = Dog.getColor(key);
     assertEq(name, "bob");
     assertEq(color, "blue");
   }
