@@ -76,7 +76,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -90,7 +90,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -100,7 +100,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getSchema());
   }
 
   /** Set moduleAddress (using the specified store) */
@@ -109,7 +109,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getSchema());
   }
 
   /** Get the full data */
@@ -144,7 +144,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -155,7 +155,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.setRecord(_tableId, _keyTuple, _data);
+    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Set the full data using the data struct */
@@ -194,7 +194,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -203,6 +203,6 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }

@@ -74,7 +74,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -84,7 +84,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -94,7 +94,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getSchema());
   }
 
   /** Set has (using the specified store) */
@@ -103,7 +103,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getSchema());
   }
 
   /** Get index */
@@ -112,7 +112,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
     return (uint40(Bytes.slice5(_blob, 0)));
   }
 
@@ -122,7 +122,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
     return (uint40(Bytes.slice5(_blob, 0)));
   }
 
@@ -132,7 +132,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)));
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getSchema());
   }
 
   /** Set index (using the specified store) */
@@ -141,7 +141,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)));
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getSchema());
   }
 
   /** Get the full data */
@@ -172,7 +172,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -183,7 +183,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setRecord(_tableId, _keyTuple, _data);
+    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -211,7 +211,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -220,7 +220,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }
 
