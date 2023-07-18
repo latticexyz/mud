@@ -719,13 +719,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "isStore",
-    outputs: [],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "pop",
     outputs: [],
     stateMutability: "nonpayable",

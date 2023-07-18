@@ -735,7 +735,7 @@ library KeysInTable {
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal view returns (KeysInTableData memory _table) {
+  function decode(bytes memory _blob) internal pure returns (KeysInTableData memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
@@ -774,7 +774,7 @@ library KeysInTable {
     bytes32[] memory keys2,
     bytes32[] memory keys3,
     bytes32[] memory keys4
-  ) internal view returns (bytes memory) {
+  ) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](5);
     _counters[0] = uint40(keys0.length * 32);
     _counters[1] = uint40(keys1.length * 32);

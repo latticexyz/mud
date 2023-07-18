@@ -95,7 +95,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     // decode static (optionally) and dynamic data
     return `
     /** Decode the tightly packed blob using this table's schema */
-    function decode(bytes memory _blob) internal view returns (${renderedDecodedRecord}) {
+    function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
       // ${totalStaticLength} is the total byte length of static data
       PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
 

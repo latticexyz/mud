@@ -44,6 +44,10 @@ contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
   event WorldTestSystemLog(string log);
 
+  function getStoreAddress() public view returns (address) {
+    return StoreSwitch.getStoreAddress();
+  }
+
   function msgSender() public view returns (address) {
     return _msgSender();
   }
@@ -72,7 +76,7 @@ contract WorldTestSystem is System {
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
     bytes32[] memory key = new bytes32[](0);
 
-    if (StoreSwitch.isDelegateCall()) {
+    if (StoreSwitch.getStoreAddress() == address(this)) {
       bytes32 tableId = ResourceSelector.from(namespace, name);
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
@@ -81,7 +85,7 @@ contract WorldTestSystem is System {
   }
 
   function emitCallType() public {
-    if (StoreSwitch.isDelegateCall()) {
+    if (StoreSwitch.getStoreAddress() == address(this)) {
       emit WorldTestSystemLog("delegatecall");
     } else {
       emit WorldTestSystemLog("call");
@@ -191,8 +195,17 @@ contract WorldTest is Test, GasReporter {
     assertTrue(ResourceAccess.get(world, ROOT_NAMESPACE, address(this)));
   }
 
-  function testIsStore() public view {
-    world.isStore();
+  function testStoreAddress() public {
+    // Register a system and use it to get storeAddress
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("namespace", "testSystem", system, false);
+    bytes memory result = world.call(
+      "namespace",
+      "testSystem",
+      abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector)
+    );
+
+    assertEq(abi.decode(result, (address)), address(world));
   }
 
   function testRegisterNamespace() public {

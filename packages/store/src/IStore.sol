@@ -35,11 +35,6 @@ interface IStoreRead {
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
-
-  // If this function exists on the contract, it is a store
-  // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
-  // (see https://github.com/latticexyz/mud/issues/444)
-  function isStore() external view;
 }
 
 interface IStoreWrite {

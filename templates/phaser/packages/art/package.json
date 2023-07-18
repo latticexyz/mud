@@ -21,7 +21,7 @@
     "glob": "^8.0.3",
     "optimist": "^0.6.1",
     "ts-node": "^10.8.2",
-    "typescript": "^4.7.4",
+    "typescript": "5.1.6",
     "xml-js": "^1.6.11"
   }
 }

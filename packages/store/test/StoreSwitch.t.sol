@@ -11,24 +11,24 @@ import { StoreSwitch } from "../src/StoreSwitch.sol";
 contract StoreSwitchTestStore is StoreReadWithStubs {
   MockSystem mockSystem = new MockSystem();
 
-  function callViaDelegateCall() public returns (bool isDelegate) {
-    (bool success, bytes memory data) = address(mockSystem).delegatecall(abi.encodeWithSignature("isDelegateCall()"));
+  function callViaDelegateCall() public returns (address storeAddress) {
+    (bool success, bytes memory data) = address(mockSystem).delegatecall(abi.encodeWithSignature("getStoreAddress()"));
     if (!success) revert("delegatecall failed");
-    isDelegate = abi.decode(data, (bool));
+    storeAddress = abi.decode(data, (address));
   }
 
-  function callViaCall() public returns (bool isDelegate) {
-    (bool success, bytes memory data) = address(mockSystem).call(abi.encodeWithSignature("isDelegateCall()"));
+  function callViaCall() public returns (address storeAddress) {
+    (bool success, bytes memory data) = address(mockSystem).call(abi.encodeWithSignature("getStoreAddress()"));
     if (!success) revert("delegatecall failed");
-    isDelegate = abi.decode(data, (bool));
+    storeAddress = abi.decode(data, (address));
   }
 }
 
-// Mock system to wrap StoreSwitch.isDelegateCall()
+// Mock system to wrap StoreSwitch.getStoreAddress()
 contract MockSystem is GasReporter {
-  function isDelegateCall() public returns (bool isDelegate) {
-    startGasReport("check if delegatecall");
-    isDelegate = StoreSwitch.isDelegateCall();
+  function getStoreAddress() public returns (address storeAddress) {
+    startGasReport("get Store address");
+    storeAddress = StoreSwitch.getStoreAddress();
     endGasReport();
   }
 }
@@ -40,14 +40,14 @@ contract StoreSwitchTest is Test, GasReporter {
     store = new StoreSwitchTestStore();
   }
 
-  function testIsDelegatecall() public {
-    bool isDelegate = store.callViaDelegateCall();
-    assertTrue(isDelegate);
+  function testDelegatecall() public {
+    address storeAddress = store.callViaDelegateCall();
+    assertEq(storeAddress, address(store));
   }
 
-  function testIsNoDelegatecall() public {
-    bool isDelegate = store.callViaCall();
-    assertFalse(isDelegate);
+  function testNoDelegatecall() public {
+    address storeAddress = store.callViaCall();
+    assertEq(storeAddress, address(store));
   }
 
   // TODO: tests for setting data on self vs msg.sender

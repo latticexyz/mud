@@ -235,7 +235,7 @@ library FunctionSelectors {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) internal view returns (bytes memory) {
+  function encode(bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
     return abi.encodePacked(namespace, name, systemFunctionSelector);
   }
 

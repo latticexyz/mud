@@ -451,7 +451,7 @@ library Singleton {
   /** Decode the tightly packed blob using this table's schema */
   function decode(
     bytes memory _blob
-  ) internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
+  ) internal pure returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     // 32 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 32));
 
@@ -483,7 +483,7 @@ library Singleton {
     uint32[2] memory v2,
     uint32[2] memory v3,
     uint32[1] memory v4
-  ) internal view returns (bytes memory) {
+  ) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](3);
     _counters[0] = uint40(v2.length * 4);
     _counters[1] = uint40(v3.length * 4);
@@ -534,7 +534,7 @@ function toStaticArray_uint32_1(uint32[] memory _value) pure returns (uint32[1] 
   }
 }
 
-function fromStaticArray_uint32_2(uint32[2] memory _value) view returns (uint32[] memory _result) {
+function fromStaticArray_uint32_2(uint32[2] memory _value) pure returns (uint32[] memory _result) {
   _result = new uint32[](2);
   uint256 fromPointer;
   uint256 toPointer;
@@ -545,7 +545,7 @@ function fromStaticArray_uint32_2(uint32[2] memory _value) view returns (uint32[
   Memory.copy(fromPointer, toPointer, 64);
 }
 
-function fromStaticArray_uint32_1(uint32[1] memory _value) view returns (uint32[] memory _result) {
+function fromStaticArray_uint32_1(uint32[1] memory _value) pure returns (uint32[] memory _result) {
   _result = new uint32[](1);
   uint256 fromPointer;
   uint256 toPointer;
