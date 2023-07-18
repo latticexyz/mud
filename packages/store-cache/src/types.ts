@@ -29,16 +29,16 @@ export type DatabaseClient<C extends StoreConfig> = {
   /** Utils for every table with the table argument prefilled */
   tables: {
     [Table in keyof C["tables"]]: {
-      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => Promise<void>;
+      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions | undefined) => Promise<void>;
       get: (key: Key<C, Table>) => Promise<Value<C, Table>>;
       remove: (key: Key<C, Table>, options?: RemoveOptions) => Promise<void>;
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
         // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
-        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
+        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace"> | undefined
       ) => Promise<Unsubscribe>;
       scan: <Table extends string = keyof C["tables"] & string>(
-        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace">
+        filter?: Omit<FilterOptions<C, Table>, "table" | "namespace"> | undefined
       ) => Promise<ScanResult<C, Table>>;
     };
   };
@@ -49,7 +49,7 @@ export type DatabaseClient<C extends StoreConfig> = {
     table: Table,
     key: Key<C, Table>,
     value: Partial<Value<C, Table>>,
-    options?: SetOptions
+    options?: SetOptions | undefined
   ) => Promise<void>;
   get: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
@@ -60,14 +60,14 @@ export type DatabaseClient<C extends StoreConfig> = {
     namespace: string,
     table: Table,
     key: Key<C, Table>,
-    options?: RemoveOptions
+    options?: RemoveOptions | undefined
   ) => Promise<void>;
   subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
-    filter?: FilterOptions<C, Table>
+    filter?: FilterOptions<C, Table> | undefined
   ) => Promise<Unsubscribe>;
   scan: <Table extends string = keyof C["tables"] & string>(
-    filter?: FilterOptions<C, Table>
+    filter?: FilterOptions<C, Table> | undefined
   ) => Promise<ScanResult<C, Table>>;
   _tupleDatabaseClient: AsyncTupleDatabaseClient;
 };
@@ -91,7 +91,7 @@ export type SubscriptionCallback<
 export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   table: T & string;
   namespace?: string | undefined;
-  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> } | undefined;
+  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> | undefined } | undefined;
 };
 
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
