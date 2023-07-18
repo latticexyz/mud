@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import type { PublicClient, WalletClient, Chain } from "viem";
+import type { PublicClient, WalletClient, Chain, Transport } from "viem";
 import type { CacheStore } from "../workers";
 import { TableId } from "@latticexyz/common";
 import { StoreEvent, EphemeralEvent } from "../v2/common";
@@ -16,20 +16,22 @@ export const storeEvent$ = new Subject<{
   event: StoreEvent | EphemeralEvent;
   table: TableId;
   keyTuple: any; // TODO: refine
-  indexedValues?: Record<number, any>; // TODO: refine
-  namedValues?: Record<string, any>; // TODO: refine
+  indexedValues?: Record<number, any> | undefined; // TODO: refine
+  namedValues?: Record<string, any> | undefined; // TODO: refine
 }>();
 
 export const transactionHash$ = new Subject<string>();
 
 // require chain for now so we can use it downstream
-export const publicClient$: BehaviorSubject<(PublicClient & { chain: Chain }) | null> = new BehaviorSubject<
-  (PublicClient & { chain: Chain }) | null
->(null);
+export const publicClient$: BehaviorSubject<PublicClient<Transport, Chain> | null> = new BehaviorSubject<PublicClient<
+  Transport,
+  Chain
+> | null>(null);
 // require chain for now so we can use it downstream
-export const walletClient$: BehaviorSubject<(WalletClient & { chain: Chain }) | null> = new BehaviorSubject<
-  (WalletClient & { chain: Chain }) | null
->(null);
+export const walletClient$: BehaviorSubject<WalletClient<Transport, Chain> | null> = new BehaviorSubject<WalletClient<
+  Transport,
+  Chain
+> | null>(null);
 
 export const cacheStore$ = new BehaviorSubject<CacheStore | null>(null);
 

@@ -79,7 +79,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         return {
           tableIdName: tableName + "TableId",
           namespace: config.namespace,
-          name: tableData.name,
+          name: tableData.name!,
         };
       }
     })();

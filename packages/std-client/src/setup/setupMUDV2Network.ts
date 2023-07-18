@@ -31,10 +31,10 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfi
   networkConfig: SetupContractConfig;
   world: World;
   contractComponents: C;
-  initialGasPrice?: number;
-  fetchSystemCalls?: boolean;
-  syncThread?: "main" | "worker";
-  syncStoreCache?: boolean;
+  initialGasPrice?: number | undefined;
+  fetchSystemCalls?: boolean | undefined;
+  syncThread?: "main" | "worker" | undefined;
+  syncStoreCache?: boolean | undefined;
   storeConfig: S;
   worldAbi: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };

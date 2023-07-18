@@ -15,8 +15,8 @@ import { Input, Ack, ack, SyncWorker } from "./workers/SyncWorker";
  * }
  */
 export function createSyncWorker<C extends Components = Components>(
-  ack$?: Observable<Ack>,
-  options?: { thread?: "main" | "worker" }
+  ack$?: Observable<Ack> | undefined,
+  options?: { thread?: "main" | "worker" | undefined } | undefined
 ) {
   const thread = options?.thread || "worker";
   const input$ = new Subject<Input>();

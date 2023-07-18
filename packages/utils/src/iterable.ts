@@ -36,7 +36,7 @@ export function transformIterator<A, B>(iterator: Iterator<A>, transform: (value
   return makeIterable({
     next() {
       const { done, value } = iterator.next();
-      return { done, value: done ? value : transform(value) };
+      return { done: done ?? false, value: done ? value : transform(value) };
     },
   });
 }

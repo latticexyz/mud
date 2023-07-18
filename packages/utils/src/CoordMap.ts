@@ -35,7 +35,7 @@ export function keyToCoord(key: number): Coord {
 
 export class CoordMap<T> {
   map: Map<number, T>;
-  defaultValue?: T;
+  defaultValue?: T | undefined;
 
   constructor(props?: { defaultValue?: T }) {
     this.map = new Map<number, T>();

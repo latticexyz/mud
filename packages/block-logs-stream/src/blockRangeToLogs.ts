@@ -21,7 +21,7 @@ export type BlockRangeToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   /**
    * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time.
    */
-  maxBlockRange?: bigint;
+  maxBlockRange?: bigint | undefined;
 };
 
 export type BlockRangeToLogsResult<TAbiEvents extends readonly AbiEvent[]> = OperatorFunction<
@@ -56,7 +56,7 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
       return from(
         fetchLogs({
           publicClient,
-          address,
+          address: address ?? [],
           events,
           fromBlock,
           toBlock,

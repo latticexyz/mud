@@ -1,7 +1,7 @@
 import { InMemoryTupleStorage, AsyncTupleStorageApi, AsyncTupleDatabase } from "tuple-database";
 
 export type CreateDatabaseOptions = {
-  storage?: AsyncTupleStorageApi;
+  storage?: AsyncTupleStorageApi | undefined;
 };
 
 /**

@@ -13,7 +13,7 @@ function keyToCoord(key: string): VoxelCoord {
 
 export class VoxelCoordMap<T> {
   map: Map<string, T>;
-  defaultValue?: T;
+  defaultValue?: T | undefined;
 
   constructor(props?: { defaultValue?: T }) {
     this.map = new Map<string, T>();

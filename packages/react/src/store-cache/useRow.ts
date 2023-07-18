@@ -6,7 +6,7 @@ export type UseRowFilterOptions<
   C extends StoreConfig = StoreConfig,
   T extends keyof C["tables"] & string = keyof C["tables"] & string
 > = {
-  namespace?: C["namespace"];
+  namespace?: C["namespace"] | undefined;
   table: T;
   key: Key<C, T>;
 };

@@ -9,7 +9,7 @@ import { createBlockNumberStream } from "./createBlockNumberStream";
 import { Signer, Wallet } from "ethers";
 import { computedToStream } from "@latticexyz/utils";
 import { privateKeyToAccount } from "viem/accounts";
-import { Address, fallback, webSocket, http, createPublicClient, createWalletClient } from "viem";
+import { Address, fallback, webSocket, http, createPublicClient, createWalletClient, Chain } from "viem";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
 import * as devObservables from "./dev/observables";
@@ -73,11 +73,14 @@ export async function createNetwork(initialConfig: NetworkConfig) {
 
   // Create viem clients
   try {
-    const possibleChains = Object.values({ ...mudChains, ...chains });
+    const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
     if (config.chainConfig) {
       possibleChains.unshift(config.chainConfig);
     }
     const chain = possibleChains.find((c) => c.id === config.chainId);
+    if (!chain) {
+      throw new Error(`No chain found for chain ID ${config.chainId}`);
+    }
 
     const publicClient = createPublicClient({
       chain,

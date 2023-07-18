@@ -149,15 +149,15 @@ export type SyncWorkerConfig = {
   worldContract: ContractConfig;
   disableCache?: boolean;
   chainId: number;
-  modeUrl?: string;
-  snapshotServiceUrl?: string;
-  streamServiceUrl?: string;
-  fetchSystemCalls?: boolean;
-  cacheInterval?: number;
-  cacheAgeThreshold?: number;
-  snapshotNumChunks?: number;
-  pruneOptions?: { playerAddress: string; hashedComponentId: string };
-  initialRecords?: RawTableRecord[];
+  modeUrl?: string | undefined;
+  snapshotServiceUrl?: string | undefined;
+  streamServiceUrl?: string | undefined;
+  fetchSystemCalls?: boolean | undefined;
+  cacheInterval?: number | undefined;
+  cacheAgeThreshold?: number | undefined;
+  snapshotNumChunks?: number | undefined;
+  pruneOptions?: { playerAddress: string; hashedComponentId: string } | undefined;
+  initialRecords?: RawTableRecord[] | undefined;
 };
 
 export enum ContractSchemaValue {

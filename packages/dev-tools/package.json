@@ -18,7 +18,7 @@
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
-    "dev": "tsup --watch",
+    "dev": "vitest typecheck --run --passWithNoTests",
     "test": "tsc --noEmit"
   },
   "dependencies": {

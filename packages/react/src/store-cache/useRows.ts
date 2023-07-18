@@ -9,7 +9,7 @@ import { useMountedState } from "../utils/useMountedState";
  */
 export function useRows<C extends StoreConfig, T extends keyof C["tables"] & string>(
   storeCache: DatabaseClient<C>,
-  filter?: FilterOptions<C, T>
+  filter?: FilterOptions<C, T> | undefined
 ) {
   const [rows, setRows] = useMountedState<ScanResult<C, T>>([]);
   const filterMemo = useDeepMemo(filter);

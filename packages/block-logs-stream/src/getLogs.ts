@@ -17,7 +17,7 @@ import { isDefined } from "@latticexyz/common/utils";
 
 export type GetLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   publicClient: PublicClient;
-  address?: Address | Address[];
+  address?: Address | Address[] | undefined;
   events: TAbiEvents;
   fromBlock: BlockNumber | BlockTag;
   toBlock: BlockNumber | BlockTag;
@@ -44,7 +44,7 @@ export async function getLogs<TAbiEvents extends readonly AbiEvent[]>({
     method: "eth_getLogs",
     params: [
       {
-        address,
+        address: address ?? [],
         topics,
         fromBlock: typeof fromBlock === "bigint" ? numberToHex(fromBlock) : fromBlock,
         toBlock: typeof toBlock === "bigint" ? numberToHex(toBlock) : toBlock,

@@ -78,17 +78,17 @@ export interface TableConfig<
   StaticUserTypes extends StringForUnion = StringForUnion
 > {
   /** Output directory path for the file. Default is "tables" */
-  directory?: string;
+  directory?: string | undefined;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
-  tableIdArgument?: boolean;
+  tableIdArgument?: boolean | undefined;
   /** Include methods that accept a manual `IStore` argument. Default is true. */
-  storeArgument?: boolean;
+  storeArgument?: boolean | undefined;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
-  dataStruct?: boolean;
+  dataStruct?: boolean | undefined;
   /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
-  ephemeral?: boolean;
+  ephemeral?: boolean | undefined;
   /** Table's key schema names mapped to their types. Default is `{ key: "bytes32" }` */
-  keySchema?: Record<string, KeySchema<StaticUserTypes>>;
+  keySchema?: Record<string, KeySchema<StaticUserTypes>> | undefined;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: SchemaConfig<UserTypes>;
 }
@@ -251,13 +251,13 @@ export type MUDUserConfig<
      */
     tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
     /** The namespace for table ids. Default is "" (ROOT) */
-    namespace?: string;
+    namespace?: string | undefined;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
-    storeImportPath?: string;
+    storeImportPath?: string | undefined;
     /** Path to the file where common user types will be generated and imported from. Default is "Types" */
-    userTypesPath?: string;
+    userTypesPath?: string | undefined;
     /** Path to the directory where generated files will be placed. (Default is "codegen") */
-    codegenDirectory?: string;
+    codegenDirectory?: string | undefined;
   };
 
 const StoreConfigUnrefined = z

@@ -9,7 +9,9 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "react",
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true
   },
   "include": ["src"]
 }

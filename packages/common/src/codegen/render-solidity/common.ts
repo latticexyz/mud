@@ -33,7 +33,7 @@ export function renderCommonData({
   staticResourceData,
   keyTuple,
 }: {
-  staticResourceData?: StaticResourceData;
+  staticResourceData?: StaticResourceData | undefined;
   keyTuple: RenderKeyTuple[];
 }): {
   _tableId: string;

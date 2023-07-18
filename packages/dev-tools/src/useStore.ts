@@ -6,7 +6,7 @@ import {
   cacheStore$,
   worldAddress$,
 } from "@latticexyz/network/dev";
-import { PublicClient, WalletClient, Hex, Chain } from "viem";
+import { PublicClient, WalletClient, Hex, Chain, Transport } from "viem";
 import { Abi } from "abitype";
 import { create } from "zustand";
 import { worldAbi$ } from "@latticexyz/std-client/dev";
@@ -20,8 +20,8 @@ export const useStore = create<{
   storeEvents: StoreEvent[];
   transactions: Hex[];
   cacheStore: CacheStore | null;
-  publicClient: (PublicClient & { chain: Chain }) | null;
-  walletClient: (WalletClient & { chain: Chain }) | null;
+  publicClient: PublicClient<Transport, Chain> | null;
+  walletClient: WalletClient<Transport, Chain> | null;
   blockNumber: bigint | null;
   worldAbi: Abi;
   worldAddress: string | null;

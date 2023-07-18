@@ -25,7 +25,7 @@ export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
   network: Network,
   gasPrice$: BehaviorSubject<number>,
-  options?: { concurrency?: number; devMode?: boolean }
+  options?: { concurrency?: number | undefined; devMode?: boolean | undefined } | undefined
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
 
@@ -36,7 +36,7 @@ export function createTxQueue<C extends Contracts>(
     ) => Promise<{ hash: string; wait: () => Promise<TransactionReceipt> }>;
     estimateGas: () => BigNumberish | Promise<BigNumberish>;
     cancel: (error: any) => void;
-    stateMutability?: string;
+    stateMutability?: string | undefined;
   }>();
   const submissionMutex = new Mutex();
   const _nonce = observable.box<number | null>(null);

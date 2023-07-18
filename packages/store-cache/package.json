@@ -19,7 +19,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest --run --passWithNoTests"
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests"
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",

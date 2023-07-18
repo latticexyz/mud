@@ -73,14 +73,14 @@ export type DatabaseClient<C extends StoreConfig> = {
 };
 
 export type SetOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
-  defaultValue?: Value<C, T>;
+  defaultValue?: Value<C, T> | undefined;
   /** Transaction to append the set operation to. If provided, the transaction will not be committed. */
-  transaction?: AsyncTupleRootTransactionApi;
+  transaction?: AsyncTupleRootTransactionApi | undefined;
 };
 
 export type RemoveOptions = {
   /** Transaction to append the remove operation to. If provided, the transaction will not be committed. */
-  transaction?: AsyncTupleRootTransactionApi;
+  transaction?: AsyncTupleRootTransactionApi | undefined;
 };
 
 export type SubscriptionCallback<
@@ -90,8 +90,8 @@ export type SubscriptionCallback<
 
 export type FilterOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   table: T & string;
-  namespace?: string;
-  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> };
+  namespace?: string | undefined;
+  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Key<C, T> } | undefined;
 };
 
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {

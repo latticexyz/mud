@@ -14,7 +14,7 @@ export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   /**
    * Optional contract address(es) to fetch logs for.
    */
-  address?: Address | Address[];
+  address?: Address | Address[] | undefined;
   /**
    * Events to fetch logs for.
    */
@@ -30,11 +30,11 @@ export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   /**
    * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time. Defaults to 1000n.
    */
-  maxBlockRange?: bigint;
+  maxBlockRange?: bigint | undefined;
   /**
    * Optional maximum amount of retries if the RPC returns a rate limit error. Defaults to 3.
    */
-  maxRetryCount?: number;
+  maxRetryCount?: number | undefined;
 };
 
 export type FetchLogsResult<TAbiEvents extends readonly AbiEvent[]> = {

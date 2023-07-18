@@ -48,7 +48,7 @@
     "gas-report": "mud-gas-report --save gas-report.json",
     "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test"
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
