@@ -18,7 +18,6 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "lint": "eslint . --ext .ts",
     "test": "tsc --noEmit && jest"
   },
@@ -33,9 +32,7 @@
     "@types/jest": "^27.4.1",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.5",
-    "tsup": "^6.7.0",
-    "typedoc": "0.23.21",
-    "typedoc-plugin-markdown": "^3.13.6"
+    "tsup": "^6.7.0"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
