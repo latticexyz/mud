@@ -14,7 +14,7 @@ describe("TableId", () => {
     expect(tableId.toHex()).toMatchInlineSnapshot(
       '"0x41566572794c6f6e674e616d657370616e616d65000000000000000000000000"'
     );
-    expect(tableId.namespace).toMatchInlineSnapshot('"AVeryLongNamespace"');
+    expect(TableId.fromHex(tableId.toHex()).namespace).toMatchInlineSnapshot('"AVeryLongNamespa"');
   });
 
   it("throws when converting names >16 bytes", () => {
@@ -22,7 +22,7 @@ describe("TableId", () => {
     expect(tableId.toHex()).toMatchInlineSnapshot(
       '"0x6e616d65737061636500000000000000416e556e6e65636573736172696c794c"'
     );
-    expect(tableId.name).toMatchInlineSnapshot('"AnUnnecessarilyLongName"');
+    expect(TableId.fromHex(tableId.toHex()).name).toMatchInlineSnapshot('"AnUnnecessarilyL"');
   });
 
   it("can convert from hex string", () => {
