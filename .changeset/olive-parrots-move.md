@@ -2,4 +2,4 @@
 "@latticexyz/recs": patch
 ---
 
-improve messages for v2 components
+improve RECS error messages for v2 components
