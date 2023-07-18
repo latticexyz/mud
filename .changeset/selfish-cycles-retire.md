@@ -4,7 +4,7 @@
 "@latticexyz/world": minor
 ---
 
-`MudV2Test` has been renamed to `MudTest` and moved to another package.
+Rename `MudV2Test` to `MudTest` and move from `@latticexyz/std-contracts` to `@latticexyz/store`.
 
 ```solidity
 // old import
