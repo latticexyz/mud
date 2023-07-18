@@ -51,7 +51,8 @@ contract StoreCoreTest is Test, StoreMock {
     Schema loadedKeySchema = IStore(this).getKeySchema(table);
     assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
 
-    bytes memory schemaRecord = IStore(this).getRecord(StoreCoreInternal.SCHEMA_TABLE, key);
+    Schema schemaTableSchema = SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32);
+    bytes memory schemaRecord = IStore(this).getRecord(StoreCoreInternal.SCHEMA_TABLE, key, schemaTableSchema);
     assertEq(schemaRecord, abi.encodePacked(schema.unwrap(), keySchema.unwrap()));
   }
 
@@ -298,7 +299,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setRecord(table, key, data, schema);
 
     // Get data
-    bytes memory loadedData = IStore(this).getRecord(table, key);
+    bytes memory loadedData = IStore(this).getRecord(table, key, schema);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -381,10 +382,10 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Verify the full static data is correct
     assertEq(IStore(this).getSchema(table).staticDataLength(), 48);
-    assertEq(Bytes.slice16(IStore(this).getRecord(table, key), 0), firstDataBytes);
-    assertEq(Bytes.slice32(IStore(this).getRecord(table, key), 16), secondDataBytes);
+    assertEq(Bytes.slice16(IStore(this).getRecord(table, key, schema), 0), firstDataBytes);
+    assertEq(Bytes.slice32(IStore(this).getRecord(table, key, schema), 16), secondDataBytes);
     assertEq(
-      keccak256(SliceLib.getSubslice(IStore(this).getRecord(table, key), 0, 48).toBytes()),
+      keccak256(SliceLib.getSubslice(IStore(this).getRecord(table, key, schema), 0, 48).toBytes()),
       keccak256(abi.encodePacked(firstDataBytes, secondDataBytes))
     );
 
@@ -448,7 +449,7 @@ contract StoreCoreTest is Test, StoreMock {
     // Verify all fields are correct
     PackedCounter encodedLengths = PackedCounterLib.pack(uint40(thirdDataBytes.length), uint40(fourthDataBytes.length));
     assertEq(
-      keccak256(IStore(this).getRecord(table, key)),
+      keccak256(IStore(this).getRecord(table, key, schema)),
       keccak256(
         abi.encodePacked(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes)
       )
@@ -505,7 +506,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setRecord(table, key, data, schema);
 
     // Get data
-    bytes memory loadedData = IStore(this).getRecord(table, key);
+    bytes memory loadedData = IStore(this).getRecord(table, key, schema);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -518,7 +519,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).deleteRecord(table, key, schema);
 
     // Verify data is deleted
-    loadedData = IStore(this).getRecord(table, key);
+    loadedData = IStore(this).getRecord(table, key, schema);
     assertEq(keccak256(loadedData), keccak256(new bytes(schema.staticDataLength())));
   }
 
@@ -780,7 +781,7 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
-    bytes memory data1 = IStore(this).getRecord(table, key);
+    bytes memory data1 = IStore(this).getRecord(table, key, schema);
     assertEq(data1.length, schema.staticDataLength());
 
     bytes memory data2 = IStore(this).getField(table, key, 0, schema);
@@ -815,7 +816,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setRecord(table, key, data, schema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key);
+    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, schema);
     assertEq(keccak256(data), keccak256(indexedData));
 
     data = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
@@ -823,13 +824,13 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setField(table, key, 0, data, schema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key, schema);
     assertEq(keccak256(data), keccak256(indexedData));
 
     IStore(this).deleteRecord(table, key, schema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key, schema);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 
@@ -858,7 +859,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setRecord(table, key, data, schema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key);
+    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, schema);
     assertEq(keccak256(data), keccak256(indexedData));
 
     // Update dynamic data
@@ -870,13 +871,13 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).setField(table, key, 1, arrayDataBytes, schema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key, schema);
     assertEq(keccak256(data), keccak256(indexedData));
 
     IStore(this).deleteRecord(table, key, schema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key, schema);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 }

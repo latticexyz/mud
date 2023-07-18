@@ -18,12 +18,6 @@ contract StoreRead is IStoreRead {
     schema = StoreCore.getKeySchema(table);
   }
 
-  // Get full record (static and dynamic data, load schema from storage)
-  // TODO: remove?
-  function getRecord(bytes32 table, bytes32[] calldata key) public view virtual returns (bytes memory data) {
-    data = StoreCore.getRecord(table, key);
-  }
-
   // Get full record (static and dynamic data)
   function getRecord(
     bytes32 table,

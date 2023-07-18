@@ -177,16 +177,6 @@ library StoreSwitch {
     }
   }
 
-  // TODO: remove? why is this the only method that doesn't require a schema?
-  function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    address _storeAddress = getStoreAddress();
-    if (_storeAddress == address(this)) {
-      return StoreCore.getRecord(table, key);
-    } else {
-      return IStore(_storeAddress).getRecord(table, key);
-    }
-  }
-
   function getRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {

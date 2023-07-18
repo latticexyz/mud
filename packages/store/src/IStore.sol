@@ -9,9 +9,6 @@ interface IStoreRead {
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);
 
-  // Get full record (including full array, load table schema from storage)
-  function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
-
   // Get full record (including full array)
   function getRecord(
     bytes32 table,
@@ -32,7 +29,7 @@ interface IStoreRead {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    Schema schema
+    Schema valueSchema
   ) external view returns (uint256);
 
   // Get start:end slice of the field at schema index
@@ -40,7 +37,7 @@ interface IStoreRead {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    Schema schema,
+    Schema valueSchema,
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);

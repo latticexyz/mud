@@ -148,14 +148,6 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Set full data record for the given tableId, key tuple (loading value schema from storage)
-   */
-  function setRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) internal {
-    Schema valueSchema = getSchema(tableId);
-    setRecord(tableId, key, data, valueSchema);
-  }
-
-  /**
    * Set full data record for the given tableId and key tuple and schema
    */
   function setRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
@@ -213,14 +205,6 @@ library StoreCore {
   }
 
   /**
-   * Set data for a field in a table with the given tableId and key tuple (loading value schema from storage)
-   */
-  function setField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex, bytes memory data) internal {
-    Schema valueSchema = getSchema(tableId);
-    setField(tableId, key, schemaIndex, data, valueSchema);
-  }
-
-  /**
    * Set data for a field in a table with the given tableId, key tuple and value schema
    */
   function setField(
@@ -255,14 +239,6 @@ library StoreCore {
   }
 
   /**
-   * Delete a record for the given tableId, key tuple (loading value schema from storage)
-   */
-  function deleteRecord(bytes32 tableId, bytes32[] memory key) internal {
-    Schema valueSchema = getSchema(tableId);
-    deleteRecord(tableId, key, valueSchema);
-  }
-
-  /**
    * Delete a record for the given tableId, key tuple and value schema
    */
   function deleteRecord(bytes32 tableId, bytes32[] memory key, Schema valueSchema) internal {
@@ -286,14 +262,6 @@ library StoreCore {
     // Delete dynamic data length
     uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
     Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
-  }
-
-  /**
-   * Push data to a field in a table with the given tableId and key tuple (loading value schema from storage)
-   */
-  function pushToField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex, bytes memory dataToPush) internal {
-    Schema valueSchema = getSchema(tableId);
-    pushToField(tableId, key, schemaIndex, dataToPush, valueSchema);
   }
 
   /**
@@ -336,14 +304,6 @@ library StoreCore {
   }
 
   /**
-   * Pop data from a field in a table with the given tableId, key tuple (loading value schema from storage)
-   */
-  function popFromField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex, uint256 byteLengthToPop) internal {
-    Schema valueSchema = getSchema(tableId);
-    popFromField(tableId, key, schemaIndex, byteLengthToPop, valueSchema);
-  }
-
-  /**
    * Pop data from a field in a table with the given tableId, key tuple and value schema
    */
   function popFromField(
@@ -381,20 +341,6 @@ library StoreCore {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
-  }
-
-  /**
-   * Update data in a field in a table with the given tableId, key tuple (loading value schema from storage)
-   */
-  function updateInField(
-    bytes32 tableId,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet
-  ) internal {
-    Schema valueSchema = getSchema(tableId);
-    updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
   }
 
   /**
@@ -478,14 +424,6 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple (loading value schema from storage)
-   */
-  function getRecord(bytes32 tableId, bytes32[] memory key) internal view returns (bytes memory) {
-    Schema schema = getSchema(tableId);
-    return getRecord(tableId, key, schema);
-  }
-
-  /**
    * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value schema
    */
   function getRecord(bytes32 tableId, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
@@ -534,14 +472,6 @@ library StoreCore {
 
     // Return the packed data
     return data;
-  }
-
-  /**
-   * Get a single field from the given tableId and key tuple (loading value schema from storage)
-   */
-  function getField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex) internal view returns (bytes memory) {
-    Schema schema = getSchema(tableId);
-    return getField(tableId, key, schemaIndex, schema);
   }
 
   /**
@@ -754,14 +684,6 @@ library StoreCoreInternal {
    ************************************************************************/
 
   /**
-   * Get full static record for the given tableId and key tuple (loading schema's static length from storage)
-   */
-  function _getStaticData(bytes32 tableId, bytes32[] memory key, uint256 memoryPointer) internal view {
-    Schema schema = _getSchema(tableId);
-    _getStaticData(tableId, key, schema.staticDataLength(), memoryPointer);
-  }
-
-  /**
    * Get full static data for the given tableId and key tuple, with the given static length
    */
   function _getStaticData(bytes32 tableId, bytes32[] memory key, uint256 length, uint256 memoryPointer) internal view {
@@ -926,32 +848,5 @@ library StoreCoreInternal {
     // partial storage slot offset (there is no inherent offset, as each dynamic field starts at its own storage slot)
     uint256 offset = startByteIndex % 32;
     Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: partialData });
-  }
-}
-
-// Overloads for single key and some fixed length array keys for better devex
-library StoreCoreExtended {
-  /************************************************************************
-   *
-   *    SET DATA
-   *
-   ************************************************************************/
-
-  /************************************************************************
-   *
-   *    GET DATA
-   *
-   ************************************************************************/
-  function getRecord(bytes32 tableId, bytes32 _key) internal view returns (bytes memory) {
-    bytes32[] memory key = new bytes32[](1);
-    key[0] = _key;
-    return StoreCore.getRecord(tableId, key);
-  }
-
-  function getData(bytes32 tableId, bytes32[2] memory _key) internal view returns (bytes memory) {
-    bytes32[] memory key = new bytes32[](2);
-    key[0] = _key[0];
-    key[1] = _key[1];
-    return StoreCore.getRecord(tableId, key);
   }
 }

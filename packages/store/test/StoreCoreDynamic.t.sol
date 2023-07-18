@@ -66,13 +66,14 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
     thirdDataBytes = EncodeArray.encode(thirdData);
 
     // Set fields
-    StoreCore.setField(_table, _key, 0, abi.encodePacked(firstDataBytes));
-    StoreCore.setField(_table, _key, 1, secondDataBytes);
+    StoreCore.setField(_table, _key, 0, abi.encodePacked(firstDataBytes), schema);
+    StoreCore.setField(_table, _key, 1, secondDataBytes, schema);
     // Initialize a field with push
-    StoreCore.pushToField(_table, _key, 2, thirdDataBytes);
+    StoreCore.pushToField(_table, _key, 2, thirdDataBytes, schema);
   }
 
   function testPopFromSecondField() public {
+    Schema schema = StoreCore.getSchema(_table);
     bytes memory dataBytes = secondDataBytes;
 
     // Prepare expected data
@@ -88,29 +89,30 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
     // Pop from second field
     startGasReport("pop from field (cold, 1 slot, 1 uint32 item)");
-    StoreCore.popFromField(_table, _key, 1, byteLengthToPop);
+    StoreCore.popFromField(_table, _key, 1, byteLengthToPop, schema);
     endGasReport();
     // Get second field
-    bytes memory loadedData = StoreCore.getField(_table, _key, 1);
+    bytes memory loadedData = StoreCore.getField(_table, _key, 1, schema);
     // Verify loaded data is correct
     assertEq(loadedData, newDataBytes);
 
     // Reset the second field and pop again (but warm this time)
-    StoreCore.setField(_table, _key, 1, dataBytes);
+    StoreCore.setField(_table, _key, 1, dataBytes, schema);
     startGasReport("pop from field (warm, 1 slot, 1 uint32 item)");
-    StoreCore.popFromField(_table, _key, 1, byteLengthToPop);
+    StoreCore.popFromField(_table, _key, 1, byteLengthToPop, schema);
     endGasReport();
     // Get second field
-    loadedData = StoreCore.getField(_table, _key, 1);
+    loadedData = StoreCore.getField(_table, _key, 1, schema);
     // Verify loaded data is correct
     assertEq(loadedData, newDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(_table, _key, 0)), firstDataBytes);
-    assertEq(StoreCore.getField(_table, _key, 2), thirdDataBytes);
+    assertEq(bytes32(StoreCore.getField(_table, _key, 0, schema)), firstDataBytes);
+    assertEq(StoreCore.getField(_table, _key, 2, schema), thirdDataBytes);
   }
 
   function testPopFromThirdField() public {
+    Schema schema = StoreCore.getSchema(_table);
     bytes memory dataBytes = thirdDataBytes;
 
     // Prepare expected data
@@ -126,24 +128,24 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
     // Pop from the field
     startGasReport("pop from field (cold, 2 slots, 10 uint32 items)");
-    StoreCore.popFromField(_table, _key, 2, byteLengthToPop);
+    StoreCore.popFromField(_table, _key, 2, byteLengthToPop, schema);
     endGasReport();
     // Load and verify the field
-    bytes memory loadedData = StoreCore.getField(_table, _key, 2);
+    bytes memory loadedData = StoreCore.getField(_table, _key, 2, schema);
     assertEq(loadedData, newDataBytes);
 
     // Reset the field and pop again (but warm this time)
-    StoreCore.setField(_table, _key, 2, dataBytes);
+    StoreCore.setField(_table, _key, 2, dataBytes, schema);
     startGasReport("pop from field (warm, 2 slots, 10 uint32 items)");
-    StoreCore.popFromField(_table, _key, 2, byteLengthToPop);
+    StoreCore.popFromField(_table, _key, 2, byteLengthToPop, schema);
     endGasReport();
     // Load and verify the field
-    loadedData = StoreCore.getField(_table, _key, 2);
+    loadedData = StoreCore.getField(_table, _key, 2, schema);
     assertEq(loadedData, newDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(_table, _key, 0)), firstDataBytes);
-    assertEq(StoreCore.getField(_table, _key, 1), secondDataBytes);
+    assertEq(bytes32(StoreCore.getField(_table, _key, 0, schema)), firstDataBytes);
+    assertEq(StoreCore.getField(_table, _key, 1, schema), secondDataBytes);
   }
 
   function testGetSecondFieldLength() public {
