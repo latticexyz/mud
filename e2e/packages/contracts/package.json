@@ -30,7 +30,7 @@
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "rimraf": "^3.0.2",
     "typechain": "^8.1.1",
-    "typescript": "^4.9.5",
+    "typescript": "5.1.6",
     "vite": "^4.2.1",
     "vitest": "0.31.4"
   }
