@@ -19,7 +19,6 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "test": "tsc --noEmit && vitest --run"
   },
   "dependencies": {
@@ -39,8 +38,6 @@
     "eslint-plugin-react-hooks": "4.6.0",
     "react-test-renderer": "^18.2.0",
     "tsup": "^6.7.0",
-    "typedoc": "0.23.21",
-    "typedoc-plugin-markdown": "^3.13.6",
     "vite": "^4.3.6",
     "vitest": "0.31.4"
   },
