@@ -126,6 +126,11 @@
         "internalType": "uint8",
         "name": "schemaIndex",
         "type": "uint8"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "getField",
@@ -250,7 +255,7 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "valueSchema",
         "type": "bytes32"
       }
     ],

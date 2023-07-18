@@ -172,7 +172,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data);
+      hook.onSetRecord(tableId, key, data, valueSchema);
     }
 
     // Store the static data at the static data location
@@ -238,7 +238,7 @@ library StoreCore {
 
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, data);
+      hook.onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
     }
 
     if (schemaIndex < valueSchema.numStaticFields()) {
@@ -250,7 +250,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, data);
+      hook.onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
     }
   }
 
@@ -273,7 +273,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onDeleteRecord(tableId, key);
+      hook.onDeleteRecord(tableId, key, valueSchema);
     }
 
     // Delete static data
@@ -323,7 +323,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, valueSchema, schemaIndex, dataToPush);
@@ -331,7 +331,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
   }
 
@@ -371,7 +371,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
 
     StoreCoreInternal._popFromDynamicField(tableId, key, valueSchema, schemaIndex, byteLengthToPop);
@@ -379,7 +379,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
   }
 
@@ -435,7 +435,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
 
     StoreCoreInternal._setDynamicFieldItem(tableId, key, valueSchema, schemaIndex, startByteIndex, dataToSet);
@@ -443,7 +443,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
     }
   }
 
@@ -456,13 +456,9 @@ library StoreCore {
   /**
    * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
    */
-  function emitEphemeralRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) internal {
-    // verify the value has the correct length for the tableId (based on the tableId's schema)
-    // to prevent invalid data from being emitted
-    Schema schema = getSchema(tableId);
-
+  function emitEphemeralRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
     // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(schema, data);
+    StoreCoreInternal._validateDataLength(valueSchema, data);
 
     // Emit event to notify indexers
     emit StoreEphemeralRecord(tableId, key, data);
@@ -471,7 +467,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data);
+      hook.onSetRecord(tableId, key, data, valueSchema);
     }
   }
 

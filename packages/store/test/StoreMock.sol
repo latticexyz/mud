@@ -11,23 +11,41 @@ import { StoreRead } from "../src/StoreRead.sol";
  */
 contract StoreMock is IStore, StoreRead {
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) public {
-    StoreCore.setRecord(table, key, data);
+  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
+    StoreCore.setRecord(table, key, data, valueSchema);
   }
 
   // Set partial data at schema index
-  function setField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata data) public {
-    StoreCore.setField(table, key, schemaIndex, data);
+  function setField(
+    bytes32 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata data,
+    Schema valueSchema
+  ) public {
+    StoreCore.setField(table, key, schemaIndex, data, valueSchema);
   }
 
   // Push encoded items to the dynamic field at schema index
-  function pushToField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata dataToPush) public {
-    StoreCore.pushToField(table, key, schemaIndex, dataToPush);
+  function pushToField(
+    bytes32 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush,
+    Schema valueSchema
+  ) public {
+    StoreCore.pushToField(table, key, schemaIndex, dataToPush, valueSchema);
   }
 
   // Pop byte length from the dynamic field at schema index
-  function popFromField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, uint256 byteLengthToPop) public {
-    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop);
+  function popFromField(
+    bytes32 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 byteLengthToPop,
+    Schema valueSchema
+  ) public {
+    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, valueSchema);
   }
 
   // Change encoded items within the dynamic field at schema index
@@ -36,19 +54,20 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet
+    bytes calldata dataToSet,
+    Schema valueSchema
   ) public {
-    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet);
+    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 table, bytes32[] memory key) public {
-    StoreCore.deleteRecord(table, key);
+  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+    StoreCore.deleteRecord(table, key, valueSchema);
   }
 
   // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) public {
-    StoreCore.emitEphemeralRecord(table, key, data);
+  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
+    StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
   }
 
   function registerSchema(bytes32 table, Schema schema, Schema keySchema) public {

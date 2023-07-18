@@ -89,39 +89,57 @@ library StoreSwitch {
     }
   }
 
-  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
+  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(table, key, data);
+      StoreCore.setRecord(table, key, data, valueSchema);
     } else {
-      IStore(_storeAddress).setRecord(table, key, data);
+      IStore(_storeAddress).setRecord(table, key, data, valueSchema);
     }
   }
 
-  function setField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory data) internal {
+  function setField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setField(table, key, fieldIndex, data);
+      StoreCore.setField(table, key, fieldIndex, data, valueSchema);
     } else {
-      IStore(_storeAddress).setField(table, key, fieldIndex, data);
+      IStore(_storeAddress).setField(table, key, fieldIndex, data, valueSchema);
     }
   }
 
-  function pushToField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
+  function pushToField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    bytes memory dataToPush,
+    Schema valueSchema
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.pushToField(table, key, fieldIndex, dataToPush);
+      StoreCore.pushToField(table, key, fieldIndex, dataToPush, valueSchema);
     } else {
-      IStore(_storeAddress).pushToField(table, key, fieldIndex, dataToPush);
+      IStore(_storeAddress).pushToField(table, key, fieldIndex, dataToPush, valueSchema);
     }
   }
 
-  function popFromField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
+  function popFromField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    uint256 byteLengthToPop,
+    Schema valueSchema
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop);
+      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop, valueSchema);
     } else {
-      IStore(_storeAddress).popFromField(table, key, fieldIndex, byteLengthToPop);
+      IStore(_storeAddress).popFromField(table, key, fieldIndex, byteLengthToPop, valueSchema);
     }
   }
 
@@ -130,34 +148,36 @@ library StoreSwitch {
     bytes32[] memory key,
     uint8 fieldIndex,
     uint256 startByteIndex,
-    bytes memory dataToSet
+    bytes memory dataToSet,
+    Schema valueSchema
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueSchema);
     } else {
-      IStore(_storeAddress).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+      IStore(_storeAddress).updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueSchema);
     }
   }
 
-  function deleteRecord(bytes32 table, bytes32[] memory key) internal {
+  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.deleteRecord(table, key);
+      StoreCore.deleteRecord(table, key, valueSchema);
     } else {
-      IStore(_storeAddress).deleteRecord(table, key);
+      IStore(_storeAddress).deleteRecord(table, key, valueSchema);
     }
   }
 
-  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
+  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(table, key, data);
+      StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(table, key, data);
+      IStore(_storeAddress).emitEphemeralRecord(table, key, data, valueSchema);
     }
   }
 
+  // TODO: remove? why is this the only method that doesn't require a schema?
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
@@ -167,21 +187,26 @@ library StoreSwitch {
     }
   }
 
-  function getRecord(bytes32 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
+  function getRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getRecord(table, key, schema);
+      return StoreCore.getRecord(table, key, valueSchema);
     } else {
-      return IStore(_storeAddress).getRecord(table, key, schema);
+      return IStore(_storeAddress).getRecord(table, key, valueSchema);
     }
   }
 
-  function getField(bytes32 table, bytes32[] memory key, uint8 fieldIndex) internal view returns (bytes memory) {
+  function getField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema valueSchema
+  ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getField(table, key, fieldIndex);
+      return StoreCore.getField(table, key, fieldIndex, valueSchema);
     } else {
-      return IStore(_storeAddress).getField(table, key, fieldIndex);
+      return IStore(_storeAddress).getField(table, key, fieldIndex, valueSchema);
     }
   }
 

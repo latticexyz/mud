@@ -28,9 +28,10 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
     bytes32 table,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 byteLengthToPop
+    uint256 byteLengthToPop,
+    Schema valueSchema
   ) public override {
-    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop);
+    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, valueSchema);
   }
 
   function setUp() public {

@@ -242,6 +242,11 @@
         "internalType": "bytes32[]",
         "name": "",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "deleteRecord",
@@ -265,6 +270,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "emitEphemeralRecord",
@@ -288,6 +298,11 @@
         "internalType": "uint8",
         "name": "schemaIndex",
         "type": "uint8"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "getField",
@@ -412,7 +427,7 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "valueSchema",
         "type": "bytes32"
       }
     ],
@@ -491,6 +506,11 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "popFromField",
@@ -519,6 +539,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "pushToField",
@@ -588,6 +613,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "setField",
@@ -634,6 +664,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "setRecord",
@@ -667,6 +702,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "updateInField",
