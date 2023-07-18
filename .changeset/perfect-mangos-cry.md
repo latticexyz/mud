@@ -1,5 +1,6 @@
 ---
 "@latticexyz/cli": patch
+"@latticexyz/create-mud": patch
 "@latticexyz/gas-report": patch
 "@latticexyz/noise": patch
 "@latticexyz/schema-type": patch
