@@ -66,8 +66,8 @@
     "@types/openurl": "^1.0.0",
     "@types/throttle-debounce": "^5.0.0",
     "@types/yargs": "^17.0.10",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
+    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.31.4"
