@@ -20,7 +20,6 @@
     "@latticexyz/cli": "link:../../../packages/cli",
     "@latticexyz/config": "link:../../../packages/config",
     "@latticexyz/schema-type": "link:../../../packages/schema-type",
-    "@latticexyz/std-contracts": "link:../../../packages/std-contracts",
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/world": "link:../../../packages/world",
     "@typechain/ethers-v5": "^10.2.0",

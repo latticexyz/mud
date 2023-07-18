@@ -22,7 +22,6 @@
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/cli": "link:../../../../packages/cli",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/std-contracts": "link:../../../../packages/std-contracts",
     "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/world": "link:../../../../packages/world",
     "ethers": "^5.7.2"

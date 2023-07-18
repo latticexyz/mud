@@ -35,7 +35,7 @@
   },
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
-    "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
+    "build:abi": "forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",

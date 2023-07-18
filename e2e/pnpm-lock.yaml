@@ -108,9 +108,6 @@ importers:
       '@latticexyz/schema-type':
         specifier: link:../../../packages/schema-type
         version: link:../../../packages/schema-type
-      '@latticexyz/std-contracts':
-        specifier: link:../../../packages/std-contracts
-        version: link:../../../packages/std-contracts
       '@latticexyz/store':
         specifier: link:../../../packages/store
         version: link:../../../packages/store
