@@ -72,7 +72,7 @@ library Ephemeral {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
@@ -82,7 +82,7 @@ library Ephemeral {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Tightly pack full data using this table's schema */

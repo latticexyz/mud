@@ -443,30 +443,6 @@
         "internalType": "bytes32",
         "name": "table",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "getRecord",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "table",
-        "type": "bytes32"
       }
     ],
     "name": "getSchema",

@@ -344,6 +344,11 @@
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "deleteRecord",
@@ -367,6 +372,11 @@
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "deleteRecord",
@@ -390,6 +400,11 @@
         "internalType": "uint8",
         "name": "schemaIndex",
         "type": "uint8"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "getField",
@@ -514,32 +529,8 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "valueSchema",
         "type": "bytes32"
-      }
-    ],
-    "name": "getRecord",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "table",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
       }
     ],
     "name": "getRecord",
@@ -593,6 +584,39 @@
   {
     "inputs": [
       {
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "byteLengthToPop",
+        "type": "uint256"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
+      }
+    ],
+    "name": "popFromField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes16",
         "name": "namespace",
         "type": "bytes16"
@@ -616,34 +640,11 @@
         "internalType": "uint256",
         "name": "byteLengthToPop",
         "type": "uint256"
-      }
-    ],
-    "name": "popFromField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "bytes32",
-        "name": "tableId",
+        "internalType": "Schema",
+        "name": "valueSchema",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint256",
-        "name": "byteLengthToPop",
-        "type": "uint256"
       }
     ],
     "name": "popFromField",
@@ -672,6 +673,11 @@
         "internalType": "bytes",
         "name": "dataToPush",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "pushToField",
@@ -705,9 +711,52 @@
         "internalType": "bytes",
         "name": "dataToPush",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "pushToField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setField",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -733,6 +782,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setField",
@@ -743,47 +797,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "uint8",
-        "name": "schemaIndex",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "name": "setField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes32[]",
@@ -794,6 +810,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setRecord",
@@ -804,9 +825,14 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
       },
       {
         "internalType": "bytes32[]",
@@ -817,6 +843,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setRecord",
@@ -850,6 +881,11 @@
         "internalType": "bytes",
         "name": "dataToSet",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "updateInField",
@@ -888,6 +924,11 @@
         "internalType": "bytes",
         "name": "dataToSet",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "updateInField",
