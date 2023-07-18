@@ -13,7 +13,7 @@ import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
  * For usage outside of a World, use the overload that takes an explicit store argument.
  */
 function getUniqueEntity() returns (bytes32 uniqueEntity) {
-  address world = StoreSwitch.inferStoreAddress();
+  address world = StoreSwitch.getStoreAddress();
   return IUniqueEntitySystem(world).uniqueEntity_system_getUniqueEntity();
 }
 
