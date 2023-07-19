@@ -2,7 +2,7 @@ import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
 import { Table, TableRecord } from "@latticexyz/store-sync";
 import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
-import { eq } from "drizzle-orm";
+import { eq, getTableName } from "drizzle-orm";
 
 export type TableWithRecords = Table & { records: TableRecord[] };
 
@@ -20,7 +20,7 @@ export const appRouter = router({
 
       const tables = getTables(database).filter((table) => table.address === address);
 
-      const tablesWithRows = tables.map((table) => {
+      const tablesWithRecords = tables.map((table) => {
         const sqliteTable = createSqliteTable(table);
         const records = database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).all();
         return {
@@ -37,7 +37,7 @@ export const appRouter = router({
 
       const result = {
         blockNumber: lastUpdatedBlockNumber ?? null,
-        tables: tablesWithRows,
+        tables: tablesWithRecords,
       };
 
       // console.log("findAll:", opts, result);

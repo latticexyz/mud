@@ -10,7 +10,7 @@ import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { appRouter } from "../src";
 import { chainState } from "@latticexyz/store-sync/sqlite";
-import { eq } from "drizzle-orm";
+import { DefaultLogger, eq } from "drizzle-orm";
 import { indexerVersion } from "@latticexyz/store-sync/sqlite";
 import fs from "node:fs";
 

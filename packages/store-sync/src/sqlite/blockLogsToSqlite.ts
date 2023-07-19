@@ -1,4 +1,4 @@
-import { Chain, Hex, PublicClient, Transport, encodePacked } from "viem";
+import { Chain, Hex, PublicClient, Transport, encodePacked, getAddress } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -71,7 +71,11 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
         Array.from(
           new Set(
             operations.map((operation) =>
-              JSON.stringify({ address: operation.log.address, namespace: operation.namespace, name: operation.name })
+              JSON.stringify({
+                address: getAddress(operation.log.address),
+                namespace: operation.namespace,
+                name: operation.name,
+              })
             )
           )
         ).map((json) => JSON.parse(json))
@@ -94,7 +98,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
         for (const operation of operations) {
           const table = tables.find(
             (table) =>
-              table.address === operation.log.address &&
+              table.address === getAddress(operation.log.address) &&
               table.namespace === operation.namespace &&
               table.name === operation.name
           );
@@ -160,21 +164,21 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
               .run();
           }
         }
-      });
 
-      db.insert(chainState)
-        .values({
-          indexerVersion,
-          chainId: publicClient.chain.id,
-          lastUpdatedBlockNumber: blockNumber,
-        })
-        .onConflictDoUpdate({
-          target: [chainState.indexerVersion, chainState.chainId],
-          set: {
+        tx.insert(chainState)
+          .values({
+            indexerVersion,
+            chainId: publicClient.chain.id,
             lastUpdatedBlockNumber: blockNumber,
-          },
-        })
-        .run();
+          })
+          .onConflictDoUpdate({
+            target: [chainState.indexerVersion, chainState.chainId],
+            set: {
+              lastUpdatedBlockNumber: blockNumber,
+            },
+          })
+          .run();
+      });
     },
   });
 }

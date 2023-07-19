@@ -1,5 +1,3 @@
-import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
-import { Address } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { inArray } from "drizzle-orm";
 import { Table } from "../common";
@@ -24,12 +22,12 @@ export function getTables(
     const tableId = new TableId(table.namespace, table.name).toHex();
     return {
       id: getTableName(table.address, table.namespace, table.name),
-      address: table.address as Address,
+      address: table.address,
       tableId,
       namespace: table.namespace,
       name: table.name,
-      keySchema: table.keySchema as Record<string, StaticAbiType>,
-      valueSchema: table.valueSchema as Record<string, StaticAbiType | DynamicAbiType>,
+      keySchema: table.keySchema,
+      valueSchema: table.valueSchema,
       lastUpdatedBlockNumber: table.lastUpdatedBlockNumber,
     };
   });

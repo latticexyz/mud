@@ -9,7 +9,7 @@ import {
 import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
-import { Address, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Address, Hex, decodeAbiParameters, getAddress, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 // TODO: move these type helpers into store?
 import { Key, Value } from "@latticexyz/store-cache";
@@ -127,9 +127,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       const tableId = TableId.fromHex(tableForSchema);
       const schema = hexToTableSchema(log.args.data);
 
-      const key: TableKey = `${log.address}:${tableId.namespace}:${tableId.name}`;
+      const key: TableKey = `${getAddress(log.address)}:${tableId.namespace}:${tableId.name}`;
       if (!visitedSchemas.has(key)) {
-        visitedSchemas.set(key, { address: log.address, tableId, schema });
+        visitedSchemas.set(key, { address: getAddress(log.address), tableId, schema });
         newTableKeys.add(key);
       }
     });
@@ -154,9 +154,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
       // TODO: add key names to table registration when we refactor it
 
-      const key: TableKey = `${log.address}:${tableId.namespace}:${tableName}`;
+      const key: TableKey = `${getAddress(log.address)}:${tableId.namespace}:${tableName}`;
       if (!visitedMetadata.has(key)) {
-        visitedMetadata.set(key, { address: log.address, tableId, keyNames: [], valueNames });
+        visitedMetadata.set(key, { address: getAddress(log.address), tableId, keyNames: [], valueNames });
         newTableKeys.add(key);
       }
     });
@@ -209,7 +209,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       new Set(
         block.logs.map((log) =>
           JSON.stringify({
-            address: log.address,
+            address: getAddress(log.address),
             ...TableId.fromHex(log.args.table),
           })
         )
@@ -228,7 +228,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
     const operations = block.logs
       .map((log): StorageOperation<TConfig> | undefined => {
         const tableId = TableId.fromHex(log.args.table);
-        const table = tables[`${log.address}:${log.args.table}`];
+        const table = tables[`${getAddress(log.address)}:${log.args.table}`];
         if (!table) {
           debug("no table found for event, skipping", tableId.toString(), log);
           return;
