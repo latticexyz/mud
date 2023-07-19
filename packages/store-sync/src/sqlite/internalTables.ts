@@ -1,5 +1,5 @@
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { json } from "./columnTypes";
+import { address, json } from "./columnTypes";
 
 export const chainState = sqliteTable("__chainState", {
   chainId: integer("chainId").notNull().primaryKey(),
@@ -10,7 +10,7 @@ export const chainState = sqliteTable("__chainState", {
 
 export const mudStoreTables = sqliteTable("__mudStoreTables", {
   id: text("id").notNull().primaryKey(),
-  address: text("address").notNull(),
+  address: address("address").notNull(),
   tableId: text("table_id").notNull(),
   namespace: text("namespace").notNull(),
   name: text("name").notNull(),
