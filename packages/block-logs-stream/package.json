@@ -26,10 +26,10 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "0.8.7",
+    "abitype": "0.9.3",
     "debug": "^4.3.4",
     "rxjs": "7.5.5",
-    "viem": "1.1.7"
+    "viem": "1.3.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
