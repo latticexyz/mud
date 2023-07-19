@@ -691,12 +691,6 @@
   },
   {
     "file": "test/tightcoder/EncodeArray.t.sol",
-    "test": "testEncodeBytesArray",
-    "name": "encode packed bytes[]",
-    "gasUsed": 1357
-  },
-  {
-    "file": "test/tightcoder/EncodeArray.t.sol",
     "test": "testEncodeUint16Array",
     "name": "encode packed uint16[]",
     "gasUsed": 1143
@@ -717,13 +711,13 @@
     "file": "test/tightcoder/TightCoder.t.sol",
     "test": "testFromAndToUint32Array",
     "name": "decode packed uint32[]",
-    "gasUsed": 788
+    "gasUsed": 785
   },
   {
     "file": "test/tightcoder/TightCoder.t.sol",
     "test": "testToAndFromBytes24Array",
     "name": "encode packed bytes24[]",
-    "gasUsed": 886
+    "gasUsed": 880
   },
   {
     "file": "test/tightcoder/TightCoder.t.sol",
