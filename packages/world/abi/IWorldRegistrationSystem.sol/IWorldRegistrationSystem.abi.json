@@ -174,13 +174,23 @@
       },
       {
         "internalType": "Schema",
-        "name": "valueSchema",
+        "name": "keySchema",
         "type": "bytes32"
       },
       {
         "internalType": "Schema",
-        "name": "keySchema",
+        "name": "valueSchema",
         "type": "bytes32"
+      },
+      {
+        "internalType": "string[]",
+        "name": "keyNames",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "fieldNames",
+        "type": "string[]"
       }
     ],
     "name": "registerTable",
@@ -213,34 +223,6 @@
       }
     ],
     "name": "registerTableHook",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "string",
-        "name": "tableName",
-        "type": "string"
-      },
-      {
-        "internalType": "string[]",
-        "name": "fieldNames",
-        "type": "string[]"
-      }
-    ],
-    "name": "setMetadata",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

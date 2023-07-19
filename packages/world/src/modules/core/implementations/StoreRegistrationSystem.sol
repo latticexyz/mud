@@ -23,11 +23,17 @@ contract StoreRegistrationSystem is IStoreRegistration, System {
   using ResourceSelector for bytes32;
 
   /**
-   * Register the given schema for the given table id.
+   * Register the given key schema, value schema, key names and value names for the given table id.
    * This overload exists to conform with the IStore interface.
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function registerSchema(bytes32 tableId, Schema valueSchema, Schema keySchema) public virtual {
+  function registerTable(
+    bytes32 tableId,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
+  ) public virtual {
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
@@ -39,32 +45,9 @@ contract StoreRegistrationSystem is IStoreRegistration, System {
         WorldRegistrationSystem.registerTable.selector,
         tableId.getNamespace(),
         tableId.getName(),
+        keySchema,
         valueSchema,
-        keySchema
-      ),
-      delegate: true,
-      value: 0
-    });
-  }
-
-  /**
-   * Register metadata (tableName, fieldNames) for the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * Access is checked based on the namespace or name (encoded in the tableId).
-   */
-  function setMetadata(bytes32 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
-
-    // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
-    // an external call, so msg.sender would be the address of the World contract
-    Call.withSender({
-      msgSender: _msgSender(),
-      target: systemAddress,
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.setMetadata.selector,
-        tableId.getNamespace(),
-        tableId.getName(),
-        tableName,
+        keyNames,
         fieldNames
       ),
       delegate: true,

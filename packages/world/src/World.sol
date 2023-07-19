@@ -31,7 +31,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // Register internal NamespaceOwner table and give ownership of the root
     // namespace to msg.sender. This is done in the constructor instead of a
     // module, so that we can use it for access control checks in `installRootModule`.
-    NamespaceOwner.registerSchema();
+    NamespaceOwner.register();
     NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
 
     // Other internal tables are registered by the CoreModule to reduce World's bytecode size.

@@ -42,21 +42,7 @@ contract KeysWithValueModule is IModule, WorldContext {
     bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Register the target table
-    IBaseWorld(_world()).registerTable(
-      targetTableSelector.getNamespace(),
-      targetTableSelector.getName(),
-      KeysWithValue.getSchema(),
-      KeysWithValue.getKeySchema()
-    );
-
-    // Register metadata for the target table
-    (string memory tableName, string[] memory fieldNames) = KeysWithValue.getMetadata();
-    IBaseWorld(_world()).setMetadata(
-      targetTableSelector.getNamespace(),
-      targetTableSelector.getName(),
-      tableName,
-      fieldNames
-    );
+    KeysWithValue.register(IBaseWorld(_world()), targetTableSelector);
 
     // Grant the hook access to the target table
     IBaseWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getName(), address(hook));

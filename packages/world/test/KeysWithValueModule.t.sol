@@ -52,7 +52,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
   function _installKeysWithValueModule() internal {
     // Register source table
-    sourceTableId = world.registerTable(namespace, sourceName, sourceTableSchema, sourceTableKeySchema);
+    sourceTableId = world.registerTable(
+      namespace,
+      sourceName,
+      sourceTableSchema,
+      sourceTableKeySchema,
+      new string[](1),
+      new string[](1)
+    );
 
     // Install the index module
     // TODO: add support for installing this via installModule
