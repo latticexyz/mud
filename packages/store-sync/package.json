@@ -31,7 +31,7 @@
     "@latticexyz/store-cache": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "debug": "^4.3.4",
-    "viem": "1.1.7"
+    "viem": "1.3.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",

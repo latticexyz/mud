@@ -20,7 +20,6 @@
     "@latticexyz/std-client": "link:../../../../packages/std-client",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
-    "@wagmi/chains": "^0.2.22",
     "contracts": "workspace:*",
     "ethers": "^5.7.2"
   },
