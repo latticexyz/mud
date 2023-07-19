@@ -512,8 +512,15 @@ export async function deploy(
     try {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
+      const _baseTxConfig = { gasLimit, nonce: nonce++ };
+      const txConfig = Object.assign(
+        _baseTxConfig,
+        maxPriorityFeePerGas !== undefined && maxFeePerGas !== undefined
+          ? { maxPriorityFeePerGas, maxFeePerGas }
+          : { gasPrice }
+      );
       const txPromise = contract[func]
-        .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas }])
+        .apply(null, [...args, txConfig])
         .then((tx: any) => (confirmations === 0 ? tx : tx.wait(confirmations)));
       promises.push(txPromise);
       return txPromise;
