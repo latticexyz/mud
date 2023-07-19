@@ -21,9 +21,9 @@
     "dev": "tsup --watch",
     "lint": "eslint .",
     "start": "tsx bin/sqlite-indexer",
-    "start:local": "SQLITE_FILENAME=anvil.db CHAIN_ID=31337 pnpm start",
-    "start:testnet": "SQLITE_FILENAME=testnet.db CHAIN_ID=4242 START_BLOCK=19037160 pnpm start",
-    "start:testnet2": "SQLITE_FILENAME=testnet2.db CHAIN_ID=4243 pnpm start",
+    "start:local": "rimraf anvil.db && SQLITE_FILENAME=anvil.db CHAIN_ID=31337 pnpm start",
+    "start:testnet": "rimraf testnet.db && SQLITE_FILENAME=testnet.db CHAIN_ID=4242 START_BLOCK=19037160 pnpm start",
+    "start:testnet2": "rimraf testnet2.db && SQLITE_FILENAME=testnet2.db CHAIN_ID=4243 pnpm start",
     "test": "vitest --run"
   },
   "dependencies": {
