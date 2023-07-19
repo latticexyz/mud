@@ -2,13 +2,15 @@ import { z } from "zod";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { latticeTestnet } from "@latticexyz/common/chains";
+import { latticeTestnet, latticeTestnet2 } from "@latticexyz/common/chains";
 import { Chain, foundry } from "viem/chains";
 import { createPublicClient, fallback, webSocket, http } from "viem";
 import { createIndexer } from "../src/sqlite/createIndexer";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { appRouter } from "../src";
+
+const supportedChains: Chain[] = [foundry, latticeTestnet, latticeTestnet2];
 
 const env = z
   .object({
@@ -29,7 +31,6 @@ const database = drizzle(new Database("indexer.db"), {
   // logger: new DefaultLogger(),
 }) as any as BaseSQLiteDatabase<"sync", void>;
 
-const supportedChains: Chain[] = [foundry, latticeTestnet];
 const chain = supportedChains.find((c) => c.id === env.CHAIN_ID);
 if (!chain) {
   throw new Error(`Chain ${env.CHAIN_ID} not found`);

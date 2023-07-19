@@ -21,8 +21,9 @@
     "dev": "tsup --watch",
     "lint": "eslint .",
     "start": "tsx bin/sqlite-indexer",
-    "start:local": "CHAIN_ID=31337 START_BLOCK=0 pnpm start",
+    "start:local": "CHAIN_ID=31337 pnpm start",
     "start:testnet": "CHAIN_ID=4242 START_BLOCK=19037160 pnpm start",
+    "start:testnet2": "CHAIN_ID=4243 pnpm start",
     "test": "vitest --run"
   },
   "dependencies": {
