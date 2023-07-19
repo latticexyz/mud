@@ -22,7 +22,7 @@ export const appRouter = router({
 
       const tablesWithRows = tables.map((table) => {
         const { tableName, table: sqliteTable } = createSqliteTable(table);
-        const records = database.select().from(sqliteTable).all();
+        const records = database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).all();
         return {
           ...table,
           records: records.map((record) => ({
