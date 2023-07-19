@@ -10,4 +10,4 @@ Also adds a few utils we'll need in the indexer:
 - `bigIntMax` is similar to `Math.max` but for `bigint`s
 - `bigIntSort` for sorting an array of `bigint`s
 - `chunk` to split an array into chunks
-- `wait` returns a `Promise` after specified number of milliseconds
+- `wait` returns a `Promise` that resolves after specified number of milliseconds
