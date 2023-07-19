@@ -18,6 +18,7 @@ const env = z
     START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     PORT: z.coerce.number().positive().default(3001),
+    SQLITE_FILENAME: z.string().default("indexer.db"),
   })
   .parse(process.env, {
     errorMap: (issue) => ({
@@ -27,7 +28,7 @@ const env = z
 
 // TODO: find a better intersection type between sql.js and better-sqlite3 instead of casting here
 // TODO: make DB filename configurable?
-const database = drizzle(new Database("indexer.db"), {
+const database = drizzle(new Database(env.SQLITE_FILENAME), {
   // logger: new DefaultLogger(),
 }) as any as BaseSQLiteDatabase<"sync", void>;
 
