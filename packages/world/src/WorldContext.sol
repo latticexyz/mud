@@ -16,6 +16,6 @@ abstract contract WorldContext {
   }
 
   function _world() internal view returns (address) {
-    return StoreSwitch.inferStoreAddress();
+    return StoreSwitch.getStoreAddress();
   }
 }

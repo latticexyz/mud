@@ -1,6 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "./tasks/compile";
-import "solidity-docgen";
 
 const config: HardhatUserConfig = {
   paths: {
@@ -14,9 +13,6 @@ const config: HardhatUserConfig = {
         runs: 200,
       },
     },
-  },
-  docgen: {
-    outputDir: "API",
   },
 };
 
