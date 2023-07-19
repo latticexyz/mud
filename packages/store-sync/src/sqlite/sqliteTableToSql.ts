@@ -7,7 +7,6 @@ const db = new Kysely<any>({
   dialect: new SqliteDialect({ database: new SqliteDatabase(":memory:") }),
 });
 
-// TODO: figure out how to extract table name from SQLiteTableWithColumns (it's in there just not exposed)
 export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {
   const tableName = getTableName(table);
 

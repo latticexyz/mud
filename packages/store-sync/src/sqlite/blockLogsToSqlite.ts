@@ -38,7 +38,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
             valueSchema: table.valueSchema,
           });
 
-          tx.run(sql.raw(sqliteTableToSql(sqliteTable.table)));
+          tx.run(sql.raw(sqliteTableToSql(sqliteTable)));
 
           tx.insert(mudStoreTables)
             .values({
@@ -101,7 +101,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
             continue;
           }
 
-          const { table: sqliteTable } = createSqliteTable(table);
+          const sqliteTable = createSqliteTable(table);
           const key = encodePacked(
             operation.log.args.key.map(() => "bytes32"),
             operation.log.args.key as Hex[]

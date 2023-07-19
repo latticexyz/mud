@@ -4,28 +4,57 @@ import { buildSqliteColumn } from "./buildSqliteColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
 
-type CreateSqliteTableOptions = {
+export const metaColumns = {
+  __key: buildSqliteColumn("__key", "bytes").notNull().primaryKey(),
+  __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
+  // TODO: last updated block hash?
+  __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
+} as const satisfies Record<string, AnySQLiteColumnBuilder>;
+
+type SQLiteTableFromSchema<
+  TKeySchema extends Record<string, StaticAbiType>,
+  TValueSchema extends Record<string, SchemaAbiType>
+> = SQLiteTableWithColumns<{
+  name: string;
+  schema: string | undefined;
+  columns: {
+    // TODO: figure out column types
+    [metaColumn in keyof typeof metaColumns]: any;
+  } & {
+    // TODO: figure out column types
+    [keyColumn in keyof TKeySchema]: any;
+  } & {
+    // TODO: figure out column types
+    [valueColumn in keyof TValueSchema]: any;
+  };
+}>;
+
+type CreateSqliteTableOptions<
+  TKeySchema extends Record<string, StaticAbiType>,
+  TValueSchema extends Record<string, SchemaAbiType>
+> = {
   address: Address;
   namespace: string;
   name: string;
-  keySchema: Record<string, StaticAbiType>;
-  valueSchema: Record<string, SchemaAbiType>;
+  keySchema: TKeySchema;
+  valueSchema: TValueSchema;
 };
 
-// TODO: refine type
-type CreateSqliteTableResult = {
-  tableName: string;
-  table: SQLiteTableWithColumns<any>;
-  metaColumnNames: string[];
-};
+type CreateSqliteTableResult<
+  TKeySchema extends Record<string, StaticAbiType>,
+  TValueSchema extends Record<string, SchemaAbiType>
+> = SQLiteTableFromSchema<TKeySchema, TValueSchema>;
 
-export function createSqliteTable({
+export function createSqliteTable<
+  TKeySchema extends Record<string, StaticAbiType>,
+  TValueSchema extends Record<string, SchemaAbiType>
+>({
   address,
   namespace,
   name,
   keySchema,
   valueSchema,
-}: CreateSqliteTableOptions): CreateSqliteTableResult {
+}: CreateSqliteTableOptions<TKeySchema, TValueSchema>): CreateSqliteTableResult<TKeySchema, TValueSchema> {
   const tableName = getTableName(address, namespace, name);
 
   const keyColumns = Object.fromEntries(
@@ -36,14 +65,7 @@ export function createSqliteTable({
     Object.entries(valueSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull()])
   );
 
-  const metaColumns: Record<string, AnySQLiteColumnBuilder> = {
-    __key: buildSqliteColumn("__key", "bytes").notNull().primaryKey(),
-    __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
-    // TODO: last updated block hash?
-    __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
-  };
-
-  // TODO: unqiue constraint on key columns?
+  // TODO: unique constraint on key columns?
 
   // TODO: make sure there are no meta columns that overlap with key/value columns
   // TODO: index meta columns?
@@ -56,6 +78,5 @@ export function createSqliteTable({
 
   const table = sqliteTable(tableName, columns);
 
-  // We have to return a table name because SQLiteTableWithColumns has no way to get it, even though its part of the contructor
-  return { tableName, table, metaColumnNames: Object.keys(metaColumns) };
+  return table as SQLiteTableFromSchema<TKeySchema, TValueSchema>;
 }

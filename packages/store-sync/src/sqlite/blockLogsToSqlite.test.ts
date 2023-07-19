@@ -145,7 +145,7 @@ describe("blockLogsToSqlite", async () => {
       ]
     `);
 
-    const { table: sqliteTable } = createSqliteTable(tables[0]);
+    const sqliteTable = createSqliteTable(tables[0]);
     expect(db.select().from(sqliteTable).all()).toMatchInlineSnapshot(`
       [
         {
