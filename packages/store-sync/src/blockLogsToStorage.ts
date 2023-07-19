@@ -16,13 +16,12 @@ import { Key, Value } from "@latticexyz/store-cache";
 import { isDefined } from "@latticexyz/common/utils";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 
-// TODO: change table schema/metadata APIs once we get both schema and field names in the same event
+// TODO: change table schema/metadata APIs once we get both schema and field names in the same event (https://github.com/latticexyz/mud/pull/1182)
 
 // TODO: export these from store or world
 export const schemaTableId = new TableId("mudstore", "schema");
 export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
-// I don't love carrying all these types through. Ideally this should be the shape of the thing we want, rather than the specific return type from a function.
 export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
@@ -45,7 +44,7 @@ export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperati
     [TTable in keyof TConfig["tables"]]: {
       name: TTable;
       key: Key<TConfig, TTable>;
-      record: Value<TConfig, TTable>;
+      value: Value<TConfig, TTable>;
     };
   }[keyof TConfig["tables"]];
 
@@ -57,9 +56,8 @@ export type SetFieldOperation<TConfig extends StoreConfig> = BaseStorageOperatio
       key: Key<TConfig, TTable>;
     } & {
       [TValue in keyof Value<TConfig, TTable>]: {
-        // TODO: standardize on calling these "fields" or "values" or maybe "columns"
-        valueName: TValue;
-        value: Value<TConfig, TTable>[TValue];
+        fieldName: TValue;
+        fieldValue: Value<TConfig, TTable>[TValue];
       };
     }[keyof Value<TConfig, TTable>];
   }[keyof TConfig["tables"]];
@@ -100,7 +98,7 @@ type TableName = string;
 type TableKey = `${Address}:${TableNamespace}:${TableName}`;
 
 // hacky fix for schema registration + metadata events spanning multiple blocks
-// TODO: remove this once schema registration+metadata is one event or tx
+// TODO: remove this once schema registration+metadata is one event or tx (https://github.com/latticexyz/mud/pull/1182)
 const visitedSchemas = new Map<TableKey, { address: Address; tableId: TableId; schema: TableSchema }>();
 const visitedMetadata = new Map<
   TableKey,
@@ -135,7 +133,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
     });
 
     // Then find all metadata events. These should follow schema registration events and be in the same block (since they're in the same tx).
-    // TODO: rework contracts so schemas+tables are combined and immutable
+    // TODO: rework contracts so schemas+tables are combined and immutable (https://github.com/latticexyz/mud/pull/1182)
     block.logs.forEach((log) => {
       if (log.eventName !== "StoreSetRecord") return;
       if (log.args.table !== metadataTableId.toHex()) return;
@@ -147,12 +145,12 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
 
       const tableId = TableId.fromHex(tableForSchema);
       const [tableName, abiEncodedFieldNames] = decodeRecord(
-        // TODO: this is hardcoded for now while metadata is separate from table registration
+        // TODO: this is hardcoded for now while metadata is separate from table registration (https://github.com/latticexyz/mud/pull/1182)
         { staticFields: [], dynamicFields: ["string", "bytes"] },
         log.args.data
       );
       const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
-      // TODO: add key names to table registration when we refactor it
+      // TODO: add key names to table registration when we refactor it (https://github.com/latticexyz/mud/pull/1182)
 
       const key: TableKey = `${log.address}:${tableId.namespace}:${tableName}`;
       if (!visitedMetadata.has(key)) {
@@ -197,7 +195,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             address,
             namespace: schema.tableId.namespace,
             name: schema.tableId.name,
-            // TODO: replace with proper named key tuple
+            // TODO: replace with proper named key tuple (https://github.com/latticexyz/mud/pull/1182)
             keySchema: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
             valueSchema: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
           };
@@ -215,7 +213,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
         )
       )
     );
-    // TODO: combine these once we refactor table registration
+    // TODO: combine these once we refactor table registration (https://github.com/latticexyz/mud/pull/1182)
     const tables = Object.fromEntries(
       (
         await getTables({
@@ -246,11 +244,11 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
 
         const valueAbiTypes = Object.values(table.valueSchema);
         const valueSchema = abiTypesToSchema(valueAbiTypes);
-        const valueNames = Object.keys(table.valueSchema);
+        const fieldNames = Object.keys(table.valueSchema);
 
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
-          const values = decodeRecord(valueSchema, log.args.data);
-          const record = Object.fromEntries(valueNames.map((name, i) => [name, values[i]])) as Value<
+          const valueTuple = decodeRecord(valueSchema, log.args.data);
+          const value = Object.fromEntries(fieldNames.map((name, i) => [name, valueTuple[i]])) as Value<
             TConfig,
             keyof TConfig["tables"]
           >;
@@ -261,23 +259,23 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             type: "SetRecord",
             ...tableId,
             key,
-            record,
+            value,
           };
         }
 
         if (log.eventName === "StoreSetField") {
-          const valueName = valueNames[log.args.schemaIndex] as string & keyof Value<TConfig, keyof TConfig["tables"]>;
-          const value = decodeField(valueAbiTypes[log.args.schemaIndex], log.args.data) as Value<
+          const fieldName = fieldNames[log.args.schemaIndex] as string & keyof Value<TConfig, keyof TConfig["tables"]>;
+          const fieldValue = decodeField(valueAbiTypes[log.args.schemaIndex], log.args.data) as Value<
             TConfig,
             keyof TConfig["tables"]
-          >[typeof valueName];
+          >[typeof fieldName];
           return {
             log,
             type: "SetField",
             ...tableId,
             key,
-            valueName,
-            value,
+            fieldName,
+            fieldValue,
           };
         }
 
