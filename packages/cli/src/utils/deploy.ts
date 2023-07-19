@@ -414,6 +414,7 @@ export async function deploy(
         deployPromise = factory
           .deploy({
             nonce: nonce++,
+            gasPrice,
           })
           .then((c) => (disableTxWait ? c : c.deployed()));
       } else {
