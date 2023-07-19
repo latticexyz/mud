@@ -1,9 +1,8 @@
-import { publicProcedure, router } from "../trpc";
+import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
 import { Table, TableRecord } from "@latticexyz/store-sync";
 import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { eq } from "drizzle-orm";
-import { getDatabase } from "./getDatabase";
 
 export type TableWithRecords = Table & { records: TableRecord[] };
 
@@ -16,14 +15,14 @@ export const appRouter = router({
       })
     )
     .query(async (opts): Promise<{ blockNumber: bigint | null; tables: TableWithRecords[] }> => {
+      const { database } = opts.ctx;
       const { chainId, address } = opts.input;
 
-      const db = await getDatabase();
-      const tables = getTables(db).filter((table) => table.address === address);
+      const tables = getTables(database).filter((table) => table.address === address);
 
       const tablesWithRows = tables.map((table) => {
         const { tableName, table: sqliteTable } = createSqliteTable(table);
-        const records = db.select().from(sqliteTable).all();
+        const records = database.select().from(sqliteTable).all();
         return {
           ...table,
           records: records.map((record) => ({
@@ -33,7 +32,7 @@ export const appRouter = router({
         };
       });
 
-      const metadata = db.select().from(chainState).where(eq(chainState.chainId, chainId)).all();
+      const metadata = database.select().from(chainState).where(eq(chainState.chainId, chainId)).all();
       const { lastUpdatedBlockNumber } = metadata[0] ?? {};
 
       const result = {

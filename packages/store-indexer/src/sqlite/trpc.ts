@@ -1,7 +1,8 @@
 import { initTRPC } from "@trpc/server";
+import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import superjson from "superjson";
 
-const t = initTRPC.create({
+const t = initTRPC.context<{ database: BaseSQLiteDatabase<"sync", void> }>().create({
   transformer: superjson,
 });
 
