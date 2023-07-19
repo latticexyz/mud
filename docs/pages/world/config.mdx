@@ -68,6 +68,7 @@ All of these global configuration keys are optional.
 - **`systems`**: a dictionary of system definitions. The keys in the array are file names without the `.sol` extension. For example, if your system is named `SystemA.sol`, use `SystemA` as the.
 
   The value is a dictionary of system configuration properties:
+
   - `fileSelector` (optional): a `string`: the file selector for the system.
   - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed from the accessList.
 
@@ -88,4 +89,3 @@ All of these global configuration keys are optional.
     tables: {},
   });
   ```
-
