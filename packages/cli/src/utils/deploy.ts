@@ -401,7 +401,7 @@ export async function deploy(
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${nonce}`));
       let deployPromise;
 
-      if (maxFeePerGas && maxPriorityFeePerGas) {
+      if (maxFeePerGas !== undefined && maxPriorityFeePerGas !== undefined) {
         deployPromise = factory
           .deploy({
             nonce: nonce++,
@@ -410,7 +410,7 @@ export async function deploy(
           })
           .then((c) => (disableTxWait ? c : c.deployed()));
         /// Gas Price === Legacy
-      } else if (gasPrice) {
+      } else if (gasPrice !== null) {
         deployPromise = factory
           .deploy({
             nonce: nonce++,
