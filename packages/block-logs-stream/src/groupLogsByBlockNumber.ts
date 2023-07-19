@@ -17,11 +17,15 @@ export type GroupLogsByBlockNumberResult<TLog extends Log> = {
  * Pending logs are filtered out before processing, as they don't have block numbers.
  *
  * @param logs The logs to group by block number.
+ * @param toBlock If specified, always include this block number at the end, even if there are no logs.
  *
  * @returns An array of objects where each object represents a distinct block and includes the block number,
  * the block hash, and an array of logs for that block.
  */
-export function groupLogsByBlockNumber<TLog extends Log>(logs: readonly TLog[]): GroupLogsByBlockNumberResult<TLog> {
+export function groupLogsByBlockNumber<TLog extends Log>(
+  logs: readonly TLog[],
+  toBlock?: BlockNumber
+): GroupLogsByBlockNumberResult<TLog> {
   // Pending logs don't have block numbers, so filter them out.
   const nonPendingLogs = logs.filter(isNonPendingLog);
   if (logs.length !== nonPendingLogs.length) {
@@ -34,7 +38,7 @@ export function groupLogsByBlockNumber<TLog extends Log>(logs: readonly TLog[]):
   const blockNumbers = Array.from(new Set(nonPendingLogs.map((log) => log.blockNumber)));
   blockNumbers.sort(bigIntSort);
 
-  return blockNumbers
+  const groupedBlocks = blockNumbers
     .map((blockNumber) => {
       const blockLogs = nonPendingLogs.filter((log) => log.blockNumber === blockNumber);
       if (!blockLogs.length) return;
@@ -48,4 +52,15 @@ export function groupLogsByBlockNumber<TLog extends Log>(logs: readonly TLog[]):
       };
     })
     .filter(isDefined);
+
+  const lastBlockNumber = blockNumbers.length > 0 ? blockNumbers[blockNumbers.length - 1] : null;
+
+  if (toBlock != null && (lastBlockNumber == null || toBlock > lastBlockNumber)) {
+    groupedBlocks.push({
+      blockNumber: toBlock,
+      logs: [],
+    });
+  }
+
+  return groupedBlocks;
 }
