@@ -1049,24 +1049,12 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
-      '@latticexyz/protocol-parser':
-        specifier: workspace:*
-        version: link:../protocol-parser
-      '@latticexyz/schema-type':
-        specifier: workspace:*
-        version: link:../schema-type
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      '@latticexyz/store-cache':
-        specifier: workspace:*
-        version: link:../store-cache
       '@latticexyz/store-sync':
         specifier: workspace:*
         version: link:../store-sync
-      '@latticexyz/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@trpc/server':
         specifier: 10.34.0
         version: 10.34.0
@@ -1085,15 +1073,9 @@ importers:
       drizzle-orm:
         specifier: ^0.27.0
         version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
-      kysely:
-        specifier: ^0.26.1
-        version: 0.26.1
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
-      sql.js:
-        specifier: ^1.8.0
-        version: 1.8.0
       superjson:
         specifier: ^1.12.4
         version: 1.12.4
@@ -1113,9 +1095,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
-      '@types/sql.js':
-        specifier: ^1.4.4
-        version: 1.4.4
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
@@ -1146,19 +1125,37 @@ importers:
       '@latticexyz/store-cache':
         specifier: workspace:*
         version: link:../store-cache
-      '@latticexyz/utils':
-        specifier: workspace:*
-        version: link:../utils
+      better-sqlite3:
+        specifier: ^8.4.0
+        version: 8.4.0
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
+      drizzle-orm:
+        specifier: ^0.27.0
+        version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
+      kysely:
+        specifier: ^0.26.1
+        version: 0.26.1
+      sql.js:
+        specifier: ^1.8.0
+        version: 1.8.0
+      superjson:
+        specifier: ^1.12.4
+        version: 1.12.4
       viem:
         specifier: 1.1.7
         version: 1.1.7(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
+      '@types/better-sqlite3':
+        specifier: ^7.6.4
+        version: 7.6.4
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
+      '@types/sql.js':
+        specifier: ^1.4.4
+        version: 1.4.4
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)

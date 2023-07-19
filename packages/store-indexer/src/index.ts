@@ -1,2 +1,2 @@
 export * from "./sqlite/appRouter";
-export type { Table, TableWithRows } from "./common";
+export type { Table, TableRecord } from "@latticexyz/store-sync";

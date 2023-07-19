@@ -1,11 +1,11 @@
 import { publicProcedure, router } from "../trpc";
 import { z } from "zod";
-import { getTables } from "./getTables";
-import { chainState } from "./internalTables";
-import { TableWithRows } from "../common";
-import { createSqliteTable } from "./createSqliteTable";
+import { Table, TableRecord } from "@latticexyz/store-sync";
+import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { eq } from "drizzle-orm";
 import { getDatabase } from "./getDatabase";
+
+export type TableWithRecords = Table & { records: TableRecord[] };
 
 export const appRouter = router({
   findAll: publicProcedure
@@ -15,7 +15,7 @@ export const appRouter = router({
         address: z.string(), // TODO: refine to hex
       })
     )
-    .query(async (opts): Promise<{ blockNumber: bigint | null; tables: TableWithRows[] }> => {
+    .query(async (opts): Promise<{ blockNumber: bigint | null; tables: TableWithRecords[] }> => {
       const { chainId, address } = opts.input;
 
       const db = await getDatabase();
@@ -23,13 +23,12 @@ export const appRouter = router({
 
       const tablesWithRows = tables.map((table) => {
         const { tableName, table: sqliteTable } = createSqliteTable(table);
-        const rows = db.select().from(sqliteTable).all();
-        // console.log("got rows for table", tableName, rows);
+        const records = db.select().from(sqliteTable).all();
         return {
           ...table,
-          rows: rows.map((row) => ({
-            key: Object.fromEntries(Object.entries(table.keySchema).map(([name]) => [name, row[name]])),
-            value: Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, row[name]])),
+          records: records.map((record) => ({
+            key: Object.fromEntries(Object.entries(table.keySchema).map(([name]) => [name, record[name]])),
+            value: Object.fromEntries(Object.entries(table.valueSchema).map(([name]) => [name, record[name]])),
           })),
         };
       });

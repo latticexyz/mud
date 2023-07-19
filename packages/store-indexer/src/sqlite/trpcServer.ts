@@ -1,5 +1,5 @@
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import { appRouter } from "../src";
+import { appRouter } from "./appRouter";
 import { z } from "zod";
 import cors from "cors";
 

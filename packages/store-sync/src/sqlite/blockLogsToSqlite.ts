@@ -5,7 +5,7 @@ import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { schemaToDefaults } from "../common";
 import { TableId } from "@latticexyz/common";
-import { blockLogsToStorage } from "@latticexyz/store-sync";
+import { blockLogsToStorage } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";

@@ -15,7 +15,7 @@ export type WorldId = `${ChainId}:${Address}`;
 export type TableNamespace = string;
 export type TableName = string;
 
-export type TableRow = {
+export type TableRecord = {
   key: Record<string, StaticPrimitiveType>;
   value: Record<string, StaticPrimitiveType | DynamicPrimitiveType>;
 };
@@ -29,8 +29,6 @@ export type Table = {
   valueSchema: Record<string, StaticAbiType | DynamicAbiType>;
   lastUpdatedBlockNumber: bigint | null;
 };
-
-export type TableWithRows = Table & { rows: TableRow[] };
 
 export function getWorldId(chainId: ChainId, address: Address): WorldId {
   return `${chainId}:${getAddress(address)}`;

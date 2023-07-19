@@ -10,9 +10,19 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./sqlite": "./dist/sqlite/index.js"
   },
-  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/index.ts"
+      ],
+      "sqlite": [
+        "./src/sqlite/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -29,12 +39,18 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-cache": "workspace:*",
-    "@latticexyz/utils": "workspace:*",
+    "better-sqlite3": "^8.4.0",
     "debug": "^4.3.4",
+    "drizzle-orm": "^0.27.0",
+    "kysely": "^0.26.1",
+    "sql.js": "^1.8.0",
+    "superjson": "^1.12.4",
     "viem": "1.1.7"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.4",
     "@types/debug": "^4.1.7",
+    "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },

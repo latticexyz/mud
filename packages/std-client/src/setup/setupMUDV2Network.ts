@@ -28,7 +28,7 @@ import { DatabaseClient, Key, Value, createDatabase, createDatabaseClient } from
 import { StoreConfig } from "@latticexyz/store";
 import superjson from "superjson";
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
-import type { AppRouter, TableWithRows } from "@latticexyz/store-indexer";
+import type { AppRouter, TableWithRecords } from "@latticexyz/store-indexer";
 
 type SetupMUDV2NetworkOptions<C extends Components, S extends StoreConfig> = {
   networkConfig: SetupContractConfig;
@@ -50,7 +50,7 @@ function setupIndexer(options: { type: "trpc"; url: string }) {
 }
 
 async function applyInitialState<S extends StoreConfig>(
-  tables: TableWithRows[],
+  tables: TableWithRecords[],
   database: { recsComponents?: ContractComponents; storeCache?: DatabaseClient<S> },
   config: StoreConfig,
   mappings: Mappings<ContractComponents>
@@ -69,10 +69,10 @@ async function applyInitialState<S extends StoreConfig>(
         );
         continue;
       }
-      for (const row of table.rows) {
-        const entity = keyTupleToEntityID(Object.values(row.keyTuple) as unknown[]);
-        console.log("applying component update", componentId, entity, row.value);
-        setComponent(component, entity, row.value as ComponentValue);
+      for (const record of table.records) {
+        const entity = keyTupleToEntityID(Object.values(record.key) as unknown[]);
+        console.log("applying component update", componentId, entity, record.value);
+        setComponent(component, entity, record.value as ComponentValue);
       }
     }
   }
@@ -88,10 +88,15 @@ async function applyInitialState<S extends StoreConfig>(
         continue;
       }
       const keyNames = Object.getOwnPropertyNames(tableConfig.keySchema);
-      for (const row of table.rows) {
-        const namedKey = nameKeys(row.keyTuple, keyNames) as Key<S, keyof S["tables"]>;
-        console.log("applying table update", new TableId(table.namespace, table.name).toString(), namedKey, row.value);
-        await storeCache.set(table.namespace, table.name, namedKey, row.value as Value<S, keyof S["tables"]>);
+      for (const record of table.records) {
+        const namedKey = nameKeys(record.key, keyNames) as Key<S, keyof S["tables"]>;
+        console.log(
+          "applying table update",
+          new TableId(table.namespace, table.name).toString(),
+          namedKey,
+          record.value
+        );
+        await storeCache.set(table.namespace, table.name, namedKey, record.value as Value<S, keyof S["tables"]>);
       }
     }
   }
@@ -186,7 +191,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     const indexer = setupIndexer(networkConfig.indexer);
     // TODO: should separately check the block number to avoid loading unnecessary data
     const result = await indexer.findAll.query({ chainId: networkConfig.chainId, address: networkConfig.worldAddress });
-    if (result.blockNumber >= networkConfig.initialBlockNumber) {
+    if (result.blockNumber != null && result.blockNumber >= networkConfig.initialBlockNumber) {
       // Update block number from which the sync worker starts syncing from
       networkConfig.initialBlockNumber = Number(result.blockNumber + 1n);
       console.log("got initial state from trpc indexer", result);
