@@ -10,6 +10,8 @@ const db = new Kysely<any>({
 export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {
   const tableName = getTableName(table);
 
+  // db.schema.dropTable(tableName).ifExists().compile();
+
   let query = db.schema.createTable(tableName).ifNotExists();
 
   const columns = Object.values(getTableColumns(table)) as AnySQLiteColumn[];

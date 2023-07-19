@@ -11,6 +11,7 @@ import { debug } from "./debug";
 import { getTableName } from "./getTableName";
 import { chainState, mudStoreTables } from "./internalTables";
 import { getTables } from "./getTables";
+import { indexerVersion } from "./indexerVersion";
 
 export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
   database: db,
@@ -42,6 +43,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
 
           tx.insert(mudStoreTables)
             .values({
+              indexerVersion,
               id: getTableName(table.address, table.namespace, table.name),
               address: table.address,
               tableId: new TableId(table.namespace, table.name).toHex(),
@@ -162,11 +164,12 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
 
       db.insert(chainState)
         .values({
+          indexerVersion,
           chainId: publicClient.chain.id,
           lastUpdatedBlockNumber: blockNumber,
         })
         .onConflictDoUpdate({
-          target: chainState.chainId,
+          target: [chainState.indexerVersion, chainState.chainId],
           set: {
             lastUpdatedBlockNumber: blockNumber,
           },

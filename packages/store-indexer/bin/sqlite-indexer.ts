@@ -9,6 +9,10 @@ import { createIndexer } from "../src/sqlite/createIndexer";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
 import { appRouter } from "../src";
+import { chainState } from "@latticexyz/store-sync/sqlite";
+import { eq } from "drizzle-orm";
+import { indexerVersion } from "@latticexyz/store-sync/sqlite";
+import fs from "node:fs";
 
 const supportedChains: Chain[] = [foundry, latticeTestnet, latticeTestnet2];
 
@@ -26,11 +30,6 @@ const env = z
     }),
   });
 
-// TODO: find a better intersection type between sql.js and better-sqlite3 instead of casting here
-const database = drizzle(new Database(env.SQLITE_FILENAME), {
-  // logger: new DefaultLogger(),
-}) as any as BaseSQLiteDatabase<"sync", void>;
-
 const chain = supportedChains.find((c) => c.id === env.CHAIN_ID);
 if (!chain) {
   throw new Error(`Chain ${env.CHAIN_ID} not found`);
@@ -42,10 +41,40 @@ const publicClient = createPublicClient({
   pollingInterval: 1000,
 });
 
+// TODO: find a better intersection type between sql.js and better-sqlite3 instead of casting here
+const database = drizzle(new Database(env.SQLITE_FILENAME), {
+  // logger: new DefaultLogger(),
+}) as any as BaseSQLiteDatabase<"sync", void>;
+
+let startBlock = env.START_BLOCK;
+try {
+  const currentChainStates = database.select().from(chainState).where(eq(chainState.chainId, chain.id)).all();
+  // TODO: figure out if TS offers an option to turn on `undefined` as a possible outcome of getting an item from an array by index
+  const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
+
+  if (currentChainState != null) {
+    if (currentChainState.indexerVersion != null && currentChainState.indexerVersion < indexerVersion) {
+      console.log(
+        "indexer version changed from",
+        currentChainState.indexerVersion,
+        "to",
+        indexerVersion,
+        "recreating database"
+      );
+      fs.truncateSync(env.SQLITE_FILENAME);
+    } else if (currentChainState.lastUpdatedBlockNumber != null) {
+      console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
+      startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
+    }
+  }
+} catch (error) {
+  // console.log(error);
+}
+
 createIndexer({
   database,
   publicClient,
-  startBlock: env.START_BLOCK,
+  startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
