@@ -27,7 +27,6 @@ const env = z
   });
 
 // TODO: find a better intersection type between sql.js and better-sqlite3 instead of casting here
-// TODO: make DB filename configurable?
 const database = drizzle(new Database(env.SQLITE_FILENAME), {
   // logger: new DefaultLogger(),
 }) as any as BaseSQLiteDatabase<"sync", void>;

@@ -1,7 +1,7 @@
 import { AnySQLiteColumnBuilder, blob, integer, text } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { json } from "./columnTypes";
+import { address, json } from "./columnTypes";
 
 export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): AnySQLiteColumnBuilder {
   switch (schemaAbiType) {
@@ -108,9 +108,11 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes30":
     case "bytes31":
     case "bytes32":
-    case "address":
     case "bytes":
       return text(name);
+
+    case "address":
+      return address(name);
 
     case "uint8[]":
     case "uint16[]":
@@ -209,6 +211,9 @@ export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): A
     case "bytes31[]":
     case "bytes32[]":
     case "bool[]":
+      return json(name);
+
+    // TODO: normalize like address column type
     case "address[]":
       return json(name);
 
