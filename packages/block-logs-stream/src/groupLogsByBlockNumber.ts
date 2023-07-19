@@ -1,12 +1,10 @@
-import { BlockNumber, Hex, Log } from "viem";
+import { BlockNumber, Log } from "viem";
 import { NonPendingLog, isNonPendingLog } from "./isNonPendingLog";
-import { bigIntSort } from "./utils";
-import { isDefined } from "@latticexyz/common/utils";
+import { isDefined, bigIntSort } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 
 export type GroupLogsByBlockNumberResult<TLog extends Log> = {
   blockNumber: BlockNumber;
-  blockHash: Hex;
   logs: readonly NonPendingLog<TLog>[];
 }[];
 
@@ -46,7 +44,6 @@ export function groupLogsByBlockNumber<TLog extends Log>(logs: readonly TLog[]):
 
       return {
         blockNumber,
-        blockHash: blockLogs[0].blockHash,
         logs: blockLogs,
       };
     })

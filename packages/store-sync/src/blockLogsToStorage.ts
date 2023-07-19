@@ -113,6 +113,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
   return async (block) => {
     const newTableKeys = new Set<TableKey>();
 
+    // First find all schema registration events.
     block.logs.forEach((log) => {
       if (log.eventName !== "StoreSetRecord") return;
       if (log.args.table !== schemaTableId.toHex()) return;

@@ -1,5 +1,7 @@
 import type { Log } from "viem";
 
+// TODO: get rid of this once https://github.com/wagmi-dev/viem/pull/847 lands
+
 export type NonPendingLog<TLog extends Log> = TLog & {
   blockHash: NonNullable<TLog["blockHash"]>;
   blockNumber: NonNullable<TLog["blockNumber"]>;

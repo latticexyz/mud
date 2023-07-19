@@ -52,7 +52,6 @@ describe("groupLogsByBlockNumber", () => {
     expect(groupLogsByBlockNumber(logs)).toMatchInlineSnapshot(`
       [
         {
-          "blockHash": "0x",
           "blockNumber": 1n,
           "logs": [
             {
@@ -79,7 +78,6 @@ describe("groupLogsByBlockNumber", () => {
           ],
         },
         {
-          "blockHash": "0x",
           "blockNumber": 3n,
           "logs": [
             {
@@ -92,7 +90,6 @@ describe("groupLogsByBlockNumber", () => {
           ],
         },
         {
-          "blockHash": "0x",
           "blockNumber": 5n,
           "logs": [
             {
