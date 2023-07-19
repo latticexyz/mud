@@ -1,12 +1,12 @@
 import { Hex, stringToHex, hexToString, sliceHex, concatHex } from "viem";
 
 export class TableId {
-  namespace: string;
-  name: string;
+  readonly namespace: string;
+  readonly name: string;
 
   constructor(namespace: string, name: string) {
-    this.namespace = namespace;
-    this.name = name;
+    this.namespace = namespace.substring(0, 16);
+    this.name = name.substring(0, 16);
   }
 
   toString(): string {

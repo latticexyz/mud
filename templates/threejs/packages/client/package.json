@@ -22,11 +22,11 @@
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "@react-three/fiber": "^8.12.0",
-    "@wagmi/chains": "^0.2.22",
     "contracts": "workspace:*",
     "ethers": "^5.7.2",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "viem": "1.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.6",

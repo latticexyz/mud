@@ -5,6 +5,7 @@ import {
   Chain,
   TransactionNotFoundError,
   TransactionReceiptNotFoundError,
+  Transport,
 } from "viem";
 
 // TODO: use IndexedDB cache for these?
@@ -12,7 +13,7 @@ import {
 type CacheKey = `${number}:${Hex}`;
 const cache: Record<CacheKey, Promise<TransactionReceipt>> = {};
 
-export const getTransactionReceipt = (publicClient: PublicClient & { chain: Chain }, hash: Hex) => {
+export const getTransactionReceipt = (publicClient: PublicClient<Transport, Chain>, hash: Hex) => {
   const key: CacheKey = `${publicClient.chain.id}:${hash}`;
 
   if (!cache[key]) {
