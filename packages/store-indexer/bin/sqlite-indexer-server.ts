@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MUDChain, latticeTestnet } from "@latticexyz/common/chains";
+import { MUDChain, latticeTestnet, latticeTestnet2 } from "@latticexyz/common/chains";
 import { foundry } from "@wagmi/chains";
 import { createPublicClient, fallback, http, webSocket } from "viem";
 import {
@@ -15,7 +15,7 @@ import { getDatabase } from "../src/sqlite/getDatabase";
 
 // TODO: align shared types (e.g. table, key+value schema)
 
-export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
+export const supportedChains: MUDChain[] = [foundry, latticeTestnet, latticeTestnet2];
 
 const env = z
   .object({
