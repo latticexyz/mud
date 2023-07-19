@@ -18,7 +18,7 @@ export const appRouter = router({
       const { database } = opts.ctx;
       const { chainId, address } = opts.input;
 
-      const tables = getTables(database).filter((table) => table.address === address);
+      const tables = getTables(database).filter((table) => table.address === address.toLowerCase());
 
       const tablesWithRows = tables.map((table) => {
         const sqliteTable = createSqliteTable(table);
