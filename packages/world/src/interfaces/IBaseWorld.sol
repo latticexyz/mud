@@ -10,7 +10,7 @@ import { IWorldEphemeral } from "../interfaces/IWorldEphemeral.sol";
 import { ICoreSystem } from "./ICoreSystem.sol";
 import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
 import { IModuleInstallationSystem } from "./IModuleInstallationSystem.sol";
-import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
+import { IRegistrationSystem } from "./IRegistrationSystem.sol";
 
 /**
  * The IBaseWorld interface includes all systems dynamically added to the World
@@ -23,7 +23,7 @@ interface IBaseWorld is
   ICoreSystem,
   IAccessManagementSystem,
   IModuleInstallationSystem,
-  IWorldRegistrationSystem
+  IRegistrationSystem
 {
 
 }

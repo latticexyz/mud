@@ -13,39 +13,31 @@ library AccessControl {
   /**
    * Returns true if the caller has access to the namespace or name, false otherwise.
    */
-  function hasAccess(bytes16 namespace, bytes16 name, address caller) internal view returns (bool) {
+  function hasAccess(bytes32 resourceSelector, address caller) internal view returns (bool) {
     return
       address(this) == caller || // First check if the World is calling itself
-      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // Then check access based on the namespace
-      ResourceAccess.get(ResourceSelector.from(namespace, name), caller); // If caller has no namespace access, check access on the name
+      ResourceAccess.get(resourceSelector.getNamespace(), caller) || // Then check access based on the namespace
+      ResourceAccess.get(resourceSelector, caller); // If caller has no namespace access, check access on the name
   }
 
   /**
    * Check for access at the given namespace or name.
-   * Returns the resourceSelector if the caller has access.
    * Reverts with AccessDenied if the caller has no access.
    */
-  function requireAccess(
-    bytes16 namespace,
-    bytes16 name,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, name);
-
+  function requireAccess(bytes32 resourceSelector, address caller) internal view {
     // Check if the given caller has access to the given namespace or name
-    if (!hasAccess(namespace, name, caller)) {
+    if (!hasAccess(resourceSelector, caller)) {
       revert IWorldErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 
-  function requireOwnerOrSelf(
-    bytes16 namespace,
-    bytes16 name,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, name);
-
-    if (address(this) != caller && NamespaceOwner.get(namespace) != caller) {
+  /**
+   * Check for ownership of the namespace of the given resource selector
+   * or identity of the caller to the own address.
+   * Reverts with AccessDenied the check fails.
+   */
+  function requireOwnerOrSelf(bytes32 resourceSelector, address caller) internal view {
+    if (address(this) != caller && NamespaceOwner.get(resourceSelector.getNamespace()) != caller) {
       revert IWorldErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }

@@ -11,6 +11,7 @@ import { IModule } from "../../interfaces/IModule.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { IWorldEphemeral } from "../../interfaces/IWorldEphemeral.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
@@ -25,8 +26,7 @@ import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 
-import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
-import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
+import { RegistrationSystem } from "./implementations/RegistrationSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
@@ -80,7 +80,7 @@ contract CoreModule is IModule, WorldContext {
       delegate: true,
       value: 0,
       funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.registerSystem.selector,
+        RegistrationSystem.registerSystem.selector,
         ROOT_NAMESPACE,
         CORE_SYSTEM_NAME,
         coreSystem,
@@ -93,19 +93,16 @@ contract CoreModule is IModule, WorldContext {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[15] memory functionSelectors = [
-      // --- WorldRegistrationSystem ---
-      WorldRegistrationSystem.registerNamespace.selector,
-      WorldRegistrationSystem.registerTable.selector,
-      WorldRegistrationSystem.registerHook.selector,
-      WorldRegistrationSystem.registerTableHook.selector,
-      WorldRegistrationSystem.registerSystemHook.selector,
-      WorldRegistrationSystem.registerSystem.selector,
-      WorldRegistrationSystem.registerFunctionSelector.selector,
-      WorldRegistrationSystem.registerRootFunctionSelector.selector,
-      // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerTable.selector,
-      StoreRegistrationSystem.registerStoreHook.selector,
+    bytes4[13] memory functionSelectors = [
+      // --- RegistrationSystem ---
+      RegistrationSystem.registerNamespace.selector,
+      RegistrationSystem.registerTable.selector,
+      RegistrationSystem.registerHook.selector,
+      RegistrationSystem.registerStoreHook.selector,
+      RegistrationSystem.registerSystemHook.selector,
+      RegistrationSystem.registerSystem.selector,
+      RegistrationSystem.registerFunctionSelector.selector,
+      RegistrationSystem.registerRootFunctionSelector.selector,
       // --- ModuleInstallationSystem ---
       ModuleInstallationSystem.installModule.selector,
       // --- AccessManagementSystem ---
@@ -125,9 +122,8 @@ contract CoreModule is IModule, WorldContext {
         delegate: true,
         value: 0,
         funcSelectorAndArgs: abi.encodeWithSelector(
-          WorldRegistrationSystem.registerRootFunctionSelector.selector,
-          ROOT_NAMESPACE,
-          CORE_SYSTEM_NAME,
+          RegistrationSystem.registerRootFunctionSelector.selector,
+          ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
           functionSelectors[i],
           functionSelectors[i]
         )

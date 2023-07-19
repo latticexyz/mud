@@ -8,41 +8,33 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 import { System } from "./../System.sol";
 
-interface IWorldRegistrationSystem {
+interface IRegistrationSystem {
   function registerNamespace(bytes16 namespace) external;
 
   function registerTable(
-    bytes16 namespace,
-    bytes16 name,
+    bytes32 resourceSelector,
     Schema keySchema,
     Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
-  ) external returns (bytes32 resourceSelector);
+  ) external;
 
-  function registerHook(bytes16 namespace, bytes16 name, address hook) external;
+  function registerHook(bytes32 resourceSelector, address hook) external;
 
-  function registerTableHook(bytes16 namespace, bytes16 name, IStoreHook hook) external;
+  function registerStoreHook(bytes32 tableId, IStoreHook hook) external;
 
-  function registerSystemHook(bytes16 namespace, bytes16 name, ISystemHook hook) external;
+  function registerSystemHook(bytes32 resourceSelector, ISystemHook hook) external;
 
-  function registerSystem(
-    bytes16 namespace,
-    bytes16 name,
-    System system,
-    bool publicAccess
-  ) external returns (bytes32 resourceSelector);
+  function registerSystem(bytes32 resourceSelector, System system, bool publicAccess) external;
 
   function registerFunctionSelector(
-    bytes16 namespace,
-    bytes16 name,
+    bytes32 resourceSelector,
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerRootFunctionSelector(
-    bytes16 namespace,
-    bytes16 name,
+    bytes32 resourceSelector,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) external returns (bytes4);
