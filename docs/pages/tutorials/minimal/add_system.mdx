@@ -43,7 +43,6 @@ uint32 counter = Counter.get();
 
 Get the counter value.
 
-
 ```solidity
 Counter.set(newValue);
 ```
@@ -52,52 +51,52 @@ Set the counter to a new value.
 
 </details>
 
-
 ## Add `decrement` to the application
 
 Having a system be able to do something doesn't help anybody unless it is called from somewhere.
 In this case, the vanilla getting started front end.
 
-1. Edit `packages/client/src/mud/createSystemCalls.ts` to include `decrement`.
+1.  Edit `packages/client/src/mud/createSystemCalls.ts` to include `decrement`.
     This is the file after the changes:
-  
-   ```typescript
+
+    ```typescript
     import { ClientComponents } from "./createClientComponents";
     import { SetupNetworkResult } from "./setupNetwork";
 
     export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
     export function createSystemCalls(
-        { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
-        { Counter }: ClientComponents
+      { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
+      { Counter }: ClientComponents
     ) {
-        const increment = async () => {
-            const tx = await worldSend("increment", []);
-            await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
-            return getComponentValue(Counter, singletonEntity);
-        };
+      const increment = async () => {
+        const tx = await worldSend("increment", []);
+        await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+        return getComponentValue(Counter, singletonEntity);
+      };
 
-        const decrement = async () => {
-            const tx = await worldSend("decrement", []) 
-            await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash) 
-            return getComponentValue(Counter, singletonEntity)
-        };
+      const decrement = async () => {
+        const tx = await worldSend("decrement", []);
+        await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+        return getComponentValue(Counter, singletonEntity);
+      };
 
-        return {
-            increment,
-            decrement, 
-        };
-    }        
-   ```
+      return {
+        increment,
+        decrement,
+      };
+    }
+    ```
 
-   <details>
-   <summary>
-   Explanation
-   </summary>
+       <details>
+<summary>
+Explanation
+</summary>
 
-   <p></p>
+    {" "}
+    <p></p>
 
-   The new function is `decrement`.
+    The new function is `decrement`.
 
     ```typescript
     const decrement = async () => {
@@ -106,15 +105,15 @@ In this case, the vanilla getting started front end.
     This function involves sending a transaction, which is a slow process, so it needs to be [asynchronous](https://www.w3schools.com/js/js_async.asp).
 
     ```typescript
-        const tx = await worldSend("decrement", []) 
+    const tx = await worldSend("decrement", []);
     ```
 
-    This is the way we call functions in top-level systems in a world. 
+    This is the way we call functions in top-level systems in a world.
     The second parameter, the list, is for the function parameters.
     In this case there aren't any, so it is empty.
 
-    ```typescript        
-        await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash) 
+    ```typescript
+    await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
     ```
 
     Await until we receive confirmation that the transaction has been added to a block.
@@ -129,62 +128,57 @@ In this case, the vanilla getting started front end.
 
     ```typescript
     return {
-        increment,
-        decrement, 
+      increment,
+      decrement,
     };
     ```
 
     Of course, we also need to return `decrement` so it can be used elsewhere.
 
-    </details>
+        </details>
 
-1. Update `packages/client/src/index.ts` to include `decrement`.
-   This is the file after the changes:
+1.  Update `packages/client/src/index.ts` to include `decrement`.
+    This is the file after the changes:
 
-   ```typescript
+    ```typescript
     import { mount as mountDevTools } from "@latticexyz/dev-tools";
     import { setup } from "./mud/setup";
 
     const {
-        components,
-        systemCalls: { 
-            decrement,
-            increment 
-        },
+      components,
+      systemCalls: { decrement, increment },
     } = await setup();
 
     // Components expose a stream that triggers when the component is updated.
     components.Counter.update$.subscribe((update) => {
-    const [nextValue, prevValue] = update.value;
-    console.log("Counter updated", update, { nextValue, prevValue });
-    document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+      const [nextValue, prevValue] = update.value;
+      console.log("Counter updated", update, { nextValue, prevValue });
+      document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
     });
 
     // Just for demonstration purposes: we create a global function that can be
     // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
     (window as any).increment = async () => {
-        console.log("new counter value:", await increment());
+      console.log("new counter value:", await increment());
     };
 
     (window as any).decrement = async () => {
-        console.log("new counter value:", await decrement());
+      console.log("new counter value:", await decrement());
     };
 
     mountDevTools();
-   ```
+    ```
 
-   <details>
-   <summary>Explanation</summary>
+       <details>
+<summary>Explanation</summary>
 
-   <p></p>
+    {" "}
+    <p></p>
 
     ```typescript
     const {
-        components,
-        systemCalls: { 
-            decrement,
-            increment 
-        },
+      components,
+      systemCalls: { decrement, increment },
     } = await setup();
     ```
 
@@ -193,47 +187,47 @@ In this case, the vanilla getting started front end.
 
     ```typescript
     (window as any).decrement = async () => {
-        console.log("new counter value:", await decrement());
+      console.log("new counter value:", await decrement());
     };
     ```
 
     We need to make `decrement` available to our application code.
     Most frameworks have a standard mechanism to do this, but we are using `vanilla`, which doesn't - so we add it to `window` which is a global variable.
 
-   </details>
+       </details>
 
+1.  Modify `packages/client/index.html` to add a decrement button.
+    This is the file after the changes:
 
-1. Modify `packages/client/index.html` to add a decrement button.
-   This is the file after the changes:
-
-   ```html
+    ```html
     <!DOCTYPE html>
     <html lang="en">
-    <head>
+      <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>a minimal MUD client</title>
-    </head>
-    <body>
+      </head>
+      <body>
         <script type="module" src="/src/index.ts"></script>
         <div>Counter: <span id="counter">0</span></div>
         <button onclick="window.increment()">Increment</button>
         <button onclick="window.decrement()">Decrement</button>
-    </body>
+      </body>
     </html>
-   ```
+    ```
 
-   <details>
-   <summary>Explanation</summary>
+       <details>
+<summary>Explanation</summary>
 
-   <p></p>
+    {" "}
+    <p></p>
 
-   ```html
-   <button onclick="window.decrement()">Decrement</button>
-   ```
+    ```html
+    <button onclick="window.decrement()">Decrement</button>
+    ```
 
-   Create a [`button`](https://www.w3schools.com/tags/tag_button.asp) with an [`onClick`](https://www.w3schools.com/tags/ev_onclick.asp) property. 
+    Create a [`button`](https://www.w3schools.com/tags/tag_button.asp) with an [`onClick`](https://www.w3schools.com/tags/ev_onclick.asp) property.
 
-   </details>
+       </details>
 
-1. Reload the application to see that there is a decrement button and that you can use it.
+1.  Reload the application to see that there is a decrement button and that you can use it.
