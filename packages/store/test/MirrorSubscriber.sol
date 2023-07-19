@@ -10,8 +10,14 @@ bytes32 constant indexerTableId = keccak256("indexer.table");
 contract MirrorSubscriber is IStoreHook {
   bytes32 _table;
 
-  constructor(bytes32 table, Schema schema, Schema keySchema) {
-    IStore(msg.sender).registerSchema(indexerTableId, schema, keySchema);
+  constructor(
+    bytes32 table,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] memory keyNames,
+    string[] memory valueNames
+  ) {
+    IStore(msg.sender).registerTable(indexerTableId, keySchema, valueSchema, keyNames, valueNames);
     _table = table;
   }
 

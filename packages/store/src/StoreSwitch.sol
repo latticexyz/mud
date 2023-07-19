@@ -53,12 +53,12 @@ library StoreSwitch {
     }
   }
 
-  function getSchema(bytes32 table) internal view returns (Schema schema) {
+  function getValueSchema(bytes32 table) internal view returns (Schema valueSchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      schema = StoreCore.getSchema(table);
+      valueSchema = StoreCore.getValueSchema(table);
     } else {
-      schema = IStore(_storeAddress).getSchema(table);
+      valueSchema = IStore(_storeAddress).getValueSchema(table);
     }
   }
 
@@ -71,21 +71,18 @@ library StoreSwitch {
     }
   }
 
-  function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
+  function registerTable(
+    bytes32 table,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] memory keyNames,
+    string[] memory valueNames
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setMetadata(table, tableName, fieldNames);
+      StoreCore.registerTable(table, keySchema, valueSchema, keyNames, valueNames);
     } else {
-      IStore(_storeAddress).setMetadata(table, tableName, fieldNames);
-    }
-  }
-
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) internal {
-    address _storeAddress = getStoreAddress();
-    if (_storeAddress == address(this)) {
-      StoreCore.registerSchema(table, schema, keySchema);
-    } else {
-      IStore(_storeAddress).registerSchema(table, schema, keySchema);
+      IStore(_storeAddress).registerTable(table, keySchema, valueSchema, keyNames, valueNames);
     }
   }
 

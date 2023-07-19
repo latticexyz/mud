@@ -8,13 +8,23 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "keySchema",
         "type": "bytes32"
       },
       {
         "internalType": "Schema",
-        "name": "keySchema",
+        "name": "valueSchema",
         "type": "bytes32"
+      },
+      {
+        "internalType": "string[]",
+        "name": "keyNames",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "valueNames",
+        "type": "string[]"
       }
     ],
     "stateMutability": "nonpayable",

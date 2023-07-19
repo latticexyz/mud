@@ -5,7 +5,7 @@ import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStoreRead {
-  function getSchema(bytes32 table) external view returns (Schema schema);
+  function getValueSchema(bytes32 table) external view returns (Schema schema);
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);
 
@@ -114,9 +114,13 @@ interface IStoreData is IStoreRead, IStoreWrite {
  * making them less performance critical than the IStoreData methods.
  */
 interface IStoreRegistration {
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
-
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+  function registerTable(
+    bytes32 table,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] calldata keyNames,
+    string[] calldata valueNames
+  ) external;
 
   // Register hook to be called when a record or field is set or deleted
   function registerStoreHook(bytes32 table, IStoreHook hook) external;

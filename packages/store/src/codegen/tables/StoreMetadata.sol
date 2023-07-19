@@ -26,15 +26,7 @@ struct StoreMetadataData {
 }
 
 library StoreMetadata {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.STRING;
-    _schema[1] = SchemaType.BYTES;
-
-    return SchemaLib.encode(_schema);
-  }
-
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32;
@@ -42,34 +34,36 @@ library StoreMetadata {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](2);
-    _fieldNames[0] = "tableName";
-    _fieldNames[1] = "abiEncodedFieldNames";
-    return ("StoreMetadata", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](2);
+    _schema[0] = SchemaType.STRING;
+    _schema[1] = SchemaType.BYTES;
+
+    return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](1);
+    keyNames[0] = "tableId";
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](2);
+    fieldNames[0] = "tableName";
+    fieldNames[1] = "abiEncodedFieldNames";
   }
 
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get tableName */
@@ -77,7 +71,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (string(_blob));
   }
 
@@ -86,7 +80,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (string(_blob));
   }
 
@@ -95,7 +89,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, bytes((tableName)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, bytes((tableName)), getValueSchema());
   }
 
   /** Set tableName (using the specified store) */
@@ -103,7 +97,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 0, bytes((tableName)), getSchema());
+    _store.setField(_tableId, _keyTuple, 0, bytes((tableName)), getValueSchema());
   }
 
   /** Get the length of tableName */
@@ -111,7 +105,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getValueSchema());
     unchecked {
       return _byteLength / 1;
     }
@@ -122,7 +116,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getValueSchema());
     unchecked {
       return _byteLength / 1;
     }
@@ -137,7 +131,14 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getValueSchema(),
+        _index * 1,
+        (_index + 1) * 1
+      );
       return (string(_blob));
     }
   }
@@ -151,7 +152,7 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getValueSchema(), _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -161,7 +162,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 0, bytes((_slice)), getSchema());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 0, bytes((_slice)), getValueSchema());
   }
 
   /** Push a slice to tableName (using the specified store) */
@@ -169,7 +170,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.pushToField(_tableId, _keyTuple, 0, bytes((_slice)), getSchema());
+    _store.pushToField(_tableId, _keyTuple, 0, bytes((_slice)), getValueSchema());
   }
 
   /** Pop a slice from tableName */
@@ -177,7 +178,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 1, getSchema());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 1, getValueSchema());
   }
 
   /** Pop a slice from tableName (using the specified store) */
@@ -185,7 +186,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.popFromField(_tableId, _keyTuple, 0, 1, getSchema());
+    _store.popFromField(_tableId, _keyTuple, 0, 1, getValueSchema());
   }
 
   /**
@@ -197,7 +198,7 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)), getSchema());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)), getValueSchema());
     }
   }
 
@@ -210,7 +211,7 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)), getSchema());
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)), getValueSchema());
     }
   }
 
@@ -219,7 +220,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getValueSchema());
     return (bytes(_blob));
   }
 
@@ -231,7 +232,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getValueSchema());
     return (bytes(_blob));
   }
 
@@ -240,7 +241,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)), getValueSchema());
   }
 
   /** Set abiEncodedFieldNames (using the specified store) */
@@ -248,7 +249,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)), getSchema());
+    _store.setField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)), getValueSchema());
   }
 
   /** Get the length of abiEncodedFieldNames */
@@ -256,7 +257,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getValueSchema());
     unchecked {
       return _byteLength / 1;
     }
@@ -267,7 +268,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getValueSchema());
     unchecked {
       return _byteLength / 1;
     }
@@ -282,7 +283,14 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        1,
+        getValueSchema(),
+        _index * 1,
+        (_index + 1) * 1
+      );
       return (bytes(_blob));
     }
   }
@@ -300,7 +308,7 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getValueSchema(), _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -310,7 +318,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), getSchema());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), getValueSchema());
   }
 
   /** Push a slice to abiEncodedFieldNames (using the specified store) */
@@ -318,7 +326,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), getSchema());
+    _store.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), getValueSchema());
   }
 
   /** Pop a slice from abiEncodedFieldNames */
@@ -326,7 +334,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 1, 1, getSchema());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 1, 1, getValueSchema());
   }
 
   /** Pop a slice from abiEncodedFieldNames (using the specified store) */
@@ -334,7 +342,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.popFromField(_tableId, _keyTuple, 1, 1, getSchema());
+    _store.popFromField(_tableId, _keyTuple, 1, 1, getValueSchema());
   }
 
   /**
@@ -346,7 +354,7 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), getSchema());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), getValueSchema());
     }
   }
 
@@ -359,7 +367,7 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), getSchema());
+      _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), getValueSchema());
     }
   }
 
@@ -368,7 +376,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getValueSchema());
     return decode(_blob);
   }
 
@@ -377,7 +385,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getValueSchema());
     return decode(_blob);
   }
 
@@ -388,7 +396,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -398,7 +406,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
+    _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
   /** Set the full data using the data struct */
@@ -460,7 +468,7 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -468,6 +476,6 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.deleteRecord(_tableId, _keyTuple, getSchema());
+    _store.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 }

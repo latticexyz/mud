@@ -70,12 +70,14 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
   }
 
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) public {
-    StoreCore.registerSchema(table, schema, keySchema);
-  }
-
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) public {
-    StoreCore.setMetadata(table, tableName, fieldNames);
+  function registerTable(
+    bytes32 table,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] calldata keyNames,
+    string[] calldata valueNames
+  ) public {
+    StoreCore.registerTable(table, keySchema, valueSchema, keyNames, valueNames);
   }
 
   // Register hook to be called when a record or field is set or deleted

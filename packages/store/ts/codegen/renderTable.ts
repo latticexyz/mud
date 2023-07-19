@@ -73,14 +73,7 @@ ${
 }
 
 library ${libraryName} {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${fields.length});
-    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
-
-    return SchemaLib.encode(_schema);
-  }
-
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
     ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
@@ -88,29 +81,32 @@ library ${libraryName} {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](${fields.length});
-    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
-    return ("${libraryName}", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](${fields.length});
+    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+
+    return SchemaLib.encode(_schema);
+  }
+
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](${keyTuple.length});
+    ${renderList(keyTuple, (keyElement, index) => `keyNames[${index}] = "${keyElement.name}";`)}
+  }
+
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](${fields.length});
+    ${renderList(fields, (field, index) => `fieldNames[${index}] = "${field.name}";`)}
   }
 
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Register the table's schema${_commentSuffix} */
-    function registerSchema(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerSchema(_tableId, getSchema(), getKeySchema());
-    }
-  `
-  )}
-  ${renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
-    /** Set the table's metadata${_commentSuffix} */
-    function setMetadata(${renderArguments([_typedStore, _typedTableId])}) internal {
-      (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-      ${_store}.setMetadata(_tableId, _tableName, _fieldNames);
+    /** Register the table's key schema, value schema, key names and value names${_commentSuffix} */
+    function register(${renderArguments([_typedStore, _typedTableId])}) internal {
+      ${_store}.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
   `
   )}
@@ -148,7 +144,7 @@ library ${libraryName} {
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_keyTupleDefinition}
-      ${_store}.deleteRecord(_tableId, _keyTuple, getSchema());
+      ${_store}.deleteRecord(_tableId, _keyTuple, getValueSchema());
     }
   `
         )
