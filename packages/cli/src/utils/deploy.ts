@@ -572,9 +572,11 @@ export async function deploy(
         ? 0
         : Math.floor(1_500_000_000 * multiplier)
       : undefined;
-    if (maxPriorityFeePerGas)
+    if (maxPriorityFeePerGas) {
       maxFeePerGas = feeData.lastBaseFeePerGas ? feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas) : undefined;
-    gasPrice = feeData.gasPrice;
+    } else {
+      gasPrice = feeData.gasPrice;
+    }
   }
 }
 
