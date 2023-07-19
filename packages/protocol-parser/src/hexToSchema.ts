@@ -26,6 +26,9 @@ export function hexToSchema(data: Hex): Schema {
   // validate static data length
   const actualStaticDataLength = staticFields.reduce((acc, fieldType) => acc + staticAbiTypeToByteLength[fieldType], 0);
   if (actualStaticDataLength !== staticDataLength) {
+    console.warn(
+      `Schema "${data}" static data length (${staticDataLength}) did not match the summed length of all static fields (${actualStaticDataLength}). Is \`staticAbiTypeToByteLength\` up to date with Solidity schema types?`
+    );
     throw new SchemaStaticLengthMismatchError(data, staticDataLength, actualStaticDataLength);
   }
 
