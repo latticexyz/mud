@@ -151,6 +151,7 @@ describe("blockLogsToSqlite", async () => {
         {
           "0": "0x000000000000000000000000796eb990a3f9c431c69149c7a168b91596d87f60",
           "__isDeleted": false,
+          "__key": "0x000000000000000000000000796eb990a3f9c431c69149c7a168b91596d87f60",
           "__lastUpdatedBlockNumber": 5448n,
           "value": 8,
         },

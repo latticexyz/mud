@@ -1,4 +1,4 @@
-import { Chain, PublicClient, Transport } from "viem";
+import { Chain, Hex, PublicClient, Transport, encodePacked } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -101,28 +101,28 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
             continue;
           }
 
-          const isSingleton = Object.keys(table.keySchema).length === 0;
-
           const { table: sqliteTable } = createSqliteTable(table);
+          const key = encodePacked(
+            operation.log.args.key.map(() => "bytes32"),
+            operation.log.args.key as Hex[]
+          );
 
           if (operation.type === "SetRecord") {
             debug("SetRecord", operation);
             tx.insert(sqliteTable)
               .values({
-                ...operation.key,
-                ...operation.record,
+                __key: key,
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: false,
-                ...(isSingleton ? { __singleton: true } : {}),
+                ...operation.key,
+                ...operation.record,
               })
               .onConflictDoUpdate({
-                target: isSingleton
-                  ? sqliteTable.__singleton
-                  : Object.keys(operation.key).map((columnName) => sqliteTable[columnName]),
+                target: sqliteTable.__key,
                 set: {
-                  ...operation.record,
                   __lastUpdatedBlockNumber: blockNumber,
                   __isDeleted: false,
+                  ...operation.record,
                 },
               })
               .run();
@@ -130,38 +130,31 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
             debug("SetField", operation);
             tx.insert(sqliteTable)
               .values({
+                __key: key,
+                __lastUpdatedBlockNumber: blockNumber,
+                __isDeleted: false,
                 ...operation.key,
                 ...schemaToDefaults(table.valueSchema),
                 [operation.valueName]: operation.value,
-                __lastUpdatedBlockNumber: blockNumber,
-                __isDeleted: false,
-                ...(isSingleton ? { __singleton: true } : {}),
               })
               .onConflictDoUpdate({
-                target: isSingleton
-                  ? sqliteTable.__singleton
-                  : Object.keys(operation.key).map((columnName) => sqliteTable[columnName]),
+                target: sqliteTable.__key,
                 set: {
-                  [operation.valueName]: operation.value,
                   __lastUpdatedBlockNumber: blockNumber,
                   __isDeleted: false,
+                  [operation.valueName]: operation.value,
                 },
               })
               .run();
           } else if (operation.type === "DeleteRecord") {
+            // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
             debug("DeleteRecord", operation);
             tx.update(sqliteTable)
               .set({
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: true,
               })
-              .where(
-                isSingleton
-                  ? undefined
-                  : and(
-                      ...Object.entries(operation.key).map(([columnName, value]) => eq(sqliteTable[columnName], value))
-                    )
-              )
+              .where(eq(sqliteTable.__key, key))
               .run();
           }
         }
