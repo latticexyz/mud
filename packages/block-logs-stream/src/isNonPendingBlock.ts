@@ -1,5 +1,7 @@
 import type { Block } from "viem";
 
+// TODO: get rid of this once https://github.com/wagmi-dev/viem/pull/847 lands
+
 export type NonPendingBlock<TBlock extends Block> = TBlock & {
   hash: NonNullable<TBlock["hash"]>;
   logsBloom: NonNullable<TBlock["logsBloom"]>;

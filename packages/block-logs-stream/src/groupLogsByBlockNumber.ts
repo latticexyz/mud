@@ -1,4 +1,4 @@
-import { Block, BlockNumber, Log } from "viem";
+import { BlockNumber, Log } from "viem";
 import { NonPendingLog, isNonPendingLog } from "./isNonPendingLog";
 import { bigIntSort, isDefined } from "@latticexyz/common/utils";
 import { debug } from "./debug";

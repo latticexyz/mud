@@ -99,6 +99,7 @@ describe("blockLogsToSqlite", async () => {
       [
         {
           "chainId": 31337,
+          "indexerVersion": 1,
           "lastError": null,
           "lastUpdatedBlockNumber": 5448n,
         },
@@ -108,8 +109,9 @@ describe("blockLogsToSqlite", async () => {
     expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
+          "indexerVersion": 1,
           "keySchema": {
             "0": "bytes32",
           },
@@ -129,7 +131,7 @@ describe("blockLogsToSqlite", async () => {
     expect(tables).toMatchInlineSnapshot(`
       [
         {
-          "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
           "keySchema": {
             "0": "bytes32",

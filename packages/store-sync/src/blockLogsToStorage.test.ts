@@ -118,6 +118,8 @@ describe("blockLogsToStorage", () => {
               "blockNumber": 5448n,
               "operations": [
                 {
+                  "fieldName": "amount",
+                  "fieldValue": 8,
                   "key": {
                     "item": 1,
                     "itemVariant": 1,
@@ -150,8 +152,6 @@ describe("blockLogsToStorage", () => {
                   "name": "Inventory",
                   "namespace": "",
                   "type": "SetField",
-                  "value": 8,
-                  "valueName": "amount",
                 },
               ],
             },
@@ -171,6 +171,8 @@ describe("blockLogsToStorage", () => {
         "blockNumber": 5448n,
         "operations": [
           {
+            "fieldName": "amount",
+            "fieldValue": 8,
             "key": {
               "item": 1,
               "itemVariant": 1,
@@ -203,8 +205,6 @@ describe("blockLogsToStorage", () => {
             "name": "Inventory",
             "namespace": "",
             "type": "SetField",
-            "value": 8,
-            "valueName": "amount",
           },
         ],
       }

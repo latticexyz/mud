@@ -121,14 +121,14 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: false,
                 ...operation.key,
-                ...operation.record,
+                ...operation.value,
               })
               .onConflictDoUpdate({
                 target: sqliteTable.__key,
                 set: {
                   __lastUpdatedBlockNumber: blockNumber,
                   __isDeleted: false,
-                  ...operation.record,
+                  ...operation.value,
                 },
               })
               .run();
@@ -141,14 +141,14 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
                 __isDeleted: false,
                 ...operation.key,
                 ...schemaToDefaults(table.valueSchema),
-                [operation.valueName]: operation.value,
+                [operation.fieldName]: operation.fieldValue,
               })
               .onConflictDoUpdate({
                 target: sqliteTable.__key,
                 set: {
                   __lastUpdatedBlockNumber: blockNumber,
                   __isDeleted: false,
-                  [operation.valueName]: operation.value,
+                  [operation.fieldName]: operation.fieldValue,
                 },
               })
               .run();
