@@ -1,2 +1,3 @@
 dist
 *.db
+*.db-journal
