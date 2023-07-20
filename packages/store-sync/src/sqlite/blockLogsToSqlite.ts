@@ -3,7 +3,7 @@ import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
-import { schemaToDefaults } from "../common";
+import { schemaToDefaults } from "../schemaToDefaults";
 import { TableId } from "@latticexyz/common";
 import { blockLogsToStorage } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
