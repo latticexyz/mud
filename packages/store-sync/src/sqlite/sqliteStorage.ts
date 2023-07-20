@@ -5,7 +5,7 @@ import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { TableId } from "@latticexyz/common";
-import { blockLogsToStorage } from "../blockLogsToStorage";
+import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
@@ -13,21 +13,19 @@ import { chainState, mudStoreTables } from "./internalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 
-// TODO: expose as an object to pass into `blockLogsToStorage` so we can use underlying functions in other places (e.g. hydrate from indexer using `storeOperations`)
-
-export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
+export function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
   database: BaseSQLiteDatabase<"sync", void>;
   publicClient: PublicClient<Transport, Chain>;
   config?: TConfig;
-}): ReturnType<typeof blockLogsToStorage<TConfig>> {
+}): BlockLogsToStorageOptions<TConfig> {
   // TODO: should these run lazily before first `registerTables`?
   database.run(sql.raw(sqliteTableToSql(chainState)));
   database.run(sql.raw(sqliteTableToSql(mudStoreTables)));
 
-  return blockLogsToStorage({
+  return {
     async registerTables({ blockNumber, tables }) {
       await database.transaction(async (tx) => {
         for (const table of tables) {
@@ -184,5 +182,5 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
           .run();
       });
     },
-  });
+  } as BlockLogsToStorageOptions<TConfig>;
 }

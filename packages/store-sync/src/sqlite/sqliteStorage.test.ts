@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { blockLogsToSqlite } from "./blockLogsToSqlite";
+import { sqliteStorage } from "./sqliteStorage";
 import { getTables } from "./getTables";
 import { chainState, mudStoreTables } from "./internalTables";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
@@ -8,8 +8,9 @@ import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
 import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
+import { blockLogsToStorage } from "../blockLogsToStorage";
 
-describe("blockLogsToSqlite", async () => {
+describe("sqliteStorage", async () => {
   const SqlJs = await initSqlJs();
   let db: BaseSQLiteDatabase<"sync", void>;
 
@@ -32,12 +33,12 @@ describe("blockLogsToSqlite", async () => {
       '"no such table: __mudStoreTables"'
     );
 
-    const storageAdapter = blockLogsToSqlite({ database: db, publicClient });
+    const storageAdapter = sqliteStorage({ database: db, publicClient });
 
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot("[]");
     expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot("[]");
 
-    await storageAdapter({
+    await blockLogsToStorage(storageAdapter)({
       blockNumber: 5448n,
       logs: [
         {
