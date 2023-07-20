@@ -7,7 +7,8 @@ import {
 } from "@latticexyz/block-logs-stream";
 import { concatMap, filter, from, map, mergeMap, tap } from "rxjs";
 import { storeEventsAbi } from "@latticexyz/store";
-import { blockLogsToSqlite } from "@latticexyz/store-sync/sqlite";
+import { blockLogsToStorage } from "@latticexyz/store-sync";
+import { sqliteStorage } from "@latticexyz/store-sync/sqlite";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 
 type CreateIndexerOptions = {
@@ -47,7 +48,7 @@ export function createIndexer({ database, publicClient, startBlock, maxBlockRang
 
   blockLogs$
     .pipe(
-      concatMap(blockLogsToSqlite({ database, publicClient })),
+      concatMap(blockLogsToStorage(sqliteStorage({ database, publicClient }))),
       tap(({ blockNumber, operations }) => {
         console.log("stored", operations.length, "operations for block", blockNumber);
       })

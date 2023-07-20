@@ -1,13 +1,14 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Address, Chain, PublicClient, Transport } from "viem";
 import {
+  ComponentValue,
   Entity,
   Component as RecsComponent,
   Schema as RecsSchema,
   World as RecsWorld,
-  createWorld,
+  setComponent,
 } from "@latticexyz/recs";
-import { KeySchema, ValueSchema } from "../common";
+import { KeySchema, ValueSchema, Table, TableRecord } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
@@ -18,8 +19,13 @@ import { filter, map, tap, mergeMap, from, concatMap } from "rxjs";
 import { blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
+import { debug } from "./debug";
+import { encodeKeyTuple } from "@latticexyz/protocol-parser";
+import { defineInternalComponents } from "./defineInternalComponents";
+import { getTableKey } from "./getTableKey";
 
 type SyncToRecsOptions = {
+  world: RecsWorld;
   config: StoreConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
@@ -36,21 +42,61 @@ type SyncToRecsOptions = {
       }
     >
   >;
+  initialState?: {
+    blockNumber: bigint | null;
+    tables: (Table & { records: TableRecord[] })[];
+  };
 };
 
 type SyncToRecsResult = {
   // TODO: return publicClient?
   // TODO: return components, if we extend them
-  world: RecsWorld;
   singletonEntity: Entity;
   destroy: () => void;
 };
 
-export function syncToRecs({ config, address, publicClient, components }: SyncToRecsOptions): SyncToRecsResult {
-  const world = createWorld();
+export async function syncToRecs({
+  world,
+  config,
+  address,
+  publicClient,
+  components: initialComponents,
+  initialState,
+}: SyncToRecsOptions): Promise<SyncToRecsResult> {
+  const components = {
+    ...initialComponents,
+    ...defineInternalComponents(world),
+  };
 
-  // TODO: fetch start block from indexer and/or deploy event
-  const startBlock = 0n;
+  let startBlock = 0n;
+
+  if (initialState != null && initialState.blockNumber != null) {
+    debug("hydrating from initial state to block", initialState.blockNumber);
+    startBlock = initialState.blockNumber + 1n;
+
+    const componentList = Object.values(components);
+
+    for (const table of initialState.tables) {
+      setComponent(components.TableMetadata, getTableKey(table) as Entity, { table });
+      const component = componentList.find((component) => component.metadata.contractId === table.tableId);
+      if (component == null) {
+        debug(`no component found for table ${table.namespace}:${table.name}, skipping initial state`);
+        continue;
+      }
+      for (const record of table.records) {
+        // TODO: rework encodeKeyTuple to take a schema tuple or KeySchema
+        const entity = hexKeyTupleToEntity(
+          encodeKeyTuple({ staticFields: Object.values(table.keySchema), dynamicFields: [] }, Object.values(record.key))
+        );
+        setComponent(component, entity, record.value as ComponentValue);
+      }
+    }
+  }
+
+  // TODO: if startBlock is still 0, find via deploy event
+
+  debug("starting sync from block", startBlock);
+
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
   const latestBlockNumber$ = latestBlock$.pipe(
@@ -59,7 +105,7 @@ export function syncToRecs({ config, address, publicClient, components }: SyncTo
   );
 
   const blockLogs$ = latestBlockNumber$.pipe(
-    tap((latestBlockNumber) => console.log("latest block number", latestBlockNumber)),
+    tap((latestBlockNumber) => debug("latest block number", latestBlockNumber)),
     map((latestBlockNumber) => ({ startBlock, endBlock: latestBlockNumber })),
     blockRangeToLogs({
       publicClient,
@@ -73,7 +119,7 @@ export function syncToRecs({ config, address, publicClient, components }: SyncTo
     .pipe(
       concatMap(blockLogsToStorage(recsStorage({ components, config }))),
       tap(({ blockNumber, operations }) => {
-        console.log("stored", operations.length, "operations for block", blockNumber);
+        debug("stored", operations.length, "operations for block", blockNumber);
       })
     )
     .subscribe();
@@ -81,7 +127,6 @@ export function syncToRecs({ config, address, publicClient, components }: SyncTo
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
   return {
-    world,
     singletonEntity,
     destroy: (): void => {
       world.dispose();

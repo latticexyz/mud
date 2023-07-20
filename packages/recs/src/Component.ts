@@ -41,7 +41,7 @@ function getComponentName(component: Component<any, any, any>) {
  * const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { id: "Position" });
  * ```
  */
-export function defineComponent<S extends Schema, M extends Metadata, T = undefined>(
+export function defineComponent<S extends Schema, M extends Metadata, T = any>(
   world: World,
   schema: S,
   options?: { id?: string; metadata?: M; indexed?: boolean }
