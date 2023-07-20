@@ -23,10 +23,5 @@
   "engines": {
     "node": "18.x",
     "pnpm": "8.x"
-  },
-  "pnpm": {
-    "overrides": {
-      "abitype": "0.9.3"
-    }
   }
 }

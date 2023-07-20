@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  abitype: 0.9.3
-
 importers:
 
   .:
@@ -84,8 +81,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 1.3.0
-        version: 1.3.0(typescript@5.1.6)
+        specifier: 1.3.1
+        version: 1.3.1(typescript@5.1.6)
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -181,8 +178,8 @@ importers:
         specifier: 5.1.6
         version: 5.1.6
       viem:
-        specifier: 1.3.0
-        version: 1.3.0(typescript@5.1.6)
+        specifier: 1.3.1
+        version: 1.3.1(typescript@5.1.6)
       vite:
         specifier: ^4.2.1
         version: 4.3.5(@types/node@20.1.3)
@@ -2197,8 +2194,8 @@ packages:
     hasBin: true
     dev: true
 
-  /viem@1.3.0(typescript@5.1.6):
-    resolution: {integrity: sha512-gCtachbNPG9G9D7UNuiqLaLf8IFV15FypBrSpXEFeeEczXxI+Jgi9FTwDS+NJLreVrjBeZXQVj1ITTqKpItw4w==}
+  /viem@1.3.1(typescript@5.1.6):
+    resolution: {integrity: sha512-Yv+y3/exrrEN4EAkVUtUuQxsjF4+3taHY2aSinJnNWtcA4fBZ+WfPJBTywcnFIa/Q5oDcQN85yqPFBbkXqWHdw==}
     peerDependencies:
       typescript: '>=5.0.4'
     peerDependenciesMeta:
