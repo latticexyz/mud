@@ -99,9 +99,9 @@ describe("blockLogsToSqlite", async () => {
       [
         {
           "chainId": 31337,
-          "indexerVersion": 1,
           "lastError": null,
           "lastUpdatedBlockNumber": 5448n,
+          "schemaVersion": 1,
         },
       ]
     `);
@@ -111,7 +111,6 @@ describe("blockLogsToSqlite", async () => {
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
-          "indexerVersion": 1,
           "keySchema": {
             "0": "bytes32",
           },
@@ -119,6 +118,7 @@ describe("blockLogsToSqlite", async () => {
           "lastUpdatedBlockNumber": 5448n,
           "name": "Inventory",
           "namespace": "",
+          "schemaVersion": 1,
           "tableId": "0x00000000000000000000000000000000496e76656e746f727900000000000000",
           "valueSchema": {
             "value": "uint32",
