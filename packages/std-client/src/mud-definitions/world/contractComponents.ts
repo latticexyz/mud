@@ -7,6 +7,8 @@ export function defineContractComponents(world: World) {
   return {
     NamespaceOwner: (() => {
       const tableId = new TableId("", "NamespaceOwner");
+      const keySchema = { namespace: "bytes16" } as const;
+      const valueSchema = { owner: "address" } as const;
       return defineComponent(
         world,
         {
@@ -16,12 +18,19 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     ResourceAccess: (() => {
       const tableId = new TableId("", "ResourceAccess");
+      const keySchema = {
+        resourceSelector: "bytes32",
+        caller: "address",
+      } as const;
+      const valueSchema = { access: "bool" } as const;
       return defineComponent(
         world,
         {
@@ -31,12 +40,19 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     InstalledModules: (() => {
       const tableId = new TableId("", "InstalledModules");
+      const keySchema = {
+        moduleName: "bytes16",
+        argumentsHash: "bytes32",
+      } as const;
+      const valueSchema = { moduleAddress: "address" } as const;
       return defineComponent(
         world,
         {
@@ -46,12 +62,16 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     Systems: (() => {
       const tableId = new TableId("", "Systems");
+      const keySchema = { resourceSelector: "bytes32" } as const;
+      const valueSchema = { system: "address", publicAccess: "bool" } as const;
       return defineComponent(
         world,
         {
@@ -62,12 +82,16 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     SystemRegistry: (() => {
       const tableId = new TableId("", "SystemRegistry");
+      const keySchema = { system: "address" } as const;
+      const valueSchema = { resourceSelector: "bytes32" } as const;
       return defineComponent(
         world,
         {
@@ -77,12 +101,16 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     SystemHooks: (() => {
       const tableId = new TableId("", "SystemHooks");
+      const keySchema = { resourceSelector: "bytes32" } as const;
+      const valueSchema = { value: "address[]" } as const;
       return defineComponent(
         world,
         {
@@ -92,12 +120,16 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     ResourceType: (() => {
       const tableId = new TableId("", "ResourceType");
+      const keySchema = { resourceSelector: "bytes32" } as const;
+      const valueSchema = { resourceType: "uint8" } as const;
       return defineComponent(
         world,
         {
@@ -107,12 +139,20 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     FunctionSelectors: (() => {
       const tableId = new TableId("", "FunctionSelector");
+      const keySchema = { functionSelector: "bytes4" } as const;
+      const valueSchema = {
+        namespace: "bytes16",
+        name: "bytes16",
+        systemFunctionSelector: "bytes4",
+      } as const;
       return defineComponent(
         world,
         {
@@ -124,12 +164,22 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     KeysInTable: (() => {
       const tableId = new TableId("", "KeysInTable");
+      const keySchema = { sourceTable: "bytes32" } as const;
+      const valueSchema = {
+        keys0: "bytes32[]",
+        keys1: "bytes32[]",
+        keys2: "bytes32[]",
+        keys3: "bytes32[]",
+        keys4: "bytes32[]",
+      } as const;
       return defineComponent(
         world,
         {
@@ -143,12 +193,19 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     UsedKeysIndex: (() => {
       const tableId = new TableId("", "UsedKeysIndex");
+      const keySchema = {
+        sourceTable: "bytes32",
+        keysHash: "bytes32",
+      } as const;
+      const valueSchema = { has: "bool", index: "uint40" } as const;
       return defineComponent(
         world,
         {
@@ -159,6 +216,8 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );

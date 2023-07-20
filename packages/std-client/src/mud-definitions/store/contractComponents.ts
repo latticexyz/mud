@@ -7,6 +7,8 @@ export function defineContractComponents(world: World) {
   return {
     Hooks: (() => {
       const tableId = new TableId("mudstore", "Hooks");
+      const keySchema = { key: "bytes32" } as const;
+      const valueSchema = { value: "address[]" } as const;
       return defineComponent(
         world,
         {
@@ -16,12 +18,16 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     Callbacks: (() => {
       const tableId = new TableId("mudstore", "Callbacks");
+      const keySchema = { key: "bytes32" } as const;
+      const valueSchema = { value: "bytes24[]" } as const;
       return defineComponent(
         world,
         {
@@ -31,12 +37,19 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     StoreMetadata: (() => {
       const tableId = new TableId("mudstore", "StoreMetadata");
+      const keySchema = { tableId: "bytes32" } as const;
+      const valueSchema = {
+        tableName: "string",
+        abiEncodedFieldNames: "bytes",
+      } as const;
       return defineComponent(
         world,
         {
@@ -47,12 +60,21 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     Mixed: (() => {
       const tableId = new TableId("mudstore", "Mixed");
+      const keySchema = { key: "bytes32" } as const;
+      const valueSchema = {
+        u32: "uint32",
+        u128: "uint128",
+        a32: "uint32[]",
+        s: "string",
+      } as const;
       return defineComponent(
         world,
         {
@@ -65,12 +87,16 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     Vector2: (() => {
       const tableId = new TableId("mudstore", "Vector2");
+      const keySchema = { key: "bytes32" } as const;
+      const valueSchema = { x: "uint32", y: "uint32" } as const;
       return defineComponent(
         world,
         {
@@ -81,12 +107,23 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     KeyEncoding: (() => {
       const tableId = new TableId("mudstore", "KeyEncoding");
+      const keySchema = {
+        k1: "uint256",
+        k2: "int32",
+        k3: "bytes16",
+        k4: "address",
+        k5: "bool",
+        k6: "uint8",
+      } as const;
+      const valueSchema = { value: "bool" } as const;
       return defineComponent(
         world,
         {
@@ -96,6 +133,8 @@ export function defineContractComponents(world: World) {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );

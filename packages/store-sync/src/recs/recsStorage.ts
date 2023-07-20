@@ -1,5 +1,5 @@
-import { Address, Hex, concatHex, getAddress } from "viem";
-import { StoredTable, blockLogsToStorage } from "../blockLogsToStorage";
+import { Address, getAddress } from "viem";
+import { BlockLogsToStorageOptions, blockLogsToStorage } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import {
@@ -11,44 +11,38 @@ import {
   setComponent,
   updateComponent,
 } from "@latticexyz/recs";
-import { TableName, TableNamespace, schemaToDefaults } from "../common";
+import { KeySchema, Table, TableName, TableNamespace, ValueSchema } from "../common";
 import { isDefined } from "@latticexyz/common/utils";
 import { TableId } from "@latticexyz/common";
-import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { schemaToDefaults } from "../schemaToDefaults";
+import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 
 // TODO: should we create components here from config rather than passing them in?
 // TODO: should we store table schemas in RECS?
 
 type TableKey = `${Address}:${TableNamespace}:${TableName}`;
 
-function getTableKey(table: Pick<StoredTable, "address" | "namespace" | "name">): TableKey {
+function getTableKey(table: Pick<Table, "address" | "namespace" | "name">): TableKey {
   return `${getAddress(table.address)}:${table.namespace}:${table.name}`;
 }
 
-export function blockLogsToRecs<TConfig extends StoreConfig = StoreConfig>({
-  recsComponents,
+export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
+  components,
 }: {
-  recsComponents: Record<
+  components: Record<
     string,
-    RecsComponent<
-      RecsSchema,
-      {
-        contractId: string;
-        keySchema: Record<string, StaticAbiType>;
-        valueSchema: Record<string, SchemaAbiType>;
-      }
-    >
+    RecsComponent<RecsSchema, { contractId: string; keySchema: KeySchema; valueSchema: ValueSchema }>
   >;
   config?: TConfig;
-}): ReturnType<typeof blockLogsToStorage<TConfig>> {
+}): BlockLogsToStorageOptions<TConfig> {
   // TODO: do we need to store block number?
-  const storedTables = new Map<TableKey, StoredTable>();
+  const storedTables = new Map<TableKey, Table>();
 
-  const recsComponentsByTableId = Object.fromEntries(
-    Object.entries(recsComponents).map(([id, component]) => [component.metadata.contractId, component])
+  const componentsByTableId = Object.fromEntries(
+    Object.entries(components).map(([id, component]) => [component.metadata.contractId, component])
   );
 
-  return blockLogsToStorage({
+  return {
     async registerTables({ tables }) {
       for (const table of tables) {
         // TODO: check if table exists already and skip/warn?
@@ -76,15 +70,14 @@ export function blockLogsToRecs<TConfig extends StoreConfig = StoreConfig>({
         }
 
         const tableId = new TableId(operation.namespace, operation.name).toString();
-        const component = recsComponentsByTableId[operation.log.args.table];
+        const component = componentsByTableId[operation.log.args.table];
         if (!component) {
-          debug(
-            `skipping update for unknown component: ${tableId}. Available components: ${Object.keys(recsComponents)}`
-          );
+          debug(`skipping update for unknown component: ${tableId}. Available components: ${Object.keys(components)}`);
           continue;
         }
 
-        const entity = `entity:${operation.log.args.key.join(":")}` as Entity;
+        const entity = hexKeyTupleToEntity(operation.log.args.key);
+
         if (operation.type === "SetRecord") {
           debug("setting component", tableId, entity, operation.value);
           setComponent(component, entity, operation.value as ComponentValue);
@@ -99,10 +92,10 @@ export function blockLogsToRecs<TConfig extends StoreConfig = StoreConfig>({
             schemaToDefaults(table.valueSchema) as ComponentValue
           );
         } else if (operation.type === "DeleteRecord") {
-          console.log("deleting component", tableId, entity);
+          debug("deleting component", tableId, entity);
           removeComponent(component, entity);
         }
       }
     },
-  });
+  } as BlockLogsToStorageOptions<TConfig>;
 }
