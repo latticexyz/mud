@@ -2,7 +2,7 @@ import { publicProcedure, router } from "./trpc";
 import { z } from "zod";
 import { Table, TableRecord } from "@latticexyz/store-sync";
 import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
-import { eq, getTableName } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export type TableWithRecords = Table & { records: TableRecord[] };
 

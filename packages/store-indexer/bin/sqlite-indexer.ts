@@ -53,7 +53,7 @@ try {
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
 
   if (currentChainState != null) {
-    if (currentChainState.schemaVersion != null && currentChainState.schemaVersion < schemaVersion) {
+    if (currentChainState.schemaVersion != schemaVersion) {
       console.log(
         "schema version changed from",
         currentChainState.schemaVersion,
