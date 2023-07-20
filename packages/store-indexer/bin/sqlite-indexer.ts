@@ -11,7 +11,7 @@ import cors from "cors";
 import { appRouter } from "../src";
 import { chainState } from "@latticexyz/store-sync/sqlite";
 import { DefaultLogger, eq } from "drizzle-orm";
-import { indexerVersion } from "@latticexyz/store-sync/sqlite";
+import { schemaVersion } from "@latticexyz/store-sync/sqlite";
 import fs from "node:fs";
 
 const supportedChains: Chain[] = [foundry, latticeTestnet, latticeTestnet2];
@@ -53,12 +53,12 @@ try {
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
 
   if (currentChainState != null) {
-    if (currentChainState.indexerVersion != null && currentChainState.indexerVersion < indexerVersion) {
+    if (currentChainState.schemaVersion != null && currentChainState.schemaVersion < schemaVersion) {
       console.log(
-        "indexer version changed from",
-        currentChainState.indexerVersion,
+        "schema version changed from",
+        currentChainState.schemaVersion,
         "to",
-        indexerVersion,
+        schemaVersion,
         "recreating database"
       );
       fs.truncateSync(env.SQLITE_FILENAME);
