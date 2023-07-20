@@ -34,10 +34,14 @@ export function getWorldId(chainId: ChainId, address: Address): WorldId {
   return `${chainId}:${getAddress(address)}`;
 }
 
-export function schemaToDefaults(
-  schema: Record<string, SchemaAbiType>
-): Record<string, SchemaAbiTypeToPrimitiveType<SchemaAbiType>> {
+export type SchemaToPrimitives<TSchema extends Record<string, SchemaAbiType>> = {
+  [key in keyof TSchema]: SchemaAbiTypeToPrimitiveType<TSchema[key]>;
+};
+
+export function schemaToDefaults<TSchema extends Record<string, SchemaAbiType>>(
+  schema: TSchema
+): SchemaToPrimitives<TSchema> {
   return Object.fromEntries(
     Object.entries(schema).map(([key, abiType]) => [key, schemaAbiTypeToDefaultValue[abiType]])
-  );
+  ) as SchemaToPrimitives<TSchema>;
 }

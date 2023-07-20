@@ -1,4 +1,4 @@
-import { Address, Hex, getAddress, isHex, pad, toHex } from "viem";
+import { Address, Hex, concatHex, getAddress } from "viem";
 import { StoredTable, blockLogsToStorage } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
@@ -14,6 +14,7 @@ import {
 import { TableName, TableNamespace, schemaToDefaults } from "../common";
 import { isDefined } from "@latticexyz/common/utils";
 import { TableId } from "@latticexyz/common";
+import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 
 // TODO: should we create components here from config rather than passing them in?
 // TODO: should we store table schemas in RECS?
@@ -24,21 +25,20 @@ function getTableKey(table: Pick<StoredTable, "address" | "namespace" | "name">)
   return `${getAddress(table.address)}:${table.namespace}:${table.name}`;
 }
 
-// TODO: should we store this in recs package? importing from network may create a circular dependency
-const singletonId = pad("0x060d" as Hex, { size: 32 }) as Entity;
-function keyTupleToEntityId(keyTuple: any[]): Entity {
-  // v2 uses an empty key tuple as the singleton ID, so we'll return the corresponding v1 singleton entity ID to normalize this for now
-  if (keyTuple.length === 0) {
-    return singletonId;
-  }
-  // TODO: this should probably be padded based on key schema (uint vs bytes32 will have different leading/trailing zeroes)
-  return keyTuple.map((key) => (isHex(key) ? pad(key, { size: 32 }) : toHex(key, { size: 32 }))).join(":") as Entity;
-}
-
 export function blockLogsToRecs<TConfig extends StoreConfig = StoreConfig>({
   recsComponents,
 }: {
-  recsComponents: Record<string, RecsComponent<RecsSchema, { contractId: string; tableId?: string }>>;
+  recsComponents: Record<
+    string,
+    RecsComponent<
+      RecsSchema,
+      {
+        contractId: string;
+        keySchema: Record<string, StaticAbiType>;
+        valueSchema: Record<string, SchemaAbiType>;
+      }
+    >
+  >;
   config?: TConfig;
 }): ReturnType<typeof blockLogsToStorage<TConfig>> {
   // TODO: do we need to store block number?
@@ -84,13 +84,10 @@ export function blockLogsToRecs<TConfig extends StoreConfig = StoreConfig>({
           continue;
         }
 
-        const entity = keyTupleToEntityId(Object.values(operation.key));
+        const entity = `entity:${operation.log.args.key.join(":")}` as Entity;
         if (operation.type === "SetRecord") {
           debug("setting component", tableId, entity, operation.value);
-          setComponent(component, entity, {
-            ...operation.value,
-            __key: operation.key,
-          } as ComponentValue);
+          setComponent(component, entity, operation.value as ComponentValue);
         } else if (operation.type === "SetField") {
           debug("updating component", tableId, entity, {
             [operation.fieldName]: operation.fieldValue,
@@ -98,10 +95,7 @@ export function blockLogsToRecs<TConfig extends StoreConfig = StoreConfig>({
           updateComponent(
             component,
             entity,
-            {
-              [operation.fieldName]: operation.fieldValue,
-              __key: operation.key,
-            } as ComponentValue,
+            { [operation.fieldName]: operation.fieldValue } as ComponentValue,
             schemaToDefaults(table.valueSchema) as ComponentValue
           );
         } else if (operation.type === "DeleteRecord") {

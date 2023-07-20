@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { DynamicAbiType, SchemaAbiType } from "./schemaAbiTypes";
+import { DynamicAbiType, SchemaAbiType, dynamicAbiTypes } from "./schemaAbiTypes";
 import { LiteralToBroad } from "./utils";
 import { isArrayAbiType } from "./arrayAbiTypes";
 
@@ -124,6 +124,6 @@ export type DynamicAbiTypeToPrimitiveType<TDynamicAbiType extends DynamicAbiType
   (typeof dynamicAbiTypeToDefaultValue)[TDynamicAbiType]
 >;
 
-export function isDynamicAbiType(abiType: SchemaAbiType): abiType is DynamicAbiType {
-  return isArrayAbiType(abiType) || abiType === "bytes" || abiType === "string";
+export function isDynamicAbiType(abiType: string): abiType is DynamicAbiType {
+  return dynamicAbiTypes.includes(abiType as DynamicAbiType);
 }

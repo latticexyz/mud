@@ -21,11 +21,17 @@ function renderDefineComponent(table: RecsV1TableOptions["tables"][number]) {
   return `
     (() => {
       const tableId = new TableId("${namespace}", "${name}");
+      const keySchema = ${JSON.stringify(table.keySchema)} as const;
+      const valueSchema = ${JSON.stringify(table.valueSchema)} as const;
       return defineComponent(world, {
-        ${table.fields.map(({ name, recsTypeString }) => `${name}: ${recsTypeString}`).join(",")},
-        __key: RecsType.T
+        ${table.fields.map(({ name, recsTypeString }) => `${name}: ${recsTypeString}`).join(",")}
       }, {
-        metadata: { contractId: tableId.toHex(), tableId: tableId.toString() },
+        metadata: {
+          contractId: tableId.toHex(),
+          tableId: tableId.toString(),
+          keySchema,
+          valueSchema,
+        },
       });
     })()
   `;

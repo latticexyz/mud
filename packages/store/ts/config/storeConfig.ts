@@ -21,6 +21,7 @@ import {
   zValueName,
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
+import { schemaAbiTypes, staticAbiTypes } from "@latticexyz/schema-type";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -29,13 +30,13 @@ const zUserEnumName = zObjectName;
 
 // Fields can use AbiType or one of user-defined wrapper types
 // (user types are refined later, based on the appropriate config options)
-const zFieldData = z.string();
+const zFieldData = z.union([z.enum(schemaAbiTypes), z.string()]);
 
 export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
-const zKeyElementSchema = z.string();
+const zKeyElementSchema = z.union([z.enum(staticAbiTypes), z.string()]);
 const zKeySchema = z.record(zKeyName, zKeyElementSchema).default(TABLE_DEFAULTS.keySchema);
 
 type KeySchema<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;

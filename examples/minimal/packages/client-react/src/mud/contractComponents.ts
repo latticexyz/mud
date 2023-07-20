@@ -7,48 +7,61 @@ export function defineContractComponents(world: World) {
   return {
     CounterTable: (() => {
       const tableId = new TableId("", "CounterTable");
+      const keySchema = { key: "bytes32" } as const;
+      const valueSchema = { value: "uint32" } as const;
       return defineComponent(
         world,
         {
           value: RecsType.Number,
-          __key: RecsType.T,
         },
         {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     MessageTable: (() => {
       const tableId = new TableId("", "MessageTable");
+      const keySchema = {} as const;
+      const valueSchema = { value: "string" } as const;
       return defineComponent(
         world,
         {
           value: RecsType.String,
-          __key: RecsType.T,
         },
         {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );
     })(),
     Inventory: (() => {
       const tableId = new TableId("", "Inventory");
+      const keySchema = {
+        owner: "address",
+        item: "uint32",
+        itemVariant: "uint32",
+      } as const;
+      const valueSchema = { amount: "uint32" } as const;
       return defineComponent(
         world,
         {
           amount: RecsType.Number,
-          __key: RecsType.T,
         },
         {
           metadata: {
             contractId: tableId.toHex(),
             tableId: tableId.toString(),
+            keySchema,
+            valueSchema,
           },
         }
       );

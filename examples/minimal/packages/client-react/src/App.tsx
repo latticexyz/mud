@@ -1,7 +1,8 @@
-import { useComponentValue, useEntityQuery, useRows } from "@latticexyz/react";
-import { Has, getComponentValue, getComponentValueStrict } from "@latticexyz/recs";
+import { useComponentValue, useEntityQuery } from "@latticexyz/react";
+import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
+import { entityToKey } from "@latticexyz/store-sync/recs";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
@@ -101,10 +102,8 @@ export const App = () => {
         <h1>Inventory</h1>
         <ul>
           {inventory.map((entity) => {
-            // TODO: figure out a better approach for piping key, maybe component has key decoder?
-            const { __key, amount } = getComponentValueStrict(Inventory, entity);
-            // TODO: use regular properties once we have key names (https://github.com/latticexyz/mud/pull/1182)
-            const [owner, item, itemVariant] = Object.values(__key as any as Record<string, any>);
+            const { amount } = getComponentValueStrict(Inventory, entity);
+            const { owner, item, itemVariant } = entityToKey(Inventory, entity);
             return (
               <li key={entity}>
                 {owner.substring(0, 8)} owns {amount} of {VARIANTS[itemVariant]} {ITEMS[item]}
