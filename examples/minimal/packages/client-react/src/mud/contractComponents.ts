@@ -11,6 +11,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           value: RecsType.Number,
+          __key: RecsType.T,
         },
         {
           metadata: {
@@ -26,6 +27,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           value: RecsType.String,
+          __key: RecsType.T,
         },
         {
           metadata: {
@@ -41,6 +43,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           amount: RecsType.Number,
+          __key: RecsType.T,
         },
         {
           metadata: {

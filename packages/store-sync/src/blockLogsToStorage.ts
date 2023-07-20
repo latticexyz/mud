@@ -36,13 +36,14 @@ export type StoredTable = {
 export type BaseStorageOperation = {
   log: StoreEventsLog;
   namespace: string;
+  name: string;
 };
 
 export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
   type: "SetRecord";
 } & {
     [TTable in keyof TConfig["tables"]]: {
-      name: TTable;
+      name: TTable & string;
       key: Key<TConfig, TTable>;
       value: Value<TConfig, TTable>;
     };
@@ -52,11 +53,11 @@ export type SetFieldOperation<TConfig extends StoreConfig> = BaseStorageOperatio
   type: "SetField";
 } & {
     [TTable in keyof TConfig["tables"]]: {
-      name: TTable;
+      name: TTable & string;
       key: Key<TConfig, TTable>;
     } & {
       [TValue in keyof Value<TConfig, TTable>]: {
-        fieldName: TValue;
+        fieldName: TValue & string;
         fieldValue: Value<TConfig, TTable>[TValue];
       };
     }[keyof Value<TConfig, TTable>];
@@ -66,7 +67,7 @@ export type DeleteRecordOperation<TConfig extends StoreConfig> = BaseStorageOper
   type: "DeleteRecord";
 } & {
     [TTable in keyof TConfig["tables"]]: {
-      name: TTable;
+      name: TTable & string;
       key: Key<TConfig, TTable>;
     };
   }[keyof TConfig["tables"]];

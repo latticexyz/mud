@@ -12,6 +12,7 @@
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
+    "@latticexyz/block-logs-stream": "link:../../../../packages/block-logs-stream",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
     "@latticexyz/network": "link:../../../../packages/network",
@@ -20,6 +21,8 @@
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/services": "link:../../../../packages/services",
     "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/store": "link:../../../../packages/store",
+    "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "async-mutex": "^0.4.0",

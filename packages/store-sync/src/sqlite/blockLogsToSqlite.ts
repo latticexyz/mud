@@ -107,7 +107,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
               table.name === operation.name
           );
           if (!table) {
-            debug(`table ${operation.namespace}:${String(operation.name)} not found, skipping operation`, operation);
+            debug(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
             continue;
           }
 

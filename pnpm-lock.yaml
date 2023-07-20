@@ -1113,6 +1113,9 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
+      '@latticexyz/recs':
+        specifier: workspace:*
+        version: link:../recs
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type

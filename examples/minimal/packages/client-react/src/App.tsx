@@ -1,4 +1,5 @@
-import { useComponentValue, useRows } from "@latticexyz/react";
+import { useComponentValue, useEntityQuery, useRows } from "@latticexyz/react";
+import { Has, getComponentValue, getComponentValueStrict } from "@latticexyz/recs";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
 
@@ -7,8 +8,8 @@ const VARIANTS = ["yellow", "green", "red"];
 
 export const App = () => {
   const {
-    components: { CounterTable, MessageTable },
-    network: { singletonEntity, worldSend, storeCache },
+    components: { CounterTable, MessageTable, Inventory },
+    network: { singletonEntity, world, publicClient },
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
@@ -17,7 +18,7 @@ export const App = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const message = useComponentValue(MessageTable, singletonEntity);
 
-  const inventory = useRows(storeCache, { table: "Inventory" });
+  const inventory = useEntityQuery([Has(Inventory)]);
 
   useEffect(() => {
     if (!message?.value) return;
@@ -33,10 +34,9 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("increment", []);
-
+          const tx = await world.write.increment({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
           console.log("increment tx", tx);
-          console.log("increment result", await tx.wait());
+          console.log("increment result", await publicClient.waitForTransactionReceipt({ hash: tx }));
         }}
       >
         Increment
@@ -44,10 +44,8 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("willRevert", []);
-
+          const tx = await world.simulate.willRevert();
           console.log("willRevert tx", tx);
-          console.log("willRevert result", await tx.wait());
         }}
       >
         Fail gas estimate
@@ -55,11 +53,10 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          // set gas limit so we skip estimation and can test tx revert
-          const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
-
+          // TODO: figure out how to skip gas estimation
+          const tx = await world.write.willRevert({ gas: 1_000_000n });
           console.log("willRevert tx", tx);
-          console.log("willRevert result", await tx.wait());
+          console.log("willRevert result", await publicClient.waitForTransactionReceipt({ hash: tx }));
         }}
       >
         Revert tx
@@ -72,7 +69,8 @@ export const App = () => {
         <form
           onSubmit={async (event) => {
             event.preventDefault();
-            await worldSend("sendMessage", [myMessage]);
+            const tx = await world.write.sendMessage([myMessage], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+            // await worldSend("sendMessage", [myMessage]);
             setMyMessage("");
           }}
         >
@@ -92,7 +90,7 @@ export const App = () => {
               key={item + index}
               type="button"
               onClick={async () => {
-                const tx = await worldSend("pickUp", [index, index]);
+                const tx = await world.write.pickUp([index, index], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
                 console.log("pick up tx", tx);
               }}
             >
@@ -102,11 +100,17 @@ export const App = () => {
         </div>
         <h1>Inventory</h1>
         <ul>
-          {inventory.map(({ key, value }) => (
-            <li key={key.owner + key.item + key.itemVariant}>
-              {key.owner.substring(0, 8)} owns {value.amount} of {VARIANTS[key.itemVariant]} {ITEMS[key.item]}
-            </li>
-          ))}
+          {inventory.map((entity) => {
+            // TODO: figure out a better approach for piping key, maybe component has key decoder?
+            const { __key, amount } = getComponentValueStrict(Inventory, entity);
+            // TODO: use regular properties once we have key names (https://github.com/latticexyz/mud/pull/1182)
+            const [owner, item, itemVariant] = Object.values(__key as any as Record<string, any>);
+            return (
+              <li key={entity}>
+                {owner.substring(0, 8)} owns {amount} of {VARIANTS[itemVariant]} {ITEMS[item]}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </>

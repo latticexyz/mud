@@ -1,5 +1,5 @@
-import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
+import { getBurnerWallet, setupMUDV2Network } from "@latticexyz/std-client";
+import { createFastTxExecutor, createFaucetService, getSnapSyncRecords, SingletonID } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
@@ -8,95 +8,77 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import { getTableIds } from "@latticexyz/utils";
 import storeConfig from "contracts/mud.config";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex } from "viem";
+import {
+  blockRangeToLogs,
+  createBlockStream,
+  groupLogsByBlockNumber,
+  isNonPendingBlock,
+} from "@latticexyz/block-logs-stream";
+import { filter, map, tap, mergeMap, from, concatMap } from "rxjs";
+import { storeEventsAbi } from "@latticexyz/store";
+import { blockLogsToRecs } from "@latticexyz/store-sync/recs";
+import { privateKeyToAccount } from "viem/accounts";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
-  const result = await setupMUDV2Network<typeof contractComponents, typeof storeConfig>({
-    networkConfig,
-    world,
-    contractComponents,
-    syncThread: "main",
-    storeConfig,
-    worldAbi: IWorld__factory.abi,
+
+  const publicClient = createPublicClient({
+    chain: networkConfig.chain,
+    transport: fallback([webSocket(), http()]),
+    pollingInterval: 1000,
   });
 
-  // Request drip from faucet
-  const signer = result.network.signer.get();
-  if (networkConfig.faucetServiceUrl && signer) {
-    const address = await signer.getAddress();
-    console.info("[Dev Faucet]: Player address -> ", address);
+  const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
-    const faucet = createFaucetService(networkConfig.faucetServiceUrl);
+  const latestBlockNumber$ = latestBlock$.pipe(
+    filter(isNonPendingBlock),
+    map((block) => block.number)
+  );
 
-    const requestDrip = async () => {
-      const balance = await signer.getBalance();
-      console.info(`[Dev Faucet]: Player balance -> ${balance}`);
-      const lowBalance = balance?.lte(utils.parseEther("1"));
-      if (lowBalance) {
-        console.info("[Dev Faucet]: Balance is low, dripping funds to player");
-        // Double drip
-        await faucet.dripDev({ address });
-        await faucet.dripDev({ address });
-      }
-    };
+  const blockLogs$ = latestBlockNumber$.pipe(
+    tap((latestBlockNumber) => console.log("latest block number", latestBlockNumber)),
+    map((latestBlockNumber) => ({ startBlock: 0n, endBlock: latestBlockNumber })),
+    blockRangeToLogs({
+      publicClient,
+      events: storeEventsAbi,
+    }),
+    mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
+  );
 
-    requestDrip();
-    // Request a drip every 20 seconds
-    setInterval(requestDrip, 20000);
-  }
+  blockLogs$
+    .pipe(
+      concatMap(blockLogsToRecs({ recsComponents: contractComponents, config: storeConfig })),
+      tap(({ blockNumber, operations }) => {
+        console.log("stored", operations.length, "operations for block", blockNumber);
+      })
+    )
+    .subscribe();
 
-  const provider = result.network.providers.get().json;
-  const signerOrProvider = signer ?? provider;
-  // Create a World contract instance
-  const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
+  const singletonEntity = world.registerEntity({ id: SingletonID });
 
-  if (networkConfig.snapSync) {
-    const currentBlockNumber = await provider.getBlockNumber();
-    const tableRecords = await getSnapSyncRecords(
-      networkConfig.worldAddress,
-      getTableIds(storeConfig),
-      currentBlockNumber,
-      signerOrProvider
-    );
-
-    console.log(`Syncing ${tableRecords.length} records`);
-    result.startSync(tableRecords, currentBlockNumber);
-  } else {
-    result.startSync();
-  }
-
-  // Create a fast tx executor
-  const fastTxExecutor =
-    signer?.provider instanceof JsonRpcProvider
-      ? await createFastTxExecutor(signer as Signer & { provider: JsonRpcProvider })
-      : null;
-
-  // TODO: infer this from fastTxExecute signature?
-  type BoundFastTxExecuteFn<C extends Contract> = <F extends keyof C>(
-    func: F,
-    args: Parameters<C[F]>,
-    options?: {
-      retryCount?: number;
-    }
-  ) => Promise<ReturnType<C[F]>>;
-
-  function bindFastTxExecute<C extends Contract>(contract: C): BoundFastTxExecuteFn<C> {
-    return async function (...args) {
-      if (!fastTxExecutor) {
-        throw new Error("no signer");
-      }
-      const { tx } = await fastTxExecutor.fastTxExecute(contract, ...args);
-      return await tx;
-    };
-  }
+  const burnerAccount = privateKeyToAccount(getBurnerWallet().value);
+  const burnerWalletClient = createWalletClient({
+    account: burnerAccount,
+    chain: networkConfig.chain,
+    transport: fallback([webSocket(), http()]),
+    // TODO: configure polling per chain? maybe in the MUDChain config?
+    pollingInterval: 1000,
+  });
 
   return {
-    ...result,
-    worldContract,
-    worldSend: bindFastTxExecute(worldContract),
-    fastTxExecutor,
+    components: contractComponents,
+    singletonEntity,
+    publicClient,
+    walletClient: burnerWalletClient,
+    world: getContract({
+      address: networkConfig.worldAddress as Hex,
+      abi: IWorld__factory.abi,
+      publicClient,
+      walletClient: burnerWalletClient,
+    }),
   };
 }
