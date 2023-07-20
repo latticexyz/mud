@@ -58,7 +58,7 @@ export async function setupNetwork() {
     )
     .subscribe();
 
-  const singletonEntity = world.registerEntity({ id: SingletonID });
+  const singletonEntity = world.registerEntity({ id: "entity:" });
 
   const burnerAccount = privateKeyToAccount(getBurnerWallet().value);
   const burnerWalletClient = createWalletClient({
