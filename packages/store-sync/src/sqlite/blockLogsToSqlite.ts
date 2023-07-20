@@ -13,8 +13,10 @@ import { chainState, mudStoreTables } from "./internalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 
+// TODO: expose as an object to pass into `blockLogsToStorage` so we can use underlying functions in other places (e.g. hydrate from indexer using `storeOperations`)
+
 export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
-  database: db,
+  database,
   publicClient,
 }: {
   database: BaseSQLiteDatabase<"sync", void>;
@@ -22,12 +24,12 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
   config?: TConfig;
 }): ReturnType<typeof blockLogsToStorage<TConfig>> {
   // TODO: should these run lazily before first `registerTables`?
-  db.run(sql.raw(sqliteTableToSql(chainState)));
-  db.run(sql.raw(sqliteTableToSql(mudStoreTables)));
+  database.run(sql.raw(sqliteTableToSql(chainState)));
+  database.run(sql.raw(sqliteTableToSql(mudStoreTables)));
 
   return blockLogsToStorage({
     async registerTables({ blockNumber, tables }) {
-      await db.transaction(async (tx) => {
+      await database.transaction(async (tx) => {
         for (const table of tables) {
           debug(`creating table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${table.address}`);
 
@@ -59,7 +61,9 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
       });
     },
     async getTables({ tables }) {
-      return getTables(db, tables);
+      // TODO: fetch any missing schemas from RPC
+      // TODO: cache schemas in memory?
+      return getTables(database, tables);
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
@@ -67,7 +71,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
       // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
 
       const tables = getTables(
-        db,
+        database,
         Array.from(
           new Set(
             operations.map((operation) =>
@@ -81,7 +85,7 @@ export function blockLogsToSqlite<TConfig extends StoreConfig = StoreConfig>({
         ).map((json) => JSON.parse(json))
       );
 
-      await db.transaction(async (tx) => {
+      await database.transaction(async (tx) => {
         for (const { address, namespace, name } of tables) {
           tx.update(mudStoreTables)
             .set({ lastUpdatedBlockNumber: blockNumber })
