@@ -46,10 +46,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     async getTables({ tables }) {
       // TODO: fetch schema from RPC if table not found?
       return tables
-        .map(
-          (table) =>
-            getComponentValue(components.TableMetadata, getTableKey(table) as Entity)?.table as Table | undefined
-        )
+        .map((table) => getComponentValue(components.TableMetadata, getTableKey(table) as Entity)?.table)
         .filter(isDefined);
     },
     async storeOperations({ operations }) {
