@@ -41,7 +41,7 @@ function getComponentName(component: Component<any, any, any>) {
  * const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { id: "Position" });
  * ```
  */
-export function defineComponent<S extends Schema, M extends Metadata, T = any>(
+export function defineComponent<S extends Schema, M extends Metadata, T = unknown>(
   world: World,
   schema: S,
   options?: { id?: string; metadata?: M; indexed?: boolean }
@@ -71,7 +71,7 @@ export function defineComponent<S extends Schema, M extends Metadata, T = any>(
  * setComponent(Position, entity, { x: 1, y: 2 });
  * ```
  */
-export function setComponent<S extends Schema, T = undefined>(
+export function setComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity,
   value: ComponentValue<S, T>
@@ -122,7 +122,7 @@ export function setComponent<S extends Schema, T = undefined>(
  * updateComponent(Position, entity, { x: 1 });
  * ```
  */
-export function updateComponent<S extends Schema, T = undefined>(
+export function updateComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity,
   value: Partial<ComponentValue<S, T>>,
@@ -145,7 +145,7 @@ export function updateComponent<S extends Schema, T = undefined>(
  * @param component {@link defineComponent Component} to be updated.
  * @param entity {@link Entity} whose value should be removed from this component.
  */
-export function removeComponent<S extends Schema, M extends Metadata, T>(
+export function removeComponent<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>,
   entity: Entity
 ) {
@@ -164,7 +164,7 @@ export function removeComponent<S extends Schema, M extends Metadata, T>(
  * @param entity {@link Entity} to check whether it has a value in the given component.
  * @returns true if the component contains a value for the given entity, else false.
  */
-export function hasComponent<S extends Schema, T = undefined>(
+export function hasComponent<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity
 ): boolean {
@@ -181,7 +181,7 @@ export function hasComponent<S extends Schema, T = undefined>(
  * @param entity {@link Entity} to get the value for from the given component.
  * @returns Value of the given entity in the given component or undefined if no value exists.
  */
-export function getComponentValue<S extends Schema, T = undefined>(
+export function getComponentValue<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity
 ): ComponentValue<S, T> | undefined {
@@ -210,7 +210,7 @@ export function getComponentValue<S extends Schema, T = undefined>(
  * @remarks
  * Throws an error if no value exists in the component for the given entity.
  */
-export function getComponentValueStrict<S extends Schema, T = undefined>(
+export function getComponentValueStrict<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   entity: Entity
 ): ComponentValue<S, T> {
@@ -233,7 +233,7 @@ export function getComponentValueStrict<S extends Schema, T = undefined>(
  * componentValueEquals({ x: 1 }, { x: 1, y: 3 }) // returns true because x is equal and y is not present in a
  * ```
  */
-export function componentValueEquals<S extends Schema, T = undefined>(
+export function componentValueEquals<S extends Schema, T = unknown>(
   a?: Partial<ComponentValue<S, T>>,
   b?: ComponentValue<S, T>
 ): boolean {
@@ -256,7 +256,7 @@ export function componentValueEquals<S extends Schema, T = undefined>(
  * @param value {@link ComponentValue} with {@link ComponentSchema} `S`
  * @returns Tuple `[component, value]`
  */
-export function withValue<S extends Schema, T = undefined>(
+export function withValue<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>,
   value: ComponentValue<S, T>
 ): [Component<S, Metadata, T>, ComponentValue<S, T>] {
@@ -296,7 +296,7 @@ export function getEntitiesWithValue<S extends Schema>(
  * @param component {@link defineComponent Component} to get all entities from
  * @returns Set of all entities in the given component.
  */
-export function getComponentEntities<S extends Schema, T = undefined>(
+export function getComponentEntities<S extends Schema, T = unknown>(
   component: Component<S, Metadata, T>
 ): IterableIterator<Entity> {
   return component.entities();
@@ -316,7 +316,7 @@ export function getComponentEntities<S extends Schema, T = undefined>(
  * @param component {@link defineComponent Component} to use as underlying source for the overridable component
  * @returns overridable component
  */
-export function overridableComponent<S extends Schema, M extends Metadata, T = undefined>(
+export function overridableComponent<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>
 ): OverridableComponent<S, M, T> {
   let nonce = 0;
@@ -455,7 +455,7 @@ export function clearLocalCache(component: Component, uniqueWorldIdentifier?: st
 }
 
 // Note: Only proof of concept for now - use this only for component that do not update frequently
-export function createLocalCache<S extends Schema, M extends Metadata, T = undefined>(
+export function createLocalCache<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>,
   uniqueWorldIdentifier?: string
 ): Component<S, M, T> {
