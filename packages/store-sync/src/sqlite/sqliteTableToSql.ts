@@ -10,8 +10,7 @@ const db = new Kysely<any>({
 export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {
   const tableName = getTableName(table);
 
-  // db.schema.dropTable(tableName).ifExists().compile();
-
+  // TODO: should we allow this to fail (remove ifNotExists) so we can catch issues with our logic that creates tables?
   let query = db.schema.createTable(tableName).ifNotExists();
 
   const columns = Object.values(getTableColumns(table)) as AnySQLiteColumn[];
@@ -21,7 +20,6 @@ export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {
         col = col.notNull();
       }
       if (column.hasDefault && typeof column.default !== "undefined") {
-        // col = col.defaultTo(column.mapToDriverValue(column.default));
         col = col.defaultTo(column.default);
       }
       return col;
