@@ -10,7 +10,7 @@ export function renderEncodeArray() {
   `;
 
   for (const prefix of ["uint", "int", "bytes"]) {
-    const [start, end, step, leftAligned] = prefix === "bytes" ? [1, 32, 1, true] : [8, 256, 8, false];
+    const [start, end, step] = prefix === "bytes" ? [1, 32, 1] : [8, 256, 8];
     result += `
       /************************************************************************
        *
@@ -20,8 +20,8 @@ export function renderEncodeArray() {
     `;
 
     for (let i = start; i <= end; i += step) {
-      const typeId = `${prefix}${i}`;
-      result += renderTightCoderEncode({ typeId, elementSize: i / step, leftAligned });
+      const internalTypeId = `${prefix}${i}`;
+      result += renderTightCoderEncode({ internalTypeId, staticByteLength: i / step });
     }
   }
 
@@ -33,9 +33,9 @@ export function renderEncodeArray() {
        ************************************************************************/
 
       // Note: internally address is right-aligned, like uint160
-      ${renderTightCoderEncode({ typeId: "address", elementSize: 20, leftAligned: false })}
+      ${renderTightCoderEncode({ internalTypeId: "address", staticByteLength: 20 })}
 
-      ${renderTightCoderEncode({ typeId: "bool", elementSize: 1, leftAligned: false })}
+      ${renderTightCoderEncode({ internalTypeId: "bool", staticByteLength: 1 })}
     }
   `;
 

@@ -11,7 +11,7 @@ export function renderDecodeSlice() {
   `;
 
   for (const prefix of ["uint", "int", "bytes"]) {
-    const [start, end, step, leftAligned] = prefix === "bytes" ? [1, 32, 1, true] : [8, 256, 8, false];
+    const [start, end, step] = prefix === "bytes" ? [1, 32, 1] : [8, 256, 8];
     result += `
       /************************************************************************
        *
@@ -21,8 +21,8 @@ export function renderDecodeSlice() {
     `;
 
     for (let i = start; i <= end; i += step) {
-      const typeId = `${prefix}${i}`;
-      result += renderTightCoderDecode({ typeId, elementSize: i / step, leftAligned });
+      const internalTypeId = `${prefix}${i}`;
+      result += renderTightCoderDecode({ internalTypeId, staticByteLength: i / step });
     }
   }
 
@@ -34,9 +34,9 @@ export function renderDecodeSlice() {
        ************************************************************************/
 
       // Note: internally address is right-aligned, like uint160
-      ${renderTightCoderDecode({ typeId: "address", elementSize: 20, leftAligned: false })}
+      ${renderTightCoderDecode({ internalTypeId: "address", staticByteLength: 20 })}
 
-      ${renderTightCoderDecode({ typeId: "bool", elementSize: 1, leftAligned: false })}
+      ${renderTightCoderDecode({ internalTypeId: "bool", staticByteLength: 1 })}
     }
   `;
 

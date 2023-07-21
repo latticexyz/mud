@@ -44,4 +44,23 @@ library Memory {
       )
     }
   }
+
+  /**
+   * mstore n bytes (left-aligned) of given data
+   */
+  function mstoreN(bytes32 data, uint256 toPointer, uint256 n) internal pure {
+    uint256 mask = leftMask(n);
+    /// @solidity memory-safe-assembly
+    assembly {
+      mstore(
+        toPointer,
+        or(
+          // store the left part
+          and(data, mask),
+          // preserve the right part
+          and(mload(toPointer), not(mask))
+        )
+      )
+    }
+  }
 }

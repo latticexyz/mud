@@ -75,7 +75,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 1812
+    "gasUsed": 1379
   },
   {
     "file": "test/Gas.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 111108
+    "gasUsed": 110678
   },
   {
     "file": "test/Mixed.t.sol",
@@ -645,7 +645,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "set field in Callbacks",
-    "gasUsed": 62243
+    "gasUsed": 61982
   },
   {
     "file": "test/tables/Callbacks.t.sol",
@@ -663,7 +663,7 @@
     "file": "test/tables/Hooks.t.sol",
     "test": "testSetAndGet",
     "name": "set field in Hooks",
-    "gasUsed": 64400
+    "gasUsed": 63973
   },
   {
     "file": "test/tables/Hooks.t.sol",
@@ -693,19 +693,19 @@
     "file": "test/tightcoder/EncodeArray.t.sol",
     "test": "testEncodeUint16Array",
     "name": "encode packed uint16[]",
-    "gasUsed": 1143
+    "gasUsed": 710
   },
   {
     "file": "test/tightcoder/EncodeArray.t.sol",
     "test": "testEncodeUint32Array",
     "name": "encode packed uint32[]",
-    "gasUsed": 1049
+    "gasUsed": 619
   },
   {
     "file": "test/tightcoder/EncodeArray.t.sol",
     "test": "testEncodeUint8Array",
     "name": "encode packed uint8[]",
-    "gasUsed": 1038
+    "gasUsed": 608
   },
   {
     "file": "test/tightcoder/TightCoder.t.sol",
@@ -717,7 +717,7 @@
     "file": "test/tightcoder/TightCoder.t.sol",
     "test": "testToAndFromBytes24Array",
     "name": "encode packed bytes24[]",
-    "gasUsed": 880
+    "gasUsed": 608
   },
   {
     "file": "test/tightcoder/TightCoder.t.sol",

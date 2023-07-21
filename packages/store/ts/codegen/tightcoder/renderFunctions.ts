@@ -1,13 +1,17 @@
-export type RenderTighcoderOptions = {
-  typeId: string;
-  elementSize: number;
-  leftAligned: boolean;
-};
+import { isLeftAligned, shiftLeftBits } from "@latticexyz/common/codegen";
 
-export function renderTightCoderDecode({ typeId, elementSize, leftAligned }: RenderTighcoderOptions) {
+export function renderTightCoderDecode(element: { internalTypeId: string; staticByteLength: number }) {
   return `
-    function decodeArray_${typeId}(Slice _input) internal pure returns (${typeId}[] memory _output) {
-      bytes32[] memory _genericArray = TightCoder.decode(_input, ${elementSize}, ${leftAligned});
+    function decodeArray_${element.internalTypeId}(
+      Slice _input
+    ) internal pure returns (
+      ${element.internalTypeId}[] memory _output
+    ) {
+      bytes32[] memory _genericArray = TightCoder.decode(
+        _input,
+        ${element.staticByteLength},
+        ${isLeftAligned(element)}
+      );
       assembly {
         _output := _genericArray
       }
@@ -15,14 +19,28 @@ export function renderTightCoderDecode({ typeId, elementSize, leftAligned }: Ren
   `.trim();
 }
 
-export function renderTightCoderEncode({ typeId, elementSize, leftAligned }: RenderTighcoderOptions) {
+export function renderTightCoderEncode(element: { internalTypeId: string; staticByteLength: number }) {
   return `
-    function encode(${typeId}[] memory _input) internal pure returns (bytes memory _output) {
+    function encodeToLocation(${element.internalTypeId}[] memory _input, uint256 _toPointer) internal pure {
       bytes32[] memory _genericArray;
       assembly {
         _genericArray := _input
       }
-      return TightCoder.encode(_genericArray, ${elementSize}, ${leftAligned});
+      TightCoder.encodeToLocation(
+        _genericArray,
+        _toPointer,
+        ${element.staticByteLength},
+        ${shiftLeftBits(element)}
+      );
+    }
+
+    function encode(${element.internalTypeId}[] memory _input) internal pure returns (bytes memory _output) {
+      _output = new bytes(_input.length * ${element.staticByteLength});
+      uint256 _toPointer;
+      assembly {
+        _toPointer := add(_output, 0x20)
+      }
+      encodeToLocation(_input, _toPointer);
     }
   `.trim();
 }

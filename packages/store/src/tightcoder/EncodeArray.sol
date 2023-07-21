@@ -11,260 +11,548 @@ library EncodeArray {
    *    uint8 - uint256
    *
    ************************************************************************/
-  function encode(uint8[] memory _input) internal pure returns (bytes memory _output) {
+  function encodeToLocation(uint8[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 1, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 1, 248);
+  }
+
+  function encode(uint8[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 1);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint16[] memory _input, uint256 _toPointer) internal pure {
+    bytes32[] memory _genericArray;
+    assembly {
+      _genericArray := _input
+    }
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 2, 240);
   }
 
   function encode(uint16[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 2);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint24[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 2, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 3, 232);
   }
 
   function encode(uint24[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 3);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint32[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 3, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 4, 224);
   }
 
   function encode(uint32[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 4);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint40[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 4, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 5, 216);
   }
 
   function encode(uint40[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 5);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint48[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 5, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 6, 208);
   }
 
   function encode(uint48[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 6);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint56[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 6, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 7, 200);
   }
 
   function encode(uint56[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 7);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint64[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 7, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 8, 192);
   }
 
   function encode(uint64[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 8);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint72[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 8, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 9, 184);
   }
 
   function encode(uint72[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 9);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint80[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 9, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 10, 176);
   }
 
   function encode(uint80[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 10);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint88[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 10, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 11, 168);
   }
 
   function encode(uint88[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 11);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint96[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 11, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 12, 160);
   }
 
   function encode(uint96[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 12);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint104[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 12, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 13, 152);
   }
 
   function encode(uint104[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 13);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint112[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 13, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 14, 144);
   }
 
   function encode(uint112[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 14);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint120[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 14, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 15, 136);
   }
 
   function encode(uint120[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 15);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint128[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 15, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 16, 128);
   }
 
   function encode(uint128[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 16);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint136[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 16, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 17, 120);
   }
 
   function encode(uint136[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 17);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint144[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 17, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 18, 112);
   }
 
   function encode(uint144[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 18);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint152[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 18, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 19, 104);
   }
 
   function encode(uint152[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 19);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint160[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 19, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 20, 96);
   }
 
   function encode(uint160[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 20);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint168[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 20, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 21, 88);
   }
 
   function encode(uint168[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 21);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint176[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 21, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 22, 80);
   }
 
   function encode(uint176[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 22);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint184[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 22, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 23, 72);
   }
 
   function encode(uint184[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 23);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint192[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 23, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 24, 64);
   }
 
   function encode(uint192[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 24);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint200[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 24, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 25, 56);
   }
 
   function encode(uint200[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 25);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint208[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 25, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 26, 48);
   }
 
   function encode(uint208[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 26);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint216[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 26, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 27, 40);
   }
 
   function encode(uint216[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 27);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint224[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 27, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 28, 32);
   }
 
   function encode(uint224[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 28);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint232[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 28, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 29, 24);
   }
 
   function encode(uint232[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 29);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint240[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 29, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 30, 16);
   }
 
   function encode(uint240[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 30);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint248[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 30, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 31, 8);
   }
 
   function encode(uint248[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 31);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(uint256[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 31, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 32, 0);
   }
 
   function encode(uint256[] memory _input) internal pure returns (bytes memory _output) {
-    bytes32[] memory _genericArray;
+    _output = new bytes(_input.length * 32);
+    uint256 _toPointer;
     assembly {
-      _genericArray := _input
+      _toPointer := add(_output, 0x20)
     }
-    return TightCoder.encode(_genericArray, 32, false);
+    encodeToLocation(_input, _toPointer);
   }
 
   /************************************************************************
@@ -272,260 +560,548 @@ library EncodeArray {
    *    int8 - int256
    *
    ************************************************************************/
-  function encode(int8[] memory _input) internal pure returns (bytes memory _output) {
+  function encodeToLocation(int8[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 1, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 1, 248);
+  }
+
+  function encode(int8[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 1);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int16[] memory _input, uint256 _toPointer) internal pure {
+    bytes32[] memory _genericArray;
+    assembly {
+      _genericArray := _input
+    }
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 2, 240);
   }
 
   function encode(int16[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 2);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int24[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 2, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 3, 232);
   }
 
   function encode(int24[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 3);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int32[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 3, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 4, 224);
   }
 
   function encode(int32[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 4);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int40[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 4, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 5, 216);
   }
 
   function encode(int40[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 5);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int48[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 5, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 6, 208);
   }
 
   function encode(int48[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 6);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int56[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 6, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 7, 200);
   }
 
   function encode(int56[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 7);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int64[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 7, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 8, 192);
   }
 
   function encode(int64[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 8);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int72[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 8, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 9, 184);
   }
 
   function encode(int72[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 9);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int80[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 9, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 10, 176);
   }
 
   function encode(int80[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 10);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int88[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 10, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 11, 168);
   }
 
   function encode(int88[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 11);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int96[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 11, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 12, 160);
   }
 
   function encode(int96[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 12);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int104[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 12, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 13, 152);
   }
 
   function encode(int104[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 13);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int112[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 13, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 14, 144);
   }
 
   function encode(int112[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 14);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int120[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 14, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 15, 136);
   }
 
   function encode(int120[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 15);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int128[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 15, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 16, 128);
   }
 
   function encode(int128[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 16);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int136[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 16, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 17, 120);
   }
 
   function encode(int136[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 17);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int144[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 17, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 18, 112);
   }
 
   function encode(int144[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 18);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int152[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 18, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 19, 104);
   }
 
   function encode(int152[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 19);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int160[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 19, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 20, 96);
   }
 
   function encode(int160[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 20);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int168[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 20, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 21, 88);
   }
 
   function encode(int168[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 21);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int176[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 21, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 22, 80);
   }
 
   function encode(int176[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 22);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int184[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 22, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 23, 72);
   }
 
   function encode(int184[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 23);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int192[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 23, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 24, 64);
   }
 
   function encode(int192[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 24);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int200[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 24, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 25, 56);
   }
 
   function encode(int200[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 25);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int208[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 25, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 26, 48);
   }
 
   function encode(int208[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 26);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int216[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 26, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 27, 40);
   }
 
   function encode(int216[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 27);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int224[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 27, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 28, 32);
   }
 
   function encode(int224[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 28);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int232[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 28, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 29, 24);
   }
 
   function encode(int232[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 29);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int240[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 29, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 30, 16);
   }
 
   function encode(int240[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 30);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int248[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 30, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 31, 8);
   }
 
   function encode(int248[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 31);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(int256[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 31, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 32, 0);
   }
 
   function encode(int256[] memory _input) internal pure returns (bytes memory _output) {
-    bytes32[] memory _genericArray;
+    _output = new bytes(_input.length * 32);
+    uint256 _toPointer;
     assembly {
-      _genericArray := _input
+      _toPointer := add(_output, 0x20)
     }
-    return TightCoder.encode(_genericArray, 32, false);
+    encodeToLocation(_input, _toPointer);
   }
 
   /************************************************************************
@@ -533,260 +1109,548 @@ library EncodeArray {
    *    bytes1 - bytes32
    *
    ************************************************************************/
-  function encode(bytes1[] memory _input) internal pure returns (bytes memory _output) {
+  function encodeToLocation(bytes1[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 1, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 1, 0);
+  }
+
+  function encode(bytes1[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 1);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes2[] memory _input, uint256 _toPointer) internal pure {
+    bytes32[] memory _genericArray;
+    assembly {
+      _genericArray := _input
+    }
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 2, 0);
   }
 
   function encode(bytes2[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 2);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes3[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 2, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 3, 0);
   }
 
   function encode(bytes3[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 3);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes4[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 3, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 4, 0);
   }
 
   function encode(bytes4[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 4);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes5[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 4, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 5, 0);
   }
 
   function encode(bytes5[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 5);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes6[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 5, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 6, 0);
   }
 
   function encode(bytes6[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 6);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes7[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 6, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 7, 0);
   }
 
   function encode(bytes7[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 7);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes8[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 7, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 8, 0);
   }
 
   function encode(bytes8[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 8);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes9[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 8, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 9, 0);
   }
 
   function encode(bytes9[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 9);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes10[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 9, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 10, 0);
   }
 
   function encode(bytes10[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 10);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes11[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 10, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 11, 0);
   }
 
   function encode(bytes11[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 11);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes12[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 11, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 12, 0);
   }
 
   function encode(bytes12[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 12);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes13[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 12, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 13, 0);
   }
 
   function encode(bytes13[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 13);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes14[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 13, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 14, 0);
   }
 
   function encode(bytes14[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 14);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes15[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 14, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 15, 0);
   }
 
   function encode(bytes15[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 15);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes16[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 15, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 16, 0);
   }
 
   function encode(bytes16[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 16);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes17[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 16, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 17, 0);
   }
 
   function encode(bytes17[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 17);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes18[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 17, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 18, 0);
   }
 
   function encode(bytes18[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 18);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes19[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 18, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 19, 0);
   }
 
   function encode(bytes19[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 19);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes20[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 19, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 20, 0);
   }
 
   function encode(bytes20[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 20);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes21[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 20, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 21, 0);
   }
 
   function encode(bytes21[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 21);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes22[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 21, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 22, 0);
   }
 
   function encode(bytes22[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 22);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes23[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 22, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 23, 0);
   }
 
   function encode(bytes23[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 23);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes24[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 23, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 24, 0);
   }
 
   function encode(bytes24[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 24);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes25[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 24, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 25, 0);
   }
 
   function encode(bytes25[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 25);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes26[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 25, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 26, 0);
   }
 
   function encode(bytes26[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 26);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes27[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 26, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 27, 0);
   }
 
   function encode(bytes27[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 27);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes28[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 27, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 28, 0);
   }
 
   function encode(bytes28[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 28);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes29[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 28, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 29, 0);
   }
 
   function encode(bytes29[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 29);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes30[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 29, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 30, 0);
   }
 
   function encode(bytes30[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 30);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes31[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 30, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 31, 0);
   }
 
   function encode(bytes31[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 31);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bytes32[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 31, true);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 32, 0);
   }
 
   function encode(bytes32[] memory _input) internal pure returns (bytes memory _output) {
-    bytes32[] memory _genericArray;
+    _output = new bytes(_input.length * 32);
+    uint256 _toPointer;
     assembly {
-      _genericArray := _input
+      _toPointer := add(_output, 0x20)
     }
-    return TightCoder.encode(_genericArray, 32, true);
+    encodeToLocation(_input, _toPointer);
   }
 
   /************************************************************************
@@ -796,19 +1660,37 @@ library EncodeArray {
    ************************************************************************/
 
   // Note: internally address is right-aligned, like uint160
-  function encode(address[] memory _input) internal pure returns (bytes memory _output) {
+  function encodeToLocation(address[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
       _genericArray := _input
     }
-    return TightCoder.encode(_genericArray, 20, false);
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 20, 96);
+  }
+
+  function encode(address[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 20);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(bool[] memory _input, uint256 _toPointer) internal pure {
+    bytes32[] memory _genericArray;
+    assembly {
+      _genericArray := _input
+    }
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 1, 248);
   }
 
   function encode(bool[] memory _input) internal pure returns (bytes memory _output) {
-    bytes32[] memory _genericArray;
+    _output = new bytes(_input.length * 1);
+    uint256 _toPointer;
     assembly {
-      _genericArray := _input
+      _toPointer := add(_output, 0x20)
     }
-    return TightCoder.encode(_genericArray, 1, false);
+    encodeToLocation(_input, _toPointer);
   }
 }
