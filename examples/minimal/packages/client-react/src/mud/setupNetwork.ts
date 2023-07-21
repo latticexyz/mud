@@ -1,15 +1,15 @@
+import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
+import superjson from "superjson";
+import { AppRouter } from "@latticexyz/store-indexer";
 import { getBurnerWallet } from "@latticexyz/std-client";
-import { getNetworkConfig } from "./getNetworkConfig";
-import { defineContractComponents } from "./contractComponents";
-import { world } from "./world";
+import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
-import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex } from "viem";
-import { syncToRecs } from "@latticexyz/store-sync/recs";
-import { privateKeyToAccount } from "viem/accounts";
-import superjson from "superjson";
-import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
-import { AppRouter } from "@latticexyz/store-indexer";
+import { world } from "./world";
+import { defineContractComponents } from "./contractComponents";
+import { getNetworkConfig } from "./getNetworkConfig";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
