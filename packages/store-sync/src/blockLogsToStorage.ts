@@ -6,15 +6,14 @@ import {
   abiTypesToSchema,
   TableSchema,
 } from "@latticexyz/protocol-parser";
-import { GroupLogsByBlockNumberResult, GetLogsResult } from "@latticexyz/block-logs-stream";
-import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
-import { Address, Hex, decodeAbiParameters, parseAbiParameters } from "viem";
+import { Address, Hex, decodeAbiParameters, getAddress, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 // TODO: move these type helpers into store?
 import { Key, Value } from "@latticexyz/store-cache";
 import { isDefined } from "@latticexyz/common/utils";
-import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { BlockLogs, StorageOperation, Table, TableName, TableNamespace } from "./common";
 
 // TODO: change table schema/metadata APIs once we get both schema and field names in the same event (https://github.com/latticexyz/mud/pull/1182)
 
@@ -22,66 +21,12 @@ import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 export const schemaTableId = new TableId("mudstore", "schema");
 export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
-export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
-export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
-
-export type StoredTable = {
-  address: Address;
-  namespace: string;
-  name: string;
-  keySchema: Record<string, StaticAbiType>;
-  valueSchema: Record<string, SchemaAbiType>;
-};
-
-export type BaseStorageOperation = {
-  log: StoreEventsLog;
-  namespace: string;
-};
-
-export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
-  type: "SetRecord";
-} & {
-    [TTable in keyof TConfig["tables"]]: {
-      name: TTable;
-      key: Key<TConfig, TTable>;
-      value: Value<TConfig, TTable>;
-    };
-  }[keyof TConfig["tables"]];
-
-export type SetFieldOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
-  type: "SetField";
-} & {
-    [TTable in keyof TConfig["tables"]]: {
-      name: TTable;
-      key: Key<TConfig, TTable>;
-    } & {
-      [TValue in keyof Value<TConfig, TTable>]: {
-        fieldName: TValue;
-        fieldValue: Value<TConfig, TTable>[TValue];
-      };
-    }[keyof Value<TConfig, TTable>];
-  }[keyof TConfig["tables"]];
-
-export type DeleteRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
-  type: "DeleteRecord";
-} & {
-    [TTable in keyof TConfig["tables"]]: {
-      name: TTable;
-      key: Key<TConfig, TTable>;
-    };
-  }[keyof TConfig["tables"]];
-
-export type StorageOperation<TConfig extends StoreConfig> =
-  | SetFieldOperation<TConfig>
-  | SetRecordOperation<TConfig>
-  | DeleteRecordOperation<TConfig>;
-
 export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
-  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: StoredTable[] }) => Promise<void>;
+  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: Table[] }) => Promise<void>;
   getTables: (opts: {
     blockNumber: BlockLogs["blockNumber"];
-    tables: Pick<StoredTable, "address" | "namespace" | "name">[];
-  }) => Promise<StoredTable[]>;
+    tables: Pick<Table, "address" | "namespace" | "name">[];
+  }) => Promise<Table[]>;
   storeOperations: (opts: {
     blockNumber: BlockLogs["blockNumber"];
     operations: StorageOperation<TConfig>[];
@@ -93,8 +38,6 @@ export type BlockLogsToStorageResult<TConfig extends StoreConfig = StoreConfig> 
   operations: StorageOperation<TConfig>[];
 }>;
 
-type TableNamespace = string;
-type TableName = string;
 type TableKey = `${Address}:${TableNamespace}:${TableName}`;
 
 // hacky fix for schema registration + metadata events spanning multiple blocks
@@ -126,9 +69,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       const tableId = TableId.fromHex(tableForSchema);
       const schema = hexToTableSchema(log.args.data);
 
-      const key: TableKey = `${log.address}:${tableId.namespace}:${tableId.name}`;
+      const key: TableKey = `${getAddress(log.address)}:${tableId.namespace}:${tableId.name}`;
       if (!visitedSchemas.has(key)) {
-        visitedSchemas.set(key, { address: log.address, tableId, schema });
+        visitedSchemas.set(key, { address: getAddress(log.address), tableId, schema });
         newTableKeys.add(key);
       }
     });
@@ -152,10 +95,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       );
       const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
       // TODO: add key names to table registration when we refactor it (https://github.com/latticexyz/mud/pull/1182)
-
-      const key: TableKey = `${log.address}:${tableId.namespace}:${tableName}`;
+      const key: TableKey = `${getAddress(log.address)}:${tableId.namespace}:${tableName}`;
       if (!visitedMetadata.has(key)) {
-        visitedMetadata.set(key, { address: log.address, tableId, keyNames: [], valueNames });
+        visitedMetadata.set(key, { address: getAddress(log.address), tableId, keyNames: [], valueNames });
         newTableKeys.add(key);
       }
     });
@@ -194,6 +136,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
 
           return {
             address,
+            tableId: schema.tableId.toHex(),
             namespace: schema.tableId.namespace,
             name: schema.tableId.name,
             // TODO: replace with proper named key tuple (https://github.com/latticexyz/mud/pull/1182)
@@ -208,7 +151,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       new Set(
         block.logs.map((log) =>
           JSON.stringify({
-            address: log.address,
+            address: getAddress(log.address),
             ...TableId.fromHex(log.args.table),
           })
         )
@@ -222,12 +165,12 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           tables: tableIds.map((json) => JSON.parse(json)),
         })
       ).map((table) => [`${table.address}:${new TableId(table.namespace, table.name).toHex()}`, table])
-    ) as Record<Hex, StoredTable>;
+    ) as Record<Hex, Table>;
 
     const operations = block.logs
       .map((log): StorageOperation<TConfig> | undefined => {
         const tableId = TableId.fromHex(log.args.table);
-        const table = tables[`${log.address}:${log.args.table}`];
+        const table = tables[`${getAddress(log.address)}:${log.args.table}`];
         if (!table) {
           debug("no table found for event, skipping", tableId.toString(), log);
           return;
