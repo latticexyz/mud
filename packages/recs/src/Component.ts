@@ -19,7 +19,7 @@ import { isFullComponentValue, isIndexer } from "./utils";
 import { getEntityString, getEntitySymbol } from "./Entity";
 
 function getComponentName(component: Component<any, any, any>) {
-  return component.metadata?.tableId ?? component.metadata?.contractId ?? component.id;
+  return component.metadata?.tableName ?? component.metadata?.tableId ?? component.metadata?.contractId ?? component.id;
 }
 
 /**

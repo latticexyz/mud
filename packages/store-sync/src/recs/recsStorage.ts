@@ -11,13 +11,14 @@ import {
   setComponent,
   updateComponent,
 } from "@latticexyz/recs";
-import { KeySchema, Table, ValueSchema } from "../common";
+import { Table } from "../common";
 import { isDefined } from "@latticexyz/common/utils";
 import { TableId } from "@latticexyz/common";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
+import { StoreComponentMetadata } from "./common";
 
 // TODO: should we create components here from config rather than passing them in?
 // TODO: should we store table schemas in RECS?
@@ -26,13 +27,13 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
 }: {
   components: ReturnType<typeof defineInternalComponents> &
-    Record<string, RecsComponent<RecsSchema, { contractId: string; keySchema: KeySchema; valueSchema: ValueSchema }>>;
+    Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
   config?: TConfig;
 }): BlockLogsToStorageOptions<TConfig> {
   // TODO: do we need to store block number?
 
   const componentsByTableId = Object.fromEntries(
-    Object.entries(components).map(([id, component]) => [component.metadata.contractId, component])
+    Object.entries(components).map(([id, component]) => [component.id, component])
   );
 
   return {
@@ -60,7 +61,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
             namespace: operation.namespace,
             name: operation.name,
           }) as Entity
-        )?.table as Table | undefined;
+        )?.table;
         if (!table) {
           debug(
             `skipping update for unknown table: ${operation.namespace}:${operation.name} at ${operation.log.address}`

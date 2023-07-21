@@ -23,6 +23,7 @@ import { debug } from "./debug";
 import { encodeKeyTuple } from "@latticexyz/protocol-parser";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
+import { StoreComponentMetadata } from "./common";
 
 type SyncToRecsOptions = {
   world: RecsWorld;
@@ -31,17 +32,7 @@ type SyncToRecsOptions = {
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
   publicClient: PublicClient<Transport, Chain>;
   // TODO: generate these from config and return instead?
-  components: Record<
-    string,
-    RecsComponent<
-      RecsSchema,
-      {
-        contractId: string;
-        keySchema: KeySchema;
-        valueSchema: ValueSchema;
-      }
-    >
-  >;
+  components: Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
   initialState?: {
     blockNumber: bigint | null;
     tables: (Table & { records: TableRecord[] })[];
@@ -78,7 +69,7 @@ export async function syncToRecs({
 
     for (const table of initialState.tables) {
       setComponent(components.TableMetadata, getTableKey(table) as Entity, { table });
-      const component = componentList.find((component) => component.metadata.contractId === table.tableId);
+      const component = componentList.find((component) => component.id === table.tableId);
       if (component == null) {
         debug(`no component found for table ${table.namespace}:${table.name}, skipping initial state`);
         continue;
@@ -90,6 +81,7 @@ export async function syncToRecs({
         );
         setComponent(component, entity, record.value as ComponentValue);
       }
+      debug(`hydrated ${table.records.length} records for table ${table.namespace}:${table.name}`);
     }
   }
 
