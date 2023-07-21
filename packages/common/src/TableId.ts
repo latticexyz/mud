@@ -18,7 +18,10 @@ export class TableId {
   }
 
   static toHex(namespace: string, name: string): Hex {
-    return concatHex([stringToHex(namespace, { size: 16 }), stringToHex(name, { size: 16 })]);
+    return concatHex([
+      stringToHex(namespace.substring(0, 16), { size: 16 }),
+      stringToHex(name.substring(0, 16), { size: 16 }),
+    ]);
   }
 
   static fromHex(hex: Hex): TableId {
