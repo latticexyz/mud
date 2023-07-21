@@ -31,7 +31,6 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   config?: TConfig;
 }): BlockLogsToStorageOptions<TConfig> {
   // TODO: do we need to store block number?
-  // TODO: do we need to register entities as we see them?
 
   const componentsByTableId = Object.fromEntries(
     Object.entries(components).map(([id, component]) => [component.id, component])
@@ -41,13 +40,16 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     async registerTables({ tables }) {
       for (const table of tables) {
         // TODO: check if table exists already and skip/warn?
-        setComponent(components.TableMetadata, getTableKey(table) as Entity, { value: table });
+        setComponent(components.TableMetadata, getTableKey(table) as Entity, { table });
       }
     },
     async getTables({ tables }) {
       // TODO: fetch schema from RPC if table not found?
       return tables
-        .map((table) => getComponentValue(components.TableMetadata, getTableKey(table) as Entity)?.value)
+        .map(
+          (table) =>
+            getComponentValue(components.TableMetadata, getTableKey(table) as Entity)?.table as Table | undefined
+        )
         .filter(isDefined);
     },
     async storeOperations({ operations }) {
@@ -59,7 +61,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
             namespace: operation.namespace,
             name: operation.name,
           }) as Entity
-        )?.value;
+        )?.table;
         if (!table) {
           debug(
             `skipping update for unknown table: ${operation.namespace}:${operation.name} at ${operation.log.address}`
