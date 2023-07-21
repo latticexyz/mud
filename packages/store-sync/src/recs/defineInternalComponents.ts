@@ -1,4 +1,4 @@
-import { World, defineComponent, Type, Component } from "@latticexyz/recs";
+import { World, defineComponent, Type, Component, Metadata, Schema } from "@latticexyz/recs";
 import { Table } from "../common";
 
 function typedComponent<TType>(
@@ -7,24 +7,30 @@ function typedComponent<TType>(
   return component;
 }
 
+function defineTypedComponent<TType, TSchema extends Schema = Schema, TMetadata extends Metadata = Metadata>(
+  world: World,
+  schema: TSchema,
+  metadata?: TMetadata
+): Component<TSchema, TMetadata, TType> {
+  return defineComponent<TSchema, TMetadata, TType>(world, schema, metadata);
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function defineInternalComponents(world: World) {
   return {
-    TableMetadata: typedComponent<Table>(
-      defineComponent(
-        world,
-        {
-          // TODO: figure out how to more strongly type this value without having to redefine the schema/metadata in the type signature
-          table: Type.T,
+    TableMetadata: defineTypedComponent<Table>(
+      world,
+      {
+        // TODO: figure out how to more strongly type this value without having to redefine the schema/metadata in the type signature
+        table: Type.T,
+      },
+      {
+        metadata: {
+          contractId: "0x",
+          keySchema: {},
+          valueSchema: {},
         },
-        {
-          metadata: {
-            contractId: "0x",
-            keySchema: {},
-            valueSchema: {},
-          },
-        }
-      )
+      }
     ),
   };
 }
