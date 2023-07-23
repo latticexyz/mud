@@ -87,7 +87,7 @@ Internally, it works by installing a [hook](https://v2.mud.dev/store/advanced-fe
 
 #### **`KeysWithValueModule`**
 
-The [`KeysWithValueModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keyswithvalue/KeysWithValueModule.sol) allows for querying for all keys that have a given value in a table. It can only be used on tables that have one key (eg: ECS components).
+The [`KeysWithValueModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keyswithvalue/KeysWithValueModule.sol) allows for querying for all keys that have a given value in a table. It can only be used on tables that have up to five keys.
 
 As an example, this can be used to ask for all NFTs owned by a specific user (if the table models `NFT ID → Owner`), or all units on a specific position (if the ECS component is modeled as `entity → Position`)
 
@@ -106,7 +106,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 import { Owners, OwnersId } from "../codegen/tables/Owners.sol";
 // get all nfts (as bytes, need to convert to uint256) owned by address 0x42
-bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
+bytes32[][] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
 ```
 
 Internally, it works by installing a [hook](/store/advanced-features#storage-hooks) that maintains an array of all keys in the table.
