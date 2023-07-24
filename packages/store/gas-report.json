@@ -75,25 +75,25 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 2937
+    "gasUsed": 2603
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 2915
+    "gasUsed": 2916
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass abi encoded bytes to external contract",
-    "gasUsed": 6551
+    "gasUsed": 6550
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass custom encoded bytes to external contract",
-    "gasUsed": 1453
+    "gasUsed": 1452
   },
   {
     "file": "test/KeyEncoding.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 110678
+    "gasUsed": 110363
   },
   {
     "file": "test/Mixed.t.sol",
@@ -603,7 +603,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetMetadata",
     "name": "StoreCore: set table metadata",
-    "gasUsed": 252784
+    "gasUsed": 253209
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -621,7 +621,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "set record in StoreMetadataTable",
-    "gasUsed": 251257
+    "gasUsed": 251665
   },
   {
     "file": "test/StoreMetadata.t.sol",

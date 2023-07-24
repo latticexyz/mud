@@ -8,9 +8,6 @@ library TightCoder {
   /**
    * @dev Copies the array to the location of `packedSlice`,
    * tightly packing it using the given size per element (in bytes)
-   *
-   * TODO this function is currently not used externally and will be changed in the future
-   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function encodeToLocation(
     bytes32[] memory array,
@@ -34,20 +31,6 @@ library TightCoder {
       }
     }
   }
-
-  /**
-   * @dev Copies the array to a new bytes array,
-   * tightly packing it using the given size per element (in bytes)
-   */
-  /*function encode(
-    bytes32[] memory array,
-    uint256 elementSize,
-    bool leftAligned
-  ) internal pure returns (bytes memory data) {
-    uint256 packedLength = array.length * elementSize;
-    data = new bytes(packedLength);
-    _encodeToLocation(array, SliceLib.fromBytes(data), elementSize, leftAligned);
-  }*/
 
   /**
    * @dev Unpacks the slice to a new memory location

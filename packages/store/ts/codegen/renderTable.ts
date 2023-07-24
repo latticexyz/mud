@@ -8,12 +8,12 @@ import {
   renderValueTypeToBytes32,
   renderWithStore,
   renderTypeHelpers,
-  RenderDynamicField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
-import { renderEncodeField, renderFieldMethods } from "./field";
+import { renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
+import { renderEncodeRecord } from "./renderEncodeRecord";
 
 export function renderTable(options: RenderTableOptions) {
   const {
@@ -121,20 +121,7 @@ library ${libraryName} {
 
   ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
-  /** Tightly pack full data using this table's schema */
-  function encode(${renderArguments(
-    options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-  )}) internal pure returns (bytes memory) {
-    ${renderEncodedLengths(dynamicFields)}
-    return abi.encodePacked(${renderArguments([
-      renderArguments(staticFields.map(({ name }) => name)),
-      // TODO try gas optimization (preallocate for all, encodePacked statics, and direct encode dynamics)
-      // (see https://github.com/latticexyz/mud/issues/444)
-      ...(dynamicFields.length === 0
-        ? []
-        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
-    ])});
-  }
+  ${renderEncodeRecord(fields, staticFields, dynamicFields)}
   
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keyTuple) {
@@ -161,22 +148,4 @@ library ${libraryName} {
 ${renderTypeHelpers(options)}
 
 `;
-}
-
-function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
-  if (dynamicFields.length > 0) {
-    return `
-    uint40[] memory _counters = new uint40[](${dynamicFields.length});
-    ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
-      if (arrayElement) {
-        return `_counters[${index}] = uint40(${name}.length * ${arrayElement.staticByteLength});`;
-      } else {
-        return `_counters[${index}] = uint40(bytes(${name}).length);`;
-      }
-    })}
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
-    `;
-  } else {
-    return "";
-  }
 }

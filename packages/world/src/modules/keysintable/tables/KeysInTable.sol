@@ -781,17 +781,46 @@ library KeysInTable {
     _counters[2] = uint40(keys2.length * 32);
     _counters[3] = uint40(keys3.length * 32);
     _counters[4] = uint40(keys4.length * 32);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    bytes32 _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
 
-    return
-      abi.encodePacked(
-        _encodedLengths.unwrap(),
-        EncodeArray.encode((keys0)),
-        EncodeArray.encode((keys1)),
-        EncodeArray.encode((keys2)),
-        EncodeArray.encode((keys3)),
-        EncodeArray.encode((keys4))
-      );
+    uint256 _resultLength;
+    unchecked {
+      _resultLength = 32 + _counters[0] + _counters[1] + _counters[2] + _counters[3] + _counters[4];
+    }
+
+    bytes memory _result;
+    uint256 _resultPointer;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // allocate memory
+      _result := mload(0x40)
+      _resultPointer := add(_result, 0x20)
+      mstore(0x40, add(_resultPointer, and(add(_resultLength, 31), not(31))))
+      mstore(_result, _resultLength)
+
+      mstore(add(_resultPointer, 0), shl(0, _encodedLengths))
+
+      _resultPointer := add(_resultPointer, 32)
+    }
+    EncodeArray.encodeToLocation(keys0, _resultPointer);
+    unchecked {
+      _resultPointer += _counters[0];
+    }
+    EncodeArray.encodeToLocation(keys1, _resultPointer);
+    unchecked {
+      _resultPointer += _counters[1];
+    }
+    EncodeArray.encodeToLocation(keys2, _resultPointer);
+    unchecked {
+      _resultPointer += _counters[2];
+    }
+    EncodeArray.encodeToLocation(keys3, _resultPointer);
+    unchecked {
+      _resultPointer += _counters[3];
+    }
+    EncodeArray.encodeToLocation(keys4, _resultPointer);
+    return _result;
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

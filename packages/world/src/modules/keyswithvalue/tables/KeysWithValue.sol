@@ -188,9 +188,30 @@ library KeysWithValue {
   function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](1);
     _counters[0] = uint40(keysWithValue.length * 32);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    bytes32 _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
+    uint256 _resultLength;
+    unchecked {
+      _resultLength = 32 + _counters[0];
+    }
+
+    bytes memory _result;
+    uint256 _resultPointer;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // allocate memory
+      _result := mload(0x40)
+      _resultPointer := add(_result, 0x20)
+      mstore(0x40, add(_resultPointer, and(add(_resultLength, 31), not(31))))
+      mstore(_result, _resultLength)
+
+      mstore(add(_resultPointer, 0), shl(0, _encodedLengths))
+
+      _resultPointer := add(_resultPointer, 32)
+    }
+    EncodeArray.encodeToLocation(keysWithValue, _resultPointer);
+    return _result;
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

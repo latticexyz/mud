@@ -460,9 +460,38 @@ library Mixed {
     uint40[] memory _counters = new uint40[](2);
     _counters[0] = uint40(a32.length * 4);
     _counters[1] = uint40(bytes(s).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    bytes32 _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
 
-    return abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode((a32)), bytes((s)));
+    uint256 _resultLength;
+    unchecked {
+      _resultLength = 52 + _counters[0] + _counters[1];
+    }
+
+    bytes memory _result;
+    uint256 _resultPointer;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // allocate memory
+      _result := mload(0x40)
+      _resultPointer := add(_result, 0x20)
+      mstore(0x40, add(_resultPointer, and(add(_resultLength, 31), not(31))))
+      mstore(_result, _resultLength)
+
+      mstore(add(_resultPointer, 0), shl(224, u32))
+
+      mstore(add(_resultPointer, 4), shl(128, u128))
+
+      mstore(add(_resultPointer, 20), shl(0, _encodedLengths))
+
+      _resultPointer := add(_resultPointer, 52)
+    }
+    EncodeArray.encodeToLocation(a32, _resultPointer);
+    unchecked {
+      _resultPointer += _counters[0];
+    }
+    Memory.copy(Memory.dataPointer(bytes(s)), _resultPointer, _counters[1]);
+    return _result;
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
