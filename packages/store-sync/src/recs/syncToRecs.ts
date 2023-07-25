@@ -8,15 +8,15 @@ import {
   World as RecsWorld,
   setComponent,
 } from "@latticexyz/recs";
-import { KeySchema, ValueSchema, Table, TableRecord } from "../common";
+import { Table, TableRecord } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap } from "rxjs";
-import { blockLogsToStorage } from "../blockLogsToStorage";
+import { filter, map, tap, mergeMap, from, concatMap, Observable, share } from "rxjs";
+import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { debug } from "./debug";
@@ -25,9 +25,9 @@ import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata } from "./common";
 
-type SyncToRecsOptions = {
+type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
-  config: StoreConfig;
+  config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
   publicClient: PublicClient<Transport, Chain>;
@@ -39,25 +39,28 @@ type SyncToRecsOptions = {
   };
 };
 
-type SyncToRecsResult = {
+type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
   // TODO: return components, if we extend them
   singletonEntity: Entity;
+  blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
   destroy: () => void;
 };
 
-export async function syncToRecs({
+export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
   address,
   publicClient,
   components: initialComponents,
   initialState,
-}: SyncToRecsOptions): Promise<SyncToRecsResult> {
+}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const components = {
     ...initialComponents,
     ...defineInternalComponents(world),
   };
+
+  const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
   let startBlock = 0n;
 
@@ -107,19 +110,19 @@ export async function syncToRecs({
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
   );
 
-  const subscription = blockLogs$
-    .pipe(
-      concatMap(blockLogsToStorage(recsStorage({ components, config }))),
-      tap(({ blockNumber, operations }) => {
-        debug("stored", operations.length, "operations for block", blockNumber);
-      })
-    )
-    .subscribe();
+  const blockStorageOperations$ = blockLogs$.pipe(
+    concatMap(blockLogsToStorage(recsStorage({ components, config }))),
+    tap(({ blockNumber, operations }) => {
+      debug("stored", operations.length, "operations for block", blockNumber);
+    }),
+    share()
+  );
 
-  const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
+  const subscription = blockStorageOperations$.subscribe();
 
   return {
     singletonEntity,
+    blockStorageOperations$,
     destroy: (): void => {
       world.dispose();
       subscription.unsubscribe();

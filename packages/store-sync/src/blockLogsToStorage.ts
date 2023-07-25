@@ -33,10 +33,14 @@ export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig>
   }) => Promise<void>;
 };
 
-export type BlockLogsToStorageResult<TConfig extends StoreConfig = StoreConfig> = (block: BlockLogs) => Promise<{
+export type BlockStorageOperations<TConfig extends StoreConfig = StoreConfig> = {
   blockNumber: BlockLogs["blockNumber"];
   operations: StorageOperation<TConfig>[];
-}>;
+};
+
+export type BlockLogsToStorageResult<TConfig extends StoreConfig = StoreConfig> = (
+  block: BlockLogs
+) => Promise<BlockStorageOperations<TConfig>>;
 
 type TableKey = `${Address}:${TableNamespace}:${TableName}`;
 
