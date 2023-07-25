@@ -34,7 +34,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run generate-tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
