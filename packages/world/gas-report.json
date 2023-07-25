@@ -3,13 +3,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
-    "gasUsed": 1256863
+    "gasUsed": 1256815
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "install keys in table module",
-    "gasUsed": 1256863
+    "gasUsed": 1256815
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -21,13 +21,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallSingleton",
     "name": "install keys in table module",
-    "gasUsed": 1256863
+    "gasUsed": 1256815
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "install keys in table module",
-    "gasUsed": 1256863
+    "gasUsed": 1256815
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -39,13 +39,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "delete a composite record on a table with keysInTableModule installed",
-    "gasUsed": 270004
+    "gasUsed": 269581
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "install keys in table module",
-    "gasUsed": 1256863
+    "gasUsed": 1256815
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -57,13 +57,13 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "delete a record on a table with keysInTableModule installed",
-    "gasUsed": 141266
+    "gasUsed": 141125
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 606952
+    "gasUsed": 606928
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -81,7 +81,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 606952
+    "gasUsed": 606928
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -93,7 +93,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 606952
+    "gasUsed": 606928
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -111,7 +111,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 606952
+    "gasUsed": 606928
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -207,7 +207,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 798141
+    "gasUsed": 798117
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -219,7 +219,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 769585
+    "gasUsed": 769561
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -285,7 +285,7 @@
     "file": "test/World.t.sol",
     "test": "testSetMetadata",
     "name": "Set metadata",
-    "gasUsed": 279965
+    "gasUsed": 279941
   },
   {
     "file": "test/World.t.sol",
@@ -297,24 +297,24 @@
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 38906
+    "gasUsed": 38929
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 21696
+    "gasUsed": 21719
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testUpdateInField",
     "name": "updateInField 1 item (cold)",
-    "gasUsed": 40858
+    "gasUsed": 40834
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testUpdateInField",
     "name": "updateInField 1 item (warm)",
-    "gasUsed": 24060
+    "gasUsed": 24036
   }
 ]

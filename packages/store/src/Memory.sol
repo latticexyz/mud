@@ -29,6 +29,8 @@ library Memory {
         length -= 32;
       }
     }
+    if (length == 0) return;
+
     // Copy the 0-31 length tail
     uint256 mask = leftMask(length);
     /// @solidity memory-safe-assembly
@@ -38,25 +40,6 @@ library Memory {
         or(
           // store the left part
           and(mload(fromPointer), mask),
-          // preserve the right part
-          and(mload(toPointer), not(mask))
-        )
-      )
-    }
-  }
-
-  /**
-   * mstore n bytes (left-aligned) of given data
-   */
-  function mstoreN(bytes32 data, uint256 toPointer, uint256 n) internal pure {
-    uint256 mask = leftMask(n);
-    /// @solidity memory-safe-assembly
-    assembly {
-      mstore(
-        toPointer,
-        or(
-          // store the left part
-          and(data, mask),
           // preserve the right part
           and(mload(toPointer), not(mask))
         )

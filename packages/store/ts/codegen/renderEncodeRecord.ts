@@ -1,3 +1,4 @@
+import { AbiTypeToSchemaType } from "@latticexyz/schema-type/deprecated";
 import {
   RenderDynamicField,
   RenderField,
@@ -7,7 +8,6 @@ import {
   shiftLeftBits,
 } from "@latticexyz/common/codegen";
 import { getSchemaTypeInfo } from "./userType";
-import { AbiTypeToSchemaType } from "@latticexyz/schema-type/deprecated";
 
 export function renderEncodeRecord(
   fields: RenderField[],
@@ -51,7 +51,7 @@ function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
  *
  * Some MUD-specific concessions (as opposed to a generic function like encodePacked):
  * - source data location is assumed to be memory
- * - _encodedLengths isn't a normal static field, but hardcoded and used for dynamic lengths
+ * - _encodedLengths isn't a normal static field, but hardcoded based on dynamicFields existence
  * - no nested structs
  * - static fields always precede dynamic fields
  *
