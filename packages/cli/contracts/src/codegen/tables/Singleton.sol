@@ -492,7 +492,7 @@ library Singleton {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 64 + _counters[0] + _counters[1] + _counters[2];
+      _resultLength = 64 + v2.length * 4 + v3.length * 4 + v4.length * 4;
     }
 
     bytes memory _result;
@@ -514,11 +514,11 @@ library Singleton {
     }
     EncodeArray.encodeToLocation(fromStaticArray_uint32_2(v2), _resultPointer);
     unchecked {
-      _resultPointer += _counters[0];
+      _resultPointer += v2.length * 4;
     }
     EncodeArray.encodeToLocation(fromStaticArray_uint32_2(v3), _resultPointer);
     unchecked {
-      _resultPointer += _counters[1];
+      _resultPointer += v3.length * 4;
     }
     EncodeArray.encodeToLocation(fromStaticArray_uint32_1(v4), _resultPointer);
     return _result;

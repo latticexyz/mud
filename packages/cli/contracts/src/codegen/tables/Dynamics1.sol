@@ -785,7 +785,18 @@ library Dynamics1 {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 32 + _counters[0] + _counters[1] + _counters[2] + _counters[3] + _counters[4];
+      _resultLength =
+        32 +
+        staticB32.length *
+        32 +
+        staticI32.length *
+        4 +
+        staticU128.length *
+        16 +
+        staticAddrs.length *
+        20 +
+        staticBools.length *
+        1;
     }
 
     bytes memory _result;
@@ -805,19 +816,19 @@ library Dynamics1 {
     }
     EncodeArray.encodeToLocation(fromStaticArray_bytes32_1(staticB32), _resultPointer);
     unchecked {
-      _resultPointer += _counters[0];
+      _resultPointer += staticB32.length * 32;
     }
     EncodeArray.encodeToLocation(fromStaticArray_int32_2(staticI32), _resultPointer);
     unchecked {
-      _resultPointer += _counters[1];
+      _resultPointer += staticI32.length * 4;
     }
     EncodeArray.encodeToLocation(fromStaticArray_uint128_3(staticU128), _resultPointer);
     unchecked {
-      _resultPointer += _counters[2];
+      _resultPointer += staticU128.length * 16;
     }
     EncodeArray.encodeToLocation(fromStaticArray_address_4(staticAddrs), _resultPointer);
     unchecked {
-      _resultPointer += _counters[3];
+      _resultPointer += staticAddrs.length * 20;
     }
     EncodeArray.encodeToLocation(fromStaticArray_bool_5(staticBools), _resultPointer);
     return _result;

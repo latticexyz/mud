@@ -512,7 +512,7 @@ library Dynamics2 {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 32 + _counters[0] + _counters[1] + _counters[2];
+      _resultLength = 32 + u64.length * 8 + bytes(str).length + bytes(b).length;
     }
 
     bytes memory _result;
@@ -532,13 +532,13 @@ library Dynamics2 {
     }
     EncodeArray.encodeToLocation((u64), _resultPointer);
     unchecked {
-      _resultPointer += _counters[0];
+      _resultPointer += u64.length * 8;
     }
-    Memory.copy(Memory.dataPointer(bytes((str))), _resultPointer, _counters[1]);
+    Memory.copy(Memory.dataPointer(bytes((str))), _resultPointer, bytes(str).length);
     unchecked {
-      _resultPointer += _counters[1];
+      _resultPointer += bytes(str).length;
     }
-    Memory.copy(Memory.dataPointer(bytes((b))), _resultPointer, _counters[2]);
+    Memory.copy(Memory.dataPointer(bytes((b))), _resultPointer, bytes(b).length);
     return _result;
   }
 
