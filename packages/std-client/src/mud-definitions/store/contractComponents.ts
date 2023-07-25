@@ -15,8 +15,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x6d756473746f72650000000000000000486f6f6b730000000000000000000000",
           metadata: {
-            componentId: "0x6d756473746f72650000000000000000486f6f6b730000000000000000000000",
-            tableId: "TableId<mudstore:Hooks>",
+            tableName: "mudstore:Hooks",
             keySchema,
             valueSchema,
           },
@@ -34,8 +33,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x6d756473746f7265000000000000000043616c6c6261636b7300000000000000",
           metadata: {
-            componentId: "0x6d756473746f7265000000000000000043616c6c6261636b7300000000000000",
-            tableId: "TableId<mudstore:Callbacks>",
+            tableName: "mudstore:Callbacks",
             keySchema,
             valueSchema,
           },
@@ -57,8 +55,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x6d756473746f7265000000000000000053746f72654d65746164617461000000",
           metadata: {
-            componentId: "0x6d756473746f7265000000000000000053746f72654d65746164617461000000",
-            tableId: "TableId<mudstore:StoreMetadata>",
+            tableName: "mudstore:StoreMetadata",
             keySchema,
             valueSchema,
           },
@@ -84,8 +81,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x6d756473746f726500000000000000004d697865640000000000000000000000",
           metadata: {
-            componentId: "0x6d756473746f726500000000000000004d697865640000000000000000000000",
-            tableId: "TableId<mudstore:Mixed>",
+            tableName: "mudstore:Mixed",
             keySchema,
             valueSchema,
           },
@@ -104,8 +100,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x6d756473746f72650000000000000000566563746f7232000000000000000000",
           metadata: {
-            componentId: "0x6d756473746f72650000000000000000566563746f7232000000000000000000",
-            tableId: "TableId<mudstore:Vector2>",
+            tableName: "mudstore:Vector2",
             keySchema,
             valueSchema,
           },
@@ -130,8 +125,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x6d756473746f726500000000000000004b6579456e636f64696e670000000000",
           metadata: {
-            componentId: "0x6d756473746f726500000000000000004b6579456e636f64696e670000000000",
-            tableId: "TableId<mudstore:KeyEncoding>",
+            tableName: "mudstore:KeyEncoding",
             keySchema,
             valueSchema,
           },

@@ -15,8 +15,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x000000000000000000000000000000004e616d6573706163654f776e65720000",
           metadata: {
-            componentId: "0x000000000000000000000000000000004e616d6573706163654f776e65720000",
-            tableId: "TableId<[empty]:NamespaceOwner>",
+            tableName: ":NamespaceOwner",
             keySchema,
             valueSchema,
           },
@@ -37,8 +36,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x000000000000000000000000000000005265736f757263654163636573730000",
           metadata: {
-            componentId: "0x000000000000000000000000000000005265736f757263654163636573730000",
-            tableId: "TableId<[empty]:ResourceAccess>",
+            tableName: ":ResourceAccess",
             keySchema,
             valueSchema,
           },
@@ -59,8 +57,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x00000000000000000000000000000000496e7374616c6c65644d6f64756c6573",
           metadata: {
-            componentId: "0x00000000000000000000000000000000496e7374616c6c65644d6f64756c6573",
-            tableId: "TableId<[empty]:InstalledModules>",
+            tableName: ":InstalledModules",
             keySchema,
             valueSchema,
           },
@@ -79,8 +76,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x0000000000000000000000000000000053797374656d73000000000000000000",
           metadata: {
-            componentId: "0x0000000000000000000000000000000053797374656d73000000000000000000",
-            tableId: "TableId<[empty]:Systems>",
+            tableName: ":Systems",
             keySchema,
             valueSchema,
           },
@@ -98,8 +94,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x0000000000000000000000000000000053797374656d52656769737472790000",
           metadata: {
-            componentId: "0x0000000000000000000000000000000053797374656d52656769737472790000",
-            tableId: "TableId<[empty]:SystemRegistry>",
+            tableName: ":SystemRegistry",
             keySchema,
             valueSchema,
           },
@@ -117,8 +112,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x0000000000000000000000000000000053797374656d486f6f6b730000000000",
           metadata: {
-            componentId: "0x0000000000000000000000000000000053797374656d486f6f6b730000000000",
-            tableId: "TableId<[empty]:SystemHooks>",
+            tableName: ":SystemHooks",
             keySchema,
             valueSchema,
           },
@@ -136,8 +130,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x000000000000000000000000000000005265736f757263655479706500000000",
           metadata: {
-            componentId: "0x000000000000000000000000000000005265736f757263655479706500000000",
-            tableId: "TableId<[empty]:ResourceType>",
+            tableName: ":ResourceType",
             keySchema,
             valueSchema,
           },
@@ -161,8 +154,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x0000000000000000000000000000000046756e6374696f6e53656c6563746f72",
           metadata: {
-            componentId: "0x0000000000000000000000000000000046756e6374696f6e53656c6563746f72",
-            tableId: "TableId<[empty]:FunctionSelector>",
+            tableName: ":FunctionSelector",
             keySchema,
             valueSchema,
           },
@@ -190,8 +182,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x000000000000000000000000000000004b657973496e5461626c650000000000",
           metadata: {
-            componentId: "0x000000000000000000000000000000004b657973496e5461626c650000000000",
-            tableId: "TableId<[empty]:KeysInTable>",
+            tableName: ":KeysInTable",
             keySchema,
             valueSchema,
           },
@@ -213,8 +204,7 @@ export function defineContractComponents(world: World) {
         {
           id: "0x00000000000000000000000000000000557365644b657973496e646578000000",
           metadata: {
-            componentId: "0x00000000000000000000000000000000557365644b657973496e646578000000",
-            tableId: "TableId<[empty]:UsedKeysIndex>",
+            tableName: ":UsedKeysIndex",
             keySchema,
             valueSchema,
           },
