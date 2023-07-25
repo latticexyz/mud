@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Chain, PublicClient, Transport } from "viem";
+import { Address, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
 import {
   ComponentValue,
   Entity,
@@ -8,14 +8,14 @@ import {
   World as RecsWorld,
   setComponent,
 } from "@latticexyz/recs";
-import { Table, TableRecord } from "../common";
+import { StorageOperation, Table, TableRecord } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap, Observable, share } from "rxjs";
+import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
@@ -44,6 +44,10 @@ type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return components, if we extend them
   singletonEntity: Entity;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
+  waitForTransaction: (tx: Hex) => Promise<{
+    receipt: TransactionReceipt;
+    operations: StorageOperation<TConfig>[];
+  }>;
   destroy: () => void;
 };
 
@@ -118,11 +122,29 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     share()
   );
 
+  async function waitForTransaction(tx: Hex): Promise<{
+    receipt: TransactionReceipt;
+    operations: StorageOperation<TConfig>[];
+  }> {
+    // Wait for tx to be mined, then find the resulting block storage operations.
+    // We could just do this based on the blockStorageOperations$, but for txs that have no storage operations, we'd never get a value.
+    const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
+    const operationsForTx$ = blockStorageOperations$.pipe(
+      filter(({ blockNumber }) => blockNumber === receipt.blockNumber),
+      map(({ operations }) => operations.filter((op) => op.log.transactionHash === tx))
+    );
+    return {
+      receipt,
+      operations: await firstValueFrom(operationsForTx$),
+    };
+  }
+
   const subscription = blockStorageOperations$.subscribe();
 
   return {
     singletonEntity,
     blockStorageOperations$,
+    waitForTransaction,
     destroy: (): void => {
       world.dispose();
       subscription.unsubscribe();
