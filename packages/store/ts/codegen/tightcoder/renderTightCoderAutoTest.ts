@@ -28,7 +28,7 @@ export function renderTightCoderAutoTestFunction({ typeId }: { typeId: string })
 export function renderTightCoderAutoTest() {
   let result = `${renderedSolidityHeader}
 
-    import "forge-std/Test.sol";
+    import { Test } from "forge-std/Test.sol";
     import { Bytes } from "../../src/Bytes.sol";
     import { EncodeArray } from "../../src/tightcoder/EncodeArray.sol";
     import { Memory } from "../../src/Memory.sol";

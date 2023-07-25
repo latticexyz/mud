@@ -36,7 +36,7 @@ contract TightCoderTest is Test, GasReporter {
 
     assertEq(packed.length, 48);
 
-    startGasReport("decode packed uint32[]");
+    startGasReport("decode packed bytes24[]");
     bytes24[] memory output = SliceLib.fromBytes(packed).decodeArray_bytes24();
     endGasReport();
 
