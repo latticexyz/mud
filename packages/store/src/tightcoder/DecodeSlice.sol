@@ -7,11 +7,6 @@ import { TightCoder } from "./TightCoder.sol";
 import { Slice } from "../Slice.sol";
 
 library DecodeSlice {
-  /************************************************************************
-   *
-   *    uint8 - uint256
-   *
-   ************************************************************************/
   function decodeArray_uint8(Slice _input) internal pure returns (uint8[] memory _output) {
     bytes32[] memory _genericArray = TightCoder.decode(_input, 1, false);
     assembly {
@@ -236,11 +231,6 @@ library DecodeSlice {
     }
   }
 
-  /************************************************************************
-   *
-   *    int8 - int256
-   *
-   ************************************************************************/
   function decodeArray_int8(Slice _input) internal pure returns (int8[] memory _output) {
     bytes32[] memory _genericArray = TightCoder.decode(_input, 1, false);
     assembly {
@@ -465,11 +455,6 @@ library DecodeSlice {
     }
   }
 
-  /************************************************************************
-   *
-   *    bytes1 - bytes32
-   *
-   ************************************************************************/
   function decodeArray_bytes1(Slice _input) internal pure returns (bytes1[] memory _output) {
     bytes32[] memory _genericArray = TightCoder.decode(_input, 1, true);
     assembly {
@@ -694,22 +679,15 @@ library DecodeSlice {
     }
   }
 
-  /************************************************************************
-   *
-   *    Other types
-   *
-   ************************************************************************/
-
-  // Note: internally address is right-aligned, like uint160
-  function decodeArray_address(Slice _input) internal pure returns (address[] memory _output) {
-    bytes32[] memory _genericArray = TightCoder.decode(_input, 20, false);
+  function decodeArray_bool(Slice _input) internal pure returns (bool[] memory _output) {
+    bytes32[] memory _genericArray = TightCoder.decode(_input, 1, false);
     assembly {
       _output := _genericArray
     }
   }
 
-  function decodeArray_bool(Slice _input) internal pure returns (bool[] memory _output) {
-    bytes32[] memory _genericArray = TightCoder.decode(_input, 1, false);
+  function decodeArray_address(Slice _input) internal pure returns (address[] memory _output) {
+    bytes32[] memory _genericArray = TightCoder.decode(_input, 20, false);
     assembly {
       _output := _genericArray
     }

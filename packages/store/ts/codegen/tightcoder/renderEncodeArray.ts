@@ -1,5 +1,6 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { renderTightCoderEncode } from "./renderFunctions";
+import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type";
 
 export function renderEncodeArray() {
   let result = `${renderedSolidityHeader}
@@ -9,33 +10,12 @@ export function renderEncodeArray() {
     library EncodeArray {
   `;
 
-  for (const prefix of ["uint", "int", "bytes"]) {
-    const [start, end, step] = prefix === "bytes" ? [1, 32, 1] : [8, 256, 8];
-    result += `
-      /************************************************************************
-       *
-       *    ${prefix}${start} - ${prefix}${end}
-       *
-       ************************************************************************/
-    `;
-
-    for (let i = start; i <= end; i += step) {
-      const internalTypeId = `${prefix}${i}`;
-      result += renderTightCoderEncode({ internalTypeId, staticByteLength: i / step });
-    }
+  for (const staticAbiType of staticAbiTypes) {
+    const staticByteLength = staticAbiTypeToByteLength[staticAbiType];
+    result += renderTightCoderEncode({ internalTypeId: staticAbiType, staticByteLength });
   }
 
   result += `
-      /************************************************************************
-       *
-       *    Other types
-       *
-       ************************************************************************/
-
-      // Note: internally address is right-aligned, like uint160
-      ${renderTightCoderEncode({ internalTypeId: "address", staticByteLength: 20 })}
-
-      ${renderTightCoderEncode({ internalTypeId: "bool", staticByteLength: 1 })}
     }
   `;
 

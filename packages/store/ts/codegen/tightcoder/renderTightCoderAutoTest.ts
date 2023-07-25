@@ -1,4 +1,5 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
+import { staticAbiTypes } from "@latticexyz/schema-type";
 
 export function renderTightCoderAutoTestFunction({ typeId }: { typeId: string }) {
   return `
@@ -36,32 +37,11 @@ export function renderTightCoderAutoTest() {
     contract TightCoderAutoTest is Test {
   `;
 
-  for (const prefix of ["uint", "int", "bytes"]) {
-    const [start, end, step] = prefix === "bytes" ? [1, 32, 1] : [8, 256, 8];
-    result += `
-      /************************************************************************
-       *
-       *    ${prefix}${start} - ${prefix}${end}
-       *
-       ************************************************************************/
-    `;
-
-    for (let i = start; i <= end; i += step) {
-      const typeId = `${prefix}${i}`;
-      result += renderTightCoderAutoTestFunction({ typeId });
-    }
+  for (const staticAbiType of staticAbiTypes) {
+    result += renderTightCoderAutoTestFunction({ typeId: staticAbiType });
   }
 
   result += `
-      /************************************************************************
-       *
-       *    Other types
-       *
-       ************************************************************************/
-
-      ${renderTightCoderAutoTestFunction({ typeId: "address" })}
-
-      ${renderTightCoderAutoTestFunction({ typeId: "bool" })}
     }
   `;
 

@@ -10,11 +10,6 @@ import { Memory } from "../../src/Memory.sol";
 import { SliceLib } from "../../src/Slice.sol";
 
 contract TightCoderAutoTest is Test {
-  /************************************************************************
-   *
-   *    uint8 - uint256
-   *
-   ************************************************************************/
   function testEncodeDecodeArray_uint8(uint8 val0, uint8 val1, uint8 val2) public {
     uint8[] memory input = new uint8[](3);
     input[0] = val0;
@@ -527,11 +522,6 @@ contract TightCoderAutoTest is Test {
     assertEq(decoded[2], val2);
   }
 
-  /************************************************************************
-   *
-   *    int8 - int256
-   *
-   ************************************************************************/
   function testEncodeDecodeArray_int8(int8 val0, int8 val1, int8 val2) public {
     int8[] memory input = new int8[](3);
     input[0] = val0;
@@ -1044,11 +1034,6 @@ contract TightCoderAutoTest is Test {
     assertEq(decoded[2], val2);
   }
 
-  /************************************************************************
-   *
-   *    bytes1 - bytes32
-   *
-   ************************************************************************/
   function testEncodeDecodeArray_bytes1(bytes1 val0, bytes1 val1, bytes1 val2) public {
     bytes1[] memory input = new bytes1[](3);
     input[0] = val0;
@@ -1561,11 +1546,21 @@ contract TightCoderAutoTest is Test {
     assertEq(decoded[2], val2);
   }
 
-  /************************************************************************
-   *
-   *    Other types
-   *
-   ************************************************************************/
+  function testEncodeDecodeArray_bool(bool val0, bool val1, bool val2) public {
+    bool[] memory input = new bool[](3);
+    input[0] = val0;
+    input[1] = val1;
+    input[2] = val2;
+
+    bytes memory encoded = EncodeArray.encode(input);
+    assertEq(encoded, abi.encodePacked(val0, val1, val2));
+
+    bool[] memory decoded = SliceLib.fromBytes(encoded).decodeArray_bool();
+    assertEq(decoded.length, 3);
+    assertEq(decoded[0], val0);
+    assertEq(decoded[1], val1);
+    assertEq(decoded[2], val2);
+  }
 
   function testEncodeDecodeArray_address(address val0, address val1, address val2) public {
     address[] memory input = new address[](3);
@@ -1577,22 +1572,6 @@ contract TightCoderAutoTest is Test {
     assertEq(encoded, abi.encodePacked(val0, val1, val2));
 
     address[] memory decoded = SliceLib.fromBytes(encoded).decodeArray_address();
-    assertEq(decoded.length, 3);
-    assertEq(decoded[0], val0);
-    assertEq(decoded[1], val1);
-    assertEq(decoded[2], val2);
-  }
-
-  function testEncodeDecodeArray_bool(bool val0, bool val1, bool val2) public {
-    bool[] memory input = new bool[](3);
-    input[0] = val0;
-    input[1] = val1;
-    input[2] = val2;
-
-    bytes memory encoded = EncodeArray.encode(input);
-    assertEq(encoded, abi.encodePacked(val0, val1, val2));
-
-    bool[] memory decoded = SliceLib.fromBytes(encoded).decodeArray_bool();
     assertEq(decoded.length, 3);
     assertEq(decoded[0], val0);
     assertEq(decoded[1], val1);

@@ -6,11 +6,6 @@ pragma solidity >=0.8.0;
 import { TightCoder } from "./TightCoder.sol";
 
 library EncodeArray {
-  /************************************************************************
-   *
-   *    uint8 - uint256
-   *
-   ************************************************************************/
   function encodeToLocation(uint8[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
@@ -555,11 +550,6 @@ library EncodeArray {
     encodeToLocation(_input, _toPointer);
   }
 
-  /************************************************************************
-   *
-   *    int8 - int256
-   *
-   ************************************************************************/
   function encodeToLocation(int8[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
@@ -1104,11 +1094,6 @@ library EncodeArray {
     encodeToLocation(_input, _toPointer);
   }
 
-  /************************************************************************
-   *
-   *    bytes1 - bytes32
-   *
-   ************************************************************************/
   function encodeToLocation(bytes1[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
@@ -1653,30 +1638,6 @@ library EncodeArray {
     encodeToLocation(_input, _toPointer);
   }
 
-  /************************************************************************
-   *
-   *    Other types
-   *
-   ************************************************************************/
-
-  // Note: internally address is right-aligned, like uint160
-  function encodeToLocation(address[] memory _input, uint256 _toPointer) internal pure {
-    bytes32[] memory _genericArray;
-    assembly {
-      _genericArray := _input
-    }
-    TightCoder.encodeToLocation(_genericArray, _toPointer, 20, 96);
-  }
-
-  function encode(address[] memory _input) internal pure returns (bytes memory _output) {
-    _output = new bytes(_input.length * 20);
-    uint256 _toPointer;
-    assembly {
-      _toPointer := add(_output, 0x20)
-    }
-    encodeToLocation(_input, _toPointer);
-  }
-
   function encodeToLocation(bool[] memory _input, uint256 _toPointer) internal pure {
     bytes32[] memory _genericArray;
     assembly {
@@ -1687,6 +1648,23 @@ library EncodeArray {
 
   function encode(bool[] memory _input) internal pure returns (bytes memory _output) {
     _output = new bytes(_input.length * 1);
+    uint256 _toPointer;
+    assembly {
+      _toPointer := add(_output, 0x20)
+    }
+    encodeToLocation(_input, _toPointer);
+  }
+
+  function encodeToLocation(address[] memory _input, uint256 _toPointer) internal pure {
+    bytes32[] memory _genericArray;
+    assembly {
+      _genericArray := _input
+    }
+    TightCoder.encodeToLocation(_genericArray, _toPointer, 20, 96);
+  }
+
+  function encode(address[] memory _input) internal pure returns (bytes memory _output) {
+    _output = new bytes(_input.length * 20);
     uint256 _toPointer;
     assembly {
       _toPointer := add(_output, 0x20)
