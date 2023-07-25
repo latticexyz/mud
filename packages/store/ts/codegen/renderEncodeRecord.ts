@@ -30,15 +30,11 @@ const PACKED_COUNTER_INNER_TYPE = "bytes32";
 function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length > 0) {
     return `
-    uint40[] memory _counters = new uint40[](${dynamicFields.length});
-    ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
-      if (arrayElement) {
-        return `_counters[${index}] = uint40(${name}.length * ${arrayElement.staticByteLength});`;
-      } else {
-        return `_counters[${index}] = uint40(bytes(${name}).length);`;
-      }
-    })}
-    ${PACKED_COUNTER_INNER_TYPE} _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
+      uint40[] memory _counters = new uint40[](${dynamicFields.length});
+      ${renderList(dynamicFields, (field, index) => {
+        return `_counters[${index}] = uint40(${renderDynamicLength(field)});`;
+      })}
+      ${PACKED_COUNTER_INNER_TYPE} _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
     `;
   } else {
     return "";
@@ -74,7 +70,7 @@ function renderEncodeRecordBody(staticFields: RenderField[], dynamicFields: Rend
     uint256 _resultLength;
     unchecked {
       _resultLength = ${totalStaticByteLength}
-        + ${dynamicFields.map((_, index) => `_counters[${index}]`).join(" + ")};
+        + ${dynamicFields.map(renderDynamicLength).join(" + ")};
     }
   `;
 
@@ -119,13 +115,15 @@ function renderEncodeRecordBody(staticFields: RenderField[], dynamicFields: Rend
     if (field.arrayElement) {
       result += `EncodeArray.encodeToLocation(${unwrappedField}, _resultPointer);`;
     } else {
-      result += `Memory.copy(Memory.dataPointer(bytes(${unwrappedField})), _resultPointer, _counters[${index}]);`;
+      result += `Memory.copy(Memory.dataPointer(bytes(${unwrappedField})), _resultPointer, ${renderDynamicLength(
+        field
+      )});`;
     }
     // Add field length to the result pointer, unless this was the last field
     if (index !== dynamicFields.length - 1) {
       result += `
         unchecked {
-          _resultPointer += _counters[${index}];
+          _resultPointer += ${renderDynamicLength(field)};
         }
       `;
     }
@@ -143,6 +141,17 @@ function renderEncodeRecordBody(staticFields: RenderField[], dynamicFields: Rend
  */
 function yulRoundUp(variableName: string) {
   return `and(add(${variableName}, 31), not(31))`;
+}
+
+// Recomputing the length each time is cheap (storing them in an array would add lots of overhead).
+function renderDynamicLength(field: RenderField) {
+  // The field is not unwrapped here because all dynamic memory types have length in solidity
+  // (except string, which is what `bytes` cast is for; user types can only be elementary)
+  if (field.arrayElement) {
+    return `${field.name}.length * ${field.arrayElement.staticByteLength}`;
+  } else {
+    return `bytes(${field.name}).length`;
+  }
 }
 
 function encodedLengthsAsField(): RenderField {

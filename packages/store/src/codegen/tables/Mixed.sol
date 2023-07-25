@@ -464,7 +464,7 @@ library Mixed {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 52 + _counters[0] + _counters[1];
+      _resultLength = 52 + a32.length * 4 + bytes(s).length;
     }
 
     bytes memory _result;
@@ -488,9 +488,9 @@ library Mixed {
     }
     EncodeArray.encodeToLocation((a32), _resultPointer);
     unchecked {
-      _resultPointer += _counters[0];
+      _resultPointer += a32.length * 4;
     }
-    Memory.copy(Memory.dataPointer(bytes((s))), _resultPointer, _counters[1]);
+    Memory.copy(Memory.dataPointer(bytes((s))), _resultPointer, bytes(s).length);
     return _result;
   }
 

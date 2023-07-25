@@ -785,7 +785,18 @@ library KeysInTable {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 32 + _counters[0] + _counters[1] + _counters[2] + _counters[3] + _counters[4];
+      _resultLength =
+        32 +
+        keys0.length *
+        32 +
+        keys1.length *
+        32 +
+        keys2.length *
+        32 +
+        keys3.length *
+        32 +
+        keys4.length *
+        32;
     }
 
     bytes memory _result;
@@ -805,19 +816,19 @@ library KeysInTable {
     }
     EncodeArray.encodeToLocation((keys0), _resultPointer);
     unchecked {
-      _resultPointer += _counters[0];
+      _resultPointer += keys0.length * 32;
     }
     EncodeArray.encodeToLocation((keys1), _resultPointer);
     unchecked {
-      _resultPointer += _counters[1];
+      _resultPointer += keys1.length * 32;
     }
     EncodeArray.encodeToLocation((keys2), _resultPointer);
     unchecked {
-      _resultPointer += _counters[2];
+      _resultPointer += keys2.length * 32;
     }
     EncodeArray.encodeToLocation((keys3), _resultPointer);
     unchecked {
-      _resultPointer += _counters[3];
+      _resultPointer += keys3.length * 32;
     }
     EncodeArray.encodeToLocation((keys4), _resultPointer);
     return _result;

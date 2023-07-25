@@ -75,7 +75,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 2626
+    "gasUsed": 2417
   },
   {
     "file": "test/Gas.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 110386
+    "gasUsed": 110178
   },
   {
     "file": "test/Mixed.t.sol",
@@ -603,7 +603,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetMetadata",
     "name": "StoreCore: set table metadata",
-    "gasUsed": 253185
+    "gasUsed": 252900
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -621,7 +621,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "set record in StoreMetadataTable",
-    "gasUsed": 251641
+    "gasUsed": 251356
   },
   {
     "file": "test/StoreMetadata.t.sol",

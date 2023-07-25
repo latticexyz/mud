@@ -191,7 +191,7 @@ library Callbacks {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 32 + _counters[0];
+      _resultLength = 32 + value.length * 24;
     }
 
     bytes memory _result;

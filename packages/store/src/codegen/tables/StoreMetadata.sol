@@ -393,7 +393,7 @@ library StoreMetadata {
 
     uint256 _resultLength;
     unchecked {
-      _resultLength = 32 + _counters[0] + _counters[1];
+      _resultLength = 32 + bytes(tableName).length + bytes(abiEncodedFieldNames).length;
     }
 
     bytes memory _result;
@@ -411,11 +411,11 @@ library StoreMetadata {
 
       _resultPointer := add(_resultPointer, 32)
     }
-    Memory.copy(Memory.dataPointer(bytes((tableName))), _resultPointer, _counters[0]);
+    Memory.copy(Memory.dataPointer(bytes((tableName))), _resultPointer, bytes(tableName).length);
     unchecked {
-      _resultPointer += _counters[0];
+      _resultPointer += bytes(tableName).length;
     }
-    Memory.copy(Memory.dataPointer(bytes((abiEncodedFieldNames))), _resultPointer, _counters[1]);
+    Memory.copy(Memory.dataPointer(bytes((abiEncodedFieldNames))), _resultPointer, bytes(abiEncodedFieldNames).length);
     return _result;
   }
 
