@@ -803,23 +803,23 @@ library KeysInTable {
 
       _resultPointer := add(_resultPointer, 32)
     }
-    EncodeArray.encodeToLocation(keys0, _resultPointer);
+    EncodeArray.encodeToLocation((keys0), _resultPointer);
     unchecked {
       _resultPointer += _counters[0];
     }
-    EncodeArray.encodeToLocation(keys1, _resultPointer);
+    EncodeArray.encodeToLocation((keys1), _resultPointer);
     unchecked {
       _resultPointer += _counters[1];
     }
-    EncodeArray.encodeToLocation(keys2, _resultPointer);
+    EncodeArray.encodeToLocation((keys2), _resultPointer);
     unchecked {
       _resultPointer += _counters[2];
     }
-    EncodeArray.encodeToLocation(keys3, _resultPointer);
+    EncodeArray.encodeToLocation((keys3), _resultPointer);
     unchecked {
       _resultPointer += _counters[3];
     }
-    EncodeArray.encodeToLocation(keys4, _resultPointer);
+    EncodeArray.encodeToLocation((keys4), _resultPointer);
     return _result;
   }
 

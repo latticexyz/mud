@@ -722,7 +722,7 @@
   {
     "file": "test/tightcoder/TightCoder.t.sol",
     "test": "testToAndFromBytes24Array",
-    "name": "decode packed uint32[]",
+    "name": "decode packed bytes24[]",
     "gasUsed": 622
   },
   {

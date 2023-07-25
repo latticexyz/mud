@@ -209,7 +209,7 @@ library SystemHooks {
 
       _resultPointer := add(_resultPointer, 32)
     }
-    EncodeArray.encodeToLocation(value, _resultPointer);
+    EncodeArray.encodeToLocation((value), _resultPointer);
     return _result;
   }
 

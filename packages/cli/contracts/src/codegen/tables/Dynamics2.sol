@@ -508,9 +508,38 @@ library Dynamics2 {
     _counters[0] = uint40(u64.length * 8);
     _counters[1] = uint40(bytes(str).length);
     _counters[2] = uint40(bytes(b).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    bytes32 _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((u64)), bytes((str)), bytes((b)));
+    uint256 _resultLength;
+    unchecked {
+      _resultLength = 32 + _counters[0] + _counters[1] + _counters[2];
+    }
+
+    bytes memory _result;
+    uint256 _resultPointer;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // allocate memory
+      _result := mload(0x40)
+      _resultPointer := add(_result, 0x20)
+      mstore(0x40, add(_resultPointer, and(add(_resultLength, 31), not(31))))
+      mstore(_result, _resultLength)
+
+      mstore(add(_resultPointer, 0), shl(0, _encodedLengths))
+
+      _resultPointer := add(_resultPointer, 32)
+    }
+    EncodeArray.encodeToLocation((u64), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[0];
+    }
+    Memory.copy(Memory.dataPointer(bytes((str))), _resultPointer, _counters[1]);
+    unchecked {
+      _resultPointer += _counters[1];
+    }
+    Memory.copy(Memory.dataPointer(bytes((b))), _resultPointer, _counters[2]);
+    return _result;
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

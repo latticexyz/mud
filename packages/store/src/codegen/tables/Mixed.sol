@@ -486,11 +486,11 @@ library Mixed {
 
       _resultPointer := add(_resultPointer, 52)
     }
-    EncodeArray.encodeToLocation(a32, _resultPointer);
+    EncodeArray.encodeToLocation((a32), _resultPointer);
     unchecked {
       _resultPointer += _counters[0];
     }
-    Memory.copy(Memory.dataPointer(bytes(s)), _resultPointer, _counters[1]);
+    Memory.copy(Memory.dataPointer(bytes((s))), _resultPointer, _counters[1]);
     return _result;
   }
 

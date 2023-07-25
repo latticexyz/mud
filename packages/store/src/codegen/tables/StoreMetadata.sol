@@ -411,11 +411,11 @@ library StoreMetadata {
 
       _resultPointer := add(_resultPointer, 32)
     }
-    Memory.copy(Memory.dataPointer(bytes(tableName)), _resultPointer, _counters[0]);
+    Memory.copy(Memory.dataPointer(bytes((tableName))), _resultPointer, _counters[0]);
     unchecked {
       _resultPointer += _counters[0];
     }
-    Memory.copy(Memory.dataPointer(bytes(abiEncodedFieldNames)), _resultPointer, _counters[1]);
+    Memory.copy(Memory.dataPointer(bytes((abiEncodedFieldNames))), _resultPointer, _counters[1]);
     return _result;
   }
 

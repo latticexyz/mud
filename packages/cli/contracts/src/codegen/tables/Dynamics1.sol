@@ -781,17 +781,46 @@ library Dynamics1 {
     _counters[2] = uint40(staticU128.length * 16);
     _counters[3] = uint40(staticAddrs.length * 20);
     _counters[4] = uint40(staticBools.length * 1);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    bytes32 _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
 
-    return
-      abi.encodePacked(
-        _encodedLengths.unwrap(),
-        EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)),
-        EncodeArray.encode(fromStaticArray_int32_2(staticI32)),
-        EncodeArray.encode(fromStaticArray_uint128_3(staticU128)),
-        EncodeArray.encode(fromStaticArray_address_4(staticAddrs)),
-        EncodeArray.encode(fromStaticArray_bool_5(staticBools))
-      );
+    uint256 _resultLength;
+    unchecked {
+      _resultLength = 32 + _counters[0] + _counters[1] + _counters[2] + _counters[3] + _counters[4];
+    }
+
+    bytes memory _result;
+    uint256 _resultPointer;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // allocate memory
+      _result := mload(0x40)
+      _resultPointer := add(_result, 0x20)
+      mstore(0x40, add(_resultPointer, and(add(_resultLength, 31), not(31))))
+      mstore(_result, _resultLength)
+
+      mstore(add(_resultPointer, 0), shl(0, _encodedLengths))
+
+      _resultPointer := add(_resultPointer, 32)
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_bytes32_1(staticB32), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[0];
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_int32_2(staticI32), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[1];
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_uint128_3(staticU128), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[2];
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_address_4(staticAddrs), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[3];
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_bool_5(staticBools), _resultPointer);
+    return _result;
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

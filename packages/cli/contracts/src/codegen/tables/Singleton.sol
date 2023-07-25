@@ -488,16 +488,40 @@ library Singleton {
     _counters[0] = uint40(v2.length * 4);
     _counters[1] = uint40(v3.length * 4);
     _counters[2] = uint40(v4.length * 4);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    bytes32 _encodedLengths = PackedCounterLib.pack(_counters).unwrap();
 
-    return
-      abi.encodePacked(
-        v1,
-        _encodedLengths.unwrap(),
-        EncodeArray.encode(fromStaticArray_uint32_2(v2)),
-        EncodeArray.encode(fromStaticArray_uint32_2(v3)),
-        EncodeArray.encode(fromStaticArray_uint32_1(v4))
-      );
+    uint256 _resultLength;
+    unchecked {
+      _resultLength = 64 + _counters[0] + _counters[1] + _counters[2];
+    }
+
+    bytes memory _result;
+    uint256 _resultPointer;
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      // allocate memory
+      _result := mload(0x40)
+      _resultPointer := add(_result, 0x20)
+      mstore(0x40, add(_resultPointer, and(add(_resultLength, 31), not(31))))
+      mstore(_result, _resultLength)
+
+      mstore(add(_resultPointer, 0), shl(0, v1))
+
+      mstore(add(_resultPointer, 32), shl(0, _encodedLengths))
+
+      _resultPointer := add(_resultPointer, 64)
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_uint32_2(v2), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[0];
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_uint32_2(v3), _resultPointer);
+    unchecked {
+      _resultPointer += _counters[1];
+    }
+    EncodeArray.encodeToLocation(fromStaticArray_uint32_1(v4), _resultPointer);
+    return _result;
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

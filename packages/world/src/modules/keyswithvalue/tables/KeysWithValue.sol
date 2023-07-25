@@ -210,7 +210,7 @@ library KeysWithValue {
 
       _resultPointer := add(_resultPointer, 32)
     }
-    EncodeArray.encodeToLocation(keysWithValue, _resultPointer);
+    EncodeArray.encodeToLocation((keysWithValue), _resultPointer);
     return _result;
   }
 

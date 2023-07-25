@@ -114,11 +114,12 @@ function renderEncodeRecordBody(staticFields: RenderField[], dynamicFields: Rend
   // Ideally this would use yul functions to keep everything in 1 assembly block,
   // but yul functions can't be imported, and inlining would be bulky and make table libs unreadable
   for (const [index, field] of dynamicFields.entries()) {
+    const unwrappedField = `${field.typeUnwrap}(${field.name})`;
     // Encode the field to the result pointer
     if (field.arrayElement) {
-      result += `EncodeArray.encodeToLocation(${field.name}, _resultPointer);`;
+      result += `EncodeArray.encodeToLocation(${unwrappedField}, _resultPointer);`;
     } else {
-      result += `Memory.copy(Memory.dataPointer(bytes(${field.name})), _resultPointer, _counters[${index}]);`;
+      result += `Memory.copy(Memory.dataPointer(bytes(${unwrappedField})), _resultPointer, _counters[${index}]);`;
     }
     // Add field length to the result pointer, unless this was the last field
     if (index !== dynamicFields.length - 1) {
