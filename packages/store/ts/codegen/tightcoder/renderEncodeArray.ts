@@ -1,6 +1,6 @@
 import { renderedSolidityHeader } from "@latticexyz/common/codegen";
-import { renderTightCoderEncode } from "./renderFunctions";
 import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-type";
+import { renderTightCoderEncode } from "./renderFunctions";
 
 export function renderEncodeArray() {
   let result = `${renderedSolidityHeader}

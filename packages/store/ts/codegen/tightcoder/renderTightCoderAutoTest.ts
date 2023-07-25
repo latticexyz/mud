@@ -29,9 +29,7 @@ export function renderTightCoderAutoTest() {
   let result = `${renderedSolidityHeader}
 
     import { Test } from "forge-std/Test.sol";
-    import { Bytes } from "../../src/Bytes.sol";
     import { EncodeArray } from "../../src/tightcoder/EncodeArray.sol";
-    import { Memory } from "../../src/Memory.sol";
     import { SliceLib } from "../../src/Slice.sol";
 
     contract TightCoderAutoTest is Test {
