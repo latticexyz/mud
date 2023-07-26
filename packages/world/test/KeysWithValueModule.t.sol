@@ -329,13 +329,13 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0].length, 1);
     assertEq(keysWithValue[0][0], key1);
 
-    // // Set a another key with the same value
+    // Set a another key with the same value
     world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value));
 
-    // // Get the list of keys with value from the target table
+    // Get the list of keys with value from the target table
     keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
-    // // Assert that the list is correct
+    // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
     assertEq(keysWithValue[0].length, 1);
     assertEq(keysWithValue[1].length, 1);

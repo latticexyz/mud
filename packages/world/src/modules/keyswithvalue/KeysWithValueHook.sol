@@ -29,24 +29,6 @@ contract KeysWithValueHook is IStoreHook {
     return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
-  function handleSet(bytes32 tableId, bytes32 valueHash, bytes32[] memory key) internal {
-    if (key.length > 0) {
-      KeysWithValue.pushKeys0(tableId, valueHash, key[0]);
-      if (key.length > 1) {
-        KeysWithValue.pushKeys1(tableId, valueHash, key[1]);
-        if (key.length > 2) {
-          KeysWithValue.pushKeys2(tableId, valueHash, key[2]);
-          if (key.length > 3) {
-            KeysWithValue.pushKeys3(tableId, valueHash, key[3]);
-            if (key.length > 4) {
-              KeysWithValue.pushKeys4(tableId, valueHash, key[4]);
-            }
-          }
-        }
-      }
-    }
-  }
-
   function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
@@ -57,7 +39,7 @@ contract KeysWithValueHook is IStoreHook {
     _removeKeyFromList(targetTableId, key, previousValue);
 
     // Push the key to the list of keys with the new value
-    handleSet(targetTableId, keccak256(data), key);
+    _addKeyToList(targetTableId, key, keccak256(data));
   }
 
   function onBeforeSetField(bytes32 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
@@ -71,7 +53,7 @@ contract KeysWithValueHook is IStoreHook {
     // Add the key to the list of keys with the new value
     bytes32 newValue = keccak256(_world().getRecord(sourceTableId, key));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    handleSet(targetTableId, newValue, key);
+    _addKeyToList(targetTableId, key, newValue);
   }
 
   function onDeleteRecord(bytes32 sourceTableId, bytes32[] memory key) public {
@@ -79,6 +61,24 @@ contract KeysWithValueHook is IStoreHook {
     bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, key, previousValue);
+  }
+
+  function _addKeyToList(bytes32 targetTableId, bytes32[] memory key, bytes32 valueHash) internal {
+    if (key.length > 0) {
+      KeysWithValue.pushKeys0(targetTableId, valueHash, key[0]);
+      if (key.length > 1) {
+        KeysWithValue.pushKeys1(targetTableId, valueHash, key[1]);
+        if (key.length > 2) {
+          KeysWithValue.pushKeys2(targetTableId, valueHash, key[2]);
+          if (key.length > 3) {
+            KeysWithValue.pushKeys3(targetTableId, valueHash, key[3]);
+            if (key.length > 4) {
+              KeysWithValue.pushKeys4(targetTableId, valueHash, key[4]);
+            }
+          }
+        }
+      }
+    }
   }
 
   function _removeKeyFromList(bytes32 targetTableId, bytes32[] memory key, bytes32 valueHash) internal {
