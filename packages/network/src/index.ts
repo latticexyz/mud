@@ -3,6 +3,7 @@ export * from "./createNetwork";
 export * from "./createProvider";
 export * from "./createSigner";
 export * from "./createContracts";
+export * from "./createClock";
 export * from "./createTxQueue";
 export * from "./createSyncWorker";
 export * from "./createTopics";

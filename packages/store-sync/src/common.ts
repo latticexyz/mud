@@ -2,7 +2,7 @@ import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@lat
 import { Address, Hex } from "viem";
 // TODO: move these type helpers into store?
 import { Key, Value } from "@latticexyz/store-cache";
-import { GetLogsResult, GroupLogsByBlockNumberResult } from "@latticexyz/block-logs-stream";
+import { GetLogsResult, GroupLogsByBlockNumberResult, NonPendingLog } from "@latticexyz/block-logs-stream";
 import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
 
 export type ChainId = number;
@@ -36,7 +36,7 @@ export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type BaseStorageOperation = {
-  log: StoreEventsLog;
+  log: NonPendingLog<StoreEventsLog>;
   namespace: string;
   name: string;
 };
