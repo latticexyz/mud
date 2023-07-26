@@ -2,7 +2,7 @@ import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
-import { entityToKey } from "@latticexyz/store-sync/recs";
+import { decodeEntity } from "@latticexyz/store-sync/recs";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
@@ -103,7 +103,7 @@ export const App = () => {
         <ul>
           {inventory.map((entity) => {
             const { amount } = getComponentValueStrict(Inventory, entity);
-            const { owner, item, itemVariant } = entityToKey(Inventory, entity);
+            const { owner, item, itemVariant } = decodeEntity(Inventory.metadata.keySchema, entity);
             return (
               <li key={entity}>
                 {owner.substring(0, 8)} owns {amount} of {VARIANTS[itemVariant]} {ITEMS[item]}

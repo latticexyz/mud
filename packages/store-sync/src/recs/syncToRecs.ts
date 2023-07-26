@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
+import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
 import {
   ComponentValue,
   Entity,
@@ -8,7 +8,7 @@ import {
   World as RecsWorld,
   setComponent,
 } from "@latticexyz/recs";
-import { StorageOperation, Table, TableRecord } from "../common";
+import { BlockLogs, StorageOperation, Table, TableRecord } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
@@ -43,6 +43,9 @@ type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
   // TODO: return components, if we extend them
   singletonEntity: Entity;
+  latestBlock$: Observable<Block>;
+  latestBlockNumber$: Observable<bigint>;
+  blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
   waitForTransaction: (tx: Hex) => Promise<{
     receipt: TransactionReceipt;
@@ -96,11 +99,12 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   debug("starting sync from block", startBlock);
 
-  const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
+  const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(share());
 
   const latestBlockNumber$ = latestBlock$.pipe(
     filter(isNonPendingBlock),
-    map((block) => block.number)
+    map((block) => block.number),
+    share()
   );
 
   const blockLogs$ = latestBlockNumber$.pipe(
@@ -111,7 +115,8 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
       address,
       events: storeEventsAbi,
     }),
-    mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
+    mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock))),
+    share()
   );
 
   const blockStorageOperations$ = blockLogs$.pipe(
@@ -143,6 +148,9 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   return {
     singletonEntity,
+    latestBlock$,
+    latestBlockNumber$,
+    blockLogs$,
     blockStorageOperations$,
     waitForTransaction,
     destroy: (): void => {
