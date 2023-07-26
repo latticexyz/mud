@@ -31,7 +31,7 @@ function renderDefineComponent(table: RecsV1TableOptions["tables"][number]) {
           tableName: ${JSON.stringify([namespace, name].join(":"))},
           keySchema,
           valueSchema,
-        },
+        } as const,
       });
     })()
   `;

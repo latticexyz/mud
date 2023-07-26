@@ -10,5 +10,16 @@ export function defineInternalComponents(world: World) {
       { table: Type.T },
       { metadata: { keySchema: {}, valueSchema: {} } }
     ),
+    SyncProgress: defineComponent(
+      world,
+      {
+        step: Type.String,
+        message: Type.String,
+        percentage: Type.Number,
+      },
+      {
+        metadata: { keySchema: {}, valueSchema: {} },
+      }
+    ),
   };
 }

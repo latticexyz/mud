@@ -1,3 +1,4 @@
+export * from "./common";
 export * from "./decodeEntity";
 export * from "./encodeEntity";
 export * from "./entityToHexKeyTuple";

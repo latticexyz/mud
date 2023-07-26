@@ -11,7 +11,6 @@ import {
   setComponent,
   updateComponent,
 } from "@latticexyz/recs";
-import { Table } from "../common";
 import { isDefined } from "@latticexyz/common/utils";
 import { TableId } from "@latticexyz/common";
 import { schemaToDefaults } from "../schemaToDefaults";
