@@ -92,6 +92,23 @@ contract GasTest is Test, GasReporter {
     startGasReport("solidity storage write (warm, 10 words)");
     layoutBytes.value = value9Words;
     endGasReport();
+
+    // load
+
+    startGasReport("solidity storage load (warm, 1 word)");
+    valueSimple = layoutSimple.value;
+    endGasReport();
+
+    startGasReport("solidity storage load (warm, 1 word, partial)");
+    valuePartial = layoutPartial.value;
+    endGasReport();
+
+    startGasReport("solidity storage load (warm, 10 words)");
+    value9Words = layoutBytes.value;
+    endGasReport();
+
+    // Do something in case the optimizer removes unused assignments
+    someContract.doSomethingWithBytes(abi.encode(valueSimple, valuePartial, value9Words));
   }
 
   // Note that this compares storage writes in isolation, which can be misleading,
@@ -131,6 +148,23 @@ contract GasTest is Test, GasReporter {
     startGasReport("MUD storage write (warm, 10 words)");
     Storage.store(SolidityStorage.STORAGE_SLOT_BYTES, 0, encoded9Words);
     endGasReport();
+
+    // load
+
+    startGasReport("MUD storage load (warm, 1 word)");
+    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
+    endGasReport();
+
+    startGasReport("MUD storage load (warm, 1 word, partial)");
+    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
+    endGasReport();
+
+    startGasReport("MUD storage load (warm, 10 words)");
+    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, encoded9Words.length, 0);
+    endGasReport();
+
+    // Do something in case the optimizer removes unused assignments
+    someContract.doSomethingWithBytes(abi.encode(encodedSimple, encodedPartial, encoded9Words));
   }
 }
 

@@ -87,13 +87,13 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass abi encoded bytes to external contract",
-    "gasUsed": 6551
+    "gasUsed": 6563
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass custom encoded bytes to external contract",
-    "gasUsed": 1368
+    "gasUsed": 1380
   },
   {
     "file": "test/Gas.t.sol",
@@ -133,6 +133,24 @@
   },
   {
     "file": "test/Gas.t.sol",
+    "test": "testCompareStorageMUD",
+    "name": "MUD storage load (warm, 1 word)",
+    "gasUsed": 630
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageMUD",
+    "name": "MUD storage load (warm, 1 word, partial)",
+    "gasUsed": 577
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageMUD",
+    "name": "MUD storage load (warm, 10 words)",
+    "gasUsed": 2655
+  },
+  {
+    "file": "test/Gas.t.sol",
     "test": "testCompareStorageSolidity",
     "name": "solidity storage write (cold, 1 word)",
     "gasUsed": 22107
@@ -166,6 +184,24 @@
     "test": "testCompareStorageSolidity",
     "name": "solidity storage write (warm, 10 words)",
     "gasUsed": 1988
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageSolidity",
+    "name": "solidity storage load (warm, 1 word)",
+    "gasUsed": 109
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageSolidity",
+    "name": "solidity storage load (warm, 1 word, partial)",
+    "gasUsed": 126
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageSolidity",
+    "name": "solidity storage load (warm, 10 words)",
+    "gasUsed": 1916
   },
   {
     "file": "test/KeyEncoding.t.sol",
