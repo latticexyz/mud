@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "1.42.0",
+  "version": "2.0.0-next.0",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -33,8 +33,8 @@
     "test": "vitest typecheck --run && vitest --run && forge test"
   },
   "dependencies": {
-    "abitype": "0.8.7",
-    "viem": "1.1.7"
+    "abitype": "0.9.3",
+    "viem": "1.3.1"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",

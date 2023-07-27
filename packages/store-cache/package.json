@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-cache",
-  "version": "1.42.0",
+  "version": "2.0.0-next.0",
   "description": "Database to replicate Store contract state on a TypeScript client",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "abitype": "0.8.7",
+    "abitype": "0.9.3",
     "tuple-database": "^2.2.0"
   },
   "devDependencies": {

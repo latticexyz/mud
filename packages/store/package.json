@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "1.42.0",
+  "version": "2.0.0-next.0",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -57,7 +57,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "abitype": "0.8.7",
+    "abitype": "0.9.3",
     "ethers": "^5.7.2",
     "zod": "^3.21.4"
   },

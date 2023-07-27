@@ -52,7 +52,6 @@ describe("groupLogsByBlockNumber", () => {
     expect(groupLogsByBlockNumber(logs)).toMatchInlineSnapshot(`
       [
         {
-          "blockHash": "0x",
           "blockNumber": 1n,
           "logs": [
             {
@@ -79,7 +78,6 @@ describe("groupLogsByBlockNumber", () => {
           ],
         },
         {
-          "blockHash": "0x",
           "blockNumber": 3n,
           "logs": [
             {
@@ -92,13 +90,74 @@ describe("groupLogsByBlockNumber", () => {
           ],
         },
         {
-          "blockHash": "0x",
           "blockNumber": 5n,
           "logs": [
             {
               "blockHash": "0x",
               "blockNumber": 5n,
               "logIndex": 0,
+              "transactionHash": "0x",
+              "transactionIndex": 0,
+            },
+          ],
+        },
+      ]
+    `);
+  });
+
+  it("adds an entry for toBlock if block is not in logs", () => {
+    const logs = [
+      {
+        blockNumber: 1n,
+        blockHash: "0x",
+        logIndex: 4,
+        transactionHash: "0x",
+        transactionIndex: 0,
+      },
+    ] as any as Log[];
+
+    expect(groupLogsByBlockNumber(logs, 2n)).toMatchInlineSnapshot(`
+      [
+        {
+          "blockNumber": 1n,
+          "logs": [
+            {
+              "blockHash": "0x",
+              "blockNumber": 1n,
+              "logIndex": 4,
+              "transactionHash": "0x",
+              "transactionIndex": 0,
+            },
+          ],
+        },
+        {
+          "blockNumber": 2n,
+          "logs": [],
+        },
+      ]
+    `);
+  });
+
+  it("does not add an entry for toBlock if block number is in logs", () => {
+    const logs = [
+      {
+        blockNumber: 2n,
+        blockHash: "0x",
+        logIndex: 4,
+        transactionHash: "0x",
+        transactionIndex: 0,
+      },
+    ] as any as Log[];
+
+    expect(groupLogsByBlockNumber(logs, 2n)).toMatchInlineSnapshot(`
+      [
+        {
+          "blockNumber": 2n,
+          "logs": [
+            {
+              "blockHash": "0x",
+              "blockNumber": 2n,
+              "logIndex": 4,
               "transactionHash": "0x",
               "transactionIndex": 0,
             },

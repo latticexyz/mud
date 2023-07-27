@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.0
+
+### Patch Changes
+
+- [#1167](https://github.com/latticexyz/mud/pull/1167) [`1e2ad78e`](https://github.com/latticexyz/mud/commit/1e2ad78e277b551dd1b8efb0e4438fb10441644c) Thanks [@holic](https://github.com/holic)! - improve RECS error messages for v2 components
+
+- Updated dependencies [[`48909d15`](https://github.com/latticexyz/mud/commit/48909d151b3dfceab128c120bc6bb77de53c456b), [`f03531d9`](https://github.com/latticexyz/mud/commit/f03531d97c999954a626ef63bc5bbae51a7b90f3), [`4e4a3415`](https://github.com/latticexyz/mud/commit/4e4a34150aeae988c8e61e25d55c227afb6c2d4b), [`53522998`](https://github.com/latticexyz/mud/commit/535229984565539e6168042150b45fe0f9b48b0f)]:
+  - @latticexyz/schema-type@2.0.0-next.0
+  - @latticexyz/utils@2.0.0-next.0
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

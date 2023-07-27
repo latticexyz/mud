@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { blockRangeToLogs } from "./blockRangeToLogs";
 import { Subject, lastValueFrom, map, toArray } from "rxjs";
 import { EIP1193RequestFn, RpcLog, Transport, createPublicClient, createTransport } from "viem";
-import { wait } from "./utils";
+import { wait } from "@latticexyz/common/utils";
 
 // TODO: there is a chance that these tests will need to be written differently with timers to avoid flakiness
 

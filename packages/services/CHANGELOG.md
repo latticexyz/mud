@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.0-next.0
+
+### Patch Changes
+
+- [#1074](https://github.com/latticexyz/mud/pull/1074) [`086be4ef`](https://github.com/latticexyz/mud/commit/086be4ef4f3c1ecb3eac0e9554d7d4eb64531fc2) Thanks [@alvrs](https://github.com/alvrs)! - fix a bug related to encoding negative bigints in MODE
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

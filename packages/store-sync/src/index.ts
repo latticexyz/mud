@@ -1,1 +1,2 @@
-export * from "./blockEventsToStorage";
+export * from "./blockLogsToStorage";
+export * from "./common";
