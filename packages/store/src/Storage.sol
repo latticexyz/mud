@@ -111,10 +111,6 @@ library Storage {
     }
   }
 
-  function load(uint256 storagePointer, uint256 length) internal view returns (bytes memory) {
-    return load(storagePointer, length, 0);
-  }
-
   /**
    * @notice Load raw bytes from storage at the given storagePointer, offset, and length
    */

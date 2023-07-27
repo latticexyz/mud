@@ -731,7 +731,7 @@ library StoreCoreInternal {
     uint256 location = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
     uint256 dataLength = _loadEncodedDynamicDataLength(tableId, key).atIndex(dynamicSchemaIndex);
 
-    return Storage.load({ storagePointer: location, length: dataLength });
+    return Storage.load({ storagePointer: location, length: dataLength, offset: 0 });
   }
 
   /************************************************************************
