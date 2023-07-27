@@ -119,10 +119,22 @@ library Storage {
    * @notice Load raw bytes from storage at the given storagePointer, offset, and length
    */
   function load(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes memory result) {
-    // TODO this will probably use less gas via manual memory allocation
-    // (see https://github.com/latticexyz/mud/issues/444)
-    result = new bytes(length);
-    load(storagePointer, length, offset, Memory.dataPointer(result));
+    uint256 memoryPointer;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Solidity's YulUtilFunctions::roundUpFunction
+      function round_up_to_mul_of_32(value) -> _result {
+        _result := and(add(value, 31), not(31))
+      }
+
+      // Allocate memory
+      result := mload(0x40)
+      memoryPointer := add(result, 0x20)
+      mstore(0x40, round_up_to_mul_of_32(add(memoryPointer, length)))
+      // Store length
+      mstore(result, length)
+    }
+    load(storagePointer, length, offset, memoryPointer);
     return result;
   }
 
