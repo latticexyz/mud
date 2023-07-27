@@ -2,3 +2,5 @@ dist
 **/types/ethers-contracts
 **/.next
 templates/phaser/packages/art
+packages/std-client/src/mud-definitions/store/contractComponents.ts
+packages/std-client/src/mud-definitions/world/contractComponents.ts
