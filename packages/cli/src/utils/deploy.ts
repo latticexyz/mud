@@ -399,12 +399,12 @@ export async function deploy(
     try {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${nonce}`));
- const deployPromise = factory
+      const deployPromise = factory
         .deploy({
           nonce: nonce++,
           maxPriorityFeePerGas,
           maxFeePerGas,
-          gasPrice
+          gasPrice,
         })
         .then((c) => (disableTxWait ? c : c.deployed()));
 
@@ -546,21 +546,26 @@ export async function deploy(
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
 
-    // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
-    if(!feeData.lastBaseFeePerGas && !feeData.gasPrice) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
-    
-    if(feeData.lastBaseFeePerGas) {
+    if (feeData.lastBaseFeePerGas) {
       if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
         throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
-If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
+        If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
       }
+
+      // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
       maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
       maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
-    } else {
+    } else if (feeData.gasPrice) {
+      // Legacy chains with gasPrice instead of maxFeePerGas
       if (!feeData.gasPrice.eq(0) && (await signer.getBalance()).eq(0)) {
-        throw new MUDError(`Attempting to deploy to a chain with non-zero gas price with an account that has no balance.`);
+        throw new MUDError(
+          `Attempting to deploy to a chain with non-zero gas price with an account that has no balance.`
+        );
       }
+
       gasPrice = feeData.gasPrice;
+    } else {
+      throw new MUDError("Can not fetch fee data from RPC");
     }
   }
 }
