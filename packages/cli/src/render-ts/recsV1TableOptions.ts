@@ -29,7 +29,7 @@ export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
       name: tableData.name,
     };
 
-    // TODO: move user type -> abi type into our config expanding step rather than sprinkled everywhere
+    // TODO: move user type -> abi type into our config expanding step rather than sprinkled everywhere (https://github.com/latticexyz/mud/issues/1201)
     const keySchema = Object.fromEntries(
       Object.entries(tableData.keySchema).map(([name, type]) => [
         name,
