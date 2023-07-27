@@ -29,9 +29,9 @@ import { encodeEntity } from "./encodeEntity";
 
 type SyncToRecsOptions<
   TConfig extends StoreConfig = StoreConfig,
-  TComponent extends RecsComponent<RecsSchema, StoreComponentMetadata> = RecsComponent<
-    RecsSchema,
-    StoreComponentMetadata
+  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
+    string,
+    RecsComponent<RecsSchema, StoreComponentMetadata>
   >
 > = {
   world: RecsWorld;
@@ -40,7 +40,7 @@ type SyncToRecsOptions<
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
   publicClient: PublicClient<Transport, Chain>;
   // TODO: generate these from config and return instead?
-  components: Record<string, TComponent>;
+  components: TComponents;
   initialState?: {
     blockNumber: bigint | null;
     tables: (Table & { records: TableRecord[] })[];
@@ -49,14 +49,14 @@ type SyncToRecsOptions<
 
 type SyncToRecsResult<
   TConfig extends StoreConfig = StoreConfig,
-  TComponent extends RecsComponent<RecsSchema, StoreComponentMetadata> = RecsComponent<
-    RecsSchema,
-    StoreComponentMetadata
+  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
+    string,
+    RecsComponent<RecsSchema, StoreComponentMetadata>
   >
 > = {
   // TODO: return publicClient?
   // TODO: carry user component types and extend with our components
-  components: Record<string, TComponent> & ReturnType<typeof defineInternalComponents>;
+  components: TComponents & ReturnType<typeof defineInternalComponents>;
   singletonEntity: Entity;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
@@ -71,9 +71,9 @@ type SyncToRecsResult<
 
 export async function syncToRecs<
   TConfig extends StoreConfig = StoreConfig,
-  TComponent extends RecsComponent<RecsSchema, StoreComponentMetadata> = RecsComponent<
-    RecsSchema,
-    StoreComponentMetadata
+  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
+    string,
+    RecsComponent<RecsSchema, StoreComponentMetadata>
   >
 >({
   world,
@@ -82,12 +82,12 @@ export async function syncToRecs<
   publicClient,
   components: initialComponents,
   initialState,
-}: SyncToRecsOptions<TConfig, TComponent>): Promise<SyncToRecsResult<TConfig, TComponent>> {
+}: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
   const components = {
     ...initialComponents,
     ...defineInternalComponents(world),
     // TODO: make this TS better so we don't have to cast?
-  } as typeof initialComponents & ReturnType<typeof defineInternalComponents>;
+  } as TComponents & ReturnType<typeof defineInternalComponents>;
 
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
