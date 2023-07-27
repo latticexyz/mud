@@ -4,10 +4,6 @@ pragma solidity >=0.8.0;
 import { leftMask } from "./Utils.sol";
 import { Memory } from "./Memory.sol";
 
-/**
- * TODO Probably not fully optimized
- * (see https://github.com/latticexyz/mud/issues/444)
- */
 library Storage {
   function store(uint256 storagePointer, bytes32 data) internal {
     assembly {
@@ -20,7 +16,7 @@ library Storage {
   }
 
   /**
-   * @notice Stores raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
+   * Stores raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
    */
   function store(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal {
     if (offset > 0) {
@@ -108,7 +104,7 @@ library Storage {
   }
 
   /**
-   * @notice Load raw bytes from storage at the given storagePointer, offset, and length
+   * Load raw bytes from storage at the given storagePointer, offset, and length
    */
   function load(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes memory result) {
     uint256 memoryPointer;
@@ -131,7 +127,7 @@ library Storage {
   }
 
   /**
-   * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given memoryPointer
+   * Append raw bytes from storage at the given storagePointer, offset, and length to the given memoryPointer
    */
   function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
     if (offset > 0) {
