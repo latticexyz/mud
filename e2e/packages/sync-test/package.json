@@ -12,6 +12,7 @@
     "@latticexyz/schema-type": "link:../../../packages/schema-type",
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/utils": "link:../../../packages/utils",
+    "@types/node": "18.15.11",
     "chalk": "^5.2.0",
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",

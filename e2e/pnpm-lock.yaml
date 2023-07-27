@@ -84,12 +84,15 @@ importers:
         specifier: 1.3.1
         version: 1.3.1(typescript@5.1.6)
     devDependencies:
+      '@types/node':
+        specifier: 18.15.11
+        version: 18.15.11
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
       vite:
         specifier: 4.4.7
-        version: 4.4.7(@types/node@20.1.3)
+        version: 4.4.7(@types/node@18.15.11)
       vitest:
         specifier: 0.33.0
         version: 0.33.0(jsdom@22.0.0)
@@ -114,6 +117,9 @@ importers:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
+      '@types/node':
+        specifier: 18.15.11
+        version: 18.15.11
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -137,7 +143,7 @@ importers:
         version: 5.1.6
       vite:
         specifier: 4.4.7
-        version: 4.4.7(@types/node@20.1.3)
+        version: 4.4.7(@types/node@18.15.11)
       vitest:
         specifier: 0.33.0
         version: 0.33.0(jsdom@22.0.0)
@@ -159,6 +165,9 @@ importers:
       '@latticexyz/utils':
         specifier: link:../../../packages/utils
         version: link:../../../packages/utils
+      '@types/node':
+        specifier: 18.15.11
+        version: 18.15.11
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -182,7 +191,7 @@ importers:
         version: 1.3.1(typescript@5.1.6)
       vite:
         specifier: 4.4.7
-        version: 4.4.7(@types/node@20.1.3)
+        version: 4.4.7(@types/node@18.15.11)
       vitest:
         specifier: 0.33.0
         version: 0.33.0(jsdom@22.0.0)
@@ -680,7 +689,7 @@ packages:
     engines: {node: ^8.13.0 || >=10.10.0}
     dependencies:
       '@grpc/proto-loader': 0.7.7
-      '@types/node': 20.1.3
+      '@types/node': 18.15.11
     dev: false
 
   /@grpc/proto-loader@0.7.7:
@@ -853,8 +862,12 @@ packages:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
     dev: false
 
+  /@types/node@18.15.11:
+    resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
+
   /@types/node@20.1.3:
     resolution: {integrity: sha512-NP2yfZpgmf2eDRPmgGq+fjGjSwFgYbihA8/gK+ey23qT9RkxsgNTZvGOEpXgzIGqesTYkElELLgtKoMQTys5vA==}
+    dev: true
 
   /@types/prettier@2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==}
@@ -1815,7 +1828,7 @@ packages:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 20.1.3
+      '@types/node': 18.15.11
       long: 5.2.3
     dev: false
 
@@ -2167,7 +2180,7 @@ packages:
       - utf-8-validate
       - zod
 
-  /vite-node@0.33.0(@types/node@20.1.3):
+  /vite-node@0.33.0(@types/node@18.15.11):
     resolution: {integrity: sha512-19FpHYbwWWxDr73ruNahC+vtEdza52kA90Qb3La98yZ0xULqV8A5JLNPUff0f5zID4984tW7l3DH2przTJUZSw==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -2177,7 +2190,7 @@ packages:
       mlly: 1.4.0
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 4.4.7(@types/node@20.1.3)
+      vite: 4.4.7(@types/node@18.15.11)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -2189,7 +2202,7 @@ packages:
       - terser
     dev: true
 
-  /vite@4.4.7(@types/node@20.1.3):
+  /vite@4.4.7(@types/node@18.15.11):
     resolution: {integrity: sha512-6pYf9QJ1mHylfVh39HpuSfMPojPSKVxZvnclX1K1FyZ1PXDOcLBibdq5t1qxJSnL63ca8Wf4zts6mD8u8oc9Fw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -2217,7 +2230,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 20.1.3
+      '@types/node': 18.15.11
       esbuild: 0.18.17
       postcss: 8.4.27
       rollup: 3.26.3
@@ -2258,7 +2271,7 @@ packages:
     dependencies:
       '@types/chai': 4.3.5
       '@types/chai-subset': 1.3.3
-      '@types/node': 20.1.3
+      '@types/node': 18.15.11
       '@vitest/expect': 0.33.0
       '@vitest/runner': 0.33.0
       '@vitest/snapshot': 0.33.0
@@ -2278,8 +2291,8 @@ packages:
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.6.0
-      vite: 4.4.7(@types/node@20.1.3)
-      vite-node: 0.33.0(@types/node@20.1.3)
+      vite: 4.4.7(@types/node@18.15.11)
+      vite-node: 0.33.0(@types/node@18.15.11)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
       - less

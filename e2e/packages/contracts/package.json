@@ -23,6 +23,7 @@
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/world": "link:../../../packages/world",
     "@typechain/ethers-v5": "^10.2.0",
+    "@types/node": "18.15.11",
     "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "ethers": "^5.7.2",
