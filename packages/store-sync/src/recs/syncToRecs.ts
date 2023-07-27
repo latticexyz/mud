@@ -9,14 +9,14 @@ import {
   getComponentValue,
   setComponent,
 } from "@latticexyz/recs";
-import { BlockLogs, StorageOperation, Table, TableRecord } from "../common";
+import { BlockLogs, Table, TableRecord } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
+import { BehaviorSubject, filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
@@ -136,11 +136,15 @@ export async function syncToRecs<
     share()
   );
 
-  let latestBlockNumber: bigint | null = null;
+  const latestBlockNumber = new BehaviorSubject<bigint | null>(null);
+  {
+    const sub = latestBlockNumber$.subscribe(latestBlockNumber);
+    world.registerDisposer(() => sub.unsubscribe());
+  }
+
   const blockLogs$ = latestBlockNumber$.pipe(
     tap((blockNumber) => {
       debug("latest block number", blockNumber);
-      latestBlockNumber = blockNumber;
     }),
     map((blockNumber) => ({ startBlock, endBlock: blockNumber })),
     blockRangeToLogs({
@@ -152,22 +156,20 @@ export async function syncToRecs<
     share()
   );
 
-  let lastBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
-      lastBlockNumberProcessed = blockNumber;
 
       if (
-        latestBlockNumber != null &&
+        latestBlockNumber.value != null &&
         getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
       ) {
-        if (blockNumber < latestBlockNumber) {
+        if (blockNumber < latestBlockNumber.value) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.RPC,
-            message: `Hydrating from RPC to block ${latestBlockNumber}`,
-            percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
+            message: `Hydrating from RPC to block ${latestBlockNumber.value}`,
+            percentage: (Number(blockNumber) / Number(latestBlockNumber.value)) * 100,
           });
         } else {
           setComponent(components.SyncProgress, singletonEntity, {
@@ -181,7 +183,16 @@ export async function syncToRecs<
     share()
   );
 
-  const subscription = blockStorageOperations$.subscribe();
+  const lastBlockNumberProcessed = new BehaviorSubject<bigint | null>(null);
+  {
+    const sub = blockStorageOperations$.pipe(map(({ blockNumber }) => blockNumber)).subscribe(lastBlockNumberProcessed);
+    world.registerDisposer(() => sub.unsubscribe());
+  }
+
+  {
+    const sub = blockStorageOperations$.subscribe();
+    world.registerDisposer(() => sub.unsubscribe());
+  }
 
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
@@ -190,9 +201,11 @@ export async function syncToRecs<
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
-    if (lastBlockNumberProcessed == null || lastBlockNumberProcessed <= receipt.blockNumber) {
+    if (lastBlockNumberProcessed.value == null || lastBlockNumberProcessed.value < receipt.blockNumber) {
       await firstValueFrom(
-        blockStorageOperations$.pipe(filter(({ blockNumber }) => blockNumber >= receipt.blockNumber))
+        lastBlockNumberProcessed.pipe(
+          filter((blockNumber) => blockNumber != null && blockNumber >= receipt.blockNumber)
+        )
       );
     }
 
@@ -209,7 +222,6 @@ export async function syncToRecs<
     waitForTransaction,
     destroy: (): void => {
       world.dispose();
-      subscription.unsubscribe();
     },
   };
 }
