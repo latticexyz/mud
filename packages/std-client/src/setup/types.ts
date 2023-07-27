@@ -26,7 +26,7 @@ export type DecodedSystemCall<
   updates: DecodedNetworkComponentUpdate[];
 };
 
-export type ContractComponent = Component<Schema, { contractId: string; tableId?: string }>;
+export type ContractComponent = Component<Schema>;
 
 export type ContractComponents = {
   [key: string]: ContractComponent;
