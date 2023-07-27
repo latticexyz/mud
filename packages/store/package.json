@@ -66,7 +66,7 @@
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.15.11",
+    "@types/node": "18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "ejs": "^3.1.8",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",

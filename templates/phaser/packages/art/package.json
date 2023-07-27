@@ -13,7 +13,7 @@
     "@mapeditor/tiled-api": "^1.8.2",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",
-    "@types/node": "^18.0.3",
+    "@types/node": "18.15.11",
     "ejs": "^3.1.8",
     "ethers": "^5.7.0",
     "free-tex-packer-cli": "^0.3.0",

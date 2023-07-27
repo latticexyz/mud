@@ -360,7 +360,7 @@ importers:
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
@@ -418,7 +418,7 @@ importers:
         version: 3.21.4
     devDependencies:
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       rimraf:
         specifier: ^3.0.2

@@ -185,7 +185,7 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       '@types/openurl':
         specifier: ^1.0.0
@@ -237,7 +237,7 @@ importers:
         version: 1.3.1(typescript@5.1.6)
     devDependencies:
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       tsup:
         specifier: ^6.7.0
@@ -284,7 +284,7 @@ importers:
         version: github.com/holic/create-create-app/74376c59b48a04aabbe94d9cacfe9cb1cecccd63
     devDependencies:
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       tsup:
         specifier: ^6.7.0
@@ -425,7 +425,7 @@ importers:
         version: 17.7.1
     devDependencies:
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       '@types/yargs':
         specifier: ^17.0.10
@@ -516,7 +516,7 @@ importers:
         specifier: ^4.14.182
         version: 4.14.182
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       fake-indexeddb:
         specifier: ^4.0.0
@@ -807,7 +807,7 @@ importers:
         version: 0.16.0
     devDependencies:
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       tsup:
         specifier: ^6.7.0
@@ -968,7 +968,7 @@ importers:
         specifier: ^9.1.1
         version: 9.1.1
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
@@ -1161,7 +1161,7 @@ importers:
         specifier: ^9.1.1
         version: 9.1.1
       '@types/node':
-        specifier: ^18.15.11
+        specifier: 18.15.11
         version: 18.15.11
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
