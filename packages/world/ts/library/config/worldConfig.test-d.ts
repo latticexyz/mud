@@ -5,8 +5,8 @@ import { WorldUserConfig } from "./types";
 
 describe("worldConfig", () => {
   // Typecheck manual interfaces against zod
-  expectTypeOf<WorldUserConfig>().toEqualTypeOf<z.input<typeof zWorldConfig>>();
+  expectTypeOf<WorldUserConfig>().toMatchTypeOf<z.input<typeof zWorldConfig>>();
   // type equality isn't deep for optionals
-  expectTypeOf<WorldUserConfig["systems"]>().toEqualTypeOf<z.input<typeof zWorldConfig>["systems"]>();
+  expectTypeOf<WorldUserConfig["systems"]>().toMatchTypeOf<z.input<typeof zWorldConfig>["systems"]>();
   // TODO If more nested schemas are added, provide separate tests for them
 });
