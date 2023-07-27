@@ -6,14 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { Storage } from "../src/Storage.sol";
-import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-
-struct Mixed {
-  uint32 u32;
-  uint128 u128;
-  uint32[] a32;
-  string s;
-}
+import { Mixed, MixedData } from "../src/codegen/Tables.sol";
 
 contract SomeContract {
   function doSomethingWithBytes(bytes memory data) public {}
@@ -23,7 +16,7 @@ contract GasTest is Test, GasReporter {
   SomeContract someContract = new SomeContract();
 
   function testCompareAbiEncodeVsCustom() public {
-    Mixed memory mixed = Mixed({ u32: 1, u128: 2, a32: new uint32[](3), s: "hello" });
+    MixedData memory mixed = MixedData({ u32: 1, u128: 2, a32: new uint32[](3), s: "hello" });
     mixed.a32[0] = 1;
     mixed.a32[1] = 2;
     mixed.a32[2] = 3;
@@ -33,15 +26,15 @@ contract GasTest is Test, GasReporter {
     endGasReport();
 
     startGasReport("abi decode");
-    Mixed memory abiDecoded = abi.decode(abiEncoded, (Mixed));
+    MixedData memory abiDecoded = abi.decode(abiEncoded, (MixedData));
     endGasReport();
 
     startGasReport("custom encode");
-    bytes memory customEncoded = customEncode(mixed);
+    bytes memory customEncoded = Mixed.encode(mixed.u32, mixed.u128, mixed.a32, mixed.s);
     endGasReport();
 
     startGasReport("custom decode");
-    Mixed memory customDecoded = customDecode(customEncoded);
+    MixedData memory customDecoded = Mixed.decode(customEncoded);
     endGasReport();
 
     console.log("Length comparison: abi encode %s, custom %s", abiEncoded.length, customEncoded.length);
@@ -54,7 +47,7 @@ contract GasTest is Test, GasReporter {
     someContract.doSomethingWithBytes(customEncoded);
     endGasReport();
 
-    assertEq(keccak256(abi.encode(abiDecoded)), keccak256(abi.encode(customDecoded)));
+    assertEq(abi.encode(abiDecoded), abi.encode(customDecoded));
   }
 
   function testCompareStorageSolidity() public {
@@ -166,20 +159,6 @@ contract GasTest is Test, GasReporter {
     // Do something in case the optimizer removes unused assignments
     someContract.doSomethingWithBytes(abi.encode(encodedSimple, encodedPartial, encoded9Words));
   }
-}
-
-function customEncode(Mixed memory mixed) pure returns (bytes memory) {
-  return abi.encodePacked(mixed.u32, mixed.u128, EncodeArray.encode(mixed.a32), mixed.s);
-}
-
-function customDecode(bytes memory input) view returns (Mixed memory) {
-  return
-    Mixed({
-      u32: uint32(Bytes.slice4(input, 0)),
-      u128: uint128(Bytes.slice16(input, 4)),
-      a32: SliceLib.getSubslice(input, 20, 20 + 3 * 4).decodeArray_uint32(),
-      s: string(SliceLib.getSubslice(input, 20 + 3 * 4, input.length).toBytes())
-    });
 }
 
 library SolidityStorage {
