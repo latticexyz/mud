@@ -1,6 +1,6 @@
 import { defineComponent, World, Type, Component, Metadata, SchemaOf } from "@latticexyz/recs";
 
-export function defineActionComponent<T = undefined>(world: World) {
+export function defineActionComponent<T = unknown>(world: World) {
   const Action = defineComponent(
     world,
     {
