@@ -6,24 +6,23 @@ import {
   getComponentValue,
   Has,
   isComponentUpdate,
-  Metadata,
   Schema,
 } from "@latticexyz/recs";
 import { useEffect, useState } from "react";
 
 export function useComponentValue<S extends Schema>(
-  component: Component<S, Metadata, undefined>,
+  component: Component<S>,
   entity: Entity | undefined,
   defaultValue: ComponentValue<S>
 ): ComponentValue<S>;
 
 export function useComponentValue<S extends Schema>(
-  component: Component<S, Metadata, undefined>,
+  component: Component<S>,
   entity: Entity | undefined
 ): ComponentValue<S> | undefined;
 
 export function useComponentValue<S extends Schema>(
-  component: Component<S, Metadata, undefined>,
+  component: Component<S>,
   entity: Entity | undefined,
   defaultValue?: ComponentValue<S>
 ) {
