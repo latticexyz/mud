@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { leftMask } from "./Utils.sol";
+import { Memory } from "./Memory.sol";
 
 /**
  * TODO Probably not fully optimized
@@ -19,11 +20,7 @@ library Storage {
   }
 
   function store(uint256 storagePointer, uint256 offset, bytes memory data) internal {
-    uint256 memoryPointer;
-    assembly {
-      memoryPointer := add(data, 0x20)
-    }
-    store(storagePointer, offset, memoryPointer, data.length);
+    store(storagePointer, offset, Memory.dataPointer(data), data.length);
   }
 
   /**
@@ -124,11 +121,7 @@ library Storage {
     // TODO this will probably use less gas via manual memory allocation
     // (see https://github.com/latticexyz/mud/issues/444)
     result = new bytes(length);
-    uint256 memoryPointer;
-    assembly {
-      memoryPointer := add(result, 0x20)
-    }
-    load(storagePointer, length, offset, memoryPointer);
+    load(storagePointer, length, offset, Memory.dataPointer(result));
     return result;
   }
 
