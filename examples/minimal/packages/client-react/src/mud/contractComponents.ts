@@ -5,8 +5,6 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 export function defineContractComponents(world: World) {
   return {
     CounterTable: (() => {
-      const keySchema = { key: "bytes32" } as const;
-      const valueSchema = { value: "uint32" } as const;
       return defineComponent(
         world,
         {
@@ -15,16 +13,15 @@ export function defineContractComponents(world: World) {
         {
           id: "0x00000000000000000000000000000000436f756e7465725461626c6500000000",
           metadata: {
+            componentName: "CounterTable",
             tableName: ":CounterTable",
-            keySchema,
-            valueSchema,
+            keySchema: { key: "bytes32" },
+            valueSchema: { value: "uint32" },
           },
-        }
+        } as const
       );
     })(),
     MessageTable: (() => {
-      const keySchema = {} as const;
-      const valueSchema = { value: "string" } as const;
       return defineComponent(
         world,
         {
@@ -33,20 +30,15 @@ export function defineContractComponents(world: World) {
         {
           id: "0x000000000000000000000000000000004d6573736167655461626c6500000000",
           metadata: {
+            componentName: "MessageTable",
             tableName: ":MessageTable",
-            keySchema,
-            valueSchema,
+            keySchema: {},
+            valueSchema: { value: "string" },
           },
-        }
+        } as const
       );
     })(),
     Inventory: (() => {
-      const keySchema = {
-        owner: "address",
-        item: "uint32",
-        itemVariant: "uint32",
-      } as const;
-      const valueSchema = { amount: "uint32" } as const;
       return defineComponent(
         world,
         {
@@ -55,11 +47,16 @@ export function defineContractComponents(world: World) {
         {
           id: "0x00000000000000000000000000000000496e76656e746f727900000000000000",
           metadata: {
+            componentName: "Inventory",
             tableName: ":Inventory",
-            keySchema,
-            valueSchema,
+            keySchema: {
+              owner: "address",
+              item: "uint32",
+              itemVariant: "uint32",
+            },
+            valueSchema: { amount: "uint32" },
           },
-        }
+        } as const
       );
     })(),
   };
