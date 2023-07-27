@@ -54,7 +54,6 @@ type SyncToRecsResult<
   >
 > = {
   // TODO: return publicClient?
-  // TODO: carry user component types and extend with our components
   components: TComponents & ReturnType<typeof defineInternalComponents>;
   singletonEntity: Entity;
   latestBlock$: Observable<Block>;
@@ -85,8 +84,7 @@ export async function syncToRecs<
   const components = {
     ...initialComponents,
     ...defineInternalComponents(world),
-    // TODO: make this TS better so we don't have to cast?
-  } as TComponents & ReturnType<typeof defineInternalComponents>;
+  };
 
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
