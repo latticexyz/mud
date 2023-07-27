@@ -61,7 +61,7 @@ export async function deploy(
   // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
   let maxPriorityFeePerGas: number | undefined;
   let maxFeePerGas: BigNumber | undefined;
-  let gasPrice: BigNumber | null;
+  let gasPrice: BigNumber | undefined;
 
   await setInternalFeePerGas(priorityFeeMultiplier);
 
@@ -399,27 +399,14 @@ export async function deploy(
     try {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${nonce}`));
-      let deployPromise;
-
-      if (maxFeePerGas !== undefined && maxPriorityFeePerGas !== undefined) {
-        deployPromise = factory
-          .deploy({
-            nonce: nonce++,
-            maxPriorityFeePerGas,
-            maxFeePerGas,
-          })
-          .then((c) => (disableTxWait ? c : c.deployed()));
-        /// Gas Price === Legacy
-      } else if (gasPrice !== null) {
-        deployPromise = factory
-          .deploy({
-            nonce: nonce++,
-            gasPrice,
-          })
-          .then((c) => (disableTxWait ? c : c.deployed()));
-      } else {
-        throw new Error("Error: No Fee Data Found");
-      }
+ const deployPromise = factory
+        .deploy({
+          nonce: nonce++,
+          maxPriorityFeePerGas,
+          maxFeePerGas,
+          gasPrice
+        })
+        .then((c) => (disableTxWait ? c : c.deployed()));
 
       promises.push(deployPromise);
       const { address } = await deployPromise;
@@ -512,15 +499,8 @@ export async function deploy(
     try {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
-      const _baseTxConfig = { gasLimit, nonce: nonce++ };
-      const txConfig = Object.assign(
-        _baseTxConfig,
-        maxPriorityFeePerGas !== undefined && maxFeePerGas !== undefined
-          ? { maxPriorityFeePerGas, maxFeePerGas }
-          : { gasPrice }
-      );
       const txPromise = contract[func]
-        .apply(null, [...args, txConfig])
+        .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas, gasPrice }])
         .then((tx: any) => (confirmations === 0 ? tx : tx.wait(confirmations)));
       promises.push(txPromise);
       return txPromise;
@@ -567,14 +547,19 @@ export async function deploy(
     const feeData = await provider.getFeeData();
 
     // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
-    maxPriorityFeePerGas = feeData.lastBaseFeePerGas
-      ? feeData.lastBaseFeePerGas.eq(0)
-        ? 0
-        : Math.floor(1_500_000_000 * multiplier)
-      : undefined;
-    if (maxPriorityFeePerGas) {
-      maxFeePerGas = feeData.lastBaseFeePerGas?.mul(2).add(maxPriorityFeePerGas);
+    if(!feeData.lastBaseFeePerGas && !feeData.gasPrice) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
+    
+    if(feeData.lastBaseFeePerGas) {
+      if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
+        throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
+If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
+      }
+      maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
+      maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
     } else {
+      if (!feeData.gasPrice.eq(0) && (await signer.getBalance()).eq(0)) {
+        throw new MUDError(`Attempting to deploy to a chain with non-zero gas price with an account that has no balance.`);
+      }
       gasPrice = feeData.gasPrice;
     }
   }
