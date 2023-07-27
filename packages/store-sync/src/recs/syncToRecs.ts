@@ -60,10 +60,7 @@ type SyncToRecsResult<
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{
-    receipt: TransactionReceipt;
-    operations: StorageOperation<TConfig>[];
-  }>;
+  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
   destroy: () => void;
 };
 
@@ -155,10 +152,12 @@ export async function syncToRecs<
     share()
   );
 
+  let lastBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
+      lastBlockNumberProcessed = blockNumber;
 
       if (
         latestBlockNumber != null &&
@@ -186,19 +185,18 @@ export async function syncToRecs<
 
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
-    operations: StorageOperation<TConfig>[];
   }> {
-    // Wait for tx to be mined, then find the resulting block storage operations.
-    // We could just do this based on the blockStorageOperations$, but for txs that have no storage operations, we'd never get a value.
+    // Wait for tx to be mined
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
-    const operationsForTx$ = blockStorageOperations$.pipe(
-      filter(({ blockNumber }) => blockNumber === receipt.blockNumber),
-      map(({ operations }) => operations.filter((op) => op.log.transactionHash === tx))
-    );
-    return {
-      receipt,
-      operations: await firstValueFrom(operationsForTx$),
-    };
+
+    // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
+    if (lastBlockNumberProcessed == null || lastBlockNumberProcessed <= receipt.blockNumber) {
+      await firstValueFrom(
+        blockStorageOperations$.pipe(filter(({ blockNumber }) => blockNumber >= receipt.blockNumber))
+      );
+    }
+
+    return { receipt };
   }
 
   return {
