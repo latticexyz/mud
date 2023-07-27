@@ -9,10 +9,6 @@ import { Memory } from "./Memory.sol";
  * (see https://github.com/latticexyz/mud/issues/444)
  */
 library Storage {
-  function store(uint256 storagePointer, bytes memory data) internal {
-    store(storagePointer, 0, data);
-  }
-
   function store(uint256 storagePointer, bytes32 data) internal {
     assembly {
       sstore(storagePointer, data)

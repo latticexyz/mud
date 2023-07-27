@@ -607,7 +607,7 @@ library StoreCoreInternal {
 
     // Store the provided value in storage
     uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
-    Storage.store({ storagePointer: dynamicDataLocation, data: data });
+    Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: data });
   }
 
   function _pushToDynamicField(

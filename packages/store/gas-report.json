@@ -381,7 +381,7 @@
     "file": "test/Storage.t.sol",
     "test": "testStoreLoad",
     "name": "store 1 storage slot",
-    "gasUsed": 22373
+    "gasUsed": 22339
   },
   {
     "file": "test/Storage.t.sol",
@@ -555,7 +555,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 33010
+    "gasUsed": 32942
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -663,7 +663,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, first dynamic field)",
-    "gasUsed": 56605
+    "gasUsed": 56571
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -675,7 +675,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, second dynamic field)",
-    "gasUsed": 34738
+    "gasUsed": 34704
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -753,7 +753,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "set field in Callbacks",
-    "gasUsed": 62009
+    "gasUsed": 61975
   },
   {
     "file": "test/tables/Callbacks.t.sol",
@@ -771,7 +771,7 @@
     "file": "test/tables/Hooks.t.sol",
     "test": "testSetAndGet",
     "name": "set field in Hooks",
-    "gasUsed": 64166
+    "gasUsed": 64132
   },
   {
     "file": "test/tables/Hooks.t.sol",
