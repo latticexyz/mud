@@ -19,7 +19,7 @@ export async function readClientStore(
     const [_namespace, _table, _key, _serializeString, _deserializeString] = _args;
     const _serialize = deserializeFunction(_serializeString);
     const _deserialize = deserializeFunction(_deserializeString);
-    const value = await window["storeCache"].get(_namespace, _table, _deserialize(_key));
+    const value = await (window as any).storeCache.get(_namespace, _table, _deserialize(_key));
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;
 
