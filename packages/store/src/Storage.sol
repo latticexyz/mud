@@ -21,9 +21,11 @@ library Storage {
   function store(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
-      unchecked {
-        storagePointer += offset / 32;
-        offset %= 32;
+      if (offset >= 32) {
+        unchecked {
+          storagePointer += offset / 32;
+          offset %= 32;
+        }
       }
 
       // For the first word, if there is an offset, apply a mask to beginning
@@ -132,9 +134,11 @@ library Storage {
   function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
     if (offset > 0) {
       // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
-      unchecked {
-        storagePointer += offset / 32;
-        offset %= 32;
+      if (offset >= 32) {
+        unchecked {
+          storagePointer += offset / 32;
+          offset %= 32;
+        }
       }
 
       // For the first word, if there is an offset, apply a mask to beginning
