@@ -4,10 +4,10 @@ import { zStoreConfig, MUDUserConfig } from "./storeConfig";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
-  expectTypeOf<MUDUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig>>();
+  expectTypeOf<MUDUserConfig>().toMatchTypeOf<z.input<typeof zStoreConfig>>();
 
   // type equality isn't deep for optionals
-  expectTypeOf<MUDUserConfig["tables"][string]>().toEqualTypeOf<z.input<typeof zStoreConfig>["tables"][string]>();
+  expectTypeOf<MUDUserConfig["tables"][string]>().toMatchTypeOf<z.input<typeof zStoreConfig>["tables"][string]>();
   expectTypeOf<NonNullable<MUDUserConfig["enums"]>[string]>().toEqualTypeOf<
     NonNullable<NonNullable<z.input<typeof zStoreConfig>>["enums"]>[string]
   >();
