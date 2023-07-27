@@ -65,9 +65,9 @@ library Storage {
         if (length <= wordRemainder) return;
 
         // Advance pointers
-        storagePointer += 1;
-        // (safe because of `length <= prefixLength` earlier)
+        // (safe because of `length <= wordRemainder` earlier)
         unchecked {
+          storagePointer += 1;
           memoryPointer += wordRemainder;
           length -= wordRemainder;
         }
@@ -80,9 +80,8 @@ library Storage {
       assembly {
         sstore(storagePointer, mload(memoryPointer))
       }
-      storagePointer += 1;
-      // (safe unless length is improbably large)
       unchecked {
+        storagePointer += 1;
         memoryPointer += 32;
         length -= 32;
       }
@@ -167,9 +166,9 @@ library Storage {
         if (length <= wordRemainder) return;
 
         // Advance pointers
-        storagePointer += 1;
-        // (safe because of `length <= prefixLength` earlier)
+        // (safe because of `length <= wordRemainder` earlier)
         unchecked {
+          storagePointer += 1;
           memoryPointer += wordRemainder;
           length -= wordRemainder;
         }
@@ -182,9 +181,8 @@ library Storage {
       assembly {
         mstore(memoryPointer, sload(storagePointer))
       }
-      storagePointer += 1;
-      // (safe unless length is improbably large)
       unchecked {
+        storagePointer += 1;
         memoryPointer += 32;
         length -= 32;
       }
