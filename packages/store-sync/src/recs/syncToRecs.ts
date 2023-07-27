@@ -21,7 +21,6 @@ import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorag
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { debug } from "./debug";
-import { encodeKeyTuple } from "@latticexyz/protocol-parser";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata, SyncStep } from "./common";
