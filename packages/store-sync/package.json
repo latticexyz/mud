@@ -11,7 +11,8 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./sqlite": "./dist/sqlite/index.js"
+    "./sqlite": "./dist/sqlite/index.js",
+    "./recs": "./dist/recs/index.js"
   },
   "typesVersions": {
     "*": {
@@ -20,6 +21,9 @@
       ],
       "sqlite": [
         "./src/sqlite/index.ts"
+      ],
+      "recs": [
+        "./src/recs/index.ts"
       ]
     }
   },
@@ -36,6 +40,7 @@
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/protocol-parser": "workspace:*",
+    "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-cache": "workspace:*",
@@ -43,6 +48,7 @@
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
     "kysely": "^0.26.1",
+    "rxjs": "7.5.5",
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
     "viem": "1.3.1"

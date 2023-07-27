@@ -1037,6 +1037,9 @@ importers:
       '@latticexyz/protocol-parser':
         specifier: workspace:*
         version: link:../protocol-parser
+      '@latticexyz/recs':
+        specifier: workspace:*
+        version: link:../recs
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -1058,6 +1061,9 @@ importers:
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
+      rxjs:
+        specifier: 7.5.5
+        version: 7.5.5
       sql.js:
         specifier: ^1.8.0
         version: 1.8.0
