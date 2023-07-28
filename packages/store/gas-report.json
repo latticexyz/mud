@@ -75,7 +75,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 3354
+    "gasUsed": 3357
   },
   {
     "file": "test/Gas.t.sol",
@@ -97,111 +97,141 @@
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
-    "name": "MUD storage write (cold, 1 word)",
-    "gasUsed": 22339
+    "test": "testCompareStorageLoadMUD",
+    "name": "MUD storage load (cold, 1 word)",
+    "gasUsed": 2411
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
-    "name": "MUD storage write (cold, 1 word, partial)",
-    "gasUsed": 22406
+    "test": "testCompareStorageLoadMUD",
+    "name": "MUD storage load (cold, 1 word, partial)",
+    "gasUsed": 2460
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
-    "name": "MUD storage write (cold, 10 words)",
-    "gasUsed": 199795
+    "test": "testCompareStorageLoadMUD",
+    "name": "MUD storage load (cold, 10 words)",
+    "gasUsed": 19911
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
-    "name": "MUD storage write (warm, 1 word)",
-    "gasUsed": 339
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
-    "name": "MUD storage write (warm, 1 word, partial)",
-    "gasUsed": 506
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
-    "name": "MUD storage write (warm, 10 words)",
-    "gasUsed": 1795
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
+    "test": "testCompareStorageLoadMUD",
     "name": "MUD storage load (warm, 1 word)",
-    "gasUsed": 414
+    "gasUsed": 412
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
+    "test": "testCompareStorageLoadMUD",
     "name": "MUD storage load (warm, 1 word, partial)",
-    "gasUsed": 462
+    "gasUsed": 460
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageMUD",
+    "test": "testCompareStorageLoadMUD",
     "name": "MUD storage load (warm, 10 words)",
-    "gasUsed": 1935
+    "gasUsed": 1914
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
-    "name": "solidity storage write (cold, 1 word)",
-    "gasUsed": 22107
+    "test": "testCompareStorageLoadSolidity",
+    "name": "solidity storage load (cold, 1 word)",
+    "gasUsed": 2109
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
-    "name": "solidity storage write (cold, 1 word, partial)",
-    "gasUsed": 22136
+    "test": "testCompareStorageLoadSolidity",
+    "name": "solidity storage load (cold, 1 word, partial)",
+    "gasUsed": 2126
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
-    "name": "solidity storage write (cold, 10 words)",
-    "gasUsed": 199902
+    "test": "testCompareStorageLoadSolidity",
+    "name": "solidity storage load (cold, 10 words)",
+    "gasUsed": 2569
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
-    "name": "solidity storage write (warm, 1 word)",
-    "gasUsed": 107
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
-    "name": "solidity storage write (warm, 1 word, partial)",
-    "gasUsed": 236
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
-    "name": "solidity storage write (warm, 10 words)",
-    "gasUsed": 1988
-  },
-  {
-    "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
+    "test": "testCompareStorageLoadSolidity",
     "name": "solidity storage load (warm, 1 word)",
     "gasUsed": 109
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
+    "test": "testCompareStorageLoadSolidity",
     "name": "solidity storage load (warm, 1 word, partial)",
     "gasUsed": 126
   },
   {
     "file": "test/Gas.t.sol",
-    "test": "testCompareStorageSolidity",
+    "test": "testCompareStorageLoadSolidity",
     "name": "solidity storage load (warm, 10 words)",
-    "gasUsed": 1916
+    "gasUsed": 569
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteMUD",
+    "name": "MUD storage write (cold, 1 word)",
+    "gasUsed": 22339
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteMUD",
+    "name": "MUD storage write (cold, 1 word, partial)",
+    "gasUsed": 22406
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteMUD",
+    "name": "MUD storage write (cold, 10 words)",
+    "gasUsed": 199795
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteMUD",
+    "name": "MUD storage write (warm, 1 word)",
+    "gasUsed": 339
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteMUD",
+    "name": "MUD storage write (warm, 1 word, partial)",
+    "gasUsed": 506
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteMUD",
+    "name": "MUD storage write (warm, 10 words)",
+    "gasUsed": 1795
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteSolidity",
+    "name": "solidity storage write (cold, 1 word)",
+    "gasUsed": 22107
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteSolidity",
+    "name": "solidity storage write (cold, 1 word, partial)",
+    "gasUsed": 22136
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteSolidity",
+    "name": "solidity storage write (cold, 10 words)",
+    "gasUsed": 199902
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteSolidity",
+    "name": "solidity storage write (warm, 1 word)",
+    "gasUsed": 107
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareStorageWriteSolidity",
+    "name": "solidity storage write (warm, 1 word, partial)",
+    "gasUsed": 236
   },
   {
     "file": "test/KeyEncoding.t.sol",

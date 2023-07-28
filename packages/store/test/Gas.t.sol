@@ -50,7 +50,7 @@ contract GasTest is Test, GasReporter {
     assertEq(abi.encode(abiDecoded), abi.encode(customDecoded));
   }
 
-  function testCompareStorageSolidity() public {
+  function testCompareStorageWriteSolidity() public {
     (bytes32 valueSimple, bytes16 valuePartial, bytes memory value9Words) = SolidityStorage.generateValues();
     (
       SolidityStorage.LayoutSimple storage layoutSimple,
@@ -84,9 +84,29 @@ contract GasTest is Test, GasReporter {
 
     startGasReport("solidity storage write (warm, 10 words)");
     layoutBytes.value = value9Words;
+  }
+
+  function testCompareStorageLoadSolidity() public {
+    (bytes32 valueSimple, bytes16 valuePartial, bytes memory value9Words) = SolidityStorage.generateValues();
+    (
+      SolidityStorage.LayoutSimple storage layoutSimple,
+      SolidityStorage.LayoutPartial storage layoutPartial,
+      SolidityStorage.LayoutBytes storage layoutBytes
+    ) = SolidityStorage.layouts();
+
+    startGasReport("solidity storage load (cold, 1 word)");
+    valueSimple = layoutSimple.value;
     endGasReport();
 
-    // load
+    startGasReport("solidity storage load (cold, 1 word, partial)");
+    valuePartial = layoutPartial.value;
+    endGasReport();
+
+    startGasReport("solidity storage load (cold, 10 words)");
+    value9Words = layoutBytes.value;
+    endGasReport();
+
+    // warm
 
     startGasReport("solidity storage load (warm, 1 word)");
     valueSimple = layoutSimple.value;
@@ -108,7 +128,7 @@ contract GasTest is Test, GasReporter {
   // since MUD encoding is dynamic and separate from storage,
   // but solidity encoding is hardcoded at compile-time and is part of writing to storage.
   // (look for comparison of native storage vs MUD tables for a more comprehensive overview)
-  function testCompareStorageMUD() public {
+  function testCompareStorageWriteMUD() public {
     (bytes32 valueSimple, bytes16 valuePartial, bytes memory value9Words) = SolidityStorage.generateValues();
     bytes memory encodedSimple = abi.encodePacked(valueSimple);
     bytes memory encodedPartial = abi.encodePacked(valuePartial);
@@ -141,8 +161,27 @@ contract GasTest is Test, GasReporter {
     startGasReport("MUD storage write (warm, 10 words)");
     Storage.store(SolidityStorage.STORAGE_SLOT_BYTES, 0, encoded9Words);
     endGasReport();
+  }
 
-    // load
+  function testCompareStorageLoadMUD() public {
+    (bytes32 valueSimple, bytes16 valuePartial, bytes memory value9Words) = SolidityStorage.generateValues();
+    bytes memory encodedSimple = abi.encodePacked(valueSimple);
+    bytes memory encodedPartial = abi.encodePacked(valuePartial);
+    bytes memory encoded9Words = abi.encodePacked(value9Words.length, value9Words);
+
+    startGasReport("MUD storage load (cold, 1 word)");
+    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
+    endGasReport();
+
+    startGasReport("MUD storage load (cold, 1 word, partial)");
+    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
+    endGasReport();
+
+    startGasReport("MUD storage load (cold, 10 words)");
+    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, encoded9Words.length, 0);
+    endGasReport();
+
+    // warm
 
     startGasReport("MUD storage load (warm, 1 word)");
     encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
