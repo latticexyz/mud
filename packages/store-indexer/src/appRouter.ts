@@ -1,20 +1,20 @@
 import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
 import { StorageAdapter } from "./common";
-import { Hex } from "viem";
+import { isHex } from "viem";
 
 export const appRouter = router({
   findAll: publicProcedure
     .input(
       z.object({
         chainId: z.number(),
-        address: z.string(), // TODO: refine to hex
+        address: z.string().refine(isHex),
       })
     )
     .query(async (opts): ReturnType<StorageAdapter["findAll"]> => {
       const { storageAdapter } = opts.ctx;
       const { chainId, address } = opts.input;
-      return storageAdapter.findAll(chainId, address as Hex);
+      return storageAdapter.findAll(chainId, address);
     }),
 });
 

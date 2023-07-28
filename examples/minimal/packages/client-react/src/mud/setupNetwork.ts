@@ -1,8 +1,6 @@
 import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
-import superjson from "superjson";
-import { AppRouter } from "@latticexyz/store-indexer";
+import { createIndexerClient } from "@latticexyz/store-indexer";
 import { getBurnerWallet } from "@latticexyz/std-client";
 import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
@@ -23,10 +21,7 @@ export async function setupNetwork() {
     pollingInterval: 1000,
   });
 
-  const indexer = createTRPCProxyClient<AppRouter>({
-    transformer: superjson,
-    links: [httpBatchLink({ url: "http://127.0.0.1:3001" })],
-  });
+  const indexer = createIndexerClient({ url: "http://127.0.0.1:3001" });
   const state = await indexer.findAll.query({
     chainId: publicClient.chain.id,
     address: networkConfig.worldAddress as Hex,

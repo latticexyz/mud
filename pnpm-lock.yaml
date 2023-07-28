@@ -1049,6 +1049,9 @@ importers:
       '@latticexyz/store-sync':
         specifier: workspace:*
         version: link:../store-sync
+      '@trpc/client':
+        specifier: 10.34.0
+        version: 10.34.0(@trpc/server@10.34.0)
       '@trpc/server':
         specifier: 10.34.0
         version: 10.34.0
