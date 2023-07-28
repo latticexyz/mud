@@ -3,7 +3,7 @@
 "@latticexyz/store-sync": feat
 ---
 
-Add store indexer service and utils to query it
+Adds store indexer service package with utils to query the indexer service.
 
 You can run the indexer locally by checking out the MUD monorepo, installing/building everything, and running `pnpm start:local` from `packages/store-indexer`.
 
