@@ -20,6 +20,7 @@ import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata } from "./common";
 
 // TODO: should we create components here from config rather than passing them in?
+// TODO: should we store table schemas in RECS?
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
