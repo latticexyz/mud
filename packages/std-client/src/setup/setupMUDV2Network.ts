@@ -170,11 +170,12 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
 
   // Function to register new components in mappings object
   function registerComponent(key: string, component: ContractComponent) {
-    const { contractId, tableId } = component.metadata;
-    if (tableId) {
-      mappings[tableId] = key;
+    if (typeof component.metadata?.tableId === "string") {
+      mappings[component.metadata.tableId] = key;
     } else {
-      mappings[keccak256(contractId)] = key;
+      mappings[
+        keccak256(typeof component.metadata?.contractId === "string" ? component.metadata.contractId : component.id)
+      ] = key;
     }
   }
 
