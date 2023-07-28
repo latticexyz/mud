@@ -3,12 +3,12 @@ import React from "react";
 const WarningBox = ({ title, message }) => {
   const styles = {
     container: {
-      backgroundColor: "#ffebee",
+      backgroundColor: "#FDF2F3",
       borderRadius: "4px",
-      boxShadow: "0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12)",
+      border: "1px solid #E8D9DA",
       padding: "12px 20px",
       margin: "16px 0",
-      color: "#b71c1c",
+      color: "#7D221C",
     },
     header: {
       display: "flex",
@@ -16,7 +16,6 @@ const WarningBox = ({ title, message }) => {
       fontSize: "1rem",
       fontWeight: "bold",
       lineHeight: "1.43",
-      letterSpacing: "0.01071em",
     },
     icon: {
       marginRight: "12px",
@@ -26,8 +25,8 @@ const WarningBox = ({ title, message }) => {
       fontSize: "1rem",
       fontWeight: "400",
       lineHeight: "1.43",
-      letterSpacing: "0.01071em",
       paddingLeft: "34px",
+      color: "#995A56",
     },
   };
 
