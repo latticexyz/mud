@@ -9,14 +9,14 @@ import {
   getComponentValue,
   setComponent,
 } from "@latticexyz/recs";
-import { BlockLogs, StorageOperation, Table, TableRecord } from "../common";
+import { BlockLogs, Table, TableRecord } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
+import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom, BehaviorSubject } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
@@ -56,17 +56,13 @@ type SyncToRecsResult<
   >
 > = {
   // TODO: return publicClient?
-  // TODO: carry user component types and extend with our components
   components: TComponents & ReturnType<typeof defineInternalComponents>;
   singletonEntity: Entity;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{
-    receipt: TransactionReceipt;
-    operations: StorageOperation<TConfig>[];
-  }>;
+  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
   destroy: () => void;
 };
 
@@ -88,8 +84,7 @@ export async function syncToRecs<
   const components = {
     ...initialComponents,
     ...defineInternalComponents(world),
-    // TODO: make this TS better so we don't have to cast?
-  } as TComponents & ReturnType<typeof defineInternalComponents>;
+  };
 
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
@@ -156,11 +151,15 @@ export async function syncToRecs<
     share()
   );
 
-  let latestBlockNumber: bigint | null = null;
+  const latestBlockNumber = new BehaviorSubject<bigint | null>(null);
+  {
+    const sub = latestBlockNumber$.subscribe(latestBlockNumber);
+    world.registerDisposer(() => sub.unsubscribe());
+  }
+
   const blockLogs$ = latestBlockNumber$.pipe(
     tap((blockNumber) => {
       debug("latest block number", blockNumber);
-      latestBlockNumber = blockNumber;
     }),
     map((blockNumber) => ({ startBlock, endBlock: blockNumber })),
     blockRangeToLogs({
@@ -178,14 +177,14 @@ export async function syncToRecs<
       debug("stored", operations.length, "operations for block", blockNumber);
 
       if (
-        latestBlockNumber != null &&
+        latestBlockNumber.value != null &&
         getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
       ) {
-        if (blockNumber < latestBlockNumber) {
+        if (blockNumber < latestBlockNumber.value) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.RPC,
-            message: `Hydrating from RPC to block ${latestBlockNumber}`,
-            percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
+            message: `Hydrating from RPC to block ${latestBlockNumber.value}`,
+            percentage: (Number(blockNumber) / Number(latestBlockNumber.value)) * 100,
           });
         } else {
           setComponent(components.SyncProgress, singletonEntity, {
@@ -199,23 +198,33 @@ export async function syncToRecs<
     share()
   );
 
-  const subscription = blockStorageOperations$.subscribe();
+  const lastBlockNumberProcessed = new BehaviorSubject<bigint | null>(null);
+  {
+    const sub = blockStorageOperations$.pipe(map(({ blockNumber }) => blockNumber)).subscribe(lastBlockNumberProcessed);
+    world.registerDisposer(() => sub.unsubscribe());
+  }
+
+  {
+    const sub = blockStorageOperations$.subscribe();
+    world.registerDisposer(() => sub.unsubscribe());
+  }
 
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
-    operations: StorageOperation<TConfig>[];
   }> {
     // Wait for tx to be mined, then find the resulting block storage operations.
-    // We could just do this based on the blockStorageOperations$, but for txs that have no storage operations, we'd never get a value.
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
-    const operationsForTx$ = blockStorageOperations$.pipe(
-      filter(({ blockNumber }) => blockNumber === receipt.blockNumber),
-      map(({ operations }) => operations.filter((op) => op.log.transactionHash === tx))
-    );
-    return {
-      receipt,
-      operations: await firstValueFrom(operationsForTx$),
-    };
+
+    // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
+    if (lastBlockNumberProcessed.value == null || lastBlockNumberProcessed.value < receipt.blockNumber) {
+      await firstValueFrom(
+        lastBlockNumberProcessed.pipe(
+          filter((blockNumber) => blockNumber != null && blockNumber >= receipt.blockNumber)
+        )
+      );
+    }
+
+    return { receipt };
   }
 
   return {
@@ -228,7 +237,6 @@ export async function syncToRecs<
     waitForTransaction,
     destroy: (): void => {
       world.dispose();
-      subscription.unsubscribe();
     },
   };
 }
