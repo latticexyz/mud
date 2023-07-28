@@ -1,6 +1,5 @@
 import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { createIndexerClient } from "@latticexyz/store-indexer";
 import { getBurnerWallet } from "@latticexyz/std-client";
 import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
@@ -21,26 +20,13 @@ export async function setupNetwork() {
     pollingInterval: 1000,
   });
 
-  const indexer = createIndexerClient({ url: "http://127.0.0.1:3001" });
-  const initialState = await (async () => {
-    try {
-      return await indexer.findAll.query({
-        chainId: publicClient.chain.id,
-        address: networkConfig.worldAddress as Hex,
-      });
-    } catch (error) {
-      console.log("couldn't get initial state from indexer", error);
-      return undefined;
-    }
-  })();
-
   const { singletonEntity } = await syncToRecs({
     world,
     config: storeConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
     components: contractComponents,
-    initialState,
+    indexerUrl: "http://127.0.0.1:3001",
   });
 
   const burnerAccount = privateKeyToAccount(getBurnerWallet().value);

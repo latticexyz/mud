@@ -1,18 +1,17 @@
+import fs from "node:fs";
 import { z } from "zod";
+import cors from "cors";
+import { DefaultLogger, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { latticeTestnet, latticeTestnet2 } from "@latticexyz/common/chains";
-import { Chain, foundry } from "viem/chains";
 import { createPublicClient, fallback, webSocket, http } from "viem";
-import { createIndexer } from "../src/sqlite/createIndexer";
+import { Chain, foundry } from "viem/chains";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import cors from "cors";
-import { appRouter } from "../src/appRouter";
-import { chainState } from "@latticexyz/store-sync/sqlite";
-import { DefaultLogger, eq } from "drizzle-orm";
-import { schemaVersion } from "@latticexyz/store-sync/sqlite";
-import fs from "node:fs";
+import { latticeTestnet, latticeTestnet2 } from "@latticexyz/common/chains";
+import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
+import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
+import { createIndexer } from "../src/sqlite/createIndexer";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 
 const supportedChains: Chain[] = [foundry, latticeTestnet, latticeTestnet2];
@@ -81,7 +80,7 @@ createIndexer({
 
 const server = createHTTPServer({
   middleware: cors(),
-  router: appRouter,
+  router: createAppRouter(),
   createContext: async () => ({
     storageAdapter: await createStorageAdapter(database),
   }),

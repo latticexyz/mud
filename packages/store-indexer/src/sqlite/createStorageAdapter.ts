@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
-import { StorageAdapter } from "../common";
+import { StorageAdapter } from "@latticexyz/store-sync/trpc-indexer";
 
 export async function createStorageAdapter(database: BaseSQLiteDatabase<"sync", void>): Promise<StorageAdapter> {
   const adapter: StorageAdapter = {

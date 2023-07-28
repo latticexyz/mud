@@ -25,6 +25,7 @@ import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
+import { createIndexerClient } from "../trpc-indexer";
 
 type SyncToRecsOptions<
   TConfig extends StoreConfig = StoreConfig,
@@ -40,6 +41,7 @@ type SyncToRecsOptions<
   publicClient: PublicClient<Transport, Chain>;
   // TODO: generate these from config and return instead?
   components: TComponents;
+  indexerUrl?: string;
   initialState?: {
     blockNumber: bigint | null;
     tables: (Table & { records: TableRecord[] })[];
@@ -81,6 +83,7 @@ export async function syncToRecs<
   publicClient,
   components: initialComponents,
   initialState,
+  indexerUrl,
 }: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
   const components = {
     ...initialComponents,
@@ -91,6 +94,18 @@ export async function syncToRecs<
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
   let startBlock = 0n;
+
+  if (indexerUrl != null && initialState == null) {
+    const indexer = createIndexerClient({ url: indexerUrl });
+    try {
+      initialState = await indexer.findAll.query({
+        chainId: publicClient.chain.id,
+        address,
+      });
+    } catch (error) {
+      console.log("couldn't get initial state from indexer", error);
+    }
+  }
 
   if (initialState != null && initialState.blockNumber != null) {
     debug("hydrating from initial state to block", initialState.blockNumber);
