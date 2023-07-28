@@ -84,44 +84,7 @@ contract GasTest is Test, GasReporter {
 
     startGasReport("solidity storage write (warm, 10 words)");
     layoutBytes.value = value9Words;
-  }
-
-  function testCompareStorageLoadSolidity() public {
-    (bytes32 valueSimple, bytes16 valuePartial, bytes memory value9Words) = SolidityStorage.generateValues();
-    (
-      SolidityStorage.LayoutSimple storage layoutSimple,
-      SolidityStorage.LayoutPartial storage layoutPartial,
-      SolidityStorage.LayoutBytes storage layoutBytes
-    ) = SolidityStorage.layouts();
-
-    startGasReport("solidity storage load (cold, 1 word)");
-    valueSimple = layoutSimple.value;
     endGasReport();
-
-    startGasReport("solidity storage load (cold, 1 word, partial)");
-    valuePartial = layoutPartial.value;
-    endGasReport();
-
-    startGasReport("solidity storage load (cold, 10 words)");
-    value9Words = layoutBytes.value;
-    endGasReport();
-
-    // warm
-
-    startGasReport("solidity storage load (warm, 1 word)");
-    valueSimple = layoutSimple.value;
-    endGasReport();
-
-    startGasReport("solidity storage load (warm, 1 word, partial)");
-    valuePartial = layoutPartial.value;
-    endGasReport();
-
-    startGasReport("solidity storage load (warm, 10 words)");
-    value9Words = layoutBytes.value;
-    endGasReport();
-
-    // Do something in case the optimizer removes unused assignments
-    someContract.doSomethingWithBytes(abi.encode(valueSimple, valuePartial, value9Words));
   }
 
   // Note that this compares storage writes in isolation, which can be misleading,
@@ -161,42 +124,6 @@ contract GasTest is Test, GasReporter {
     startGasReport("MUD storage write (warm, 10 words)");
     Storage.store(SolidityStorage.STORAGE_SLOT_BYTES, 0, encoded9Words);
     endGasReport();
-  }
-
-  function testCompareStorageLoadMUD() public {
-    (bytes32 valueSimple, bytes16 valuePartial, bytes memory value9Words) = SolidityStorage.generateValues();
-    bytes memory encodedSimple = abi.encodePacked(valueSimple);
-    bytes memory encodedPartial = abi.encodePacked(valuePartial);
-    bytes memory encoded9Words = abi.encodePacked(value9Words.length, value9Words);
-
-    startGasReport("MUD storage load (cold, 1 word)");
-    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
-    endGasReport();
-
-    startGasReport("MUD storage load (cold, 1 word, partial)");
-    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
-    endGasReport();
-
-    startGasReport("MUD storage load (cold, 10 words)");
-    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, encoded9Words.length, 0);
-    endGasReport();
-
-    // warm
-
-    startGasReport("MUD storage load (warm, 1 word)");
-    encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
-    endGasReport();
-
-    startGasReport("MUD storage load (warm, 1 word, partial)");
-    encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
-    endGasReport();
-
-    startGasReport("MUD storage load (warm, 10 words)");
-    encoded9Words = Storage.load(SolidityStorage.STORAGE_SLOT_BYTES, encoded9Words.length, 0);
-    endGasReport();
-
-    // Do something in case the optimizer removes unused assignments
-    someContract.doSomethingWithBytes(abi.encode(encodedSimple, encodedPartial, encoded9Words));
   }
 }
 
