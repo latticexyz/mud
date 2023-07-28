@@ -22,10 +22,17 @@ export async function setupNetwork() {
   });
 
   const indexer = createIndexerClient({ url: "http://127.0.0.1:3001" });
-  const state = await indexer.findAll.query({
-    chainId: publicClient.chain.id,
-    address: networkConfig.worldAddress as Hex,
-  });
+  const initialState = await (async () => {
+    try {
+      return await indexer.findAll.query({
+        chainId: publicClient.chain.id,
+        address: networkConfig.worldAddress as Hex,
+      });
+    } catch (error) {
+      console.log("couldn't get initial state from indexer", error);
+      return undefined;
+    }
+  })();
 
   const { singletonEntity } = await syncToRecs({
     world,
@@ -33,7 +40,7 @@ export async function setupNetwork() {
     address: networkConfig.worldAddress as Hex,
     publicClient,
     components: contractComponents,
-    initialState: state,
+    initialState,
   });
 
   const burnerAccount = privateKeyToAccount(getBurnerWallet().value);
