@@ -103,7 +103,7 @@ export async function syncToRecs<
         address,
       });
     } catch (error) {
-      console.log("couldn't get initial state from indexer", error);
+      debug("couldn't get initial state from indexer", error);
     }
   }
 
