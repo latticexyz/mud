@@ -1,23 +1,11 @@
-import { publicProcedure, router } from "./trpc";
-import { z } from "zod";
-import { Table, TableRecord } from "@latticexyz/store-sync";
-import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { eq } from "drizzle-orm";
+import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
+import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
+import { StorageAdapter } from "../common";
 
-export type TableWithRecords = Table & { records: TableRecord[] };
-
-export const appRouter = router({
-  findAll: publicProcedure
-    .input(
-      z.object({
-        chainId: z.number(),
-        address: z.string(), // TODO: refine to hex
-      })
-    )
-    .query(async (opts): Promise<{ blockNumber: bigint | null; tables: TableWithRecords[] }> => {
-      const { database } = opts.ctx;
-      const { chainId, address } = opts.input;
-
+export async function createStorageAdapter(database: BaseSQLiteDatabase<"sync", void>): Promise<StorageAdapter> {
+  const adapter: StorageAdapter = {
+    async findAll(chainId, address) {
       const tables = getTables(database).filter((table) => table.address === address);
 
       const tablesWithRecords = tables.map((table) => {
@@ -43,7 +31,7 @@ export const appRouter = router({
       // console.log("findAll:", opts, result);
 
       return result;
-    }),
-});
-
-export type AppRouter = typeof appRouter;
+    },
+  };
+  return adapter;
+}

@@ -8,11 +8,12 @@ import { createPublicClient, fallback, webSocket, http } from "viem";
 import { createIndexer } from "../src/sqlite/createIndexer";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import cors from "cors";
-import { appRouter } from "../src";
+import { appRouter } from "../src/appRouter";
 import { chainState } from "@latticexyz/store-sync/sqlite";
 import { DefaultLogger, eq } from "drizzle-orm";
 import { schemaVersion } from "@latticexyz/store-sync/sqlite";
 import fs from "node:fs";
+import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 
 const supportedChains: Chain[] = [foundry, latticeTestnet, latticeTestnet2];
 
@@ -81,8 +82,8 @@ createIndexer({
 const server = createHTTPServer({
   middleware: cors(),
   router: appRouter,
-  createContext: () => ({
-    database,
+  createContext: async () => ({
+    storageAdapter: await createStorageAdapter(database),
   }),
 });
 

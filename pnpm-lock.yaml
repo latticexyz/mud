@@ -70,7 +70,7 @@ importers:
         version: 7.5.5
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -234,7 +234,7 @@ importers:
         version: 1.1.2(prettier@2.8.4)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -333,7 +333,7 @@ importers:
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -504,7 +504,7 @@ importers:
         version: 1.7.0
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -615,7 +615,7 @@ importers:
         version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -717,7 +717,7 @@ importers:
         version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@latticexyz/gas-report':
         specifier: workspace:*
@@ -874,7 +874,7 @@ importers:
         version: 1.12.4
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -1074,8 +1074,8 @@ importers:
         specifier: ^1.12.4
         version: 1.12.4
       viem:
-        specifier: 1.3.0
-        version: 1.3.0(typescript@5.1.6)(zod@3.21.4)
+        specifier: 1.3.1
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -1145,7 +1145,7 @@ importers:
         version: 1.12.4
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.4
@@ -3847,19 +3847,6 @@ packages:
   /abind@1.0.5:
     resolution: {integrity: sha512-dbaEZphdPje0ihqSdWg36Sb8S20TuqQomiz2593oIx+enQ9Q4vDZRjIzhnkWltGRKVKqC28kTribkgRLBexWVQ==}
     engines: {node: '>=6', npm: '>=3'}
-    dev: false
-
-  /abitype@0.8.11(typescript@5.1.6)(zod@3.21.4):
-    resolution: {integrity: sha512-bM4v2dKvX08sZ9IU38IN5BKmN+ZkOSd2oI4a9f0ejHYZQYV6cDr7j+d95ga0z2XHG36Y4jzoG5Z7qDqxp7fi/A==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
-    peerDependenciesMeta:
-      zod:
-        optional: true
-    dependencies:
-      typescript: 5.1.6
-      zod: 3.21.4
     dev: false
 
   /abitype@0.9.3(typescript@5.1.6)(zod@3.21.4):
@@ -11123,31 +11110,7 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /viem@1.3.0(typescript@5.1.6)(zod@3.21.4):
-    resolution: {integrity: sha512-gCtachbNPG9G9D7UNuiqLaLf8IFV15FypBrSpXEFeeEczXxI+Jgi9FTwDS+NJLreVrjBeZXQVj1ITTqKpItw4w==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@adraffy/ens-normalize': 1.9.0
-      '@noble/curves': 1.0.0
-      '@noble/hashes': 1.3.0
-      '@scure/bip32': 1.3.0
-      '@scure/bip39': 1.2.0
-      '@wagmi/chains': 1.6.0(typescript@5.1.6)
-      abitype: 0.8.11(typescript@5.1.6)(zod@3.21.4)
-      isomorphic-ws: 5.0.0(ws@8.12.0)
-      typescript: 5.1.6
-      ws: 8.12.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
-    dev: false
-
-  /viem@1.3.1(typescript@5.1.6):
+  /viem@1.3.1(typescript@5.1.6)(zod@3.21.4):
     resolution: {integrity: sha512-Yv+y3/exrrEN4EAkVUtUuQxsjF4+3taHY2aSinJnNWtcA4fBZ+WfPJBTywcnFIa/Q5oDcQN85yqPFBbkXqWHdw==}
     peerDependencies:
       typescript: '>=5.0.4'
