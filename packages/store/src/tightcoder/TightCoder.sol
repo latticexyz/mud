@@ -4,10 +4,16 @@ pragma solidity >=0.8.0;
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Slice, SliceLib } from "../Slice.sol";
 
+/**
+ * Low-level generic implementation of tight encoding for arrays, used by codegen.
+ * This is the same as solidity's internal tight encoding for array data in storage.
+ */
 library TightCoder {
   /**
-   * @dev Copies the array to a new bytes array,
-   * tightly packing it using the given size per element (in bytes)
+   * Copies the array to a new bytes array, tightly packing it.
+   * elementSize is in bytes, shiftLeftBits is in bits.
+   * elementSize and shiftLeftBits must be correctly provided by the caller based on the array's element type.
+   * @return data a tightly packed array
    */
   function encode(
     bytes32[] memory array,
@@ -16,15 +22,26 @@ library TightCoder {
   ) internal pure returns (bytes memory data) {
     uint256 arrayLength = array.length;
     uint256 packedLength = array.length * elementSize;
-    data = new bytes(packedLength);
 
+    // Manual memory allocation is cheaper and removes the issue of memory corruption at the tail
     /// @solidity memory-safe-assembly
     assembly {
+      // Solidity's YulUtilFunctions::roundUpFunction
+      function round_up_to_mul_of_32(value) -> _result {
+        _result := and(add(value, 31), not(31))
+      }
+
+      // Allocate memory
+      data := mload(0x40)
+      let toPointer := add(data, 0x20)
+      mstore(0x40, round_up_to_mul_of_32(add(toPointer, packedLength)))
+      // Store length
+      mstore(data, packedLength)
+
       for {
         let i := 0
         // Skip array length
         let fromPointer := add(array, 0x20)
-        let toPointer := add(data, 0x20)
       } lt(i, arrayLength) {
         // Loop until we reach the end of the array
         i := add(i, 1)
@@ -33,14 +50,15 @@ library TightCoder {
         // Increment packed pointer by one element size
         toPointer := add(toPointer, elementSize)
       } {
-        mstore(toPointer, shl(shiftLeftBits, mload(fromPointer))) // pack one array element
+        // Pack one array element
+        mstore(toPointer, shl(shiftLeftBits, mload(fromPointer)))
       }
     }
   }
 
   /**
-   * @dev Unpacks the slice to a new memory location
-   * and lays it out like a memory array with the given size per element (in bytes)
+   * Unpacks the slice to a new memory location and lays it out like a memory array.
+   * elementSize is in bytes.
    * @return array a generic array, needs to be casted to the expected type using assembly
    */
   function decode(
