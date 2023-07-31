@@ -33,42 +33,42 @@ library TightCoder {
 
       // Allocate memory
       data := mload(0x40)
-      let toPointer := add(data, 0x20)
-      mstore(0x40, round_up_to_mul_of_32(add(toPointer, packedLength)))
+      let packedPointer := add(data, 0x20)
+      mstore(0x40, round_up_to_mul_of_32(add(packedPointer, packedLength)))
       // Store length
       mstore(data, packedLength)
 
       for {
         let i := 0
         // Skip array length
-        let fromPointer := add(array, 0x20)
+        let arrayPointer := add(array, 0x20)
       } lt(i, arrayLength) {
         // Loop until we reach the end of the array
         i := add(i, 1)
         // Increment array pointer by one word
-        fromPointer := add(fromPointer, 0x20)
+        arrayPointer := add(arrayPointer, 0x20)
         // Increment packed pointer by one element size
-        toPointer := add(toPointer, elementSize)
+        packedPointer := add(packedPointer, elementSize)
       } {
         // Pack one array element
-        mstore(toPointer, shl(shiftLeftBits, mload(fromPointer)))
+        mstore(packedPointer, shl(shiftLeftBits, mload(arrayPointer)))
       }
     }
   }
 
   /**
    * Unpacks the slice to a new memory location and lays it out like a memory array.
-   * elementSize is in bytes.
+   * elementSize is in bytes, unshiftLeftBits is in bits.
+   * elementSize and unshiftLeftBits must be correctly provided by the caller based on the array's element type.
    * @return array a generic array, needs to be casted to the expected type using assembly
    */
   function decode(
     Slice packedSlice,
     uint256 elementSize,
-    bool leftAligned
+    uint256 unshiftLeftBits
   ) internal pure returns (bytes32[] memory array) {
     uint256 packedPointer = packedSlice.pointer();
     uint256 packedLength = packedSlice.length();
-    uint256 padLeft = leftAligned ? 0 : 256 - elementSize * 8;
     // Array length (number of elements)
     uint256 arrayLength;
     unchecked {
@@ -83,26 +83,25 @@ library TightCoder {
 
     /// @solidity memory-safe-assembly
     assembly {
-      // Allocate a word for each element, and a word for the array's length
-      let allocateBytes := add(mul(arrayLength, 32), 0x20)
-      // Allocate memory and update the free memory pointer
+      // Allocate memory
       array := mload(0x40)
-      mstore(0x40, add(array, allocateBytes))
-
-      // Store array length
+      let arrayPointer := add(array, 0x20)
+      mstore(0x40, add(arrayPointer, mul(arrayLength, 32)))
+      // Store length
       mstore(array, arrayLength)
 
       for {
         let i := 0
-        let arrayCursor := add(array, 0x20) // skip array length
-        let packedCursor := packedPointer
       } lt(i, arrayLength) {
         // Loop until we reach the end of the array
         i := add(i, 1)
-        arrayCursor := add(arrayCursor, 0x20) // increment array pointer by one word
-        packedCursor := add(packedCursor, elementSize) // increment packed pointer by one element size
+        // Increment array pointer by one word
+        arrayPointer := add(arrayPointer, 0x20)
+        // Increment packed pointer by one element size
+        packedPointer := add(packedPointer, elementSize)
       } {
-        mstore(arrayCursor, shr(padLeft, mload(packedCursor))) // unpack one array element
+        // Unpack one array element
+        mstore(arrayPointer, shr(unshiftLeftBits, mload(packedPointer)))
       }
     }
   }
