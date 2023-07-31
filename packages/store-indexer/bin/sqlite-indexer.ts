@@ -5,15 +5,16 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http } from "viem";
-import { Chain, foundry } from "viem/chains";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import { latticeTestnet } from "@latticexyz/common/chains";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
 import { createIndexer } from "../src/sqlite/createIndexer";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
+import type { Chain } from "viem/chains";
+import * as mudChains from "@latticexyz/common/chains";
+import * as chains from "viem/chains";
 
-const supportedChains: Chain[] = [foundry, latticeTestnet];
+const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
 const env = z
   .object({
@@ -29,7 +30,7 @@ const env = z
     }),
   });
 
-const chain = supportedChains.find((c) => c.id === env.CHAIN_ID);
+const chain = possibleChains.find((c) => c.id === env.CHAIN_ID);
 if (!chain) {
   throw new Error(`Chain ${env.CHAIN_ID} not found`);
 }
