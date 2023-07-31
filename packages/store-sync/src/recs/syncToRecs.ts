@@ -17,7 +17,7 @@ import {
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom, BehaviorSubject } from "rxjs";
+import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
@@ -213,7 +213,7 @@ export async function syncToRecs<
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
   }> {
-    // Wait for tx to be mined, then find the resulting block storage operations.
+    // Wait for tx to be mined
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
