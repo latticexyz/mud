@@ -115,14 +115,22 @@ export async function syncToRecs<
         setComponent(component, entity, record.value as ComponentValue);
 
         recordsProcessed++;
-        setComponent(components.SyncProgress, singletonEntity, {
-          step: SyncStep.SNAPSHOT,
-          message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
-          percentage: (recordsProcessed / numRecords) * 100,
-        });
+        if (recordsProcessed % 1000 === 0) {
+          setComponent(components.SyncProgress, singletonEntity, {
+            step: SyncStep.SNAPSHOT,
+            message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
+            percentage: (recordsProcessed / numRecords) * 100,
+          });
+        }
       }
       debug(`hydrated ${table.records.length} records for table ${table.namespace}:${table.name}`);
     }
+
+    setComponent(components.SyncProgress, singletonEntity, {
+      step: SyncStep.SNAPSHOT,
+      message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
+      percentage: (recordsProcessed / numRecords) * 100,
+    });
   }
 
   // TODO: if startBlock is still 0, find via deploy event
