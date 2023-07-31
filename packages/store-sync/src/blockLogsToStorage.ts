@@ -6,12 +6,10 @@ import {
   abiTypesToSchema,
   TableSchema,
 } from "@latticexyz/protocol-parser";
-import { StoreConfig } from "@latticexyz/store";
+import { StoreConfig, ConfigToKeyPrimitives as Key, ConfigToValuePrimitives as Value } from "@latticexyz/store";
 import { TableId } from "@latticexyz/common";
 import { Address, Hex, decodeAbiParameters, getAddress, parseAbiParameters } from "viem";
 import { debug } from "./debug";
-// TODO: move these type helpers into store?
-import { Key, Value } from "@latticexyz/store-cache";
 import { isDefined } from "@latticexyz/common/utils";
 import { BlockLogs, StorageOperation, Table, TableName, TableNamespace } from "./common";
 

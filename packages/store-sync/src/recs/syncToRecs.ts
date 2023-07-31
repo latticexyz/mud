@@ -9,7 +9,8 @@ import {
   getComponentValue,
   setComponent,
 } from "@latticexyz/recs";
-import { BlockLogs, Table, TableRecord } from "../common";
+import { BlockLogs, Table } from "../common";
+import { TableRecord } from "@latticexyz/store";
 import {
   createBlockStream,
   isNonPendingBlock,
