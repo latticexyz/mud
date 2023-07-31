@@ -116,6 +116,7 @@ export async function syncToRecs<
     const componentList = Object.values(components);
 
     const numRecords = initialState.tables.reduce((sum, table) => sum + table.records.length, 0);
+    const recordsPerSyncProgressUpdate = Math.floor(numRecords / 100);
     let recordsProcessed = 0;
 
     for (const table of initialState.tables) {
@@ -130,14 +131,22 @@ export async function syncToRecs<
         setComponent(component, entity, record.value as ComponentValue);
 
         recordsProcessed++;
-        setComponent(components.SyncProgress, singletonEntity, {
-          step: SyncStep.SNAPSHOT,
-          message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
-          percentage: (recordsProcessed / numRecords) * 100,
-        });
+        if (recordsProcessed % recordsPerSyncProgressUpdate === 0) {
+          setComponent(components.SyncProgress, singletonEntity, {
+            step: SyncStep.SNAPSHOT,
+            message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
+            percentage: (recordsProcessed / numRecords) * 100,
+          });
+        }
       }
       debug(`hydrated ${table.records.length} records for table ${table.namespace}:${table.name}`);
     }
+
+    setComponent(components.SyncProgress, singletonEntity, {
+      step: SyncStep.SNAPSHOT,
+      message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
+      percentage: (recordsProcessed / numRecords) * 100,
+    });
   }
 
   // TODO: if startBlock is still 0, find via deploy event
@@ -152,15 +161,11 @@ export async function syncToRecs<
     share()
   );
 
-  const latestBlockNumber = new BehaviorSubject<bigint | null>(null);
-  {
-    const sub = latestBlockNumber$.subscribe(latestBlockNumber);
-    world.registerDisposer(() => sub.unsubscribe());
-  }
-
+  let latestBlockNumber: bigint | null = null;
   const blockLogs$ = latestBlockNumber$.pipe(
     tap((blockNumber) => {
       debug("latest block number", blockNumber);
+      latestBlockNumber = blockNumber;
     }),
     map((blockNumber) => ({ startBlock, endBlock: blockNumber })),
     blockRangeToLogs({
@@ -172,20 +177,22 @@ export async function syncToRecs<
     share()
   );
 
+  let latestBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
+      latestBlockNumberProcessed = blockNumber;
 
       if (
-        latestBlockNumber.value != null &&
+        latestBlockNumber != null &&
         getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
       ) {
-        if (blockNumber < latestBlockNumber.value) {
+        if (blockNumber < latestBlockNumber) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.RPC,
-            message: `Hydrating from RPC to block ${latestBlockNumber.value}`,
-            percentage: (Number(blockNumber) / Number(latestBlockNumber.value)) * 100,
+            message: `Hydrating from RPC to block ${latestBlockNumber}`,
+            percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
           });
         } else {
           setComponent(components.SyncProgress, singletonEntity, {
@@ -199,16 +206,9 @@ export async function syncToRecs<
     share()
   );
 
-  const lastBlockNumberProcessed = new BehaviorSubject<bigint | null>(null);
-  {
-    const sub = blockStorageOperations$.pipe(map(({ blockNumber }) => blockNumber)).subscribe(lastBlockNumberProcessed);
-    world.registerDisposer(() => sub.unsubscribe());
-  }
-
-  {
-    const sub = blockStorageOperations$.subscribe();
-    world.registerDisposer(() => sub.unsubscribe());
-  }
+  // Start the sync
+  const sub = blockStorageOperations$.subscribe();
+  world.registerDisposer(() => sub.unsubscribe());
 
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
@@ -217,10 +217,10 @@ export async function syncToRecs<
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
-    if (lastBlockNumberProcessed.value == null || lastBlockNumberProcessed.value < receipt.blockNumber) {
+    if (latestBlockNumberProcessed == null || latestBlockNumberProcessed < receipt.blockNumber) {
       await firstValueFrom(
-        lastBlockNumberProcessed.pipe(
-          filter((blockNumber) => blockNumber != null && blockNumber >= receipt.blockNumber)
+        blockStorageOperations$.pipe(
+          filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
         )
       );
     }
