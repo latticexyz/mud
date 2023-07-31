@@ -10,17 +10,16 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { blockLogsToStorage } from "@latticexyz/store-sync";
 import { sqliteStorage } from "@latticexyz/store-sync/sqlite";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
+import { debug } from "../debug";
 
 type CreateIndexerOptions = {
-  database: BaseSQLiteDatabase<"sync", void>;
+  database: BaseSQLiteDatabase<"sync", any>;
   publicClient: PublicClient<Transport, Chain>;
   startBlock: bigint;
   maxBlockRange: bigint;
 };
 
 export function createIndexer({ database, publicClient, startBlock, maxBlockRange }: CreateIndexerOptions): void {
-  // TODO: fetch latest block from database and update `startBlock`
-
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
   const latestBlockNumber$ = latestBlock$.pipe(
@@ -29,7 +28,7 @@ export function createIndexer({ database, publicClient, startBlock, maxBlockRang
   );
 
   const blockLogs$ = latestBlockNumber$.pipe(
-    tap((latestBlockNumber) => console.log("latest block number", latestBlockNumber)),
+    tap((latestBlockNumber) => debug("latest block number", latestBlockNumber)),
     map((latestBlockNumber) => ({ startBlock, endBlock: latestBlockNumber })),
     blockRangeToLogs({
       publicClient,
@@ -37,20 +36,16 @@ export function createIndexer({ database, publicClient, startBlock, maxBlockRang
       maxBlockRange,
     }),
     tap(({ fromBlock, toBlock, logs }) => {
-      console.log("found", logs.length, "logs for block", fromBlock, "-", toBlock);
-      logs.forEach((log) => {
-        // console.log("table", log.blockNumber, TableId.fromHex(log.args.table));
-      });
+      debug("found", logs.length, "logs for block", fromBlock, "-", toBlock);
     }),
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
-    // tap((blockLogs) => console.log("block logs", blockLogs))
   );
 
   blockLogs$
     .pipe(
       concatMap(blockLogsToStorage(sqliteStorage({ database, publicClient }))),
       tap(({ blockNumber, operations }) => {
-        console.log("stored", operations.length, "operations for block", blockNumber);
+        debug("stored", operations.length, "operations for block", blockNumber);
       })
     )
     .subscribe();
