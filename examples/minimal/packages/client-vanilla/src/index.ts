@@ -3,7 +3,7 @@ import { mount as mountDevTools } from "@latticexyz/dev-tools";
 
 const {
   components,
-  network: { worldSend },
+  network: { worldContract, waitForTransaction },
 } = await setup();
 
 // Components expose a stream that triggers when the component is updated.
@@ -24,18 +24,19 @@ components.MessageTable.update$.subscribe((update) => {
 // Just for demonstration purposes: we create a global function that can be
 // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
 (window as any).increment = async () => {
-  const tx = await worldSend("increment", []);
+  // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
+  const tx = await worldContract.write.increment({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
 
   console.log("increment tx", tx);
-  console.log("increment result", await tx.wait());
+  console.log("increment result", await waitForTransaction(tx));
 };
 
 (window as any).willRevert = async () => {
   // set gas limit so we skip estimation and can test tx revert
-  const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
+  const tx = await worldContract.write.willRevert({ gas: 100000n });
 
   console.log("willRevert tx", tx);
-  console.log("willRevert result", await tx.wait());
+  console.log("willRevert result", await waitForTransaction(tx));
 };
 
 (window as any).sendMessage = async () => {
@@ -45,10 +46,11 @@ components.MessageTable.update$.subscribe((update) => {
 
   input.value = "";
 
-  const tx = await worldSend("sendMessage", [msg]);
+  // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
+  const tx = await worldContract.write.sendMessage([msg], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
 
   console.log("sendMessage tx", tx);
-  console.log("sendMessage result", await tx.wait());
+  console.log("sendMessage result", await waitForTransaction(tx));
 };
 
 document.getElementById("chat-form")?.addEventListener("submit", (e) => {
