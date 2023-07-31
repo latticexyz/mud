@@ -1,6 +1,7 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
 import worldsJson from "contracts/worlds.json";
 import { supportedChains } from "./supportedChains";
+import type { Chain } from "viem/chains";
 
 const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
@@ -8,6 +9,7 @@ type NetworkConfig = SetupContractConfig & {
   privateKey: string;
   faucetServiceUrl?: string;
   snapSync?: boolean;
+  chain: Chain;
 };
 
 export async function getNetworkConfig(): Promise<NetworkConfig> {
@@ -42,6 +44,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     },
     privateKey: getBurnerWallet().value,
     chainId,
+    chain,
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
