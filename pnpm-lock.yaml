@@ -1046,9 +1046,6 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      '@latticexyz/store-cache':
-        specifier: workspace:*
-        version: link:../store-cache
       better-sqlite3:
         specifier: ^8.4.0
         version: 8.4.0

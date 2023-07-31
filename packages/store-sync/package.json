@@ -43,7 +43,6 @@
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/store-cache": "workspace:*",
     "better-sqlite3": "^8.4.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
