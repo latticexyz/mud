@@ -48,7 +48,7 @@ let startBlock = env.START_BLOCK;
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 try {
   const currentChainStates = database.select().from(chainState).where(eq(chainState.chainId, chain.id)).all();
-  // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related
+  // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
 
   if (currentChainState != null) {
