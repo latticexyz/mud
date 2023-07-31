@@ -25,6 +25,7 @@
     "@latticexyz/std-contracts": "1.42.0",
     "@latticexyz/store": "1.42.0",
     "@latticexyz/store-cache": "1.42.0",
+    "@latticexyz/store-indexer": "1.42.0",
     "@latticexyz/store-sync": "1.42.0",
     "@latticexyz/utils": "1.42.0",
     "@latticexyz/world": "1.42.0"
