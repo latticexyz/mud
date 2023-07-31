@@ -1,6 +1,6 @@
 ---
-"@latticexyz/store-indexer": feat
-"@latticexyz/store-sync": feat
+"@latticexyz/store-indexer": major
+"@latticexyz/store-sync": major
 ---
 
 Adds store indexer service package with utils to query the indexer service.
