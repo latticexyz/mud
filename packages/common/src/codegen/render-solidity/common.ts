@@ -180,6 +180,18 @@ export function renderValueTypeToBytes32(name: string, { typeUnwrap, internalTyp
   }
 }
 
+export function isLeftAligned(field: Pick<RenderType, "internalTypeId">): boolean {
+  return field.internalTypeId.match(/^bytes\d{1,2}$/) !== null;
+}
+
+export function shiftLeftBits(field: Pick<RenderType, "internalTypeId" | "staticByteLength">): number {
+  if (isLeftAligned(field)) {
+    return 0;
+  } else {
+    return 256 - field.staticByteLength * 8;
+  }
+}
+
 function internalRenderList<T>(
   lineTerminator: string,
   list: T[],
