@@ -34,7 +34,7 @@
     }
   },
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run generate-tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
@@ -46,7 +46,7 @@
     "clean:typechain": "rimraf types",
     "dev": "tsup --watch",
     "gas-report": "mud-gas-report --save gas-report.json",
-    "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
+    "generate-tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test"
   },

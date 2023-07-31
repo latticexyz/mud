@@ -6,58 +6,36 @@ import { Slice, SliceLib } from "../Slice.sol";
 
 library TightCoder {
   /**
-   * @dev Copies the array to the location of `packedSlice`,
-   * tightly packing it using the given size per element (in bytes)
-   *
-   * TODO this function is currently not used externally and will be changed in the future
-   * (see https://github.com/latticexyz/mud/issues/444)
-   */
-  function _encodeToLocation(
-    bytes32[] memory array,
-    Slice packedSlice,
-    uint256 elementSize,
-    bool leftAligned
-  ) private pure {
-    uint256 arrayLength = array.length;
-    uint256 packedPointer = packedSlice.pointer();
-    uint256 shiftLeft = leftAligned ? 0 : 256 - elementSize * 8;
-
-    // TODO temporary check to catch bugs, either remove it or use a custom error
-    // (see https://github.com/latticexyz/mud/issues/444)
-    uint256 packedLength = arrayLength * elementSize;
-    if (packedLength > packedSlice.length()) {
-      revert("packFromArray: insufficient allocated packedSlice length");
-    }
-
-    /// @solidity memory-safe-assembly
-    assembly {
-      for {
-        let i := 0
-        let arrayCursor := add(array, 0x20) // skip array length
-        let packedCursor := packedPointer
-      } lt(i, arrayLength) {
-        // Loop until we reach the end of the array
-        i := add(i, 1)
-        arrayCursor := add(arrayCursor, 0x20) // increment array pointer by one word
-        packedCursor := add(packedCursor, elementSize) // increment packed pointer by one element size
-      } {
-        mstore(packedCursor, shl(shiftLeft, mload(arrayCursor))) // pack one array element
-      }
-    }
-  }
-
-  /**
    * @dev Copies the array to a new bytes array,
    * tightly packing it using the given size per element (in bytes)
    */
   function encode(
     bytes32[] memory array,
     uint256 elementSize,
-    bool leftAligned
+    uint256 shiftLeftBits
   ) internal pure returns (bytes memory data) {
+    uint256 arrayLength = array.length;
     uint256 packedLength = array.length * elementSize;
     data = new bytes(packedLength);
-    _encodeToLocation(array, SliceLib.fromBytes(data), elementSize, leftAligned);
+
+    /// @solidity memory-safe-assembly
+    assembly {
+      for {
+        let i := 0
+        // Skip array length
+        let fromPointer := add(array, 0x20)
+        let toPointer := add(data, 0x20)
+      } lt(i, arrayLength) {
+        // Loop until we reach the end of the array
+        i := add(i, 1)
+        // Increment array pointer by one word
+        fromPointer := add(fromPointer, 0x20)
+        // Increment packed pointer by one element size
+        toPointer := add(toPointer, elementSize)
+      } {
+        mstore(toPointer, shl(shiftLeftBits, mload(fromPointer))) // pack one array element
+      }
+    }
   }
 
   /**
