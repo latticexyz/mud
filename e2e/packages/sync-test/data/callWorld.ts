@@ -8,8 +8,8 @@ type Args<Method extends keyof IWorld> = IWorld[Method] extends (...args: any) =
 export function callWorld<Method extends keyof IWorld>(page: Page, method: Method, args: Args<Method>) {
   return page.evaluate(
     ([_method, _args]) => {
-      return window["worldSend"](_method, _args)
-        .then((tx) => tx.wait())
+      return (window as any).worldContract.write[_method](_args)
+        .then((tx) => window["waitForTransaction"](tx))
         .catch((e) => {
           throw new Error([`Error executing ${_method} with args:`, JSON.stringify(_args), e].join("\n\n"));
         });

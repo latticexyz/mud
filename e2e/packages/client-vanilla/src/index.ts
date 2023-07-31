@@ -2,28 +2,26 @@ import { setup } from "./mud/setup";
 
 const {
   network: {
-    storeCache,
-    network: { blockNumber$ },
-    worldSend,
+    components: { SyncProgress },
+    latestBlock$,
     worldContract,
-    components: { LoadingState },
+    waitForTransaction,
   },
 } = await setup();
 
 const _window = window as any;
-_window.storeCache = storeCache;
 _window.worldContract = worldContract;
-_window.worldSend = worldSend;
+_window.waitForTransaction = waitForTransaction;
 
 // Update block number in the UI
-blockNumber$.subscribe((blockNumber) => {
+latestBlock$.subscribe((block) => {
   const element = document.querySelector("#block");
-  if (element) element.innerHTML = String(blockNumber);
+  if (element) element.innerHTML = String(block.number);
 });
 
 // Update initial sync status in the UI
-LoadingState.update$.subscribe((value) => {
-  const syncState = value.value[0]?.state;
+SyncProgress.update$.subscribe((value) => {
+  const syncStep = value.value[0]?.step;
   const element = document.querySelector("#sync-state");
-  if (element) element.innerHTML = String(syncState);
+  if (element) element.innerHTML = String(syncStep);
 });
