@@ -101,6 +101,7 @@ export async function syncToRecs<
     const componentList = Object.values(components);
 
     const numRecords = initialState.tables.reduce((sum, table) => sum + table.records.length, 0);
+    const recordsPerSyncProgressUpdate = Math.floor(numRecords / 100);
     let recordsProcessed = 0;
 
     for (const table of initialState.tables) {
@@ -115,7 +116,7 @@ export async function syncToRecs<
         setComponent(component, entity, record.value as ComponentValue);
 
         recordsProcessed++;
-        if (recordsProcessed % 1000 === 0) {
+        if (recordsProcessed % recordsPerSyncProgressUpdate === 0) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.SNAPSHOT,
             message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
