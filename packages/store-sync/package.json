@@ -47,7 +47,6 @@
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/store-cache": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "better-sqlite3": "^8.4.0",

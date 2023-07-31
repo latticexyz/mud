@@ -1,7 +1,7 @@
 import { Entity } from "@latticexyz/recs";
 import { StaticAbiType } from "@latticexyz/schema-type";
 import { Hex, decodeAbiParameters } from "viem";
-import { SchemaToPrimitives } from "../common";
+import { SchemaToPrimitives } from "@latticexyz/store";
 import { entityToHexKeyTuple } from "./entityToHexKeyTuple";
 
 export function decodeEntity<TKeySchema extends Record<string, StaticAbiType>>(

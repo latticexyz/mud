@@ -10,17 +10,43 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { blockLogsToStorage } from "@latticexyz/store-sync";
 import { sqliteStorage } from "@latticexyz/store-sync/sqlite";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
+import { debug } from "../debug";
 
 type CreateIndexerOptions = {
-  database: BaseSQLiteDatabase<"sync", void>;
+  /**
+   * [SQLite database object from Drizzle][0].
+   *
+   * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/sqlite/better-sqlite3
+   */
+  database: BaseSQLiteDatabase<"sync", any>;
+  /**
+   * [viem `PublicClient`][0] used for fetching logs from the RPC.
+   *
+   * [0]: https://viem.sh/docs/clients/public.html
+   */
   publicClient: PublicClient<Transport, Chain>;
-  startBlock: bigint;
-  maxBlockRange: bigint;
+  /**
+   * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
+   */
+  startBlock?: bigint;
+  /**
+   * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time.
+   */
+  maxBlockRange?: bigint;
 };
 
-export function createIndexer({ database, publicClient, startBlock, maxBlockRange }: CreateIndexerOptions): void {
-  // TODO: fetch latest block from database and update `startBlock`
-
+/**
+ * Creates an indexer to process and store blockchain events.
+ *
+ * @param {CreateIndexerOptions} options See `CreateIndexerOptions`.
+ * @returns A function to unsubscribe from the block stream, effectively stopping the indexer.
+ */
+export function createIndexer({
+  database,
+  publicClient,
+  startBlock = 0n,
+  maxBlockRange,
+}: CreateIndexerOptions): () => void {
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
   const latestBlockNumber$ = latestBlock$.pipe(
@@ -29,7 +55,7 @@ export function createIndexer({ database, publicClient, startBlock, maxBlockRang
   );
 
   const blockLogs$ = latestBlockNumber$.pipe(
-    tap((latestBlockNumber) => console.log("latest block number", latestBlockNumber)),
+    tap((latestBlockNumber) => debug("latest block number", latestBlockNumber)),
     map((latestBlockNumber) => ({ startBlock, endBlock: latestBlockNumber })),
     blockRangeToLogs({
       publicClient,
@@ -37,21 +63,21 @@ export function createIndexer({ database, publicClient, startBlock, maxBlockRang
       maxBlockRange,
     }),
     tap(({ fromBlock, toBlock, logs }) => {
-      console.log("found", logs.length, "logs for block", fromBlock, "-", toBlock);
-      logs.forEach((log) => {
-        // console.log("table", log.blockNumber, TableId.fromHex(log.args.table));
-      });
+      debug("found", logs.length, "logs for block", fromBlock, "-", toBlock);
     }),
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
-    // tap((blockLogs) => console.log("block logs", blockLogs))
   );
 
-  blockLogs$
+  const sub = blockLogs$
     .pipe(
       concatMap(blockLogsToStorage(sqliteStorage({ database, publicClient }))),
       tap(({ blockNumber, operations }) => {
-        console.log("stored", operations.length, "operations for block", blockNumber);
+        debug("stored", operations.length, "operations for block", blockNumber);
       })
     )
     .subscribe();
+
+  return () => {
+    sub.unsubscribe();
+  };
 }

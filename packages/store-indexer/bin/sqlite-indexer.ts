@@ -1,20 +1,20 @@
 import fs from "node:fs";
 import { z } from "zod";
 import cors from "cors";
-import { DefaultLogger, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
-import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { createPublicClient, fallback, webSocket, http } from "viem";
-import { Chain, foundry } from "viem/chains";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
-import { latticeTestnet, latticeTestnet2 } from "@latticexyz/common/chains";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
 import { createIndexer } from "../src/sqlite/createIndexer";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
+import type { Chain } from "viem/chains";
+import * as mudChains from "@latticexyz/common/chains";
+import * as chains from "viem/chains";
 
-const supportedChains: Chain[] = [foundry, latticeTestnet, latticeTestnet2];
+const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
 const env = z
   .object({
@@ -30,7 +30,7 @@ const env = z
     }),
   });
 
-const chain = supportedChains.find((c) => c.id === env.CHAIN_ID);
+const chain = possibleChains.find((c) => c.id === env.CHAIN_ID);
 if (!chain) {
   throw new Error(`Chain ${env.CHAIN_ID} not found`);
 }
@@ -41,15 +41,14 @@ const publicClient = createPublicClient({
   pollingInterval: 1000,
 });
 
-// TODO: find a better intersection type between sql.js and better-sqlite3 instead of casting here
-const database = drizzle(new Database(env.SQLITE_FILENAME), {
-  // logger: new DefaultLogger(),
-}) as any as BaseSQLiteDatabase<"sync", void>;
+const database = drizzle(new Database(env.SQLITE_FILENAME));
 
 let startBlock = env.START_BLOCK;
+
+// Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 try {
   const currentChainStates = database.select().from(chainState).where(eq(chainState.chainId, chain.id)).all();
-  // TODO: figure out if TS offers an option to turn on `undefined` as a possible outcome of getting an item from an array by index
+  // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
 
   if (currentChainState != null) {
@@ -68,7 +67,7 @@ try {
     }
   }
 } catch (error) {
-  // console.log(error);
+  // ignore errors, this is optional
 }
 
 createIndexer({

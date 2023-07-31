@@ -9,7 +9,8 @@ import {
   getComponentValue,
   setComponent,
 } from "@latticexyz/recs";
-import { BlockLogs, StorageOperation, Table, TableRecord } from "../common";
+import { BlockLogs, Table } from "../common";
+import { TableRecord } from "@latticexyz/store";
 import {
   createBlockStream,
   isNonPendingBlock,
@@ -56,17 +57,13 @@ type SyncToRecsResult<
   >
 > = {
   // TODO: return publicClient?
-  // TODO: carry user component types and extend with our components
   components: TComponents & ReturnType<typeof defineInternalComponents>;
   singletonEntity: Entity;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{
-    receipt: TransactionReceipt;
-    operations: StorageOperation<TConfig>[];
-  }>;
+  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
   destroy: () => void;
 };
 
@@ -88,8 +85,7 @@ export async function syncToRecs<
   const components = {
     ...initialComponents,
     ...defineInternalComponents(world),
-    // TODO: make this TS better so we don't have to cast?
-  } as TComponents & ReturnType<typeof defineInternalComponents>;
+  };
 
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
@@ -120,6 +116,7 @@ export async function syncToRecs<
     const componentList = Object.values(components);
 
     const numRecords = initialState.tables.reduce((sum, table) => sum + table.records.length, 0);
+    const recordsPerSyncProgressUpdate = Math.floor(numRecords / 100);
     let recordsProcessed = 0;
 
     for (const table of initialState.tables) {
@@ -134,14 +131,22 @@ export async function syncToRecs<
         setComponent(component, entity, record.value as ComponentValue);
 
         recordsProcessed++;
-        setComponent(components.SyncProgress, singletonEntity, {
-          step: SyncStep.SNAPSHOT,
-          message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
-          percentage: (recordsProcessed / numRecords) * 100,
-        });
+        if (recordsProcessed % recordsPerSyncProgressUpdate === 0) {
+          setComponent(components.SyncProgress, singletonEntity, {
+            step: SyncStep.SNAPSHOT,
+            message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
+            percentage: (recordsProcessed / numRecords) * 100,
+          });
+        }
       }
       debug(`hydrated ${table.records.length} records for table ${table.namespace}:${table.name}`);
     }
+
+    setComponent(components.SyncProgress, singletonEntity, {
+      step: SyncStep.SNAPSHOT,
+      message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
+      percentage: (recordsProcessed / numRecords) * 100,
+    });
   }
 
   // TODO: if startBlock is still 0, find via deploy event
@@ -172,10 +177,12 @@ export async function syncToRecs<
     share()
   );
 
+  let latestBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
+      latestBlockNumberProcessed = blockNumber;
 
       if (
         latestBlockNumber != null &&
@@ -199,23 +206,26 @@ export async function syncToRecs<
     share()
   );
 
-  const subscription = blockStorageOperations$.subscribe();
+  // Start the sync
+  const sub = blockStorageOperations$.subscribe();
+  world.registerDisposer(() => sub.unsubscribe());
 
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
-    operations: StorageOperation<TConfig>[];
   }> {
-    // Wait for tx to be mined, then find the resulting block storage operations.
-    // We could just do this based on the blockStorageOperations$, but for txs that have no storage operations, we'd never get a value.
+    // Wait for tx to be mined
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
-    const operationsForTx$ = blockStorageOperations$.pipe(
-      filter(({ blockNumber }) => blockNumber === receipt.blockNumber),
-      map(({ operations }) => operations.filter((op) => op.log.transactionHash === tx))
-    );
-    return {
-      receipt,
-      operations: await firstValueFrom(operationsForTx$),
-    };
+
+    // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
+    if (latestBlockNumberProcessed == null || latestBlockNumberProcessed < receipt.blockNumber) {
+      await firstValueFrom(
+        blockStorageOperations$.pipe(
+          filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
+        )
+      );
+    }
+
+    return { receipt };
   }
 
   return {
@@ -228,7 +238,6 @@ export async function syncToRecs<
     waitForTransaction,
     destroy: (): void => {
       world.dispose();
-      subscription.unsubscribe();
     },
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store-indexer",
-  "version": "1.42.0",
+  "version": "2.0.0-next.0",
   "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "start:local": "SQLITE_FILENAME=anvil.db CHAIN_ID=31337 pnpm start",
     "start:testnet": "SQLITE_FILENAME=testnet.db CHAIN_ID=4242 START_BLOCK=19037160 pnpm start",
     "start:testnet2": "SQLITE_FILENAME=testnet2.db CHAIN_ID=4243 pnpm start",
-    "test": "vitest --run"
+    "test": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",

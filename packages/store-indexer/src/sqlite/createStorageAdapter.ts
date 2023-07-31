@@ -2,8 +2,15 @@ import { eq } from "drizzle-orm";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { StorageAdapter } from "@latticexyz/store-sync/trpc-indexer";
+import { debug } from "../debug";
 
-export async function createStorageAdapter(database: BaseSQLiteDatabase<"sync", void>): Promise<StorageAdapter> {
+/**
+ * Creates a storage adapter for the tRPC server/client to query data from SQLite.
+ *
+ * @param {BaseSQLiteDatabase<"sync", any>} database SQLite database object from Drizzle
+ * @returns {Promise<StorageAdapter>} A set of methods used by tRPC endpoints.
+ */
+export async function createStorageAdapter(database: BaseSQLiteDatabase<"sync", any>): Promise<StorageAdapter> {
   const adapter: StorageAdapter = {
     async findAll(chainId, address) {
       const tables = getTables(database).filter((table) => table.address === address);
@@ -28,7 +35,7 @@ export async function createStorageAdapter(database: BaseSQLiteDatabase<"sync", 
         tables: tablesWithRecords,
       };
 
-      // console.log("findAll:", opts, result);
+      debug("findAll", chainId, address, result);
 
       return result;
     },

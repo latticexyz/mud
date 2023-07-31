@@ -1057,7 +1057,7 @@ importers:
         version: 10.34.0
       '@wagmi/chains':
         specifier: ^0.2.22
-        version: 0.2.23(typescript@5.1.6)
+        version: 0.2.22(typescript@5.1.6)
       better-sqlite3:
         specifier: ^8.4.0
         version: 8.4.0
@@ -1122,9 +1122,6 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
-      '@latticexyz/store-cache':
-        specifier: workspace:*
-        version: link:../store-cache
       '@trpc/client':
         specifier: 10.34.0
         version: 10.34.0(@trpc/server@10.34.0)
@@ -3826,8 +3823,8 @@ packages:
       pretty-format: 27.5.1
     dev: true
 
-  /@wagmi/chains@0.2.23(typescript@5.1.6):
-    resolution: {integrity: sha512-oIc4ZpUL6bH/HdS7ROPWlFnP5U3XBujO/OiX4csRIezyLjMQ9FNXQRZShhi5ddL0Kj1RDbyVLe9K/QotEm1vig==}
+  /@wagmi/chains@0.2.22(typescript@5.1.6):
+    resolution: {integrity: sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==}
     peerDependencies:
       typescript: '>=4.9.4'
     peerDependenciesMeta:
