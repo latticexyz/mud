@@ -8,8 +8,6 @@ import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/ge
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
 
-import { SingletonKey } from "../src/systems/IncrementSystem.sol";
-
 contract CounterTest is MudTest {
   IWorld world;
 
@@ -29,19 +27,17 @@ contract CounterTest is MudTest {
 
   function testCounter() public {
     // Expect the counter to be 1 because it was incremented in the PostDeploy script.
-    bytes32 key = SingletonKey;
-    uint32 counter = CounterTable.get(key);
+    uint32 counter = CounterTable.get();
     assertEq(counter, 1);
 
     // Expect the counter to be 2 after calling increment.
     world.increment();
-    counter = CounterTable.get(key);
+    counter = CounterTable.get();
     assertEq(counter, 2);
   }
 
   function testKeysWithValue() public {
-    bytes32 key = SingletonKey;
-    uint32 counter = CounterTable.get(key);
+    uint32 counter = CounterTable.get();
     bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
     assertEq(keysWithValue.length, 1);
   }

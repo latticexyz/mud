@@ -1,14 +1,16 @@
-import { useComponentValue, useRows } from "@latticexyz/react";
-import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
+import { useComponentValue, useEntityQuery } from "@latticexyz/react";
+import { Has, getComponentValueStrict } from "@latticexyz/recs";
+import { decodeEntity } from "@latticexyz/store-sync/recs";
+import { useMUD } from "./MUDContext";
 
 const ITEMS = ["cup", "spoon", "fork"];
 const VARIANTS = ["yellow", "green", "red"];
 
 export const App = () => {
   const {
-    components: { CounterTable, MessageTable },
-    network: { singletonEntity, worldSend, storeCache },
+    components: { CounterTable, Inventory, MessageTable },
+    network: { singletonEntity, worldContract, waitForTransaction },
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
@@ -17,7 +19,7 @@ export const App = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const message = useComponentValue(MessageTable, singletonEntity);
 
-  const inventory = useRows(storeCache, { table: "Inventory" });
+  const inventory = useEntityQuery([Has(Inventory)]);
 
   useEffect(() => {
     if (!message?.value) return;
@@ -33,10 +35,11 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("increment", []);
+          // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
+          const tx = await worldContract.write.increment({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
 
           console.log("increment tx", tx);
-          console.log("increment result", await tx.wait());
+          console.log("increment result", await waitForTransaction(tx));
         }}
       >
         Increment
@@ -44,10 +47,11 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("willRevert", []);
+          // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
+          const tx = await worldContract.write.willRevert({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
 
           console.log("willRevert tx", tx);
-          console.log("willRevert result", await tx.wait());
+          console.log("willRevert result", await waitForTransaction(tx));
         }}
       >
         Fail gas estimate
@@ -56,10 +60,10 @@ export const App = () => {
         type="button"
         onClick={async () => {
           // set gas limit so we skip estimation and can test tx revert
-          const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
+          const tx = await worldContract.write.willRevert({ gas: 100000n });
 
           console.log("willRevert tx", tx);
-          console.log("willRevert result", await tx.wait());
+          console.log("willRevert result", await waitForTransaction(tx));
         }}
       >
         Revert tx
@@ -72,7 +76,8 @@ export const App = () => {
         <form
           onSubmit={async (event) => {
             event.preventDefault();
-            await worldSend("sendMessage", [myMessage]);
+            // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
+            await worldContract.write.sendMessage([myMessage], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
             setMyMessage("");
           }}
         >
@@ -92,7 +97,11 @@ export const App = () => {
               key={item + index}
               type="button"
               onClick={async () => {
-                const tx = await worldSend("pickUp", [index, index]);
+                // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
+                const tx = await worldContract.write.pickUp([index, index], {
+                  maxFeePerGas: 0n,
+                  maxPriorityFeePerGas: 0n,
+                });
                 console.log("pick up tx", tx);
               }}
             >
@@ -102,11 +111,15 @@ export const App = () => {
         </div>
         <h1>Inventory</h1>
         <ul>
-          {inventory.map(({ key, value }) => (
-            <li key={key.owner + key.item + key.itemVariant}>
-              {key.owner.substring(0, 8)} owns {value.amount} of {VARIANTS[key.itemVariant]} {ITEMS[key.item]}
-            </li>
-          ))}
+          {inventory.map((entity) => {
+            const { amount } = getComponentValueStrict(Inventory, entity);
+            const { owner, item, itemVariant } = decodeEntity(Inventory.metadata.keySchema, entity);
+            return (
+              <li key={entity}>
+                {owner.substring(0, 8)} owns {amount} of {VARIANTS[itemVariant]} {ITEMS[item]}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </>
