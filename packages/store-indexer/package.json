@@ -1,36 +1,18 @@
 {
-  "name": "@latticexyz/store-sync",
+  "name": "@latticexyz/store-indexer",
   "version": "2.0.0-next.0",
-  "description": "Utilities to sync MUD Store events with a client or cache",
+  "description": "Minimal Typescript indexer for Store",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/store-sync"
+    "directory": "packages/store-indexer"
   },
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./sqlite": "./dist/sqlite/index.js",
-    "./recs": "./dist/recs/index.js",
-    "./trpc-indexer": "./dist/trpc-indexer/index.js"
+    ".": "./dist/index.js"
   },
-  "typesVersions": {
-    "*": {
-      "index": [
-        "./src/index.ts"
-      ],
-      "sqlite": [
-        "./src/sqlite/index.ts"
-      ],
-      "recs": [
-        "./src/recs/index.ts"
-      ],
-      "trpc-indexer": [
-        "./src/trpc-indexer/index.ts"
-      ]
-    }
-  },
+  "types": "src/index.ts",
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -38,32 +20,35 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest --run"
+    "start": "tsx bin/sqlite-indexer",
+    "start:local": "SQLITE_FILENAME=anvil.db CHAIN_ID=31337 pnpm start",
+    "start:testnet": "SQLITE_FILENAME=testnet.db CHAIN_ID=4242 START_BLOCK=19037160 pnpm start",
+    "start:testnet2": "SQLITE_FILENAME=testnet2.db CHAIN_ID=4243 pnpm start",
+    "test": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
-    "@latticexyz/protocol-parser": "workspace:*",
-    "@latticexyz/recs": "workspace:*",
-    "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
+    "@wagmi/chains": "^0.2.22",
     "better-sqlite3": "^8.4.0",
+    "cors": "^2.8.5",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
-    "kysely": "^0.26.1",
     "rxjs": "7.5.5",
-    "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
     "viem": "1.3.1",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
+    "@types/cors": "^2.8.13",
     "@types/debug": "^4.1.7",
-    "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",
+    "tsx": "^3.12.6",
     "vitest": "0.31.4"
   },
   "publishConfig": {

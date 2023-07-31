@@ -70,7 +70,7 @@ importers:
         version: 7.5.5
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -234,7 +234,7 @@ importers:
         version: 1.1.2(prettier@2.8.4)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -333,7 +333,7 @@ importers:
         version: 18.3.2(react-dom@18.2.0)(react@18.2.0)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -504,7 +504,7 @@ importers:
         version: 1.7.0
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/debug':
         specifier: ^4.1.7
@@ -615,7 +615,7 @@ importers:
         version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       tsup:
         specifier: ^6.7.0
@@ -717,7 +717,7 @@ importers:
         version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@latticexyz/gas-report':
         specifier: workspace:*
@@ -865,7 +865,7 @@ importers:
         version: 7.5.5
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -1026,6 +1026,73 @@ importers:
         specifier: 0.31.4
         version: 0.31.4
 
+  packages/store-indexer:
+    dependencies:
+      '@latticexyz/block-logs-stream':
+        specifier: workspace:*
+        version: link:../block-logs-stream
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/store-sync':
+        specifier: workspace:*
+        version: link:../store-sync
+      '@trpc/client':
+        specifier: 10.34.0
+        version: 10.34.0(@trpc/server@10.34.0)
+      '@trpc/server':
+        specifier: 10.34.0
+        version: 10.34.0
+      '@wagmi/chains':
+        specifier: ^0.2.22
+        version: 0.2.22(typescript@5.1.6)
+      better-sqlite3:
+        specifier: ^8.4.0
+        version: 8.4.0
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4(supports-color@8.1.1)
+      drizzle-orm:
+        specifier: ^0.27.0
+        version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
+      rxjs:
+        specifier: 7.5.5
+        version: 7.5.5
+      superjson:
+        specifier: ^1.12.4
+        version: 1.12.4
+      viem:
+        specifier: 1.3.1
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@types/better-sqlite3':
+        specifier: ^7.6.4
+        version: 7.6.4
+      '@types/cors':
+        specifier: ^2.8.13
+        version: 2.8.13
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
+      tsx:
+        specifier: ^3.12.6
+        version: 3.12.6
+      vitest:
+        specifier: 0.31.4
+        version: 0.31.4
+
   packages/store-sync:
     dependencies:
       '@latticexyz/block-logs-stream':
@@ -1046,6 +1113,12 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@trpc/client':
+        specifier: 10.34.0
+        version: 10.34.0(@trpc/server@10.34.0)
+      '@trpc/server':
+        specifier: 10.34.0
+        version: 10.34.0
       better-sqlite3:
         specifier: ^8.4.0
         version: 8.4.0
@@ -1069,7 +1142,10 @@ importers:
         version: 1.12.4
       viem:
         specifier: 1.3.1
-        version: 1.3.1(typescript@5.1.6)
+        version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.4
@@ -3200,6 +3276,18 @@ packages:
     engines: {node: '>= 10'}
     dev: true
 
+  /@trpc/client@10.34.0(@trpc/server@10.34.0):
+    resolution: {integrity: sha512-nqtDTIqSY/9syo2EjSy4WWWXPU9GsamEh9Tsg698gLAh1nhgFc5+/YYeb+Ne1pbvWGZ5/3t9Dcz3h4wMyyJ9gQ==}
+    peerDependencies:
+      '@trpc/server': 10.34.0
+    dependencies:
+      '@trpc/server': 10.34.0
+    dev: false
+
+  /@trpc/server@10.34.0:
+    resolution: {integrity: sha512-2VMW44Fpaoyqb50dBtzdSWMhqt8lmoJiocEyBBeDb03R0W+XrzbVD5kU/wqKPlcp1DWeNCkOEIMtetMZCfo1hA==}
+    dev: false
+
   /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6):
     resolution: {integrity: sha512-ikaq0N/w9fABM+G01OFmU3U3dNnyRwEahkdvi9mqy1a3XwKiPZaF/lu54OcNaEWnpvEYyhhS0N7buCtLQqC92w==}
     peerDependencies:
@@ -3283,6 +3371,12 @@ packages:
 
   /@types/chai@4.3.5:
     resolution: {integrity: sha512-mEo1sAde+UCE6b2hxn332f1g1E8WfYRu6p5SvTKr2ZKC1f7gFJXk4h5PyGP9Dt6gCaG8y8XhwnXWC6Iy2cmBng==}
+    dev: true
+
+  /@types/cors@2.8.13:
+    resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
+    dependencies:
+      '@types/node': 18.15.11
     dev: true
 
   /@types/debug@4.1.7:
@@ -3719,6 +3813,17 @@ packages:
       loupe: 2.3.6
       pretty-format: 27.5.1
     dev: true
+
+  /@wagmi/chains@0.2.22(typescript@5.1.6):
+    resolution: {integrity: sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.1.6
+    dev: false
 
   /@wagmi/chains@1.6.0(typescript@5.1.6):
     resolution: {integrity: sha512-5FRlVxse5P4ZaHG3GTvxwVANSmYJas1eQrTBHhjxVtqXoorm0aLmCHbhmN8Xo1yu09PaWKlleEvfE98yH4AgIw==}
@@ -4817,6 +4922,14 @@ packages:
     resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
     deprecated: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
     requiresBuild: true
+    dev: false
+
+  /cors@2.8.5:
+    resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
+    engines: {node: '>= 0.10'}
+    dependencies:
+      object-assign: 4.1.1
+      vary: 1.1.2
     dev: false
 
   /cosmiconfig@5.2.1:
@@ -8616,7 +8729,6 @@ packages:
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /object-hash@1.3.1:
     resolution: {integrity: sha512-OSuu/pU4ENM9kmREg0BdNrUDIl1heYa4mBZacJc+vVWz4GtAwu7jO8s4AIt2aGRUTqxykpWzI3Oqnsm13tTMDA==}
@@ -10993,7 +11105,12 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /viem@1.3.1(typescript@5.1.6):
+  /vary@1.1.2:
+    resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
+    engines: {node: '>= 0.8'}
+    dev: false
+
+  /viem@1.3.1(typescript@5.1.6)(zod@3.21.4):
     resolution: {integrity: sha512-Yv+y3/exrrEN4EAkVUtUuQxsjF4+3taHY2aSinJnNWtcA4fBZ+WfPJBTywcnFIa/Q5oDcQN85yqPFBbkXqWHdw==}
     peerDependencies:
       typescript: '>=5.0.4'
