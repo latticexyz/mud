@@ -1,4 +1,5 @@
-import { getBurnerWallet } from "@latticexyz/std-client";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 import { createFaucetService } from "@latticexyz/network";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -6,8 +7,6 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
-import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -27,9 +26,10 @@ export async function setupNetwork() {
     address: networkConfig.worldAddress as Hex,
     publicClient,
     components: contractComponents,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
   });
 
-  const burnerAccount = privateKeyToAccount(getBurnerWallet().value);
+  const burnerAccount = privateKeyToAccount(networkConfig.privateKey as Hex);
   const burnerWalletClient = createWalletClient({
     account: burnerAccount,
     chain: networkConfig.chain,

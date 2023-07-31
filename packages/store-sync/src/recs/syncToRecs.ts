@@ -42,6 +42,7 @@ type SyncToRecsOptions<
   publicClient: PublicClient<Transport, Chain>;
   // TODO: generate these from config and return instead?
   components: TComponents;
+  startBlock?: bigint;
   indexerUrl?: string;
   initialState?: {
     blockNumber: bigint | null;
@@ -79,6 +80,7 @@ export async function syncToRecs<
   address,
   publicClient,
   components: initialComponents,
+  startBlock = 0n,
   initialState,
   indexerUrl,
 }: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
@@ -88,8 +90,6 @@ export async function syncToRecs<
   };
 
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
-
-  let startBlock = 0n;
 
   if (indexerUrl != null && initialState == null) {
     const indexer = createIndexerClient({ url: indexerUrl });
