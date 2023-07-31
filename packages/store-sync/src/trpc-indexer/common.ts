@@ -1,5 +1,6 @@
 import { Hex } from "viem";
-import type { Table, TableRecord } from "../common";
+import type { TableRecord } from "@latticexyz/store";
+import type { Table } from "../common";
 
 export type TableWithRecords = Table & { records: TableRecord[] };
 
