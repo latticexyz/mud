@@ -22,16 +22,16 @@
 - Switch to the latest snapshot release:
 
   ```
-  pnpm mud set-version --tag main
+  pnpm mud set-version --tag main && pnpm install
   ```
 
 - Switch to the latest pre-release:
 
   ```
-  pnpm mud set-version --tag next
+  pnpm mud set-version --tag next && pnpm install
   ```
 
 - Switch to [a specific commit](https://github.com/latticexyz/mud/commits/main):
 
   ```
-  pnpm mud set-version --commit <hash>
+  pnpm mud set-version --commit <hash> && pnpm install
