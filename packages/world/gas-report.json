@@ -195,13 +195,13 @@
     "file": "test/SnapSyncModule.t.sol",
     "test": "testSnapSyncGas",
     "name": "Call snap sync on a table with 1 record",
-    "gasUsed": 39143
+    "gasUsed": 39213
   },
   {
     "file": "test/SnapSyncModule.t.sol",
     "test": "testSnapSyncGas",
     "name": "Call snap sync on a table with 2 records",
-    "gasUsed": 56220
+    "gasUsed": 56360
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
