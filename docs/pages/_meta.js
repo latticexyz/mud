@@ -12,6 +12,12 @@ export default {
   tutorials: "Tutorials",
   reference: "Reference",  
   contribute: "Contribute",
+  roadmap: {
+    title: "Roadmap",
+    type: "page",
+    href: "https://roadmap.mud.dev",
+    newWindow: true,
+  },
   community: {
     title: "Community",
     type: "page",

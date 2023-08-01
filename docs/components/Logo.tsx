@@ -5,8 +5,12 @@ export default function Logo() {
   const [src, setSrc] = useState("/logo512-white.png"); // default to the dark theme logo
   const { theme } = useTheme();
 
+  // useEffect(() => {
+  //   setSrc(theme === "light" ? "/logo512-black.png" : "/logo512-white.png");
+  //}, [theme]);
+
   useEffect(() => {
-    setSrc(theme === "light" ? "/logo512-black.png" : "/logo512-white.png");
+    setSrc(theme === "light" ? "/mud-cover-photo.png" : "/mud-cover-photo.png");
   }, [theme]);
 
   return <img src={src} alt="MUD logo" />;
