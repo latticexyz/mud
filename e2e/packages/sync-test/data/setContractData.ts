@@ -13,7 +13,7 @@ export async function setContractData(page: Page, data: Data) {
   const promises: Promise<unknown>[] = [];
   for (const [table, records] of Object.entries(encodedData)) {
     for (const record of records) {
-      const promise = callWorld(page, "setRecord(bytes16,bytes16,bytes32[],bytes)", [
+      const promise = callWorld(page, "setRecord", [
         // TODO: add support for multiple namespaces after https://github.com/latticexyz/mud/issues/994 is resolved
         toHex(stringToBytes16("")),
         toHex(stringToBytes16(table)),

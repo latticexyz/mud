@@ -1,14 +1,17 @@
 import { Page } from "@playwright/test";
-import { IWorld } from "../../contracts/types/ethers-contracts/IWorld";
+import { IWorld__factory } from "../../contracts/types/ethers-contracts/factories/IWorld__factory";
+import { AbiParametersToPrimitiveTypes, ExtractAbiFunction, ExtractAbiFunctionNames } from "abitype";
 
-type Args<Method extends keyof IWorld> = IWorld[Method] extends (...args: any) => any
-  ? Parameters<IWorld[Method]>
-  : never;
+type WorldAbi = typeof IWorld__factory.abi;
+type Method = ExtractAbiFunctionNames<WorldAbi>;
 
-export function callWorld<Method extends keyof IWorld>(page: Page, method: Method, args: Args<Method>) {
+type Args<TMethod extends Method> = AbiParametersToPrimitiveTypes<ExtractAbiFunction<WorldAbi, TMethod>["inputs"]>;
+
+export function callWorld<TMethod extends Method>(page: Page, method: TMethod, args: Args<TMethod>) {
   return page.evaluate(
     ([_method, _args]) => {
-      return (window as any).worldContract.write[_method](_args)
+      console.log(`worldContract.write.${_method}`);
+      return (window as any).worldContract.write[_method](_args, { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n })
         .then((tx) => window["waitForTransaction"](tx))
         .catch((e) => {
           throw new Error([`Error executing ${_method} with args:`, JSON.stringify(_args), e].join("\n\n"));
