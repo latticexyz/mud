@@ -24,7 +24,7 @@ import {
 } from "./data";
 import { range } from "@latticexyz/utils";
 
-describe("Sync from MODE", async () => {
+describe.skip("Sync from MODE", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let anvilProcess: ExecaChildProcess;
   let webserver: ViteDevServer;

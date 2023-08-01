@@ -1,25 +1,23 @@
 import { Page } from "@playwright/test";
-import { setup } from "../../client-vanilla/src/mud/setup";
+import { Entity } from "@latticexyz/recs";
 import { deserialize, serialize } from "./utils";
-
-// Extract the storeCache type directly from the client
-type StoreCache = Awaited<ReturnType<typeof setup>>["network"]["storeCache"];
 
 /**
  * Read an individual record from the client's data store.
  * This is necessary because `page.evaluate` can only transmit serialisable data,
  * so we can't just return the entire client store (which includes functions to read data)
  */
-export async function readClientStore(
+export async function readComponentValue(
   page: Page,
-  [namespace, table, key]: Parameters<StoreCache["get"]>
+  componentName: string,
+  entity: Entity
 ): Promise<Record<string, unknown> | undefined> {
-  const args = [namespace, table, serialize(key), serialize.toString(), deserialize.toString()];
+  const args = [componentName, entity, serialize.toString(), deserialize.toString()];
   const serializedValue = await page.evaluate(async (_args) => {
-    const [_namespace, _table, _key, _serializeString, _deserializeString] = _args;
+    const [_componentName, _entity, _serializeString, _deserializeString] = _args;
     const _serialize = deserializeFunction(_serializeString);
     const _deserialize = deserializeFunction(_deserializeString);
-    const value = await window["storeCache"].get(_namespace, _table, _deserialize(_key));
+    const value = await window["getComponentValue"].get(_componentName, _entity);
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;
 

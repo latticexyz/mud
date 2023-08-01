@@ -9,8 +9,10 @@
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
     "@latticexyz/network": "link:../../../packages/network",
+    "@latticexyz/recs": "link:../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../packages/schema-type",
     "@latticexyz/store": "link:../../../packages/store",
+    "@latticexyz/store-sync": "link:../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../packages/utils",
     "chalk": "^5.2.0",
     "dotenv": "^16.0.3",
