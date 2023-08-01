@@ -1,0 +1,37 @@
+# Reference
+
+## Operations
+
+### Create a new codebase
+
+- Using the latest snapshot release:
+
+  ```
+  pnpm create mud@main <directory>
+  ```
+
+- Using the latest pre-release:
+
+  ```
+  pnpm create mud@next <directory>
+  ```
+
+
+  ### Modify the codebase version
+
+- Switch to the latest snapshot release:
+
+  ```
+  pnpm mud set-version --tag main
+  ```
+
+- Switch to the latest pre-release:
+
+  ```
+  pnpm mud set-version --tag next
+  ```
+
+- Switch to [a specific commit](https://github.com/latticexyz/mud/commits/main):
+
+  ```
+  pnpm mud set-version --commit <hash>
