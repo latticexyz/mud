@@ -42,7 +42,7 @@ contract CounterTest is MudTest {
   function testKeysWithValue() public {
     bytes32 key = SingletonKey;
     uint32 counter = CounterTable.get(key);
-    bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
+    bytes32[][] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
     assertEq(keysWithValue.length, 1);
   }
 }

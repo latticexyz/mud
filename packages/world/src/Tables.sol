@@ -11,7 +11,7 @@ import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/Sys
 import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHooks.sol";
 import { ResourceType, ResourceTypeTableId } from "./modules/core/tables/ResourceType.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
-import { KeysWithValue } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
+import { KeysWithValue, KeysWithValueData } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
 import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";

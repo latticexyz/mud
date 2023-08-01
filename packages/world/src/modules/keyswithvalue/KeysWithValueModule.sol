@@ -20,7 +20,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * from value to list of keys with this value. This mapping is stored in a table registered
  * by the module at the `targetTableId` provided in the install methods arguments.
  *
- * Note: if a table with composite keys is used, only the first key is indexed
+ * Note: this module only supports up to 5 composite keys.
  *
  * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.

@@ -101,7 +101,11 @@ export default mudConfig({
         valueHash: "bytes32",
       },
       schema: {
-        keysWithValue: "bytes32[]", // For now only supports 1 key per value
+        keys0: "bytes32[]",
+        keys1: "bytes32[]",
+        keys2: "bytes32[]",
+        keys3: "bytes32[]",
+        keys4: "bytes32[]",
       },
       tableIdArgument: true,
     },
