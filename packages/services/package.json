@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/services",
-  "version": "1.42.0",
+  "version": "2.0.0-next.0",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "repository": {
     "type": "git",
@@ -41,8 +41,8 @@
     "build:js": "tsup",
     "build:protobuf": "make protoc-ts && prettier --write protobuf/ts/**/*.ts",
     "dev": "tsup --watch",
-    "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
-    "test": "tsc --noEmit && echo 'todo: add tests'"
+    "test": "pnpm run test:go",
+    "test:go": "go test -v ./..."
   },
   "dependencies": {
     "long": "^5.2.1",
@@ -50,7 +50,6 @@
     "protobufjs": "^7.2.3"
   },
   "devDependencies": {
-    "rimraf": "^3.0.2",
     "ts-proto": "^1.146.0",
     "tsup": "^6.7.0"
   },

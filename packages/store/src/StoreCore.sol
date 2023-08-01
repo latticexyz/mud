@@ -12,6 +12,7 @@ import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { TableId } from "./TableId.sol";
+import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
   using TableId for bytes32;
@@ -29,6 +30,11 @@ library StoreCore {
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
+    // StoreSwitch uses the storeAddress to decide where to write data to.
+    // If StoreSwitch is called in the context of a Store contract (storeAddress == address(this)),
+    // StoreSwitch uses internal methods to write data instead of external calls.
+    StoreSwitch.setStoreAddress(address(this));
+
     // Register internal schema table
     registerSchema(
       StoreCoreInternal.SCHEMA_TABLE,
@@ -601,7 +607,7 @@ library StoreCoreInternal {
 
     // Store the provided value in storage
     uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
-    Storage.store({ storagePointer: dynamicDataLocation, data: data });
+    Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: data });
   }
 
   function _pushToDynamicField(
@@ -725,7 +731,7 @@ library StoreCoreInternal {
     uint256 location = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
     uint256 dataLength = _loadEncodedDynamicDataLength(tableId, key).atIndex(dynamicSchemaIndex);
 
-    return Storage.load({ storagePointer: location, length: dataLength });
+    return Storage.load({ storagePointer: location, length: dataLength, offset: 0 });
   }
 
   /************************************************************************

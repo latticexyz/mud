@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "1.42.0",
+  "version": "2.0.0-next.0",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -33,14 +33,13 @@
     "test": "vitest typecheck --run && vitest --run && forge test"
   },
   "dependencies": {
-    "abitype": "0.8.7",
-    "viem": "1.1.7"
+    "abitype": "0.9.3",
+    "viem": "1.3.1"
   },
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
-    "rimraf": "^3.0.2",
+    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },

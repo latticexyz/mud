@@ -10,7 +10,7 @@ export type ComponentUpdate<C extends Components> = ValueOf<{
   };
 }>;
 
-export type ActionRequest<C extends Components, T, M = undefined> = {
+export type ActionRequest<C extends Components, T, M = unknown> = {
   // Identifier of this action. Will be used as entity id of the Action component.
   id: string;
 
@@ -47,7 +47,7 @@ export type ActionRequest<C extends Components, T, M = undefined> = {
   metadata?: M;
 };
 
-export type ActionData<M = undefined> = ActionRequest<Components, unknown, M> & {
+export type ActionData<M = unknown> = ActionRequest<Components, unknown, M> & {
   componentsWithOptimisticUpdates: Components;
   entity: Entity;
 };

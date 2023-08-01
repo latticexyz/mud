@@ -307,12 +307,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isStore",
-    "outputs": [],
-    "stateMutability": "view",
-    "type": "function"
   }
 ]

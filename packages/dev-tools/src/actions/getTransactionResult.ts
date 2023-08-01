@@ -1,4 +1,4 @@
-import { Hex, SimulateContractReturnType, PublicClient, Chain, decodeFunctionData } from "viem";
+import { Hex, SimulateContractReturnType, PublicClient, Chain, decodeFunctionData, Transport } from "viem";
 import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { useStore } from "../useStore";
@@ -11,7 +11,7 @@ import { useStore } from "../useStore";
 type CacheKey = `${number}:${Hex}`;
 const cache: Record<CacheKey, Promise<SimulateContractReturnType>> = {};
 
-export const getTransactionResult = (publicClient: PublicClient & { chain: Chain }, hash: Hex) => {
+export const getTransactionResult = (publicClient: PublicClient<Transport, Chain>, hash: Hex) => {
   const key: CacheKey = `${publicClient.chain.id}:${hash}`;
   if (!cache[key]) {
     const { worldAbi } = useStore.getState();

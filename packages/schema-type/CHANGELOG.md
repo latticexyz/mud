@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.0.0-next.0
+
+### Patch Changes
+
+- [#1168](https://github.com/latticexyz/mud/pull/1168) [`48909d15`](https://github.com/latticexyz/mud/commit/48909d151b3dfceab128c120bc6bb77de53c456b) Thanks [@dk1a](https://github.com/dk1a)! - bump forge-std and ds-test dependencies
+
+- [#1175](https://github.com/latticexyz/mud/pull/1175) [`f03531d9`](https://github.com/latticexyz/mud/commit/f03531d97c999954a626ef63bc5bbae51a7b90f3) Thanks [@holic](https://github.com/holic)! - Fix byte lengths for `uint64` and `int64`.
+
+- [#1179](https://github.com/latticexyz/mud/pull/1179) [`53522998`](https://github.com/latticexyz/mud/commit/535229984565539e6168042150b45fe0f9b48b0f) Thanks [@holic](https://github.com/holic)! - - bump to viem 1.3.0 and abitype 0.9.3
+  - move `@wagmi/chains` imports to `viem/chains`
+  - refine a few types
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

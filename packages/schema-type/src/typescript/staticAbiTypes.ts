@@ -1,5 +1,5 @@
 import { Hex } from "viem";
-import { StaticAbiType } from "./schemaAbiTypes";
+import { StaticAbiType, staticAbiTypes } from "./schemaAbiTypes";
 import { LiteralToBroad } from "./utils";
 
 // Fixed-length ABI types
@@ -122,7 +122,7 @@ export const staticAbiTypeToByteLength = {
   uint40: 5,
   uint48: 6,
   uint56: 7,
-  uint64: 9,
+  uint64: 8,
   uint72: 9,
   uint80: 10,
   uint88: 11,
@@ -155,7 +155,7 @@ export const staticAbiTypeToByteLength = {
   int40: 5,
   int48: 6,
   int56: 7,
-  int64: 9,
+  int64: 8,
   int72: 9,
   int80: 10,
   int88: 11,
@@ -217,3 +217,7 @@ export const staticAbiTypeToByteLength = {
   bool: 1,
   address: 20,
 } as const satisfies Record<StaticAbiType, number>;
+
+export function isStaticAbiType(abiType: string): abiType is StaticAbiType {
+  return staticAbiTypes.includes(abiType as StaticAbiType);
+}
