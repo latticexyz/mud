@@ -19,7 +19,7 @@ export function defineContractComponents(world: World) {
           metadata: {
             componentName: "CounterTable",
             tableName: ":CounterTable",
-            keySchema: { key: "bytes32" },
+            keySchema: {},
             valueSchema: { value: "uint32" },
           },
         } as const
