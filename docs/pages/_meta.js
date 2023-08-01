@@ -10,6 +10,7 @@ export default {
   ecs: "ECS and MUD",
   plugins: "Plugins",
   tutorials: "Tutorials",
+  reference: "Reference",  
   contribute: "Contribute",
   roadmap: {
     title: "Roadmap",
