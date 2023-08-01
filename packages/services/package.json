@@ -41,7 +41,8 @@
     "build:js": "tsup",
     "build:protobuf": "make protoc-ts && prettier --write protobuf/ts/**/*.ts",
     "dev": "tsup --watch",
-    "test": "tsc --noEmit && echo 'todo: add tests'"
+    "test": "pnpm run test:go",
+    "test:go": "go test -v ./..."
   },
   "dependencies": {
     "long": "^5.2.1",

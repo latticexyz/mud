@@ -31,7 +31,7 @@ export type Metadata =
 /**
  * Mapping between JavaScript {@link Type} enum and corresponding TypeScript type.
  */
-export type ValueType<T = undefined> = {
+export type ValueType<T = unknown> = {
   [Type.Boolean]: boolean;
   [Type.Number]: number;
   [Type.BigInt]: bigint;
@@ -56,14 +56,14 @@ export type ValueType<T = undefined> = {
 /**
  * Used to infer the TypeScript type of a component value corresponding to a given {@link Schema}.
  */
-export type ComponentValue<S extends Schema = Schema, T = undefined> = {
+export type ComponentValue<S extends Schema = Schema, T = unknown> = {
   [key in keyof S]: ValueType<T>[S[key]];
 };
 
 /**
  * Type of a component update corresponding to a given {@link Schema}.
  */
-export type ComponentUpdate<S extends Schema = Schema, T = undefined> = {
+export type ComponentUpdate<S extends Schema = Schema, T = unknown> = {
   entity: Entity;
   value: [ComponentValue<S, T> | undefined, ComponentValue<S, T> | undefined];
   component: Component<S, Metadata, T>;
@@ -72,7 +72,7 @@ export type ComponentUpdate<S extends Schema = Schema, T = undefined> = {
 /**
  * Type of component returned by {@link defineComponent}.
  */
-export interface Component<S extends Schema = Schema, M extends Metadata = Metadata, T = undefined> {
+export interface Component<S extends Schema = Schema, M extends Metadata = Metadata, T = unknown> {
   id: string;
   values: { [key in keyof S]: Map<EntitySymbol, ValueType<T>[S[key]]> };
   schema: S;
@@ -86,7 +86,7 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
 /**
  * Type of indexer returned by {@link createIndexer}.
  */
-export type Indexer<S extends Schema, M extends Metadata = Metadata, T = undefined> = Component<S, M, T> & {
+export type Indexer<S extends Schema, M extends Metadata = Metadata, T = unknown> = Component<S, M, T> & {
   getEntitiesWithValue: (value: ComponentValue<S, T>) => Set<Entity>;
 };
 
@@ -94,7 +94,7 @@ export type Components = {
   [key: string]: Component;
 };
 
-export interface ComponentWithStream<S extends Schema, T = undefined> extends Component<S, Metadata, T> {
+export interface ComponentWithStream<S extends Schema, T = unknown> extends Component<S, Metadata, T> {
   stream$: Subject<{ entity: Entity; value: ComponentValue<S, T> | undefined }>;
 }
 
@@ -180,7 +180,7 @@ export type QueryFragments = QueryFragment<Schema>[];
 
 export type SchemaOf<C extends Component<Schema>> = C extends Component<infer S> ? S : never;
 
-export type Override<S extends Schema, T = undefined> = {
+export type Override<S extends Schema, T = unknown> = {
   entity: Entity;
   value: Partial<ComponentValue<S, T>> | null;
 };
@@ -188,7 +188,7 @@ export type Override<S extends Schema, T = undefined> = {
 /**
  * Type of overridable component returned by {@link overridableComponent}.
  */
-export type OverridableComponent<S extends Schema = Schema, M extends Metadata = Metadata, T = undefined> = Component<
+export type OverridableComponent<S extends Schema = Schema, M extends Metadata = Metadata, T = unknown> = Component<
   S,
   M,
   T

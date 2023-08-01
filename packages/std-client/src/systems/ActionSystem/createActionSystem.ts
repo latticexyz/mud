@@ -20,7 +20,7 @@ import { merge, Observable } from "rxjs";
 
 export type ActionSystem = ReturnType<typeof createActionSystem>;
 
-export function createActionSystem<M = undefined>(world: World, txReduced$: Observable<string>) {
+export function createActionSystem<M = unknown>(world: World, txReduced$: Observable<string>) {
   // Action component
   const Action = defineActionComponent<M>(world);
 
