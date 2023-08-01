@@ -12,10 +12,11 @@ describe("store/contractComponents", () => {
         y: RecsType.Number;
       },
       {
-        contractId: `0x${string}`;
-        tableId: string;
-      },
-      undefined
+        readonly componentName: "Vector2";
+        readonly tableName: "mudstore:Vector2";
+        readonly keySchema: { key: "bytes32" };
+        readonly valueSchema: { x: "uint32"; y: "uint32" };
+      }
     >
   >();
 });
