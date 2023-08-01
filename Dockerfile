@@ -7,29 +7,29 @@ RUN apt-get -y update --fix-missing && \
     apt-get install -y --no-install-recommends \
     libssl-dev make cmake graphviz \
     git pkg-config curl time rhash ca-certificates jq \
-    python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler && \
-    apt-get install -y vim wget net-tools iptables iproute2 iputils-ping ed && \
-    apt-get -y update; \
-    apt-get install -y --no-install-recommends zlib1g-dev npm wabt && \
+    python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler \
+    wget net-tools iptables iproute2 iputils-ping ed zlib1g-dev wabt && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    # install Go
-    wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
+    apt-get install -y nodejs
+
+# foundry
+RUN curl -L https://foundry.paradigm.xyz/ | bash && \
+    ${HOME}/.foundry/bin/foundryup
+# go
+RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
     # -C to move to given directory
-    tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz && \
-    npm install pnpm --global
-
-ENV PATH="${PATH}:/usr/local/go/bin"
-
+    tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz
+# pnpm
+RUN npm install pnpm --global
 
 FROM base AS builder
 COPY . /app
 WORKDIR /app
 
+ENV PATH="${PATH}:/usr/local/go/bin"
+ENV PATH="${PATH}:/root/.foundry/bin"
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
-ENV PATH="${PATH}:/usr/local/go/bin"
-ENV PATH="${PATH}:${HOME}/.foundry"
 
 FROM builder AS store-indexer
 WORKDIR /app/packages/store-indexer
