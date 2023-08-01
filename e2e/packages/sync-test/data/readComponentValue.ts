@@ -17,7 +17,7 @@ export async function readComponentValue(
     const [_componentName, _entity, _serializeString, _deserializeString] = _args;
     const _serialize = deserializeFunction(_serializeString);
     const _deserialize = deserializeFunction(_deserializeString);
-    const value = await window["getComponentValue"].get(_componentName, _entity);
+    const value = await window["getComponentValue"](_componentName, _entity);
     const serializedValue = value ? _serialize(value) : undefined;
     return serializedValue;
 

@@ -24,7 +24,7 @@ export async function getNetworkConfig() {
     : world?.blockNumber ?? 0n;
 
   return {
-    privateKey: getBurnerWallet().value,
+    privateKey: params.get("privateKey") ?? getBurnerWallet().value,
     chainId,
     chain,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,

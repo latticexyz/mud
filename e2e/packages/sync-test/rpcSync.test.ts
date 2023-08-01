@@ -15,7 +15,7 @@ import {
   pushRange,
   pop,
 } from "./data";
-import { range } from "@latticexyz/utils";
+import { range, sleep } from "@latticexyz/utils";
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -46,7 +46,7 @@ describe("Sync from RPC", async () => {
     anvilProcess?.kill();
   });
 
-  test("should sync test data", async () => {
+  test.only("should sync test data", async () => {
     await openClientWithRootAccount(page);
     await waitForInitialSync(page);
 
