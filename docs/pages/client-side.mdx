@@ -13,7 +13,7 @@ When using MUD in the browser, we provide two different ways to query the [Store
 1. **`recs`**: `recs` is a client-side store optimize for ECS modelling. If you [model your MUD data using ECS](/ecs), this is a great choice.
 2. **`store-cache`**: `store-cache` is reactive tuple-database. It has a more powerful query system than `recs`, and support multiple keys. If don't use the ECS data model (eg: you have multi-key tables, like one-to-many relationship), we recommend using `store-cache`.
 
-**Note**: when using the default MUD templates (created with `pnpm create mud@canary`), the Store data will be available in **both** client-side stores. You are free to query with the one that makes the most sense.
+**Note**: when using the default MUD templates (created with `pnpm create mud@next`), the Store data will be available in **both** client-side stores. You are free to query with the one that makes the most sense.
 
 Over time, we will migrate to `store-cache` as the default and surface an opinionated layer for ECS data on top.
 
