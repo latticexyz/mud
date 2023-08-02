@@ -775,13 +775,13 @@ library Dynamics1 {
     address[4] memory staticAddrs,
     bool[5] memory staticBools
   ) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](5);
-    _counters[0] = uint40(staticB32.length * 32);
-    _counters[1] = uint40(staticI32.length * 4);
-    _counters[2] = uint40(staticU128.length * 16);
-    _counters[3] = uint40(staticAddrs.length * 20);
-    _counters[4] = uint40(staticBools.length * 1);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(
+      uint40(staticB32.length * 32),
+      uint40(staticI32.length * 4),
+      uint40(staticU128.length * 16),
+      uint40(staticAddrs.length * 20),
+      uint40(staticBools.length * 1)
+    );
 
     return
       abi.encodePacked(
