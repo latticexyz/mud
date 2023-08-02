@@ -1,4 +1,4 @@
-import { Address, Hex } from "viem";
+import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
 import { GetLogsResult, GroupLogsByBlockNumberResult, NonPendingLog } from "@latticexyz/block-logs-stream";
 import {
   StoreEventsAbi,
@@ -7,7 +7,10 @@ import {
   ValueSchema,
   ConfigToKeyPrimitives as Key,
   ConfigToValuePrimitives as Value,
+  TableRecord,
 } from "@latticexyz/store";
+import { Observable } from "rxjs";
+import { BlockStorageOperations } from "./blockLogsToStorage";
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
@@ -70,3 +73,48 @@ export type StorageOperation<TConfig extends StoreConfig> =
   | SetFieldOperation<TConfig>
   | SetRecordOperation<TConfig>
   | DeleteRecordOperation<TConfig>;
+
+export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
+  /**
+   * MUD config
+   */
+  config: TConfig;
+  /**
+   * [viem `PublicClient`][0] used for fetching logs from the RPC.
+   *
+   * [0]: https://viem.sh/docs/clients/public.html
+   */
+  publicClient: PublicClient<Transport, Chain>;
+  /**
+   * MUD Store/World contract address
+   */
+  address?: Address;
+  /**
+   * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
+   */
+  startBlock?: bigint;
+  /**
+   * Optional maximum block range, if your RPC limits the amount of blocks fetched at a time.
+   */
+  maxBlockRange?: bigint;
+  /**
+   * Optional MUD tRPC indexer URL to fetch initial state from.
+   */
+  indexerUrl?: string;
+  /**
+   * Optional initial state to hydrate from. Useful if you're hydrating from your own indexer or cache.
+   */
+  initialState?: {
+    blockNumber: bigint | null;
+    tables: (Table & { records: TableRecord[] })[];
+  };
+};
+
+export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {
+  latestBlock$: Observable<Block>;
+  latestBlockNumber$: Observable<bigint>;
+  blockLogs$: Observable<BlockLogs>;
+  blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
+  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
+  destroy: () => void;
+};

@@ -5,5 +5,5 @@ import type { Table } from "../common";
 export type TableWithRecords = Table & { records: TableRecord[] };
 
 export type StorageAdapter = {
-  findAll: (chainId: number, address: Hex) => Promise<{ blockNumber: bigint | null; tables: TableWithRecords[] }>;
+  findAll: (chainId: number, address?: Hex) => Promise<{ blockNumber: bigint | null; tables: TableWithRecords[] }>;
 };

@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
+import { Hex, TransactionReceipt } from "viem";
 import {
   ComponentValue,
   Entity,
@@ -9,16 +9,15 @@ import {
   getComponentValue,
   setComponent,
 } from "@latticexyz/recs";
-import { BlockLogs, Table } from "../common";
-import { TableRecord } from "@latticexyz/store";
+import { SyncOptions, SyncResult } from "../common";
 import {
   createBlockStream,
   isNonPendingBlock,
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
-import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
+import { filter, map, tap, mergeMap, from, concatMap, share, firstValueFrom } from "rxjs";
+import { blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { debug } from "./debug";
@@ -34,19 +33,10 @@ type SyncToRecsOptions<
     string,
     RecsComponent<RecsSchema, StoreComponentMetadata>
   >
-> = {
+> = SyncOptions<TConfig> & {
   world: RecsWorld;
-  config: TConfig;
-  address: Address;
-  // TODO: make this optional and return one if none provided (but will need chain ID at least)
-  publicClient: PublicClient<Transport, Chain>;
   // TODO: generate these from config and return instead?
   components: TComponents;
-  indexerUrl?: string;
-  initialState?: {
-    blockNumber: bigint | null;
-    tables: (Table & { records: TableRecord[] })[];
-  };
 };
 
 type SyncToRecsResult<
@@ -55,16 +45,10 @@ type SyncToRecsResult<
     string,
     RecsComponent<RecsSchema, StoreComponentMetadata>
   >
-> = {
+> = SyncResult<TConfig> & {
   // TODO: return publicClient?
   components: TComponents & ReturnType<typeof defineInternalComponents>;
   singletonEntity: Entity;
-  latestBlock$: Observable<Block>;
-  latestBlockNumber$: Observable<bigint>;
-  blockLogs$: Observable<BlockLogs>;
-  blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
-  destroy: () => void;
 };
 
 export async function syncToRecs<
@@ -79,6 +63,8 @@ export async function syncToRecs<
   address,
   publicClient,
   components: initialComponents,
+  startBlock = 0n,
+  maxBlockRange,
   initialState,
   indexerUrl,
 }: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
@@ -88,8 +74,6 @@ export async function syncToRecs<
   };
 
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
-
-  let startBlock = 0n;
 
   if (indexerUrl != null && initialState == null) {
     const indexer = createIndexerClient({ url: indexerUrl });
@@ -172,17 +156,18 @@ export async function syncToRecs<
       publicClient,
       address,
       events: storeEventsAbi,
+      maxBlockRange,
     }),
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock))),
     share()
   );
 
-  let latestBlockNumberProcessed: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
-      latestBlockNumberProcessed = blockNumber;
+      lastBlockNumberProcessed = blockNumber;
 
       if (
         latestBlockNumber != null &&
@@ -217,7 +202,7 @@ export async function syncToRecs<
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
-    if (latestBlockNumberProcessed == null || latestBlockNumberProcessed < receipt.blockNumber) {
+    if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
       await firstValueFrom(
         blockStorageOperations$.pipe(
           filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
