@@ -11,6 +11,7 @@ const zSystemConfig = z.intersection(
   z.object({
     name: zSelector.optional(),
     registerFunctionSelectors: z.boolean().default(SYSTEM_DEFAULTS.registerFunctionSelector),
+    registerAsRoot: z.boolean().optional(),
   }),
   z.discriminatedUnion("openAccess", [
     z.object({

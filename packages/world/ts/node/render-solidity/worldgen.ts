@@ -42,10 +42,13 @@ export async function worldgen(
     });
     const systemInterfaceName = `I${system.basename}`;
     // create an interface using the external functions and imports
-    const { name } = resolvedConfig.systems[system.basename];
+    const { name, registerAsRoot } = resolvedConfig.systems[system.basename];
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${name}_`,
+      functionPrefix:
+        (registerAsRoot !== undefined && registerAsRoot) || config.namespace === ""
+          ? ""
+          : `${config.namespace}_${name}_`,
       functions,
       errors,
       imports,

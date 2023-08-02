@@ -17,6 +17,8 @@ export type SystemUserConfig =
        * - For non-root systems, the World function selectors will be <namespace>_<system>_<function>.
        */
       registerFunctionSelectors?: boolean;
+
+      registerAsRoot?: boolean;
     } & (
       | {
           /** If openAccess is true, any address can call the system */

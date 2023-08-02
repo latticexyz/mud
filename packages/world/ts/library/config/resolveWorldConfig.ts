@@ -70,6 +70,7 @@ export function resolveSystemConfig(systemName: string, config?: SystemConfig, e
   const accessListAddresses: string[] = [];
   const accessListSystems: string[] = [];
   const accessList = config && !config.openAccess ? config.accessList : [];
+  const registerAsRoot = config?.registerAsRoot ?? undefined;
 
   // Split the access list into addresses and system names
   for (const accessListItem of accessList) {
@@ -84,5 +85,5 @@ export function resolveSystemConfig(systemName: string, config?: SystemConfig, e
     }
   }
 
-  return { name, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
+  return { name, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems, registerAsRoot };
 }

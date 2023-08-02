@@ -224,27 +224,28 @@ export async function deploy(
   promises = [
     ...promises,
     ...Object.entries(resolvedConfig.systems).map(
-      async ([systemName, { name, openAccess, registerFunctionSelectors }]) => {
+      async ([systemName, { name, openAccess, registerFunctionSelectors, registerAsRoot }]) => {
+        const useNamespace = registerAsRoot === undefined || !registerAsRoot ? namespace : "";
         // Register system at route
-        console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${name}`));
+        console.log(chalk.blue(`Registering system ${systemName} at ${useNamespace}/${name}`));
         await fastTxExecute(
           WorldContract,
           "registerSystem",
           [tableIdToHex(namespace, name), await contractPromises[systemName], openAccess],
           confirmations
         );
-        console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${name}`));
+        console.log(chalk.green(`Registered system ${systemName} at ${useNamespace}/${name}`));
 
         // Register function selectors for the system
         if (registerFunctionSelectors) {
           const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
-          const isRoot = namespace === "";
+          const isRoot = useNamespace === "";
           // Using Promise.all to avoid blocking on async calls
           await Promise.all(
             functionSignatures.map(async ({ functionName, functionArgs }) => {
               const functionSignature = isRoot
                 ? functionName + functionArgs
-                : `${namespace}_${name}_${functionName}${functionArgs}`;
+                : `${useNamespace}_${name}_${functionName}${functionArgs}`;
 
               console.log(chalk.blue(`Registering function "${functionSignature}"`));
               if (isRoot) {
@@ -281,8 +282,11 @@ export async function deploy(
   promises = [];
 
   // Grant access to systems
-  for (const [systemName, { name, accessListAddresses, accessListSystems }] of Object.entries(resolvedConfig.systems)) {
-    const resourceSelector = `${namespace}/${name}`;
+  for (const [systemName, { name, accessListAddresses, accessListSystems, registerAsRoot }] of Object.entries(
+    resolvedConfig.systems
+  )) {
+    const useNamespace = registerAsRoot === undefined || !registerAsRoot ? namespace : "";
+    const resourceSelector = `${useNamespace}/${name}`;
 
     // Grant access to addresses
     promises = [
