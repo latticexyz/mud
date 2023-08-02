@@ -1,20 +1,26 @@
 import { Page } from "@playwright/test";
 import { IWorld__factory } from "../../contracts/types/ethers-contracts/factories/IWorld__factory";
+import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 import { AbiParametersToPrimitiveTypes, ExtractAbiFunction, ExtractAbiFunctionNames } from "abitype";
 
 type WorldAbi = typeof IWorld__factory.abi;
-type Method = ExtractAbiFunctionNames<WorldAbi>;
 
-type Args<TMethod extends Method> = AbiParametersToPrimitiveTypes<ExtractAbiFunction<WorldAbi, TMethod>["inputs"]>;
+type WorldContract = GetContractReturnType<WorldAbi, PublicClient, WalletClient>;
 
-export function callWorld<TMethod extends Method>(page: Page, method: TMethod, args: Args<TMethod>) {
+type WriteMethodName = ExtractAbiFunctionNames<WorldAbi>;
+type WriteMethod<TMethod extends WriteMethodName> = ExtractAbiFunction<WorldAbi, TMethod>;
+type WriteArgs<TMethod extends WriteMethodName> = AbiParametersToPrimitiveTypes<WriteMethod<TMethod>["inputs"]>;
+
+export function callWorld<TMethod extends WriteMethodName>(page: Page, method: TMethod, args?: WriteArgs<TMethod>) {
   return page.evaluate(
     ([_method, _args]) => {
-      console.log(`worldContract.write.${_method}`);
-      return (window as any).worldContract.write[_method](_args, { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n })
+      const worldContract = (window as any).worldContract as WorldContract;
+      const writeMethod = worldContract.write[_method as any];
+      return writeMethod(_args, { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n })
         .then((tx) => window["waitForTransaction"](tx))
-        .catch((e) => {
-          throw new Error([`Error executing ${_method} with args:`, JSON.stringify(_args), e].join("\n\n"));
+        .catch((error) => {
+          console.error(error);
+          throw new Error([`Error executing ${_method} with args:`, JSON.stringify(_args), error].join("\n\n"));
         });
     },
     [method, args]
