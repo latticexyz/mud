@@ -78,7 +78,7 @@ describe("Sync from indexer", async () => {
     await waitForInitialSync(page);
     await expectClientData(page, mergeTestData(testData1, testData2));
 
-    // asyncErrorHandler.expectNoAsyncErrors();
+    asyncErrorHandler.expectNoAsyncErrors();
   });
 
   test("should log error if indexer is down", async () => {
@@ -92,7 +92,7 @@ describe("Sync from indexer", async () => {
   });
 
   test("should sync number list modified via system", async () => {
-    await openClientWithRootAccount(page);
+    await openClientWithRootAccount(page, { indexerUrl });
     await waitForInitialSync(page);
 
     // Push one element to the array
@@ -108,6 +108,6 @@ describe("Sync from indexer", async () => {
     await expectClientData(page, { NumberList: [{ key: {}, value: { value: [42, ...range(4999, 1, 0)] } }] });
 
     // Should not have thrown errors
-    // asyncErrorHandler.expectNoAsyncErrors();
+    asyncErrorHandler.expectNoAsyncErrors();
   });
 });
