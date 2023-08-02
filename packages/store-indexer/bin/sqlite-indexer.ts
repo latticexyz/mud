@@ -7,8 +7,7 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http } from "viem";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
-import { createIndexer } from "../src/sqlite/createIndexer";
+import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
@@ -70,7 +69,7 @@ try {
   // ignore errors, this is optional
 }
 
-createIndexer({
+syncToSqlite({
   database,
   publicClient,
   startBlock,

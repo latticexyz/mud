@@ -78,7 +78,7 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
    * MUD config
    */
-  config: TConfig;
+  config?: TConfig;
   /**
    * [viem `PublicClient`][0] used for fetching logs from the RPC.
    *
