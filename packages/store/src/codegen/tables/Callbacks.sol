@@ -185,9 +185,7 @@ library Callbacks {
 
   /** Tightly pack full data using this table's schema */
   function encode(bytes24[] memory value) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](1);
-    _counters[0] = uint40(value.length * 24);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(uint40(value.length * 24));
 
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
   }

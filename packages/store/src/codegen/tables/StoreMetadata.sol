@@ -386,10 +386,10 @@ library StoreMetadata {
 
   /** Tightly pack full data using this table's schema */
   function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](2);
-    _counters[0] = uint40(bytes(tableName).length);
-    _counters[1] = uint40(bytes(abiEncodedFieldNames).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(
+      uint40(bytes(tableName).length),
+      uint40(bytes(abiEncodedFieldNames).length)
+    );
 
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((tableName)), bytes((abiEncodedFieldNames)));
   }

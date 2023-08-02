@@ -188,13 +188,10 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength;
-    {
-      uint40[] memory dynamicLengths = new uint40[](2);
-      dynamicLengths[0] = uint40(secondDataBytes.length);
-      dynamicLengths[1] = uint40(thirdDataBytes.length);
-      encodedDynamicLength = PackedCounterLib.pack(dynamicLengths);
-    }
+    PackedCounter encodedDynamicLength = PackedCounterLib.pack(
+      uint40(secondDataBytes.length),
+      uint40(thirdDataBytes.length)
+    );
 
     // Concat data
     bytes memory data = abi.encodePacked(
@@ -353,13 +350,10 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
-    PackedCounter encodedDynamicLength;
-    {
-      uint40[] memory dynamicLengths = new uint40[](2);
-      dynamicLengths[0] = uint40(secondDataBytes.length);
-      dynamicLengths[1] = uint40(thirdDataBytes.length);
-      encodedDynamicLength = PackedCounterLib.pack(dynamicLengths);
-    }
+    PackedCounter encodedDynamicLength = PackedCounterLib.pack(
+      uint40(secondDataBytes.length),
+      uint40(thirdDataBytes.length)
+    );
 
     // Concat data
     bytes memory data = abi.encodePacked(

@@ -457,10 +457,7 @@ library Mixed {
 
   /** Tightly pack full data using this table's schema */
   function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](2);
-    _counters[0] = uint40(a32.length * 4);
-    _counters[1] = uint40(bytes(s).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(uint40(a32.length * 4), uint40(bytes(s).length));
 
     return abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode((a32)), bytes((s)));
   }
