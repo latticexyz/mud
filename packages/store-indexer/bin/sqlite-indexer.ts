@@ -1,11 +1,10 @@
 import fs from "node:fs";
 import { z } from "zod";
-import cors from "cors";
+import cors from "@fastify/cors";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http } from "viem";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
 import { createIndexer } from "../src/sqlite/createIndexer";
@@ -13,6 +12,9 @@ import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
+import fastify from "fastify";
+import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
+import { renderTrpcPanel } from "trpc-panel";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -77,13 +79,34 @@ createIndexer({
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
-const server = createHTTPServer({
-  middleware: cors(),
-  router: createAppRouter(),
-  createContext: async () => ({
-    storageAdapter: await createStorageAdapter(database),
-  }),
+const router = createAppRouter();
+
+const server = fastify({
+  maxParamLength: 5000,
+  logger: true,
+});
+server.register(cors);
+server.register(fastifyTRPCPlugin, {
+  // TODO is there a way to stick this at / and still have /playground work?
+  prefix: "/api",
+  trpcOptions: {
+    router,
+    createContext: async () => ({
+      storageAdapter: await createStorageAdapter(database),
+    }),
+  },
 });
 
-const { port } = server.listen(env.PORT);
-console.log(`tRPC listening on http://127.0.0.1:${port}`);
+const url = "http://127.0.0.1";
+
+server.get("/playground", (_, res) => {
+  return res.send(renderTrpcPanel(router, { url, transformer: "superjson" }));
+});
+
+try {
+  await server.listen({ port: env.PORT });
+} catch (err) {
+  server.log.error(err);
+  process.exit(1);
+}
+console.log(`fastify listening on ${url}:${env.PORT}`);

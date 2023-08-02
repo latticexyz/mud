@@ -1028,6 +1028,9 @@ importers:
 
   packages/store-indexer:
     dependencies:
+      '@fastify/cors':
+        specifier: ^8.3.0
+        version: 8.3.0
       '@latticexyz/block-logs-stream':
         specifier: workspace:*
         version: link:../block-logs-stream
@@ -1061,12 +1064,18 @@ importers:
       drizzle-orm:
         specifier: ^0.27.0
         version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
+      fastify:
+        specifier: ^4.21.0
+        version: 4.21.0
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
       superjson:
         specifier: ^1.12.4
         version: 1.12.4
+      trpc-panel:
+        specifier: ^1.3.4
+        version: 1.3.4(@trpc/server@10.34.0)(zod@3.21.4)
       viem:
         specifier: 1.3.1
         version: 1.3.1(typescript@5.1.6)(zod@3.21.4)
@@ -1131,9 +1140,6 @@ importers:
       drizzle-orm:
         specifier: ^0.27.0
         version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
-      fastify:
-        specifier: ^4.21.0
-        version: 4.21.0
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
@@ -2655,6 +2661,13 @@ packages:
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       fast-uri: 2.2.0
+    dev: false
+
+  /@fastify/cors@8.3.0:
+    resolution: {integrity: sha512-oj9xkka2Tg0MrwuKhsSUumcAkfp2YCnKxmFEusi01pjk1YrdDsuSYTHXEelWNW+ilSy/ApZq0c2SvhKrLX0H1g==}
+    dependencies:
+      fastify-plugin: 4.5.1
+      mnemonist: 0.39.5
     dev: false
 
   /@fastify/deepmerge@1.3.0:
@@ -6246,6 +6259,10 @@ packages:
     resolution: {integrity: sha512-cIusKBIt/R/oI6z/1nyfe2FvGKVTohVRfvkOhvx0nCEW+xf5NoCXjAHcWp93uOUBchzYcsvPlrapAdX1uW+YGg==}
     dev: false
 
+  /fastify-plugin@4.5.1:
+    resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
+    dev: false
+
   /fastify@4.21.0:
     resolution: {integrity: sha512-tsu4bcwE4HetxqW8prA5fbC9bKHMYDp7jGEDWyzK1l90a3uOaLoIcQbdGcWeODNLVJviQnzh1wvIjTZE3MJFEg==}
     dependencies:
@@ -8680,6 +8697,12 @@ packages:
       obliterator: 2.0.4
     dev: true
 
+  /mnemonist@0.39.5:
+    resolution: {integrity: sha512-FPUtkhtJ0efmEFGpU14x7jGbTB+s18LrzRL2KgoWz9YvcY3cPomz8tih01GbHwnGk/OmkOKfqd/RAQoc8Lm7DQ==}
+    dependencies:
+      obliterator: 2.0.4
+    dev: false
+
   /mobx-react-lite@3.4.0(mobx@6.9.0)(react@18.2.0):
     resolution: {integrity: sha512-bRuZp3C0itgLKHu/VNxi66DN/XVkQG7xtoBVWxpvC5FhAqbOCP21+nPhULjnzEqd7xBMybp6KwytdUpZKEgpIQ==}
     peerDependencies:
@@ -8966,7 +8989,6 @@ packages:
 
   /obliterator@2.0.4:
     resolution: {integrity: sha512-lgHwxlxV1qIg1Eap7LgIeoBWIMFibOjbrYPIPJZcI1mmGAI2m3lNYpK12Y+GBdPQ0U1hRwSord7GIaawz962qQ==}
-    dev: true
 
   /observable-fns@0.6.1:
     resolution: {integrity: sha512-9gRK4+sRWzeN6AOewNBTLXir7Zl/i3GB6Yl26gK4flxz8BXVpD3kt8amREmWNb0mxYOGDotvE5a4N+PtGGKdkg==}
