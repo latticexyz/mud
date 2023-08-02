@@ -19,8 +19,8 @@ latestBlock$.subscribe((block) => {
 });
 
 // Update initial sync status in the UI
-components.SyncProgress.update$.subscribe((value) => {
-  const syncStep = value.value[0]?.step;
+components.SyncProgress.update$.subscribe(({ value }) => {
+  const syncStep = value[0]?.step;
   const element = document.querySelector("#sync-step");
   if (element) element.innerHTML = String(syncStep);
 });

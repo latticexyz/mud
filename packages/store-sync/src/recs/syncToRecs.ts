@@ -92,8 +92,8 @@ export async function syncToRecs<
   const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
 
   if (indexerUrl != null && initialState == null) {
-    const indexer = createIndexerClient({ url: indexerUrl });
     try {
+      const indexer = createIndexerClient({ url: indexerUrl });
       initialState = await indexer.findAll.query({
         chainId: publicClient.chain.id,
         address,

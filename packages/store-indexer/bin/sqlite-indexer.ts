@@ -4,7 +4,7 @@ import cors from "cors";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
-import { createPublicClient, fallback, webSocket, http } from "viem";
+import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
@@ -13,6 +13,7 @@ import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
+import { isNotNull } from "@latticexyz/common/utils";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -23,6 +24,8 @@ const env = z
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     PORT: z.coerce.number().positive().default(3001),
     SQLITE_FILENAME: z.string().default("indexer.db"),
+    RPC_HTTP_URL: z.string().optional(),
+    RPC_WS_URL: z.string().optional(),
   })
   .parse(process.env, {
     errorMap: (issue) => ({
@@ -35,9 +38,20 @@ if (!chain) {
   throw new Error(`Chain ${env.CHAIN_ID} not found`);
 }
 
+const transports: Transport[] = [
+  env.RPC_WS_URL ? webSocket(env.RPC_WS_URL) : null,
+  env.RPC_HTTP_URL ? http(env.RPC_HTTP_URL) : null,
+].filter(isNotNull);
+
 const publicClient = createPublicClient({
   chain,
-  transport: fallback([webSocket(), http()]),
+  transport: fallback(
+    // If one or more RPC URLs are provided, we'll configure the transport with only those RPC URLs
+    transports.length > 0
+      ? transports
+      : // Otherwise use the chain defaults
+        [webSocket(), http()]
+  ),
   pollingInterval: 1000,
 });
 

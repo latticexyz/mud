@@ -27,6 +27,7 @@ export async function setupNetwork() {
     publicClient,
     components: contractComponents,
     startBlock: BigInt(networkConfig.initialBlockNumber),
+    indexerUrl: networkConfig.indexerUrl ?? undefined,
   });
 
   const burnerAccount = privateKeyToAccount(networkConfig.privateKey as Hex);
