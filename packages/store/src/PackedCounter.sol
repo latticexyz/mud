@@ -19,7 +19,9 @@ library PackedCounterLib {
     uint56 accumulator = a;
 
     packedCounter = accumulator;
-    packedCounter |= (uint256(a) << ACC_BYTES);
+    unchecked {
+      packedCounter |= (uint256(a) << ACC_BYTES);
+    }
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
@@ -28,8 +30,10 @@ library PackedCounterLib {
     uint56 accumulator = a + b;
 
     packedCounter = accumulator;
-    packedCounter |= (uint256(a) << (ACC_BYTES));
-    packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
+    unchecked {
+      packedCounter |= (uint256(a) << (ACC_BYTES));
+      packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
+    }
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
@@ -38,9 +42,11 @@ library PackedCounterLib {
     uint56 accumulator = a + b + c;
 
     packedCounter = accumulator;
-    packedCounter |= (uint256(a) << (ACC_BYTES));
-    packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
-    packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
+    unchecked {
+      packedCounter |= (uint256(a) << (ACC_BYTES));
+      packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
+      packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
+    }
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
@@ -49,10 +55,12 @@ library PackedCounterLib {
     uint56 accumulator = a + b + c + d;
 
     packedCounter = accumulator;
-    packedCounter |= (uint256(a) << (ACC_BYTES));
-    packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
-    packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
-    packedCounter |= (uint256(d) << (ACC_BYTES + VAL_BYTES * 3));
+    unchecked {
+      packedCounter |= (uint256(a) << (ACC_BYTES));
+      packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
+      packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
+      packedCounter |= (uint256(d) << (ACC_BYTES + VAL_BYTES * 3));
+    }
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
@@ -61,11 +69,13 @@ library PackedCounterLib {
     uint56 accumulator = a + b + c + d + e;
 
     packedCounter = accumulator;
-    packedCounter |= (uint256(a) << (ACC_BYTES));
-    packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
-    packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
-    packedCounter |= (uint256(d) << (ACC_BYTES + VAL_BYTES * 3));
-    packedCounter |= (uint256(e) << (ACC_BYTES + VAL_BYTES * 4));
+    unchecked {
+      packedCounter |= (uint256(a) << (ACC_BYTES));
+      packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
+      packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
+      packedCounter |= (uint256(d) << (ACC_BYTES + VAL_BYTES * 3));
+      packedCounter |= (uint256(e) << (ACC_BYTES + VAL_BYTES * 4));
+    }
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 }
