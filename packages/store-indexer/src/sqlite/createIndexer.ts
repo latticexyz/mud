@@ -72,14 +72,14 @@ export function createIndexer({
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
   );
 
-  let latestBlockNumberProcessed: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
   const sub = blockLogs$
     .pipe(
       concatMap(blockLogsToStorage(sqliteStorage({ database, publicClient }))),
       tap(({ blockNumber, operations }) => {
-        latestBlockNumberProcessed = blockNumber;
+        lastBlockNumberProcessed = blockNumber;
         debug("stored", operations.length, "operations for block", blockNumber);
-        if (latestBlockNumber === latestBlockNumberProcessed) {
+        if (latestBlockNumber === lastBlockNumberProcessed) {
           debug("all caught up");
         }
       })

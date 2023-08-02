@@ -177,12 +177,12 @@ export async function syncToRecs<
     share()
   );
 
-  let latestBlockNumberProcessed: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
-      latestBlockNumberProcessed = blockNumber;
+      lastBlockNumberProcessed = blockNumber;
 
       if (
         latestBlockNumber != null &&
@@ -217,7 +217,7 @@ export async function syncToRecs<
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
-    if (latestBlockNumberProcessed == null || latestBlockNumberProcessed < receipt.blockNumber) {
+    if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
       await firstValueFrom(
         blockStorageOperations$.pipe(
           filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
