@@ -5,7 +5,7 @@ export default {
   store: "Store",
   world: "World",
   "client-side": "MUD client",
-  mode: "MODE",
+  indexer: "Indexer",
   cli: "CLI",
   ecs: "ECS and MUD",
   plugins: "Plugins",
