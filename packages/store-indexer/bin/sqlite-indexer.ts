@@ -77,6 +77,7 @@ createIndexer({
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
+// @see https://fastify.dev/docs/latest/
 const server = fastify({
   maxParamLength: 5000,
 });
