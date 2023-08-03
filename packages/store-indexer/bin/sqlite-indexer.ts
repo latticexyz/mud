@@ -82,7 +82,6 @@ const server = fastify({
 });
 
 await server.register(import("@fastify/cors"));
-// await server.register(import("@fastify/compress"));
 
 server.register(fastifyTRPCPlugin, {
   prefix: "/trpc",

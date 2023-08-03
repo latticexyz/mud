@@ -27,7 +27,6 @@
     "test": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
-    "@fastify/compress": "^6.4.0",
     "@fastify/cors": "^8.3.0",
     "@latticexyz/block-logs-stream": "workspace:*",
     "@latticexyz/common": "workspace:*",
