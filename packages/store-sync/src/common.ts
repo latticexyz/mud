@@ -116,5 +116,4 @@ export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
   waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
-  destroy: () => void;
 };
