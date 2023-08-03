@@ -34,7 +34,7 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   initialState,
 }: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult<TConfig>> {
   const storeSync = await createStoreSync({
-    storageAdapter: await sqliteStorage({ database, publicClient }),
+    storageAdapter: await sqliteStorage({ database, publicClient, config }),
     config,
     address,
     publicClient,
