@@ -16,6 +16,8 @@ export function defineInternalComponents(world: World) {
         step: Type.String,
         message: Type.String,
         percentage: Type.Number,
+        latestBlockNumber: Type.BigInt,
+        lastBlockNumberProcessed: Type.BigInt,
       },
       {
         metadata: { keySchema: {}, valueSchema: {} },
