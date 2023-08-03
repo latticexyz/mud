@@ -10,8 +10,11 @@ import { Bytes } from "./Bytes.sol";
 // - 28 bytes for 28 schema types (MAX_DYNAMIC_FIELDS allows us to pack the lengths into 1 word)
 type Schema is bytes32;
 
-using SchemaLib for Schema global;
+using SchemaInstance for Schema global;
 
+/**
+ * Static functions for Schema
+ */
 library SchemaLib {
   error SchemaLib_InvalidLength(uint256 length);
   error SchemaLib_StaticTypeAfterDynamicType();
@@ -68,66 +71,12 @@ library SchemaLib {
 
     return Schema.wrap(schema);
   }
+}
 
-  // Overrides for encode functions
-  function encode(SchemaType a) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](1);
-    schema[0] = a;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](2);
-    schema[0] = a;
-    schema[1] = b;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b, SchemaType c) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](3);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b, SchemaType c, SchemaType d) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](4);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    schema[3] = d;
-    return encode(schema);
-  }
-
-  function encode(SchemaType a, SchemaType b, SchemaType c, SchemaType d, SchemaType e) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](5);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    schema[3] = d;
-    schema[4] = e;
-    return encode(schema);
-  }
-
-  function encode(
-    SchemaType a,
-    SchemaType b,
-    SchemaType c,
-    SchemaType d,
-    SchemaType e,
-    SchemaType f
-  ) internal pure returns (Schema) {
-    SchemaType[] memory schema = new SchemaType[](6);
-    schema[0] = a;
-    schema[1] = b;
-    schema[2] = c;
-    schema[3] = d;
-    schema[4] = e;
-    schema[5] = f;
-    return encode(schema);
-  }
-
+/**
+ * Instance functions for Schema
+ */
+library SchemaInstance {
   /************************************************************************
    *
    *    INSTANCE FUNCTIONS
@@ -178,15 +127,16 @@ library SchemaLib {
 
   function validate(Schema schema, bool allowEmpty) internal pure {
     // Schema must not be empty
-    if (!allowEmpty && schema.isEmpty()) revert SchemaLib_InvalidLength(0);
+    if (!allowEmpty && schema.isEmpty()) revert SchemaLib.SchemaLib_InvalidLength(0);
 
     // Schema must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = schema.numDynamicFields();
-    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > SchemaLib.MAX_DYNAMIC_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = schema.numStaticFields();
     // Schema must not have more than 28 fields in total
-    if (_numStaticFields + _numDynamicFields > 28) revert SchemaLib_InvalidLength(_numStaticFields + _numDynamicFields);
+    if (_numStaticFields + _numDynamicFields > 28)
+      revert SchemaLib.SchemaLib_InvalidLength(_numStaticFields + _numDynamicFields);
 
     // No static field can be after a dynamic field
     uint256 countStaticFields;
@@ -194,11 +144,11 @@ library SchemaLib {
     for (uint256 i; i < _numStaticFields + _numDynamicFields; ) {
       if (schema.atIndex(i).getStaticByteLength() > 0) {
         // Static field in dynamic part
-        if (i >= _numStaticFields) revert SchemaLib_StaticTypeAfterDynamicType();
+        if (i >= _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
         countStaticFields++;
       } else {
         // Dynamic field in static part
-        if (i < _numStaticFields) revert SchemaLib_StaticTypeAfterDynamicType();
+        if (i < _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
         countDynamicFields++;
       }
       unchecked {
@@ -207,10 +157,10 @@ library SchemaLib {
     }
 
     // Number of static fields must match
-    if (countStaticFields != _numStaticFields) revert SchemaLib_InvalidLength(countStaticFields);
+    if (countStaticFields != _numStaticFields) revert SchemaLib.SchemaLib_InvalidLength(countStaticFields);
 
     // Number of dynamic fields must match
-    if (countDynamicFields != _numDynamicFields) revert SchemaLib_InvalidLength(countDynamicFields);
+    if (countDynamicFields != _numDynamicFields) revert SchemaLib.SchemaLib_InvalidLength(countDynamicFields);
   }
 
   /**
