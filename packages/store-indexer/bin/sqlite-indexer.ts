@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http } from "viem";
+import fastify from "fastify";
+import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
@@ -77,13 +79,22 @@ createIndexer({
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
-const server = createHTTPServer({
-  middleware: cors(),
-  router: createAppRouter(),
-  createContext: async () => ({
-    storageAdapter: await createStorageAdapter(database),
-  }),
+const server = fastify({
+  maxParamLength: 5000,
 });
 
-const { port } = server.listen(env.PORT);
-console.log(`tRPC listening on http://127.0.0.1:${port}`);
+await server.register(import("@fastify/cors"));
+await server.register(import("@fastify/compress"));
+
+server.register(fastifyTRPCPlugin, {
+  prefix: "/trpc",
+  trpcOptions: {
+    router: createAppRouter(),
+    createContext: async () => ({
+      storageAdapter: await createStorageAdapter(database),
+    }),
+  },
+});
+
+await server.listen({ port: env.PORT });
+console.log(`indexer server listening on http://127.0.0.1:${env.PORT}`);
