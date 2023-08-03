@@ -16,10 +16,8 @@ uint256 constant VAL_BYTES = 5 * 8;
 library PackedCounterLib {
   function pack(uint40 a) internal pure returns (PackedCounter) {
     uint256 packedCounter;
-    uint56 accumulator = a;
-
-    packedCounter = accumulator;
     unchecked {
+      packedCounter = a;
       packedCounter |= (uint256(a) << ACC_BYTES);
     }
     return PackedCounter.wrap(bytes32(packedCounter));
@@ -27,10 +25,8 @@ library PackedCounterLib {
 
   function pack(uint40 a, uint40 b) internal pure returns (PackedCounter) {
     uint256 packedCounter;
-    uint56 accumulator = a + b;
-
-    packedCounter = accumulator;
     unchecked {
+      packedCounter = a + b;
       packedCounter |= (uint256(a) << (ACC_BYTES));
       packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
     }
@@ -39,10 +35,8 @@ library PackedCounterLib {
 
   function pack(uint40 a, uint40 b, uint40 c) internal pure returns (PackedCounter) {
     uint256 packedCounter;
-    uint56 accumulator = a + b + c;
-
-    packedCounter = accumulator;
     unchecked {
+      packedCounter = a + b + c;
       packedCounter |= (uint256(a) << (ACC_BYTES));
       packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
       packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
@@ -52,10 +46,8 @@ library PackedCounterLib {
 
   function pack(uint40 a, uint40 b, uint40 c, uint40 d) internal pure returns (PackedCounter) {
     uint256 packedCounter;
-    uint56 accumulator = a + b + c + d;
-
-    packedCounter = accumulator;
     unchecked {
+      packedCounter = a + b + c + d;
       packedCounter |= (uint256(a) << (ACC_BYTES));
       packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
       packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));
@@ -66,10 +58,8 @@ library PackedCounterLib {
 
   function pack(uint40 a, uint40 b, uint40 c, uint40 d, uint40 e) internal pure returns (PackedCounter) {
     uint256 packedCounter;
-    uint56 accumulator = a + b + c + d + e;
-
-    packedCounter = accumulator;
     unchecked {
+      packedCounter = a + b + c + d + e;
       packedCounter |= (uint256(a) << (ACC_BYTES));
       packedCounter |= (uint256(b) << (ACC_BYTES + VAL_BYTES));
       packedCounter |= (uint256(c) << (ACC_BYTES + VAL_BYTES * 2));

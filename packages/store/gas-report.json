@@ -75,7 +75,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 2159
+    "gasUsed": 2047
   },
   {
     "file": "test/Gas.t.sol",
@@ -261,7 +261,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 108937
+    "gasUsed": 108796
   },
   {
     "file": "test/Mixed.t.sol",
@@ -284,8 +284,8 @@
   {
     "file": "test/PackedCounter.t.sol",
     "test": "testTotal",
-    "name": "pack uint40 array into PackedCounter",
-    "gasUsed": 510
+    "name": "pack 4 lengths into PackedCounter",
+    "gasUsed": 199
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -747,7 +747,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetMetadata",
     "name": "StoreCore: set table metadata",
-    "gasUsed": 250110
+    "gasUsed": 249985
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -765,7 +765,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "set record in StoreMetadataTable",
-    "gasUsed": 248582
+    "gasUsed": 248449
   },
   {
     "file": "test/StoreMetadata.t.sol",
