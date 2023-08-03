@@ -17,6 +17,7 @@ import { isNotNull } from "@latticexyz/common/utils";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
+// TODO: refine zod type to be either CHAIN_ID or RPC_HTTP_URL/RPC_WS_URL
 const env = z
   .object({
     CHAIN_ID: z.coerce.number().positive().optional(),
@@ -33,7 +34,10 @@ const env = z
     }),
   });
 
-const chain = env.CHAIN_ID ? possibleChains.find((c) => c.id === env.CHAIN_ID) : undefined;
+const chain = env.CHAIN_ID != null ? possibleChains.find((c) => c.id === env.CHAIN_ID) : undefined;
+if (env.CHAIN_ID != null && !chain) {
+  console.warn(`No chain found for chain ID ${env.CHAIN_ID}`);
+}
 
 const transports: Transport[] = [
   env.RPC_WS_URL ? webSocket(env.RPC_WS_URL) : null,
