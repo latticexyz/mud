@@ -4,7 +4,8 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
@@ -43,8 +44,8 @@ contract QueryTest is Test, GasReporter {
   QueryFragment[] fragmentsHasNot;
 
   function setUp() public {
-    tableSchema = SchemaLib.encode(SchemaType.UINT256);
-    tableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
+    tableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
 
