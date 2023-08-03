@@ -4,6 +4,6 @@
 "@latticexyz/world": patch
 ---
 
-Refactor tightcoder to use typescript functions instead of ejs
-Optimize `TightCoder` library
-Add `isLeftAligned` and `shiftLeftBits` common codegen helpers
+- Refactor tightcoder to use typescript functions instead of ejs
+- Optimize `TightCoder` library
+- Add `isLeftAligned` and `shiftLeftBits` common codegen helpers
