@@ -186,11 +186,12 @@ export async function deploy(
   const tableIds: { [tableName: string]: Uint8Array } = {};
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema }]) => {
-      console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema, registerAsRoot }]) => {
+      const useNamespace = registerAsRoot === undefined || !registerAsRoot ? namespace : "";
+      console.log(chalk.blue(`Registering table ${tableName} at ${useNamespace}/${name}`));
 
       // Store the tableId for later use
-      tableIds[tableName] = toResourceSelector(namespace, name);
+      tableIds[tableName] = toResourceSelector(useNamespace, name);
 
       // Register table
       const schemaTypes = Object.values(schema).map((abiOrUserType) => {

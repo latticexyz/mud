@@ -91,6 +91,7 @@ export interface TableConfig<
   keySchema?: Record<string, KeySchema<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: SchemaConfig<UserTypes>;
+  registerAsRoot?: boolean;
 }
 
 export type FullTableConfig<
@@ -112,6 +113,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       dataStruct: boolean;
       keySchema: typeof TABLE_DEFAULTS.keySchema;
       ephemeral: typeof TABLE_DEFAULTS.ephemeral;
+      registerAsRoot: boolean;
     }
   > {
   schema: ExpandSchemaConfig<T["schema"]>;
@@ -127,6 +129,7 @@ const zFullTableConfig = z
     keySchema: zKeySchema,
     schema: zSchemaConfig,
     ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
+    registerAsRoot: z.boolean().optional(),
   })
   .transform((arg) => {
     // default dataStruct value depends on schema's length

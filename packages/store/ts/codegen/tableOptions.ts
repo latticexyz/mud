@@ -78,7 +78,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       } else {
         return {
           tableIdName: tableName + "TableId",
-          namespace: config.namespace,
+          namespace: tableData.registerAsRoot === undefined || !tableData.registerAsRoot ? config.namespace : "",
           name: tableData.name,
         };
       }
