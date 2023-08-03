@@ -111,6 +111,8 @@ export async function syncToRecs<
       step: SyncStep.SNAPSHOT,
       message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
       percentage: 0,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: initialState.blockNumber,
     });
 
     const componentList = Object.values(components);
@@ -136,6 +138,8 @@ export async function syncToRecs<
             step: SyncStep.SNAPSHOT,
             message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
             percentage: (recordsProcessed / numRecords) * 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: initialState.blockNumber,
           });
         }
       }
@@ -146,6 +150,8 @@ export async function syncToRecs<
       step: SyncStep.SNAPSHOT,
       message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
       percentage: (recordsProcessed / numRecords) * 100,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: initialState.blockNumber,
     });
   }
 
@@ -177,28 +183,32 @@ export async function syncToRecs<
     share()
   );
 
-  let latestBlockNumberProcessed: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
-      latestBlockNumberProcessed = blockNumber;
+      lastBlockNumberProcessed = blockNumber;
 
       if (
         latestBlockNumber != null &&
         getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
       ) {
-        if (blockNumber < latestBlockNumber) {
+        if (lastBlockNumberProcessed < latestBlockNumber) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.RPC,
             message: `Hydrating from RPC to block ${latestBlockNumber}`,
-            percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
+            percentage: (Number(lastBlockNumberProcessed) / Number(latestBlockNumber)) * 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
           });
         } else {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.LIVE,
             message: `All caught up!`,
             percentage: 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
           });
         }
       }
@@ -217,7 +227,7 @@ export async function syncToRecs<
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
-    if (latestBlockNumberProcessed == null || latestBlockNumberProcessed < receipt.blockNumber) {
+    if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
       await firstValueFrom(
         blockStorageOperations$.pipe(
           filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
