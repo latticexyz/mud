@@ -1,0 +1,174 @@
+# Extend the schema
+
+In this tutorial you extend the schema to add a table of historical counter values and the time in which the counter reached those values.
+For the sake of simplicity, we will implement this in the `increment` function rather than use a [storage hook](/store/advanced-features#storage-hooks).
+
+## Modify the MUD configuration file
+
+1. In an editor, open `packages/contracts/mud.config.ts` and add this table definition:
+
+   ```ts
+      History: {
+        keySchema: {
+          counterValue: "uint32",
+        },
+        schema: {
+          blockNumber: "uint256",
+          time: "uint256"
+        }
+      },
+   ```
+
+   <details>
+<summary>The complete file</summary>
+```ts
+ import { mudConfig } from "@latticexyz/world/register";
+
+   export default mudConfig({
+   tables: {
+   Counter: {
+   keySchema: {},
+   schema: "uint32",
+   },
+   History: {
+   keySchema: {
+   counterValue: "uint32",
+   },
+   schema: {
+   blockNumber: "uint256",
+   time: "uint256"
+   }
+   },
+   },
+   });
+
+   ```
+   </details>
+
+   ```
+
+1. Run this command in `packages/contracts` to regenerate the code.
+
+   ```sh
+   pnpm build:mud
+   ```
+
+## Update `IncrementSystem`
+
+1. In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
+
+   - Modify the second `import` line to import `History`.
+
+     ```solidity
+     import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+     ```
+
+   - Modify the `increment` function to also update `History` by adding this line just before `return newValue`.
+
+     ```solidity
+     History.set(newValue, block.number, block.timestamp);
+     ```
+
+     To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we regenerated it).
+
+    <details>
+ <summary>The complete file</summary>
+ ```solidity
+ // SPDX-License-Identifier: MIT
+ pragma solidity >=0.8.0;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+
+   contract IncrementSystem is System {
+   function increment() public returns (uint32) {
+   uint32 counter = Counter.get();
+   uint32 newValue = counter + 1;
+   Counter.set(newValue);
+   History.set(newValue, block.number, block.timestamp);
+   return newValue;
+   }
+   }
+
+   ```
+   </details>
+
+   ```
+
+1. Run this command in `packages/contracts` to rebuild everything this package produces.
+
+   ```sh
+   pnpm build
+   ```
+
+## Update the user interface
+
+You can already run the application and see in the MUD Dev Tools that there is a `:History` table and it gets updates when you click **Increment**.
+However, you can also add the history to the user interface.
+The directions here apply to the `vanilla` user interface, if you use anything else you'll need to modify them as appropriate.
+
+1. Install `store-cache`.
+   Run this command in `packages/client`.
+
+   ```sh
+   pnpm install @latticexyz/store-cache
+   ```
+
+1. Edit `packages/clients/index.html` to add these lines just before `</body>`.
+
+   ```html
+   <hr />
+   <h2>
+     History for value:
+     <select id="historyValue" onInput="window.readHistory()"></select>
+   </h2>
+   <table border>
+     <tr>
+       <th>Block number</th>
+       <th>Time</th>
+     </tr>
+     <tr>
+       <td id="blockNumber"></td>
+       <td id="timeStamp"></td>
+     </tr>
+   </table>
+   ```
+
+   <details>
+     <summary>The complete file</summary>
+     ``` blah ```
+   </details>
+
+1. Edit `packages/client/src/mud/createSystemCalls.ts` to add `readHistory`.
+
+   ```typescript
+
+   ```
+
+   <details>
+     <summary>The complete file</summary>
+     ``` blah ```
+   </details>
+
+1. Edit `packages/client/src/index.ts`.
+
+   - Import `getComponentValue`.
+
+     ```typescript
+     import { getComponentValue } from "@latticexyz/recs";
+     ```
+
+   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values.
+
+     ```typescript
+     let options: String = "";
+     for (let i = 0; i < nextValue?.value; i++) {
+       options += `<option value="${i}">${i}</option>`;
+     }
+     document.getElementById("historyValue")!.innerHTML = options;
+     ```
+
+   <details>
+     <summary>The complete file</summary>
+     ``` blah ```
+   </details>{" "}
