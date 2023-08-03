@@ -38,12 +38,10 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<CreateStoreSyncResult<TConfig>> {
   if (indexerUrl != null && initialState == null) {
-    const indexer = createIndexerClient({ url: indexerUrl });
     try {
-      initialState = await indexer.findAll.query({
-        chainId: publicClient.chain.id,
-        address,
-      });
+      const indexer = createIndexerClient({ url: indexerUrl });
+      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+      initialState = await indexer.findAll.query({ chainId, address });
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
     }

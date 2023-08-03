@@ -1,4 +1,4 @@
-import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
+import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
 import { GetLogsResult, GroupLogsByBlockNumberResult, NonPendingLog } from "@latticexyz/block-logs-stream";
 import {
   StoreEventsAbi,
@@ -84,7 +84,7 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: PublicClient<Transport, Chain>;
+  publicClient: PublicClient;
   /**
    * MUD Store/World contract address
    */

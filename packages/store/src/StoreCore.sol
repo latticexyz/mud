@@ -36,10 +36,15 @@ library StoreCore {
     StoreSwitch.setStoreAddress(address(this));
 
     // Register internal schema table
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.BYTES32;
+    _valueSchema[1] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
     registerSchema(
       StoreCoreInternal.SCHEMA_TABLE,
-      SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
-      SchemaLib.encode(SchemaType.BYTES32) // The Schema table's keySchema is { tableId: BYTES32 }
+      SchemaLib.encode(_valueSchema), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
+      SchemaLib.encode(_keySchema) // The Schema table's keySchema is { tableId: BYTES32 }
     );
 
     // Register other internal tables
