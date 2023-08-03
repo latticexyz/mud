@@ -1,13 +1,11 @@
 import fs from "node:fs";
 import { z } from "zod";
-import cors from "cors";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http } from "viem";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
 import { createIndexer } from "../src/sqlite/createIndexer";
@@ -84,7 +82,7 @@ const server = fastify({
 });
 
 await server.register(import("@fastify/cors"));
-await server.register(import("@fastify/compress"));
+// await server.register(import("@fastify/compress"));
 
 server.register(fastifyTRPCPlugin, {
   prefix: "/trpc",

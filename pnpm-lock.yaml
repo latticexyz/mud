@@ -1058,9 +1058,6 @@ importers:
       better-sqlite3:
         specifier: ^8.4.0
         version: 8.4.0
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.5
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
@@ -5028,14 +5025,6 @@ packages:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: false
 
-  /cors@2.8.5:
-    resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
-    engines: {node: '>= 0.10'}
-    dependencies:
-      object-assign: 4.1.1
-      vary: 1.1.2
-    dev: false
-
   /cosmiconfig@5.2.1:
     resolution: {integrity: sha512-H65gsXo1SKjf8zmrJ67eJk8aIRKV5ff2D4uKZIBZShbhGSpEmsQOPW/SKMKYhSTrqR7ufy6RP69rPogdaPh/kA==}
     engines: {node: '>=4'}
@@ -8972,6 +8961,7 @@ packages:
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
+    dev: true
 
   /object-hash@1.3.1:
     resolution: {integrity: sha512-OSuu/pU4ENM9kmREg0BdNrUDIl1heYa4mBZacJc+vVWz4GtAwu7jO8s4AIt2aGRUTqxykpWzI3Oqnsm13tTMDA==}
@@ -11518,11 +11508,6 @@ packages:
       spdx-correct: 3.2.0
       spdx-expression-parse: 3.0.1
     dev: true
-
-  /vary@1.1.2:
-    resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
-    engines: {node: '>= 0.8'}
-    dev: false
 
   /viem@1.3.1(typescript@5.1.6)(zod@3.21.4):
     resolution: {integrity: sha512-Yv+y3/exrrEN4EAkVUtUuQxsjF4+3taHY2aSinJnNWtcA4fBZ+WfPJBTywcnFIa/Q5oDcQN85yqPFBbkXqWHdw==}
