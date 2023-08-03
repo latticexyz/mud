@@ -277,21 +277,27 @@
   },
   {
     "file": "test/PackedCounter.t.sol",
-    "test": "testSetAtIndex",
-    "name": "set value at index of PackedCounter",
-    "gasUsed": 532
+    "test": "testGas",
+    "name": "pack 1 length into PackedCounter",
+    "gasUsed": 68
   },
   {
     "file": "test/PackedCounter.t.sol",
-    "test": "testTotal",
+    "test": "testGas",
     "name": "pack 4 lengths into PackedCounter",
     "gasUsed": 199
   },
   {
     "file": "test/PackedCounter.t.sol",
-    "test": "testTotal",
+    "test": "testGas",
     "name": "get total of PackedCounter",
     "gasUsed": 15
+  },
+  {
+    "file": "test/PackedCounter.t.sol",
+    "test": "testSetAtIndex",
+    "name": "set value at index of PackedCounter",
+    "gasUsed": 532
   },
   {
     "file": "test/Schema.t.sol",
