@@ -22,7 +22,7 @@ A World contains resources. Currently, there exists three types of resources. Mo
 2. **Table**: a [Store](store) table. Used to store and retrieve data.
 3. **System**: a piece of logic, stored as EVM bytecode. Systems have no state, and instead read and write to Tables.
 
-Each resource is contained within a namespace (possibly the root one, where you use an empty string for the namespace). You can think of the resources within a World as a filesystem:
+Each resource is contained within a namespace (possibly the ROOT one, where you use an empty string for the namespace). You can think of the resources within a World as a filesystem:
 
 ```bash
 root
@@ -45,9 +45,8 @@ The organization of resources within namespaces is used for two different featur
 1. **Access control:** resources in a namespace have “write” access to the other resources within their namespace.
    Currently, having write access only matters for systems interacting with tables: it means these systems can create and edit records within those tables.
 
-   Note that systems in the root namespace are not subject to access control.
+   Note that systems in the ROOT namespace are not subject to access control.
    They can bypass any hooks and write directly to any table in the `World`.
-   Because these systems are called with `DELEGATECALL` instead of `CALL`, using them can cost less gas.
 
 2. **Synchronization of state**: MUD clients can decide which namespaces they synchronize. Synchronization means different things depending on the resource type:
    - **Synchronizing a Table** means downloading and keeping track of all changes to records found within the Table. As an example, synchronizing a `BalanceTable` would mean keeping track of the balances of all addresses within that table.
@@ -83,6 +82,7 @@ Systems **MUST** use the `_msgSender()` function exposed in the `System` interfa
 There exists two types of systems:
 
 1. **Regular systems**: Regular systems are `CALL`ed from the World, which isolates their storage from the World storage. They read and write to the Store by going through the World, which does access control checks (eg: Can this system write to this table>). Regular systems can register namespaced function selectors on the World. eg: `World.myNamespace_ExampleSystem_createRecord()`.
+
 2. **Root systems**: Root systems are `DELEGATECALL`ed from the World, which lets them borrow the World storage. They read and write to the Store _directly_. There are _NO_ access control on Root systems. Root systems can register root function selectors, allowing their functions to be called on the World directly, eg: `World.createRecord()`.
 
 Systems are not root by default, only systems registered in the ROOT namespace (the empty string namespace: `""`) are treated as root systems.
