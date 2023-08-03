@@ -83,6 +83,7 @@ const server = fastify({
 
 await server.register(import("@fastify/cors"));
 
+// @see https://trpc.io/docs/server/adapters/fastify
 server.register(fastifyTRPCPlugin, {
   prefix: "/trpc",
   trpcOptions: {
