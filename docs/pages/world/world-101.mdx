@@ -45,8 +45,8 @@ The organization of resources within namespaces is used for two different featur
 1. **Access control:** resources in a namespace have “write” access to the other resources within their namespace.
    Currently, having write access only matters for systems interacting with tables: it means these systems can create and edit records within those tables.
 
-   Note that systems in the ROOT namespace are not subject to access control.
-   They can bypass any hooks and write directly to any table in the `World`.
+   Note that systems in the ROOT namespace are able to bypass access control.
+   Because they are called with `DELEGATECALL`, they can bypass any hooks and write directly to any table in the `World`.
 
 2. **Synchronization of state**: MUD clients can decide which namespaces they synchronize. Synchronization means different things depending on the resource type:
    - **Synchronizing a Table** means downloading and keeping track of all changes to records found within the Table. As an example, synchronizing a `BalanceTable` would mean keeping track of the balances of all addresses within that table.
