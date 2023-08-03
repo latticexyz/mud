@@ -39,7 +39,7 @@ type SyncToRecsOptions<
   config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
-  publicClient: PublicClient<Transport, Chain>;
+  publicClient: PublicClient;
   // TODO: generate these from config and return instead?
   components: TComponents;
   indexerUrl?: string;
@@ -94,10 +94,8 @@ export async function syncToRecs<
   if (indexerUrl != null && initialState == null) {
     const indexer = createIndexerClient({ url: indexerUrl });
     try {
-      initialState = await indexer.findAll.query({
-        chainId: publicClient.chain.id,
-        address,
-      });
+      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+      initialState = await indexer.findAll.query({ chainId, address });
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
     }
