@@ -34,6 +34,3 @@ RUN pnpm run -r build
 FROM builder AS store-indexer
 WORKDIR /app/packages/store-indexer
 EXPOSE 3001
-ENV DEBUG=*
-ENV NODE_ENV=production
-CMD [ "pnpm", "start:testnet" ]
