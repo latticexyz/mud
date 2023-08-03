@@ -20,13 +20,13 @@ import {
 import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
-import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { debug } from "./debug";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
 import { createIndexerClient } from "../trpc-indexer";
+import { singletonEntity } from "./singletonEntity";
 
 type SyncToRecsOptions<
   TConfig extends StoreConfig = StoreConfig,
@@ -39,7 +39,7 @@ type SyncToRecsOptions<
   config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
-  publicClient: PublicClient<Transport, Chain>;
+  publicClient: PublicClient;
   // TODO: generate these from config and return instead?
   components: TComponents;
   indexerUrl?: string;
@@ -58,7 +58,6 @@ type SyncToRecsResult<
 > = {
   // TODO: return publicClient?
   components: TComponents & ReturnType<typeof defineInternalComponents>;
-  singletonEntity: Entity;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -87,17 +86,15 @@ export async function syncToRecs<
     ...defineInternalComponents(world),
   };
 
-  const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
+  world.registerEntity({ id: singletonEntity });
 
   let startBlock = 0n;
 
   if (indexerUrl != null && initialState == null) {
     const indexer = createIndexerClient({ url: indexerUrl });
     try {
-      initialState = await indexer.findAll.query({
-        chainId: publicClient.chain.id,
-        address,
-      });
+      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+      initialState = await indexer.findAll.query({ chainId, address });
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
     }
@@ -240,7 +237,6 @@ export async function syncToRecs<
 
   return {
     components,
-    singletonEntity,
     latestBlock$,
     latestBlockNumber$,
     blockLogs$,
