@@ -11,34 +11,9 @@ Indexer is an off-chain indexer for on-chain applications build with MUD.
 These are the steps to install and start Indexer.
 They are written under the assumption you are using `anvil` for your test chain, which is what the getting started package's `pnpm dev` does.
 
-1. Ensure you have these applications installed:
+1. Build the repository [as explained here](contribute#local-development-setup).
 
-   - [`curl`](https://curl.se/)
-   - [`jq`](https://jqlang.github.io/jq/)
-   - [`node`](https://nodejs.org/en)
-   - [`pnpm`](https://pnpm.io/)
-
-1. Download the source code for MUD.
-
-   ```sh
-   git clone https://github.com/latticexyz/mud.git
-   cd mud
-   ```
-
-1. Remove the `services` package.
-   This package includes various services which are not required for building any of the other packages in the repository.
-
-   ```sh
-   rm -rf packages/services
-   ```
-
-1. Install and build packages.
-   It is necessary to build the entire repository, not just the `store-index` package.
-
-   ```sh
-   pnpm install
-   pnpm build
-   ```
+1. Ensure you have [`jq`](https://jqlang.github.io/jq/) installed.
 
 1. Run a test world.
    The easiest way to do this is to follow [these directions](tutorials/minimal#getting-the-initial-version) in a separate command line window.
@@ -90,10 +65,8 @@ For queries, the Indexer expects to get two parameters in a [query string](https
   An HTTP request can include multiple queries, so the query object includes a numbered key (or numbered keys) with the actual queries.
   Also, in the future other formats than JSON might be supported, so each query specifies what format it uses.
 
-#### findAll queries
-
-These queries find all the information stored on a specific world in Indexer.
-They are available at path `/findAll` and have two parameters:
+The one type of query currently supported is `findAll`. It gives you all the information stored on a specific world in Indexer.
+The query is available at path `/findAll` and have two parameters:
 
 - `chainId`: The chain ID of the blockchain to query.
 - `address`: The address of the `World`.
@@ -146,10 +119,6 @@ To understand the result, it is easiest to look at it inside Node.
    ```javascript
    counterTable.records[0].value.value;
    ```
-
-#### Additional queries
-
-**Coming soon**
 
 ### Using Indexer with TypeScript
 
