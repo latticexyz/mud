@@ -184,7 +184,7 @@ export function isLeftAligned(field: Pick<RenderType, "internalTypeId">): boolea
   return field.internalTypeId.match(/^bytes\d{1,2}$/) !== null;
 }
 
-export function shiftLeftBits(field: Pick<RenderType, "internalTypeId" | "staticByteLength">): number {
+export function getLeftPaddingBits(field: Pick<RenderType, "internalTypeId" | "staticByteLength">): number {
   if (isLeftAligned(field)) {
     return 0;
   } else {

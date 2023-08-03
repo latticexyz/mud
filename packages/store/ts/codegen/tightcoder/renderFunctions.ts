@@ -1,4 +1,4 @@
-import { shiftLeftBits } from "@latticexyz/common/codegen";
+import { getLeftPaddingBits } from "@latticexyz/common/codegen";
 
 export function renderTightCoderDecode(element: { internalTypeId: string; staticByteLength: number }) {
   return `
@@ -10,7 +10,7 @@ export function renderTightCoderDecode(element: { internalTypeId: string; static
       bytes32[] memory _genericArray = TightCoder.decode(
         _input,
         ${element.staticByteLength},
-        ${shiftLeftBits(element)}
+        ${getLeftPaddingBits(element)}
       );
       assembly {
         _output := _genericArray
@@ -29,7 +29,7 @@ export function renderTightCoderEncode(element: { internalTypeId: string; static
       return TightCoder.encode(
         _genericArray,
         ${element.staticByteLength},
-        ${shiftLeftBits(element)}
+        ${getLeftPaddingBits(element)}
       );
     }
   `.trim();

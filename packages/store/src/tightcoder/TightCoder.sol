@@ -11,14 +11,14 @@ import { Slice, SliceLib } from "../Slice.sol";
 library TightCoder {
   /**
    * Copies the array to a new bytes array, tightly packing it.
-   * elementSize is in bytes, shiftLeftBits is in bits.
-   * elementSize and shiftLeftBits must be correctly provided by the caller based on the array's element type.
+   * elementSize is in bytes, leftPaddingBits is in bits.
+   * elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
    * @return data a tightly packed array
    */
   function encode(
     bytes32[] memory array,
     uint256 elementSize,
-    uint256 shiftLeftBits
+    uint256 leftPaddingBits
   ) internal pure returns (bytes memory data) {
     uint256 arrayLength = array.length;
     uint256 packedLength = array.length * elementSize;
@@ -51,21 +51,21 @@ library TightCoder {
         packedPointer := add(packedPointer, elementSize)
       } {
         // Pack one array element
-        mstore(packedPointer, shl(shiftLeftBits, mload(arrayPointer)))
+        mstore(packedPointer, shl(leftPaddingBits, mload(arrayPointer)))
       }
     }
   }
 
   /**
    * Unpacks the slice to a new memory location and lays it out like a memory array.
-   * elementSize is in bytes, unshiftLeftBits is in bits.
-   * elementSize and unshiftLeftBits must be correctly provided by the caller based on the array's element type.
+   * elementSize is in bytes, leftPaddingBits is in bits.
+   * elementSize and leftPaddingBits must be correctly provided by the caller based on the array's element type.
    * @return array a generic array, needs to be casted to the expected type using assembly
    */
   function decode(
     Slice packedSlice,
     uint256 elementSize,
-    uint256 unshiftLeftBits
+    uint256 leftPaddingBits
   ) internal pure returns (bytes32[] memory array) {
     uint256 packedPointer = packedSlice.pointer();
     uint256 packedLength = packedSlice.length();
@@ -101,7 +101,7 @@ library TightCoder {
         packedPointer := add(packedPointer, elementSize)
       } {
         // Unpack one array element
-        mstore(arrayPointer, shr(unshiftLeftBits, mload(packedPointer)))
+        mstore(arrayPointer, shr(leftPaddingBits, mload(packedPointer)))
       }
     }
   }
