@@ -243,7 +243,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register KeyEncoding schema",
-    "gasUsed": 64679
+    "gasUsed": 65010
   },
   {
     "file": "test/Mixed.t.sol",
@@ -255,7 +255,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Mixed schema",
-    "gasUsed": 61687
+    "gasUsed": 61992
   },
   {
     "file": "test/Mixed.t.sol",
@@ -267,7 +267,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "get record from Mixed",
-    "gasUsed": 12438
+    "gasUsed": 12610
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -296,7 +296,7 @@
   {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
-    "name": "encode schema with 6 entries [SchemaLib.encode]",
+    "name": "encode schema with 6 entries",
     "gasUsed": 5639
   },
   {
@@ -771,7 +771,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "get record from StoreMetadataTable",
-    "gasUsed": 11430
+    "gasUsed": 11576
   },
   {
     "file": "test/StoreSwitch.t.sol",
@@ -879,7 +879,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Vector2 schema",
-    "gasUsed": 58890
+    "gasUsed": 59169
   },
   {
     "file": "test/Vector2.t.sol",
@@ -891,6 +891,6 @@
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "get Vector2 record",
-    "gasUsed": 4403
+    "gasUsed": 4549
   }
 ]

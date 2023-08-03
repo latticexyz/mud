@@ -4,7 +4,8 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
@@ -37,8 +38,8 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   bytes32 targetTableId;
 
   function setUp() public {
-    sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
-    sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
+    sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);
