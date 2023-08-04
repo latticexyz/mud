@@ -15,5 +15,6 @@ import { KeysWithValue, KeysWithValueData } from "./modules/keyswithvalue/tables
 import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
+import { Callers } from "./modules/callers/tables/Callers.sol";
 import { Bool } from "./../test/tables/Bool.sol";
 import { AddressArray } from "./../test/tables/AddressArray.sol";

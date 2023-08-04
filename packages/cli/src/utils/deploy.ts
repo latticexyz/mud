@@ -20,6 +20,8 @@ import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/K
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 import { tableIdToHex } from "@latticexyz/common";
 import { abiTypesToSchema, schemaToHex } from "@latticexyz/protocol-parser";
+import SnapSyncModuleData from "@latticexyz/world/abi/SnapSyncModule.sol/SnapSyncModule.json" assert { type: "json" };
+import CallersModuleData from "@latticexyz/world/abi/CallersModule.sol/CallersModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -135,6 +137,12 @@ export async function deploy(
           SnapSyncModuleData.bytecode,
           disableTxWait,
           "SnapSyncModule"
+        ),
+        CallersModule: deployContract(
+          CallersModuleData.abi,
+          CallersModuleData.bytecode,
+          disableTxWait,
+          "CallersModule"
         ),
       };
 

@@ -19,6 +19,7 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
+import { ICallersSystem } from "./interfaces/ICallersSystem.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
@@ -197,6 +198,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // Allow access if the system is public or the caller has access to the namespace or name
     if (!publicAccess) AccessControl.requireAccess(resourceSelector, msg.sender);
 
+    // Store the caller in a table so we know who the list of callers are
+    bool callerSuccess = false;
+    if (namespace != bytes16("callers")) {
+      (callerSuccess, ) = address(this).call(abi.encodeWithSignature("callers_system_pushCaller(address)", msg.sender));
+    }
+
     // Get system hooks
     address[] memory hooks = SystemHooks.get(resourceSelector);
 
@@ -219,6 +226,11 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     for (uint256 i; i < hooks.length; i++) {
       ISystemHook hook = ISystemHook(hooks[i]);
       hook.onAfterCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    }
+
+    if (callerSuccess) {
+      (callerSuccess, ) = address(this).call(abi.encodeWithSignature("callers_system_popCaller()"));
+      require(callerSuccess, "Failed to pop caller when already pushed caller");
     }
   }
 
