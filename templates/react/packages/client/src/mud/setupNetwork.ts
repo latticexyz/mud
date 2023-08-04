@@ -7,6 +7,7 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
+import { mudTransportObserver } from "@latticexyz/common";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -14,9 +15,10 @@ export async function setupNetwork() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
 
+  const transport = mudTransportObserver(fallback([webSocket(), http()]));
   const publicClient = createPublicClient({
     chain: networkConfig.chain,
-    transport: fallback([webSocket(), http()]),
+    transport,
     pollingInterval: 1000,
   });
 
@@ -33,7 +35,7 @@ export async function setupNetwork() {
   const burnerWalletClient = createWalletClient({
     account: burnerAccount,
     chain: networkConfig.chain,
-    transport: fallback([webSocket(), http()]),
+    transport,
     pollingInterval: 1000,
   });
 
