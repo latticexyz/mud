@@ -181,6 +181,6 @@ const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
 });
 
 if (syncProgress.step === SyncStep.LIVE) {
- // we're live!
+  // we're live!
 }
 ```
