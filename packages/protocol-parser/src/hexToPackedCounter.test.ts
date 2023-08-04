@@ -3,7 +3,7 @@ import { hexToPackedCounter } from "./hexToPackedCounter";
 
 describe("hexToPackedCounter", () => {
   it("decodes hex data to packed counter", () => {
-    expect(hexToPackedCounter("0x0000000000008000000000200000000020000000004000000000000000000000"))
+    expect(hexToPackedCounter("0x0000000000000000000000000000400000000020000000002000000000000080"))
       .toMatchInlineSnapshot(`
       {
         "fieldByteLengths": [
@@ -26,9 +26,9 @@ describe("hexToPackedCounter", () => {
 
   it("throws if packed counter total byte length doesn't match summed byte length of fields", () => {
     expect(() =>
-      hexToPackedCounter("0x0000000000004000000000200000000020000000004000000000000000000000")
+      hexToPackedCounter("0x0000000000000000000000000000400000000020000000002000000000000040")
     ).toThrowErrorMatchingInlineSnapshot(
-      '"PackedCounter \\"0x0000000000004000000000200000000020000000004000000000000000000000\\" total bytes length (64) did not match the summed length of all field byte lengths (128)."'
+      '"PackedCounter \\"0x0000000000000000000000000000400000000020000000002000000000000040\\" total bytes length (64) did not match the summed length of all field byte lengths (128)."'
     );
   });
 });
