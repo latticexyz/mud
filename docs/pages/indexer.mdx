@@ -1,6 +1,6 @@
-# Indexer
+# The MUD Indexer
 
-Indexer is an off-chain indexer for on-chain applications build with MUD.
+The MUD Iidexer is an off-chain indexer for on-chain applications build with MUD.
 
 ## Why an off-chain indexer?
 
@@ -33,7 +33,7 @@ They are written under the assumption you are using `anvil` for your test chain,
    pnpm start:local
    ```
 
-1. Run this command as a sanity check to verify Indexer is working correctly:
+1. Run this command as a sanity check to verify the indexer is working correctly:
 
    ```sh
    curl 'http://localhost:3001/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
@@ -45,10 +45,10 @@ They are written under the assumption you are using `anvil` for your test chain,
 
 ### Using HTTP
 
-The Indexer is built on top of [tRPC](https://trpc.io/), which is primarily designed to be used between [TypeScript](https://www.typescriptlang.org/) programs.
+The indexer is built on top of [tRPC](https://trpc.io/), which is primarily designed to be used between [TypeScript](https://www.typescriptlang.org/) programs.
 As a result, the data format is a bit more complicated than REST APIs.
 
-For queries, the Indexer expects to get two parameters in a [query string](https://en.wikipedia.org/wiki/Query_string):
+For queries, the indexer expects to get two parameters in a [query string](https://en.wikipedia.org/wiki/Query_string):
 
 - `batch`, the batch identifier.
   This parameter can contain any string, as long as it is present.
@@ -73,7 +73,7 @@ For queries, the Indexer expects to get two parameters in a [query string](https
   An HTTP request can include multiple queries, so the query object includes a numbered key (or numbered keys) with the actual queries.
   Also, in the future other formats than JSON might be supported, so each query specifies what format it uses.
 
-The one type of query currently supported is `findAll`. It gives you all the information stored on a specific world in Indexer.
+The one type of query currently supported is `findAll`. It gives you all the information stored on the specific world in the indexer.
 The query is available at path `/findAll` and have two parameters:
 
 - `chainId`: The chain ID of the blockchain to query.
@@ -128,6 +128,6 @@ To understand the result, it is easiest to look at it inside Node.
    counterTable.records[0].value.value;
    ```
 
-### Using Indexer with TypeScript
+### Using the indexer with TypeScript
 
 **Coming soon**
