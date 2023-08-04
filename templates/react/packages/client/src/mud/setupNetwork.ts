@@ -1,5 +1,17 @@
-import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  getContract,
+  Hex,
+  parseEther,
+  getAddress,
+  keccak256,
+  serializeTransaction,
+} from "viem";
+import { privateKeyToAccount, signMessage, signTypedData, toAccount, sign } from "viem/accounts";
 import { createFaucetService } from "@latticexyz/network";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -32,8 +44,31 @@ export async function setupNetwork() {
   });
 
   const burnerAccount = privateKeyToAccount(networkConfig.privateKey as Hex);
+  const privateKey = networkConfig.privateKey as Hex;
+  const account = toAccount({
+    // address: getAddress(privateKey),
+    address: burnerAccount.address,
+    async signMessage({ message }) {
+      return signMessage({ message, privateKey });
+    },
+    async signTransaction(transaction, serializer) {
+      transaction.maxFeePerGas = 0n;
+      transaction.maxPriorityFeePerGas = 0n;
+      const serialize = serializer?.serializer ?? serializeTransaction;
+      const signature = await sign({
+        hash: keccak256(serialize(transaction)),
+        privateKey,
+      });
+      return serialize(transaction, signature);
+      // return signTransaction({ privateKey, transaction, serializer });
+    },
+    async signTypedData(typedData) {
+      return signTypedData({ ...typedData, privateKey });
+    },
+  });
+
   const burnerWalletClient = createWalletClient({
-    account: burnerAccount,
+    account: account as any,
     chain: networkConfig.chain,
     transport,
     pollingInterval: 1000,

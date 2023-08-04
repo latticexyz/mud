@@ -11,16 +11,16 @@ export function mudTransportObserver<TTransport extends Transport>(transport: TT
         if (req.method === "eth_estimateGas" && req.params instanceof Array) {
           req.params = req.params.map((params) => ({
             ...params,
-            maxFeePerGas: "0x0",
-            maxPriorityFeePerGas: "0x0",
+            // maxFeePerGas: "0x0",
+            // maxPriorityFeePerGas: "0x0",
           }));
         } else if (req.method === "eth_sendRawTransaction" && req.params instanceof Array) {
           req.params = req.params.map((hex) => {
             const { r, s, v, ...tx } = parseTransaction(hex);
             console.log("parsed tx", tx);
-            tx.maxFeePerGas = 0n;
-            tx.maxPriorityFeePerGas = 0n;
-            tx.nonce = tx.nonce != null ? tx.nonce + 3 : undefined;
+            // tx.maxFeePerGas = 0n;
+            // tx.maxPriorityFeePerGas = 0n;
+            // tx.nonce = tx.nonce != null ? tx.nonce + 3 : undefined;
             // delete tx.nonce;
             // delete tx.maxFeePerGas;
             // delete tx.maxPriorityFeePerGas;
