@@ -25,8 +25,6 @@ import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
 
-import { console } from "forge-std/console.sol";
-
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
 
