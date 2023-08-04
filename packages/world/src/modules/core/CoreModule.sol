@@ -15,6 +15,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
+import { Callers } from "../../tables/Callers.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
@@ -64,6 +65,7 @@ contract CoreModule is IModule, WorldContext {
     SystemHooks.register();
     SystemRegistry.register();
     ResourceType.register();
+    Callers.register();
 
     ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
     ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
