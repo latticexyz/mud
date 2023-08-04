@@ -9,12 +9,16 @@ using PackedCounterInstance for PackedCounter global;
 
 uint256 constant ACC_BYTES = 7 * 8;
 uint256 constant VAL_BYTES = 5 * 8;
+uint256 constant MAX_VAL = type(uint40).max;
 
 /**
  * Static functions for PackedCounter
+ * The called must ensure that the value arguments are <= MAX_VAL
  */
 library PackedCounterLib {
-  function pack(uint40 a) internal pure returns (PackedCounter) {
+  error PackedCounter_InvalidLength(uint256 length);
+
+  function pack(uint256 a) internal pure returns (PackedCounter) {
     uint256 packedCounter;
     unchecked {
       packedCounter = a;
@@ -23,7 +27,7 @@ library PackedCounterLib {
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b) internal pure returns (PackedCounter) {
+  function pack(uint256 a, uint256 b) internal pure returns (PackedCounter) {
     uint256 packedCounter;
     unchecked {
       packedCounter = a + b;
@@ -33,7 +37,7 @@ library PackedCounterLib {
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b, uint40 c) internal pure returns (PackedCounter) {
+  function pack(uint256 a, uint256 b, uint256 c) internal pure returns (PackedCounter) {
     uint256 packedCounter;
     unchecked {
       packedCounter = a + b + c;
@@ -44,7 +48,7 @@ library PackedCounterLib {
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b, uint40 c, uint40 d) internal pure returns (PackedCounter) {
+  function pack(uint256 a, uint256 b, uint256 c, uint256 d) internal pure returns (PackedCounter) {
     uint256 packedCounter;
     unchecked {
       packedCounter = a + b + c + d;
@@ -56,7 +60,7 @@ library PackedCounterLib {
     return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b, uint40 c, uint40 d, uint40 e) internal pure returns (PackedCounter) {
+  function pack(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e) internal pure returns (PackedCounter) {
     uint256 packedCounter;
     unchecked {
       packedCounter = a + b + c + d + e;
@@ -67,6 +71,12 @@ library PackedCounterLib {
       packedCounter |= (uint256(e) << (ACC_BYTES + VAL_BYTES * 4));
     }
     return PackedCounter.wrap(bytes32(packedCounter));
+  }
+
+  function requireValidLength(uint256 length) internal pure {
+    if (length > MAX_VAL) {
+      revert PackedCounter_InvalidLength(length);
+    }
   }
 }
 

@@ -5,6 +5,9 @@ import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 
+uint256 constant ACC_BYTES = 7 * 8;
+uint256 constant MAX_VAL = type(uint40).max;
+
 contract PackedCounterTest is Test, GasReporter {
   function testPack1() public {
     PackedCounter packedCounter = PackedCounterLib.pack(4);
@@ -84,21 +87,22 @@ contract PackedCounterTest is Test, GasReporter {
     uint8[] memory a3 = new uint8[](3);
     int128[] memory a4 = new int128[](4);
 
+    startGasReport("requireValidLength");
+    unchecked {
+      PackedCounterLib.requireValidLength(a1.length * 32);
+    }
+    endGasReport();
+
     startGasReport("pack 1 length into PackedCounter");
     unchecked {
-      packedCounter = PackedCounterLib.pack(uint40(a1.length * 32));
+      packedCounter = PackedCounterLib.pack(a1.length * 32);
     }
     endGasReport();
     assertEq(packedCounter.total(), 1 * 32);
 
     startGasReport("pack 4 lengths into PackedCounter");
     unchecked {
-      packedCounter = PackedCounterLib.pack(
-        uint40(a1.length * 32),
-        uint40(a2.length * 20),
-        uint40(a3.length * 1),
-        uint40(a4.length * 16)
-      );
+      packedCounter = PackedCounterLib.pack(a1.length * 32, a2.length * 20, a3.length * 1, a4.length * 16);
     }
     endGasReport();
 

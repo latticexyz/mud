@@ -75,7 +75,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 2047
+    "gasUsed": 2041
   },
   {
     "file": "test/Gas.t.sol",
@@ -261,7 +261,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "set record in Mixed",
-    "gasUsed": 108796
+    "gasUsed": 108790
   },
   {
     "file": "test/Mixed.t.sol",
@@ -278,14 +278,20 @@
   {
     "file": "test/PackedCounter.t.sol",
     "test": "testGas",
+    "name": "requireValidLength",
+    "gasUsed": 67
+  },
+  {
+    "file": "test/PackedCounter.t.sol",
+    "test": "testGas",
     "name": "pack 1 length into PackedCounter",
-    "gasUsed": 68
+    "gasUsed": 35
   },
   {
     "file": "test/PackedCounter.t.sol",
     "test": "testGas",
     "name": "pack 4 lengths into PackedCounter",
-    "gasUsed": 199
+    "gasUsed": 169
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -753,7 +759,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetMetadata",
     "name": "StoreCore: set table metadata",
-    "gasUsed": 249985
+    "gasUsed": 249979
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -771,7 +777,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "set record in StoreMetadataTable",
-    "gasUsed": 248449
+    "gasUsed": 248443
   },
   {
     "file": "test/StoreMetadata.t.sol",
