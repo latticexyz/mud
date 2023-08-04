@@ -96,7 +96,7 @@ library PackedCounterInstance {
    * Decode the counter at the given index
    * (5 bytes per counter after the first 7 bytes)
    */
-  function atIndex(PackedCounter packedCounter, uint256 index) internal pure returns (uint256) {
+  function atIndex(PackedCounter packedCounter, uint8 index) internal pure returns (uint256) {
     unchecked {
       return uint40(uint256(PackedCounter.unwrap(packedCounter) >> (ACC_BYTES + VAL_BYTES * index)));
     }
@@ -107,14 +107,14 @@ library PackedCounterInstance {
    */
   function setAtIndex(
     PackedCounter packedCounter,
-    uint256 index,
+    uint8 index,
     uint256 newValueAtIndex
   ) internal pure returns (PackedCounter) {
     uint256 rawPackedCounter = uint256(PackedCounter.unwrap(packedCounter));
 
     // Get current lengths (total and at index)
     uint256 accumulator = total(packedCounter);
-    uint256 currentValueAtIndex = atIndex(packedCounter, uint8(index));
+    uint256 currentValueAtIndex = atIndex(packedCounter, index);
 
     // Compute the difference and update the total value
     if (newValueAtIndex >= currentValueAtIndex) {

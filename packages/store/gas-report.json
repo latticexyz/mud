@@ -303,7 +303,7 @@
     "file": "test/PackedCounter.t.sol",
     "test": "testSetAtIndex",
     "name": "set value at index of PackedCounter",
-    "gasUsed": 532
+    "gasUsed": 538
   },
   {
     "file": "test/Schema.t.sol",
