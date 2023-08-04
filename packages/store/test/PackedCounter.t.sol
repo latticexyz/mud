@@ -87,12 +87,6 @@ contract PackedCounterTest is Test, GasReporter {
     uint8[] memory a3 = new uint8[](3);
     int128[] memory a4 = new int128[](4);
 
-    startGasReport("requireValidLength");
-    unchecked {
-      PackedCounterLib.requireValidLength(a1.length * 32);
-    }
-    endGasReport();
-
     startGasReport("pack 1 length into PackedCounter");
     unchecked {
       packedCounter = PackedCounterLib.pack(a1.length * 32);
