@@ -47,15 +47,20 @@ library SchemaLib {
       if (staticByteLength > 0) {
         // Revert if we have seen a dynamic field before, but now we see a static field
         if (hasDynamicFields) revert SchemaLib_StaticTypeAfterDynamicType();
-        staticFields++;
+        // (safe because of the initial _schema.length check)
+        unchecked {
+          staticFields++;
+        }
       } else {
         // Flag that we have seen a dynamic field
         hasDynamicFields = true;
       }
 
-      length += staticByteLength;
-      schema = Bytes.setBytes1(schema, i + 4, bytes1(uint8(_schema[i])));
       unchecked {
+        // (safe because 28 (max _schema.length) * 32 (max static length) < 2**16)
+        length += staticByteLength;
+        // (safe because of the initial _schema.length check)
+        schema = Bytes.setBytes1(schema, i + 4, bytes1(uint8(_schema[i])));
         i++;
       }
     }
