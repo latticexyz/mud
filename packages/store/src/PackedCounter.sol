@@ -13,7 +13,7 @@ uint256 constant MAX_VAL = type(uint40).max;
 
 /**
  * Static functions for PackedCounter
- * The called must ensure that the value arguments are <= MAX_VAL
+ * The caller must ensure that the value arguments are <= MAX_VAL
  */
 library PackedCounterLib {
   error PackedCounter_InvalidLength(uint256 length);
@@ -110,6 +110,10 @@ library PackedCounterInstance {
     uint8 index,
     uint256 newValueAtIndex
   ) internal pure returns (PackedCounter) {
+    if (newValueAtIndex > MAX_VAL) {
+      revert PackedCounterLib.PackedCounter_InvalidLength(newValueAtIndex);
+    }
+
     uint256 rawPackedCounter = uint256(PackedCounter.unwrap(packedCounter));
 
     // Get current lengths (total and at index)
