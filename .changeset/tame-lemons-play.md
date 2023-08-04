@@ -26,7 +26,7 @@ As you migrate, you may find some features removed or not included by default. P
 
 3. In `getNetworkConfig.ts`, we'll remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
 
-   ```diff 
+   ```diff
    - export async function getNetworkConfig(): Promise<NetworkConfig> {
    + export async function getNetworkConfig() {
    ```
@@ -48,7 +48,7 @@ As you migrate, you may find some features removed or not included by default. P
    + };
    ```
 
-5. In `setupNetwork.ts`, replace `setupMUDV2Network` with `syncToRecs`.
+4. In `setupNetwork.ts`, replace `setupMUDV2Network` with `syncToRecs`.
 
    ```diff
    - import { setupMUDV2Network } from "@latticexyz/std-client";
@@ -57,12 +57,12 @@ As you migrate, you may find some features removed or not included by default. P
    + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
    + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
    ```
-   
+
    ```diff
    - const result = await setupMUDV2Network({
    -   ...
    - });
-   
+
    + const publicClient = createPublicClient({
    +   chain: networkConfig.chain,
    +   transport: mudTransportObserver(fallback([webSocket(), http()])),
@@ -129,7 +129,7 @@ As you migrate, you may find some features removed or not included by default. P
    + };
    ```
 
-6. Update `createSystemCalls` with the new return type of `setupNetwork`.
+5. Update `createSystemCalls` with the new return type of `setupNetwork`.
 
    ```diff
      export function createSystemCalls(
@@ -146,18 +146,18 @@ As you migrate, you may find some features removed or not included by default. P
         };
    ```
 
-7. (optional) If you still need a clock, you can create it with:
+6. (optional) If you still need a clock, you can create it with:
 
    ```ts
    import { map, filter } from "rxjs";
    import { createClock } from "@latticexyz/network";
 
    const clock = createClock({
-      period: 1000,
-      initialTime: 0,
-      syncInterval: 5000,
-    });
-   
+     period: 1000,
+     initialTime: 0,
+     syncInterval: 5000,
+   });
+
    world.registerDisposer(() => clock.dispose());
 
    latestBlock$
