@@ -117,17 +117,22 @@ library PackedCounterInstance {
     uint256 currentValueAtIndex = atIndex(packedCounter, index);
 
     // Compute the difference and update the total value
-    if (newValueAtIndex >= currentValueAtIndex) {
-      accumulator += newValueAtIndex - currentValueAtIndex;
-    } else {
-      accumulator -= currentValueAtIndex - newValueAtIndex;
+    unchecked {
+      if (newValueAtIndex >= currentValueAtIndex) {
+        accumulator += newValueAtIndex - currentValueAtIndex;
+      } else {
+        accumulator -= currentValueAtIndex - newValueAtIndex;
+      }
     }
 
     // Set the new accumulated value and value at index
     // (7 bytes total length, 5 bytes per dynamic schema)
-    rawPackedCounter = (rawPackedCounter & ~uint256(type(uint56).max)) | accumulator;
-    uint256 offset = ACC_BYTES + VAL_BYTES * index;
+    uint256 offset;
+    unchecked {
+      offset = ACC_BYTES + VAL_BYTES * index;
+    }
     uint256 mask = uint256(type(uint40).max) << offset;
+    rawPackedCounter = (rawPackedCounter & ~uint256(type(uint56).max)) | accumulator;
     rawPackedCounter = (rawPackedCounter & ~mask) | ((newValueAtIndex << offset) & mask);
 
     return PackedCounter.wrap(bytes32(rawPackedCounter));
