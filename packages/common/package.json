@@ -55,12 +55,14 @@
     "@latticexyz/schema-type": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
     "chalk": "^5.2.0",
+    "debug": "^4.3.4",
     "execa": "^7.0.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
     "viem": "1.3.1"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.7",
     "@types/node": "^18.15.11",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
