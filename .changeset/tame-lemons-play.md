@@ -1,0 +1,170 @@
+---
+"@latticexyz/cli": patch
+"@latticexyz/common": minor
+"@latticexyz/create-mud": minor
+"@latticexyz/store-indexer": patch
+---
+
+Templates and examples now use MUD's new sync packages, all built on top of [viem](https://viem.sh/). This greatly speeds up and stabilizes our networking code and improves types throughout.
+
+## Migrate existing apps to new sync packages
+
+As you migrate, you may find some features removed or not included by default. Please [open an issue](https://github.com/latticexyz/mud/issues/new) and let us know if we missed anything.
+
+1. Add `@latticexyz/store-sync` package to your app's `client` package and make sure `viem` is pinned to version `1.3.1` (otherwise you may get type errors)
+
+2. In your `supportedChains.ts`, replace `foundry` chain with our new `mudFoundry` chain.
+
+   ```diff
+   - import { foundry } from "viem/chains";
+   - import { MUDChain, latticeTestnet } from "@latticexyz/common/chains";
+   + import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+
+   - export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
+   + export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
+   ```
+
+3. In `getNetworkConfig.ts`, we'll remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
+
+   ```diff 
+   - export async function getNetworkConfig(): Promise<NetworkConfig> {
+   + export async function getNetworkConfig() {
+   ```
+
+   ```diff
+     const initialBlockNumber = params.has("initialBlockNumber")
+       ? Number(params.get("initialBlockNumber"))
+   -   : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
+   +   : world?.blockNumber ?? 0n;
+   ```
+
+   ```diff
+   + return {
+   +   privateKey: getBurnerWallet().value,
+   +   chain,
+   +   worldAddress,
+   +   initialBlockNumber,
+   +   faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
+   + };
+   ```
+
+5. In `setupNetwork.ts`, replace `setupMUDV2Network` with `syncToRecs`.
+
+   ```diff
+   - import { setupMUDV2Network } from "@latticexyz/std-client";
+   - import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
+   + import { createFaucetService } from "@latticexyz/network";
+   + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
+   + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+   ```
+   
+   ```diff
+   - const result = await setupMUDV2Network({
+   -   ...
+   - });
+   
+   + const publicClient = createPublicClient({
+   +   chain: networkConfig.chain,
+   +   transport: mudTransportObserver(fallback([webSocket(), http()])),
+   +   pollingInterval: 1000,
+   + });
+
+   + const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+   +   world,
+   +   config: storeConfig,
+   +   address: networkConfig.worldAddress as Hex,
+   +   publicClient,
+   +   components: contractComponents,
+   +   startBlock: BigInt(networkConfig.initialBlockNumber),
+   +   indexerUrl: networkConfig.indexerUrl ?? undefined,
+   + });
+
+   + const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+   + const burnerWalletClient = createWalletClient({
+   +   account: burnerAccount,
+   +   chain: networkConfig.chain,
+   +   transport: mudTransportObserver(fallback([webSocket(), http()])),
+   +   pollingInterval: 1000,
+   + });
+   ```
+
+   ```diff
+     // Request drip from faucet
+   - const signer = result.network.signer.get();
+   - if (networkConfig.faucetServiceUrl && signer) {
+   -   const address = await signer.getAddress();
+   + if (networkConfig.faucetServiceUrl) {
+   +   const address = burnerAccount.address;
+   ```
+
+   ```diff
+     const requestDrip = async () => {
+   -   const balance = await signer.getBalance();
+   +   const balance = await publicClient.getBalance({ address });
+       console.info(`[Dev Faucet]: Player balance -> ${balance}`);
+   -   const lowBalance = balance?.lte(utils.parseEther("1"));
+   +   const lowBalance = balance < parseEther("1");
+   ```
+
+   You can remove the previous ethers `worldContract`, snap sync code, and fast transaction executor.
+
+   The return of `setupNetwork` is a bit different than before, so you may have to do corresponding app changes.
+
+   ```diff
+   + return {
+   +   world,
+   +   components,
+   +   playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+   +   publicClient,
+   +   walletClient: burnerWalletClient,
+   +   latestBlock$,
+   +   blockStorageOperations$,
+   +   waitForTransaction,
+   +   worldContract: getContract({
+   +     address: networkConfig.worldAddress as Hex,
+   +     abi: IWorld__factory.abi,
+   +     publicClient,
+   +     walletClient: burnerWalletClient,
+   +   }),
+   + };
+   ```
+
+6. Update `createSystemCalls` with the new return type of `setupNetwork`.
+
+   ```diff
+     export function createSystemCalls(
+   -   { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
+   +   { worldContract, waitForTransaction }: SetupNetworkResult,
+       { Counter }: ClientComponents
+     ) {
+        const increment = async () => {
+   -      const tx = await worldSend("increment", []);
+   -      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+   +      const tx = await worldContract.write.increment();
+   +      await waitForTransaction(tx);
+          return getComponentValue(Counter, singletonEntity);
+        };
+   ```
+
+7. (optional) If you still need a clock, you can create it with:
+
+   ```ts
+   import { map, filter } from "rxjs";
+   import { createClock } from "@latticexyz/network";
+
+   const clock = createClock({
+      period: 1000,
+      initialTime: 0,
+      syncInterval: 5000,
+    });
+   
+   world.registerDisposer(() => clock.dispose());
+
+   latestBlock$
+     .pipe(
+       map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
+       filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
+       filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+     )
+     .subscribe(clock.update); // Update the local clock
+   ```
