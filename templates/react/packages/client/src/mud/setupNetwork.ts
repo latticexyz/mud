@@ -20,7 +20,7 @@ export async function setupNetwork() {
     pollingInterval: 1000,
   });
 
-  const { components, singletonEntity, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
     world,
     config: storeConfig,
     address: networkConfig.worldAddress as Hex,
@@ -64,7 +64,6 @@ export async function setupNetwork() {
   return {
     world,
     components,
-    singletonEntity,
     playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     publicClient,
     walletClient: burnerWalletClient,
