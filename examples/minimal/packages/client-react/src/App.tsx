@@ -35,8 +35,7 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-          const tx = await worldContract.write.increment({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+          const tx = await worldContract.write.increment();
 
           console.log("increment tx", tx);
           console.log("increment result", await waitForTransaction(tx));
@@ -47,8 +46,7 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-          const tx = await worldContract.write.willRevert({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+          const tx = await worldContract.write.willRevert();
 
           console.log("willRevert tx", tx);
           console.log("willRevert result", await waitForTransaction(tx));
@@ -76,8 +74,7 @@ export const App = () => {
         <form
           onSubmit={async (event) => {
             event.preventDefault();
-            // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-            await worldContract.write.sendMessage([myMessage], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+            await worldContract.write.sendMessage([myMessage]);
             setMyMessage("");
           }}
         >
@@ -97,11 +94,7 @@ export const App = () => {
               key={item + index}
               type="button"
               onClick={async () => {
-                // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-                const tx = await worldContract.write.pickUp([index, index], {
-                  maxFeePerGas: 0n,
-                  maxPriorityFeePerGas: 0n,
-                });
+                const tx = await worldContract.write.pickUp([index, index]);
                 console.log("pick up tx", tx);
               }}
             >

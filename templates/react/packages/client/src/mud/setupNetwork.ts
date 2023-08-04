@@ -14,10 +14,9 @@ export async function setupNetwork() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
 
-  const transport = mudTransportObserver(fallback([webSocket(), http()]));
   const publicClient = createPublicClient({
     chain: networkConfig.chain,
-    transport,
+    transport: mudTransportObserver(fallback([webSocket(), http()])),
     pollingInterval: 1000,
   });
 
@@ -31,11 +30,10 @@ export async function setupNetwork() {
   });
 
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-
   const burnerWalletClient = createWalletClient({
     account: burnerAccount,
     chain: networkConfig.chain,
-    transport,
+    transport: mudTransportObserver(fallback([webSocket(), http()])),
     pollingInterval: 1000,
   });
 

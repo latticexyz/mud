@@ -1,5 +1,4 @@
 import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
 import { createFaucetService } from "@latticexyz/network";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -7,6 +6,7 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
+import { createBurnerAccount, mudTransportObserver } from "@latticexyz/common";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -16,11 +16,11 @@ export async function setupNetwork() {
 
   const publicClient = createPublicClient({
     chain: networkConfig.chain,
-    transport: fallback([webSocket(), http()]),
+    transport: mudTransportObserver(fallback([webSocket(), http()])),
     pollingInterval: 1000,
   });
 
-  const { components, singletonEntity, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
     world,
     config: storeConfig,
     address: networkConfig.worldAddress as Hex,
@@ -30,11 +30,11 @@ export async function setupNetwork() {
     indexerUrl: networkConfig.indexerUrl ?? undefined,
   });
 
-  const burnerAccount = privateKeyToAccount(networkConfig.privateKey as Hex);
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
   const burnerWalletClient = createWalletClient({
     account: burnerAccount,
     chain: networkConfig.chain,
-    transport: fallback([webSocket(), http()]),
+    transport: mudTransportObserver(fallback([webSocket(), http()])),
     pollingInterval: 1000,
   });
 
@@ -65,7 +65,6 @@ export async function setupNetwork() {
   return {
     world,
     components,
-    singletonEntity,
     playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     publicClient,
     walletClient: burnerWalletClient,

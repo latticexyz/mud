@@ -9,8 +9,7 @@ export function createSystemCalls(
   { Position }: ClientComponents
 ) {
   const moveTo = async (x: number, y: number, z: number) => {
-    // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-    const tx = await worldContract.write.move([x, y, z], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+    const tx = await worldContract.write.move([x, y, z]);
     await waitForTransaction(tx);
   };
 

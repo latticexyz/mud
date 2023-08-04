@@ -24,8 +24,7 @@ components.MessageTable.update$.subscribe((update) => {
 // Just for demonstration purposes: we create a global function that can be
 // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
 (window as any).increment = async () => {
-  // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-  const tx = await worldContract.write.increment({ maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+  const tx = await worldContract.write.increment();
 
   console.log("increment tx", tx);
   console.log("increment result", await waitForTransaction(tx));
@@ -46,8 +45,7 @@ components.MessageTable.update$.subscribe((update) => {
 
   input.value = "";
 
-  // TODO: fix anvil issue where accounts can't send txs unless max fee is specified or is funded
-  const tx = await worldContract.write.sendMessage([msg], { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n });
+  const tx = await worldContract.write.sendMessage([msg]);
 
   console.log("sendMessage tx", tx);
   console.log("sendMessage result", await waitForTransaction(tx));
