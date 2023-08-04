@@ -9,7 +9,8 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
@@ -143,7 +144,7 @@ contract WorldTest is Test, GasReporter {
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
+  Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   IBaseWorld world;
 
   bytes32 key;
@@ -182,7 +183,10 @@ contract WorldTest is Test, GasReporter {
     bytes memory value = world.getRecord(StoreCoreInternal.SCHEMA_TABLE, schemaKey);
     assertEq(
       value,
-      abi.encodePacked(SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), SchemaLib.encode(SchemaType.BYTES32))
+      abi.encodePacked(
+        SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32),
+        SchemaEncodeHelper.encode(SchemaType.BYTES32)
+      )
     );
   }
 
@@ -227,7 +231,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterTable() public {
-    Schema schema = SchemaLib.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
+    Schema schema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
     bytes16 namespace = "testNamespace";
     bytes16 table = "testTable";
 
@@ -261,7 +265,7 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "tableName";
     bytes32 tableId = ResourceSelector.from(namespace, name);
 
-    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT8);
+    Schema schema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT8);
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "testField1";
     fieldNames[1] = "testField2";
