@@ -775,13 +775,17 @@ library KeysInTable {
     bytes32[] memory keys3,
     bytes32[] memory keys4
   ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths = PackedCounterLib.pack(
-      uint40(keys0.length * 32),
-      uint40(keys1.length * 32),
-      uint40(keys2.length * 32),
-      uint40(keys3.length * 32),
-      uint40(keys4.length * 32)
-    );
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(
+        keys0.length * 32,
+        keys1.length * 32,
+        keys2.length * 32,
+        keys3.length * 32,
+        keys4.length * 32
+      );
+    }
 
     return
       abi.encodePacked(

@@ -775,13 +775,17 @@ library Dynamics1 {
     address[4] memory staticAddrs,
     bool[5] memory staticBools
   ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths = PackedCounterLib.pack(
-      uint40(staticB32.length * 32),
-      uint40(staticI32.length * 4),
-      uint40(staticU128.length * 16),
-      uint40(staticAddrs.length * 20),
-      uint40(staticBools.length * 1)
-    );
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(
+        staticB32.length * 32,
+        staticI32.length * 4,
+        staticU128.length * 16,
+        staticAddrs.length * 20,
+        staticBools.length * 1
+      );
+    }
 
     return
       abi.encodePacked(

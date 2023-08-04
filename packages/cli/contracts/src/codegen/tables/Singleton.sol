@@ -484,11 +484,11 @@ library Singleton {
     uint32[2] memory v3,
     uint32[1] memory v4
   ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths = PackedCounterLib.pack(
-      uint40(v2.length * 4),
-      uint40(v3.length * 4),
-      uint40(v4.length * 4)
-    );
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(v2.length * 4, v3.length * 4, v4.length * 4);
+    }
 
     return
       abi.encodePacked(

@@ -84,7 +84,11 @@ library MessageTable {
 
   /** Tightly pack full data using this table's schema */
   function encode(string memory value) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths = PackedCounterLib.pack(uint40(bytes(value).length));
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(bytes(value).length);
+    }
 
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
   }

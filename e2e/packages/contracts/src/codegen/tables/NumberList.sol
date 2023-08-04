@@ -170,7 +170,11 @@ library NumberList {
 
   /** Tightly pack full data using this table's schema */
   function encode(uint32[] memory value) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths = PackedCounterLib.pack(uint40(value.length * 4));
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(value.length * 4);
+    }
 
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
   }

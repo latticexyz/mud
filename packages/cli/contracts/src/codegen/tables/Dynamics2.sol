@@ -504,11 +504,11 @@ library Dynamics2 {
 
   /** Tightly pack full data using this table's schema */
   function encode(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths = PackedCounterLib.pack(
-      uint40(u64.length * 8),
-      uint40(bytes(str).length),
-      uint40(bytes(b).length)
-    );
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(u64.length * 8, bytes(str).length, bytes(b).length);
+    }
 
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((u64)), bytes((str)), bytes((b)));
   }
