@@ -168,3 +168,19 @@ As you migrate, you may find some features removed or not included by default. P
      )
      .subscribe(clock.update); // Update the local clock
    ```
+
+If you're using the previous `LoadingState` component, you'll want to migrate to the new `SyncProgress`.
+
+```ts
+import { SyncStep } from "@latticexyz/store-sync/recs";
+
+const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
+  message: "Connecting",
+  percentage: 0,
+  step: SyncStep.INITIALIZE,
+});
+
+if (syncProgress.step === SyncStep.LIVE) {
+ // we're live!
+}
+```
