@@ -33,7 +33,7 @@ describe("sqliteStorage", async () => {
       '"no such table: __mudStoreTables"'
     );
 
-    const storageAdapter = sqliteStorage({ database: db, publicClient });
+    const storageAdapter = await sqliteStorage({ database: db, publicClient });
 
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot("[]");
     expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot("[]");

@@ -20,13 +20,13 @@ import {
 import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
-import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { debug } from "./debug";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
 import { createIndexerClient } from "../trpc-indexer";
+import { singletonEntity } from "./singletonEntity";
 
 type SyncToRecsOptions<
   TConfig extends StoreConfig = StoreConfig,
@@ -39,7 +39,7 @@ type SyncToRecsOptions<
   config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
-  publicClient: PublicClient<Transport, Chain>;
+  publicClient: PublicClient;
   // TODO: generate these from config and return instead?
   components: TComponents;
   startBlock?: bigint;
@@ -59,7 +59,6 @@ type SyncToRecsResult<
 > = {
   // TODO: return publicClient?
   components: TComponents & ReturnType<typeof defineInternalComponents>;
-  singletonEntity: Entity;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -89,15 +88,13 @@ export async function syncToRecs<
     ...defineInternalComponents(world),
   };
 
-  const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
+  world.registerEntity({ id: singletonEntity });
 
   if (indexerUrl != null && initialState == null) {
     try {
       const indexer = createIndexerClient({ url: indexerUrl });
-      initialState = await indexer.findAll.query({
-        chainId: publicClient.chain.id,
-        address,
-      });
+      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+      initialState = await indexer.findAll.query({ chainId, address });
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
     }
@@ -111,6 +108,8 @@ export async function syncToRecs<
       step: SyncStep.SNAPSHOT,
       message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
       percentage: 0,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: initialState.blockNumber,
     });
 
     const componentList = Object.values(components);
@@ -136,6 +135,8 @@ export async function syncToRecs<
             step: SyncStep.SNAPSHOT,
             message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
             percentage: (recordsProcessed / numRecords) * 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: initialState.blockNumber,
           });
         }
       }
@@ -146,6 +147,8 @@ export async function syncToRecs<
       step: SyncStep.SNAPSHOT,
       message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
       percentage: (recordsProcessed / numRecords) * 100,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: initialState.blockNumber,
     });
   }
 
@@ -188,17 +191,21 @@ export async function syncToRecs<
         latestBlockNumber != null &&
         getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
       ) {
-        if (blockNumber < latestBlockNumber) {
+        if (lastBlockNumberProcessed < latestBlockNumber) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.RPC,
             message: `Hydrating from RPC to block ${latestBlockNumber}`,
-            percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
+            percentage: (Number(lastBlockNumberProcessed) / Number(latestBlockNumber)) * 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
           });
         } else {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.LIVE,
             message: `All caught up!`,
             percentage: 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
           });
         }
       }
@@ -230,7 +237,6 @@ export async function syncToRecs<
 
   return {
     components,
-    singletonEntity,
     latestBlock$,
     latestBlockNumber$,
     blockLogs$,
