@@ -100,7 +100,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerFunctionSelector(
     bytes32 resourceSelector,
     string memory systemFunctionName,
-    string memory systemFunctionArguments
+    string memory systemFunctionArguments,
+    bool staticCallOnly
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
     AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
@@ -122,7 +123,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
       ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
       : bytes4(keccak256(systemFunctionSignature));
-    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
+    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector, staticCallOnly);
   }
 
   /**
@@ -135,7 +136,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerRootFunctionSelector(
     bytes32 resourceSelector,
     bytes4 worldFunctionSelector,
-    bytes4 systemFunctionSelector
+    bytes4 systemFunctionSelector,
+    bool staticCallOnly
   ) public returns (bytes4) {
     // Require the caller to own the root namespace
     AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, _msgSender());
@@ -146,7 +148,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     if (existingResourceSelector != 0) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
+    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector, staticCallOnly);
 
     return worldFunctionSelector;
   }

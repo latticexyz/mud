@@ -21,6 +21,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "StoreCore_NotDynamicField",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "bytes32",

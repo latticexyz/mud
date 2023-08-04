@@ -19,7 +19,7 @@ interface IWorldCall {
    * Call the system at the given resource selector (namespace + name)
    * If the system is not public, the caller must have access to the namespace or name.
    */
-  function call(bytes32 resourceSelector, bytes memory funcSelectorAndArgs) external payable returns (bytes memory);
+  function call(bytes32 resourceSelector, bytes memory funcSelectorAndArgs, bool staticCallOnly) external payable returns (bytes memory);
 }
 
 /**

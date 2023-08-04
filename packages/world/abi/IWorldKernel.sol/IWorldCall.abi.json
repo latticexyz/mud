@@ -10,6 +10,11 @@
         "internalType": "bytes",
         "name": "funcSelectorAndArgs",
         "type": "bytes"
+      },
+      {
+        "internalType": "bool",
+        "name": "staticCallOnly",
+        "type": "bool"
       }
     ],
     "name": "call",

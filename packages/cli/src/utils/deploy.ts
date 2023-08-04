@@ -251,7 +251,7 @@ export async function deploy(
           const isRoot = useNamespace === "";
           // Using Promise.all to avoid blocking on async calls
           await Promise.all(
-            functionSignatures.map(async ({ functionName, functionArgs }) => {
+            functionSignatures.map(async ({ functionName, functionArgs, staticCallOnly }) => {
               const functionSignature = isRoot
                 ? functionName + functionArgs
                 : `${useNamespace}_${name}_${functionName}${functionArgs}`;
@@ -260,21 +260,21 @@ export async function deploy(
               if (isRoot) {
                 const worldFunctionSelector = toFunctionSelector(
                   functionSignature === ""
-                    ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
-                    : { functionName, functionArgs }
+                    ? { functionName: systemName, functionArgs, staticCallOnly } // Register the system's fallback function as `<systemName>(<args>)`
+                    : { functionName, functionArgs, staticCallOnly }
                 );
-                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs, staticCallOnly });
                 await fastTxExecute(
                   WorldContract,
                   "registerRootFunctionSelector",
-                  [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector],
+                  [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector, staticCallOnly],
                   confirmations
                 );
               } else {
                 await fastTxExecute(
                   WorldContract,
                   "registerFunctionSelector",
-                  [tableIdToHex(namespace, name), functionName, functionArgs],
+                  [tableIdToHex(namespace, name), functionName, functionArgs, staticCallOnly],
                   confirmations
                 );
               }
@@ -501,11 +501,13 @@ export async function deploy(
     return abi
       .filter((item) => ["fallback", "function"].includes(item.type))
       .map((item) => {
-        if (item.type === "fallback") return { functionName: "", functionArgs: "" };
+        const staticCallOnly = item.stateMutability === "view" || item.stateMutability === "pure";
+        if (item.type === "fallback") return { functionName: "", functionArgs: "", staticCallOnly: staticCallOnly };
 
         return {
           functionName: item.name,
           functionArgs: parseComponents(item.inputs),
+          staticCallOnly: staticCallOnly,
         };
       });
   }
@@ -652,6 +654,7 @@ function toResourceSelector(namespace: string, file: string): Uint8Array {
 interface FunctionSignature {
   functionName: string;
   functionArgs: string;
+  staticCallOnly: boolean;
 }
 
 // TODO: move this to utils as soon as utils are usable inside cli

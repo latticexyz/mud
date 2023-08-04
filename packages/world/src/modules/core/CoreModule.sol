@@ -123,7 +123,8 @@ contract CoreModule is IModule, WorldContext {
           WorldRegistrationSystem.registerRootFunctionSelector.selector,
           ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
           functionSelectors[i],
-          functionSelectors[i]
+          functionSelectors[i],
+          false
         )
       });
     }

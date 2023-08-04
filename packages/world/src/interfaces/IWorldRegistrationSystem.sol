@@ -16,12 +16,14 @@ interface IWorldRegistrationSystem {
   function registerFunctionSelector(
     bytes32 resourceSelector,
     string memory systemFunctionName,
-    string memory systemFunctionArguments
+    string memory systemFunctionArguments,
+    bool staticCallOnly
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerRootFunctionSelector(
     bytes32 resourceSelector,
     bytes4 worldFunctionSelector,
-    bytes4 systemFunctionSelector
+    bytes4 systemFunctionSelector,
+    bool staticCallOnly
   ) external returns (bytes4);
 }

@@ -177,6 +177,11 @@
         "internalType": "string",
         "name": "systemFunctionArguments",
         "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "staticCallOnly",
+        "type": "bool"
       }
     ],
     "name": "registerFunctionSelector",
@@ -219,6 +224,11 @@
         "internalType": "bytes4",
         "name": "systemFunctionSelector",
         "type": "bytes4"
+      },
+      {
+        "internalType": "bool",
+        "name": "staticCallOnly",
+        "type": "bool"
       }
     ],
     "name": "registerRootFunctionSelector",
