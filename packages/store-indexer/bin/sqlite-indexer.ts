@@ -27,8 +27,6 @@ const env = z
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     PORT: z.coerce.number().positive().default(3001),
     SQLITE_FILENAME: z.string().default("indexer.db"),
-    RPC_HTTP_URL: z.string().optional(),
-    RPC_WS_URL: z.string().optional(),
   })
   .parse(process.env, {
     errorMap: (issue) => ({
