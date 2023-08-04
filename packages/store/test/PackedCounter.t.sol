@@ -1,12 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Test, console } from "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
-
-uint256 constant ACC_BYTES = 7 * 8;
-uint256 constant MAX_VAL = type(uint40).max;
 
 contract PackedCounterTest is Test, GasReporter {
   function testPack1() public {
