@@ -17,10 +17,12 @@ export function hexToPackedCounter(data: Hex): {
   if (data.length !== 66) {
     throw new InvalidHexLengthForPackedCounterError(data);
   }
-  const totalByteLength = decodeStaticField("uint56", sliceHex(data, 32 - 7, 32));
 
+  const totalByteLength = decodeStaticField("uint56", sliceHex(data, 32 - 7, 32));
   // TODO: use schema to make sure we only parse as many as we need (rather than zeroes at the end)?
-  const fieldByteLengths = [...decodeDynamicField("uint40[]", sliceHex(data, 0, 32 - 7))].reverse();
+  const reversedFieldByteLengths = decodeDynamicField("uint40[]", sliceHex(data, 0, 32 - 7));
+  // Reverse the lengths
+  const fieldByteLengths = Object.freeze([...reversedFieldByteLengths].reverse());
 
   const summedLength = BigInt(fieldByteLengths.reduce((total, length) => total + length, 0));
   if (summedLength !== totalByteLength) {
