@@ -4,13 +4,12 @@ import { LoadingBar } from "./LoadingBar";
 import { BootScreen } from "./BootScreen";
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "../../store";
-import { SyncStep } from "@latticexyz/store-sync/recs";
+import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
 
 export const LoadingScreen = () => {
   const {
     networkLayer: {
       components: { SyncProgress },
-      singletonEntity,
     },
   } = useMUD();
 
@@ -18,6 +17,8 @@ export const LoadingScreen = () => {
     message: "Connecting",
     percentage: 0,
     step: SyncStep.INITIALIZE,
+    latestBlockNumber: 0n,
+    lastBlockNumberProcessed: 0n,
   });
 
   if (syncProgress.step === SyncStep.LIVE) {
