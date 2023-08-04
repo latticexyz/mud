@@ -1,17 +1,4 @@
-import {
-  createPublicClient,
-  fallback,
-  webSocket,
-  http,
-  createWalletClient,
-  getContract,
-  Hex,
-  parseEther,
-  getAddress,
-  keccak256,
-  serializeTransaction,
-} from "viem";
-import { privateKeyToAccount, signMessage, signTypedData, toAccount, sign } from "viem/accounts";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
 import { createFaucetService } from "@latticexyz/network";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -19,7 +6,7 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
-import { mudTransportObserver } from "@latticexyz/common";
+import { createBurnerAccount, mudTransportObserver } from "@latticexyz/common";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -43,32 +30,10 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });
 
-  const burnerAccount = privateKeyToAccount(networkConfig.privateKey as Hex);
-  const privateKey = networkConfig.privateKey as Hex;
-  const account = toAccount({
-    // address: getAddress(privateKey),
-    address: burnerAccount.address,
-    async signMessage({ message }) {
-      return signMessage({ message, privateKey });
-    },
-    async signTransaction(transaction, serializer) {
-      transaction.maxFeePerGas = 0n;
-      transaction.maxPriorityFeePerGas = 0n;
-      const serialize = serializer?.serializer ?? serializeTransaction;
-      const signature = await sign({
-        hash: keccak256(serialize(transaction)),
-        privateKey,
-      });
-      return serialize(transaction, signature);
-      // return signTransaction({ privateKey, transaction, serializer });
-    },
-    async signTypedData(typedData) {
-      return signTypedData({ ...typedData, privateKey });
-    },
-  });
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
 
   const burnerWalletClient = createWalletClient({
-    account: account as any,
+    account: burnerAccount,
     chain: networkConfig.chain,
     transport,
     pollingInterval: 1000,
