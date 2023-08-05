@@ -42,13 +42,17 @@ export const decodeData = (schema: Schema, hexData: string): Record<number, any>
     // keep in sync with PackedCounter.sol
     const packedCounterAccumulatorType = SchemaType.UINT56;
     const packedCounterCounterType = SchemaType.UINT40;
-    const dynamicDataLength = decodeStaticField(packedCounterAccumulatorType, dynamicDataLayout, 0) as bigint;
+    const dynamicDataLength = decodeStaticField(
+      packedCounterAccumulatorType,
+      dynamicDataLayout,
+      32 - getStaticByteLength(packedCounterAccumulatorType)
+    ) as bigint;
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = decodeStaticField(
         packedCounterCounterType,
         dynamicDataLayout,
-        getStaticByteLength(packedCounterAccumulatorType) + i * getStaticByteLength(packedCounterCounterType)
+        32 - getStaticByteLength(packedCounterAccumulatorType) - (i + 1) * getStaticByteLength(packedCounterCounterType)
       ) as number;
       const value = decodeDynamicField(
         fieldType as DynamicSchemaType,
