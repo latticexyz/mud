@@ -9,6 +9,7 @@
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
     "@latticexyz/network": "link:../../../packages/network",
+    "@latticexyz/protocol-parser": "link:../../../packages/protocol-parser",
     "@latticexyz/schema-type": "link:../../../packages/schema-type",
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/utils": "link:../../../packages/utils",

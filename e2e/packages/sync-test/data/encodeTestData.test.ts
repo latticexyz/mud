@@ -13,4 +13,15 @@ describe("encodeTestData", () => {
       ],
     });
   });
+
+  it("should encode number arrays", () => {
+    expect(encodeTestData({ NumberList: [{ key: {}, value: { value: [1, 2, 3] } }] })).toStrictEqual({
+      NumberList: [
+        {
+          key: [],
+          value: "0x0000000000000c000000000c0000000000000000000000000000000000000000000000010000000200000003",
+        },
+      ],
+    });
+  });
 });

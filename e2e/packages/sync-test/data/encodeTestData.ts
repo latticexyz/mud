@@ -1,6 +1,6 @@
 import { mapObject } from "@latticexyz/utils";
 import { Data, EncodedData } from "./types";
-import { encodeAbiParameters, encodePacked } from "viem";
+import { abiTypesToSchema, encodeRecord, encodeKeyTuple } from "@latticexyz/protocol-parser";
 import config from "../../contracts/mud.config";
 
 /**
@@ -9,12 +9,16 @@ import config from "../../contracts/mud.config";
 export function encodeTestData(testData: Data) {
   return mapObject(testData, (records, table) =>
     records
-      ? records.map((record) => ({
-          key: Object.entries(record.key).map(([keyName, keyValue]) => {
-            return encodeAbiParameters([{ type: config.tables[table].keySchema[keyName] }], [keyValue]);
-          }),
-          value: encodePacked(Object.values(config.tables[table].schema), Object.values(record.value)),
-        }))
+      ? records.map((record) => {
+          const valueSchema = abiTypesToSchema(Object.values(config.tables[table].schema));
+          const keySchema = abiTypesToSchema(Object.values(config.tables[table].keySchema));
+          const value = encodeRecord(valueSchema, Object.values(record.value));
+          const key = encodeKeyTuple(keySchema, Object.values(record.key));
+          return {
+            key,
+            value,
+          };
+        })
       : undefined
   ) as EncodedData<typeof testData>;
 }
