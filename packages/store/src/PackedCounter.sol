@@ -11,8 +11,6 @@ uint256 constant ACC_BYTES = 7 * 8;
 uint256 constant VAL_BYTES = 5 * 8;
 uint256 constant MAX_VAL = type(uint40).max;
 
-error PackedCounter_InvalidLength(uint256 length);
-
 /**
  * Static functions for PackedCounter
  * The caller must ensure that the value arguments are <= MAX_VAL
@@ -78,6 +76,8 @@ library PackedCounterLib {
  * Instance functions for PackedCounter
  */
 library PackedCounterInstance {
+  error PackedCounter_InvalidLength(uint256 length);
+
   /**
    * Decode the accumulated counter
    * (first 7 bytes of packed counter)
