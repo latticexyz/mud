@@ -42,7 +42,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedFieldName,
       ])}) internal {
         ${_keyTupleDefinition}
-        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeField(field)});
+        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)});
       }
     `
     );
@@ -148,7 +148,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
   return result;
 }
 
-export function renderEncodeField(field: RenderField) {
+export function renderEncodeFieldSingle(field: RenderField) {
   let func;
   if (field.arrayElement) {
     func = "EncodeArray.encode";
@@ -190,7 +190,7 @@ function fieldPortionData(field: RenderField) {
     return {
       typeWithLocation: field.arrayElement.typeWithLocation,
       name: "_element",
-      encoded: renderEncodeField(elementFieldData),
+      encoded: renderEncodeFieldSingle(elementFieldData),
       decoded: renderDecodeFieldSingle(elementFieldData),
       title: "an element",
       elementLength: field.arrayElement.staticByteLength,
@@ -201,7 +201,7 @@ function fieldPortionData(field: RenderField) {
     return {
       typeWithLocation: `${field.typeId} memory`,
       name,
-      encoded: renderEncodeField(elementFieldData),
+      encoded: renderEncodeFieldSingle(elementFieldData),
       decoded: renderDecodeFieldSingle(elementFieldData),
       title: "a slice",
       elementLength: 1,
