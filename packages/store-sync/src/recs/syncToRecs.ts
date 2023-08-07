@@ -95,6 +95,7 @@ export async function syncToRecs<
       const indexer = createIndexerClient({ url: indexerUrl });
       const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
       initialState = await indexer.findAll.query({ chainId, address });
+      console.log("got initial state", initialState);
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
       // additionally log to console for Playwright
