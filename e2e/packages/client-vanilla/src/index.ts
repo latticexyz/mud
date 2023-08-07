@@ -1,10 +1,6 @@
 import { Component, Entity, getComponentValue } from "@latticexyz/recs";
 import { setup } from "./mud/setup";
 
-// Set debug level so Playwright can pick up MUD logs
-// TODO: figure out why this doesn't work all the time, maybe Playwright's localStorage handling is async? or gets wiped in certain cases?
-localStorage.setItem("debug", "*");
-
 const {
   network: { components, latestBlock$, worldContract, waitForTransaction },
 } = await setup();
