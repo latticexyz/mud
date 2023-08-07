@@ -10,15 +10,18 @@ import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 // TODO add tests for all schema types
 contract SchemaTest is Test, GasReporter {
   function testEncodeDecodeSchema() public {
+    startGasReport("initialize schema array with 6 entries");
+    SchemaType[] memory _schema = new SchemaType[](6);
+    _schema[0] = SchemaType.UINT8; // 1 byte
+    _schema[1] = SchemaType.UINT16; // 2 bytes
+    _schema[2] = SchemaType.UINT32; // 4 bytes
+    _schema[3] = SchemaType.UINT128; // 16 bytes
+    _schema[4] = SchemaType.UINT256; // 32 bytes
+    _schema[5] = SchemaType.UINT32_ARRAY; // 0 bytes (because it's dynamic)
+    endGasReport();
+
     startGasReport("encode schema with 6 entries");
-    Schema schema = SchemaEncodeHelper.encode(
-      SchemaType.UINT8, // 1 byte
-      SchemaType.UINT16, // 2 bytes
-      SchemaType.UINT32, // 4 bytes
-      SchemaType.UINT128, // 16 bytes
-      SchemaType.UINT256, // 32 bytes
-      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
-    );
+    Schema schema = SchemaLib.encode(_schema);
     endGasReport();
 
     startGasReport("get schema type at index");

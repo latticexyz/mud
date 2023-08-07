@@ -253,18 +253,6 @@
   },
   {
     "file": "test/Mixed.t.sol",
-    "test": "testGas",
-    "name": "initialize array SchemaType[](4)",
-    "gasUsed": 598
-  },
-  {
-    "file": "test/Mixed.t.sol",
-    "test": "testGas",
-    "name": "encode schema SchemaType[](4)",
-    "gasUsed": 2012
-  },
-  {
-    "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Mixed schema",
     "gasUsed": 60041
@@ -308,8 +296,14 @@
   {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
+    "name": "initialize schema array with 6 entries",
+    "gasUsed": 856
+  },
+  {
+    "file": "test/Schema.t.sol",
+    "test": "testEncodeDecodeSchema",
     "name": "encode schema with 6 entries",
-    "gasUsed": 3742
+    "gasUsed": 2814
   },
   {
     "file": "test/Schema.t.sol",
