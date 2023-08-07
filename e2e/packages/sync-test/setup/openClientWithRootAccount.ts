@@ -10,7 +10,6 @@ export async function openClientWithRootAccount(page: Page, options?: { indexerU
       // I wish I could pass undefined values into URLSearchParams and have them be ignored during stringify
       ...(process.env.PRIVATE_KEY ? { privateKey: process.env.PRIVATE_KEY } : null),
       ...(options?.indexerUrl ? { indexerUrl: options?.indexerUrl } : null),
-    }).toString()}`,
-    { waitUntil: "domcontentloaded" }
+    }).toString()}`
   );
 }
