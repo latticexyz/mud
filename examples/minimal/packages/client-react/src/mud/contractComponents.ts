@@ -8,60 +8,54 @@ import {
 
 export function defineContractComponents(world: World) {
   return {
-    CounterTable: (() => {
-      return defineComponent(
-        world,
-        {
-          value: RecsType.Number,
+    CounterTable: defineComponent(
+      world,
+      {
+        value: RecsType.Number,
+      },
+      {
+        id: "0x00000000000000000000000000000000436f756e7465725461626c6500000000",
+        metadata: {
+          componentName: "CounterTable",
+          tableName: ":CounterTable",
+          keySchema: { key: "bytes32" },
+          valueSchema: { value: "uint32" },
         },
-        {
-          id: "0x00000000000000000000000000000000436f756e7465725461626c6500000000",
-          metadata: {
-            componentName: "CounterTable",
-            tableName: ":CounterTable",
-            keySchema: { key: "bytes32" },
-            valueSchema: { value: "uint32" },
-          },
-        } as const
-      );
-    })(),
-    MessageTable: (() => {
-      return defineComponent(
-        world,
-        {
-          value: RecsType.String,
+      } as const
+    ),
+    MessageTable: defineComponent(
+      world,
+      {
+        value: RecsType.String,
+      },
+      {
+        id: "0x000000000000000000000000000000004d6573736167655461626c6500000000",
+        metadata: {
+          componentName: "MessageTable",
+          tableName: ":MessageTable",
+          keySchema: {},
+          valueSchema: { value: "string" },
         },
-        {
-          id: "0x000000000000000000000000000000004d6573736167655461626c6500000000",
-          metadata: {
-            componentName: "MessageTable",
-            tableName: ":MessageTable",
-            keySchema: {},
-            valueSchema: { value: "string" },
+      } as const
+    ),
+    Inventory: defineComponent(
+      world,
+      {
+        amount: RecsType.Number,
+      },
+      {
+        id: "0x00000000000000000000000000000000496e76656e746f727900000000000000",
+        metadata: {
+          componentName: "Inventory",
+          tableName: ":Inventory",
+          keySchema: {
+            owner: "address",
+            item: "uint32",
+            itemVariant: "uint32",
           },
-        } as const
-      );
-    })(),
-    Inventory: (() => {
-      return defineComponent(
-        world,
-        {
-          amount: RecsType.Number,
+          valueSchema: { amount: "uint32" },
         },
-        {
-          id: "0x00000000000000000000000000000000496e76656e746f727900000000000000",
-          metadata: {
-            componentName: "Inventory",
-            tableName: ":Inventory",
-            keySchema: {
-              owner: "address",
-              item: "uint32",
-              itemVariant: "uint32",
-            },
-            valueSchema: { amount: "uint32" },
-          },
-        } as const
-      );
-    })(),
+      } as const
+    ),
   };
 }
