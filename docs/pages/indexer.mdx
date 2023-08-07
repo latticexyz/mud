@@ -47,6 +47,40 @@ They are written under the assumption you are using `anvil` for your test chain,
 
 ### Using the indexer with TypeScript
 
+1. Create a new MUD project.
+
+   ```sh
+   pnpm create mud@next indexer
+   ```
+
+1. Select **vanilla**.
+
+1. Prepare the project.
+
+   ```sh
+   cd indexer
+   pnpm install
+   ```
+
+1. Add typescript to the client.
+
+   ```sh
+   cd packages/client
+   pnpm install ts-node
+   ```
+
+1. Install `store-sync`.
+
+   ```sh
+   pnpm install @latticexyz/store-sync@main
+   ```
+
+1. Run the file:
+
+   ```sh
+   npx ts-node --esm ./index.ts
+   ```
+
 ### Using HTTP
 
 <WarningBox
