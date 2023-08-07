@@ -26,7 +26,7 @@ export async function setupNetwork() {
 
   const clientOptions = {
     chain: networkConfig.chain,
-    transport: mudTransportObserver(fallback([webSocket(), http()])),
+    transport: mudTransportObserver(http()),
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
 
