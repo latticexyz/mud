@@ -7,7 +7,7 @@ Adds an onRequest option to mudTransportObserver, so we can hook into transport 
 ```ts
 createPublicClient({
   transport: mudTransportObserver(transport, {
-    function onRequest({method, params) {
+    onRequest({method, params) {
       console.log('got rpc request', method);
     }
   }),
