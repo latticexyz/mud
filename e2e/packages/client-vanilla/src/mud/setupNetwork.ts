@@ -1,4 +1,14 @@
-import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  getContract,
+  Hex,
+  parseEther,
+  ClientConfig,
+} from "viem";
 import { createFaucetService } from "@latticexyz/network";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -14,10 +24,18 @@ export async function setupNetwork() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
 
-  const publicClient = createPublicClient({
+  const clientOptions = {
     chain: networkConfig.chain,
     transport: mudTransportObserver(fallback([webSocket(), http()])),
     pollingInterval: 1000,
+  } as const satisfies ClientConfig;
+
+  const publicClient = createPublicClient(clientOptions);
+
+  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+  const burnerWalletClient = createWalletClient({
+    ...clientOptions,
+    account: burnerAccount,
   });
 
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
@@ -28,14 +46,6 @@ export async function setupNetwork() {
     components: contractComponents,
     startBlock: BigInt(networkConfig.initialBlockNumber),
     indexerUrl: networkConfig.indexerUrl ?? undefined,
-  });
-
-  const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-  const burnerWalletClient = createWalletClient({
-    account: burnerAccount,
-    chain: networkConfig.chain,
-    transport: mudTransportObserver(fallback([webSocket(), http()])),
-    pollingInterval: 1000,
   });
 
   // Request drip from faucet
