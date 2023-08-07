@@ -13,10 +13,4 @@ export async function openClientWithRootAccount(page: Page, options?: { indexerU
     }).toString()}`,
     { waitUntil: "domcontentloaded" }
   );
-
-  await page.evaluate(() => {
-    localStorage.debug = "mud:*";
-  });
-
-  await page.reload();
 }

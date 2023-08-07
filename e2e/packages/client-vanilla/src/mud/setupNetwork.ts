@@ -8,6 +8,9 @@ import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWor
 import storeConfig from "contracts/mud.config";
 import { createBurnerAccount, mudTransportObserver } from "@latticexyz/common";
 
+// Make sure Playwright can see MUD logs
+localStorage.debug = "mud:*";
+
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
