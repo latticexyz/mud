@@ -1,7 +1,8 @@
 ---
 "@latticexyz/cli": patch
-"@latticexyz/common": minor
-"@latticexyz/create-mud": minor
+"@latticexyz/common": major
+"@latticexyz/create-mud": major
+"@latticexyz/recs": patch
 "@latticexyz/store-indexer": patch
 ---
 
