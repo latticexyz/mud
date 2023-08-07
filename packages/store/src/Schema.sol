@@ -22,12 +22,6 @@ library SchemaLib {
   // Based on PackedCounter's capacity
   uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
 
-  /************************************************************************
-   *
-   *    STATIC FUNCTIONS
-   *
-   ************************************************************************/
-
   /**
    * Encode the given schema into a single bytes32
    */
@@ -88,12 +82,6 @@ library SchemaLib {
  * Instance functions for Schema
  */
 library SchemaInstance {
-  /************************************************************************
-   *
-   *    INSTANCE FUNCTIONS
-   *
-   ************************************************************************/
-
   /**
    * Get the length of the static data for the given schema
    */
