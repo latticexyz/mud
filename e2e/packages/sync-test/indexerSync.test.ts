@@ -37,8 +37,6 @@ describe("Sync from indexer", async () => {
   const indexerUrl = "http://localhost:3001";
 
   beforeEach(async () => {
-    asyncErrorHandler.resetErrors();
-
     // Start chain and deploy contracts
     anvilProcess = startAnvil(anvilPort);
     await deployContracts(rpcUrl);
@@ -60,6 +58,7 @@ describe("Sync from indexer", async () => {
     await webserver.close();
     indexerProcess?.kill();
     anvilProcess?.kill();
+    asyncErrorHandler.resetErrors();
   });
 
   test("should sync test data", async () => {
