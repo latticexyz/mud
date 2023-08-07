@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { execa } from "execa";
-import { rmSync } from "node:fs";
+import { truncateSync } from "node:fs";
 import path from "node:path";
 
 export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError: (error: string) => void) {
@@ -11,7 +11,7 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
 
   try {
     // attempt to delete file to start a fresh indexer
-    rmSync(sqliteFilename);
+    truncateSync(sqliteFilename);
   } catch (error) {
     console.log("could not delete", sqliteFilename, error);
   }
