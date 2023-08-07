@@ -12,6 +12,7 @@ export default {
   tutorials: "Tutorials",
   reference: "Reference",  
   contribute: "Contribute",
+  changelogs: "Changelog",
   roadmap: {
     title: "Roadmap",
     type: "page",
