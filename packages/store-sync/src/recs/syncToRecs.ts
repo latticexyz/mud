@@ -98,9 +98,6 @@ export async function syncToRecs<
       console.log("got initial state", initialState);
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
-      // additionally log to console for Playwright
-      // TODO: figure out why Playwright and debug/localStorage don't play nicely together
-      console.log("couldn't get initial state from indexer", error);
     }
   }
 
