@@ -16,10 +16,11 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
     console.log("could not delete", sqliteFilename, error);
   }
 
-  const proc = execa("pnpm", ["start:local"], {
+  const proc = execa("pnpm", ["start"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env: {
       DEBUG: "mud:store-indexer",
+      CHAIN_ID: "31337",
       RPC_HTTP_URL: rpcUrl,
       SQLITE_FILENAME: sqliteFilename,
     },
