@@ -1,5 +1,9 @@
 import chalk from "chalk";
 import { execa } from "execa";
+import { rmSync } from "node:fs";
+import path from "node:path";
+
+const INDEXER_DIR = `${__dirname}/../../../../packages/store-indexer`;
 
 export function startIndexer(rpcUrl: string, reportError: (error: string) => void) {
   let resolve: () => void;
@@ -7,10 +11,11 @@ export function startIndexer(rpcUrl: string, reportError: (error: string) => voi
 
   console.log(chalk.magenta("[indexer]:"), "start syncing");
 
-  // TODO: delete anvil.db file
+  // delete anvil.db file to start a fresh indexer
+  rmSync(path.join(INDEXER_DIR, "anvil.db"));
 
   const proc = execa("pnpm", ["start:local"], {
-    cwd: `${__dirname}/../../../../packages/store-indexer`,
+    cwd: INDEXER_DIR,
     env: { DEBUG: "mud:store-indexer", RPC_HTTP_URL: rpcUrl },
   });
 

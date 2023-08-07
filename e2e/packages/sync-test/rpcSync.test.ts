@@ -15,7 +15,7 @@ import {
   pushRange,
   pop,
 } from "./data";
-import { range, sleep } from "@latticexyz/utils";
+import { range } from "@latticexyz/utils";
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
