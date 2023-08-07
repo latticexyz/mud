@@ -29,6 +29,8 @@ library Memory {
         length -= 32;
       }
     }
+    if (length == 0) return;
+
     // Copy the 0-31 length tail
     uint256 mask = leftMask(length);
     /// @solidity memory-safe-assembly

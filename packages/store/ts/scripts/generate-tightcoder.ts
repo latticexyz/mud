@@ -1,17 +1,10 @@
-import { renderFile } from "ejs";
-import { writeFileSync } from "fs";
-import { extname, basename, join, dirname } from "path";
+import { formatAndWriteSolidity } from "@latticexyz/common/codegen";
+import { renderDecodeSlice, renderEncodeArray, renderTightCoderAutoTest } from "../codegen/tightcoder";
 
-function renderEjsToSol(file: string, data: object) {
-  renderFile(file, data, {}, (err, str) => {
-    if (err) throw err;
-    const solFile = basename(file, extname(file)) + ".sol";
-    const outFullPath = join(dirname(file), solFile);
-    writeFileSync(outFullPath, str);
-    console.log(`generated: ${outFullPath}`);
-  });
-}
-
-renderEjsToSol("src/tightcoder/DecodeSlice.ejs", {});
-renderEjsToSol("src/tightcoder/EncodeArray.ejs", {});
-renderEjsToSol("test/tightcoder/TightCoderAuto.t.ejs", {});
+await formatAndWriteSolidity(renderDecodeSlice(), "src/tightcoder/DecodeSlice.sol", "Generated DecodeSlice");
+await formatAndWriteSolidity(renderEncodeArray(), "src/tightcoder/EncodeArray.sol", "Generated EncodeArray");
+await formatAndWriteSolidity(
+  renderTightCoderAutoTest(),
+  "test/tightcoder/TightCoderAuto.t.sol",
+  "Generated TightCoderAutoTest"
+);
