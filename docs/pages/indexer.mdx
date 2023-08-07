@@ -1,3 +1,5 @@
+import WarningBox from "../components/WarningBox";
+
 # The MUD Indexer
 
 The MUD Indexer is an off-chain indexer for on-chain applications built with MUD.
@@ -43,10 +45,26 @@ They are written under the assumption you are using `anvil` for your test chain,
 
 ## Data access and interpretation
 
+### Using the indexer with TypeScript
+
 ### Using HTTP
 
+<WarningBox
+  title="URLs and parameters may vary"
+  message={
+    <>
+      <p>
+        The parameters, especially the URL, may change as we adjust our [tRPC](https://trpc.io/) configuration.
+
+        If you can use the TypeScript methods, those are more stable.
+      </p>
+    </>
+
+}
+/>
+
 The indexer is built on top of [tRPC](https://trpc.io/), which is primarily designed to be used between [TypeScript](https://www.typescriptlang.org/) programs.
-As a result, the data format is a bit more complicated than REST APIs.
+As a result, the data format is more complicated than REST APIs.
 
 For queries, the indexer expects to get two parameters in a [query string](https://en.wikipedia.org/wiki/Query_string):
 
@@ -127,7 +145,3 @@ To understand the result, it is easiest to look at it inside Node.
    ```javascript
    counterTable.records[0].value.value;
    ```
-
-### Using the indexer with TypeScript
-
-**Coming soon**
