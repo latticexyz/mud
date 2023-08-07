@@ -23,6 +23,7 @@ import {
   pop,
 } from "./data";
 import { range } from "@latticexyz/utils";
+import path from "node:path";
 
 describe("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
@@ -49,7 +50,7 @@ describe("Sync from indexer", async () => {
     page = browserAndPage.page;
 
     // Start indexer
-    const result = startIndexer(rpcUrl, asyncErrorHandler.reportError);
+    const result = startIndexer(path.join(__dirname, "anvil.db"), rpcUrl, asyncErrorHandler.reportError);
     indexerProcess = result.process;
     await result.doneSyncing;
   });

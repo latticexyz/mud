@@ -3,20 +3,26 @@ import { execa } from "execa";
 import { rmSync } from "node:fs";
 import path from "node:path";
 
-const INDEXER_DIR = `${__dirname}/../../../../packages/store-indexer`;
-
-export function startIndexer(rpcUrl: string, reportError: (error: string) => void) {
+export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError: (error: string) => void) {
   let resolve: () => void;
   let reject: (reason?: string) => void;
 
   console.log(chalk.magenta("[indexer]:"), "start syncing");
 
-  // delete anvil.db file to start a fresh indexer
-  rmSync(path.join(INDEXER_DIR, "anvil.db"));
+  try {
+    // attempt to delete file to start a fresh indexer
+    rmSync(sqliteFilename);
+  } catch (error) {
+    console.log("could not delete", sqliteFilename, error);
+  }
 
   const proc = execa("pnpm", ["start:local"], {
-    cwd: INDEXER_DIR,
-    env: { DEBUG: "mud:store-indexer", RPC_HTTP_URL: rpcUrl },
+    cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
+    env: {
+      DEBUG: "mud:store-indexer",
+      RPC_HTTP_URL: rpcUrl,
+      SQLITE_FILENAME: sqliteFilename,
+    },
   });
 
   proc.on("error", (error) => {
