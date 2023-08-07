@@ -4,7 +4,6 @@ import { expect, Browser, Page } from "@playwright/test";
 import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import {
-  startAnvil,
   deployContracts,
   startViteServer,
   startBrowserAndPage,
@@ -24,22 +23,18 @@ import {
 } from "./data";
 import { range } from "@latticexyz/utils";
 import path from "node:path";
+import { rpcHttpUrl } from "./setup/constants";
 
 describe("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
-  let anvilProcess: ExecaChildProcess;
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
-  const anvilPort = 8545;
-  const rpcUrl = `http://127.0.0.1:${anvilPort}`;
   let indexerProcess: ExecaChildProcess;
   const indexerUrl = "http://localhost:3001";
 
   beforeEach(async () => {
-    // Start chain and deploy contracts
-    anvilProcess = startAnvil(anvilPort);
-    await deployContracts(rpcUrl);
+    await deployContracts(rpcHttpUrl);
 
     // Start client and browser
     webserver = await startViteServer();
@@ -48,7 +43,7 @@ describe("Sync from indexer", async () => {
     page = browserAndPage.page;
 
     // Start indexer
-    const result = startIndexer(path.join(__dirname, "anvil.db"), rpcUrl, asyncErrorHandler.reportError);
+    const result = startIndexer(path.join(__dirname, "anvil.db"), rpcHttpUrl, asyncErrorHandler.reportError);
     indexerProcess = result.process;
     await result.doneSyncing;
   });
@@ -57,7 +52,6 @@ describe("Sync from indexer", async () => {
     await browser.close();
     await webserver.close();
     indexerProcess?.kill();
-    anvilProcess?.kill();
     asyncErrorHandler.resetErrors();
   });
 
