@@ -1,18 +1,18 @@
-import { Hex, Transport, keccak256 } from "viem";
-import { debug as parentDebug } from "./debug";
+import { EIP1193RequestFn, Transport } from "viem";
 
-const debug = parentDebug.extend("mudTransportObserver");
+type TransportObserverOptions<TEIP1193RequestFn extends EIP1193RequestFn = EIP1193RequestFn> = {
+  onRequest?: (...args: Parameters<TEIP1193RequestFn>) => void;
+};
 
-export function mudTransportObserver<TTransport extends Transport>(transport: TTransport): TTransport {
-  return ((opts) => {
-    const result = transport(opts);
+export function mudTransportObserver<TTransport extends Transport>(
+  transport: TTransport,
+  { onRequest }: TransportObserverOptions = {}
+): TTransport {
+  return ((transportOptions) => {
+    const result = transport(transportOptions);
     const request: typeof result.request = async (req) => {
-      if (req.method === "eth_sendRawTransaction" && req.params instanceof Array) {
-        const txs = req.params.map((data: Hex) => keccak256(data));
-        debug("saw txs", txs);
-        // TODO: pass these tx hashes into dev tools
-      }
-      // TODO: add support for `eth_sendTransaction`
+      // TODO: decide if we want to allow request to be mutated
+      onRequest?.(req);
       return result.request(req);
     };
     return {
