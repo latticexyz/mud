@@ -7,7 +7,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
-import { Schema } from "../src/Schema.sol";
+import { Schema, SchemaLib } from "../src/Schema.sol";
 
 contract MixedTest is Test, GasReporter, StoreReadWithStubs {
   MixedData private testMixed;
@@ -67,5 +67,19 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
       Mixed.encode(1, 2, a32, s),
       hex"0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
     );
+  }
+
+  function testGas() public returns (Schema schema) {
+    startGasReport("initialize array SchemaType[](4)");
+    SchemaType[] memory _schema = new SchemaType[](4);
+    _schema[0] = SchemaType.UINT32;
+    _schema[1] = SchemaType.UINT128;
+    _schema[2] = SchemaType.UINT32_ARRAY;
+    _schema[3] = SchemaType.STRING;
+    endGasReport();
+
+    startGasReport("encode schema SchemaType[](4)");
+    schema = SchemaLib.encode(_schema);
+    endGasReport();
   }
 }
