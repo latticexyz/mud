@@ -131,10 +131,10 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
+          staticCallOnly: RecsType.Boolean,
           namespace: RecsType.String,
           name: RecsType.String,
           systemFunctionSelector: RecsType.String,
-          staticCallOnly: RecsType.Boolean,
         },
         {
           metadata: {

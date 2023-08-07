@@ -33,8 +33,8 @@ library FunctionSelectors {
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
     _schema[0] = SchemaType.BYTES32;
-    _schema[1] = SchemaType.BYTES4;
-    _schema[2] = SchemaType.BOOL;
+    _schema[1] = SchemaType.BOOL;
+    _schema[2] = SchemaType.BYTES4;
 
     return SchemaLib.encode(_schema);
   }
@@ -49,8 +49,8 @@ library FunctionSelectors {
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](3);
     fieldNames[0] = "resourceSelector";
-    fieldNames[1] = "systemFunctionSelector";
-    fieldNames[2] = "staticCallOnly";
+    fieldNames[1] = "staticCallOnly";
+    fieldNames[2] = "systemFunctionSelector";
   }
 
   /** Register the table's key schema, value schema, key names and value names */
@@ -100,12 +100,46 @@ library FunctionSelectors {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)), getValueSchema());
   }
 
+  /** Get staticCallOnly */
+  function getStaticCallOnly(bytes4 functionSelector) internal view returns (bool staticCallOnly) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(functionSelector);
+
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getValueSchema());
+    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  }
+
+  /** Get staticCallOnly (using the specified store) */
+  function getStaticCallOnly(IStore _store, bytes4 functionSelector) internal view returns (bool staticCallOnly) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(functionSelector);
+
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getValueSchema());
+    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  }
+
+  /** Set staticCallOnly */
+  function setStaticCallOnly(bytes4 functionSelector, bool staticCallOnly) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(functionSelector);
+
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((staticCallOnly)), getValueSchema());
+  }
+
+  /** Set staticCallOnly (using the specified store) */
+  function setStaticCallOnly(IStore _store, bytes4 functionSelector, bool staticCallOnly) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(functionSelector);
+
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((staticCallOnly)), getValueSchema());
+  }
+
   /** Get systemFunctionSelector */
   function getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getValueSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getValueSchema());
     return (Bytes.slice4(_blob, 0));
   }
 
@@ -117,7 +151,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getValueSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getValueSchema());
     return (Bytes.slice4(_blob, 0));
   }
 
@@ -126,7 +160,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), getValueSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)), getValueSchema());
   }
 
   /** Set systemFunctionSelector (using the specified store) */
@@ -134,47 +168,13 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((systemFunctionSelector)), getValueSchema());
-  }
-
-  /** Get staticCallOnly */
-  function getStaticCallOnly(bytes4 functionSelector) internal view returns (bool staticCallOnly) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getValueSchema());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
-  }
-
-  /** Get staticCallOnly (using the specified store) */
-  function getStaticCallOnly(IStore _store, bytes4 functionSelector) internal view returns (bool staticCallOnly) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getValueSchema());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
-  }
-
-  /** Set staticCallOnly */
-  function setStaticCallOnly(bytes4 functionSelector, bool staticCallOnly) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((staticCallOnly)), getValueSchema());
-  }
-
-  /** Set staticCallOnly (using the specified store) */
-  function setStaticCallOnly(IStore _store, bytes4 functionSelector, bool staticCallOnly) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = bytes32(functionSelector);
-
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((staticCallOnly)), getValueSchema());
+    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)), getValueSchema());
   }
 
   /** Get the full data */
   function get(
     bytes4 functionSelector
-  ) internal view returns (bytes32 resourceSelector, bytes4 systemFunctionSelector, bool staticCallOnly) {
+  ) internal view returns (bytes32 resourceSelector, bool staticCallOnly, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -186,7 +186,7 @@ library FunctionSelectors {
   function get(
     IStore _store,
     bytes4 functionSelector
-  ) internal view returns (bytes32 resourceSelector, bytes4 systemFunctionSelector, bool staticCallOnly) {
+  ) internal view returns (bytes32 resourceSelector, bool staticCallOnly, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -198,10 +198,10 @@ library FunctionSelectors {
   function set(
     bytes4 functionSelector,
     bytes32 resourceSelector,
-    bytes4 systemFunctionSelector,
-    bool staticCallOnly
+    bool staticCallOnly,
+    bytes4 systemFunctionSelector
   ) internal {
-    bytes memory _data = encode(resourceSelector, systemFunctionSelector, staticCallOnly);
+    bytes memory _data = encode(resourceSelector, staticCallOnly, systemFunctionSelector);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -214,10 +214,10 @@ library FunctionSelectors {
     IStore _store,
     bytes4 functionSelector,
     bytes32 resourceSelector,
-    bytes4 systemFunctionSelector,
-    bool staticCallOnly
+    bool staticCallOnly,
+    bytes4 systemFunctionSelector
   ) internal {
-    bytes memory _data = encode(resourceSelector, systemFunctionSelector, staticCallOnly);
+    bytes memory _data = encode(resourceSelector, staticCallOnly, systemFunctionSelector);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
@@ -228,21 +228,21 @@ library FunctionSelectors {
   /** Decode the tightly packed blob using this table's schema */
   function decode(
     bytes memory _blob
-  ) internal pure returns (bytes32 resourceSelector, bytes4 systemFunctionSelector, bool staticCallOnly) {
+  ) internal pure returns (bytes32 resourceSelector, bool staticCallOnly, bytes4 systemFunctionSelector) {
     resourceSelector = (Bytes.slice32(_blob, 0));
 
-    systemFunctionSelector = (Bytes.slice4(_blob, 32));
+    staticCallOnly = (_toBool(uint8(Bytes.slice1(_blob, 32))));
 
-    staticCallOnly = (_toBool(uint8(Bytes.slice1(_blob, 36))));
+    systemFunctionSelector = (Bytes.slice4(_blob, 33));
   }
 
   /** Tightly pack full data using this table's schema */
   function encode(
     bytes32 resourceSelector,
-    bytes4 systemFunctionSelector,
-    bool staticCallOnly
+    bool staticCallOnly,
+    bytes4 systemFunctionSelector
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(resourceSelector, systemFunctionSelector, staticCallOnly);
+    return abi.encodePacked(resourceSelector, staticCallOnly, systemFunctionSelector);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
