@@ -19,38 +19,34 @@ For the sake of simplicity, we will implement this in the `increment` function r
       },
    ```
 
-   <details>
+<details>
 <summary>The complete file</summary>
 
-   ```ts
-   import { mudConfig } from "@latticexyz/world/register";
+```ts
+import { mudConfig } from "@latticexyz/world/register";
 
-   export default mudConfig({
-     tables: {
-       Counter: {
-         keySchema: {},
-         schema: "uint32",
-       },
-       History: {
-         keySchema: {
-           counterValue: "uint32",
-         },
-         schema: {
-           blockNumber: "uint256",
-           time: "uint256",
-         },
-       },
-     },
-   });
-   ```
+export default mudConfig({
+  tables: {
+    Counter: {
+      keySchema: {},
+      schema: "uint32",
+    },
+    History: {
+      keySchema: {
+        counterValue: "uint32",
+      },
+      schema: {
+        blockNumber: "uint256",
+        time: "uint256",
+      },
+    },
+  },
+});
+```
 
-   </details>
+</details>
 
-   ```
-
-   ```
-
-1. Run this command in `packages/contracts` to regenerate the code.
+2. Run this command in `packages/contracts` to regenerate the code.
 
    ```sh
    pnpm build:mud
@@ -74,7 +70,7 @@ For the sake of simplicity, we will implement this in the `increment` function r
 
      To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud`).
 
-      <details>
+<details>
    <summary>
      The complete file
    </summary>
@@ -97,15 +93,13 @@ For the sake of simplicity, we will implement this in the `increment` function r
      }
      ```
 
-      </details>
+</details>
 
-````
-
-1. Run this command in `packages/contracts` to rebuild everything this package produces.
+2. Run this command in `packages/contracts` to rebuild everything this package produces.
 
 ```sh
 pnpm build
-````
+```
 
 ## Update the user interface
 
@@ -146,7 +140,7 @@ The directions here apply to the `vanilla` user interface, if you use anything e
   ``` blah ```
 </details>
 
-1. Edit `packages/client/src/index.ts`.
+3. Edit `packages/client/src/index.ts`.
 
    - In `components.Counter.update$.subscribe`, add code that updates the selection of history values.
 
