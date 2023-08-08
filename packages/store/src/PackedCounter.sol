@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-// - 7 bytes accumulated counter
-// - 5 bytes length per counter
+// - Last 7 bytes (uint56) are used for the total byte length of the dynamic data
+// - The next 5 byte (uint40) sections are used for the byte length of each field, indexed from right to left
 type PackedCounter is bytes32;
 
 using PackedCounterInstance for PackedCounter global;
@@ -80,7 +80,7 @@ library PackedCounterInstance {
 
   /**
    * Decode the accumulated counter
-   * (first 7 bytes of packed counter)
+   * (right-most 7 bytes of packed counter)
    */
   function total(PackedCounter packedCounter) internal pure returns (uint256) {
     return uint56(uint256(PackedCounter.unwrap(packedCounter)));
@@ -88,7 +88,7 @@ library PackedCounterInstance {
 
   /**
    * Decode the counter at the given index
-   * (5 bytes per counter after the first 7 bytes)
+   * (right-to-left, 5 bytes per counter after the right-most 7 bytes)
    */
   function atIndex(PackedCounter packedCounter, uint8 index) internal pure returns (uint256) {
     unchecked {
@@ -131,10 +131,10 @@ library PackedCounterInstance {
     }
     // Bitmask with 1s at the 5 bytes that form the value slot at the given index
     uint256 mask = uint256(type(uint40).max) << offset;
-    
+
     // First set the last 7 bytes to 0, then set them to the new length
     rawPackedCounter = (rawPackedCounter & ~uint256(type(uint56).max)) | accumulator;
-    
+
     // Zero out the value slot at the given index, then set the new value
     rawPackedCounter = (rawPackedCounter & ~mask) | ((newValueAtIndex << offset) & mask);
 
