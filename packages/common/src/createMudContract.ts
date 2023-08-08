@@ -31,6 +31,16 @@ function getFunctionParameters(values: [args?: readonly unknown[], options?: obj
   return { args, options };
 }
 
+type CreateMudContractOptions<
+  TTransport extends Transport = Transport,
+  TChain extends Chain | undefined = Chain | undefined,
+  TAccount extends Account | undefined = Account | undefined,
+  TAbi extends Abi | readonly unknown[] = Abi,
+  TPublicClient extends PublicClient<TTransport, TChain> | unknown = unknown,
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount> | unknown = unknown,
+  TAddress extends Address = Address
+> = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>>;
+
 export function createMudContract<
   TTransport extends Transport,
   TAddress extends Address,
@@ -44,8 +54,14 @@ export function createMudContract<
   address,
   publicClient,
   walletClient,
-}: Required<
-  GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>
+}: CreateMudContractOptions<
+  TTransport,
+  TChain,
+  TAccount,
+  TAbi,
+  TPublicClient,
+  TWalletClient,
+  TAddress
 >): GetContractReturnType<TAbi, TPublicClient, TWalletClient, TAddress> {
   const contract = getContract<TTransport, TAddress, TAbi, TChain, TAccount, TPublicClient, TWalletClient>({
     abi,
@@ -96,12 +112,15 @@ export function createMudContract<
             return await queue.add(
               () =>
                 pRetry(write, {
-                  retries: 5,
+                  retries: 3,
                   onFailedAttempt: async (error) => {
+                    // On nonce errors, reset the nonce and retry
                     if (nonceManager.shouldResetNonce(error)) {
                       debug("got nonce error, retrying", error);
                       await nonceManager.resetNonce();
+                      return;
                     }
+                    throw error;
                   },
                 }),
               { throwOnTimeout: true }
