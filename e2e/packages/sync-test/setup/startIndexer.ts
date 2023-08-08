@@ -59,6 +59,11 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
     console.log(chalk.magentaBright("[indexer ingress]:", dataString));
   });
 
+  let exited = false;
+  proc.once("exit", () => {
+    exited = true;
+  });
+
   return {
     doneSyncing: new Promise<void>((res, rej) => {
       resolve = res;
@@ -67,7 +72,7 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
     process: proc,
     kill: () =>
       new Promise<void>((resolve) => {
-        if (proc.killed) {
+        if (exited) {
           return resolve();
         }
         proc.once("exit", resolve);
