@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useComponentValue, useEntityQuery } from "@latticexyz/react";
 import { Has, getComponentValueStrict } from "@latticexyz/recs";
-import { decodeEntity } from "@latticexyz/store-sync/recs";
+import { decodeEntity, singletonEntity } from "@latticexyz/store-sync/recs";
 import { useMUD } from "./MUDContext";
 
 const ITEMS = ["cup", "spoon", "fork"];
@@ -10,7 +10,7 @@ const VARIANTS = ["yellow", "green", "red"];
 export const App = () => {
   const {
     components: { CounterTable, Inventory, MessageTable },
-    network: { singletonEntity, worldContract, waitForTransaction },
+    network: { worldContract, waitForTransaction },
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
