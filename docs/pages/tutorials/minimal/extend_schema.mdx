@@ -19,31 +19,34 @@ For the sake of simplicity, we will implement this in the `increment` function r
       },
    ```
 
-    <details>
- <summary>The complete file</summary>
- ```ts
- import { mudConfig } from "@latticexyz/world/register";
+   <details>
+<summary>The complete file</summary>
+
+   ```ts
+   import { mudConfig } from "@latticexyz/world/register";
 
    export default mudConfig({
-   tables: {
-   Counter: {
-   keySchema: {},
-   schema: "uint32",
-   },
-   History: {
-   keySchema: {
-   counterValue: "uint32",
-   },
-   schema: {
-   blockNumber: "uint256",
-   time: "uint256"
-   }
-   },
-   },
+     tables: {
+       Counter: {
+         keySchema: {},
+         schema: "uint32",
+       },
+       History: {
+         keySchema: {
+           counterValue: "uint32",
+         },
+         schema: {
+           blockNumber: "uint256",
+           time: "uint256",
+         },
+       },
+     },
    });
+   ```
+
+   </details>
 
    ```
-   </details>
 
    ```
 
@@ -55,66 +58,51 @@ For the sake of simplicity, we will implement this in the `increment` function r
 
 ## Update `IncrementSystem`
 
-1.  In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
+1. In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
 
-    - Modify the second `import` line to import `History`.
+   - Modify the second `import` line to import `History`.
 
-      ```solidity
-      import { Counter, History, HistoryData } from "../codegen/Tables.sol";
-      ```
+     ```solidity
+     import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+     ```
 
-    - Modify the `increment` function to also update `History` by adding this line just before `return newValue`.
+   - Modify the `increment` function to also update `History` by adding this line just before `return newValue`.
 
-      ```solidity
-      History.set(newValue, block.number, block.timestamp);
-      ```
+     ```solidity
+     History.set(newValue, block.number, block.timestamp);
+     ```
 
-      To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we regenerated it).
+     To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud`).
 
-    - Create a function to read the history.
+   <details>
+<summary>The complete file</summary>
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
-      ```solidity
-      function readHistory(uint32 counterValue) public returns (uint blockNumber, uint timestamp) {
-        HistoryData memory retval = History.get(counterValue);
-        return (retval.blockNumber, retval.time);
-      }
-      ```
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Counter, History, HistoryData } from "../codegen/Tables.sol";
 
-    <details>
-   <summary>The complete file</summary>
-   ```solidity
-   // SPDX-License-Identifier: MIT
-   pragma solidity >=0.8.0;
+   contract IncrementSystem is System {
+   function increment() public returns (uint32) {
+   uint32 counter = Counter.get();
+   uint32 newValue = counter + 1;
+   Counter.set(newValue);
+   History.set(newValue, block.number, block.timestamp);
+   return newValue;
+   }
+   }
 
-    import { System } from "@latticexyz/world/src/System.sol";
-    import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+   ```
+   </details>
 
-    contract IncrementSystem is System {
-    function increment() public returns (uint32) {
-    uint32 counter = Counter.get();
-    uint32 newValue = counter + 1;
-    Counter.set(newValue);
-    History.set(newValue, block.number, block.timestamp);
-    return newValue;
-    }
+   ```
 
-         function readHistory(uint32 counterValue) public returns (uint blockNumber, uint timestamp) {
-           HistoryData memory retval = History.get(counterValue);
-           return (retval.blockNumber, retval.time);
-         }
+1. Run this command in `packages/contracts` to rebuild everything this package produces.
 
-    }
-
-    ```
-    </details>
-
-    ```
-
-1.  Run this command in `packages/contracts` to rebuild everything this package produces.
-
-    ```sh
-    pnpm build
-    ```
+   ```sh
+   pnpm build
+   ```
 
 ## Update the user interface
 
@@ -122,11 +110,12 @@ You can already run the application and see in the MUD Dev Tools that there is a
 However, you can also add the history to the user interface.
 The directions here apply to the `vanilla` user interface, if you use anything else you'll need to modify them as appropriate.
 
-1. Install `store-cache`.
-   Run this command in `packages/client`.
+1. Install additional packages.
+   Run these commands in `packages/client`.
 
    ```sh
-   pnpm install @latticexyz/store-cache
+   pnpm install @latticexyz/store-cache@next
+   pnpm install @latticexyz/store-sync@next
    ```
 
 1. Edit `packages/clients/index.html` to add these lines just before `</body>`.
@@ -156,12 +145,6 @@ The directions here apply to the `vanilla` user interface, if you use anything e
 
 1. Edit `packages/client/src/index.ts`.
 
-   - Get `readHistory` from the system calls.
-
-     ```typescript
-
-     ```
-
    - In `components.Counter.update$.subscribe`, add code that updates the selection of history values.
 
      ```typescript
@@ -171,17 +154,6 @@ The directions here apply to the `vanilla` user interface, if you use anything e
      }
      document.getElementById("historyValue")!.innerHTML = options;
      ```
-
-<details>
-  <summary>The complete file</summary>
-  ``` blah ```
-</details>
-
-1. Edit `packages/client/src/mud/createSystemCalls.ts` to add `readHistory`.
-
-```typescript
-vlah;
-```
 
 <details>
   <summary>The complete file</summary>
