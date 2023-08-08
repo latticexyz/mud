@@ -65,6 +65,16 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
       reject = rej;
     }),
     process: proc,
+    kill: () =>
+      new Promise<void>((resolve) => {
+        if (proc.killed) {
+          return resolve();
+        }
+        proc.once("exit", resolve);
+        proc.kill("SIGTERM", {
+          forceKillAfterTimeout: 5000,
+        });
+      }),
   };
 }
 

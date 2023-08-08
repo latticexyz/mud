@@ -30,7 +30,7 @@ describe("Sync from indexer", async () => {
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
-  let indexerProcess: ExecaChildProcess;
+  let indexer: ReturnType<typeof startIndexer>;
   const indexerUrl = "http://localhost:3001";
 
   beforeEach(async () => {
@@ -43,15 +43,14 @@ describe("Sync from indexer", async () => {
     page = browserAndPage.page;
 
     // Start indexer
-    const result = startIndexer(path.join(__dirname, "anvil.db"), rpcHttpUrl, asyncErrorHandler.reportError);
-    indexerProcess = result.process;
-    await result.doneSyncing;
+    indexer = startIndexer(path.join(__dirname, "anvil.db"), rpcHttpUrl, asyncErrorHandler.reportError);
+    await indexer.doneSyncing;
   });
 
   afterEach(async () => {
     await browser.close();
     await webserver.close();
-    indexerProcess?.kill();
+    await indexer.kill();
     asyncErrorHandler.resetErrors();
   });
 
@@ -76,7 +75,7 @@ describe("Sync from indexer", async () => {
   });
 
   test("should log error if indexer is down", async () => {
-    indexerProcess?.kill();
+    await indexer.kill();
 
     await openClientWithRootAccount(page, { indexerUrl });
     await waitForInitialSync(page);
