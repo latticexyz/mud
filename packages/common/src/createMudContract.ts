@@ -44,6 +44,9 @@ export function createMudContract<
       address: walletClient.account.address,
     });
 
+    // Concurrency of one means transactions will be queued and inserted into the mem pool in synchronously and in order.
+    // You can increase the concurrency number for faster processing of transactions, but you risk getting nonce errors.
+    // Nonce errors will get automatically retried, but may have unintended side effects.
     const queue = new pQueue({ concurrency: 1 });
 
     const write = contract.write;
@@ -60,15 +63,13 @@ export function createMudContract<
               pRetry(
                 async () => {
                   const nonce = nonceManager.nextNonce();
-                  console.log("nonce", nonce);
                   return await write[functionName]({ args, nonce });
                 },
                 {
                   retries: 5,
                   onFailedAttempt: async (error) => {
                     if (nonceManager.shouldResetNonce(error)) {
-                      console.log("got nonce error, retrying", error);
-                      // TODO: add a delay here?
+                      console.warn("got nonce error, retrying", error);
                       await nonceManager.resetNonce();
                     }
                   },

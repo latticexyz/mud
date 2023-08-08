@@ -47,7 +47,10 @@ export function createNonceManager({
   }
 
   async function resetNonce(): Promise<void> {
-    nonceRef.current = await publicClient.getTransactionCount({ address, blockTag });
+    const nonce = await publicClient.getTransactionCount({ address, blockTag });
+    nonceRef.current = nonce;
+    channel?.postMessage(JSON.stringify(nonce));
+    debug("reset nonce to", nonceRef.current);
   }
 
   function shouldResetNonce(error: unknown): boolean {
