@@ -44,7 +44,7 @@ const Card = ({ title, text, iconSVG, link }) => {
       fontWeight: "400",
       lineHeight: "20px",
     },
-  };
+  } as const;
 
   return (
     <div style={styles.cardBackground} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
