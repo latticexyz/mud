@@ -1,4 +1,4 @@
-import { BlockTag, Chain, Hex, PublicClient, Transport } from "viem";
+import { BlockTag, Hex, PublicClient } from "viem";
 import { debug as parentDebug } from "./debug";
 
 const debug = parentDebug.extend("createNonceManager");

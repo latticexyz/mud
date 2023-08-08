@@ -5,14 +5,31 @@ import {
   Chain,
   GetContractParameters,
   GetContractReturnType,
+  Hex,
   PublicClient,
   Transport,
   WalletClient,
+  WriteContractParameters,
   getContract,
 } from "viem";
 import pQueue from "p-queue";
 import pRetry from "p-retry";
 import { createNonceManager } from "./createNonceManager";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("createNonceManager");
+
+// copied from viem because it isn't exported
+// TODO: import from viem?
+function getFunctionParameters(values: [args?: readonly unknown[], options?: object]): {
+  args: readonly unknown[];
+  options: object;
+} {
+  const hasArgs = values.length && Array.isArray(values[0]);
+  const args = hasArgs ? values[0]! : [];
+  const options = (hasArgs ? values[1] : values[0]) ?? {};
+  return { args, options };
+}
 
 export function createMudContract<
   TTransport extends Transport,
@@ -35,9 +52,8 @@ export function createMudContract<
     address,
     publicClient,
     walletClient,
-  });
+  }) as unknown as GetContractReturnType<Abi, PublicClient, WalletClient>;
 
-  // TODO: fix write types
   if (contract.write) {
     const nonceManager = createNonceManager({
       publicClient: publicClient as PublicClient,
@@ -49,33 +65,46 @@ export function createMudContract<
     // Nonce errors will get automatically retried, but may have unintended side effects.
     const queue = new pQueue({ concurrency: 1 });
 
-    const write = contract.write;
+    // Replace write calls with our own proxy. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
     contract.write = new Proxy(
       {},
       {
-        get(_, functionName: string) {
-          // TODO: make sure we have an underlying function to call?
-          return async (args: any[]) => {
+        get(_, functionName: string): GetContractReturnType<Abi, PublicClient, WalletClient>["write"][string] {
+          return async (...parameters) => {
+            const { args, options } = getFunctionParameters(parameters as any);
+
             if (!nonceManager.hasNonce()) {
               await nonceManager.resetNonce();
             }
 
-            return await queue.add(() =>
-              pRetry(
-                async () => {
-                  const nonce = nonceManager.nextNonce();
-                  return await write[functionName]({ args, nonce });
-                },
-                {
+            async function write(): Promise<Hex> {
+              const nonce = nonceManager.nextNonce();
+
+              debug("calling write function", functionName, args, { nonce, ...options });
+              const result = await walletClient.writeContract({
+                abi,
+                address,
+                functionName,
+                args,
+                nonce,
+                ...options,
+              } as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>);
+
+              return result;
+            }
+
+            return await queue.add(
+              () =>
+                pRetry(write, {
                   retries: 5,
                   onFailedAttempt: async (error) => {
                     if (nonceManager.shouldResetNonce(error)) {
-                      console.warn("got nonce error, retrying", error);
+                      debug("got nonce error, retrying", error);
                       await nonceManager.resetNonce();
                     }
                   },
-                }
-              )
+                }),
+              { throwOnTimeout: true }
             );
           };
         },
@@ -83,5 +112,5 @@ export function createMudContract<
     );
   }
 
-  return contract;
+  return contract as unknown as GetContractReturnType<TAbi, TPublicClient, TWalletClient, TAddress>;
 }
