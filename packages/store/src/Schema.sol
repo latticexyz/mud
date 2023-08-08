@@ -86,35 +86,43 @@ library SchemaInstance {
    * Get the length of the static data for the given schema
    */
   function staticDataLength(Schema schema) internal pure returns (uint256) {
-    return uint256(uint16(bytes2(Schema.unwrap(schema))));
+    return uint256(Schema.unwrap(schema)) >> ((32 - 2) * 8);
   }
 
   /**
    * Get the type of the data for the given schema at the given index
    */
   function atIndex(Schema schema, uint256 index) internal pure returns (SchemaType) {
-    return SchemaType(uint8(Bytes.slice1(Schema.unwrap(schema), index + 4)));
+    unchecked {
+      return SchemaType(uint8(uint256(schema.unwrap()) >> ((31 - 4 - index) * 8)));
+    }
   }
 
   /**
    * Get the number of dynamic length fields for the given schema
    */
   function numDynamicFields(Schema schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(Schema.unwrap(schema), 3));
+    unchecked {
+      return uint8(uint256(schema.unwrap()) >> ((31 - 3) * 8));
+    }
   }
 
   /**
    * Get the number of static  fields for the given schema
    */
   function numStaticFields(Schema schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(Schema.unwrap(schema), 2));
+    unchecked {
+      return uint8(uint256(schema.unwrap()) >> ((31 - 2) * 8));
+    }
   }
 
   /**
    * Get the total number of fields for the given schema
    */
   function numFields(Schema schema) internal pure returns (uint8) {
-    return numStaticFields(schema) + numDynamicFields(schema);
+    unchecked {
+      return numStaticFields(schema) + numDynamicFields(schema);
+    }
   }
 
   /**

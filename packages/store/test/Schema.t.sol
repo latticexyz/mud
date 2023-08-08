@@ -183,6 +183,23 @@ contract SchemaTest is Test, GasReporter {
     assertEq(num, 1);
   }
 
+  function testGetNumFields() public {
+    Schema schema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8, // 1 byte
+      SchemaType.UINT16, // 2 bytes
+      SchemaType.UINT32, // 4 bytes
+      SchemaType.UINT128, // 16 bytes
+      SchemaType.UINT256, // 32 bytes
+      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
+    );
+
+    startGasReport("get number of all fields from schema");
+    uint256 num = schema.numFields();
+    endGasReport();
+
+    assertEq(num, 6);
+  }
+
   function testValidate() public {
     SchemaType[] memory schema = new SchemaType[](28);
     schema[0] = SchemaType.UINT256;
