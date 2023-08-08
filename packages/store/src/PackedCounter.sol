@@ -129,8 +129,13 @@ library PackedCounterInstance {
     unchecked {
       offset = ACC_BYTES + VAL_BYTES * index;
     }
+    // Bitmask with 1s at the 5 bytes that form the value slot at the given index
     uint256 mask = uint256(type(uint40).max) << offset;
+    
+    // First set the last 7 bytes to 0, then set them to the new length
     rawPackedCounter = (rawPackedCounter & ~uint256(type(uint56).max)) | accumulator;
+    
+    // Zero out the value slot at the given index, then set the new value
     rawPackedCounter = (rawPackedCounter & ~mask) | ((newValueAtIndex << offset) & mask);
 
     return PackedCounter.wrap(bytes32(rawPackedCounter));
