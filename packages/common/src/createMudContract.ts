@@ -54,6 +54,7 @@ export function createMudContract<
       {},
       {
         get(_, functionName: string) {
+          // TODO: make sure we have an underlying function to call?
           return async (args: any[]) => {
             if (!nonceManager.hasNonce()) {
               await nonceManager.resetNonce();
