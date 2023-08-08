@@ -26,9 +26,11 @@ export async function setupNetwork() {
 
   const clientOptions = {
     chain: networkConfig.chain,
-    transport: mudTransportObserver(http()),
+    transport: mudTransportObserver(http(networkConfig.rpcHttpUrl ?? undefined)),
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
+
+  console.log("client options", clientOptions);
 
   const publicClient = createPublicClient(clientOptions);
 

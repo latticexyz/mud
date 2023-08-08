@@ -31,5 +31,6 @@ export async function getNetworkConfig() {
     worldAddress,
     initialBlockNumber,
     indexerUrl: params.get("indexerUrl"),
+    rpcHttpUrl: params.get("rpcHttpUrl"),
   };
 }
