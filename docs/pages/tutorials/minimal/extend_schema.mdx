@@ -20,7 +20,7 @@ For the sake of simplicity, we will implement this in the `increment` function r
    ```
 
    <details>
-  <summary>The complete file</summary>
+<summary>The complete file</summary>
 
    ```ts
    import { mudConfig } from "@latticexyz/world/register";
@@ -75,27 +75,29 @@ For the sake of simplicity, we will implement this in the `increment` function r
      To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud`).
 
       <details>
-<summary>The complete file</summary>
+   <summary>
+     The complete file
+   </summary>
 
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+     ```solidity
+     // SPDX-License-Identifier: MIT
+     pragma solidity >=0.8.0;
 
-import { System } from "@latticexyz/world/src/System.sol";
-import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+     import { System } from "@latticexyz/world/src/System.sol";
+     import { Counter, History, HistoryData } from "../codegen/Tables.sol";
 
-contract IncrementSystem is System {
-  function increment() public returns (uint32) {
-    uint32 counter = Counter.get();
-    uint32 newValue = counter + 1;
-    Counter.set(newValue);
-    History.set(newValue, block.number, block.timestamp);
-    return newValue;
-  }
-}
-```
+     contract IncrementSystem is System {
+       function increment() public returns (uint32) {
+         uint32 counter = Counter.get();
+         uint32 newValue = counter + 1;
+         Counter.set(newValue);
+         History.set(newValue, block.number, block.timestamp);
+         return newValue;
+       }
+     }
+     ```
 
-   </details>
+      </details>
 
 ````
 
