@@ -29,8 +29,8 @@ describe("Sync from indexer", async () => {
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
+  let indexerIteration = 1;
   let indexer: ReturnType<typeof startIndexer>;
-  const indexerUrl = "http://localhost:3001";
 
   beforeEach(async () => {
     await deployContracts(rpcHttpUrl);
@@ -42,7 +42,8 @@ describe("Sync from indexer", async () => {
     page = browserAndPage.page;
 
     // Start indexer
-    indexer = startIndexer(path.join(__dirname, "anvil.db"), rpcHttpUrl, asyncErrorHandler.reportError);
+    const port = 3000 + indexerIteration++;
+    indexer = startIndexer(port, path.join(__dirname, `anvil-${port}.db`), rpcHttpUrl, asyncErrorHandler.reportError);
     await indexer.doneSyncing;
   });
 
@@ -54,7 +55,7 @@ describe("Sync from indexer", async () => {
   });
 
   test("should sync test data", async () => {
-    await openClientWithRootAccount(page, { indexerUrl });
+    await openClientWithRootAccount(page, { indexerUrl: indexer.url });
     await waitForInitialSync(page);
 
     // Write data to the contracts, expect the client to be synced
@@ -76,7 +77,7 @@ describe("Sync from indexer", async () => {
   test("should log error if indexer is down", async () => {
     await indexer.kill();
 
-    await openClientWithRootAccount(page, { indexerUrl });
+    await openClientWithRootAccount(page, { indexerUrl: indexer.url });
     await waitForInitialSync(page);
 
     expect(asyncErrorHandler.getErrors()).toHaveLength(1);
@@ -84,7 +85,7 @@ describe("Sync from indexer", async () => {
   });
 
   test("should sync number list modified via system", async () => {
-    await openClientWithRootAccount(page, { indexerUrl });
+    await openClientWithRootAccount(page, { indexerUrl: indexer.url });
     await waitForInitialSync(page);
 
     // Push one element to the array

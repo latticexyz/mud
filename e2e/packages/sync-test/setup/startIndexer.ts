@@ -1,25 +1,24 @@
 import chalk from "chalk";
 import { execa } from "execa";
-import { truncateSync } from "node:fs";
+import { rmSync } from "node:fs";
 import path from "node:path";
 
-export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError: (error: string) => void) {
+export function startIndexer(
+  port: number,
+  sqliteFilename: string,
+  rpcUrl: string,
+  reportError: (error: string) => void
+) {
   let resolve: () => void;
   let reject: (reason?: string) => void;
 
   console.log(chalk.magenta("[indexer]:"), "start syncing");
 
-  try {
-    // attempt to delete file to start a fresh indexer
-    truncateSync(sqliteFilename);
-  } catch (error) {
-    console.log("could not delete", sqliteFilename, error);
-  }
-
   const proc = execa("pnpm", ["start"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env: {
       DEBUG: "mud:store-indexer",
+      PORT: port.toString(),
       CHAIN_ID: "31337",
       RPC_HTTP_URL: rpcUrl,
       SQLITE_FILENAME: sqliteFilename,
@@ -59,12 +58,28 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
     console.log(chalk.magentaBright("[indexer ingress]:", dataString));
   });
 
+  function cleanUp() {
+    try {
+      // attempt to delete file to start a fresh indexer
+      rmSync(sqliteFilename);
+    } catch (error) {
+      console.log("could not delete", sqliteFilename, error);
+    }
+  }
+
   let exited = false;
   proc.once("exit", () => {
     exited = true;
+    cleanUp();
+  });
+
+  let closed = false;
+  proc.once("close", () => {
+    closed = true;
   });
 
   return {
+    url: `http://127.0.0.1:${port}`,
     doneSyncing: new Promise<void>((res, rej) => {
       resolve = res;
       reject = rej;
@@ -72,6 +87,11 @@ export function startIndexer(sqliteFilename: string, rpcUrl: string, reportError
     process: proc,
     kill: () =>
       new Promise<void>((resolve) => {
+        // check if this CI edge case is happening
+        if (closed && !exited) {
+          throw new Error("indexer subprocess closed but not exited");
+        }
+
         if (exited) {
           return resolve();
         }
