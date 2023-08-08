@@ -59,8 +59,8 @@ export function startIndexer(
   });
 
   function cleanUp() {
+    // attempt to clean up sqlite file
     try {
-      // attempt to delete file to start a fresh indexer
       rmSync(sqliteFilename);
     } catch (error) {
       console.log("could not delete", sqliteFilename, error);
@@ -73,11 +73,6 @@ export function startIndexer(
     cleanUp();
   });
 
-  let closed = false;
-  proc.once("close", () => {
-    closed = true;
-  });
-
   return {
     url: `http://127.0.0.1:${port}`,
     doneSyncing: new Promise<void>((res, rej) => {
@@ -87,11 +82,6 @@ export function startIndexer(
     process: proc,
     kill: () =>
       new Promise<void>((resolve) => {
-        // check if this CI edge case is happening
-        if (closed && !exited) {
-          throw new Error("indexer subprocess closed but not exited");
-        }
-
         if (exited) {
           return resolve();
         }
