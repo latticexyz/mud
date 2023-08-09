@@ -235,6 +235,12 @@ importers:
       execa:
         specifier: ^7.0.0
         version: 7.0.0
+      p-queue:
+        specifier: ^7.3.4
+        version: 7.3.4
+      p-retry:
+        specifier: ^5.1.2
+        version: 5.1.2
       prettier:
         specifier: ^2.8.4
         version: 2.8.4
@@ -2288,7 +2294,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       ajv: 6.12.6
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       espree: 9.5.1
       globals: 13.20.0
       ignore: 5.2.4
@@ -2657,7 +2663,7 @@ packages:
     engines: {node: '>=10.10.0'}
     dependencies:
       '@humanwhocodes/object-schema': 1.2.1
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -3563,6 +3569,10 @@ packages:
       csstype: 3.1.2
     dev: true
 
+  /@types/retry@0.12.1:
+    resolution: {integrity: sha512-xoDlM2S4ortawSWORYqsdU+2rxdh4LRW9ytc3zmT37RIKQh6IHyKwwtKhKis9ah8ol07DCkZxPt8BBvPjC6v4g==}
+    dev: false
+
   /@types/scheduler@0.16.3:
     resolution: {integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==}
     dev: true
@@ -3644,7 +3654,7 @@ packages:
       '@typescript-eslint/scope-manager': 5.46.1
       '@typescript-eslint/type-utils': 5.46.1(eslint@8.29.0)(typescript@5.1.6)
       '@typescript-eslint/utils': 5.46.1(eslint@8.29.0)(typescript@5.1.6)
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       eslint: 8.29.0
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
@@ -3669,7 +3679,7 @@ packages:
       '@typescript-eslint/scope-manager': 5.46.1
       '@typescript-eslint/types': 5.46.1
       '@typescript-eslint/typescript-estree': 5.46.1(typescript@5.1.6)
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       eslint: 8.29.0
       typescript: 5.1.6
     transitivePeerDependencies:
@@ -3696,7 +3706,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.46.1(typescript@5.1.6)
       '@typescript-eslint/utils': 5.46.1(eslint@8.29.0)(typescript@5.1.6)
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       eslint: 8.29.0
       tsutils: 3.21.0(typescript@5.1.6)
       typescript: 5.1.6
@@ -3720,7 +3730,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.46.1
       '@typescript-eslint/visitor-keys': 5.46.1
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.0
@@ -5100,18 +5110,6 @@ packages:
       time-zone: 1.0.0
     dev: true
 
-  /debug@4.3.4:
-    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.1.2
-    dev: true
-
   /debug@4.3.4(supports-color@8.1.1):
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -5791,7 +5789,7 @@ packages:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.3
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       doctrine: 3.0.0
       escape-string-regexp: 4.0.0
       eslint-scope: 7.2.0
@@ -8053,7 +8051,7 @@ packages:
       chalk: 3.0.0
       commander: 4.1.1
       cosmiconfig: 6.0.0
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       dedent: 0.7.0
       execa: 3.4.0
       listr: 0.14.3
@@ -8978,6 +8976,27 @@ packages:
       aggregate-error: 3.1.0
     dev: true
 
+  /p-queue@7.3.4:
+    resolution: {integrity: sha512-esox8CWt0j9EZECFvkFl2WNPat8LN4t7WWeXq73D9ha0V96qPRufApZi4ZhPwXAln1uVVal429HVVKPa2X0yQg==}
+    engines: {node: '>=12'}
+    dependencies:
+      eventemitter3: 4.0.7
+      p-timeout: 5.1.0
+    dev: false
+
+  /p-retry@5.1.2:
+    resolution: {integrity: sha512-couX95waDu98NfNZV+i/iLt+fdVxmI7CbrrdC2uDWfPdUAApyxT4wmDlyOtR5KtTDmkDO0zDScDjDou9YHhd9g==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      '@types/retry': 0.12.1
+      retry: 0.13.1
+    dev: false
+
+  /p-timeout@5.1.0:
+    resolution: {integrity: sha512-auFDyzzzGZZZdHz3BtET9VEz0SE/uMEAx7uWfGPucfzEwwe/xH0iVeZibQmANYE/hp9T2+UUZT5m+BKyrDp3Ew==}
+    engines: {node: '>=12'}
+    dev: false
+
   /p-try@1.0.0:
     resolution: {integrity: sha512-U1etNYuMJoIz3ZXSrrySFjsXQTWOx2/jdi86L+2pRvph/qMKL6sbcCYdH23fqsbm8TH2Gn0OybpT4eSFlCVHww==}
     engines: {node: '>=4'}
@@ -9719,6 +9738,11 @@ packages:
     dependencies:
       onetime: 5.1.2
       signal-exit: 3.0.7
+    dev: false
+
+  /retry@0.13.1:
+    resolution: {integrity: sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==}
+    engines: {node: '>= 4'}
     dev: false
 
   /reusify@1.0.4:
