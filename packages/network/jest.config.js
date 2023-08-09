@@ -10,6 +10,7 @@ export default {
     // jest can't handle esm imports, so we import the typescript source instead
     "^@latticexyz/common$": "<rootDir>/../common/src/index.ts",
     "^@latticexyz/common/chains$": "<rootDir>/../common/src/chains/index.ts",
+    "^@latticexyz/common/deprecated$": "<rootDir>/../common/src/deprecated/index.ts",
     "^@latticexyz/common/utils$": "<rootDir>/../common/src/utils/index.ts",
     "^@latticexyz/recs$": "<rootDir>/../recs/src/index.ts",
     "^@latticexyz/schema-type$": "<rootDir>/../schema-type/src/typescript/index.ts",
