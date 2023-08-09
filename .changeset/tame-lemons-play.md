@@ -1,9 +1,9 @@
 ---
 "@latticexyz/cli": patch
 "@latticexyz/common": major
-"@latticexyz/create-mud": major
 "@latticexyz/recs": patch
 "@latticexyz/store-indexer": patch
+"create-mud": major
 ---
 
 Templates and examples now use MUD's new sync packages, all built on top of [viem](https://viem.sh/). This greatly speeds up and stabilizes our networking code and improves types throughout.
