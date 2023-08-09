@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/std-contracts",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.1",
   "description": "MUD Contracts Standard Library",
   "repository": {
     "type": "git",
