@@ -22,7 +22,6 @@
     "test": "tsc --noEmit && jest"
   },
   "dependencies": {
-    "@latticexyz/common": "workspace:*",
     "ethers": "^5.7.2",
     "mobx": "^6.7.0",
     "proxy-deep": "^3.1.1",
