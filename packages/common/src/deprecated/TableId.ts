@@ -1,5 +1,6 @@
 import { Hex, stringToHex, hexToString, sliceHex, concatHex } from "viem";
 
+/** @deprecated Use `tableIdToHex` and `hexToTableId` instead. */
 export class TableId {
   readonly namespace: string;
   readonly name: string;

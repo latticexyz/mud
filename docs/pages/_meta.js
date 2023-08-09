@@ -1,3 +1,5 @@
+import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
+
 export default {
   index: "Overview",
   introduction: "Introduction",
@@ -13,10 +15,25 @@ export default {
   tutorials: "Tutorials",
   reference: "Reference",
   contribute: "Contribute",
-  roadmap: {
-    title: "Roadmap",
+  changelog: "Changelog",
+  version: {
+    title: worldPackageJson.version,
+    type: "menu",
+    items: {
+      changelog: {
+        title: "Changelog",
+        href: "/changelog",
+      },
+      contribute: {
+        title: "Contribute",
+        href: "/contribute",
+      },
+    },
+  },
+  status: {
+    title: "Status",
     type: "page",
-    href: "https://roadmap.mud.dev",
+    href: "https://status.mud.dev",
     newWindow: true,
   },
   community: {
