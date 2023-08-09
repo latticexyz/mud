@@ -2294,7 +2294,7 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       ajv: 6.12.6
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       espree: 9.5.1
       globals: 13.20.0
       ignore: 5.2.4
@@ -2663,7 +2663,7 @@ packages:
     engines: {node: '>=10.10.0'}
     dependencies:
       '@humanwhocodes/object-schema': 1.2.1
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -3654,7 +3654,7 @@ packages:
       '@typescript-eslint/scope-manager': 5.46.1
       '@typescript-eslint/type-utils': 5.46.1(eslint@8.29.0)(typescript@5.1.6)
       '@typescript-eslint/utils': 5.46.1(eslint@8.29.0)(typescript@5.1.6)
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       eslint: 8.29.0
       ignore: 5.2.4
       natural-compare-lite: 1.4.0
@@ -3679,7 +3679,7 @@ packages:
       '@typescript-eslint/scope-manager': 5.46.1
       '@typescript-eslint/types': 5.46.1
       '@typescript-eslint/typescript-estree': 5.46.1(typescript@5.1.6)
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       eslint: 8.29.0
       typescript: 5.1.6
     transitivePeerDependencies:
@@ -3706,7 +3706,7 @@ packages:
     dependencies:
       '@typescript-eslint/typescript-estree': 5.46.1(typescript@5.1.6)
       '@typescript-eslint/utils': 5.46.1(eslint@8.29.0)(typescript@5.1.6)
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       eslint: 8.29.0
       tsutils: 3.21.0(typescript@5.1.6)
       typescript: 5.1.6
@@ -3730,7 +3730,7 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.46.1
       '@typescript-eslint/visitor-keys': 5.46.1
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       globby: 11.1.0
       is-glob: 4.0.3
       semver: 7.5.0
@@ -5110,18 +5110,6 @@ packages:
       time-zone: 1.0.0
     dev: true
 
-  /debug@4.3.4:
-    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-    dependencies:
-      ms: 2.1.2
-    dev: true
-
   /debug@4.3.4(supports-color@8.1.1):
     resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
@@ -5801,7 +5789,7 @@ packages:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.3
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       doctrine: 3.0.0
       escape-string-regexp: 4.0.0
       eslint-scope: 7.2.0
@@ -8063,7 +8051,7 @@ packages:
       chalk: 3.0.0
       commander: 4.1.1
       cosmiconfig: 6.0.0
-      debug: 4.3.4
+      debug: 4.3.4(supports-color@8.1.1)
       dedent: 0.7.0
       execa: 3.4.0
       listr: 0.14.3
