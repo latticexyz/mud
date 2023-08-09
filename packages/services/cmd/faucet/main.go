@@ -55,7 +55,7 @@ import (
 
 var (
 	// General flags.
-	wsUrl = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
+	wsUrl = flag.String("ws-url", "ws://127.0.0.1:8545", "Websocket Url")
 	port  = flag.Int("port", 50081, "gRPC Server Port")
 	// Dev mode.
 	devMode = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")

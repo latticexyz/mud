@@ -6,7 +6,7 @@ Every service is a Go stand-alone binary that can be run individually. Entry-poi
 
 Each service exposes a gRPC server and a wrapper HTPP server (for ability to make gRPC wrapped requests from a web client, e.g. TypeScript MUD client). By default the gRPC server runs at the default `PORT` (specified above and in each `main.go` file) and the HTTP server runs at that `PORT + 1`. For example, the snapshot service has a gRPC server exposed on `50061` and a wrapper server is automatically exposed on `50062`.
 
-Each service has specific command-line arguments. Each service requires a connection to an Ethereum node (for same network where your MUD application is deployed on) via a websocket. By default, all websocket connection URL parameters use a `localhost` instance running at port `8545`, so the full URL is `ws://localhost:8545`.
+Each service has specific command-line arguments. Each service requires a connection to an Ethereum node (for same network where your MUD application is deployed on) via a websocket. By default, all websocket connection URL parameters use a `127.0.0.1` instance running at port `8545`, so the full URL is `ws://127.0.0.1:8545`.
 
 #### Dockerfile
 
@@ -59,7 +59,7 @@ As mentioned earlier, there is an HTTP server that gets run along the gRPC serve
 For quick testing or experimentation with the services, we recommend using [grpcurl](https://github.com/fullstorydev/grpcurl). For example, once you build and run the snapshot service locally you can test the endpoint which returns the latest known and computed state to the service like this
 
 ```
-grpcurl -plaintext -d '{"worldAddress": "<WORLD_ADDRESS>"}' localhost:50061 ecssnapshot.ECSStateSnapshotService/GetStateLatest
+grpcurl -plaintext -d '{"worldAddress": "<WORLD_ADDRESS>"}' 127.0.0.1:50061 ecssnapshot.ECSStateSnapshotService/GetStateLatest
 ```
 
 Note that the port is the gRPC server port and not the HTTP server port, since we are sending a raw gRPC request directly.

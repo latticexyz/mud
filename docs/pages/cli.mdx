@@ -76,7 +76,7 @@ To run the dev server with a custom development node:
 anvil --port 8545
 
 # Terminal 2:
-pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc localhost:8545
+pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc 127.0.0.1:8545
 ```
 
 ### `deploy`
@@ -89,7 +89,7 @@ When using the deployer, you must set the private key of the deployer using the 
 
 To set the profile used by the deployer, either set your `FOUNDRY_PROFILE` environment variable, or pass `--profile <profileName>` to the deployer (eg: `mud deploy --profile optimism-mainnet`).
 
-The RPC used by the deployer will be `http://localhost:8545` if no profile is set, otherwise it will be read from the `eth_rpc_url` configuration field of the Foundry profile.
+The RPC used by the deployer will be `http://127.0.0.1:8545` if no profile is set, otherwise it will be read from the `eth_rpc_url` configuration field of the Foundry profile.
 
 Example profile:
 

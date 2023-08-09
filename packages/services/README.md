@@ -21,7 +21,7 @@ The following services are available for use with MUD V2. For more details on ea
 1. Install Docker for Mac (https://docs.docker.com/docker-for-mac/install/)
 2. Install Docker Compose (https://docs.docker.com/compose/install/)
 3. Run `docker-compose -f docker-compose.mode.yaml up`. This will start services for both MODE and PostgresDB.
-4. By default it will connect to a local anvil node at `localhost:8545`. If you want to connect to a different node, you can change the `rpc.http` and `rpc.ws` fields in the `config.mode-docker.yaml` file.
+4. By default it will connect to a local anvil node at `127.0.0.1:8545`. If you want to connect to a different node, you can change the `rpc.http` and `rpc.ws` fields in the `config.mode-docker.yaml` file.
 
 #### Running the MODE service
 
@@ -52,13 +52,13 @@ make mode
 
 ```yaml
 chains:
-  - name: "localhost"
+  - name: "127.0.0.1"
     id: "31337"
     rpc:
-      http: "http://localhost:8545"
-      ws: "ws://localhost:8545"
+      http: "http://127.0.0.1:8545"
+      ws: "ws://127.0.0.1:8545"
 db:
-  dsn: "postgresql://localhost:5432/mode_ephemeral?sslmode=disable&replication=database"
+  dsn: "postgresql://127.0.0.1:5432/mode_ephemeral?sslmode=disable&replication=database"
   wipe: false
 sync:
   enabled: true
@@ -70,7 +70,7 @@ metrics:
   port: 6060
 ```
 
-7. If you're running with the default localhost / `31337` chain, make sure there is a local node running for the chain you want to connect to. For example, a hardhat node or an anvil node.
+7. If you're running with the default 127.0.0.1 / `31337` chain, make sure there is a local node running for the chain you want to connect to. For example, a hardhat node or an anvil node.
 8. Run the MODE service
 
 ```bash
@@ -92,7 +92,7 @@ brew install grpcurl
 10. MODE exposes a `QueryLayer` gRPC server on port `50091` by default. You can use a gRPC client to interact with the service API. For example, to query for the current state of an indexed MUD world deployed at address `0xff738496c8cd898dC31b670D067162200C5c20A1` and on local chain with ID `31337`, you can use the `GetState` RPC endpoint:
 
 ```bash
-grpcurl -plaintext -d '{"chainTables": [], "worldTables": [], "namespace": {"chainId":"31337", "worldAddress": "0xff738496c8cd898dC31b670D067162200C5c20A1"}}' localhost:50091 mode.QueryLayer/GetState
+grpcurl -plaintext -d '{"chainTables": [], "worldTables": [], "namespace": {"chainId":"31337", "worldAddress": "0xff738496c8cd898dC31b670D067162200C5c20A1"}}' 127.0.0.1:50091 mode.QueryLayer/GetState
 ```
 
 After the initial setup, to quickly re-build and run the MODE service, you can use

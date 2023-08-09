@@ -33,7 +33,7 @@ describe("Sync from MODE", async () => {
   const anvilPort = 8545;
   const rpc = `http://127.0.0.1:${anvilPort}`;
   let modeProcess: ExecaChildProcess;
-  const modeUrl = "http://localhost:50092";
+  const modeUrl = "http://127.0.0.1:50092";
 
   beforeEach(async () => {
     asyncErrorHandler.resetErrors();

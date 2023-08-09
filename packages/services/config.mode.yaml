@@ -3,8 +3,8 @@ chains:
   - name: "localhost"
     id: "31337"
     rpc:
-      http: "http://localhost:8545"
-      ws: "ws://localhost:8545"
+      http: "http://127.0.0.1:8545"
+      ws: "ws://127.0.0.1:8545"
 db:
   name: "mode_ephemeral"
   host: "localhost"

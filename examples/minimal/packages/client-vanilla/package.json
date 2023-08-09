@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "wait-port localhost:8545 && vite",
+    "dev": "wait-port 127.0.0.1:8545 && vite",
     "preview": "vite preview"
   },
   "dependencies": {

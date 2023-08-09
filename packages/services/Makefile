@@ -1,4 +1,4 @@
-WS_URL=ws://localhost:8545
+WS_URL=ws://127.0.0.1:8545
 
 GITCOMMIT := $(shell git rev-parse HEAD)
 GITDATE := $(shell git show -s --format='%ct')
