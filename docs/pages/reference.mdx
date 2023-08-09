@@ -35,3 +35,58 @@
   ```
   pnpm mud set-version --commit <hash> && pnpm install
   ```
+
+## Debugging
+
+### Onchain components
+
+#### Foundry Debugging
+
+The MUD onchain components typically use the [Foundry development stack](https://book.getfoundry.sh/), meaning any of Foundry's debugging tools are available.
+Use this prodecure to view the output from [`anvil`](https://book.getfoundry.sh/reference/anvil/):
+
+1. Add `console.log` to your systems, edit their Solidity files.
+
+   - Import console.log.
+
+     ```solidity
+     import { console } from "forge-std/console.sol";
+     ```
+
+   - Add `console.log` statements inside your Solidity functions.
+
+     ```solidity
+     console.log("newValue:", newValue);
+     ```
+
+1. Run `anvil` manually.
+
+   ```sh
+   anvil -b 1 --block-base-fee-per-gas 0 | tee anvil.log
+   ```
+
+   You do not have to use `tee anvil.log`, but `anvil` logs so much that it is often useful to be able to look for information in the log file after it has scrolled off the screen.
+
+1. Edit `packages/contracts/package.json` to change the `scripts.dev` definition.
+
+   ```
+   "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc http://127.0.0.1:8545",
+   ```
+
+   Use `127.0.0.1`, there is a weird bug that makes it a problem to use `localhost` is some circumstances.
+
+1. Run `pnpm dev` normally.
+
+   Note that because of the way things work, there might be multiple copies of the same `console.log` message.
+
+#### MUD devtools
+
+You can also see what is happening from your application by enabling to MUD devtools.
+To do so, add this code to the client side of your application:
+
+```javascript
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
+mountDevTools();
+```
+
+In the minimal application you get from `pnpm create mud@<version> <app>` this is already included.
