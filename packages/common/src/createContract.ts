@@ -3,7 +3,6 @@ import {
   Account,
   Address,
   Chain,
-  EstimateContractGasParameters,
   GetContractParameters,
   GetContractReturnType,
   Hex,
@@ -19,7 +18,7 @@ import pRetry from "p-retry";
 import { createNonceManager } from "./createNonceManager";
 import { debug as parentDebug } from "./debug";
 
-const debug = parentDebug.extend("createNonceManager");
+const debug = parentDebug.extend("createContract");
 
 // copied from viem because it isn't exported
 // TODO: import from viem?
@@ -33,17 +32,7 @@ function getFunctionParameters(values: [args?: readonly unknown[], options?: obj
   return { args, options };
 }
 
-type CreateMudContractOptions<
-  TTransport extends Transport = Transport,
-  TChain extends Chain | undefined = Chain | undefined,
-  TAccount extends Account | undefined = Account | undefined,
-  TAbi extends Abi | readonly unknown[] = Abi,
-  TPublicClient extends PublicClient<TTransport, TChain> | unknown = unknown,
-  TWalletClient extends WalletClient<TTransport, TChain, TAccount> | unknown = unknown,
-  TAddress extends Address = Address
-> = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>>;
-
-export function createMudContract<
+export function createContract<
   TTransport extends Transport,
   TAddress extends Address,
   TAbi extends Abi,
@@ -56,14 +45,8 @@ export function createMudContract<
   address,
   publicClient,
   walletClient,
-}: CreateMudContractOptions<
-  TTransport,
-  TChain,
-  TAccount,
-  TAbi,
-  TPublicClient,
-  TWalletClient,
-  TAddress
+}: Required<
+  GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>
 >): GetContractReturnType<TAbi, TPublicClient, TWalletClient, TAddress> {
   const contract = getContract<TTransport, TAddress, TAbi, TChain, TAccount, TPublicClient, TWalletClient>({
     abi,

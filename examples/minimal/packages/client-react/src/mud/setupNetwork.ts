@@ -6,7 +6,7 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
-import { createBurnerAccount, createMudContract, mudTransportObserver } from "@latticexyz/common";
+import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -16,7 +16,7 @@ export async function setupNetwork() {
 
   const clientOptions = {
     chain: networkConfig.chain,
-    transport: mudTransportObserver(fallback([webSocket(), http()])),
+    transport: transportObserver(fallback([webSocket(), http()])),
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
 
@@ -70,7 +70,7 @@ export async function setupNetwork() {
     latestBlock$,
     blockStorageOperations$,
     waitForTransaction,
-    worldContract: createMudContract({
+    worldContract: createContract({
       address: networkConfig.worldAddress as Hex,
       abi: IWorld__factory.abi,
       publicClient,

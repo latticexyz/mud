@@ -70,7 +70,7 @@ As you migrate, you may find some features replaced, removed, or not included by
 
    + const publicClient = createPublicClient({
    +   chain: networkConfig.chain,
-   +   transport: mudTransportObserver(fallback([webSocket(), http()])),
+   +   transport: transportObserver(fallback([webSocket(), http()])),
    +   pollingInterval: 1000,
    + });
 
@@ -88,7 +88,7 @@ As you migrate, you may find some features replaced, removed, or not included by
    + const burnerWalletClient = createWalletClient({
    +   account: burnerAccount,
    +   chain: networkConfig.chain,
-   +   transport: mudTransportObserver(fallback([webSocket(), http()])),
+   +   transport: transportObserver(fallback([webSocket(), http()])),
    +   pollingInterval: 1000,
    + });
    ```

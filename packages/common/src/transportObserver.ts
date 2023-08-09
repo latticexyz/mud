@@ -1,9 +1,9 @@
 import { Hex, Transport, keccak256 } from "viem";
 import { debug as parentDebug } from "./debug";
 
-const debug = parentDebug.extend("mudTransportObserver");
+const debug = parentDebug.extend("transportObserver");
 
-export function mudTransportObserver<TTransport extends Transport>(transport: TTransport): TTransport {
+export function transportObserver<TTransport extends Transport>(transport: TTransport): TTransport {
   return ((opts) => {
     const result = transport(opts);
     const request: typeof result.request = async (req) => {
