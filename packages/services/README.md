@@ -70,7 +70,7 @@ metrics:
   port: 6060
 ```
 
-7. If you're running with the default 127.0.0.1 / `31337` chain, make sure there is a local node running for the chain you want to connect to. For example, a hardhat node or an anvil node.
+7. If you're running with the default local (`31337`) chain, make sure there is a local node running for the chain you want to connect to. For example, a hardhat node or an anvil node.
 8. Run the MODE service
 
 ```bash
