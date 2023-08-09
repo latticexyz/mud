@@ -11,12 +11,13 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./chains": "./dist/chains.js",
     "./codegen": "./dist/codegen.js",
+    "./deprecated": "./dist/deprecated.js",
+    "./errors": "./dist/errors.js",
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
-    "./utils": "./dist/utils.js",
-    "./errors": "./dist/errors.js",
-    "./chains": "./dist/chains.js"
+    "./utils": "./dist/utils.js"
   },
   "typesVersions": {
     "*": {
