@@ -2,7 +2,7 @@ import { ComponentValue } from "@latticexyz/recs";
 import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type/deprecated";
 import { QueryLayerClient } from "@latticexyz/services/mode";
 import { arrayToHex } from "@latticexyz/utils";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { Contract } from "ethers";
 import { NetworkEvents } from "../../types";
 

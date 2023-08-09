@@ -1,4 +1,4 @@
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { SchemaType } from "@latticexyz/schema-type/deprecated";
 
 export const schemaTableId = new TableId("mudstore", "schema");
