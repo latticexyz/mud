@@ -61,7 +61,7 @@ As you migrate, you may find some features replaced, removed, or not included by
    + import { createFaucetService } from "@latticexyz/network";
    + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther, ClientConfig } from "viem";
    + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
-   + import { createContract } from "@latticexyz/common";
+   + import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
    ```
 
    ```diff

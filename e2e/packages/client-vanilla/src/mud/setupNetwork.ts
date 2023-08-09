@@ -1,4 +1,4 @@
-import { createPublicClient, http, createWalletClient, getContract, Hex, parseEther, ClientConfig } from "viem";
+import { createPublicClient, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
 import { createFaucetService } from "@latticexyz/network";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
@@ -6,7 +6,7 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
-import { createBurnerAccount, transportObserver } from "@latticexyz/common";
+import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -28,6 +28,13 @@ export async function setupNetwork() {
   const burnerWalletClient = createWalletClient({
     ...clientOptions,
     account: burnerAccount,
+  });
+
+  const worldContract = createContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorld__factory.abi,
+    publicClient,
+    walletClient: burnerWalletClient,
   });
 
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
@@ -70,14 +77,9 @@ export async function setupNetwork() {
     playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     publicClient,
     walletClient: burnerWalletClient,
+    worldContract,
     latestBlock$,
     blockStorageOperations$,
     waitForTransaction,
-    worldContract: getContract({
-      address: networkConfig.worldAddress as Hex,
-      abi: IWorld__factory.abi,
-      publicClient,
-      walletClient: burnerWalletClient,
-    }),
   };
 }
