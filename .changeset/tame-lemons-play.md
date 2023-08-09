@@ -12,7 +12,7 @@ These new sync packages come with support for our `recs` package, including `enc
 
 If you're using `store-cache` and `useRow`/`useRows`, you should wait to upgrade until we have a suitable replacement for those libraries. We're working on a [sql.js](https://github.com/sql-js/sql.js/)-powered sync module that will replace `store-cache`.
 
-## Migrate existing RECS apps to new sync packages
+**Migrate existing RECS apps to new sync packages**
 
 As you migrate, you may find some features replaced, removed, or not included by default. Please [open an issue](https://github.com/latticexyz/mud/issues/new) and let us know if we missed anything.
 
