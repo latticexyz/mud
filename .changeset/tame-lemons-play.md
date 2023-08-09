@@ -29,7 +29,7 @@ As you migrate, you may find some features replaced, removed, or not included by
    + export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
    ```
 
-3. In `getNetworkConfig.ts`, we'll remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
+3. In `getNetworkConfig.ts`, remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
 
    ```diff
    - export async function getNetworkConfig(): Promise<NetworkConfig> {
@@ -177,10 +177,10 @@ As you migrate, you may find some features replaced, removed, or not included by
      .subscribe(clock.update); // Update the local clock
    ```
 
-If you're using the previous `LoadingState` component, you'll want to migrate to the new `SyncProgress`.
+If you're using the previous `LoadingState` component, you'll want to migrate to the new `SyncProgress`:
 
 ```ts
-import { SyncStep } from "@latticexyz/store-sync/recs";
+import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
 
 const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
   message: "Connecting",
