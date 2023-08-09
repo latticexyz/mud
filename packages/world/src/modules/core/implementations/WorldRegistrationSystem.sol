@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
-
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
@@ -22,9 +18,10 @@ import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
 /**
- * Functions related to registering resources in the World.
+ * Functions related to registering resources other than tables in the World.
+ * Registering tables is implemented in StoreRegistrationSystem.sol
  */
-contract RegistrationSystem is System, IWorldErrors {
+contract WorldRegistrationSystem is System, IWorldErrors {
   using ResourceSelector for bytes32;
 
   /**
@@ -44,68 +41,6 @@ contract RegistrationSystem is System, IWorldErrors {
 
     // Give caller access to the new namespace
     ResourceAccess.set(resourceSelector, _msgSender(), true);
-  }
-
-  /**
-   * Register a table with given schema in the given namespace
-   */
-  function registerTable(
-    bytes32 resourceSelector,
-    Schema keySchema,
-    Schema valueSchema,
-    string[] calldata keyNames,
-    string[] calldata fieldNames
-  ) public virtual {
-    // Require the name to not be the namespace's root name
-    if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
-
-    // If the namespace doesn't exist yet, register it
-    // otherwise require caller to own the namespace
-    bytes16 namespace = resourceSelector.getNamespace();
-    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, _msgSender());
-
-    // Require no resource to exist at this selector yet
-    if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(resourceSelector.toString());
-    }
-
-    // Store the table resource type
-    ResourceType.set(resourceSelector, Resource.TABLE);
-
-    // Register the table's schema
-    StoreCore.registerTable(resourceSelector, keySchema, valueSchema, keyNames, fieldNames);
-  }
-
-  /**
-   * Register the given store hook for the table at the given namespace and name.
-   * Hooks on table names must implement the IStoreHook interface,
-   * and hooks on system names must implement the ISystemHook interface.
-   */
-  function registerHook(bytes32 resourceSelector, address hook) public virtual {
-    Resource resourceType = ResourceType.get(resourceSelector);
-
-    if (resourceType == Resource.TABLE) {
-      return registerStoreHook(resourceSelector, IStoreHook(hook));
-    }
-
-    if (resourceType == Resource.SYSTEM) {
-      return registerSystemHook(resourceSelector, ISystemHook(hook));
-    }
-
-    revert InvalidSelector(resourceSelector.toString());
-  }
-
-  /**
-   * Register a hook for the table at the given namepace and name.
-   * Requires the caller to own the namespace.
-   */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
-    // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(tableId, _msgSender());
-
-    // Register the hook
-    StoreCore.registerStoreHook(tableId, hook);
   }
 
   /**
