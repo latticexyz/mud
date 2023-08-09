@@ -1,66 +1,171 @@
 import WarningBox from "../components/WarningBox";
 import Logo from "../components/Logo";
+import Card from "../components/Card";
+import CardGrid from "../components/CardGrid";
+import Link from "next/link";
 
 <WarningBox
   title="MUD v2 is still in alpha"
   message={
     <>
-      <p>
-        Please note that MUD v2 is still under development and some APIs may change! Stay up to date with MUD core
-        development, changes, and&nbsp;
-        <a href="https://roadmap.mud.dev" target="_blank" style={{ textDecoration: "underline", color: "#7D221C" }}>
-          roadmap
-        </a> by checking out the <a
-          href="https://github.com/latticexyz/mud"
-          target="_blank"
-          style={{ textDecoration: "underline", color: "#7D221C" }}
-        >
-          Github repo
-        </a> and join the <a
-          href="https://lattice.xyz/discord"
-          target="_blank"
-          style={{ textDecoration: "underline", color: "#7D221C" }}
-        >
-          MUD Discord.
-        </a>{" "}
-      </p>
+      <p>Please note that MUD v2 is still under development and some APIs may change.</p>
       <div style={{ height: "12px" }} />
     </>
   }
 />
+
 <div style={{ display: "flex", justifyContent: "center" }}>
-  <div style={{ marginBottom: "24px", marginTop: "12px" }}>
+  <div style={{ marginTop: "12px" }}>
     <Logo />
   </div>
 </div>
 
-# MUD Introduction
+### Explore topics
 
-MUD is a framework for ambitious Ethereum applications. It compresses the complexity of building EVM apps with a tightly integrated software stack.
+<div style={{ height: "16px" }} />
 
-MUD comes with:
+<CardGrid>
+  <Link href="/introduction">
+    <Card
+      title="MUD introduction"
+      text="Learn the basics of MUD"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M10.1916 8.65L10.7233 11.8383C11.0658 13.8947 12.0425 15.7926 13.5166 17.2667L16.25 20L15.605 21.2917C15.2433 22.0133 15.385 22.885 15.955 23.455L18.2016 25.7017C18.5516 26.0517 18.75 26.53 18.75 27.0267V28.8417C18.75 29.5517 19.15 30.2 19.7866 30.5183L20.0416 30.645C20.7633 31.0067 21.635 30.865 22.205 30.295L23.41 29.09C25.2681 27.2315 26.5862 24.903 27.2233 22.3533C27.3062 22.0228 27.2942 21.6756 27.1886 21.3516C27.0831 21.0276 26.8883 20.74 26.6266 20.5217L24.41 18.675C23.9916 18.325 23.44 18.1767 22.9016 18.2667L20.9516 18.5917C20.6574 18.6407 20.3557 18.6187 20.0716 18.5277C19.7876 18.4367 19.5293 18.2792 19.3183 18.0683L18.8266 17.5767C18.6525 17.4026 18.5144 17.1959 18.4202 16.9684C18.326 16.7409 18.2775 16.4971 18.2775 16.2508C18.2775 16.0046 18.326 15.7608 18.4202 15.5333C18.5144 15.3058 18.6525 15.0991 18.8266 14.925L19.0433 14.705C19.3219 14.4264 19.6812 14.2427 20.0701 14.1799C20.459 14.117 20.8578 14.1783 21.21 14.355L22.215 14.8583C22.4682 14.9855 22.7551 15.0296 23.0349 14.9845C23.3146 14.9393 23.5731 14.8072 23.7734 14.6068C23.9738 14.4064 24.106 14.148 24.1511 13.8682C24.1963 13.5885 24.1521 13.3016 24.025 13.0483L23.75 12.5L25.8433 11.105C26.9289 10.3807 27.8067 9.38573 28.39 8.21834L28.6333 7.73167M10.1916 8.65C7.8285 10.6922 6.16176 13.421 5.42394 16.4559C4.68613 19.4908 4.91405 22.6803 6.07591 25.5794C7.23777 28.4785 9.27561 30.9426 11.9051 32.628C14.5346 34.3134 17.6247 35.1359 20.7441 34.9809C23.8635 34.8258 26.8567 33.7009 29.3061 31.7631C31.7555 29.8252 33.539 27.1712 34.4076 24.1711C35.2762 21.1711 35.1867 17.9747 34.1516 15.028C33.1165 12.0812 31.1873 9.52941 28.6333 7.73167M10.1916 8.65C12.9142 6.29069 16.3974 4.99445 20 5C23.215 5 26.1933 6.01 28.6333 7.73167"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+  <Link href="/quick-start">
+    <Card
+      title="Quickstart guide"
+      text="Setup your first project"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M6.25 22.5L23.75 3.75L20 17.5H33.75L16.25 36.25L20 22.5H6.25Z"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+  <Link href="/what-is-mud">
+    <Card
+      title="What is MUD?"
+      text="Take a deep dive into MUD"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M35 12.5L20 3.75L5 12.5M35 12.5L20 21.25M35 12.5V27.5L20 36.25M5 12.5L20 21.25M5 12.5V27.5L20 36.25M20 21.25V36.25"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+  <Link href="/tutorials">
+    <Card
+      title="Tutorials"
+      text="Learn how to build with MUD"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M20 10.07C17.2527 7.60561 13.6907 6.24492 10 6.25002C8.24667 6.25002 6.56333 6.55002 5 7.10335V30.8533C6.60603 30.2867 8.29694 29.9981 10 30C13.8417 30 17.3467 31.445 20 33.82M20 10.07C22.7472 7.60547 26.3093 6.24476 30 6.25002C31.7533 6.25002 33.4367 6.55002 35 7.10335V30.8533C33.394 30.2867 31.7031 29.9981 30 30C26.3093 29.9949 22.7473 31.3556 20 33.82M20 10.07V33.82"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+</CardGrid>
 
-1. **Store**: An [onchain database](store). No more bespoke data modeling for each app and gas-golfing events.
-2. **World**: An [entry-point kernel](world) that brings standardized access-control, upgrades, and modules.
-3. Blazing fast development tools based on [Foundry](https://github.com/foundry-rs/foundry)
-4. Client-side data-stores that magically reflect onchain state. No need to use view functions and events to get your contract data.
-5. **Indexer**: [An indexer](indexer) you can query with [tRPC](https://trpc.io/docs) that reflects your onchain state 1 to 1.
+### Community
 
-The projects built with MUD speak for themselves: some of the most complex applications on Ethereum have been built with the framework in record time. OPCraft, a fully onchain voxel world, was built by Lattice in 1.5 months. While it didn’t have the security and auditing requirement of financial applications, it handled more transaction throughput than most apps on Mainnet ever did in their lifetime: in 10 days, OPCraft players made 3.5 million transactions, filling the MUD onchain database with billions of gas worth of storage; with the client seamlessly handling synchronizing that state back. OPCraft used MUD without any additional tricks: large onchain applications with minimal client headaches can be yours too!
+<div style={{ height: "16px" }} />
 
-MUD is maximally onchain: the entire application state lives in the EVM, and the only requirement for clients and frontends is an Ethereum Node or [an indexer](indexer). You can use all MUD libraries together as a framework and get super-powers, or only pick the parts you like. It’s up to you!
-
-## Community support
-
-Check out the following resources to learn more and get support:
-
-- [Discord](https://lattice.xyz/discord): get support and connect with the community!
-- [New releases](https://github.com/latticexyz/mud/releases): see recent changes to MUD.
-- [Roadmap](https://roadmap.mud.dev): a high-level overview of what we'll be working on next.
-- [Status](https://status.mud.dev): take a look at ongoing and upcoming initatives.
-- [Contribute](https://contribute.mud.dev): start contributing with some good first tasks.
-- [Community wiki](https://community.mud.dev): for MUD projects and MUD-related articles, videos, and podcasts.
-
-## License
-
-MUD is open-source software [licensed as MIT](LICENSE).
+<CardGrid>
+  <Link href="https://mud.dev/changelog" target="_blank">
+    <Card
+      title="MUD changelog"
+      text="Take a look at recent changes"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M13.75 11.25H33.75M13.75 20H33.75M13.75 28.75H33.75M6.25 11.25H6.26167V11.2633H6.25V11.25ZM6.875 11.25C6.875 11.4158 6.80915 11.5747 6.69194 11.6919C6.57473 11.8092 6.41576 11.875 6.25 11.875C6.08424 11.875 5.92527 11.8092 5.80806 11.6919C5.69085 11.5747 5.625 11.4158 5.625 11.25C5.625 11.0842 5.69085 10.9253 5.80806 10.8081C5.92527 10.6908 6.08424 10.625 6.25 10.625C6.41576 10.625 6.57473 10.6908 6.69194 10.8081C6.80915 10.9253 6.875 11.0842 6.875 11.25ZM6.25 20H6.26167V20.0133H6.25V20ZM6.875 20C6.875 20.1658 6.80915 20.3247 6.69194 20.4419C6.57473 20.5592 6.41576 20.625 6.25 20.625C6.08424 20.625 5.92527 20.5592 5.80806 20.4419C5.69085 20.3247 5.625 20.1658 5.625 20C5.625 19.8342 5.69085 19.6753 5.80806 19.5581C5.92527 19.4408 6.08424 19.375 6.25 19.375C6.41576 19.375 6.57473 19.4408 6.69194 19.5581C6.80915 19.6753 6.875 19.8342 6.875 20ZM6.25 28.75H6.26167V28.7633H6.25V28.75ZM6.875 28.75C6.875 28.9158 6.80915 29.0747 6.69194 29.1919C6.57473 29.3092 6.41576 29.375 6.25 29.375C6.08424 29.375 5.92527 29.3092 5.80806 29.1919C5.69085 29.0747 5.625 28.9158 5.625 28.75C5.625 28.5842 5.69085 28.4253 5.80806 28.3081C5.92527 28.1908 6.08424 28.125 6.25 28.125C6.41576 28.125 6.57473 28.1908 6.69194 28.3081C6.80915 28.4253 6.875 28.5842 6.875 28.75Z"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+  <Link href="https://status.mud.dev" target="_blank">
+    <Card
+      title="MUD status"
+      text="Check out what's coming up next"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M15 11.25V25M25 15V28.75M25.8383 34.58L33.9633 30.5183C34.5983 30.2017 35 29.5517 35 28.8417V8.03332C35 6.63999 33.5333 5.73332 32.2867 6.35666L25.8383 9.57999C25.31 9.84499 24.6883 9.84499 24.1617 9.57999L15.8383 5.41999C15.578 5.28988 15.291 5.22214 15 5.22214C14.709 5.22214 14.422 5.28988 14.1617 5.41999L6.03667 9.48166C5.4 9.79999 5 10.45 5 11.1583V31.9667C5 33.36 6.46667 34.2667 7.71333 33.6433L14.1617 30.42C14.69 30.155 15.3117 30.155 15.8383 30.42L24.1617 34.5817C24.69 34.845 25.3117 34.845 25.8383 34.5817V34.58Z"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+  <Link href="https://community.mud.dev" target="_blank">
+    <Card
+      title="Community resources"
+      text="Visit the community wiki"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M20 35V21.25M26.25 35V21.25M13.75 35V21.25M5 15L20 5L35 15M32.5 35V17.22C28.3648 16.5726 24.1855 16.2483 20 16.25C15.7483 16.25 11.5733 16.5833 7.5 17.22V35M5 35H35M20 11.25H20.0133V11.2633H20V11.25Z"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+  <Link href="https://contribute.mud.dev" target="_blank">
+    <Card
+      title="Start contributing"
+      text="Contribute with good first tasks"
+      iconSVG={
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path
+            d="M19.0333 25.2833L28.75 35C29.5833 35.8067 30.7003 36.2535 31.8601 36.2441C33.0199 36.2347 34.1295 35.7698 34.9497 34.9497C35.7698 34.1295 36.2347 33.0199 36.2441 31.8601C36.2535 30.7003 35.8067 29.5833 35 28.75L25.205 18.955M19.0333 25.2833L23.1933 20.2333C23.7217 19.5933 24.4267 19.19 25.2067 18.9567C26.1233 18.6833 27.145 18.6433 28.1117 18.7233C29.4147 18.8352 30.7244 18.6044 31.9107 18.0539C33.097 17.5033 34.1187 16.6521 34.8744 15.5847C35.6301 14.5173 36.0936 13.2708 36.2189 11.969C36.3441 10.6672 36.1267 9.35521 35.5883 8.16333L30.1283 13.625C29.2148 13.4138 28.379 12.9503 27.716 12.2873C27.0531 11.6243 26.5896 10.7885 26.3783 9.875L31.8383 4.415C30.6464 3.87661 29.3345 3.65924 28.0327 3.78447C26.7308 3.90971 25.4844 4.37318 24.417 5.12891C23.3496 5.88465 22.4984 6.90636 21.9478 8.09266C21.3972 9.27896 21.1664 10.5886 21.2783 11.8917C21.43 13.685 21.16 15.665 19.7717 16.8083L19.6017 16.95M19.0333 25.2833L11.275 34.705C10.899 35.1633 10.4312 35.5379 9.90166 35.8045C9.37215 36.0711 8.79268 36.2239 8.20055 36.2531C7.60842 36.2822 7.01674 36.1871 6.46361 35.9737C5.91048 35.7604 5.40814 35.4336 4.98894 35.0144C4.56973 34.5952 4.24294 34.0928 4.0296 33.5397C3.81627 32.9866 3.72111 32.3949 3.75025 31.8028C3.7794 31.2107 3.9322 30.6312 4.19882 30.1017C4.46544 29.5722 4.83998 29.1043 5.29833 28.7283L16.6933 19.345L9.84833 12.5H7.5L3.75 6.25L6.25 3.75L12.5 7.5V9.84833L19.6 16.9483L16.6917 19.3433M30.625 30.625L26.25 26.25M8.11166 31.875H8.125V31.8883H8.11166V31.875Z"
+            stroke="black"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      }
+    />
+  </Link>
+</CardGrid>
