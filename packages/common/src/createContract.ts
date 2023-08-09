@@ -17,12 +17,11 @@ import pQueue from "p-queue";
 import pRetry from "p-retry";
 import { createNonceManager } from "./createNonceManager";
 import { debug as parentDebug } from "./debug";
+import { UnionOmit } from "./type-utils/common";
 
 const debug = parentDebug.extend("createContract");
 
-export type UnionOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
-
-// copied from viem because it isn't exported
+// copied from viem because this isn't exported
 // TODO: import from viem?
 function getFunctionParameters(values: [args?: readonly unknown[], options?: object]): {
   args: readonly unknown[];
