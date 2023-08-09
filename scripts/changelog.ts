@@ -5,11 +5,14 @@
 
 import { execa } from "execa";
 import { readFileSync, writeFileSync } from "node:fs";
+import path from "path";
 
 //--------- CONSTANTS
 
 const REPO_URL = process.env.REPO_URL ?? "https://github.com/latticexyz/mud";
 const CHANGELOG_PATH = process.env.CHANGELOG_PATH ?? "CHANGELOG.md";
+const VERSION_PATH = process.env.VERSION_PATH ?? path.join(process.cwd(), "packages/world/package.json");
+const INCLUDE_CHANGESETS = (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets in pre.json
 
 enum ChangeType {
   PATCH,
@@ -56,54 +59,56 @@ async function appendChangelog() {
 }
 
 async function renderChangelog() {
-  const changes = await getChanges();
+  const changes = await getChanges(INCLUDE_CHANGESETS);
   const version = await getVersion();
 
-  return `
-# Version ${version}
+  return `# Version ${version}
 
-## Major changes
+${await renderChangelogItems("Major changes", changes.major)}
+${await renderChangelogItems("Minor changes", changes.minor)}
+${await renderChangelogItems("Patch changes", changes.patch)}
+---
 
-${await renderChangelogItems(changes.major)}
-## Minor changes
-
-${await renderChangelogItems(changes.minor)}
-## Patch changes
-
-${await renderChangelogItems(changes.patch)}
 `;
 }
 
-async function renderChangelogItems(changelogItems: (ChangelogItem & GitMetadata)[]) {
-  let output = "";
+async function renderChangelogItems(headline: string, changelogItems: (ChangelogItem & GitMetadata)[]) {
+  if (changelogItems.length === 0) return "";
+
+  let output = `## ${headline}\n`;
 
   for (const changelogItem of changelogItems) {
-    output += `1. **[${changelogItem.title}](${REPO_URL}/commit/${changelogItem.commitHash})** (${changelogItem.packages
+    output += `**[${changelogItem.title}](${REPO_URL}/commit/${changelogItem.commitHash})** (${changelogItem.packages
       .map((e) => e.package)
-      .join(", ")})
-
-${changelogItem.description}
-`;
+      .join(", ")})`;
+    output += `\n\n${changelogItem.description}\n\n`;
   }
 
   return output;
 }
 
 async function getVersion() {
-  return "2.0.0-next.1";
+  return (await import(VERSION_PATH)).default.version;
 }
 
-async function getChanges() {
-  // Get the diff of the current branch to main
-  const changesetDiff = (await execa("git", ["diff", "main", ".changeset/pre.json"])).stdout;
+async function getChanges(include: "diff" | "all") {
+  const changesetsToInclude: string[] = [];
 
-  // Get the list of changesets
-  const addedLinesRegex = /\+\s+"([^"]+)"/g;
-  const addedChangesets = [...changesetDiff.matchAll(addedLinesRegex)].map((match) => match[1]);
+  if (include === "diff") {
+    // Get the diff of the current branch to main
+    const changesetDiff = (await execa("git", ["diff", "main", ".changeset/pre.json"])).stdout;
+
+    // Get the list of changesets
+    const addedLinesRegex = /\+\s+"([^"]+)"/g;
+    changesetsToInclude.push(...[...changesetDiff.matchAll(addedLinesRegex)].map((match) => match[1]));
+  } else if (include === "all") {
+    // Load all current changesets from the .changeset/pre.json file
+    changesetsToInclude.push(...(await import(path.join(process.cwd(), ".changeset/pre.json"))).default.changesets);
+  }
 
   // Load the contents of each changeset and metadata from git
-  const changesets = await Promise.all(
-    addedChangesets.map(async (addedChangeset) => {
+  const changesetContents = await Promise.all(
+    changesetsToInclude.map(async (addedChangeset) => {
       const changesetPath = `.changeset/${addedChangeset}.md`;
       const changeset = readFileSync(changesetPath).toString();
       const gitLog = (await execa("git", ["log", changesetPath])).stdout;
@@ -112,9 +117,9 @@ async function getChanges() {
   );
 
   // Sort the changesets into patch, minor and major updates
-  const patch = changesets.filter((change) => change.type === ChangeType.PATCH);
-  const minor = changesets.filter((change) => change.type === ChangeType.MINOR);
-  const major = changesets.filter((change) => change.type === ChangeType.MAJOR);
+  const patch = changesetContents.filter((change) => change.type === ChangeType.PATCH);
+  const minor = changesetContents.filter((change) => change.type === ChangeType.MINOR);
+  const major = changesetContents.filter((change) => change.type === ChangeType.MAJOR);
 
   return { patch, minor, major };
 }
@@ -130,7 +135,7 @@ function parseChangeset(changeset: string): ChangelogItem {
   // Remove first separator
   const separatorString = "---\n";
   let separatorIndex = changeset.indexOf(separatorString);
-  changeset = changeset.substring(separatorIndex + separatorString.length);
+  changeset = changeset.substring(separatorIndex + separatorString.length - 1);
 
   // Parse list of changed packages and description
   separatorIndex = changeset.indexOf(separatorString);
