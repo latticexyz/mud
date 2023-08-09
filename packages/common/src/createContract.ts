@@ -74,7 +74,7 @@ export function createContract<
             >getFunctionParameters(parameters as any);
 
             // Temporarily override base fee for our default anvil config
-            // TODO: remove once https://github.com/wagmi-dev/viem/pull/963 is fixed
+            // TODO: replace with https://github.com/wagmi-dev/viem/pull/1006 once merged
             // TODO: more specific mud foundry check? or can we safely assume anvil+mud will be block fee zero for now?
             if (
               walletClient.chain.id === 31337 &&
