@@ -11,20 +11,30 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
+    "./chains": "./dist/chains.js",
     "./codegen": "./dist/codegen.js",
+    "./deprecated": "./dist/deprecated.js",
+    "./errors": "./dist/errors.js",
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
-    "./utils": "./dist/utils.js",
-    "./errors": "./dist/errors.js",
-    "./chains": "./dist/chains.js"
+    "./utils": "./dist/utils.js"
   },
   "typesVersions": {
     "*": {
       "index": [
         "./src/index.ts"
       ],
+      "chains": [
+        "./src/chains/index.ts"
+      ],
       "codegen": [
         "./src/codegen/index.ts"
+      ],
+      "deprecated": [
+        "./src/deprecated/index.ts"
+      ],
+      "errors": [
+        "./src/errors/index.ts"
       ],
       "foundry": [
         "./src/foundry/index.ts"
@@ -34,12 +44,6 @@
       ],
       "utils": [
         "./src/utils/index.ts"
-      ],
-      "errors": [
-        "./src/errors/index.ts"
-      ],
-      "chains": [
-        "./src/chains/index.ts"
       ]
     }
   },
