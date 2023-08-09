@@ -52,7 +52,7 @@ make mode
 
 ```yaml
 chains:
-  - name: "127.0.0.1"
+  - name: "foundry"
     id: "31337"
     rpc:
       http: "http://127.0.0.1:8545"
