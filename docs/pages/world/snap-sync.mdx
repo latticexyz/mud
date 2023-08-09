@@ -2,7 +2,7 @@
 
 The [`SnapSync`](https://github.com/latticexyz/mud/tree/main/packages/world/ts/plugins/snapsync) plugin allows clients to sync with the state of a World by fetching it directly from the blockchain.
 
-Without this plugin or an indexer like [MODE](/mode), clients can be slow to sync as they have to process all events since the World was deployed.
+Without this plugin or [an Indexer](/indexer), clients can be slow to sync as they have to process all events since the World was deployed.
 
 Let's walk through an example of using snap-sync.
 
@@ -117,7 +117,7 @@ const tableRecords = await getSnapSyncRecords(
 result.startSync(tableRecords, currentBlockNumber);
 ```
 
-If both MODE and snap-sync are enabled, the arguments that are passed into `startSync()` take precedence. In this case the client would perform the initial "catch up" with snap-sync then stream from MODE.
+If both the Indexer and snap-sync are enabled, the arguments that are passed into `startSync()` take precedence. In this case the client would perform the initial "catch up" with snap-sync then stream from the Indexer.
 
 To allow users to toggle snap-sync, add a flag to the `NetworkConfig` type:
 
