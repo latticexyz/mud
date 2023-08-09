@@ -101,27 +101,23 @@ library SchemaInstance {
   /**
    * Get the number of dynamic length fields for the given schema
    */
-  function numDynamicFields(Schema schema) internal pure returns (uint8) {
-    unchecked {
-      return uint8(uint256(schema.unwrap()) >> ((31 - 3) * 8));
-    }
+  function numDynamicFields(Schema schema) internal pure returns (uint256) {
+    return uint8(uint256(schema.unwrap()) >> ((31 - 3) * 8));
   }
 
   /**
-   * Get the number of static  fields for the given schema
+   * Get the number of static fields for the given schema
    */
-  function numStaticFields(Schema schema) internal pure returns (uint8) {
-    unchecked {
-      return uint8(uint256(schema.unwrap()) >> ((31 - 2) * 8));
-    }
+  function numStaticFields(Schema schema) internal pure returns (uint256) {
+    return uint8(uint256(schema.unwrap()) >> ((31 - 2) * 8));
   }
 
   /**
    * Get the total number of fields for the given schema
    */
-  function numFields(Schema schema) internal pure returns (uint8) {
+  function numFields(Schema schema) internal pure returns (uint256) {
     unchecked {
-      return numStaticFields(schema) + numDynamicFields(schema);
+      return uint8(uint256(schema.unwrap()) >> ((31 - 3) * 8)) + uint8(uint256(schema.unwrap()) >> ((31 - 2) * 8));
     }
   }
 
@@ -142,21 +138,25 @@ library SchemaInstance {
 
     uint256 _numStaticFields = schema.numStaticFields();
     // Schema must not have more than 28 fields in total
-    if (_numStaticFields + _numDynamicFields > 28)
-      revert SchemaLib.SchemaLib_InvalidLength(_numStaticFields + _numDynamicFields);
+    uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
+    if (_numTotalFields > 28) revert SchemaLib.SchemaLib_InvalidLength(_numTotalFields);
 
     // No static field can be after a dynamic field
     uint256 countStaticFields;
     uint256 countDynamicFields;
-    for (uint256 i; i < _numStaticFields + _numDynamicFields; ) {
+    for (uint256 i; i < _numTotalFields; ) {
       if (schema.atIndex(i).getStaticByteLength() > 0) {
         // Static field in dynamic part
         if (i >= _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
-        countStaticFields++;
+        unchecked {
+          countStaticFields++;
+        }
       } else {
         // Dynamic field in static part
         if (i < _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
-        countDynamicFields++;
+        unchecked {
+          countDynamicFields++;
+        }
       }
       unchecked {
         i++;

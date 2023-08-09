@@ -499,7 +499,7 @@ library StoreCore {
     uint8 schemaIndex,
     Schema schema
   ) internal view returns (uint256) {
-    uint8 numStaticFields = schema.numStaticFields();
+    uint8 numStaticFields = uint8(schema.numStaticFields());
     if (schemaIndex < numStaticFields) {
       SchemaType schemaType = schema.atIndex(schemaIndex);
       return schemaType.getStaticByteLength();
@@ -522,7 +522,7 @@ library StoreCore {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
-    uint8 numStaticFields = schema.numStaticFields();
+    uint8 numStaticFields = uint8(schema.numStaticFields());
     if (schemaIndex < schema.numStaticFields()) {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
@@ -605,7 +605,7 @@ library StoreCoreInternal {
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(schema.numStaticFields());
 
     // Update the dynamic data length
     _setDynamicDataLengthAtIndex(tableId, key, dynamicSchemaIndex, data.length);
@@ -622,7 +622,7 @@ library StoreCoreInternal {
     uint8 schemaIndex,
     bytes memory dataToPush
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(schema.numStaticFields());
 
     // Load dynamic data length from storage
     uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, key);
@@ -646,7 +646,7 @@ library StoreCoreInternal {
     uint8 schemaIndex,
     uint256 byteLengthToPop
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(schema.numStaticFields());
 
     // Load dynamic data length from storage
     uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, key);
@@ -671,7 +671,7 @@ library StoreCoreInternal {
     uint256 startByteIndex,
     bytes memory dataToSet
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(schema.numStaticFields());
 
     // Set `dataToSet` at the given index
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startByteIndex, dataToSet);
@@ -732,7 +732,7 @@ library StoreCoreInternal {
     Schema schema
   ) internal view returns (bytes memory) {
     // Get the length and storage location of the dynamic field
-    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(schema.numStaticFields());
     uint256 location = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
     uint256 dataLength = _loadEncodedDynamicDataLength(tableId, key).atIndex(dynamicSchemaIndex);
 
