@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.0-next.1
+
+### Minor Changes
+
+- [#1196](https://github.com/latticexyz/mud/pull/1196) [`b02f9d0e`](https://github.com/latticexyz/mud/commit/b02f9d0e43089e5f9b46d817ea2032ce0a1b0b07) Thanks [@holic](https://github.com/holic)! - add type narrowing `isStaticAbiType`
+
 ## 2.0.0-next.0
 
 ### Patch Changes
