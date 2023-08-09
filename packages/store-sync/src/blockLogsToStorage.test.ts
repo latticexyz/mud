@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BlockLogsToStorageOptions, blockLogsToStorage } from "./blockLogsToStorage";
 import storeConfig from "@latticexyz/store/mud.config";
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 
 const mockedCallbacks = {
   registerTables: vi.fn<
