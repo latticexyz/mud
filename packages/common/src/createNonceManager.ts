@@ -41,15 +41,16 @@ export function createNonceManager({
   }
 
   function nextNonce(): number {
+    if (!hasNonce()) throw new Error("call resetNonce before using nextNonce");
     const nonce = nonceRef.current++;
-    channel?.postMessage(JSON.stringify(nonce));
+    channel?.postMessage(JSON.stringify(nonceRef.current));
     return nonce;
   }
 
   async function resetNonce(): Promise<void> {
     const nonce = await publicClient.getTransactionCount({ address, blockTag });
     nonceRef.current = nonce;
-    channel?.postMessage(JSON.stringify(nonce));
+    channel?.postMessage(JSON.stringify(nonceRef.current));
     debug("reset nonce to", nonceRef.current);
   }
 

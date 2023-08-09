@@ -3,10 +3,12 @@ import {
   Account,
   Address,
   Chain,
+  EstimateContractGasParameters,
   GetContractParameters,
   GetContractReturnType,
   Hex,
   PublicClient,
+  SimulateContractParameters,
   Transport,
   WalletClient,
   WriteContractParameters,
@@ -76,9 +78,9 @@ export function createMudContract<
       address: walletClient.account.address,
     });
 
-    // Concurrency of one means transactions will be queued and inserted into the mem pool in synchronously and in order.
-    // You can increase the concurrency number for faster processing of transactions, but you risk getting nonce errors.
-    // Nonce errors will get automatically retried, but may have unintended side effects.
+    // Concurrency of one means transactions will be queued and inserted into the mem pool synchronously and in order.
+    // Although increasing this will allow for more parallel requests/transactions and nonce errors will get automatically retried,
+    // we can't guarantee local nonce accurancy due to needing async operations (simulate) before incrementing the nonce.
     const queue = new pQueue({ concurrency: 1 });
 
     // Replace write calls with our own proxy. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
@@ -89,21 +91,26 @@ export function createMudContract<
           return async (...parameters) => {
             const { args, options } = getFunctionParameters(parameters as any);
 
-            if (!nonceManager.hasNonce()) {
-              await nonceManager.resetNonce();
-            }
-
             async function write(): Promise<Hex> {
-              const nonce = nonceManager.nextNonce();
+              if (!nonceManager.hasNonce()) {
+                await nonceManager.resetNonce();
+              }
 
-              debug("calling write function", functionName, args, { nonce, ...options });
-              const result = await walletClient.writeContract({
-                abi,
+              debug("simulating write", functionName, args, options);
+              const { request } = await publicClient.simulateContract({
+                account: walletClient.account,
                 address,
+                abi,
                 functionName,
                 args,
-                nonce,
                 ...options,
+              } as unknown as SimulateContractParameters<TAbi, typeof functionName, TChain>);
+
+              const nonce = nonceManager.nextNonce();
+              debug("calling write function with nonce", nonce, request);
+              const result = await walletClient.writeContract({
+                nonce,
+                ...request,
               } as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>);
 
               return result;
