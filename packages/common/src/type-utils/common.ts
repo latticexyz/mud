@@ -17,3 +17,5 @@ export type OrDefault<T, Default> = T extends undefined ? Default : T;
 export type OrDefaults<T extends object, Defaults> = {
   [key in keyof Defaults]: key extends keyof T ? OrDefault<T[key], Defaults[key]> : Defaults[key];
 };
+
+export type UnionOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
