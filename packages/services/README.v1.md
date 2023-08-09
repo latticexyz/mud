@@ -6,7 +6,7 @@ Every service is a Go stand-alone binary that can be run individually. Entry-poi
 
 Each service exposes a gRPC server and a wrapper HTPP server (for ability to make gRPC wrapped requests from a web client, e.g. TypeScript MUD client). By default the gRPC server runs at the default `PORT` (specified above and in each `main.go` file) and the HTTP server runs at that `PORT + 1`. For example, the snapshot service has a gRPC server exposed on `50061` and a wrapper server is automatically exposed on `50062`.
 
-Each service has specific command-line arguments. Each service requires a connection to an Ethereum node (for same network where your MUD application is deployed on) via a websocket. By default, all websocket connection URL parameters use a `127.0.0.1` instance running at port `8545`, so the full URL is `ws://127.0.0.1:8545`.
+Each service has specific command-line arguments. Each service requires a connection to an Ethereum node (for same network where your MUD application is deployed on) via a websocket. By default, all websocket connection URL parameters use a local instance running at port `8545`, so the full URL is `ws://127.0.0.1:8545`.
 
 #### Dockerfile
 
