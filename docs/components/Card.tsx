@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 
-const Card = ({ title, text, iconSVG, link }) => {
+const Card = ({ title, text, iconSVG }) => {
   const [hover, setHover] = useState(false);
 
   const styles = {
@@ -30,7 +30,6 @@ const Card = ({ title, text, iconSVG, link }) => {
     },
     header: {
       color: "#000",
-      fontFamily: "Inter",
       fontSize: "18px",
       fontStyle: "normal",
       fontWeight: "600",
@@ -38,7 +37,6 @@ const Card = ({ title, text, iconSVG, link }) => {
     },
     text: {
       color: "rgba(0, 0, 0, 0.70)",
-      fontFamily: "Inter",
       fontSize: "15px",
       fontStyle: "normal",
       fontWeight: "400",
