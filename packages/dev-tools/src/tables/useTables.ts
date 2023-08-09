@@ -1,5 +1,5 @@
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { useStore } from "../useStore";
 
 export function useTables() {
