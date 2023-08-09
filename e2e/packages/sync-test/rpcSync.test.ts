@@ -3,7 +3,7 @@ import type { ViteDevServer } from "vite";
 import { Browser, Page } from "@playwright/test";
 import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
-import { startAnvil, deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
+import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
 import {
   setContractData,
   expectClientData,
@@ -16,22 +16,18 @@ import {
   pop,
 } from "./data";
 import { range } from "@latticexyz/utils";
+import { rpcHttpUrl } from "./setup/constants";
 
 describe("Sync from RPC", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
-  let anvilProcess: ExecaChildProcess;
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
-  const anvilPort = 8545;
-  const rpc = `http://127.0.0.1:${anvilPort}`;
 
   beforeEach(async () => {
     asyncErrorHandler.resetErrors();
 
-    // Start chain and deploy contracts
-    anvilProcess = startAnvil(anvilPort);
-    await deployContracts(rpc);
+    await deployContracts(rpcHttpUrl);
 
     // Start client and browser
     webserver = await startViteServer();
@@ -43,7 +39,6 @@ describe("Sync from RPC", async () => {
   afterEach(async () => {
     await browser.close();
     await webserver.close();
-    anvilProcess?.kill();
   });
 
   test("should sync test data", async () => {

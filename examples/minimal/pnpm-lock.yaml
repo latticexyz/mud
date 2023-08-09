@@ -35,9 +35,6 @@ importers:
       '@latticexyz/common':
         specifier: link:../../../../packages/common
         version: link:../../../../packages/common
-      '@latticexyz/ecs-browser':
-        specifier: link:../../../../packages/ecs-browser
-        version: link:../../../../packages/ecs-browser
       '@latticexyz/network':
         specifier: link:../../../../packages/network
         version: link:../../../../packages/network
@@ -59,6 +56,9 @@ importers:
       '@latticexyz/std-client':
         specifier: link:../../../../packages/std-client
         version: link:../../../../packages/std-client
+      '@latticexyz/store-sync':
+        specifier: link:../../../../packages/store-sync
+        version: link:../../../../packages/store-sync
       '@latticexyz/utils':
         specifier: link:../../../../packages/utils
         version: link:../../../../packages/utils
@@ -177,6 +177,9 @@ importers:
       '@latticexyz/std-client':
         specifier: link:../../../../packages/std-client
         version: link:../../../../packages/std-client
+      '@latticexyz/store-sync':
+        specifier: link:../../../../packages/store-sync
+        version: link:../../../../packages/store-sync
       '@latticexyz/utils':
         specifier: link:../../../../packages/utils
         version: link:../../../../packages/utils
@@ -274,6 +277,9 @@ importers:
       '@latticexyz/std-client':
         specifier: link:../../../../packages/std-client
         version: link:../../../../packages/std-client
+      '@latticexyz/store-sync':
+        specifier: link:../../../../packages/store-sync
+        version: link:../../../../packages/store-sync
       '@latticexyz/utils':
         specifier: link:../../../../packages/utils
         version: link:../../../../packages/utils

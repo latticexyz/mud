@@ -24,6 +24,7 @@ export default mudConfig({
   ],
   tables: {
     CounterTable: {
+      keySchema: {},
       schema: {
         value: "uint32",
       },
@@ -45,11 +46,12 @@ export default mudConfig({
       schema: { amount: "uint32" },
     },
   },
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("CounterTable")],
-    },
-  ],
+  // KeysWithValue doesn't seem to like singleton keys
+  // modules: [
+  //   {
+  //     name: "KeysWithValueModule",
+  //     root: true,
+  //     args: [resolveTableId("CounterTable")],
+  //   },
+  // ],
 });

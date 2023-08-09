@@ -226,6 +226,9 @@ importers:
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
+      abitype:
+        specifier: 0.9.3
+        version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -1183,9 +1186,6 @@ importers:
 
   packages/utils:
     dependencies:
-      '@latticexyz/common':
-        specifier: workspace:*
-        version: link:../common
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
