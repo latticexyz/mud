@@ -59,8 +59,9 @@ As you migrate, you may find some features replaced, removed, or not included by
    - import { setupMUDV2Network } from "@latticexyz/std-client";
    - import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
    + import { createFaucetService } from "@latticexyz/network";
-   + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther } from "viem";
+   + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther, ClientConfig } from "viem";
    + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+   + import { createContract } from "@latticexyz/common";
    ```
 
    ```diff
@@ -68,10 +69,18 @@ As you migrate, you may find some features replaced, removed, or not included by
    -   ...
    - });
 
-   + const publicClient = createPublicClient({
+   + const clientOptions = {
    +   chain: networkConfig.chain,
    +   transport: transportObserver(fallback([webSocket(), http()])),
    +   pollingInterval: 1000,
+   + } as const satisfies ClientConfig;
+
+   + const publicClient = createPublicClient(clientOptions);
+
+   + const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+   + const burnerWalletClient = createWalletClient({
+   +   ...clientOptions,
+   +   account: burnerAccount,
    + });
 
    + const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
@@ -84,12 +93,11 @@ As you migrate, you may find some features replaced, removed, or not included by
    +   indexerUrl: networkConfig.indexerUrl ?? undefined,
    + });
 
-   + const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
-   + const burnerWalletClient = createWalletClient({
-   +   account: burnerAccount,
-   +   chain: networkConfig.chain,
-   +   transport: transportObserver(fallback([webSocket(), http()])),
-   +   pollingInterval: 1000,
+   + const worldContract = createContract({
+   +   address: networkConfig.worldAddress as Hex,
+   +   abi: IWorld__factory.abi,
+   +   publicClient,
+   +   walletClient: burnerWalletClient,
    + });
    ```
 
@@ -125,12 +133,7 @@ As you migrate, you may find some features replaced, removed, or not included by
    +   latestBlock$,
    +   blockStorageOperations$,
    +   waitForTransaction,
-   +   worldContract: getContract({
-   +     address: networkConfig.worldAddress as Hex,
-   +     abi: IWorld__factory.abi,
-   +     publicClient,
-   +     walletClient: burnerWalletClient,
-   +   }),
+   +   worldContract,
    + };
    ```
 
