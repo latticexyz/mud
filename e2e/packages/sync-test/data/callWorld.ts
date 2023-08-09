@@ -16,7 +16,7 @@ export function callWorld<TMethod extends WriteMethodName>(page: Page, method: T
     ([_method, _args]) => {
       const worldContract = (window as any).worldContract as WorldContract;
       const writeMethod = worldContract.write[_method as any];
-      return writeMethod(_args, { maxFeePerGas: 0n, maxPriorityFeePerGas: 0n })
+      return writeMethod(_args)
         .then((tx) => window["waitForTransaction"](tx))
         .catch((error) => {
           console.error(error);
