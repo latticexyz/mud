@@ -14,6 +14,12 @@ export type TableRecord<TKeySchema extends KeySchema = KeySchema, TValueSchema e
   value: SchemaToPrimitives<TValueSchema>;
 };
 
+export type ConfigFieldTypeToSchemaAbiType<T extends FieldData<string>> = T extends SchemaAbiType
+  ? T
+  : T extends `${string}[${string}]`
+  ? "uint8[]"
+  : "uint";
+
 export type ConfigFieldTypeToPrimitiveType<T extends FieldData<string>> = T extends SchemaAbiType
   ? SchemaAbiTypeToPrimitiveType<T>
   : T extends `${string}[${string}]` // field type might include enums and enum arrays, which are mapped to uint8/uint8[]

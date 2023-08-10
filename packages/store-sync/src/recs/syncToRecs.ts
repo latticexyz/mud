@@ -1,11 +1,12 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
+import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
 import {
   ComponentValue,
   Entity,
   Component as RecsComponent,
   Schema as RecsSchema,
   World as RecsWorld,
+  defineComponent,
   getComponentValue,
   setComponent,
 } from "@latticexyz/recs";
@@ -23,25 +24,20 @@ import { recsStorage } from "./recsStorage";
 import { debug } from "./debug";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
-import { StoreComponentMetadata, SyncStep } from "./common";
+import { ConfigToRecsComponents, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
 import { createIndexerClient } from "../trpc-indexer";
 import { singletonEntity } from "./singletonEntity";
+import { schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
+import { SchemaAbiType } from "@latticexyz/schema-type";
+import { tableIdToHex } from "@latticexyz/common";
 
-type SyncToRecsOptions<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = {
+type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
   config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
   publicClient: PublicClient;
-  // TODO: generate these from config and return instead?
-  components: TComponents;
   startBlock?: bigint;
   indexerUrl?: string;
   initialState?: {
@@ -50,15 +46,9 @@ type SyncToRecsOptions<
   };
 };
 
-type SyncToRecsResult<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = {
+type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
-  components: TComponents & ReturnType<typeof defineInternalComponents>;
+  components: ConfigToRecsComponents<TConfig> & ReturnType<typeof defineInternalComponents>;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -67,22 +57,39 @@ type SyncToRecsResult<
   destroy: () => void;
 };
 
-export async function syncToRecs<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
->({
+export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
   address,
   publicClient,
-  components: initialComponents,
   startBlock = 0n,
   initialState,
   indexerUrl,
-}: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
+}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
+  const initialComponents = Object.fromEntries(
+    Object.entries(config.tables).map(([tableName, table]) => [
+      tableName,
+      defineComponent(
+        world,
+        Object.fromEntries(
+          Object.entries(table.schema).map(([fieldName, schemaAbiType]) => [
+            fieldName,
+            schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
+          ])
+        ),
+        {
+          id: tableIdToHex(config.namespace, tableName),
+          metadata: {
+            componentName: tableName,
+            tableName: `${config.namespace}:${tableName}`,
+            keySchema: table.keySchema,
+            valueSchema: table.schema,
+          },
+        }
+      ),
+    ])
+  ) as ConfigToRecsComponents<TConfig>;
+
   const components = {
     ...initialComponents,
     ...defineInternalComponents(world),
