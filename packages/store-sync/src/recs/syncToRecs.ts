@@ -1,15 +1,6 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
-import {
-  ComponentValue,
-  Entity,
-  Component as RecsComponent,
-  Schema as RecsSchema,
-  World as RecsWorld,
-  defineComponent,
-  getComponentValue,
-  setComponent,
-} from "@latticexyz/recs";
+import { ComponentValue, Entity, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { BlockLogs, Table } from "../common";
 import { TableRecord } from "@latticexyz/store";
 import {
@@ -28,9 +19,9 @@ import { ConfigToRecsComponents, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
 import { createIndexerClient } from "../trpc-indexer";
 import { singletonEntity } from "./singletonEntity";
-import { schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
-import { SchemaAbiType } from "@latticexyz/schema-type";
-import { tableIdToHex } from "@latticexyz/common";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
+import { configToRecsComponents } from "./configToRecsComponents";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
@@ -48,7 +39,10 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
 
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
-  components: ConfigToRecsComponents<TConfig> & ReturnType<typeof defineInternalComponents>;
+  components: ConfigToRecsComponents<TConfig> &
+    ConfigToRecsComponents<typeof storeConfig> &
+    ConfigToRecsComponents<typeof worldConfig> &
+    ReturnType<typeof defineInternalComponents>;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -66,32 +60,10 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   initialState,
   indexerUrl,
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
-  const initialComponents = Object.fromEntries(
-    Object.entries(config.tables).map(([tableName, table]) => [
-      tableName,
-      defineComponent(
-        world,
-        Object.fromEntries(
-          Object.entries(table.schema).map(([fieldName, schemaAbiType]) => [
-            fieldName,
-            schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
-          ])
-        ),
-        {
-          id: tableIdToHex(config.namespace, tableName),
-          metadata: {
-            componentName: tableName,
-            tableName: `${config.namespace}:${tableName}`,
-            keySchema: table.keySchema,
-            valueSchema: table.schema,
-          },
-        }
-      ),
-    ])
-  ) as ConfigToRecsComponents<TConfig>;
-
   const components = {
-    ...initialComponents,
+    ...configToRecsComponents(world, config),
+    ...configToRecsComponents(world, storeConfig),
+    ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
   };
 
