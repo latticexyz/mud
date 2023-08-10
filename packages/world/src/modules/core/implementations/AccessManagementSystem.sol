@@ -42,7 +42,7 @@ contract AccessManagementSystem is System {
    * Revoke ResourceAccess for previous owner and grant to newOwner.
    * Requires the caller to own the namespace.
    */
-  function transferOwner(bytes16 namespace, address newOwner) public virtual {
+  function transferOwnership(bytes16 namespace, address newOwner) public virtual {
     // Require the caller to own the namespace
     bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, 0, _msgSender());
     // Grant access to new owner
