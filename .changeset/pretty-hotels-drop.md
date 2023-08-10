@@ -24,5 +24,3 @@ To migrate existing projects after upgrading to this MUD version:
    - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
    + "dev": "pnpm mud dev-contracts",
    ```
-
-
