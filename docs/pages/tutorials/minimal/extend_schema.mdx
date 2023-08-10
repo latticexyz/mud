@@ -1,3 +1,5 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
 # Extend the schema
 
 In this tutorial you extend the schema to add a table of historical counter values and the time in which the counter reached those values.
@@ -28,10 +30,9 @@ pnpm mud set-version --tag main && pnpm install
       },
    ```
 
-<details>
-<summary>The complete file</summary>
+<CollapseCode>
 
-```ts
+```ts filename="mud.config.ts" showLineNumbers
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -53,7 +54,7 @@ export default mudConfig({
 });
 ```
 
-</details>
+</CollapseCode>
 
 <details>
 <summary>Explanation</summary>
