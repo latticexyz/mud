@@ -230,6 +230,14 @@ contract WorldTest is Test, GasReporter {
     world.registerNamespace("test");
   }
 
+  function testTransferNamespace() public {
+    world.registerNamespace("testTransfer");
+    world.transferOwner("testTransfer", address(1));
+    assertEq(NamespaceOwner.get(world, "testTransfer"), address(1), "new owner should be namespace owner");
+    // Expect the new owner to have access
+    assertEq(ResourceAccess.get(world, "testTransfer", address(1)), true, "new owner should have access");
+  }
+
   function testRegisterTable() public {
     Schema schema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
     bytes16 namespace = "testNamespace";
