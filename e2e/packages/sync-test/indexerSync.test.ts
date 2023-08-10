@@ -1,14 +1,12 @@
 import { afterEach, beforeEach, describe, test } from "vitest";
 import type { ViteDevServer } from "vite";
 import { expect, Browser, Page } from "@playwright/test";
-import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import {
-  startAnvil,
   deployContracts,
   startViteServer,
   startBrowserAndPage,
-  syncMode,
+  startIndexer,
   openClientWithRootAccount,
 } from "./setup";
 import {
@@ -23,24 +21,19 @@ import {
   pop,
 } from "./data";
 import { range } from "@latticexyz/utils";
+import path from "node:path";
+import { rpcHttpUrl } from "./setup/constants";
 
-describe("Sync from MODE", async () => {
+describe("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
-  let anvilProcess: ExecaChildProcess;
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
-  const anvilPort = 8545;
-  const rpc = `http://127.0.0.1:${anvilPort}`;
-  let modeProcess: ExecaChildProcess;
-  const modeUrl = "http://localhost:50092";
+  let indexerIteration = 1;
+  let indexer: ReturnType<typeof startIndexer>;
 
   beforeEach(async () => {
-    asyncErrorHandler.resetErrors();
-
-    // Start chain and deploy contracts
-    anvilProcess = startAnvil(anvilPort);
-    await deployContracts(rpc);
+    await deployContracts(rpcHttpUrl);
 
     // Start client and browser
     webserver = await startViteServer();
@@ -48,21 +41,21 @@ describe("Sync from MODE", async () => {
     browser = browserAndPage.browser;
     page = browserAndPage.page;
 
-    // Start MODE
-    const result = syncMode(asyncErrorHandler.reportError);
-    modeProcess = result.process;
-    await result.doneSyncing;
+    // Start indexer
+    const port = 3000 + indexerIteration++;
+    indexer = startIndexer(port, path.join(__dirname, `anvil-${port}.db`), rpcHttpUrl, asyncErrorHandler.reportError);
+    await indexer.doneSyncing;
   });
 
   afterEach(async () => {
     await browser.close();
     await webserver.close();
-    modeProcess?.kill();
-    anvilProcess?.kill();
+    await indexer.kill();
+    asyncErrorHandler.resetErrors();
   });
 
   test("should sync test data", async () => {
-    await openClientWithRootAccount(page, { modeUrl });
+    await openClientWithRootAccount(page, { indexerUrl: indexer.url });
     await waitForInitialSync(page);
 
     // Write data to the contracts, expect the client to be synced
@@ -81,20 +74,18 @@ describe("Sync from MODE", async () => {
     asyncErrorHandler.expectNoAsyncErrors();
   });
 
-  test("should throw browser error if MODE is down", async () => {
-    modeProcess?.kill();
+  test("should log error if indexer is down", async () => {
+    await indexer.kill();
 
-    await openClientWithRootAccount(page, { modeUrl });
+    await openClientWithRootAccount(page, { indexerUrl: indexer.url });
     await waitForInitialSync(page);
 
     expect(asyncErrorHandler.getErrors()).toHaveLength(1);
-    expect(asyncErrorHandler.getErrors()[0]).toContain(
-      "MODE Error:  ClientError: /mode.QueryLayer/GetPartialState UNKNOWN: Response closed without headers"
-    );
+    expect(asyncErrorHandler.getErrors()[0]).toContain("couldn't get initial state from indexer");
   });
 
   test("should sync number list modified via system", async () => {
-    await openClientWithRootAccount(page);
+    await openClientWithRootAccount(page, { indexerUrl: indexer.url });
     await waitForInitialSync(page);
 
     // Push one element to the array

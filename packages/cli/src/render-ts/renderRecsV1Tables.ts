@@ -1,4 +1,4 @@
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { RecsV1TableOptions } from "./types";
 
 export function renderRecsV1Tables(options: RecsV1TableOptions) {
@@ -20,18 +20,16 @@ function renderDefineComponent(table: RecsV1TableOptions["tables"][number]) {
   const { namespace, name } = table.staticResourceData;
   const tableId = new TableId(namespace, name);
   return `
-    (() => {
-      return defineComponent(world, {
-        ${table.fields.map(({ name, recsTypeString }) => `${name}: ${recsTypeString}`).join(",")}
-      }, {
-        id: ${JSON.stringify(tableId.toHex())},
-        metadata: {
-          componentName: ${JSON.stringify(name)},
-          tableName: ${JSON.stringify([namespace, name].join(":"))},
-          keySchema: ${JSON.stringify(table.keySchema)},
-          valueSchema: ${JSON.stringify(table.valueSchema)},
-        },
-      } as const);
-    })()
+    defineComponent(world, {
+      ${table.fields.map(({ name, recsTypeString }) => `${name}: ${recsTypeString}`).join(",")}
+    }, {
+      id: ${JSON.stringify(tableId.toHex())},
+      metadata: {
+        componentName: ${JSON.stringify(name)},
+        tableName: ${JSON.stringify([namespace, name].join(":"))},
+        keySchema: ${JSON.stringify(table.keySchema)},
+        valueSchema: ${JSON.stringify(table.valueSchema)},
+      },
+    } as const)
   `;
 }

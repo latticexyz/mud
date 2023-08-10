@@ -8,6 +8,10 @@ export async function startBrowserAndPage(
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
+  await page.addInitScript(() => {
+    window.localStorage.setItem("debug", "mud:*");
+  });
+
   // log uncaught errors in the browser page (browser and test consoles are separate)
   page.on("pageerror", (err) => {
     console.log(chalk.yellow("[browser page error]:"), err.message);
