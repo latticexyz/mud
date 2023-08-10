@@ -203,25 +203,21 @@ The directions here apply to the `vanilla` user interface, if you use anything e
     <script type="module" src="/src/index.ts"></script>
     <div>Counter: <span id="counter">0</span></div>
     <button onclick="window.increment()">Increment</button>
-
-{" "}
-
-<hr />
-<h2>
-  History for value:
-  <select id="historyValue" onInput="window.readHistory(value)"></select>
-</h2>
-<table border>
-  <tr>
-    <th>Block number</th>
-    <th>Time</th>
-  </tr>
-  <tr>
-    <td id="blockNumber"></td>
-    <td id="timeStamp"></td>
-  </tr>
-</table>
-
+    <hr />
+    <h2>
+      History for value:
+      <select id="historyValue" onInput="window.readHistory(value)"></select>
+    </h2>
+    <table border>
+      <tr>
+        <th>Block number</th>
+        <th>Time</th>
+      </tr>
+      <tr>
+        <td id="blockNumber"></td>
+        <td id="timeStamp"></td>
+      </tr>
+    </table>
   </body>
 </html>  
   ```
@@ -302,7 +298,7 @@ Terminate the row and the table in general.
 
 <details>
   <summary>The complete file</summary>
-```
+  ```typescript
 import { mount as mountDevTools } from "@latticexyz/dev-tools";
 import { setup } from "./mud/setup";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
@@ -320,11 +316,12 @@ console.log("Counter updated", update, { nextValue, prevValue });
 document.getElementById("counter")!.innerHTML =
 String(nextValue?.value ?? "unset");
 
-let options: String = "";
-for (let i = 0; i <= nextValue?.value; i++) {
-options += `<option value="${i}">${i}</option>`;
-}
-document.getElementById("historyValue")!.innerHTML = options;
+    let options: String = "";
+    for (let i = 0; i <= nextValue?.value; i++) {
+        options += `<option value="${i}">${i}</option>`;
+    }
+    document.getElementById("historyValue")!.innerHTML = options;
+
 });
 
 // Just for demonstration purposes: we create a global function that can be
