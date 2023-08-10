@@ -5,7 +5,6 @@ import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
-import { TableId } from "../src/TableId.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema } from "../src/Schema.sol";
@@ -77,12 +76,12 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).getKeySchema(table);
 
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, TableId.toString(table2))
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
     );
     IStore(this).getSchema(table2);
 
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, TableId.toString(table2))
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
     );
     IStore(this).getKeySchema(table2);
   }
