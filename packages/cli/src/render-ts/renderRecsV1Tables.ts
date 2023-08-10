@@ -1,4 +1,4 @@
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { RecsV1TableOptions } from "./types";
 
 export function renderRecsV1Tables(options: RecsV1TableOptions) {

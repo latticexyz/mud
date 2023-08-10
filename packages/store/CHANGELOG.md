@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.0.0-next.1
+
+### Patch Changes
+
+- [#1194](https://github.com/latticexyz/mud/pull/1194) [`c963b46c`](https://github.com/latticexyz/mud/commit/c963b46c7eaceebc652930936643365b8c48a021) Thanks [@dk1a](https://github.com/dk1a)! - Optimize storage library
+
+- [#1237](https://github.com/latticexyz/mud/pull/1237) [`5c965a91`](https://github.com/latticexyz/mud/commit/5c965a919355bf98d7ea69463890fe605bcde206) Thanks [@alvrs](https://github.com/alvrs)! - Align Store events parameter naming between IStoreWrite and StoreCore
+
+- [#1210](https://github.com/latticexyz/mud/pull/1210) [`cc2c8da0`](https://github.com/latticexyz/mud/commit/cc2c8da000c32c02a82a1a0fd17075d11eac56c3) Thanks [@dk1a](https://github.com/dk1a)! - - Refactor tightcoder to use typescript functions instead of ejs
+  - Optimize `TightCoder` library
+  - Add `isLeftAligned` and `getLeftPaddingBits` common codegen helpers
+- Updated dependencies [[`3fb9ce28`](https://github.com/latticexyz/mud/commit/3fb9ce2839271a0dcfe97f86394195f7a6f70f50), [`35c9f33d`](https://github.com/latticexyz/mud/commit/35c9f33dfb84b0bb94e0f7a8b0c9830761795bdb), [`b02f9d0e`](https://github.com/latticexyz/mud/commit/b02f9d0e43089e5f9b46d817ea2032ce0a1b0b07), [`60cfd089`](https://github.com/latticexyz/mud/commit/60cfd089fc7a17b98864b631d265f36718df35a9), [`6071163f`](https://github.com/latticexyz/mud/commit/6071163f70599384c5034dd772ef6fc7cdae9983), [`6c673325`](https://github.com/latticexyz/mud/commit/6c6733256f91cddb0e913217cbd8e02e6bc484c7), [`cd5abcc3`](https://github.com/latticexyz/mud/commit/cd5abcc3b4744fab9a45c322bc76ff013355ffcb), [`cc2c8da0`](https://github.com/latticexyz/mud/commit/cc2c8da000c32c02a82a1a0fd17075d11eac56c3)]:
+  - @latticexyz/common@2.0.0-next.1
+  - @latticexyz/schema-type@2.0.0-next.1
+  - @latticexyz/config@2.0.0-next.1
+  - @latticexyz/gas-report@2.0.0-next.1
+
 ## 2.0.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.0.0-next.1
+
+### Patch Changes
+
+- [#1116](https://github.com/latticexyz/mud/pull/1116) [`3236f799`](https://github.com/latticexyz/mud/commit/3236f799e501be227da6e42e7b41a4928750115c) Thanks [@authcall](https://github.com/authcall)! - protocol-parser in Go
+
 ## 2.0.0-next.0
 
 ### Patch Changes
