@@ -232,7 +232,7 @@ contract WorldTest is Test, GasReporter {
 
   function testTransferNamespace() public {
     world.registerNamespace("testTransfer");
-    world.transferOwner("testTransfer", address(1));
+    world.transferOwnership("testTransfer", address(1));
     assertEq(NamespaceOwner.get(world, "testTransfer"), address(1), "new owner should be namespace owner");
     // Expect the new owner to have access
     assertEq(ResourceAccess.get(world, "testTransfer", address(1)), true, "new owner should have access");

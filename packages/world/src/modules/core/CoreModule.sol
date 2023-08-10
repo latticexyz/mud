@@ -127,7 +127,7 @@ contract CoreModule is IModule, WorldContext {
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
-      AccessManagementSystem.transferOwner.selector,
+      AccessManagementSystem.transferOwnership.selector,
       // --- EphemeralRecordSystem ---
       IStoreEphemeral.emitEphemeralRecord.selector,
       IWorldEphemeral.emitEphemeralRecord.selector

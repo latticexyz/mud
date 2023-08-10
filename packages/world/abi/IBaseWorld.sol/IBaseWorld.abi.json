@@ -1246,7 +1246,7 @@
         "type": "address"
       }
     ],
-    "name": "transferOwner",
+    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

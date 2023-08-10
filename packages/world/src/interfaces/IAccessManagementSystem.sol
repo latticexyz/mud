@@ -8,5 +8,5 @@ interface IAccessManagementSystem {
 
   function revokeAccess(bytes16 namespace, bytes16 name, address grantee) external;
 
-  function transferOwner(bytes16 namespace, address newOwner) external;
+  function transferOwnership(bytes16 namespace, address newOwner) external;
 }
