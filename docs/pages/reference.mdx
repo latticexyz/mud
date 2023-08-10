@@ -62,8 +62,11 @@ Use this prodecure to view the output from [`anvil`](https://book.getfoundry.sh/
 1. Run `anvil` manually.
 
    ```sh
-   anvil -b 1 --base-fee 0 | tee anvil.log
+   anvil -b 1 --base-fee 0 | uniq | tee anvil.log
    ```
+
+   Note that due to a bug, there might be multiple copies of the same `console.log` message.
+   Piping through [`uniq`](https://man7.org/linux/man-pages/man1/uniq.1.html) helps reduce this issue.
 
    You do not have to use `tee anvil.log`, but `anvil` logs so much that it is often useful to be able to look for information in the log file after it has scrolled off the screen.
 
@@ -77,8 +80,6 @@ Use this prodecure to view the output from [`anvil`](https://book.getfoundry.sh/
 
 1. Run `pnpm dev` normally.
 
-   Note that because of the way things work, there might be multiple copies of the same `console.log` message.
-
 #### MUD dev tools
 
 You can also see what is happening from your application by enabling to MUD dev tools.
@@ -89,4 +90,4 @@ import { mount as mountDevTools } from "@latticexyz/dev-tools";
 mountDevTools();
 ```
 
-In the minimal application you get from `pnpm create mud@<version> <app>` this is already included.
+In the minimal application you get from `pnpm create mud@<version> <app>`, the MUD dev tools are already included.
