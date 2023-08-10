@@ -9,7 +9,8 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
@@ -30,7 +31,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  Schema internal defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
+  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   IBaseWorld internal world;
 
   bytes32 internal key;

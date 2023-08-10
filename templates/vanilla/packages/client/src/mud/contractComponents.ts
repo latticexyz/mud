@@ -8,22 +8,20 @@ import {
 
 export function defineContractComponents(world: World) {
   return {
-    Counter: (() => {
-      return defineComponent(
-        world,
-        {
-          value: RecsType.Number,
+    Counter: defineComponent(
+      world,
+      {
+        value: RecsType.Number,
+      },
+      {
+        id: "0x00000000000000000000000000000000436f756e746572000000000000000000",
+        metadata: {
+          componentName: "Counter",
+          tableName: ":Counter",
+          keySchema: {},
+          valueSchema: { value: "uint32" },
         },
-        {
-          id: "0x00000000000000000000000000000000436f756e746572000000000000000000",
-          metadata: {
-            componentName: "Counter",
-            tableName: ":Counter",
-            keySchema: {},
-            valueSchema: { value: "uint32" },
-          },
-        } as const
-      );
-    })(),
+      } as const
+    ),
   };
 }

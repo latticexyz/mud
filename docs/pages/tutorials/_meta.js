@@ -1,4 +1,4 @@
 export default {
   emojimon: "Emojimon",
-  minimal: "Modifying the getting started example"
+  minimal: "Modifying the getting started example",
 };

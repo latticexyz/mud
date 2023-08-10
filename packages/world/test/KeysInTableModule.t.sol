@@ -5,6 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
@@ -45,9 +46,9 @@ contract KeysInTableModuleTest is Test, GasReporter {
   uint256 val2 = 42;
 
   function setUp() public {
-    tableSchema = SchemaLib.encode(SchemaType.UINT256);
-    tableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-    compositeKeySchema = SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
+    tableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+    compositeKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
 
     SchemaType[] memory _schema = new SchemaType[](0);
     singletonKeySchema = SchemaLib.encode(_schema);

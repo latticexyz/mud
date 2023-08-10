@@ -1,4 +1,4 @@
-import { Chain, PublicClient, Transport } from "viem";
+import { PublicClient } from "viem";
 import {
   createBlockStream,
   isNonPendingBlock,
@@ -24,7 +24,7 @@ type CreateIndexerOptions = {
    *
    * [0]: https://viem.sh/docs/clients/public.html
    */
-  publicClient: PublicClient<Transport, Chain>;
+  publicClient: PublicClient;
   /**
    * Optional block number to start indexing from. Useful for resuming the indexer from a particular point in time or starting after a particular contract deployment.
    */
@@ -41,12 +41,12 @@ type CreateIndexerOptions = {
  * @param {CreateIndexerOptions} options See `CreateIndexerOptions`.
  * @returns A function to unsubscribe from the block stream, effectively stopping the indexer.
  */
-export function createIndexer({
+export async function createIndexer({
   database,
   publicClient,
   startBlock = 0n,
   maxBlockRange,
-}: CreateIndexerOptions): () => void {
+}: CreateIndexerOptions): Promise<() => void> {
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" });
 
   const latestBlockNumber$ = latestBlock$.pipe(
@@ -54,9 +54,13 @@ export function createIndexer({
     map((block) => block.number)
   );
 
+  let latestBlockNumber: bigint | null = null;
   const blockLogs$ = latestBlockNumber$.pipe(
-    tap((latestBlockNumber) => debug("latest block number", latestBlockNumber)),
-    map((latestBlockNumber) => ({ startBlock, endBlock: latestBlockNumber })),
+    tap((blockNumber) => {
+      latestBlockNumber = blockNumber;
+      debug("latest block number", blockNumber);
+    }),
+    map((blockNumber) => ({ startBlock, endBlock: blockNumber })),
     blockRangeToLogs({
       publicClient,
       events: storeEventsAbi,
@@ -68,11 +72,16 @@ export function createIndexer({
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
   );
 
+  let lastBlockNumberProcessed: bigint | null = null;
   const sub = blockLogs$
     .pipe(
-      concatMap(blockLogsToStorage(sqliteStorage({ database, publicClient }))),
+      concatMap(blockLogsToStorage(await sqliteStorage({ database, publicClient }))),
       tap(({ blockNumber, operations }) => {
+        lastBlockNumberProcessed = blockNumber;
         debug("stored", operations.length, "operations for block", blockNumber);
+        if (latestBlockNumber === lastBlockNumberProcessed) {
+          debug("all caught up");
+        }
       })
     )
     .subscribe();

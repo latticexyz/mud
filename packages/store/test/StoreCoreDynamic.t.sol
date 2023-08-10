@@ -7,11 +7,12 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreCore } from "../src/StoreCore.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-import { Schema, SchemaLib } from "../src/Schema.sol";
+import { Schema } from "../src/Schema.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
 contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
-  Schema internal defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
+  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _key;
   bytes32 internal _table = keccak256("some.table");
@@ -34,7 +35,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
   function setUp() public {
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema schema = SchemaEncodeHelper.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
     StoreCore.registerSchema(_table, schema, defaultKeySchema);
 
     // Create key

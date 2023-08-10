@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.1",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -34,10 +34,11 @@
     }
   },
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run build:tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
+    "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
@@ -46,7 +47,6 @@
     "clean:typechain": "rimraf types",
     "dev": "tsup --watch",
     "gas-report": "mud-gas-report --save gas-report.json",
-    "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test"
   },
