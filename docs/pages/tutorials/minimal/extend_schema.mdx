@@ -73,54 +73,54 @@ The block number and time are both the results of opcodes, so they are represent
    - Modify the `increment` function to also update `History` (line 12).
      To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud` to recreate it already).
 
-   <CollapseCode>
+<CollapseCode>
+
 ```solidity filename="IncrementSystem.sol.sol" copy showLineNumbers {5, 12}
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-   import { System } from "@latticexyz/world/src/System.sol";
-   import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+import { Counter, History, HistoryData } from "../codegen/Tables.sol";
 
-   contract IncrementSystem is System {
-   function increment() public returns (uint32) {
-   uint32 counter = Counter.get();
-   uint32 newValue = counter + 1;
-   Counter.set(newValue);
-   History.set(newValue, block.number, block.timestamp);
-   return newValue;
-   }
-   }
+contract IncrementSystem is System {
+  function increment() public returns (uint32) {
+    uint32 counter = Counter.get();
+    uint32 newValue = counter + 1;
+    Counter.set(newValue);
+    History.set(newValue, block.number, block.timestamp);
+    return newValue;
+  }
+}
+```
 
-   ````
-   </CollapseCode>
-
+</CollapseCode>
 
    <details>
    <summary>Explanation</summary>
 
-   ```solidity
-   import { Counter, History, HistoryData } from "../codegen/Tables.sol";
-   ````
+```solidity
+import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+```
 
-   When a table has multiple fields in the value schema, MUD generates a [Solidity data structure](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
-   Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
+When a table has multiple fields in the value schema, MUD generates a [Solidity data structure](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
+Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
 
-   ```solidity
-   struct HistoryData {
-     uint256 blockNumber;
-     uint256 time;
-   }
-   ```
+```solidity
+struct HistoryData {
+  uint256 blockNumber;
+  uint256 time;
+}
+```
 
-   Note that `IncrementSystem` doesn't need to use `HistoryData`, because it only writes to history, it doesn't read from it.
-   However, this is part of manipulating the schema and therefore included in this tutorial.
+Note that `IncrementSystem` doesn't need to use `HistoryData`, because it only writes to history, it doesn't read from it.
+However, this is part of manipulating the schema and therefore included in this tutorial.
 
-   ```solidity
-   History.set(newValue, block.number, block.timestamp);
-   ```
+```solidity
+History.set(newValue, block.number, block.timestamp);
+```
 
-   Set the value.
-   All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
+Set the value.
+All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
 
     </details>
 
