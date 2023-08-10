@@ -29,7 +29,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest typecheck --run"
+    "test": "vitest typecheck --run --passWithNoTests"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
