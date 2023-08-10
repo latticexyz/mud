@@ -298,23 +298,24 @@ Terminate the row and the table in general.
 
 <details>
 <summary>The complete file</summary>
-```typescript
+
+```ts
 import { mount as mountDevTools } from "@latticexyz/dev-tools";
 import { setup } from "./mud/setup";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
 import { getComponentValueStrict } from "@latticexyz/recs";
 
 const {
-components,
-systemCalls: { increment },
+    components,
+    systemCalls: { increment },
 } = await setup();
 
 // Components expose a stream that triggers when the component is updated.
 components.Counter.update$.subscribe((update) => {
-const [nextValue, prevValue] = update.value;
-console.log("Counter updated", update, { nextValue, prevValue });
-document.getElementById("counter")!.innerHTML =
-String(nextValue?.value ?? "unset");
+    const [nextValue, prevValue] = update.value;
+    console.log("Counter updated", update, { nextValue, prevValue });
+    document.getElementById("counter")!.innerHTML =
+        String(nextValue?.value ?? "unset");
 
     let options: String = "";
     for (let i = 0; i <= nextValue?.value; i++) {
@@ -328,21 +329,21 @@ String(nextValue?.value ?? "unset");
 // called to invoke the Increment system contract via the world.
 // (See IncrementSystem.sol)
 (window as any).increment = async () => {
-console.log("new counter value:", await increment());
+    console.log("new counter value:", await increment());
 };
 
 (window as any).readHistory = async counterValue => {
-const History = components.History
-const entity = encodeEntity(History.metadata.keySchema, { counterValue });
-const { blockNumber, time } = getComponentValueStrict(History, entity);
-document.getElementById("blockNumber")!.innerHTML = blockNumber
-document.getElementById("timeStamp")!.innerHTML =
-new Date(parseInt(Number(time) \* 1000)
+    const History = components.History
+    const entity = encodeEntity(History.metadata.keySchema, { counterValue });
+    const { blockNumber, time } = getComponentValueStrict(History, entity);
+    document.getElementById("blockNumber")!.innerHTML = blockNumber
+    document.getElementById("timeStamp")!.innerHTML =
+        new Date(parseInt(Number(time) \* 1000)
 }
 
 mountDevTools();
+```
 
-````
 </details>
 
 <details>
@@ -350,7 +351,7 @@ mountDevTools();
 
 ```typescript
 let options: String = "";
-````
+```
 
 Create `options` as an empty string.
 This is the way you define a variable in TypeScript: `let <variable name>: <type>`.
