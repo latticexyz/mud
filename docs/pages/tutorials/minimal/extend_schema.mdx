@@ -10,51 +10,39 @@ For the sake of simplicity, we will implement this in the `increment` function r
 Right now you need the `main` version of `mud`, not `next`.
 So if you followed the directions, you need to run this command in the root directory.
 
-```sh
+```sh copy
 pnpm mud set-version --tag main && pnpm install
 ```
 
 ## Modify the MUD configuration file
 
-1. In an editor, open `packages/contracts/mud.config.ts` and add this table definition:
+1. In an editor, open `packages/contracts/mud.config.ts` and add a table definition for `History`.
 
-   ```ts
-      History: {
-        keySchema: {
-          counterValue: "uint32",
-        },
-        schema: {
-          blockNumber: "uint256",
-          time: "uint256"
-        }
-      },
+   <CollapseCode>
+
+   ```ts filename="mud.config.ts" showLineNumbers copy {9-17}
+   import { mudConfig } from "@latticexyz/world/register";
+
+   export default mudConfig({
+     tables: {
+       Counter: {
+         keySchema: {},
+         schema: "uint32",
+       },
+       History: {
+         keySchema: {
+           counterValue: "uint32",
+         },
+         schema: {
+           blockNumber: "uint256",
+           time: "uint256",
+         },
+       },
+     },
+   });
    ```
 
-<CollapseCode>
-
-```ts filename="mud.config.ts" showLineNumbers
-import { mudConfig } from "@latticexyz/world/register";
-
-export default mudConfig({
-  tables: {
-    Counter: {
-      keySchema: {},
-      schema: "uint32",
-    },
-    History: {
-      keySchema: {
-        counterValue: "uint32",
-      },
-      schema: {
-        blockNumber: "uint256",
-        time: "uint256",
-      },
-    },
-  },
-});
-```
-
-</CollapseCode>
+   </CollapseCode>
 
 <details>
 <summary>Explanation</summary>
@@ -73,7 +61,7 @@ The block number and time are both the results of opcodes, so they are represent
 
 2. Run this command in `packages/contracts` to regenerate the code.
 
-   ```sh
+   ```sh copy
    pnpm build:mud
    ```
 
@@ -81,79 +69,66 @@ The block number and time are both the results of opcodes, so they are represent
 
 1. In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
 
-   - Modify the second `import` line to import `History`.
-
-     ```solidity
-     import { Counter, History, HistoryData } from "../codegen/Tables.sol";
-     ```
-
-   - Modify the `increment` function to also update `History` by adding this line just before `return newValue`.
-
-     ```solidity
-     History.set(newValue, block.number, block.timestamp);
-     ```
-
+   - Modify the second `import` line to import `History` (line 5)
+   - Modify the `increment` function to also update `History` (line 12).
      To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud` to recreate it already).
 
-<details>
-   <summary>
-     The complete file
-   </summary>
+   <CollapseCode>
+  ```solidity filename="IncrementSystem.sol.sol" copy showLineNumbers {5, 12}
+  // SPDX-License-Identifier: MIT
+  pragma solidity >=0.8.0;
 
-     ```solidity
-     // SPDX-License-Identifier: MIT
-     pragma solidity >=0.8.0;
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Counter, History, HistoryData } from "../codegen/Tables.sol";
 
-     import { System } from "@latticexyz/world/src/System.sol";
-     import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+   contract IncrementSystem is System {
+   function increment() public returns (uint32) {
+   uint32 counter = Counter.get();
+   uint32 newValue = counter + 1;
+   Counter.set(newValue);
+   History.set(newValue, block.number, block.timestamp);
+   return newValue;
+   }
+   }
 
-     contract IncrementSystem is System {
-       function increment() public returns (uint32) {
-         uint32 counter = Counter.get();
-         uint32 newValue = counter + 1;
-         Counter.set(newValue);
-         History.set(newValue, block.number, block.timestamp);
-         return newValue;
-       }
-     }
-     ```
+   ````
+   </CollapseCode>
 
-</details>
 
-<details>
-<summary>Explanation</summary>
+   <details>
+   <summary>Explanation</summary>
 
-```solidity
-import { Counter, History, HistoryData } from "../codegen/Tables.sol";
-```
+   ```solidity
+   import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+   ````
 
-When a table has multiple fields in the value schema, MUD generates a [Solidity data structure](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
-Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
+   When a table has multiple fields in the value schema, MUD generates a [Solidity data structure](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
+   Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
 
-```solidity
-struct HistoryData {
-  uint256 blockNumber;
-  uint256 time;
-}
-```
+   ```solidity
+   struct HistoryData {
+     uint256 blockNumber;
+     uint256 time;
+   }
+   ```
 
-Note that `IncrementSystem` doesn't need to use `HistoryData`, because it only writes to history, it doesn't read from it.
-However, this is part of manipulating the schema and therefore included in this tutorial.
+   Note that `IncrementSystem` doesn't need to use `HistoryData`, because it only writes to history, it doesn't read from it.
+   However, this is part of manipulating the schema and therefore included in this tutorial.
 
-```solidity
-History.set(newValue, block.number, block.timestamp);
-```
+   ```solidity
+   History.set(newValue, block.number, block.timestamp);
+   ```
 
-Set the value.
-All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
+   Set the value.
+   All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
 
-</details>
+    </details>
 
 2. Run this command in `packages/contracts` to rebuild everything this package produces.
 
-```sh
-pnpm build
-```
+   ```sh copy
+   pnpm build
+   ```
 
 ## Update the user interface
 
@@ -163,66 +138,49 @@ Click the **Store data** tab and select the table **:History**.
 However, you can also add the history to the user interface.
 The directions here apply to the `vanilla` user interface, if you use anything else you'll need to modify them as appropriate.
 
-1. Install additional packages.
-   Run these commands in `packages/client`.
+1. Install an additional package.
+   Run this command in `packages/client`.
 
-   ```sh
-   pnpm install @latticexyz/store-cache@main @latticexyz/store-sync@main
+   ```sh copy
+   pnpm install @latticexyz/store-sync@main
    ```
 
-1. Edit `packages/clients/index.html` to add these lines just before `</body>`.
+1. Edit `packages/clients/index.html`.
 
-   ```html
-   <hr />
-   <h2>
-     History for value:
-     <select id="historyValue" onInput="window.readHistory(value)"></select>
-   </h2>
-   <table border>
-     <tr>
-       <th>Block number</th>
-       <th>Time</th>
-     </tr>
-     <tr>
-       <td id="blockNumber"></td>
-       <td id="timeStamp"></td>
-     </tr>
-   </table>
+   <CollapseCode>
+
+   ```html filename="index.html" copy showLineNumbers {12-26}
+   <!DOCTYPE html>
+   <html lang="en">
+     <head>
+       <meta charset="UTF-8" />
+       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+       <title>a minimal MUD client</title>
+     </head>
+     <body>
+       <script type="module" src="/src/index.ts"></script>
+       <div>Counter: <span id="counter">0</span></div>
+       <button onclick="window.increment()">Increment</button>
+       <hr />
+       <h2>
+         History for value:
+         <select id="historyValue" onInput="window.readHistory(value)"></select>
+       </h2>
+       <table border>
+         <tr>
+           <th>Block number</th>
+           <th>Time</th>
+         </tr>
+         <tr>
+           <td id="blockNumber"></td>
+           <td id="timeStamp"></td>
+         </tr>
+       </table>
+     </body>
+   </html>
    ```
 
-<details>
-  <summary>The complete file</summary>
-  ```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>a minimal MUD client</title>
-  </head>
-  <body>
-    <script type="module" src="/src/index.ts"></script>
-    <div>Counter: <span id="counter">0</span></div>
-    <button onclick="window.increment()">Increment</button>
-    <hr />
-    <h2>
-      History for value:
-      <select id="historyValue" onInput="window.readHistory(value)"></select>
-    </h2>
-    <table border>
-      <tr>
-        <th>Block number</th>
-        <th>Time</th>
-      </tr>
-      <tr>
-        <td id="blockNumber"></td>
-        <td id="timeStamp"></td>
-      </tr>
-    </table>
-  </body>
-</html>  
-  ```
-</details>
+   </CollapseCode>
 
 <details>
 <summary>Explanation</summary>
@@ -258,94 +216,64 @@ A standard [HTML table](https://www.w3schools.com/html/html_tables.asp).
 A location for the values, which will be set by `window.readHistory` in `index.ts`.
 
 ```html
-     </tr>
    </table>
 ```
 
-Terminate the row and the table in general.
+Terminate the table in general.
 
 </details>
 
 3. Edit `packages/client/src/index.ts`.
 
-   - Import two more functions we need.
+   - Import two more functions we need (lines 3-4).
+   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values (lines 18-22).
+   - Add a function that is called when the user selects a different option (lines 33-40).
 
-     ```typescript
-     import { encodeEntity } from "@latticexyz/store-sync/recs";
-     import { getComponentValueStrict } from "@latticexyz/recs";
-     ```
+   <CollapseCode>
 
-   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values.
+   ```ts filename="index.ts" copy showLineNumbers {3-4,18-22,33-40}
+   import { mount as mountDevTools } from "@latticexyz/dev-tools";
+   import { setup } from "./mud/setup";
+   import { encodeEntity } from "@latticexyz/store-sync/recs";
+   import { getComponentValueStrict } from "@latticexyz/recs";
 
-     ```typescript
+   const {
+     components,
+     systemCalls: { increment },
+   } = await setup();
+
+   // Components expose a stream that triggers when the component is updated.
+   components.Counter.update$.subscribe((update) => {
+     const [nextValue, prevValue] = update.value;
+     console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+
      let options: String = "";
      for (let i = 0; i <= nextValue?.value; i++) {
        options += `<option value="${i}">${i}</option>`;
      }
      document.getElementById("historyValue")!.innerHTML = options;
-     ```
+   });
 
-   - Add this function, called when the user selects a different option.
+   // Just for demonstration purposes: we create a global function that can be
+   // called to invoke the Increment system contract via the world.
+   // (See IncrementSystem.sol)
+   (window as any).increment = async () => {
+     console.log("new counter value:", await increment());
+   };
 
-     ```typescript
-     (window as any).readHistory = async (counterValue) => {
-       const History = components.History;
-       const entity = encodeEntity(History.metadata.keySchema, { counterValue });
-       const { blockNumber, time } = getComponentValueStrict(History, entity);
-       document.getElementById("blockNumber")!.innerHTML = blockNumber;
-       document.getElementById("timeStamp")!.innerHTML = new Date(Number(time) * 1000);
-     };
-     ```
+   (window as any).readHistory = async (counterValue) => {
+     const History = components.History;
+     const entity = encodeEntity(History.metadata.keySchema, { counterValue });
+     const { blockNumber, time } = getComponentValueStrict(History, entity);
+     document.getElementById("blockNumber")!.innerHTML = blockNumber;
+     document.getElementById("timeStamp")!.innerHTML = new Date(parseInt(Number(time) * 1000));
+   };
 
-<details>
-<summary>The complete file</summary>
+   mountDevTools();
+   ```
 
-```ts
-import { mount as mountDevTools } from "@latticexyz/dev-tools";
-import { setup } from "./mud/setup";
-import { encodeEntity } from "@latticexyz/store-sync/recs";
-import { getComponentValueStrict } from "@latticexyz/recs";
-
-const {
-    components,
-    systemCalls: { increment },
-} = await setup();
-
-// Components expose a stream that triggers when the component is updated.
-components.Counter.update$.subscribe((update) => {
-    const [nextValue, prevValue] = update.value;
-    console.log("Counter updated", update, { nextValue, prevValue });
-    document.getElementById("counter")!.innerHTML =
-        String(nextValue?.value ?? "unset");
-
-    let options: String = "";
-    for (let i = 0; i <= nextValue?.value; i++) {
-        options += `<option value="${i}">${i}</option>`;
-    }
-    document.getElementById("historyValue")!.innerHTML = options;
-
-});
-
-// Just for demonstration purposes: we create a global function that can be
-// called to invoke the Increment system contract via the world.
-// (See IncrementSystem.sol)
-(window as any).increment = async () => {
-    console.log("new counter value:", await increment());
-};
-
-(window as any).readHistory = async counterValue => {
-    const History = components.History
-    const entity = encodeEntity(History.metadata.keySchema, { counterValue });
-    const { blockNumber, time } = getComponentValueStrict(History, entity);
-    document.getElementById("blockNumber")!.innerHTML = blockNumber
-    document.getElementById("timeStamp")!.innerHTML =
-        new Date(parseInt(Number(time) \* 1000)
-}
-
-mountDevTools();
-```
-
-</details>
+   </CollapseCode>
 
 <details>
 <summary>Explanation</summary>
@@ -399,7 +327,7 @@ Update the value in the HTML table.
 
 ```typescript
   document.getElementById("timeStamp")!.innerHTML =
-    new Date(parseInt(Number(time) * 1000)
+    new Date(parseInt(Number(time) * 1000))
 }
 ```
 
