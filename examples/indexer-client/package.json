@@ -1,0 +1,14 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "read-indexer": "tsx index.ts"
+  },
+  "dependencies": {
+    "@latticexyz/store-sync": "2.0.0-main-9a7c9009",
+    "tsx": "^3.12.7"
+  }
+}
