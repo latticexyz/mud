@@ -232,10 +232,31 @@ contract WorldTest is Test, GasReporter {
 
   function testTransferNamespace() public {
     world.registerNamespace("testTransfer");
+
+    // Expect the new owner to not be namespace owner before transfer
+    assertFalse(
+      (NamespaceOwner.get(world, "testTransfer") == address(1)),
+      "new owner should not be namespace owner before transfer"
+    );
+    // Expect the new owner to not have access before transfer
+    assertEq(
+      ResourceAccess.get(world, "testTransfer", address(1)),
+      false,
+      "new owner should not have access before transfer"
+    );
+
     world.transferOwnership("testTransfer", address(1));
+    // Expect the new owner to be namespace owner
     assertEq(NamespaceOwner.get(world, "testTransfer"), address(1), "new owner should be namespace owner");
     // Expect the new owner to have access
     assertEq(ResourceAccess.get(world, "testTransfer", address(1)), true, "new owner should have access");
+    // Expect previous owner to no longer be owner
+    assertFalse(
+      (NamespaceOwner.get(world, "testTransfer") == address(this)),
+      "caller should no longer be namespace owner"
+    );
+    // Expect previous owner to no longer have access
+    assertEq(ResourceAccess.get(world, "testTransfer", address(this)), false, "caller should no longer have access");
   }
 
   function testRegisterTable() public {
