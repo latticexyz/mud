@@ -49,7 +49,7 @@ export function renderCommonData({
   const _keyArgs = renderArguments(keyTuple.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
-  const _keyTupleDefinition = `
+  let _keyTupleDefinition = `
     bytes32[] memory _keyTuple;
     /// @solidity memory-safe-assembly
     assembly {
@@ -59,19 +59,24 @@ export function renderCommonData({
       // Store length
       mstore(_keyTuple, ${keyTuple.length})
     }
-
-    bytes32 _key;
-    ${renderList(
-      keyTuple,
-      (key, index) => `
-      /// @solidity memory-safe-assembly
-      _key = ${renderValueTypeToBytes32(key.name, key)};
-      assembly {
-        mstore(add(_keyTuple, ${(index + 1) * 32}), _key)
-      }
-    `
-    )}
   `;
+
+  if (keyTuple.length > 0) {
+    _keyTupleDefinition += `
+      // Store keys
+      bytes32 _keyTupleItem;
+      ${renderList(
+        keyTuple,
+        (key, index) => `
+          /// @solidity memory-safe-assembly
+          _keyTupleItem = ${renderValueTypeToBytes32(key.name, key)};
+          assembly {
+            mstore(add(_keyTuple, ${(index + 1) * 32}), _keyTupleItem)
+          }
+        `
+      )}
+    `;
+  }
 
   return {
     _tableId,

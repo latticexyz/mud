@@ -93,12 +93,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -117,12 +118,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -141,12 +143,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
@@ -164,12 +167,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)));
@@ -187,12 +191,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
@@ -211,12 +216,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
@@ -235,12 +241,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
@@ -259,12 +266,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
@@ -283,12 +291,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
@@ -306,12 +315,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
@@ -329,12 +339,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 32);
@@ -352,12 +363,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 0, 32);
@@ -375,12 +387,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
@@ -398,12 +411,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
@@ -421,12 +435,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
@@ -445,12 +460,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
@@ -469,12 +485,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
@@ -492,12 +509,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)));
@@ -515,12 +533,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
@@ -539,12 +558,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
@@ -563,12 +583,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 32, (_index + 1) * 32);
@@ -587,12 +608,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 32, (_index + 1) * 32);
@@ -611,12 +633,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
@@ -634,12 +657,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
@@ -657,12 +681,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 32);
@@ -680,12 +705,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 1, 32);
@@ -703,12 +729,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 32, abi.encodePacked((_element)));
@@ -726,12 +753,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 1, _index * 32, abi.encodePacked((_element)));
@@ -749,12 +777,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
@@ -773,12 +802,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
@@ -797,12 +827,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
@@ -820,12 +851,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)));
@@ -843,12 +875,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
@@ -867,12 +900,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
@@ -891,12 +925,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
@@ -915,12 +950,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
@@ -939,12 +975,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
@@ -962,12 +999,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
@@ -985,12 +1023,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 32);
@@ -1008,12 +1047,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 2, 32);
@@ -1031,12 +1071,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
@@ -1054,12 +1095,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
@@ -1077,12 +1119,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
@@ -1101,12 +1144,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
@@ -1125,12 +1169,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
@@ -1148,12 +1193,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)));
@@ -1171,12 +1217,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
@@ -1195,12 +1242,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
@@ -1219,12 +1267,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 32, (_index + 1) * 32);
@@ -1243,12 +1292,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 32, (_index + 1) * 32);
@@ -1267,12 +1317,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
@@ -1290,12 +1341,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
@@ -1313,12 +1365,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 32);
@@ -1336,12 +1389,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 3, 32);
@@ -1359,12 +1413,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 32, abi.encodePacked((_element)));
@@ -1382,12 +1437,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 3, _index * 32, abi.encodePacked((_element)));
@@ -1405,12 +1461,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4);
@@ -1429,12 +1486,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 4);
@@ -1453,12 +1511,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
@@ -1476,12 +1535,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)));
@@ -1499,12 +1559,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 4, getSchema());
@@ -1523,12 +1584,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 4, getSchema());
@@ -1547,12 +1609,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 32, (_index + 1) * 32);
@@ -1571,12 +1634,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 32, (_index + 1) * 32);
@@ -1595,12 +1659,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
@@ -1618,12 +1683,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
@@ -1641,12 +1707,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 4, 32);
@@ -1664,12 +1731,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 4, 32);
@@ -1687,12 +1755,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 32, abi.encodePacked((_element)));
@@ -1710,12 +1779,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 4, _index * 32, abi.encodePacked((_element)));
@@ -1733,12 +1803,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -1757,12 +1828,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
@@ -1790,12 +1862,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
@@ -1823,12 +1896,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setRecord(_tableId, _keyTuple, _data);
@@ -1916,12 +1990,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     return _keyTuple;
@@ -1939,12 +2014,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -1962,12 +2038,13 @@ library KeysInTable {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = sourceTable;
+    _keyTupleItem = sourceTable;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.deleteRecord(_tableId, _keyTuple);

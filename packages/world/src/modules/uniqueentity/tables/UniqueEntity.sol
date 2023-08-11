@@ -73,8 +73,6 @@ library UniqueEntity {
       mstore(_keyTuple, 0)
     }
 
-    bytes32 _key;
-
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (uint256(Bytes.slice32(_blob, 0)));
   }
@@ -90,8 +88,6 @@ library UniqueEntity {
       // Store length
       mstore(_keyTuple, 0)
     }
-
-    bytes32 _key;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (uint256(Bytes.slice32(_blob, 0)));
@@ -109,8 +105,6 @@ library UniqueEntity {
       mstore(_keyTuple, 0)
     }
 
-    bytes32 _key;
-
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
 
@@ -125,8 +119,6 @@ library UniqueEntity {
       // Store length
       mstore(_keyTuple, 0)
     }
-
-    bytes32 _key;
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
@@ -148,8 +140,6 @@ library UniqueEntity {
       mstore(_keyTuple, 0)
     }
 
-    bytes32 _key;
-
     return _keyTuple;
   }
 
@@ -165,8 +155,6 @@ library UniqueEntity {
       mstore(_keyTuple, 0)
     }
 
-    bytes32 _key;
-
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
@@ -181,8 +169,6 @@ library UniqueEntity {
       // Store length
       mstore(_keyTuple, 0)
     }
-
-    bytes32 _key;
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

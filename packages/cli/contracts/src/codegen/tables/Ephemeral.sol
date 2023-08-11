@@ -79,12 +79,13 @@ library Ephemeral {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
@@ -104,12 +105,13 @@ library Ephemeral {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
@@ -132,12 +134,13 @@ library Ephemeral {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     return _keyTuple;

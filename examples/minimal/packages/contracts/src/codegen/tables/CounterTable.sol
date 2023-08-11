@@ -71,8 +71,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }
@@ -88,8 +87,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }
@@ -105,8 +103,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }
@@ -121,8 +118,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }
@@ -142,8 +138,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }
@@ -158,8 +153,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }
@@ -174,8 +168,7 @@ library CounterTable {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 32
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 32))
       // Store length
       mstore(_keyTuple, 0)
     }

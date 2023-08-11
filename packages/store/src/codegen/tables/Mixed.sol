@@ -90,12 +90,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -114,12 +115,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -138,12 +140,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((u32)));
@@ -161,12 +164,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((u32)));
@@ -184,12 +188,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
@@ -208,12 +213,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
@@ -232,12 +238,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((u128)));
@@ -255,12 +262,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((u128)));
@@ -278,12 +286,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
@@ -302,12 +311,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
@@ -326,12 +336,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)));
@@ -349,12 +360,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)));
@@ -372,12 +384,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
@@ -396,12 +409,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
@@ -420,12 +434,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
@@ -444,12 +459,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
@@ -468,12 +484,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
@@ -491,12 +508,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
@@ -514,12 +532,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 4);
@@ -537,12 +556,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 2, 4);
@@ -560,12 +580,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
@@ -583,12 +604,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
@@ -606,12 +628,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
@@ -630,12 +653,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
@@ -654,12 +678,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((s)));
@@ -677,12 +702,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 3, bytes((s)));
@@ -700,12 +726,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
@@ -724,12 +751,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
@@ -748,12 +776,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
@@ -772,12 +801,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
@@ -796,12 +826,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)));
@@ -819,12 +850,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)));
@@ -842,12 +874,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1);
@@ -865,12 +898,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.popFromField(_tableId, _keyTuple, 3, 1);
@@ -888,12 +922,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
@@ -911,12 +946,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
@@ -934,12 +970,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -958,12 +995,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
@@ -984,12 +1022,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
@@ -1009,12 +1048,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setRecord(_tableId, _keyTuple, _data);
@@ -1077,12 +1117,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     return _keyTuple;
@@ -1100,12 +1141,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -1123,12 +1165,13 @@ library Mixed {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = key;
+    _keyTupleItem = key;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.deleteRecord(_tableId, _keyTuple);

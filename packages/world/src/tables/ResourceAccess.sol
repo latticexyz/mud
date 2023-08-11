@@ -78,18 +78,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -108,18 +109,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -138,18 +140,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)));
@@ -167,18 +170,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)));
@@ -201,18 +205,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     return _keyTuple;
@@ -230,18 +235,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -259,18 +265,19 @@ library ResourceAccess {
       mstore(_keyTuple, 2)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = resourceSelector;
+    _keyTupleItem = resourceSelector;
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(caller)));
+    _keyTupleItem = bytes32(uint256(uint160(caller)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     _store.deleteRecord(_tableId, _keyTuple);

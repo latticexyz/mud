@@ -107,42 +107,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -169,42 +170,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -223,42 +225,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)));
@@ -276,42 +279,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)));
@@ -329,42 +333,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
@@ -391,42 +396,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
@@ -445,42 +451,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)));
@@ -498,42 +505,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)));
@@ -551,42 +559,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
@@ -613,42 +622,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
@@ -667,42 +677,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)));
@@ -720,42 +731,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)));
@@ -773,42 +785,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
@@ -835,42 +848,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
@@ -889,42 +903,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)));
@@ -942,42 +957,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)));
@@ -995,42 +1011,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4);
@@ -1057,42 +1074,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 4);
@@ -1111,42 +1129,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)));
@@ -1164,42 +1183,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)));
@@ -1217,42 +1237,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 5);
@@ -1279,42 +1300,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 5);
@@ -1333,42 +1355,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)));
@@ -1386,42 +1409,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)));
@@ -1439,42 +1463,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 6);
@@ -1501,42 +1526,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 6);
@@ -1555,42 +1581,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 6, abi.encodePacked(uint8(v7)));
@@ -1608,42 +1635,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 6, abi.encodePacked(uint8(v7)));
@@ -1668,42 +1696,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -1730,42 +1759,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
@@ -1800,42 +1830,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
@@ -1870,42 +1901,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.setRecord(_tableId, _keyTuple, _data);
@@ -1979,42 +2011,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     return _keyTuple;
@@ -2032,42 +2065,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -2085,42 +2119,43 @@ library Statics {
       mstore(_keyTuple, 6)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(k1));
+    _keyTupleItem = bytes32(uint256(k1));
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(int256(k2)));
+    _keyTupleItem = bytes32(uint256(int256(k2)));
     assembly {
-      mstore(add(_keyTuple, 64), _key)
+      mstore(add(_keyTuple, 64), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(k3);
+    _keyTupleItem = bytes32(k3);
     assembly {
-      mstore(add(_keyTuple, 96), _key)
+      mstore(add(_keyTuple, 96), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint160(k4)));
+    _keyTupleItem = bytes32(uint256(uint160(k4)));
     assembly {
-      mstore(add(_keyTuple, 128), _key)
+      mstore(add(_keyTuple, 128), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = _boolToBytes32(k5);
+    _keyTupleItem = _boolToBytes32(k5);
     assembly {
-      mstore(add(_keyTuple, 160), _key)
+      mstore(add(_keyTuple, 160), _keyTupleItem)
     }
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(uint256(uint8(k6)));
+    _keyTupleItem = bytes32(uint256(uint8(k6)));
     assembly {
-      mstore(add(_keyTuple, 192), _key)
+      mstore(add(_keyTuple, 192), _keyTupleItem)
     }
 
     _store.deleteRecord(_tableId, _keyTuple);

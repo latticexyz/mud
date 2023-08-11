@@ -72,12 +72,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -90,12 +97,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -108,12 +122,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
@@ -125,12 +146,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)));
   }
@@ -147,12 +175,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     return _keyTuple;
   }
@@ -164,12 +199,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -181,12 +223,19 @@ library Number {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = bytes32(uint256(key));
+
+    // Store keys
+    bytes32 _keyTupleItem;
+
+    /// @solidity memory-safe-assembly
+    _keyTupleItem = bytes32(uint256(key));
+    assembly {
+      mstore(add(_keyTuple, 32), _keyTupleItem)
+    }
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

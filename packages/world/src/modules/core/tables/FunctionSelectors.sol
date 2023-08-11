@@ -81,12 +81,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -105,12 +106,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -129,12 +131,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((namespace)));
@@ -152,12 +155,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((namespace)));
@@ -175,12 +179,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
@@ -199,12 +204,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
@@ -223,12 +229,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((name)));
@@ -246,12 +253,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((name)));
@@ -269,12 +277,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
@@ -296,12 +305,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
@@ -320,12 +330,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)));
@@ -343,12 +354,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)));
@@ -368,12 +380,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -395,12 +408,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
@@ -421,12 +435,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
@@ -452,12 +467,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.setRecord(_tableId, _keyTuple, _data);
@@ -491,12 +507,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     return _keyTuple;
@@ -514,12 +531,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -537,12 +555,13 @@ library FunctionSelectors {
       mstore(_keyTuple, 1)
     }
 
-    bytes32 _key;
+    // Store keys
+    bytes32 _keyTupleItem;
 
     /// @solidity memory-safe-assembly
-    _key = bytes32(functionSelector);
+    _keyTupleItem = bytes32(functionSelector);
     assembly {
-      mstore(add(_keyTuple, 32), _key)
+      mstore(add(_keyTuple, 32), _keyTupleItem)
     }
 
     _store.deleteRecord(_tableId, _keyTuple);
