@@ -6,15 +6,14 @@
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
-    "build:mud": "mud tablegen && mud worldgen && pnpm run tsgen",
+    "build:mud": "mud tablegen && mud worldgen",
     "build:typechain": "typechain --target=ethers-v5 abi/IWorld.sol/IWorld.json",
     "clean": "pnpm run clean:abi && pnpm run clean:mud && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
     "clean:mud": "rimraf src/codegen",
     "clean:typechain": "rimraf types",
     "deploy:local": "mud deploy",
-    "test": "mud test",
-    "tsgen": "mud tsgen --configPath mud.config.ts --out ../client-vanilla/src/mud"
+    "test": "mud test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
