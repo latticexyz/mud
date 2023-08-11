@@ -67,7 +67,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     ...configToRecsComponents(world, storeConfig),
     ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
-  } as SyncToRecsComponents;
+  };
 
   world.registerEntity({ id: singletonEntity });
 
