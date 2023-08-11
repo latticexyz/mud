@@ -1140,6 +1140,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
       '@trpc/client':
         specifier: 10.34.0
         version: 10.34.0(@trpc/server@10.34.0)
