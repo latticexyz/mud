@@ -19,9 +19,6 @@ export function NetworkSummary() {
       <dt className="text-amber-200/80">RPC</dt>
       <dd className="text-sm text-green-500">Connected ✓</dd>
 
-      <dt className="text-amber-200/80">MODE</dt>
-      <dd className="text-sm text-white/40">Not available</dd>
-
       <dt className="text-amber-200/80">World</dt>
       <dd className="text-sm">{worldAddress}</dd>
     </dl>

@@ -1,7 +1,6 @@
-import { SimulateContractReturnType, PublicClient, Chain, decodeFunctionData, Transport } from "viem";
+import { SimulateContractReturnType, PublicClient, Chain, decodeFunctionData, Transport, Abi } from "viem";
 import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
-import { useStore } from "../useStore";
 import { ContractWrite } from "@latticexyz/common";
 
 // TODO: something about this fails when doing lots of simultaneous requests for transactions
@@ -13,10 +12,10 @@ const cache: Record<string, Promise<SimulateContractReturnType>> = {};
 
 export function getTransactionResult(
   publicClient: PublicClient<Transport, Chain>,
+  worldAbi: Abi,
   write: ContractWrite
 ): Promise<SimulateContractReturnType> {
   if (!cache[write.id]) {
-    const { worldAbi } = useStore.getState();
     const transaction = getTransaction(publicClient, write);
     const transactionReceipt = getTransactionReceipt(publicClient, write);
     cache[write.id] = Promise.all([transaction, transactionReceipt]).then(([tx, receipt]) => {

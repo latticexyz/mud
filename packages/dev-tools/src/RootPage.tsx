@@ -30,14 +30,14 @@ export function RootPage() {
         >
           Store log
         </NavButton>
-        <NavButton
+        {/* <NavButton
           to="/tables"
           className={({ isActive }) =>
             twMerge("py-1.5 px-3", isActive ? "bg-slate-800 text-white" : "hover:bg-blue-800 hover:text-white")
           }
         >
           Store data
-        </NavButton>
+        </NavButton> */}
       </div>
       <div className="flex-1 overflow-auto">
         <Outlet />

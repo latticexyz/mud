@@ -1,8 +1,8 @@
-import { StoreEvent } from "../useStore";
-import { exhaustiveCheck } from "../exhaustiveCheck";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { StoreEventsAbiItem } from "@latticexyz/store";
 
 type Props = {
-  eventName: StoreEvent["event"];
+  eventName: StoreEventsAbiItem["name"];
 };
 
 export function EventIcon({ eventName }: Props) {
@@ -16,6 +16,6 @@ export function EventIcon({ eventName }: Props) {
     case "StoreEphemeralRecord":
       return <span className="text-violet-400 font-bold">~</span>;
     default:
-      return exhaustiveCheck(eventName, `Unexpected event name: ${eventName}`);
+      return assertExhaustive(eventName, `Unexpected event name: ${eventName}`);
   }
 }

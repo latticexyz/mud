@@ -2,7 +2,7 @@ import { NetworkSummary } from "./NetworkSummary";
 import { AccountSummary } from "./AccountSummary";
 import { EventsSummary } from "./EventsSummary";
 import { ActionsSummary } from "./ActionsSummary";
-import { TablesSummary } from "./TablesSummary";
+// import { TablesSummary } from "./TablesSummary";
 import packageJson from "../../package.json";
 
 const isLinked = Object.entries(packageJson.dependencies).some(
@@ -29,10 +29,10 @@ export function SummaryPage() {
           <h1 className="font-bold text-white/40 uppercase text-xs">Recent store events</h1>
           <EventsSummary />
         </div>
-        <div className="space-y-2">
+        {/* <div className="space-y-2">
           <h1 className="font-bold text-white/40 uppercase text-xs">Tables</h1>
           <TablesSummary />
-        </div>
+        </div> */}
       </div>
       <div className="p-2 text-right font-mono text-xs leading-none text-white/20">
         MUD {isLinked ? <>v{packageJson.version}</> : <>linked</>}

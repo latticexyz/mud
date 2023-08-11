@@ -26,7 +26,7 @@ export function WriteSummary({ write }: Props) {
   const hash = usePromise(write.result);
   const transactionPromise = getTransaction(publicClient, write);
   const transactionReceiptPromise = getTransactionReceipt(publicClient, write);
-  const transactionResultPromise = getTransactionResult(publicClient, write);
+  const transactionResultPromise = getTransactionResult(publicClient, worldAbi, write);
   const transaction = usePromise(transactionPromise);
   const transactionReceipt = usePromise(transactionReceiptPromise);
   const transactionResult = usePromise(transactionResultPromise);
