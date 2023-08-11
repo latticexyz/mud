@@ -3,6 +3,7 @@ import { Abi, Block, Chain, PublicClient, Transport, WalletClient } from "viem";
 import { StoreConfig } from "@latticexyz/store";
 import { BlockStorageOperations } from "@latticexyz/store-sync";
 import { ContractWrite } from "@latticexyz/common";
+import { World as RecsWorld } from "@latticexyz/recs";
 
 export type DevToolsOptions<TConfig extends StoreConfig = StoreConfig> = {
   config: TConfig;
@@ -13,4 +14,5 @@ export type DevToolsOptions<TConfig extends StoreConfig = StoreConfig> = {
   worldAddress: string | null;
   worldAbi: Abi;
   write$: Observable<ContractWrite>;
+  recsWorld?: RecsWorld;
 };

@@ -319,6 +319,9 @@ importers:
       '@latticexyz/react':
         specifier: workspace:*
         version: link:../react
+      '@latticexyz/recs':
+        specifier: workspace:*
+        version: link:../recs
       '@latticexyz/std-client':
         specifier: workspace:*
         version: link:../std-client

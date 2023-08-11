@@ -25,6 +25,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/network": "workspace:*",
     "@latticexyz/react": "workspace:*",
+    "@latticexyz/recs": "workspace:*",
     "@latticexyz/std-client": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",

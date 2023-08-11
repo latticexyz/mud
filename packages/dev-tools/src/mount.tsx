@@ -1,6 +1,5 @@
-import { StoreConfig } from "@latticexyz/store";
-import { DevToolsOptions } from "./common";
-import { DevToolsProvider } from "./DevToolsContext";
+import type { StoreConfig } from "@latticexyz/store";
+import type { DevToolsOptions } from "./common";
 
 const containerId = "mud-dev-tools";
 
@@ -22,6 +21,7 @@ export async function mount<TConfig extends StoreConfig>(
     const React = await import("react");
     const ReactDOM = await import("react-dom/client");
     const { App } = await import("./App");
+    const { DevToolsProvider } = await import("./DevToolsContext");
 
     const rootElement = document.createElement("div");
     rootElement.id = containerId;
