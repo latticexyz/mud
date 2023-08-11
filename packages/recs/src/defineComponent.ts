@@ -126,11 +126,7 @@ export function defineComponent<
   }
 
   const componentPlus = {
-    id,
-    values,
-    update$,
-    metadata,
-    entities,
+    ...component,
     get,
     set,
     getAll,
@@ -141,7 +137,7 @@ export function defineComponent<
     update,
     has,
     equals,
-  } as ComponentPlus<S, M, T>;
+  };
 
   world.registerComponent(componentPlus);
   return componentPlus;

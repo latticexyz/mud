@@ -1,5 +1,5 @@
 import { KeySchema, StoreConfig, ValueSchema } from "@latticexyz/store";
-import { Component as RecsComponent, Type as RecsType } from "@latticexyz/recs";
+import { ComponentPlus as RecsComponent, Type as RecsType } from "@latticexyz/recs";
 import { SchemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 

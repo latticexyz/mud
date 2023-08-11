@@ -4,7 +4,7 @@ import { debug } from "./debug";
 import {
   ComponentValue,
   Entity,
-  Component as RecsComponent,
+  ComponentPlus as RecsComponent,
   Schema as RecsSchema,
   getComponentValue,
   removeComponent,

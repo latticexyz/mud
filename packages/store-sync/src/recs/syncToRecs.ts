@@ -37,12 +37,14 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   };
 };
 
+type SyncToRecsComponents<TConfig extends StoreConfig = StoreConfig> = ConfigToRecsComponents<TConfig> &
+  ConfigToRecsComponents<typeof storeConfig> &
+  ConfigToRecsComponents<typeof worldConfig> &
+  ReturnType<typeof defineInternalComponents>;
+
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
-  components: ConfigToRecsComponents<TConfig> &
-    ConfigToRecsComponents<typeof storeConfig> &
-    ConfigToRecsComponents<typeof worldConfig> &
-    ReturnType<typeof defineInternalComponents>;
+  components: SyncToRecsComponents;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -65,7 +67,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     ...configToRecsComponents(world, storeConfig),
     ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
-  };
+  } as SyncToRecsComponents;
 
   world.registerEntity({ id: singletonEntity });
 
