@@ -1,14 +1,15 @@
+import { StorageOperation } from "@latticexyz/store-sync";
 import { serialize } from "../serialize";
-import { StoreEvent } from "../useStore";
 import { EventIcon } from "./EventIcon";
+import { StoreConfig } from "@latticexyz/store";
 
 // TODO: use react-table or similar for better perf with lots of logs
 
 type Props = {
-  events: StoreEvent[];
+  operations: StorageOperation<StoreConfig>[];
 };
 
-export function EventsTable({ events }: Props) {
+export function StorageOperationsTable({ operations }: Props) {
   return (
     <table className="w-full table-fixed -mx-1">
       <thead className="sticky top-0 z-10 bg-slate-800 text-amber-200/80 text-left">
@@ -21,17 +22,22 @@ export function EventsTable({ events }: Props) {
         </tr>
       </thead>
       <tbody className="font-mono text-xs">
-        {events.map((event) => (
-          <tr key={`${event.chainId}:${event.blockNumber}:${event.logIndex}`} className="hover:bg-blue-800">
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">{event.blockNumber}</td>
+        {operations.map((operation) => (
+          <tr key={`${operation.log.transactionHash}:${operation.log.transactionIndex}`} className="hover:bg-blue-800">
+            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">
+              {operation.log.blockNumber.toString()}
+            </td>
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-              {event.table.namespace}:{event.table.name}
+              {operation.namespace}:{operation.name}
             </td>
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{event.keyTuple}</td>
+            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{serialize(operation.key)}</td>
             <td className="px-1 whitespace-nowrap">
-              <EventIcon eventName={event.event} />
+              <EventIcon eventName={operation.log.eventName} />
             </td>
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{serialize(event.namedValues)}</td>
+            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
+              {operation.type === "SetRecord" ? serialize(operation.value) : null}
+              {operation.type === "SetField" ? serialize({ [operation.fieldName]: operation.fieldValue }) : null}
+            </td>
           </tr>
         ))}
       </tbody>

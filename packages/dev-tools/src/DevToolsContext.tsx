@@ -1,6 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { DevToolsOptions } from "./common";
 import { ContractWrite } from "@latticexyz/common";
+import { StorageOperation } from "@latticexyz/store-sync";
+import { StoreConfig } from "@latticexyz/store";
 
 const DevToolsContext = createContext<DevToolsOptions | null>(null);
 
@@ -28,8 +30,17 @@ export const useDevToolsContext = () => {
     return () => sub.unsubscribe();
   }, [value.write$]);
 
+  const [storageOperations, setStorageOperations] = useState<StorageOperation<StoreConfig>[]>([]);
+  useEffect(() => {
+    const sub = value.blockStorageOperations$.subscribe(({ operations }) => {
+      setStorageOperations((val) => [...val, ...operations]);
+    });
+    return () => sub.unsubscribe();
+  }, [value.blockStorageOperations$]);
+
   return {
     ...value,
     writes,
+    storageOperations,
   };
 };

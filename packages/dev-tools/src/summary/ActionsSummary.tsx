@@ -10,7 +10,7 @@ export function ActionsSummary() {
       {writes.length ? (
         <>
           <div className="space-y-1">
-            {writes.slice(0, 5).map((write) => (
+            {writes.slice(-5).map((write) => (
               <WriteSummary key={write.id} write={write} />
             ))}
           </div>
