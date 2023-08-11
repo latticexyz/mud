@@ -18,7 +18,7 @@ export type ConfigFieldTypeToSchemaAbiType<T extends FieldData<string>> = T exte
   ? T
   : T extends `${string}[${string}]`
   ? "uint8[]"
-  : "uint";
+  : "uint8";
 
 export type ConfigFieldTypeToPrimitiveType<T extends FieldData<string>> = T extends SchemaAbiType
   ? SchemaAbiTypeToPrimitiveType<T>
