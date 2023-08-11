@@ -13,7 +13,6 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
-import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
