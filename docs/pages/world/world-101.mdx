@@ -22,7 +22,7 @@ A World contains resources. Currently, there exists three types of resources. Mo
 2. **Table**: a [Store](store) table. Used to store and retrieve data.
 3. **System**: a piece of logic, stored as EVM bytecode. Systems have no state, and instead read and write to Tables.
 
-Each resource is contained within a namespace. You can think of the resources within a World as a filesystem:
+Each resource is contained within a namespace (possibly the ROOT one, where you use an empty string for the namespace). You can think of the resources within a World as a filesystem:
 
 ```bash
 root
@@ -36,11 +36,18 @@ root
     | Drop <- System
     | Score <- Table
     | Win <- System
+| Counter <- Table
+| Increment <- System
 ```
 
 The organization of resources within namespaces is used for two different features of MUD:
 
-1. **Access control:** resources in a namespace have “write” access to the other resources within their namespace. Currently, having write access only matters for systems interacting with tables: it means these systems can create and edit records within those tables.
+1. **Access control:** resources in a namespace have “write” access to the other resources within their namespace.
+   Currently, having write access only matters for systems interacting with tables: it means these systems can create and edit records within those tables.
+
+   Note that systems in the ROOT namespace are able to bypass access control.
+   Because they are called with `DELEGATECALL`, they can bypass any hooks and write directly to any table in the `World`.
+
 2. **Synchronization of state**: MUD clients can decide which namespaces they synchronize. Synchronization means different things depending on the resource type:
    - **Synchronizing a Table** means downloading and keeping track of all changes to records found within the Table. As an example, synchronizing a `BalanceTable` would mean keeping track of the balances of all addresses within that table.
    - **Synchronizing a System** means downloading its EVM bytecode from the chain, and in a future version of MUD, being able to execute these systems optimistically client side. As an example, this would allow clients to immediately predict the likely outcome of an on-chain action without relying on external nodes or services like Tenderly to simulate the outcome.
@@ -75,6 +82,7 @@ Systems **MUST** use the `_msgSender()` function exposed in the `System` interfa
 There exists two types of systems:
 
 1. **Regular systems**: Regular systems are `CALL`ed from the World, which isolates their storage from the World storage. They read and write to the Store by going through the World, which does access control checks (eg: Can this system write to this table>). Regular systems can register namespaced function selectors on the World. eg: `World.myNamespace_ExampleSystem_createRecord()`.
+
 2. **Root systems**: Root systems are `DELEGATECALL`ed from the World, which lets them borrow the World storage. They read and write to the Store _directly_. There are _NO_ access control on Root systems. Root systems can register root function selectors, allowing their functions to be called on the World directly, eg: `World.createRecord()`.
 
 Systems are not root by default, only systems registered in the ROOT namespace (the empty string namespace: `""`) are treated as root systems.
@@ -95,7 +103,7 @@ In order to use World, you just need your project to have the right folder struc
 Run the following command:
 
 ```console
-pnpm create mud@canary your-project-name
+pnpm create mud@next your-project-name
 ```
 
 You'll be prompted to pick the type of template to use; select vanilla.
@@ -222,18 +230,28 @@ Now we can import our new table, and write something to it. Let’s write a func
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { Dog } from "../codegen/tables/Dog.sol"; // import table we created
+import { Dog, DogData } from "../codegen/tables/Dog.sol"; // import table we created
+
 contract MySystem is System {
   function addEntry(string memory name, string memory color) public returns (bytes32) {
     bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())); // creating a random key for the record
     address owner = _msgSender(); // IMPORTANT: always refer to the msg.sender using the _msgSender() function
-    Dog.set(key, {owner: owner, name: name, color: color}); // creating our record!
+    Dog.set(key, DogData({ owner: owner, name: name, color: color })); // creating our record!
     return key;
   }
 }
 ```
 
 That’s it! `MySystem`, just like `IncrementSystem`, will have access to Dog given they are in the same namespace.
+
+We can run `pnpm mud worldgen` in the contract folder to recreate the systems.
+
+```bash
+> pnpm mud worldgen
+Generated system interface: src/codegen/world/IIncrementSystem.sol
+Generated system interface: src/codegen/world/IMySystem.sol
+Generated system interface: src/codegen/world/IWorld.sol
+```
 
 After this step, the filesystem of the World is like this:
 

@@ -1,4 +1,4 @@
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { Hex } from "viem";
 import snapSyncSystemAbi from "./snapSyncSystemAbi";
 import { Contract, Signer, providers } from "ethers";

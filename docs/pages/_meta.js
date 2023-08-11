@@ -1,20 +1,39 @@
+import worldPackageJson from "../../packages/world/package.json" assert { type: "json" };
+
 export default {
-  index: "Introduction",
-  "quick-start": "Quick start",
+  index: "Overview",
+  introduction: "Introduction",
+  "quick-start": "Quickstart",
   "what-is-mud": "What is MUD?",
   store: "Store",
   world: "World",
   "client-side": "MUD client",
-  mode: "MODE",
+  indexer: "Indexer",
   cli: "CLI",
   ecs: "ECS and MUD",
   plugins: "Plugins",
   tutorials: "Tutorials",
+  reference: "Reference",
   contribute: "Contribute",
-  roadmap: {
-    title: "Roadmap",
+  changelog: "Changelog",
+  version: {
+    title: worldPackageJson.version,
+    type: "menu",
+    items: {
+      changelog: {
+        title: "Changelog",
+        href: "/changelog",
+      },
+      contribute: {
+        title: "Contribute",
+        href: "/contribute",
+      },
+    },
+  },
+  status: {
+    title: "Status",
     type: "page",
-    href: "https://roadmap.mud.dev",
+    href: "https://status.mud.dev",
     newWindow: true,
   },
   community: {

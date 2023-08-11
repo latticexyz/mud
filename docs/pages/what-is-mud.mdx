@@ -1,17 +1,17 @@
 import { Aside } from "../components/Aside";
 
-## What’s MUD?
+# What is MUD?
 
 MUD is a framework for ambitious Ethereum applications.
 It compresses the complexity of building EVM apps with a tightly integrated software stack.
 
 MUD comes with:
 
-1. **Store**: An [onchain database](store).
-2. **World**: An [entry-point framework](world) that brings standardized access-control, upgrades, and modules.
+1. **Store**: An [onchain database](store). No more bespoke data modeling for each app and gas-golfing events.
+2. **World**: An [entry-point kernel](world) that brings standardized access-control, upgrades, and modules.
 3. Blazing fast development tools based on [Foundry](https://github.com/foundry-rs/foundry)
-4. Client-side data-stores that magically reflect onchain state.
-5. **MODE**: [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1.
+4. Client-side data-stores that magically reflect onchain state. No need to use view functions and events to get your contract data.
+5. **Indexer**: [A indexer](indexer) you can query with [tRPC](https://trpc.io/docs) that reflects your onchain state 1 to 1.
 
 ## What MUD isn't
 
@@ -116,12 +116,12 @@ All Systems are called through the World entry point, which does initial access-
 
 When using Store (and by extension World), your onchain data is automatically introspectable, and any change is advertised via standard events.
 
-These events and schemas are leveraged by [MODE](https://www.notion.so/67312bda49de4acab98d8aa2ee3df03a): a node, but for MUD*.* MODE turns your onchain state into a SQL database and keeps it up to date with millisecond latencies. You can then query MODE via the MUD QDSL (a querying language optimized for describing efficient materialized views), GraphQL, or regular ANSI SQL.
+These events and schemas are leveraged by [the Indexer](/indexer): a node, but for MUD. The Indexer turns your onchain state into a SQL database and keeps it up to date with millisecond latencies. You can then query the Indexer via the MUD QDSL (a querying language optimized for describing efficient materialized views), or [tRPC](https://trpc.io/docs).
 
 If you decide to go with the MUD querying DSL, your app can subscribe to a subset of the Store via a simple yet flexible querying language and keep that subset of the Store up to date as onchain transactions change Store and the result set.
 
 <Aside emoji="📢">
-  For most simple use cases, using MODE is abstracted for you. Your onchain state is reflected in the client data-store
+  For most simple use cases, you do not need the Indexer. Your onchain state is reflected in the client data-store
   automatically, and no queries need to be written. If that state gets too big for the client (eg: [you are running an
   onchain MMO with millions of entities](https://dev.optimism.io/opcraft-autonomous-world/)), you can start tweaking the
   data being synced using queries.
@@ -129,11 +129,11 @@ If you decide to go with the MUD querying DSL, your app can subscribe to a subse
 
 [diagram with a few tables, a DSL query, a client that updates its frontend, and an onchain tx that percolates to changing the UI]
 
-This means you don’t need to write Subgraphs or Indexers: you just need to point a MODE to your Store!
+This means you don’t need to write Subgraphs or Indexers: you just need to point an Indexer to your Store!
 
 A major pain of frontends and clients is reflecting onchain state without spaghetti code. Some apps resort to polling, with various tricks like Multicall or Subgraphs in order to decrease RPC costs.
 
-With MUD, you define a list of queries on your Store state (the simplest being `*` which asks for all the data). The MUD client then either connects to a MODE or an Ethereum JSON-RPC in case none is available and magically keeps the Store data up to date on your frontend. We currently have libraries for Javascript, with more on the way. If you use Typescript, all your tables will be typed automatically.
+With MUD, you define a list of queries on your Store state (the simplest being `*` which asks for all the data). The MUD client then either connects to an Indexer or an Ethereum JSON-RPC in case none is available and magically keeps the Store data up to date on your frontend. We currently have libraries for Javascript, with more on the way. If you use Typescript, all your tables will be typed automatically.
 
 If you use React, MUD provides React hooks to bind the Store state to your components and automatically re-render them when the onchain data changes.
 

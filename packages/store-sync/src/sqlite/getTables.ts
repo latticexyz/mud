@@ -1,7 +1,7 @@
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { inArray } from "drizzle-orm";
 import { Table } from "../common";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { getTableName } from "./getTableName";
 import { mudStoreTables } from "./internalTables";
 

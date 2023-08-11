@@ -1,27 +1,19 @@
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
 import { Address, Hex } from "viem";
-// TODO: move these type helpers into store?
-import { Key, Value } from "@latticexyz/store-cache";
-import { GetLogsResult, GroupLogsByBlockNumberResult } from "@latticexyz/block-logs-stream";
-import { StoreEventsAbi, StoreConfig } from "@latticexyz/store";
+import { GetLogsResult, GroupLogsByBlockNumberResult, NonPendingLog } from "@latticexyz/block-logs-stream";
+import {
+  StoreEventsAbi,
+  StoreConfig,
+  KeySchema,
+  ValueSchema,
+  ConfigToKeyPrimitives as Key,
+  ConfigToValuePrimitives as Value,
+} from "@latticexyz/store";
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
 
 export type TableNamespace = string;
 export type TableName = string;
-
-export type KeySchema = Record<string, StaticAbiType>;
-export type ValueSchema = Record<string, SchemaAbiType>;
-
-export type SchemaToPrimitives<TSchema extends ValueSchema> = {
-  [key in keyof TSchema]: SchemaAbiTypeToPrimitiveType<TSchema[key]>;
-};
-
-export type TableRecord<TKeySchema extends KeySchema = KeySchema, TValueSchema extends ValueSchema = ValueSchema> = {
-  key: SchemaToPrimitives<TKeySchema>;
-  value: SchemaToPrimitives<TValueSchema>;
-};
 
 export type Table = {
   address: Address;
@@ -36,9 +28,9 @@ export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type BaseStorageOperation = {
-  log: StoreEventsLog;
-  namespace: string;
-  name: string;
+  log: NonPendingLog<StoreEventsLog>;
+  namespace: TableNamespace;
+  name: TableName;
 };
 
 export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {

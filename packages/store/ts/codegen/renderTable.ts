@@ -11,7 +11,7 @@ import {
   RenderDynamicField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
-import { renderEncodeField, renderFieldMethods } from "./field";
+import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
 
@@ -128,11 +128,9 @@ library ${libraryName} {
     ${renderEncodedLengths(dynamicFields)}
     return abi.encodePacked(${renderArguments([
       renderArguments(staticFields.map(({ name }) => name)),
-      // TODO try gas optimization (preallocate for all, encodePacked statics, and direct encode dynamics)
-      // (see https://github.com/latticexyz/mud/issues/444)
       ...(dynamicFields.length === 0
         ? []
-        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
+        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))]),
     ])});
   }
   

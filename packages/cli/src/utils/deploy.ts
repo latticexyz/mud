@@ -53,14 +53,17 @@ export async function deploy(
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
   provider.pollingInterval = pollInterval;
   const signer = new ethers.Wallet(privateKey, provider);
+  console.log("Deploying from", signer.address);
 
   // Manual nonce handling to allow for faster sending of transactions without waiting for previous transactions
   let nonce = await signer.getTransactionCount();
   console.log("Initial nonce", nonce);
 
   // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
-  let maxPriorityFeePerGas: number;
-  let maxFeePerGas: BigNumber;
+  let maxPriorityFeePerGas: number | undefined;
+  let maxFeePerGas: BigNumber | undefined;
+  let gasPrice: BigNumber | undefined;
+
   await setInternalFeePerGas(priorityFeeMultiplier);
 
   // Catch all to await any promises before exiting the script
@@ -402,6 +405,7 @@ export async function deploy(
           nonce: nonce++,
           maxPriorityFeePerGas,
           maxFeePerGas,
+          gasPrice,
         })
         .then((c) => (disableTxWait ? c : c.deployed()));
 
@@ -497,7 +501,7 @@ export async function deploy(
       const gasLimit = await contract.estimateGas[func].apply(null, args);
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
       const txPromise = contract[func]
-        .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas }])
+        .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas, gasPrice }])
         .then((tx: any) => (confirmations === 0 ? tx : tx.wait(confirmations)));
       promises.push(txPromise);
       return txPromise;
@@ -542,15 +546,28 @@ export async function deploy(
   async function setInternalFeePerGas(multiplier: number) {
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
-    if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
-    if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
-      throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
-If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
-    }
 
-    // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
-    maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
-    maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
+    if (feeData.lastBaseFeePerGas) {
+      if (!feeData.lastBaseFeePerGas.eq(0) && (await signer.getBalance()).eq(0)) {
+        throw new MUDError(`Attempting to deploy to a chain with non-zero base fee with an account that has no balance.
+        If you're deploying to the Lattice testnet, you can fund your account by running 'pnpm mud faucet --address ${await signer.getAddress()}'`);
+      }
+
+      // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
+      maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
+      maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
+    } else if (feeData.gasPrice) {
+      // Legacy chains with gasPrice instead of maxFeePerGas
+      if (!feeData.gasPrice.eq(0) && (await signer.getBalance()).eq(0)) {
+        throw new MUDError(
+          `Attempting to deploy to a chain with non-zero gas price with an account that has no balance.`
+        );
+      }
+
+      gasPrice = feeData.gasPrice;
+    } else {
+      throw new MUDError("Can not fetch fee data from RPC");
+    }
   }
 }
 
