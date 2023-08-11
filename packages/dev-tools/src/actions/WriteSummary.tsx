@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { PendingIcon } from "../icons/PendingIcon";
-import { usePromise } from "../usePromise";
+import { usePromise } from "@latticexyz/react";
 import { truncateHex } from "../truncateHex";
 import { serialize } from "../serialize";
 import { getTransaction } from "./getTransaction";
