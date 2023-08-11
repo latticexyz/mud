@@ -216,6 +216,20 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
+   * Register World function selectors in batch for the given namespace, name and system function.
+   */
+  function registerFunctionSelectors(
+    bytes16 namespaces,
+    bytes16 names,
+    string[] calldata systemFunctionName,
+    string[] calldata systemFunctionArguments
+  ) public {
+    for (uint256 i = 0; i < systemFunctionName.length; i++) {
+      registerFunctionSelector(namespaces[i], names[i], systemFunctionName[i], systemFunctionArguments[i]);
+    }
+  }
+
+  /**
    * Register a root World function selector (without namespace / name prefix).
    * Requires the caller to own the root namespace.
    * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
@@ -241,5 +255,21 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
 
     return worldFunctionSelector;
+  }
+
+  /**
+   * Register root World function selectors in batch (without namespace / name prefix).
+   * Requires the caller to own the root namespace.
+   */
+  function registerRootFunctionSelectors(
+    bytes16 namespace,
+    bytes16 name,
+    bytes4[] calldata worldFunctionSelectors,
+    bytes4[] calldata systemFunctionSelectors
+  ) public {
+    // Register the function selectors
+    for (uint256 i = 0; i < worldFunctionSelectors.length; i++) {
+      registerRootFunctionSelector(namespace, name, worldFunctionSelectors[i], systemFunctionSelectors[i]);
+    }
   }
 }

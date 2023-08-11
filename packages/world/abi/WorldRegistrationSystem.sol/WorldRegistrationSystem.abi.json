@@ -236,6 +236,34 @@
     "inputs": [
       {
         "internalType": "bytes16",
+        "name": "namespaces",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "names",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "string[]",
+        "name": "systemFunctionName",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "systemFunctionArguments",
+        "type": "string[]"
+      }
+    ],
+    "name": "registerFunctionSelectors",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
         "name": "namespace",
         "type": "bytes16"
       },
@@ -299,6 +327,34 @@
         "type": "bytes4"
       }
     ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "name",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes4[]",
+        "name": "worldFunctionSelectors",
+        "type": "bytes4[]"
+      },
+      {
+        "internalType": "bytes4[]",
+        "name": "systemFunctionSelectors",
+        "type": "bytes4[]"
+      }
+    ],
+    "name": "registerRootFunctionSelectors",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },

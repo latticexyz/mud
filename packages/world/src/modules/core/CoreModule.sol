@@ -107,7 +107,7 @@ contract CoreModule is IModule, WorldContext {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[17] memory functionSelectors = [
+    bytes4[19] memory functionSelectors = [
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
       WorldRegistrationSystem.registerTable.selector,
@@ -117,7 +117,9 @@ contract CoreModule is IModule, WorldContext {
       WorldRegistrationSystem.registerSystemHook.selector,
       WorldRegistrationSystem.registerSystem.selector,
       WorldRegistrationSystem.registerFunctionSelector.selector,
+      WorldRegistrationSystem.registerFunctionSelectors.selector,
       WorldRegistrationSystem.registerRootFunctionSelector.selector,
+      WorldRegistrationSystem.registerRootFunctionSelectors.selector,
       // --- StoreRegistrationSystem ---
       StoreRegistrationSystem.registerSchema.selector,
       StoreRegistrationSystem.setMetadata.selector,

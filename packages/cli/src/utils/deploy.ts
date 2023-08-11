@@ -149,6 +149,7 @@ export async function deploy(
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
+
   promises = [
     ...promises,
     ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema }]) => {
@@ -206,38 +207,55 @@ export async function deploy(
         if (registerFunctionSelectors) {
           const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
           const isRoot = namespace === "";
-          // Using Promise.all to avoid blocking on async calls
-          await Promise.all(
-            functionSignatures.map(async ({ functionName, functionArgs }) => {
-              const functionSignature = isRoot
-                ? functionName + functionArgs
-                : `${namespace}_${name}_${functionName}${functionArgs}`;
 
-              console.log(chalk.blue(`Registering function "${functionSignature}"`));
-              if (isRoot) {
-                const worldFunctionSelector = toFunctionSelector(
-                  functionSignature === ""
-                    ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
-                    : { functionName, functionArgs }
-                );
-                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
-                await fastTxExecute(
-                  WorldContract,
-                  "registerRootFunctionSelector",
-                  [toBytes16(namespace), toBytes16(name), worldFunctionSelector, systemFunctionSelector],
-                  confirmations
-                );
-              } else {
-                await fastTxExecute(
-                  WorldContract,
-                  "registerFunctionSelector",
-                  [toBytes16(namespace), toBytes16(name), functionName, functionArgs],
-                  confirmations
-                );
-              }
-              console.log(chalk.green(`Registered function "${functionSignature}"`));
-            })
-          );
+          const worldFunctionSelectors: string[] = []; // bytes4[]
+          const systemFunctionSelectors: string[] = []; // bytes4[]
+
+          const nonRootFunctionNames: string[] = [];
+          const nonRootFunctionArguments: string[] = [];
+
+          functionSignatures.forEach(({ functionName, functionArgs }) => {
+            const functionSignature = isRoot
+              ? functionName + functionArgs
+              : `${namespace}_${name}_${functionName}${functionArgs}`;
+
+            console.log(chalk.blue(`Preparing function "${functionSignature}" for registration`));
+
+            if (isRoot) {
+              const worldFunctionSelector = toFunctionSelector(
+                functionSignature === "" ? { functionName: systemName, functionArgs } : { functionName, functionArgs }
+              );
+              const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+
+              worldFunctionSelectors.push(worldFunctionSelector);
+              systemFunctionSelectors.push(systemFunctionSelector);
+            } else {
+              nonRootFunctionNames.push(functionName);
+              nonRootFunctionArguments.push(functionArgs);
+            }
+          });
+
+          if (isRoot) {
+            await fastTxExecute(
+              WorldContract,
+              "registerRootFunctionSelectors",
+              [toBytes16(namespace), toBytes16(name), worldFunctionSelectors, systemFunctionSelectors],
+              confirmations
+            );
+            // await fastTxExecute(WorldContract, "registerRootFunctionSelectors", [], confirmations);
+            console.log(chalk.green(`Registered root functions`));
+          }
+
+          if (nonRootFunctionNames.length) {
+            console.log(chalk.blue(`Registering non-root functions in batch`));
+            await fastTxExecute(
+              WorldContract,
+              "registerFunctionSelectors",
+              [toBytes16(namespace), toBytes16(name), nonRootFunctionNames, nonRootFunctionArguments],
+              confirmations
+            );
+            console.log(chalk.green(`Registered non-root functions`));
+          }
         }
       }
     ),
