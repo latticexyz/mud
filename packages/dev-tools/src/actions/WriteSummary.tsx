@@ -1,9 +1,7 @@
-import { decodeEventLog, decodeFunctionData, Hex, AbiEventSignatureNotFoundError } from "viem";
+import { decodeEventLog, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/common/deprecated";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
-import { useStore } from "../useStore";
 import { PendingIcon } from "../icons/PendingIcon";
 import { usePromise } from "../usePromise";
 import { truncateHex } from "../truncateHex";
@@ -12,36 +10,33 @@ import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { getTransactionResult } from "./getTransactionResult";
 import { ErrorTrace } from "../ErrorTrace";
+import { ContractWrite, hexToTableId } from "@latticexyz/common";
+import { useDevToolsContext } from "../DevToolsContext";
 
 type Props = {
-  hash: Hex;
+  write: ContractWrite;
 };
 
 // TODO: show block number or relative timestamp (e.g. 3s ago)
 
-export function TransactionSummary({ hash }: Props) {
-  const publicClient = useStore((state) => state.publicClient);
-  const worldAbi = useStore((state) => state.worldAbi);
+export function WriteSummary({ write }: Props) {
+  const { publicClient, worldAbi } = useDevToolsContext();
+  const blockExplorer = publicClient.chain.blockExplorers?.default.url;
 
-  if (!publicClient) {
-    throw new Error("Can't display transactions without a public client");
-  }
-
-  const transactionPromise = getTransaction(publicClient, hash);
-  const transactionReceiptPromise = getTransactionReceipt(publicClient, hash);
-  const transactionResultPromise = getTransactionResult(publicClient, hash);
+  const hash = usePromise(write.result);
+  const transactionPromise = getTransaction(publicClient, write);
+  const transactionReceiptPromise = getTransactionReceipt(publicClient, write);
+  const transactionResultPromise = getTransactionResult(publicClient, write);
   const transaction = usePromise(transactionPromise);
   const transactionReceipt = usePromise(transactionReceiptPromise);
   const transactionResult = usePromise(transactionResultPromise);
 
-  const isPending = transactionReceipt.status === "pending";
-  const isRevert = transactionReceipt.status === "fulfilled" && transactionReceipt.value.status === "reverted";
+  const isPending = hash.status === "pending" || transactionReceipt.status === "pending";
+  const isRevert =
+    hash.status === "rejected" ||
+    (transactionReceipt.status === "fulfilled" && transactionReceipt.value.status === "reverted");
 
   // TODO: move all this into their getTransaction functions
-  const functionData =
-    worldAbi && transaction.status === "fulfilled" && transaction.value.input
-      ? decodeFunctionData({ abi: worldAbi, data: transaction.value.input })
-      : null;
   const returnData = transactionResult.status === "fulfilled" ? transactionResult.value.result : null;
   const events =
     worldAbi && transactionReceipt.status === "fulfilled"
@@ -61,8 +56,6 @@ export function TransactionSummary({ hash }: Props) {
           .filter(isDefined)
       : null;
 
-  const blockExplorer = publicClient?.chain.blockExplorers?.default.url;
-
   return (
     <details
       onToggle={(event) => {
@@ -80,7 +73,7 @@ export function TransactionSummary({ hash }: Props) {
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
-          {functionData?.functionName}({functionData?.args?.map((value) => serialize(value)).join(", ")})
+          {write.request.functionName}({write.request.args?.map((value) => serialize(value)).join(", ")})
         </div>
         {transactionReceipt.status === "fulfilled" ? (
           <a
@@ -97,17 +90,19 @@ export function TransactionSummary({ hash }: Props) {
             block {transactionReceipt.value.blockNumber.toString()}
           </a>
         ) : null}
-        <a
-          href={blockExplorer ? `${blockExplorer}/tx/${hash}` : undefined}
-          target="_blank"
-          className={twMerge(
-            "flex-none font-mono text-xs text-white/40",
-            blockExplorer ? "hover:text-white/60 hover:underline" : null
-          )}
-          title={hash}
-        >
-          tx {truncateHex(hash)}
-        </a>
+        {hash.status === "fulfilled" ? (
+          <a
+            href={blockExplorer ? `${blockExplorer}/tx/${hash.value}` : undefined}
+            target="_blank"
+            className={twMerge(
+              "flex-none font-mono text-xs text-white/40",
+              blockExplorer ? "hover:text-white/60 hover:underline" : null
+            )}
+            title={hash.value}
+          >
+            tx {truncateHex(hash.value)}
+          </a>
+        ) : null}
         <div className="flex-none inline-flex w-4 h-4 justify-center items-center font-bold">
           {isPending ? <PendingIcon /> : isRevert ? <>⚠</> : <>✓</>}
         </div>
@@ -136,7 +131,7 @@ export function TransactionSummary({ hash }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
-                const table = TableId.fromHex((args as any).table);
+                const table = hexToTableId((args as any).table);
                 return (
                   <tr key={i}>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">

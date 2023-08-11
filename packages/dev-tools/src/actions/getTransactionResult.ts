@@ -1,23 +1,25 @@
-import { Hex, SimulateContractReturnType, PublicClient, Chain, decodeFunctionData, Transport } from "viem";
+import { SimulateContractReturnType, PublicClient, Chain, decodeFunctionData, Transport } from "viem";
 import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { useStore } from "../useStore";
+import { ContractWrite } from "@latticexyz/common";
 
 // TODO: something about this fails when doing lots of simultaneous requests for transactions
 //       not sure if its viem or failed RPC requests or what, but the promises get stuck/never resolve
 
 // TODO: use IndexedDB cache for these?
 
-type CacheKey = `${number}:${Hex}`;
-const cache: Record<CacheKey, Promise<SimulateContractReturnType>> = {};
+const cache: Record<string, Promise<SimulateContractReturnType>> = {};
 
-export const getTransactionResult = (publicClient: PublicClient<Transport, Chain>, hash: Hex) => {
-  const key: CacheKey = `${publicClient.chain.id}:${hash}`;
-  if (!cache[key]) {
+export function getTransactionResult(
+  publicClient: PublicClient<Transport, Chain>,
+  write: ContractWrite
+): Promise<SimulateContractReturnType> {
+  if (!cache[write.id]) {
     const { worldAbi } = useStore.getState();
-    const transaction = getTransaction(publicClient, hash);
-    const transactionReceipt = getTransactionReceipt(publicClient, hash);
-    cache[key] = Promise.all([transaction, transactionReceipt]).then(([tx, receipt]) => {
+    const transaction = getTransaction(publicClient, write);
+    const transactionReceipt = getTransactionReceipt(publicClient, write);
+    cache[write.id] = Promise.all([transaction, transactionReceipt]).then(([tx, receipt]) => {
       const { functionName, args } = decodeFunctionData({ abi: worldAbi, data: tx.input });
       return publicClient.simulateContract({
         account: tx.from,
@@ -31,5 +33,5 @@ export const getTransactionResult = (publicClient: PublicClient<Transport, Chain
       });
     });
   }
-  return cache[key];
-};
+  return cache[write.id];
+}

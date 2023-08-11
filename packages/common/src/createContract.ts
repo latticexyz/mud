@@ -5,6 +5,7 @@ import {
   Chain,
   GetContractParameters,
   GetContractReturnType,
+  Hex,
   PublicClient,
   SimulateContractParameters,
   Transport,
@@ -31,6 +32,24 @@ function getFunctionParameters(values: [args?: readonly unknown[], options?: obj
   return { args, options };
 }
 
+export type ContractWrite = {
+  id: string;
+  request: WriteContractParameters;
+  result: Promise<Hex>;
+};
+
+export type CreateContractOptions<
+  TTransport extends Transport,
+  TAddress extends Address,
+  TAbi extends Abi,
+  TChain extends Chain,
+  TAccount extends Account,
+  TPublicClient extends PublicClient<TTransport, TChain>,
+  TWalletClient extends WalletClient<TTransport, TChain, TAccount>
+> = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
+  onWrite?: (write: ContractWrite) => void;
+};
+
 export function createContract<
   TTransport extends Transport,
   TAddress extends Address,
@@ -44,8 +63,15 @@ export function createContract<
   address,
   publicClient,
   walletClient,
-}: Required<
-  GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>
+  onWrite,
+}: CreateContractOptions<
+  TTransport,
+  TAddress,
+  TAbi,
+  TChain,
+  TAccount,
+  TPublicClient,
+  TWalletClient
 >): GetContractReturnType<TAbi, TPublicClient, TWalletClient, TAddress> {
   const contract = getContract<TTransport, TAddress, TAbi, TChain, TAccount, TPublicClient, TWalletClient>({
     abi,
@@ -55,6 +81,7 @@ export function createContract<
   }) as unknown as GetContractReturnType<Abi, PublicClient, WalletClient>;
 
   if (contract.write) {
+    let nextWriteId = 0;
     const nonceManager = createNonceManager({
       publicClient: publicClient as PublicClient,
       address: walletClient.account.address,
@@ -65,14 +92,24 @@ export function createContract<
       {},
       {
         get(_, functionName: string): GetContractReturnType<Abi, PublicClient, WalletClient>["write"][string] {
-          return async (...parameters) => {
-            const { args, options } = <
-              {
-                args: unknown[];
-                options: UnionOmit<WriteContractParameters, "abi" | "address" | "functionName" | "args">;
-              }
-            >getFunctionParameters(parameters as any);
+          async function prepareWrite(
+            options: WriteContractParameters
+          ): Promise<WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>> {
+            if (options.gas) {
+              debug("gas provided, skipping simulate", functionName, options);
+              return options as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
+            }
 
+            debug("simulating write", functionName, options);
+            const { request } = await publicClient.simulateContract({
+              ...options,
+              account: options.account ?? walletClient.account,
+            } as unknown as SimulateContractParameters<TAbi, typeof functionName, TChain>);
+
+            return request as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
+          }
+
+          async function write(options: WriteContractParameters): Promise<Hex> {
             // Temporarily override base fee for our default anvil config
             // TODO: replace with https://github.com/wagmi-dev/viem/pull/1006 once merged
             // TODO: more specific mud foundry check? or can we safely assume anvil+mud will be block fee zero for now?
@@ -86,34 +123,7 @@ export function createContract<
               options.maxPriorityFeePerGas = 0n;
             }
 
-            async function prepareWrite(): Promise<
-              WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>
-            > {
-              if (options.gas) {
-                debug("gas provided, skipping simulate", functionName, args, options);
-                return {
-                  address,
-                  abi,
-                  functionName,
-                  args,
-                  ...options,
-                } as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
-              }
-
-              debug("simulating write", functionName, args, options);
-              const { request } = await publicClient.simulateContract({
-                address,
-                abi,
-                functionName,
-                args,
-                ...options,
-                account: options.account ?? walletClient.account,
-              } as unknown as SimulateContractParameters<TAbi, typeof functionName, TChain>);
-
-              return request as unknown as WriteContractParameters<TAbi, typeof functionName, TChain, TAccount>;
-            }
-
-            const preparedWrite = await prepareWrite();
+            const preparedWrite = await prepareWrite(options);
 
             return await pRetry(
               async () => {
@@ -142,6 +152,30 @@ export function createContract<
                 },
               }
             );
+          }
+
+          return (...parameters) => {
+            const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
+            const { args, options } = <
+              {
+                args: unknown[];
+                options: UnionOmit<WriteContractParameters, "address" | "abi" | "functionName" | "args">;
+              }
+            >getFunctionParameters(parameters as any);
+
+            const request = {
+              address,
+              abi,
+              functionName,
+              args,
+              ...options,
+            };
+
+            const result = write(request);
+
+            onWrite?.({ id, request, result });
+
+            return result;
           };
         },
       }

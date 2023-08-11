@@ -26,6 +26,7 @@ setup().then(async (result) => {
       blockStorageOperations$: result.network.blockStorageOperations$,
       worldAddress: result.network.worldContract.address,
       worldAbi: result.network.worldContract.abi,
+      write$: result.network.write$,
     });
   }
 });

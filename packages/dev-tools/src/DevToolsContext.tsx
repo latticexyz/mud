@@ -1,5 +1,6 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { DevToolsOptions } from "./common";
+import { ContractWrite } from "@latticexyz/common";
 
 const DevToolsContext = createContext<DevToolsOptions | null>(null);
 
@@ -17,5 +18,18 @@ export const DevToolsProvider = ({ children, value }: Props) => {
 export const useDevToolsContext = () => {
   const value = useContext(DevToolsContext);
   if (!value) throw new Error("Must be used within a DevToolsProvider");
-  return value;
+
+  // TODO: figure out how to stabilize this value so it doesn't get rewritten on renders
+  const [writes, setWrites] = useState<ContractWrite[]>([]);
+  useEffect(() => {
+    const sub = value.write$.subscribe((write) => {
+      setWrites((val) => [...val, write]);
+    });
+    return () => sub.unsubscribe();
+  }, [value.write$]);
+
+  return {
+    ...value,
+    writes,
+  };
 };

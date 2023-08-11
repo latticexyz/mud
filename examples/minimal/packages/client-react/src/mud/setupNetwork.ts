@@ -6,7 +6,8 @@ import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import storeConfig from "contracts/mud.config";
-import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+import { ContractWrite, createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+import { Subject, share } from "rxjs";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -26,6 +27,15 @@ export async function setupNetwork() {
   const burnerWalletClient = createWalletClient({
     ...clientOptions,
     account: burnerAccount,
+  });
+
+  const write$ = new Subject<ContractWrite>();
+  const worldContract = createContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorld__factory.abi,
+    publicClient,
+    walletClient: burnerWalletClient,
+    onWrite: (write) => write$.next(write),
   });
 
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
@@ -70,11 +80,7 @@ export async function setupNetwork() {
     latestBlock$,
     blockStorageOperations$,
     waitForTransaction,
-    worldContract: createContract({
-      address: networkConfig.worldAddress as Hex,
-      abi: IWorld__factory.abi,
-      publicClient,
-      walletClient: burnerWalletClient,
-    }),
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
   };
 }

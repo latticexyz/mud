@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useStore } from "../useStore";
 import { formatUnits } from "viem";
+import { useDevToolsContext } from "../DevToolsContext";
 
 export function AccountSummary() {
-  const publicClient = useStore((state) => state.publicClient);
-  const walletClient = useStore((state) => state.walletClient);
+  const { publicClient, walletClient } = useDevToolsContext();
 
   const [balance, setBalance] = useState<bigint | null>(null);
 
@@ -29,7 +28,7 @@ export function AccountSummary() {
       <dd className="text-sm">{walletClient?.account?.address}</dd>
       <dt className="text-amber-200/80">Balance</dt>
       <dd className="text-sm" title={balance ? balance.toString() : undefined}>
-        {publicClient && balance ? (
+        {publicClient && balance != null ? (
           <>
             {formatUnits(balance, publicClient.chain.nativeCurrency.decimals).replace(/(\.\d{4})\d+$/, "$1")}{" "}
             {publicClient.chain.nativeCurrency.symbol}
