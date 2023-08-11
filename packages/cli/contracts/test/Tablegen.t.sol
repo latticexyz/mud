@@ -18,14 +18,13 @@ contract TablegenTest is Test, StoreReadWithStubs {
     address k4 = address(123);
     bool k5 = true;
     Enum1 k6 = Enum1.E3;
-    Enum2 k7 = Enum2.E1;
 
-    Statics.setV1(k1, k2, k3, k4, k5, k6, k7, 4);
-    assertEq(Statics.getV1(k1, k2, k3, k4, k5, k6, k7), 4);
+    Statics.setV1(k1, k2, k3, k4, k5, k6, 4);
+    assertEq(Statics.getV1(k1, k2, k3, k4, k5, k6), 4);
 
     StaticsData memory data = StaticsData(4, -5, hex"06", address(456), false, Enum1.E2, Enum2.E1);
-    Statics.set(k1, k2, k3, k4, k5, k6, k7, data);
-    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6, k7)), abi.encode(data));
+    Statics.set(k1, k2, k3, k4, k5, k6, data);
+    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6)), abi.encode(data));
   }
 
   function testDynamicsSetAndGet() public {

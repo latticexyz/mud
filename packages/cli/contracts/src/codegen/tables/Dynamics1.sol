@@ -88,12 +88,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
@@ -106,12 +112,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
@@ -124,12 +136,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
@@ -141,12 +159,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
@@ -158,12 +182,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
     return _byteLength / 32;
@@ -176,12 +206,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
     return _byteLength / 32;
@@ -194,12 +230,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
     return (Bytes.slice32(_blob, 0));
@@ -212,12 +254,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
     return (Bytes.slice32(_blob, 0));
@@ -230,12 +278,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
@@ -247,12 +301,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)));
   }
@@ -264,12 +324,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 32);
   }
@@ -281,12 +347,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 0, 32);
   }
@@ -298,12 +370,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
   }
@@ -315,12 +393,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
   }
@@ -332,12 +416,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
@@ -350,12 +440,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
@@ -368,12 +464,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
@@ -385,12 +487,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
@@ -402,12 +510,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
     return _byteLength / 4;
@@ -420,12 +534,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
     return _byteLength / 4;
@@ -438,12 +558,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
     return (int32(uint32(Bytes.slice4(_blob, 0))));
@@ -456,12 +582,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
     return (int32(uint32(Bytes.slice4(_blob, 0))));
@@ -474,12 +606,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
@@ -491,12 +629,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
@@ -508,12 +652,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 4);
   }
@@ -525,12 +675,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 1, 4);
   }
@@ -542,12 +698,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
   }
@@ -559,12 +721,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
   }
@@ -576,12 +744,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
@@ -594,12 +768,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
@@ -612,12 +792,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
@@ -629,12 +815,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
@@ -646,12 +838,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
     return _byteLength / 16;
@@ -664,12 +862,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
     return _byteLength / 16;
@@ -682,12 +886,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 16, (_index + 1) * 16);
     return (uint128(Bytes.slice16(_blob, 0)));
@@ -700,12 +910,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 16, (_index + 1) * 16);
     return (uint128(Bytes.slice16(_blob, 0)));
@@ -718,12 +934,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
@@ -735,12 +957,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
@@ -752,12 +980,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 16);
   }
@@ -769,12 +1003,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 2, 16);
   }
@@ -786,12 +1026,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
   }
@@ -803,12 +1049,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
   }
@@ -820,12 +1072,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
@@ -838,12 +1096,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
@@ -856,12 +1120,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
@@ -873,12 +1143,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
@@ -890,12 +1166,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
     return _byteLength / 20;
@@ -908,12 +1190,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
     return _byteLength / 20;
@@ -926,12 +1214,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 20, (_index + 1) * 20);
     return (address(Bytes.slice20(_blob, 0)));
@@ -944,12 +1238,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 20, (_index + 1) * 20);
     return (address(Bytes.slice20(_blob, 0)));
@@ -962,12 +1262,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
@@ -979,12 +1285,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
@@ -996,12 +1308,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 20);
   }
@@ -1013,12 +1331,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 3, 20);
   }
@@ -1030,12 +1354,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
   }
@@ -1047,12 +1377,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
   }
@@ -1064,12 +1400,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4);
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
@@ -1082,12 +1424,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 4);
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
@@ -1100,12 +1448,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
@@ -1117,12 +1471,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
@@ -1134,12 +1494,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 4, getSchema());
     return _byteLength / 1;
@@ -1152,12 +1518,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 4, getSchema());
     return _byteLength / 1;
@@ -1170,12 +1542,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 1, (_index + 1) * 1);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -1188,12 +1566,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 1, (_index + 1) * 1);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -1206,12 +1590,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
@@ -1223,12 +1613,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)));
   }
@@ -1240,12 +1636,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 4, 1);
   }
@@ -1257,12 +1659,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 4, 1);
   }
@@ -1274,12 +1682,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
   }
@@ -1291,12 +1705,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
   }
@@ -1308,12 +1728,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -1326,12 +1752,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -1353,12 +1785,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
@@ -1380,12 +1818,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setRecord(_tableId, _keyTuple, _data);
   }
@@ -1467,12 +1911,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     return _keyTuple;
   }
@@ -1484,12 +1934,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -1501,12 +1957,18 @@ library Dynamics1 {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

@@ -75,12 +75,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
@@ -93,12 +99,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
@@ -111,12 +123,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)));
   }
@@ -128,12 +146,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)));
   }
@@ -150,12 +174,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     return _keyTuple;
   }
@@ -167,12 +197,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -184,12 +220,18 @@ library ResourceType {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = resourceSelector;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = resourceSelector;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

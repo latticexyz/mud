@@ -74,12 +74,18 @@ library Ephemeral {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
@@ -93,12 +99,18 @@ library Ephemeral {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
@@ -115,12 +127,18 @@ library Ephemeral {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 64
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 64))
       // Store length
       mstore(_keyTuple, 1)
     }
-    _keyTuple[0] = key;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = key;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
 
     return _keyTuple;
   }

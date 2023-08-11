@@ -75,13 +75,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -94,13 +105,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -113,13 +135,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)));
   }
@@ -131,13 +164,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)));
   }
@@ -149,13 +193,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return (uint40(Bytes.slice5(_blob, 0)));
@@ -168,13 +223,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
     return (uint40(Bytes.slice5(_blob, 0)));
@@ -187,13 +253,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)));
   }
@@ -205,13 +282,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)));
   }
@@ -223,13 +311,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -242,13 +341,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -263,13 +373,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
@@ -283,13 +404,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     _store.setRecord(_tableId, _keyTuple, _data);
   }
@@ -313,13 +445,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     return _keyTuple;
   }
@@ -331,13 +474,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -349,13 +503,24 @@ library UsedKeysIndex {
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := 96
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, 96))
       // Store length
       mstore(_keyTuple, 2)
     }
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
+
+    bytes32 _key;
+
+    /// @solidity memory-safe-assembly
+    _key = sourceTable;
+    assembly {
+      mstore(add(_keyTuple, 32), _key)
+    }
+
+    /// @solidity memory-safe-assembly
+    _key = keysHash;
+    assembly {
+      mstore(add(_keyTuple, 64), _key)
+    }
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

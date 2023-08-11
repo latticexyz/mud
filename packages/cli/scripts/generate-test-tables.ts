@@ -20,7 +20,6 @@ try {
           k4: "address",
           k5: "bool",
           k6: "Enum1",
-          k7: "Enum2",
         },
         schema: {
           v1: "uint256",

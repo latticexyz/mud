@@ -55,12 +55,22 @@ export function renderCommonData({
     assembly {
       // Allocate memory
       _keyTuple := mload(0x40)
-      let _keyTupleLength := ${(keyTuple.length + 1) * 32}
-      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      mstore(0x40, add(_keyTuple, ${(keyTuple.length + 1) * 32}))
       // Store length
       mstore(_keyTuple, ${keyTuple.length})
     }
-    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
+
+    bytes32 _key;
+    ${renderList(
+      keyTuple,
+      (key, index) => `
+      /// @solidity memory-safe-assembly
+      _key = ${renderValueTypeToBytes32(key.name, key)};
+      assembly {
+        mstore(add(_keyTuple, ${(index + 1) * 32}), _key)
+      }
+    `
+    )}
   `;
 
   return {
