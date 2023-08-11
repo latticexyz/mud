@@ -3,7 +3,6 @@ import { Subject } from "rxjs";
 import { getComponentValue, removeComponent, setComponent, updateComponent } from "./Component";
 import { getEntityString, getEntitySymbol } from "./Entity";
 import { createIndexer } from "./Indexer";
-import { createOverridableComponent } from "./OverridableComponent";
 import { Has, HasValue, NotValue, runQuery } from "./Query";
 import { Type } from "./constants";
 import {
@@ -18,6 +17,24 @@ import {
   ComponentPlus,
 } from "./types";
 
+export function defineRawComponent<S extends Schema, M extends Metadata, T = unknown>(
+  world: World,
+  schema: S,
+  options?: { id?: string; metadata?: M; indexed?: boolean }
+) {
+  if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
+  const id = options?.id ?? uuid();
+  const values = mapObject(schema, () => new Map());
+  const update$ = new Subject();
+  const metadata = options?.metadata;
+  const entities = () =>
+    transformIterator((Object.values(values)[0] as Map<EntitySymbol, unknown>).keys(), getEntityString);
+  let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M, T>;
+  if (options?.indexed) component = createIndexer(component);
+  world.registerComponent(component as Component);
+  return component;
+}
+
 export type OverridableType<
   Overridable extends boolean,
   S extends Schema,
@@ -25,11 +42,10 @@ export type OverridableType<
   T = unknown
 > = Overridable extends true ? OverridableComponent<S, M, T> : Component<S, M, T>;
 
-export interface Options<Overridable extends boolean, M extends Metadata> {
+export interface Options<M extends Metadata> {
   id?: string;
   metadata?: M;
   indexed?: boolean;
-  overridable?: Overridable;
 }
 
 /**
@@ -51,12 +67,11 @@ export interface Options<Overridable extends boolean, M extends Metadata> {
  * const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { id: "Position" });
  * ```
  */
-export function defineComponent<
-  Overridable extends boolean,
-  S extends Schema,
-  M extends Metadata = Metadata,
-  T = unknown
->(world: World, schema: S, options?: Options<Overridable, M>) {
+export function defineComponent<S extends Schema, M extends Metadata = Metadata, T = unknown>(
+  world: World,
+  schema: S,
+  options?: { id?: string; metadata?: M; indexed?: boolean }
+): ComponentPlus<S, M, T> {
   if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
   const id = options?.id ?? uuid();
   const values = mapObject(schema, () => new Map());
@@ -66,7 +81,6 @@ export function defineComponent<
     transformIterator((Object.values(values)[0] as Map<EntitySymbol, unknown>).keys(), getEntityString);
   let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M, T>;
 
-  if (options?.overridable) component = createOverridableComponent(component);
   if (options?.indexed) component = createIndexer(component);
 
   function set(entity: Entity, value: ComponentValue<S, T>) {
@@ -84,7 +98,7 @@ export function defineComponent<
     return runQuery([Has(component)]);
   }
 
-  function getAllWith(value: Partial<ComponentValue<S>>) {
+  function getAllWith(value: Partial<ComponentValue<S, T>>) {
     return runQuery([HasValue(component, value)]);
   }
 
@@ -137,39 +151,25 @@ export function defineComponent<
     update,
     has,
     equals,
-  };
+  } as ComponentPlus<S, M, T>;
 
   world.registerComponent(componentPlus);
   return componentPlus;
 }
 
-export default defineComponent;
-
 export type NumberComponent = ReturnType<typeof defineNumberComponent>;
-export function defineNumberComponent<Overridable extends boolean, M extends Metadata>(
-  world: World,
-  options?: Options<Overridable, M>
-) {
+export function defineNumberComponent<M extends Metadata>(world: World, options?: Options<M>) {
   return defineComponent(world, { value: Type.Number }, options);
 }
 
-export function defineStringComponent<Overridable extends boolean, M extends Metadata>(
-  world: World,
-  options?: Options<Overridable, M>
-) {
+export function defineStringComponent<M extends Metadata>(world: World, options?: Options<M>) {
   return defineComponent(world, { value: Type.String }, options);
 }
 
-export function defineCoordComponent<Overridable extends boolean, M extends Metadata>(
-  world: World,
-  options?: Options<Overridable, M>
-) {
+export function defineCoordComponent<M extends Metadata>(world: World, options?: Options<M>) {
   return defineComponent(world, { x: Type.Number, y: Type.Number }, options);
 }
 
-export function defineBoolComponent<Overridable extends boolean, M extends Metadata>(
-  world: World,
-  options?: Options<Overridable, M>
-) {
+export function defineBoolComponent<M extends Metadata>(world: World, options?: Options<M>) {
   return defineComponent(world, { value: Type.Boolean }, options);
 }

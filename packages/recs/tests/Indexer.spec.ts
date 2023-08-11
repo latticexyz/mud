@@ -1,5 +1,5 @@
+import { defineComponent } from "../src";
 import {
-  defineComponent,
   setComponent,
   removeComponent,
   getComponentValue,

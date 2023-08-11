@@ -1,11 +1,11 @@
-import { Component, Type as RecsType } from "@latticexyz/recs";
+import { ComponentPlus, Type as RecsType } from "@latticexyz/recs";
 import { describe, expectTypeOf } from "vitest";
 import storeConfig from "@latticexyz/store/mud.config";
 import { ConfigToRecsComponents } from "./common";
 
 describe("ConfigToRecsComponents", () => {
   expectTypeOf<ConfigToRecsComponents<typeof storeConfig>["StoreMetadata"]>().toEqualTypeOf<
-    Component<
+    ComponentPlus<
       {
         tableName: RecsType.String;
         abiEncodedFieldNames: RecsType.String;

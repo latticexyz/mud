@@ -1,4 +1,5 @@
-import { defineComponent, getComponentValue, hasComponent, withValue } from "../src/Component";
+import { defineComponent } from "../src";
+import { getComponentValue, hasComponent, withValue } from "../src/Component";
 import { Type } from "../src/constants";
 import { createEntity } from "../src/Entity";
 import { World } from "../src/types";

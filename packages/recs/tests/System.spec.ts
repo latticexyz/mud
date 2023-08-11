@@ -1,4 +1,5 @@
-import { defineComponent, removeComponent, setComponent, withValue } from "../src/Component";
+import { removeComponent, setComponent, withValue } from "../src/Component";
+import { defineComponent } from "../src";
 import { Type, UpdateType } from "../src/constants";
 import { createEntity } from "../src/Entity";
 import { Has } from "../src/Query";

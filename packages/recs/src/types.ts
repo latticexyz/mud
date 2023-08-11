@@ -94,8 +94,8 @@ export interface ComponentPlus<S extends Schema = Schema, M extends Metadata = M
   get(entity: Entity, defaultValue?: ComponentValue<S, T>): ComponentValue<S, T>;
 
   getAll: () => Set<Entity>;
-  getAllWith: (value: Partial<ComponentValue<S>>) => Set<Entity>;
-  getAllWithout: (value: Partial<ComponentValue<S>>) => Set<Entity>;
+  getAllWith: (value: Partial<ComponentValue<S, T>>) => Set<Entity>;
+  getAllWithout: (value: Partial<ComponentValue<S, T>>) => Set<Entity>;
 
   remove: (entity: Entity) => void;
   clear: () => void;

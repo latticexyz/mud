@@ -58,6 +58,7 @@ export async function setupNetwork() {
     setInterval(requestDrip, 20000);
   }
 
+  console.log("components: ", components);
   return {
     world,
     components,

@@ -1,6 +1,7 @@
 import { arrayToIterator } from "@latticexyz/utils";
+import { defineComponent } from "../src";
 import { Subject } from "rxjs";
-import { defineComponent, setComponent } from "../src/Component";
+import { setComponent } from "../src/Component";
 import { Type } from "../src/constants";
 import { createEntity } from "../src/Entity";
 import { World, AnyComponent, EntitySymbol } from "../src/types";
