@@ -69,7 +69,16 @@ library Ephemeral {
   function emitEphemeral(bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = key;
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
@@ -79,7 +88,16 @@ library Ephemeral {
   function emitEphemeral(IStore _store, bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = key;
 
     _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
@@ -91,8 +109,19 @@ library Ephemeral {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = key;
+
+    return _keyTuple;
   }
 }

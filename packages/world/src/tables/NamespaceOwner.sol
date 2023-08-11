@@ -67,7 +67,16 @@ library NamespaceOwner {
 
   /** Get owner */
   function get(bytes16 namespace) internal view returns (address owner) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -76,7 +85,16 @@ library NamespaceOwner {
 
   /** Get owner (using the specified store) */
   function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -85,7 +103,16 @@ library NamespaceOwner {
 
   /** Set owner */
   function set(bytes16 namespace, address owner) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)));
@@ -93,7 +120,16 @@ library NamespaceOwner {
 
   /** Set owner (using the specified store) */
   function set(IStore _store, bytes16 namespace, address owner) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)));
@@ -105,14 +141,34 @@ library NamespaceOwner {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes16 namespace) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -120,7 +176,16 @@ library NamespaceOwner {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes16 namespace) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = bytes32(namespace);
 
     _store.deleteRecord(_tableId, _keyTuple);

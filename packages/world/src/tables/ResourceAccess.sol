@@ -68,7 +68,16 @@ library ResourceAccess {
 
   /** Get access */
   function get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
@@ -78,7 +87,16 @@ library ResourceAccess {
 
   /** Get access (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
@@ -88,7 +106,16 @@ library ResourceAccess {
 
   /** Set access */
   function set(bytes32 resourceSelector, address caller, bool access) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
@@ -97,7 +124,16 @@ library ResourceAccess {
 
   /** Set access (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, address caller, bool access) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
@@ -110,15 +146,35 @@ library ResourceAccess {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
+  function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector, address caller) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
@@ -127,7 +183,16 @@ library ResourceAccess {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 resourceSelector, address caller) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 

@@ -77,7 +77,16 @@ library Multi {
 
   /** Get num */
   function getNum(uint32 a, bool b, uint256 c, int120 d) internal view returns (int256 num) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -89,7 +98,16 @@ library Multi {
 
   /** Get num (using the specified store) */
   function getNum(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal view returns (int256 num) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -101,7 +119,16 @@ library Multi {
 
   /** Set num */
   function setNum(uint32 a, bool b, uint256 c, int120 d, int256 num) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -112,7 +139,16 @@ library Multi {
 
   /** Set num (using the specified store) */
   function setNum(IStore _store, uint32 a, bool b, uint256 c, int120 d, int256 num) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -123,7 +159,16 @@ library Multi {
 
   /** Get value */
   function getValue(uint32 a, bool b, uint256 c, int120 d) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -135,7 +180,16 @@ library Multi {
 
   /** Get value (using the specified store) */
   function getValue(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal view returns (bool value) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -147,7 +201,16 @@ library Multi {
 
   /** Set value */
   function setValue(uint32 a, bool b, uint256 c, int120 d, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -158,7 +221,16 @@ library Multi {
 
   /** Set value (using the specified store) */
   function setValue(IStore _store, uint32 a, bool b, uint256 c, int120 d, bool value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -169,7 +241,16 @@ library Multi {
 
   /** Get the full data */
   function get(uint32 a, bool b, uint256 c, int120 d) internal view returns (MultiData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -181,7 +262,16 @@ library Multi {
 
   /** Get the full data (using the specified store) */
   function get(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal view returns (MultiData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -195,7 +285,16 @@ library Multi {
   function set(uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
     bytes memory _data = encode(num, value);
 
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -208,7 +307,16 @@ library Multi {
   function set(IStore _store, uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
     bytes memory _data = encode(num, value);
 
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -240,17 +348,37 @@ library Multi {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(uint32 a, bool b, uint256 c, int120 d) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](4);
+  function encodeKeyTuple(uint32 a, bool b, uint256 c, int120 d) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
@@ -261,7 +389,16 @@ library Multi {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 160
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 4)
+    }
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));

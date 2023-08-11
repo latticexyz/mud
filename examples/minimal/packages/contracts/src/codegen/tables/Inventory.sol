@@ -69,7 +69,16 @@ library Inventory {
 
   /** Get amount */
   function get(address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
@@ -80,7 +89,16 @@ library Inventory {
 
   /** Get amount (using the specified store) */
   function get(IStore _store, address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
@@ -91,7 +109,16 @@ library Inventory {
 
   /** Set amount */
   function set(address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
@@ -101,7 +128,16 @@ library Inventory {
 
   /** Set amount (using the specified store) */
   function set(IStore _store, address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
@@ -115,20 +151,36 @@ library Inventory {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(
-    address owner,
-    uint32 item,
-    uint32 itemVariant
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](3);
+  function encodeKeyTuple(address owner, uint32 item, uint32 itemVariant) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(address owner, uint32 item, uint32 itemVariant) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
@@ -138,7 +190,16 @@ library Inventory {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, address owner, uint32 item, uint32 itemVariant) internal {
-    bytes32[] memory _keyTuple = new bytes32[](3);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 128
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 3)
+    }
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));

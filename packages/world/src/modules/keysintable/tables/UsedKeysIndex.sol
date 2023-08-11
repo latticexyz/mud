@@ -70,7 +70,16 @@ library UsedKeysIndex {
 
   /** Get has */
   function getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -80,7 +89,16 @@ library UsedKeysIndex {
 
   /** Get has (using the specified store) */
   function getHas(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -90,7 +108,16 @@ library UsedKeysIndex {
 
   /** Set has */
   function setHas(bytes32 sourceTable, bytes32 keysHash, bool has) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -99,7 +126,16 @@ library UsedKeysIndex {
 
   /** Set has (using the specified store) */
   function setHas(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -108,7 +144,16 @@ library UsedKeysIndex {
 
   /** Get index */
   function getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -118,7 +163,16 @@ library UsedKeysIndex {
 
   /** Get index (using the specified store) */
   function getIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -128,7 +182,16 @@ library UsedKeysIndex {
 
   /** Set index */
   function setIndex(bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -137,7 +200,16 @@ library UsedKeysIndex {
 
   /** Set index (using the specified store) */
   function setIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -146,7 +218,16 @@ library UsedKeysIndex {
 
   /** Get the full data */
   function get(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -156,7 +237,16 @@ library UsedKeysIndex {
 
   /** Get the full data (using the specified store) */
   function get(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -168,7 +258,16 @@ library UsedKeysIndex {
   function set(bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _data = encode(has, index);
 
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -179,7 +278,16 @@ library UsedKeysIndex {
   function set(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _data = encode(has, index);
 
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -199,15 +307,35 @@ library UsedKeysIndex {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 sourceTable, bytes32 keysHash) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
+  function encodeKeyTuple(bytes32 sourceTable, bytes32 keysHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 sourceTable, bytes32 keysHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
@@ -216,7 +344,16 @@ library UsedKeysIndex {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 

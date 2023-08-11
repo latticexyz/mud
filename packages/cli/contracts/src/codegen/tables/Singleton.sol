@@ -72,7 +72,16 @@ library Singleton {
 
   /** Get v1 */
   function getV1() internal view returns (int256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return (int256(uint256(Bytes.slice32(_blob, 0))));
@@ -80,7 +89,16 @@ library Singleton {
 
   /** Get v1 (using the specified store) */
   function getV1(IStore _store) internal view returns (int256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
     return (int256(uint256(Bytes.slice32(_blob, 0))));
@@ -88,21 +106,48 @@ library Singleton {
 
   /** Set v1 */
   function setV1(int256 v1) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)));
   }
 
   /** Set v1 (using the specified store) */
   function setV1(IStore _store, int256 v1) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)));
   }
 
   /** Get v2 */
   function getV2() internal view returns (uint32[2] memory v2) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
@@ -110,7 +155,16 @@ library Singleton {
 
   /** Get v2 (using the specified store) */
   function getV2(IStore _store) internal view returns (uint32[2] memory v2) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
@@ -118,21 +172,48 @@ library Singleton {
 
   /** Set v2 */
   function setV2(uint32[2] memory v2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
   }
 
   /** Set v2 (using the specified store) */
   function setV2(IStore _store, uint32[2] memory v2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.setField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
   }
 
   /** Get the length of v2 */
   function lengthV2() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
     return _byteLength / 4;
@@ -140,7 +221,16 @@ library Singleton {
 
   /** Get the length of v2 (using the specified store) */
   function lengthV2(IStore _store) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
     return _byteLength / 4;
@@ -148,7 +238,16 @@ library Singleton {
 
   /** Get an item of v2 (unchecked, returns invalid data if index overflows) */
   function getItemV2(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -156,7 +255,16 @@ library Singleton {
 
   /** Get an item of v2 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV2(IStore _store, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -164,49 +272,112 @@ library Singleton {
 
   /** Push an element to v2 */
   function pushV2(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Push an element to v2 (using the specified store) */
   function pushV2(IStore _store, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)));
   }
 
   /** Pop an element from v2 */
   function popV2() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 4);
   }
 
   /** Pop an element from v2 (using the specified store) */
   function popV2(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 1, 4);
   }
 
   /** Update an element of v2 at `_index` */
   function updateV2(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Update an element of v2 (using the specified store) at `_index` */
   function updateV2(IStore _store, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get v3 */
   function getV3() internal view returns (uint32[2] memory v3) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
@@ -214,7 +385,16 @@ library Singleton {
 
   /** Get v3 (using the specified store) */
   function getV3(IStore _store) internal view returns (uint32[2] memory v3) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 2);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
@@ -222,21 +402,48 @@ library Singleton {
 
   /** Set v3 */
   function setV3(uint32[2] memory v3) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
   }
 
   /** Set v3 (using the specified store) */
   function setV3(IStore _store, uint32[2] memory v3) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
   }
 
   /** Get the length of v3 */
   function lengthV3() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
     return _byteLength / 4;
@@ -244,7 +451,16 @@ library Singleton {
 
   /** Get the length of v3 (using the specified store) */
   function lengthV3(IStore _store) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
     return _byteLength / 4;
@@ -252,7 +468,16 @@ library Singleton {
 
   /** Get an item of v3 (unchecked, returns invalid data if index overflows) */
   function getItemV3(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -260,7 +485,16 @@ library Singleton {
 
   /** Get an item of v3 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV3(IStore _store, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -268,49 +502,112 @@ library Singleton {
 
   /** Push an element to v3 */
   function pushV3(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Push an element to v3 (using the specified store) */
   function pushV3(IStore _store, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)));
   }
 
   /** Pop an element from v3 */
   function popV3() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 4);
   }
 
   /** Pop an element from v3 (using the specified store) */
   function popV3(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 2, 4);
   }
 
   /** Update an element of v3 at `_index` */
   function updateV3(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Update an element of v3 (using the specified store) at `_index` */
   function updateV3(IStore _store, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get v4 */
   function getV4() internal view returns (uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
     return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
@@ -318,7 +615,16 @@ library Singleton {
 
   /** Get v4 (using the specified store) */
   function getV4(IStore _store) internal view returns (uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 3);
     return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
@@ -326,21 +632,48 @@ library Singleton {
 
   /** Set v4 */
   function setV4(uint32[1] memory v4) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.setField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
   }
 
   /** Set v4 (using the specified store) */
   function setV4(IStore _store, uint32[1] memory v4) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.setField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
   }
 
   /** Get the length of v4 */
   function lengthV4() internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
     return _byteLength / 4;
@@ -348,7 +681,16 @@ library Singleton {
 
   /** Get the length of v4 (using the specified store) */
   function lengthV4(IStore _store) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
     return _byteLength / 4;
@@ -356,7 +698,16 @@ library Singleton {
 
   /** Get an item of v4 (unchecked, returns invalid data if index overflows) */
   function getItemV4(uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -364,7 +715,16 @@ library Singleton {
 
   /** Get an item of v4 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV4(IStore _store, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
     return (uint32(Bytes.slice4(_blob, 0)));
@@ -372,49 +732,112 @@ library Singleton {
 
   /** Push an element to v4 */
   function pushV4(uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
   /** Push an element to v4 (using the specified store) */
   function pushV4(IStore _store, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)));
   }
 
   /** Pop an element from v4 */
   function popV4() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 4);
   }
 
   /** Pop an element from v4 (using the specified store) */
   function popV4(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.popFromField(_tableId, _keyTuple, 3, 4);
   }
 
   /** Update an element of v4 at `_index` */
   function updateV4(uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Update an element of v4 (using the specified store) at `_index` */
   function updateV4(IStore _store, uint256 _index, uint32 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get the full data */
   function get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -424,7 +847,16 @@ library Singleton {
   function get(
     IStore _store
   ) internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -434,7 +866,16 @@ library Singleton {
   function set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
     bytes memory _data = encode(v1, v2, v3, v4);
 
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
@@ -443,7 +884,16 @@ library Singleton {
   function set(IStore _store, int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
     bytes memory _data = encode(v1, v2, v3, v4);
 
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.setRecord(_tableId, _keyTuple, _data);
   }
@@ -501,20 +951,49 @@ library Singleton {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](0);
+  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord() internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store) internal {
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.deleteRecord(_tableId, _keyTuple);
   }

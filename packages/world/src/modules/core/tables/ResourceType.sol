@@ -70,7 +70,16 @@ library ResourceType {
 
   /** Get resourceType */
   function get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -79,7 +88,16 @@ library ResourceType {
 
   /** Get resourceType (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector) internal view returns (Resource resourceType) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -88,7 +106,16 @@ library ResourceType {
 
   /** Set resourceType */
   function set(bytes32 resourceSelector, Resource resourceType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)));
@@ -96,7 +123,16 @@ library ResourceType {
 
   /** Set resourceType (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, Resource resourceType) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)));
@@ -108,14 +144,34 @@ library ResourceType {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -123,7 +179,16 @@ library ResourceType {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 resourceSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     _store.deleteRecord(_tableId, _keyTuple);

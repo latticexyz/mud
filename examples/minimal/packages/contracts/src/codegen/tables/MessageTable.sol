@@ -68,7 +68,16 @@ library MessageTable {
   function emitEphemeral(string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
@@ -77,7 +86,16 @@ library MessageTable {
   function emitEphemeral(IStore _store, string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _keyTuple = new bytes32[](0);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
 
     _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
   }
@@ -92,7 +110,18 @@ library MessageTable {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](0);
+  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 32
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 0)
+    }
+
+    return _keyTuple;
   }
 }

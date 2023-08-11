@@ -72,7 +72,16 @@ library InstalledModules {
 
   /** Get moduleAddress */
   function getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -86,7 +95,16 @@ library InstalledModules {
     bytes16 moduleName,
     bytes32 argumentsHash
   ) internal view returns (address moduleAddress) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -96,7 +114,16 @@ library InstalledModules {
 
   /** Set moduleAddress */
   function setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -105,7 +132,16 @@ library InstalledModules {
 
   /** Set moduleAddress (using the specified store) */
   function setModuleAddress(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -114,7 +150,16 @@ library InstalledModules {
 
   /** Get the full data */
   function get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (InstalledModulesData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -128,7 +173,16 @@ library InstalledModules {
     bytes16 moduleName,
     bytes32 argumentsHash
   ) internal view returns (InstalledModulesData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -140,7 +194,16 @@ library InstalledModules {
   function set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes memory _data = encode(moduleAddress);
 
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -151,7 +214,16 @@ library InstalledModules {
   function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes memory _data = encode(moduleAddress);
 
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -179,18 +251,35 @@ library InstalledModules {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(
-    bytes16 moduleName,
-    bytes32 argumentsHash
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
+  function encodeKeyTuple(bytes16 moduleName, bytes32 argumentsHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
@@ -199,7 +288,16 @@ library InstalledModules {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes16 moduleName, bytes32 argumentsHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](2);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 96
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 2)
+    }
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 

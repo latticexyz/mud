@@ -50,7 +50,16 @@ export function renderCommonData({
   const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
   const _keyTupleDefinition = `
-    bytes32[] memory _keyTuple = new bytes32[](${keyTuple.length});
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := ${(keyTuple.length + 1) * 32}
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, ${keyTuple.length})
+    }
     ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
   `;
 

@@ -74,7 +74,16 @@ library StoreMetadata {
 
   /** Get tableName */
   function getTableName(bytes32 tableId) internal view returns (string memory tableName) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -83,7 +92,16 @@ library StoreMetadata {
 
   /** Get tableName (using the specified store) */
   function getTableName(IStore _store, bytes32 tableId) internal view returns (string memory tableName) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -92,7 +110,16 @@ library StoreMetadata {
 
   /** Set tableName */
   function setTableName(bytes32 tableId, string memory tableName) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, bytes((tableName)));
@@ -100,7 +127,16 @@ library StoreMetadata {
 
   /** Set tableName (using the specified store) */
   function setTableName(IStore _store, bytes32 tableId, string memory tableName) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.setField(_tableId, _keyTuple, 0, bytes((tableName)));
@@ -108,7 +144,16 @@ library StoreMetadata {
 
   /** Get the length of tableName */
   function lengthTableName(bytes32 tableId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
@@ -117,7 +162,16 @@ library StoreMetadata {
 
   /** Get the length of tableName (using the specified store) */
   function lengthTableName(IStore _store, bytes32 tableId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
@@ -126,7 +180,16 @@ library StoreMetadata {
 
   /** Get an item of tableName (unchecked, returns invalid data if index overflows) */
   function getItemTableName(bytes32 tableId, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
@@ -135,7 +198,16 @@ library StoreMetadata {
 
   /** Get an item of tableName (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemTableName(IStore _store, bytes32 tableId, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
@@ -144,7 +216,16 @@ library StoreMetadata {
 
   /** Push a slice to tableName */
   function pushTableName(bytes32 tableId, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, bytes((_slice)));
@@ -152,7 +233,16 @@ library StoreMetadata {
 
   /** Push a slice to tableName (using the specified store) */
   function pushTableName(IStore _store, bytes32 tableId, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.pushToField(_tableId, _keyTuple, 0, bytes((_slice)));
@@ -160,7 +250,16 @@ library StoreMetadata {
 
   /** Pop a slice from tableName */
   function popTableName(bytes32 tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 1);
@@ -168,7 +267,16 @@ library StoreMetadata {
 
   /** Pop a slice from tableName (using the specified store) */
   function popTableName(IStore _store, bytes32 tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.popFromField(_tableId, _keyTuple, 0, 1);
@@ -176,7 +284,16 @@ library StoreMetadata {
 
   /** Update a slice of tableName at `_index` */
   function updateTableName(bytes32 tableId, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
@@ -184,7 +301,16 @@ library StoreMetadata {
 
   /** Update a slice of tableName (using the specified store) at `_index` */
   function updateTableName(IStore _store, bytes32 tableId, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
@@ -192,7 +318,16 @@ library StoreMetadata {
 
   /** Get abiEncodedFieldNames */
   function getAbiEncodedFieldNames(bytes32 tableId) internal view returns (bytes memory abiEncodedFieldNames) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
@@ -204,7 +339,16 @@ library StoreMetadata {
     IStore _store,
     bytes32 tableId
   ) internal view returns (bytes memory abiEncodedFieldNames) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
@@ -213,7 +357,16 @@ library StoreMetadata {
 
   /** Set abiEncodedFieldNames */
   function setAbiEncodedFieldNames(bytes32 tableId, bytes memory abiEncodedFieldNames) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)));
@@ -221,7 +374,16 @@ library StoreMetadata {
 
   /** Set abiEncodedFieldNames (using the specified store) */
   function setAbiEncodedFieldNames(IStore _store, bytes32 tableId, bytes memory abiEncodedFieldNames) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.setField(_tableId, _keyTuple, 1, bytes((abiEncodedFieldNames)));
@@ -229,7 +391,16 @@ library StoreMetadata {
 
   /** Get the length of abiEncodedFieldNames */
   function lengthAbiEncodedFieldNames(bytes32 tableId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
@@ -238,7 +409,16 @@ library StoreMetadata {
 
   /** Get the length of abiEncodedFieldNames (using the specified store) */
   function lengthAbiEncodedFieldNames(IStore _store, bytes32 tableId) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
@@ -247,7 +427,16 @@ library StoreMetadata {
 
   /** Get an item of abiEncodedFieldNames (unchecked, returns invalid data if index overflows) */
   function getItemAbiEncodedFieldNames(bytes32 tableId, uint256 _index) internal view returns (bytes memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
@@ -260,7 +449,16 @@ library StoreMetadata {
     bytes32 tableId,
     uint256 _index
   ) internal view returns (bytes memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
@@ -269,7 +467,16 @@ library StoreMetadata {
 
   /** Push a slice to abiEncodedFieldNames */
   function pushAbiEncodedFieldNames(bytes32 tableId, bytes memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, bytes((_slice)));
@@ -277,7 +484,16 @@ library StoreMetadata {
 
   /** Push a slice to abiEncodedFieldNames (using the specified store) */
   function pushAbiEncodedFieldNames(IStore _store, bytes32 tableId, bytes memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.pushToField(_tableId, _keyTuple, 1, bytes((_slice)));
@@ -285,7 +501,16 @@ library StoreMetadata {
 
   /** Pop a slice from abiEncodedFieldNames */
   function popAbiEncodedFieldNames(bytes32 tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 1);
@@ -293,7 +518,16 @@ library StoreMetadata {
 
   /** Pop a slice from abiEncodedFieldNames (using the specified store) */
   function popAbiEncodedFieldNames(IStore _store, bytes32 tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.popFromField(_tableId, _keyTuple, 1, 1);
@@ -301,7 +535,16 @@ library StoreMetadata {
 
   /** Update a slice of abiEncodedFieldNames at `_index` */
   function updateAbiEncodedFieldNames(bytes32 tableId, uint256 _index, bytes memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
@@ -309,7 +552,16 @@ library StoreMetadata {
 
   /** Update a slice of abiEncodedFieldNames (using the specified store) at `_index` */
   function updateAbiEncodedFieldNames(IStore _store, bytes32 tableId, uint256 _index, bytes memory _slice) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
@@ -317,7 +569,16 @@ library StoreMetadata {
 
   /** Get the full data */
   function get(bytes32 tableId) internal view returns (StoreMetadataData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -326,7 +587,16 @@ library StoreMetadata {
 
   /** Get the full data (using the specified store) */
   function get(IStore _store, bytes32 tableId) internal view returns (StoreMetadataData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
@@ -337,7 +607,16 @@ library StoreMetadata {
   function set(bytes32 tableId, string memory tableName, bytes memory abiEncodedFieldNames) internal {
     bytes memory _data = encode(tableName, abiEncodedFieldNames);
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
@@ -347,7 +626,16 @@ library StoreMetadata {
   function set(IStore _store, bytes32 tableId, string memory tableName, bytes memory abiEncodedFieldNames) internal {
     bytes memory _data = encode(tableName, abiEncodedFieldNames);
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.setRecord(_tableId, _keyTuple, _data);
@@ -395,14 +683,34 @@ library StoreMetadata {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 tableId) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes32 tableId) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -410,7 +718,16 @@ library StoreMetadata {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 tableId) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = tableId;
 
     _store.deleteRecord(_tableId, _keyTuple);

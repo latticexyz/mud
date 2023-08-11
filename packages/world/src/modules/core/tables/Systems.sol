@@ -69,7 +69,16 @@ library Systems {
 
   /** Get system */
   function getSystem(bytes32 resourceSelector) internal view returns (address system) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
@@ -78,7 +87,16 @@ library Systems {
 
   /** Get system (using the specified store) */
   function getSystem(IStore _store, bytes32 resourceSelector) internal view returns (address system) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
@@ -87,7 +105,16 @@ library Systems {
 
   /** Set system */
   function setSystem(bytes32 resourceSelector, address system) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)));
@@ -95,7 +122,16 @@ library Systems {
 
   /** Set system (using the specified store) */
   function setSystem(IStore _store, bytes32 resourceSelector, address system) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)));
@@ -103,7 +139,16 @@ library Systems {
 
   /** Get publicAccess */
   function getPublicAccess(bytes32 resourceSelector) internal view returns (bool publicAccess) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
@@ -112,7 +157,16 @@ library Systems {
 
   /** Get publicAccess (using the specified store) */
   function getPublicAccess(IStore _store, bytes32 resourceSelector) internal view returns (bool publicAccess) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
@@ -121,7 +175,16 @@ library Systems {
 
   /** Set publicAccess */
   function setPublicAccess(bytes32 resourceSelector, bool publicAccess) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)));
@@ -129,7 +192,16 @@ library Systems {
 
   /** Set publicAccess (using the specified store) */
   function setPublicAccess(IStore _store, bytes32 resourceSelector, bool publicAccess) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)));
@@ -137,7 +209,16 @@ library Systems {
 
   /** Get the full data */
   function get(bytes32 resourceSelector) internal view returns (address system, bool publicAccess) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -146,7 +227,16 @@ library Systems {
 
   /** Get the full data (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector) internal view returns (address system, bool publicAccess) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
@@ -157,7 +247,16 @@ library Systems {
   function set(bytes32 resourceSelector, address system, bool publicAccess) internal {
     bytes memory _data = encode(system, publicAccess);
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
@@ -167,7 +266,16 @@ library Systems {
   function set(IStore _store, bytes32 resourceSelector, address system, bool publicAccess) internal {
     bytes memory _data = encode(system, publicAccess);
 
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     _store.setRecord(_tableId, _keyTuple, _data);
@@ -186,14 +294,34 @@ library Systems {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
@@ -201,7 +329,16 @@ library Systems {
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 resourceSelector) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _keyTuple;
+    /// @solidity memory-safe-assembly
+    assembly {
+      // Allocate memory
+      _keyTuple := mload(0x40)
+      let _keyTupleLength := 64
+      mstore(0x40, add(_keyTuple, _keyTupleLength))
+      // Store length
+      mstore(_keyTuple, 1)
+    }
     _keyTuple[0] = resourceSelector;
 
     _store.deleteRecord(_tableId, _keyTuple);
