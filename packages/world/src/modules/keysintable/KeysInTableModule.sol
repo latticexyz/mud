@@ -47,8 +47,8 @@ contract KeysInTableModule is IModule, WorldContext {
       UsedKeysIndex.register(world);
 
       // Grant the hook access to the tables
-      world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));
-      world.grantAccess(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), address(hook));
+      world.grantAccess(KeysInTableTableId, address(hook));
+      world.grantAccess(UsedKeysIndexTableId, address(hook));
     }
 
     // Register a hook that is called when a value is set in the source table
