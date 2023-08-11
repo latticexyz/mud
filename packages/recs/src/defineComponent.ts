@@ -15,6 +15,7 @@ import {
   OverridableComponent,
   Schema,
   World,
+  ComponentPlus,
 } from "./types";
 
 export type OverridableType<
@@ -29,24 +30,6 @@ export interface Options<Overridable extends boolean, M extends Metadata> {
   metadata?: M;
   indexed?: boolean;
   overridable?: Overridable;
-}
-
-export function defineRawComponent<S extends Schema, M extends Metadata, T = unknown>(
-  world: World,
-  schema: S,
-  options?: { id?: string; metadata?: M; indexed?: boolean }
-) {
-  if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
-  const id = options?.id ?? uuid();
-  const values = mapObject(schema, () => new Map());
-  const update$ = new Subject();
-  const metadata = options?.metadata;
-  const entities = () =>
-    transformIterator((Object.values(values)[0] as Map<EntitySymbol, unknown>).keys(), getEntityString);
-  let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M, T>;
-  if (options?.indexed) component = createIndexer(component);
-  world.registerComponent(component as Component);
-  return component;
 }
 
 /**
@@ -74,18 +57,24 @@ export function defineComponent<
   M extends Metadata = Metadata,
   T = unknown
 >(world: World, schema: S, options?: Options<Overridable, M>) {
-  const rawComponent = defineRawComponent(world, schema, options);
+  if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
+  const id = options?.id ?? uuid();
+  const values = mapObject(schema, () => new Map());
+  const update$ = new Subject();
+  const metadata = options?.metadata;
+  const entities = () =>
+    transformIterator((Object.values(values)[0] as Map<EntitySymbol, unknown>).keys(), getEntityString);
+  let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M, T>;
 
-  const component: OverridableType<Overridable, S, M> = options?.overridable
-    ? createOverridableComponent(rawComponent)
-    : (rawComponent as OverridableType<Overridable, S, M>);
+  if (options?.overridable) component = createOverridableComponent(component);
+  if (options?.indexed) component = createIndexer(component);
 
   function set(entity: Entity, value: ComponentValue<S, T>) {
     setComponent(component, entity, value);
   }
 
   function get(entity: Entity): ComponentValue<S, T> | undefined;
-  function get(entity: Entity, defaultValue?: ComponentValue<S, T>): ComponentValue<S, T>;
+  function get(entity: Entity, defaultValue: ComponentValue<S, T>): ComponentValue<S, T>;
 
   function get(entity: Entity, defaultValue?: ComponentValue<S, T>) {
     return getComponentValue(component, entity) ?? defaultValue;
@@ -136,8 +125,12 @@ export function defineComponent<
     return equals;
   }
 
-  const context = {
-    ...component,
+  const componentPlus = {
+    id,
+    values,
+    update$,
+    metadata,
+    entities,
     get,
     set,
     getAll,
@@ -148,9 +141,10 @@ export function defineComponent<
     update,
     has,
     equals,
-  };
-  console.log("component:", component);
-  return context;
+  } as ComponentPlus<S, M, T>;
+
+  world.registerComponent(componentPlus);
+  return componentPlus;
 }
 
 export default defineComponent;

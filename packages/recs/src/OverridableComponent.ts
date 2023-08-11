@@ -15,7 +15,7 @@ import {
 
 export function createOverridableComponent<S extends Schema, M extends Metadata, T = unknown>(
   component: Component<S, M, T>
-): OverridableComponent<S, M, T> {
+) {
   let nonce = 0;
 
   // Map from OverrideId to Override (to be able to add multiple overrides to the same Entity)

@@ -83,6 +83,26 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
   update$: Subject<ComponentUpdate<S, T>> & { observers: any };
 }
 
+export interface ComponentPlus<S extends Schema = Schema, M extends Metadata = Metadata, T = unknown>
+  extends Component<S, M, T> {
+  has: (entity: Entity) => boolean;
+  equals: (entityA: Entity, entityB: Entity) => boolean;
+
+  set: (entity: Entity, value: ComponentValue<S, T>) => void;
+
+  get(entity: Entity): ComponentValue<S, T> | undefined;
+  get(entity: Entity, defaultValue?: ComponentValue<S, T>): ComponentValue<S, T>;
+
+  getAll: () => Set<Entity>;
+  getAllWith: (value: Partial<ComponentValue<S>>) => Set<Entity>;
+  getAllWithout: (value: Partial<ComponentValue<S>>) => Set<Entity>;
+
+  remove: (entity: Entity) => void;
+  clear: () => void;
+
+  update: (entity: Entity, value: Partial<ComponentValue<S, T>>, initialValue?: ComponentValue<S, T>) => void;
+}
+
 /**
  * Type of indexer returned by {@link createIndexer}.
  */

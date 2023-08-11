@@ -10,12 +10,10 @@ import {
 } from "./Component";
 import { UpdateType, Type } from "./constants";
 import {
-  Component,
   ComponentUpdate,
   ComponentValue,
   Entity,
   EntityQueryFragment,
-  EntitySymbol,
   HasQueryFragment,
   HasValueQueryFragment,
   NotQueryFragment,
@@ -24,6 +22,7 @@ import {
   ProxyReadQueryFragment,
   QueryFragment,
   QueryFragmentType,
+  Component,
   Schema,
   SettingQueryFragment,
 } from "./types";
