@@ -358,10 +358,10 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new system
     bytes32 resourceSelector2 = ResourceSelector.from("namespace2", "name");
-    world.registerSystem(resourceSelector, new System(), false);
+    world.registerSystem(resourceSelector2, new System(), false);
 
     // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector2.toString()));
     world.registerTable(resourceSelector2, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
   }
 
@@ -654,12 +654,13 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(tableId, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
 
     // Register a new system
+    bytes32 systemId = ResourceSelector.from("namespace", "testSystem");
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(tableId, system, false);
+    world.registerSystem(systemId, system, false);
 
     // Call a system function that writes data to the World
     world.call(
-      tableId,
+      systemId,
       abi.encodeWithSelector(WorldTestSystem.writeData.selector, bytes16("namespace"), bytes16("testTable"), true)
     );
 

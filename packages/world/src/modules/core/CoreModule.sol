@@ -81,8 +81,7 @@ contract CoreModule is IModule, WorldContext {
       value: 0,
       funcSelectorAndArgs: abi.encodeWithSelector(
         WorldRegistrationSystem.registerSystem.selector,
-        ROOT_NAMESPACE,
-        CORE_SYSTEM_NAME,
+        ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
         coreSystem,
         true
       )
