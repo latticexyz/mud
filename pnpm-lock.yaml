@@ -322,6 +322,12 @@ importers:
       '@latticexyz/std-client':
         specifier: workspace:*
         version: link:../std-client
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/store-sync':
+        specifier: workspace:*
+        version: link:../store-sync
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils

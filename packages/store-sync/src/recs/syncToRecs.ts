@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
+import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
 import {
   ComponentValue,
   Entity,
