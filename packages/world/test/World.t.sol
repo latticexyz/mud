@@ -196,7 +196,7 @@ contract WorldTest is Test, GasReporter {
     bytes memory value = world.getRecord(
       StoreCoreInternal.SCHEMA_TABLE,
       schemaKey,
-      SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32)
+      SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32)
     );
     assertEq(
       value,
