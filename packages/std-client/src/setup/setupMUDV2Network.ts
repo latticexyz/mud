@@ -20,8 +20,6 @@ import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
-import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
-import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
@@ -87,14 +85,9 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     }
   );
 
-  const storeComponents = defineStoreComponents(world);
-  const worldComponents = defineWorldComponents(world);
-
   const components = {
     // v2 components
     storeSchemaComponent,
-    ...storeComponents,
-    ...worldComponents,
     ...contractComponents,
     // v1 components
     SystemsRegistry,
