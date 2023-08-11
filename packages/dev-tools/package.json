@@ -23,10 +23,8 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "@latticexyz/network": "workspace:*",
     "@latticexyz/react": "workspace:*",
     "@latticexyz/recs": "workspace:*",
-    "@latticexyz/std-client": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
@@ -52,10 +50,12 @@
     "vitest": "0.31.4"
   },
   "peerDependencies": {
-    "@latticexyz/network": "2.0.0-next.1",
-    "@latticexyz/std-client": "2.0.0-next.1",
-    "@latticexyz/utils": "2.0.0-next.1",
-    "@latticexyz/world": "2.0.0-next.1"
+    "@latticexyz/common": "*",
+    "@latticexyz/recs": "*",
+    "@latticexyz/store": "*",
+    "@latticexyz/store-sync": "*",
+    "@latticexyz/utils": "*",
+    "@latticexyz/world": "*"
   },
   "publishConfig": {
     "access": "public"

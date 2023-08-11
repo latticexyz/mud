@@ -4,6 +4,8 @@ import { SchemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 
 export type StoreComponentMetadata = {
+  componentName: string;
+  tableName: string;
   keySchema: KeySchema;
   valueSchema: ValueSchema;
 };

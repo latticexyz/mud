@@ -313,18 +313,12 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
-      '@latticexyz/network':
-        specifier: workspace:*
-        version: link:../network
       '@latticexyz/react':
         specifier: workspace:*
         version: link:../react
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs
-      '@latticexyz/std-client':
-        specifier: workspace:*
-        version: link:../std-client
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store

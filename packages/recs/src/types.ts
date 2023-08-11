@@ -105,10 +105,10 @@ export type AnyComponent = Component<Schema>;
 /**
  * Type of World returned by {@link createWorld}.
  */
-export type World = {
+export type World<M extends Metadata = Metadata> = {
   registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
-  registerComponent: (component: Component) => void;
-  components: Component[];
+  registerComponent: (component: Component<Schema, M>) => void;
+  components: Component<Schema, M>[];
   getEntities: () => IterableIterator<Entity>;
   dispose: () => void;
   registerDisposer: (disposer: () => void) => void;

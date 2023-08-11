@@ -8,7 +8,7 @@ export function ComponentsPage() {
   const { recsWorld: world } = useDevToolsContext();
   if (!world) throw new Error("Missing recsWorld");
 
-  const components = world.components.filter((component) => component.metadata?.componentName);
+  const components = world.components.filter((component) => component.metadata.componentName);
   // TODO: lift up selected component so we can remember previous selection between tab nav
   const { id: idParam } = useParams();
   const selectedComponent = components.find((component) => component.id === idParam);
@@ -44,7 +44,7 @@ export function ComponentsPage() {
             <summary className="group pointer-events-auto cursor-pointer inline-flex">
               <span className="inline-flex gap-2 px-3 py-2 items-center border-2 border-white/10 rounded group-hover:border-blue-700 group-hover:bg-blue-700 group-hover:text-white">
                 {selectedComponent ? (
-                  <span className="font-mono">{String(selectedComponent.metadata?.componentName)}</span>
+                  <span className="font-mono">{selectedComponent.metadata.componentName}</span>
                 ) : (
                   <span>Pick a component…</span>
                 )}
@@ -67,7 +67,7 @@ export function ComponentsPage() {
                       }
                     }}
                   >
-                    {String(component.metadata?.componentName)}
+                    {component.metadata.componentName}
                   </NavButton>
                 ))}
               </div>

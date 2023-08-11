@@ -1,7 +1,6 @@
 import { decodeEventLog, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
-import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { PendingIcon } from "../icons/PendingIcon";
 import { usePromise } from "@latticexyz/react";
 import { truncateHex } from "../truncateHex";
@@ -12,6 +11,7 @@ import { getTransactionResult } from "./getTransactionResult";
 import { ErrorTrace } from "../ErrorTrace";
 import { ContractWrite, hexToTableId } from "@latticexyz/common";
 import { useDevToolsContext } from "../DevToolsContext";
+import { hexKeyTupleToEntity } from "@latticexyz/store-sync/recs";
 
 type Props = {
   write: ContractWrite;
@@ -143,7 +143,7 @@ export function WriteSummary({ write }: Props) {
                       {eventName === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                      {keyTupleToEntityID((args as any).key)}
+                      {hexKeyTupleToEntity((args as any).key)}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">{(args as any).data}</td>
                   </tr>

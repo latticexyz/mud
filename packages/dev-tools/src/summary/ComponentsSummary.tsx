@@ -1,12 +1,13 @@
 import { World } from "@latticexyz/recs";
 import { NavButton } from "../NavButton";
+import { StoreComponentMetadata } from "@latticexyz/store-sync/recs";
 
 type Props = {
-  world: World;
+  world: World<StoreComponentMetadata>;
 };
 
 export function ComponentsSummary({ world }: Props) {
-  const componentsWithName = world.components.filter((component) => component.metadata?.componentName);
+  const componentsWithName = world.components.filter((component) => component.metadata.componentName);
   return (
     <>
       {componentsWithName.length ? (
@@ -18,7 +19,7 @@ export function ComponentsSummary({ world }: Props) {
                 to={`/components/${component.id}`}
                 className="font-mono text-xs hover:text-white"
               >
-                {String(component.metadata?.componentName)}
+                {String(component.metadata.componentName)}
               </NavButton>
             ))}
           </div>
