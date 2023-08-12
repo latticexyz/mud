@@ -1,14 +1,6 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
-import {
-  ComponentValue,
-  Entity,
-  Component as RecsComponent,
-  Schema as RecsSchema,
-  World as RecsWorld,
-  getComponentValue,
-  setComponent,
-} from "@latticexyz/recs";
+import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
+import { ComponentValue, Entity, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { BlockLogs, Table } from "../common";
 import { TableRecord } from "@latticexyz/store";
 import {
@@ -23,25 +15,21 @@ import { recsStorage } from "./recsStorage";
 import { debug } from "./debug";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
-import { StoreComponentMetadata, SyncStep } from "./common";
+import { ConfigToRecsComponents, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
 import { createIndexerClient } from "../trpc-indexer";
 import { singletonEntity } from "./singletonEntity";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
+import { configToRecsComponents } from "./configToRecsComponents";
 
-type SyncToRecsOptions<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = {
+type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
   config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
   publicClient: PublicClient;
-  // TODO: generate these from config and return instead?
-  components: TComponents;
+  startBlock?: bigint;
   indexerUrl?: string;
   initialState?: {
     blockNumber: bigint | null;
@@ -49,15 +37,12 @@ type SyncToRecsOptions<
   };
 };
 
-type SyncToRecsResult<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = {
+type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
-  components: TComponents & ReturnType<typeof defineInternalComponents>;
+  components: ConfigToRecsComponents<TConfig> &
+    ConfigToRecsComponents<typeof storeConfig> &
+    ConfigToRecsComponents<typeof worldConfig> &
+    ReturnType<typeof defineInternalComponents>;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -66,33 +51,27 @@ type SyncToRecsResult<
   destroy: () => void;
 };
 
-export async function syncToRecs<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
->({
+export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
   address,
   publicClient,
-  components: initialComponents,
+  startBlock = 0n,
   initialState,
   indexerUrl,
-}: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
+}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const components = {
-    ...initialComponents,
+    ...configToRecsComponents(world, config),
+    ...configToRecsComponents(world, storeConfig),
+    ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
   };
 
   world.registerEntity({ id: singletonEntity });
 
-  let startBlock = 0n;
-
   if (indexerUrl != null && initialState == null) {
-    const indexer = createIndexerClient({ url: indexerUrl });
     try {
+      const indexer = createIndexerClient({ url: indexerUrl });
       const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
       initialState = await indexer.findAll.query({ chainId, address });
     } catch (error) {

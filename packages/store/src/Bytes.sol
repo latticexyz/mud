@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { SliceLib } from "./Slice.sol";
-
 library Bytes {
   /**
    * Converts a `bytes` memory blob to a single `bytes32` memory value, starting at the given byte offset.

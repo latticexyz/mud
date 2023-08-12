@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/gas-report",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.1",
   "description": "Gas reporter for specific lines within forge tests",
   "repository": {
     "type": "git",

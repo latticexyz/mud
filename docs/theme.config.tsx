@@ -7,7 +7,7 @@ const config: DocsThemeConfig = {
   useNextSeoProps() {
     const { asPath } = useRouter();
     return {
-      titleTemplate: asPath === "/" ? "%s" : "%s – MUD",
+      titleTemplate: asPath === "/" ? "MUD – a framework for ambitious Ethereum applications" : "%s – MUD",
     };
   },
   project: {

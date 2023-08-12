@@ -19,6 +19,7 @@
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "@react-three/fiber": "^8.12.0",

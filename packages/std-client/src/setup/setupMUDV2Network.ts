@@ -14,14 +14,12 @@ import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
 import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
-import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
-import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
 import { createDatabase, createDatabaseClient } from "@latticexyz/store-cache";
@@ -87,14 +85,9 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
     }
   );
 
-  const storeComponents = defineStoreComponents(world);
-  const worldComponents = defineWorldComponents(world);
-
   const components = {
     // v2 components
     storeSchemaComponent,
-    ...storeComponents,
-    ...worldComponents,
     ...contractComponents,
     // v1 components
     SystemsRegistry,

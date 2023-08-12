@@ -1,0 +1,147 @@
+import WarningBox from "../components/WarningBox";
+
+# The MUD Indexer
+
+The MUD Indexer is an off-chain indexer for on-chain applications built with MUD.
+
+## Why an off-chain indexer?
+
+Reads with on-chain apps can be tricky.
+What does it mean to be able to query the Ethereum network?
+Technically, given a node with a fully synced state, we can explore just about everything using the EVM, but the “exploring” would be looking at raw storage slots for accounts corresponding to smart contracts.
+A way around this exists by providing view functions on smart contracts: these effectively are just wrappers around raw storage and expose a more friendly API.
+Instead of having to figure out where the balances for an account are stored in the storage tree, we now can call a function that does the lookup via Solidity via an RPC endpoint.
+
+The issue with view functions is that complexity in having to generate and call these to get the “full picture” of the state from the chain explodes pretty quickly.
+For a web app client wanting to present the user with an up-to-date view of the on-chain state, the task of calling the different view functions becomes unnecessarily hard very fast.
+This can also quickly accelerate the need to run a set of dedicated nodes just to be able to service the needed number of RPC requests.
+
+## Installation
+
+These are the steps to install and start the MUD indexer.
+They are written under the assumption you are using `anvil` for your test chain, which is what the getting started package's `pnpm dev` does.
+
+1. Build the repository [as explained here](contribute#local-development-setup).
+
+1. Ensure you have [`jq`](https://jqlang.github.io/jq/) installed.
+
+1. Run a test world.
+   The easiest way to do this is to follow [these directions](tutorials/minimal#getting-the-initial-version) in a separate command line window.
+
+1. Start the indexer.
+
+   ```sh
+   cd packages/store-indexer
+   pnpm start:local
+   ```
+
+1. Run this command as a sanity check to verify the indexer is working correctly:
+
+   ```sh
+   curl 'http://localhost:3001/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+   ```
+
+   The result should be nicely formatted (and long) JSON output.
+
+## Data access and interpretation
+
+### Using the indexer with TypeScript
+
+### Using HTTP
+
+<WarningBox
+  title="URLs and parameters may vary"
+  message={
+    <>
+      <p>
+        The parameters, especially the URL, may change as we adjust our [tRPC](https://trpc.io/) configuration.
+
+        If you can use the TypeScript methods, those are more stable.
+      </p>
+    </>
+
+}
+/>
+
+The indexer is built on top of [tRPC](https://trpc.io/), which is primarily designed to be used between [TypeScript](https://www.typescriptlang.org/) programs.
+As a result, the data format is more complicated than REST APIs.
+
+For queries, the indexer expects to get two parameters in a [query string](https://en.wikipedia.org/wiki/Query_string):
+
+- `batch`, the batch identifier.
+  This parameter can contain any string, as long as it is present.
+
+- `input`, the actual query.
+  This query is a [URLEncoded](https://en.wikipedia.org/wiki/Query_string#URL_encoding) [JSON](https://en.wikipedia.org/wiki/JSON) object.
+  To play with possible object values, you can use [this online calculator](https://www.urlencoder.org/).
+
+  For example, the input object used in the sanity check above is:
+
+  ```json
+  {
+    "0": {
+      "json": {
+        "chainId": 31337,
+        "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      }
+    }
+  }
+  ```
+
+  An HTTP request can include multiple queries, so the query object includes a numbered key (or numbered keys) with the actual queries.
+  Also, in the future other formats than JSON might be supported, so each query specifies what format it uses.
+
+The one type of query currently supported is `findAll`. It gives you all the information stored on the specific world in the indexer.
+The query is available at path `/findAll` and have two parameters:
+
+- `chainId`: The chain ID of the blockchain to query.
+- `address`: The address of the `World`.
+  Based on the paramters in the development environment, `pnpm dev` uses the address in the sanity check.
+
+To understand the result, it is easiest to look at it inside Node.
+
+1. Read the result and enter `node`:
+
+   ```sh
+   curl 'http://localhost:3001/findAll?batch=wd&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' > res.json
+   node
+   ```
+
+1. Read the result into a JavaScript object.
+
+   ```javascript
+   res = JSON.parse(fs.readFileSync("res.json"));
+   ```
+
+1. `res` is actually a list of results, which only has one item because we only had one key in the query.
+   This item has one key, `record`, whose value also has only one key, `data`.
+   Run these commands to verify the statements above and then cut `res` to the actual result.
+
+   ```javascript
+   res.length;
+   Object.keys(res[0]);
+   Object.keys(res[0].result);
+   res = res[0].result.data;
+   ```
+
+1. Inside the result there are two fields:
+
+   - `meta`, the [metadata](https://en.wikipedia.org/wiki/Metadata).
+     In the case of JSON the field names are part of the data, so this primarily contains data types.
+   - `json`, the data read from the `World`.
+     This field itself is divided into two values:
+     - `blockNumber`, the block number in which these query results apply.
+     - `tables`, a list of the tables in the `World` and their data.
+
+   You can use [the `filter` function](https://www.w3schools.com/jsref/jsref_filter.asp) to get a specific table.
+   In this case, we are getting the `Counter` table.
+
+   ```javascript
+   counterTable = res.json.tables.filter((t) => t.name === "Counter")[0];
+   ```
+
+1. Finally, to get the actual record with the counter value, use:
+
+   ```javascript
+   counterTable.records[0].value.value;
+   ```

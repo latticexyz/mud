@@ -53,6 +53,7 @@ export async function deploy(
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
   provider.pollingInterval = pollInterval;
   const signer = new ethers.Wallet(privateKey, provider);
+  console.log("Deploying from", signer.address);
 
   // Manual nonce handling to allow for faster sending of transactions without waiting for previous transactions
   let nonce = await signer.getTransactionCount();

@@ -6,28 +6,32 @@ We'd love your support in improving MUD! This monorepo includes all of MUD's sou
 
 The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, [set up a new project with the MUD cli](/quick-start).
 
-1. Install go (required to build [MODE](/mode)): [https://go.dev/doc/install](https://go.dev/doc/install)
+1. Ensure you have these applications installed:
 
-2. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+   | Software                                                                                    | Tested with version |
+   | ------------------------------------------------------------------------------------------- | ------------------- |
+   | [`curl`](https://curl.se/)                                                                  | 7.74.0              |
+   | [`node`](https://nodejs.org/en/download/package-manager)                                    | 18.17.0             |
+   | [`pnpm`](https://pnpm.io/)                                                                  | 8.6.11              |
+   | [`go` (at least version 1.20)](https://go.dev/dl/)                                          | 1.20.7              |
+   | [`make`](https://www.gnu.org/software/make/)                                                | 4.3                 |
+   | [`protoc`](https://grpc.io/docs/protoc-installation/#install-pre-compiled-binaries-any-os/) | 3.15.8              |
 
-3. Install pnpm
+1. Download the source code for MUD.
 
-```bash
-npm install pnpm --global
-```
+   ```sh
+   git clone https://github.com/latticexyz/mud.git
+   cd mud
+   ```
 
-4. Clone the MUD monorepo
+1. Install and build packages.
 
-```
-git clone https://github.com/latticexyz/mud
-```
-
-5. Install MUD dependencies and setup local environment
-
-```
-cd mud && pnpm install
-```
+   ```sh
+   pnpm install
+   pnpm build
+   ```
 
 ### Pull requests
 
-MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
+MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles.
+Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow [the conventional commit spec](https://www.conventionalcommits.org/en/v1.0.0/).

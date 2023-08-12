@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.1",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -17,14 +17,14 @@
     "mud": "./dist/mud.js"
   },
   "scripts": {
-    "build": "pnpm run build:js",
+    "build": "pnpm run build:js && pnpm run build:test-tables",
     "build:js": "tsup && chmod +x ./dist/mud.js",
+    "build:test-tables": "tsx ./scripts/generate-test-tables.ts",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit && pnpm run generate-test-tables && forge test"
+    "test": "tsc --noEmit && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
