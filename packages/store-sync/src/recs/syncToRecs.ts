@@ -9,7 +9,22 @@ import {
   blockRangeToLogs,
   groupLogsByBlockNumber,
 } from "@latticexyz/block-logs-stream";
-import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
+import {
+  filter,
+  map,
+  tap,
+  mergeMap,
+  from,
+  concatMap,
+  Observable,
+  share,
+  firstValueFrom,
+  of,
+  switchMap,
+  catchError,
+  shareReplay,
+  defer,
+} from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { debug } from "./debug";
@@ -22,6 +37,12 @@ import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToRecsComponents } from "./configToRecsComponents";
+
+function waitForIdle(): Promise<void> {
+  return new Promise<void>((resolve) => {
+    requestIdleCallback(() => resolve());
+  });
+}
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
@@ -69,19 +90,33 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   world.registerEntity({ id: singletonEntity });
 
-  if (indexerUrl != null && initialState == null) {
-    try {
-      const indexer = createIndexerClient({ url: indexerUrl });
-      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-      initialState = await indexer.findAll.query({ chainId, address });
-    } catch (error) {
-      debug("couldn't get initial state from indexer", error);
-    }
-  }
+  const initialState$ =
+    indexerUrl != null && initialState == null
+      ? defer(
+          async (): Promise<{
+            blockNumber: bigint | null;
+            tables: (Table & { records: TableRecord[] })[];
+          }> => {
+            debug("fetching initial state from indexer", indexerUrl);
+            setComponent(components.SyncProgress, singletonEntity, {
+              step: SyncStep.SNAPSHOT,
+              message: "Fetching snapshot from indexer",
+              percentage: 0,
+              latestBlockNumber: 0n,
+              lastBlockNumberProcessed: 0n,
+            });
+            const indexer = createIndexerClient({ url: indexerUrl });
+            const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+            return await indexer.findAll.query({ chainId, address });
+          }
+        )
+      : of(initialState);
 
-  if (initialState != null && initialState.blockNumber != null) {
+  async function hydrateInitialState(initialState: {
+    blockNumber: bigint;
+    tables: (Table & { records: TableRecord[] })[];
+  }): Promise<void> {
     debug("hydrating from initial state to block", initialState.blockNumber);
-    startBlock = initialState.blockNumber + 1n;
 
     setComponent(components.SyncProgress, singletonEntity, {
       step: SyncStep.SNAPSHOT,
@@ -94,7 +129,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     const componentList = Object.values(components);
 
     const numRecords = initialState.tables.reduce((sum, table) => sum + table.records.length, 0);
-    const recordsPerSyncProgressUpdate = Math.floor(numRecords / 100);
+    const recordsPerSyncProgressUpdate = Math.floor(numRecords / 50);
     let recordsProcessed = 0;
 
     for (const table of initialState.tables) {
@@ -117,6 +152,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
             latestBlockNumber: 0n,
             lastBlockNumberProcessed: initialState.blockNumber,
           });
+          await waitForIdle();
         }
       }
       debug(`hydrated ${table.records.length} records for table ${table.namespace}:${table.name}`);
@@ -131,10 +167,6 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     });
   }
 
-  // TODO: if startBlock is still 0, find via deploy event
-
-  debug("starting sync from block", startBlock);
-
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(share());
 
   const latestBlockNumber$ = latestBlock$.pipe(
@@ -143,13 +175,34 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     share()
   );
 
+  const startBlock$ = initialState$.pipe(
+    concatMap(async (initialState) => {
+      if (initialState != null) {
+        const { blockNumber, tables } = initialState;
+        if (blockNumber != null) {
+          await hydrateInitialState({ blockNumber, tables });
+          return blockNumber;
+        }
+      }
+      return startBlock;
+    }),
+    catchError((error) => {
+      debug("error hydrating from initial state", error);
+      return of(startBlock);
+    }),
+    tap((blockNumber) => {
+      debug("starting sync from block", blockNumber);
+    }),
+    shareReplay(1)
+  );
+
   let latestBlockNumber: bigint | null = null;
   const blockLogs$ = latestBlockNumber$.pipe(
     tap((blockNumber) => {
       debug("latest block number", blockNumber);
       latestBlockNumber = blockNumber;
     }),
-    map((blockNumber) => ({ startBlock, endBlock: blockNumber })),
+    switchMap((endBlock) => startBlock$.pipe(map((startBlock) => ({ startBlock, endBlock })))),
     blockRangeToLogs({
       publicClient,
       address,
@@ -192,10 +245,6 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     share()
   );
 
-  // Start the sync
-  const sub = blockStorageOperations$.subscribe();
-  world.registerDisposer(() => sub.unsubscribe());
-
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
   }> {
@@ -213,6 +262,10 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
     return { receipt };
   }
+
+  // Start the sync
+  const sub = blockStorageOperations$.subscribe();
+  world.registerDisposer(() => sub.unsubscribe());
 
   return {
     components,
