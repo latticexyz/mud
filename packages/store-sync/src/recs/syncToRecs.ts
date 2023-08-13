@@ -44,7 +44,7 @@ type SyncToRecsComponents<TConfig extends StoreConfig = StoreConfig> = ConfigToR
 
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
-  components: SyncToRecsComponents;
+  components: SyncToRecsComponents<TConfig>;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;

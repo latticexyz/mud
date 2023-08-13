@@ -1,5 +1,5 @@
 import { KeySchema, StoreConfig, ValueSchema } from "@latticexyz/store";
-import { ComponentPlus as RecsComponent, Type as RecsType } from "@latticexyz/recs";
+import { ComponentPlus as RecsComponent, Schema as RecsSchema, Type as RecsType } from "@latticexyz/recs";
 import { SchemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 
@@ -28,4 +28,4 @@ export type ConfigToRecsComponents<TConfig extends StoreConfig> = {
       valueSchema: TConfig["tables"][tableName]["schema"];
     }
   >;
-};
+} & Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
