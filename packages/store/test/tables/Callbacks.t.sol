@@ -14,18 +14,18 @@ contract CallbacksTest is Test, GasReporter, StoreReadWithStubs {
     bytes24[] memory callbacks = new bytes24[](1);
     callbacks[0] = bytes24(abi.encode(this.testSetAndGet));
 
-    startGasReport("set field in Callbacks");
+    startGasReport("Callbacks: set field");
     Callbacks.set(key, callbacks);
     endGasReport();
 
-    startGasReport("get field from Callbacks (warm)");
+    startGasReport("Callbacks: get field (warm)");
     bytes24[] memory returnedCallbacks = Callbacks.get(key);
     endGasReport();
 
     assertEq(returnedCallbacks.length, callbacks.length);
     assertEq(returnedCallbacks[0], callbacks[0]);
 
-    startGasReport("push field to Callbacks");
+    startGasReport("Callbacks: push 1 element");
     Callbacks.push(key, callbacks[0]);
     endGasReport();
 
