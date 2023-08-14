@@ -257,6 +257,9 @@ contract WorldTest is Test, GasReporter {
     );
     // Expect previous owner to no longer have access
     assertEq(ResourceAccess.get(world, "testTransfer", address(this)), false, "caller should no longer have access");
+    // Expect revert if caller is not the owner
+    _expectAccessDenied(address(this), "testTransfer", 0);
+    world.transferOwnership("testTransfer", address(1));
   }
 
   function testRegisterTable() public {
