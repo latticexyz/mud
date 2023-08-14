@@ -154,16 +154,20 @@ library Singleton {
   function getItemV2(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Get an item of v2 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV2(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to v2 */
@@ -262,16 +266,20 @@ library Singleton {
   function getItemV3(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Get an item of v3 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV3(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to v3 */
@@ -370,16 +378,20 @@ library Singleton {
   function getItemV4(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Get an item of v4 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV4(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to v4 */

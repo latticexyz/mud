@@ -142,8 +142,17 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getSchema(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Get an item of keys0 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -151,8 +160,10 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Push an element to keys0 */
@@ -264,8 +275,17 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        1,
+        getSchema(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Get an item of keys1 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -273,8 +293,10 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 32, (_index + 1) * 32);
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Push an element to keys1 */
@@ -386,8 +408,17 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        2,
+        getSchema(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Get an item of keys2 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -395,8 +426,10 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 32, (_index + 1) * 32);
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Push an element to keys2 */
@@ -508,8 +541,17 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        3,
+        getSchema(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Get an item of keys3 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -517,8 +559,10 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 32, (_index + 1) * 32);
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Push an element to keys3 */
@@ -630,8 +674,17 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        4,
+        getSchema(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Get an item of keys4 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -639,8 +692,10 @@ library KeysInTable {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, getSchema(), _index * 32, (_index + 1) * 32);
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Push an element to keys4 */

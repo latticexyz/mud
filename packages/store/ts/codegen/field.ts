@@ -79,15 +79,17 @@ export function renderFieldMethods(options: RenderTableOptions) {
           "uint256 _index",
         ])}) internal view returns (${portionData.typeWithLocation}) {
           ${_keyTupleDefinition}
-          bytes memory _blob = ${_store}.getFieldSlice(
-            _tableId,
-            _keyTuple,
-            ${schemaIndex},
-            getSchema(),
-            _index * ${portionData.elementLength},
-            (_index + 1) * ${portionData.elementLength}
-          );
-          return ${portionData.decoded};
+          unchecked {
+            bytes memory _blob = ${_store}.getFieldSlice(
+              _tableId,
+              _keyTuple,
+              ${schemaIndex},
+              getSchema(),
+              _index * ${portionData.elementLength},
+              (_index + 1) * ${portionData.elementLength}
+            );
+            return ${portionData.decoded};
+          }
         }
       `
       );

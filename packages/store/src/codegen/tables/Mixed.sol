@@ -207,8 +207,10 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Get an item of a32 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -216,8 +218,10 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to a32 */
@@ -329,8 +333,10 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
   }
 
   /** Get an item of s (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -338,8 +344,10 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
   }
 
   /** Push a slice to s */

@@ -133,8 +133,10 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
   }
 
   /** Get an item of tableName (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -142,8 +144,10 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
   }
 
   /** Push a slice to tableName */
@@ -258,8 +262,10 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
-    return (bytes(_blob));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
   }
 
   /** Get an item of abiEncodedFieldNames (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -271,8 +277,10 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
-    return (bytes(_blob));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
   }
 
   /** Push a slice to abiEncodedFieldNames */

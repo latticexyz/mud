@@ -126,8 +126,17 @@ library Callbacks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 24, (_index + 1) * 24);
-    return (Bytes.slice24(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getSchema(),
+        _index * 24,
+        (_index + 1) * 24
+      );
+      return (Bytes.slice24(_blob, 0));
+    }
   }
 
   /** Get an item of value (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -135,8 +144,10 @@ library Callbacks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 24, (_index + 1) * 24);
-    return (Bytes.slice24(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 24, (_index + 1) * 24);
+      return (Bytes.slice24(_blob, 0));
+    }
   }
 
   /** Push an element to value */

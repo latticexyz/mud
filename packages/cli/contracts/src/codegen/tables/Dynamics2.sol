@@ -136,8 +136,10 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 8, (_index + 1) * 8);
-    return (uint64(Bytes.slice8(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 8, (_index + 1) * 8);
+      return (uint64(Bytes.slice8(_blob, 0)));
+    }
   }
 
   /** Get an item of u64 (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -145,8 +147,10 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 8, (_index + 1) * 8);
-    return (uint64(Bytes.slice8(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 8, (_index + 1) * 8);
+      return (uint64(Bytes.slice8(_blob, 0)));
+    }
   }
 
   /** Push an element to u64 */
@@ -258,8 +262,10 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
   }
 
   /** Get an item of str (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -267,8 +273,10 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
-    return (string(_blob));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
   }
 
   /** Push a slice to str */
@@ -380,8 +388,10 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 1, (_index + 1) * 1);
-    return (bytes(_blob));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
   }
 
   /** Get an item of b (using the specified store) (unchecked, returns invalid data if index overflows) */
@@ -389,8 +399,10 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 1, (_index + 1) * 1);
-    return (bytes(_blob));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 1, (_index + 1) * 1);
+      return (bytes(_blob));
+    }
   }
 
   /** Push a slice to b */

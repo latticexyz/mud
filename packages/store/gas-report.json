@@ -867,7 +867,7 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "Hooks: get 1 element (cold)",
-    "gasUsed": 7786
+    "gasUsed": 7560
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",
