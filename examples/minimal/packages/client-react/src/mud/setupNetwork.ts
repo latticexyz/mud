@@ -4,9 +4,9 @@ import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import storeConfig from "contracts/mud.config";
 import { ContractWrite, createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
+import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -38,7 +38,7 @@ export async function setupNetwork() {
 
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
     world,
-    config: storeConfig,
+    config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),

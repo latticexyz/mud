@@ -2,7 +2,7 @@ import ReactDOM from "react-dom/client";
 import { App } from "./App";
 import { setup } from "./mud/setup";
 import { MUDProvider } from "./MUDContext";
-import storeConfig from "contracts/mud.config";
+import mudConfig from "contracts/mud.config";
 
 const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
@@ -16,10 +16,11 @@ setup().then(async (result) => {
     </MUDProvider>
   );
 
+  // https://vitejs.dev/guide/env-and-mode.html
   if (import.meta.env.DEV) {
     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
     mountDevTools({
-      config: storeConfig,
+      config: mudConfig,
       publicClient: result.network.publicClient,
       walletClient: result.network.walletClient,
       latestBlock$: result.network.latestBlock$,

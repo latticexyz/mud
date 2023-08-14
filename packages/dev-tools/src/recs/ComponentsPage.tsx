@@ -3,12 +3,13 @@ import { NavButton } from "../NavButton";
 import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { useDevToolsContext } from "../DevToolsContext";
+import { isStoreComponent } from "@latticexyz/store-sync/recs";
 
 export function ComponentsPage() {
   const { recsWorld: world } = useDevToolsContext();
   if (!world) throw new Error("Missing recsWorld");
 
-  const components = world.components.filter((component) => component.metadata.componentName);
+  const components = world.components.filter(isStoreComponent);
   // TODO: lift up selected component so we can remember previous selection between tab nav
   const { id: idParam } = useParams();
   const selectedComponent = components.find((component) => component.id === idParam);

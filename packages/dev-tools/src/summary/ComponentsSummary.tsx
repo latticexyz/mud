@@ -1,13 +1,13 @@
 import { World } from "@latticexyz/recs";
 import { NavButton } from "../NavButton";
-import { StoreComponentMetadata } from "@latticexyz/store-sync/recs";
+import { isStoreComponent } from "@latticexyz/store-sync/recs";
 
 type Props = {
-  world: World<StoreComponentMetadata>;
+  world: World;
 };
 
 export function ComponentsSummary({ world }: Props) {
-  const componentsWithName = world.components.filter((component) => component.metadata.componentName);
+  const componentsWithName = world.components.filter(isStoreComponent);
   return (
     <>
       {componentsWithName.length ? (
