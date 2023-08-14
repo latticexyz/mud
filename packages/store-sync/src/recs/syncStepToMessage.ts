@@ -12,6 +12,6 @@ export function syncStepToMessage(step: SyncStep): string {
     case SyncStep.LIVE:
       return "All caught up!";
     default:
-      assertExhaustive(step);
+      assertExhaustive(step, `Unexpected sync step: ${step}`);
   }
 }
