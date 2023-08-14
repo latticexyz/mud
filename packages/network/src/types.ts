@@ -3,7 +3,7 @@ import { ExternalProvider } from "@ethersproject/providers";
 import { Components, ComponentValue, Entity, SchemaOf } from "@latticexyz/recs";
 import { TxMetadata } from "@latticexyz/services/ecs-stream";
 import { Cached } from "@latticexyz/utils";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 import { SyncState } from "./workers";

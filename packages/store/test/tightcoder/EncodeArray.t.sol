@@ -7,24 +7,6 @@ import { Bytes } from "../../src/Bytes.sol";
 import { EncodeArray } from "../../src/tightcoder/EncodeArray.sol";
 
 contract EncodeArrayTest is Test, GasReporter {
-  function testEncodeBytesArray() public {
-    bytes[] memory input = new bytes[](2);
-    input[0] = new bytes(32);
-    input[0][0] = 0x01;
-    input[0][31] = 0x02;
-    input[1] = new bytes(32);
-    input[1][0] = 0x03;
-    input[1][31] = 0x04;
-
-    startGasReport("encode packed bytes[]");
-    bytes memory output = EncodeArray.encode(input);
-    endGasReport();
-
-    assertEq(output.length, 64);
-    assertEq(uint256(Bytes.toBytes32(output, 0)), 0x0100000000000000000000000000000000000000000000000000000000000002);
-    assertEq(uint256(Bytes.toBytes32(output, 32)), 0x0300000000000000000000000000000000000000000000000000000000000004);
-  }
-
   function testEncodeUint8Array() public {
     uint8 val0 = 0x01;
     uint8 val1 = 0x02;

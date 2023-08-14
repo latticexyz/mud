@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";

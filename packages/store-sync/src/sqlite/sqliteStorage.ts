@@ -1,10 +1,10 @@
-import { Chain, Hex, PublicClient, Transport, encodePacked, getAddress } from "viem";
+import { Hex, PublicClient, encodePacked, getAddress } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { schemaToDefaults } from "../schemaToDefaults";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
@@ -13,14 +13,16 @@ import { chainState, mudStoreTables } from "./internalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 
-export function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
+export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
   database: BaseSQLiteDatabase<"sync", void>;
-  publicClient: PublicClient<Transport, Chain>;
+  publicClient: PublicClient;
   config?: TConfig;
-}): BlockLogsToStorageOptions<TConfig> {
+}): Promise<BlockLogsToStorageOptions<TConfig>> {
+  const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+
   // TODO: should these run lazily before first `registerTables`?
   database.run(sql.raw(sqliteTableToSql(chainState)));
   database.run(sql.raw(sqliteTableToSql(mudStoreTables)));
@@ -29,7 +31,7 @@ export function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
     async registerTables({ blockNumber, tables }) {
       await database.transaction(async (tx) => {
         for (const table of tables) {
-          debug(`creating table ${table.namespace}:${table.name} for world ${publicClient.chain.id}:${table.address}`);
+          debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
           const sqliteTable = createSqliteTable({
             address: table.address,
@@ -170,7 +172,7 @@ export function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         tx.insert(chainState)
           .values({
             schemaVersion,
-            chainId: publicClient.chain.id,
+            chainId,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoUpdate({

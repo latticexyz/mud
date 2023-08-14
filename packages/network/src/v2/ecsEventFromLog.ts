@@ -1,7 +1,7 @@
 import { Contract, utils } from "ethers";
 import { Log } from "@ethersproject/providers";
 import { LogDescription } from "@ethersproject/abi";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";

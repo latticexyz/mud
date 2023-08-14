@@ -1,14 +1,6 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Address, Block, Chain, Hex, PublicClient, TransactionReceipt, Transport } from "viem";
-import {
-  ComponentValue,
-  Entity,
-  Component as RecsComponent,
-  Schema as RecsSchema,
-  World as RecsWorld,
-  getComponentValue,
-  setComponent,
-} from "@latticexyz/recs";
+import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
+import { ComponentValue, Entity, World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { BlockLogs, Table } from "../common";
 import { TableRecord } from "@latticexyz/store";
 import {
@@ -20,28 +12,24 @@ import {
 import { filter, map, tap, mergeMap, from, concatMap, Observable, share, firstValueFrom } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
-import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { debug } from "./debug";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
-import { StoreComponentMetadata, SyncStep } from "./common";
+import { ConfigToRecsComponents, SyncStep } from "./common";
 import { encodeEntity } from "./encodeEntity";
 import { createIndexerClient } from "../trpc-indexer";
+import { singletonEntity } from "./singletonEntity";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
+import { configToRecsComponents } from "./configToRecsComponents";
 
-type SyncToRecsOptions<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = {
+type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
   config: TConfig;
   address: Address;
   // TODO: make this optional and return one if none provided (but will need chain ID at least)
-  publicClient: PublicClient<Transport, Chain>;
-  // TODO: generate these from config and return instead?
-  components: TComponents;
+  publicClient: PublicClient;
+  startBlock?: bigint;
   indexerUrl?: string;
   initialState?: {
     blockNumber: bigint | null;
@@ -49,16 +37,12 @@ type SyncToRecsOptions<
   };
 };
 
-type SyncToRecsResult<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = {
+type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = {
   // TODO: return publicClient?
-  components: TComponents & ReturnType<typeof defineInternalComponents>;
-  singletonEntity: Entity;
+  components: ConfigToRecsComponents<TConfig> &
+    ConfigToRecsComponents<typeof storeConfig> &
+    ConfigToRecsComponents<typeof worldConfig> &
+    ReturnType<typeof defineInternalComponents>;
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
@@ -67,37 +51,29 @@ type SyncToRecsResult<
   destroy: () => void;
 };
 
-export async function syncToRecs<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
->({
+export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
   address,
   publicClient,
-  components: initialComponents,
+  startBlock = 0n,
   initialState,
   indexerUrl,
-}: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
+}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const components = {
-    ...initialComponents,
+    ...configToRecsComponents(world, config),
+    ...configToRecsComponents(world, storeConfig),
+    ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
   };
 
-  const singletonEntity = world.registerEntity({ id: hexKeyTupleToEntity([]) });
-
-  let startBlock = 0n;
+  world.registerEntity({ id: singletonEntity });
 
   if (indexerUrl != null && initialState == null) {
-    const indexer = createIndexerClient({ url: indexerUrl });
     try {
-      initialState = await indexer.findAll.query({
-        chainId: publicClient.chain.id,
-        address,
-      });
+      const indexer = createIndexerClient({ url: indexerUrl });
+      const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
+      initialState = await indexer.findAll.query({ chainId, address });
     } catch (error) {
       debug("couldn't get initial state from indexer", error);
     }
@@ -111,6 +87,8 @@ export async function syncToRecs<
       step: SyncStep.SNAPSHOT,
       message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
       percentage: 0,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: initialState.blockNumber,
     });
 
     const componentList = Object.values(components);
@@ -136,6 +114,8 @@ export async function syncToRecs<
             step: SyncStep.SNAPSHOT,
             message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
             percentage: (recordsProcessed / numRecords) * 100,
+            latestBlockNumber: 0n,
+            lastBlockNumberProcessed: initialState.blockNumber,
           });
         }
       }
@@ -146,6 +126,8 @@ export async function syncToRecs<
       step: SyncStep.SNAPSHOT,
       message: `Hydrating from snapshot to block ${initialState.blockNumber}`,
       percentage: (recordsProcessed / numRecords) * 100,
+      latestBlockNumber: 0n,
+      lastBlockNumberProcessed: initialState.blockNumber,
     });
   }
 
@@ -177,28 +159,32 @@ export async function syncToRecs<
     share()
   );
 
-  let latestBlockNumberProcessed: bigint | null = null;
+  let lastBlockNumberProcessed: bigint | null = null;
   const blockStorageOperations$ = blockLogs$.pipe(
     concatMap(blockLogsToStorage(recsStorage({ components, config }))),
     tap(({ blockNumber, operations }) => {
       debug("stored", operations.length, "operations for block", blockNumber);
-      latestBlockNumberProcessed = blockNumber;
+      lastBlockNumberProcessed = blockNumber;
 
       if (
         latestBlockNumber != null &&
         getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
       ) {
-        if (blockNumber < latestBlockNumber) {
+        if (lastBlockNumberProcessed < latestBlockNumber) {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.RPC,
             message: `Hydrating from RPC to block ${latestBlockNumber}`,
-            percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
+            percentage: (Number(lastBlockNumberProcessed) / Number(latestBlockNumber)) * 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
           });
         } else {
           setComponent(components.SyncProgress, singletonEntity, {
             step: SyncStep.LIVE,
             message: `All caught up!`,
             percentage: 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
           });
         }
       }
@@ -217,7 +203,7 @@ export async function syncToRecs<
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
-    if (latestBlockNumberProcessed == null || latestBlockNumberProcessed < receipt.blockNumber) {
+    if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
       await firstValueFrom(
         blockStorageOperations$.pipe(
           filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
@@ -230,7 +216,6 @@ export async function syncToRecs<
 
   return {
     components,
-    singletonEntity,
     latestBlock$,
     latestBlockNumber$,
     blockLogs$,

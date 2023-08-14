@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/dev-tools",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.1",
   "description": "MUD developer tools",
   "repository": {
     "type": "git",
@@ -23,9 +23,10 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "@latticexyz/network": "workspace:*",
     "@latticexyz/react": "workspace:*",
-    "@latticexyz/std-client": "workspace:*",
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "abitype": "0.9.3",
@@ -49,10 +50,12 @@
     "vitest": "0.31.4"
   },
   "peerDependencies": {
-    "@latticexyz/network": "2.0.0-next.0",
-    "@latticexyz/std-client": "2.0.0-next.0",
-    "@latticexyz/utils": "2.0.0-next.0",
-    "@latticexyz/world": "2.0.0-next.0"
+    "@latticexyz/common": "*",
+    "@latticexyz/recs": "*",
+    "@latticexyz/store": "*",
+    "@latticexyz/store-sync": "*",
+    "@latticexyz/utils": "*",
+    "@latticexyz/world": "*"
   },
   "publishConfig": {
     "access": "public"

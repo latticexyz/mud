@@ -1,4 +1,4 @@
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { Contract, utils } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { registerMetadata } from "./schemas/tableMetadata";
