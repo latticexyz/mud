@@ -138,79 +138,7 @@ Click the **Store data** tab and select the table **:History**.
 However, you can also add the history to the user interface.
 The directions here apply to the `vanilla` client template, if you use anything else you'll need to modify them as appropriate.
 
-1. Edit `packages/clients/index.html`.
-
-   <CollapseCode>
-
-   ```html filename="index.html" copy showLineNumbers {12-26}
-   <!DOCTYPE html>
-   <html lang="en">
-     <head>
-       <meta charset="UTF-8" />
-       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-       <title>a minimal MUD client</title>
-     </head>
-     <body>
-       <script type="module" src="/src/index.ts"></script>
-       <div>Counter: <span id="counter">0</span></div>
-       <button onclick="window.increment()">Increment</button>
-       <hr />
-       <h2>
-         History for value:
-         <select id="historyValue" onInput="window.readHistory(value)"></select>
-       </h2>
-       <table border>
-         <tr>
-           <th>Block number</th>
-           <th>Time</th>
-         </tr>
-         <tr>
-           <td id="blockNumber"></td>
-           <td id="timeStamp"></td>
-         </tr>
-       </table>
-     </body>
-   </html>
-   ```
-
-   </CollapseCode>
-
-<details>
-<summary>Explanation</summary>
-
-```html
-<hr />
-<h2>
-  History for value:
-  <select id="historyValue" onInput="window.readHistory(value)"></select>
-</h2>
-```
-
-This is the [input field](https://www.w3schools.com/tags/tag_select.asp) that lets the user select which counter value they'd like to get information about.
-The `id` attribute will be used by `packages/client/src/index.ts` to set the options. The `onInput` attribute is the JavaScript code to execute when the value changes.
-
-```html
-<table border></table>
-```
-
-A standard [HTML table](https://www.w3schools.com/html/html_tables.asp).
-
-```html
-<tr>
-  <th>Block number</th>
-  <th>Time</th>
-</tr>
-<tr>
-  <td id="blockNumber"></td>
-  <td id="timeStamp"></td>
-</tr>
-```
-
-A location for the values, which will be set by `window.readHistory` in `index.ts`.
-
-</details>
-
-2. Edit `packages/client/src/index.ts`.
+1. Edit `packages/client/src/index.ts`.
 
    - Import two more functions we need (lines 3-4).
    - In `components.Counter.update$.subscribe`, add code that updates the selection of history values (lines 18-22).
@@ -218,7 +146,7 @@ A location for the values, which will be set by `window.readHistory` in `index.t
 
    <CollapseCode>
 
-   ```ts filename="index.ts" copy showLineNumbers {3-4,18-22,33-40}
+   ```ts filename="index.ts" copy showLineNumbers {3-4,18-22,31-37}
    import { mount as mountDevTools } from "@latticexyz/dev-tools";
    import { setup } from "./mud/setup";
    import { encodeEntity } from "@latticexyz/store-sync/recs";
@@ -324,5 +252,78 @@ So to get a readable date, we take the time (which is a [`BigInt`](https://www.w
 
 </details>
 
-4. Run `pnpm dev` in the application's root directory, browse to the app URL, and click **Increment** a few times.
+2. Edit `packages/clients/index.html`.
+
+   <CollapseCode>
+
+   ```html filename="index.html" copy showLineNumbers {12-26}
+   <!DOCTYPE html>
+   <html lang="en">
+     <head>
+       <meta charset="UTF-8" />
+       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+       <title>a minimal MUD client</title>
+     </head>
+     <body>
+       <script type="module" src="/src/index.ts"></script>
+       <div>Counter: <span id="counter">0</span></div>
+       <button onclick="window.increment()">Increment</button>
+       <hr />
+       <h2>
+         History for value:
+         <select id="historyValue" onInput="window.readHistory(value)"></select>
+       </h2>
+       <table border>
+         <tr>
+           <th>Block number</th>
+           <th>Time</th>
+         </tr>
+         <tr>
+           <td id="blockNumber"></td>
+           <td id="timeStamp"></td>
+         </tr>
+       </table>
+     </body>
+   </html>
+   ```
+
+   </CollapseCode>
+
+<details>
+<summary>Explanation</summary>
+
+```html
+<hr />
+<h2>
+  History for value:
+  <select id="historyValue" onInput="window.readHistory(value)"></select>
+</h2>
+```
+
+This is the [input field](https://www.w3schools.com/tags/tag_select.asp) that lets the user select which counter value they'd like to get information about.
+The `id` attribute is used by `packages/client/src/index.ts` to set the options.
+The `onInput` attribute is the JavaScript code to execute when the value changes.
+
+```html
+<table border></table>
+```
+
+A standard [HTML table](https://www.w3schools.com/html/html_tables.asp).
+
+```html
+<tr>
+  <th>Block number</th>
+  <th>Time</th>
+</tr>
+<tr>
+  <td id="blockNumber"></td>
+  <td id="timeStamp"></td>
+</tr>
+```
+
+A location for the values, which is set by `window.readHistory` in `index.ts`.
+
+</details>
+
+3. Run `pnpm dev` in the application's root directory, browse to the app URL, and click **Increment** a few times.
    Then select a counter value and see that the block number and correct time are written to the HTML table.
