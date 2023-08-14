@@ -1,54 +1,42 @@
 import { StoreConfig } from "@latticexyz/store";
-import { Component as RecsComponent, Schema as RecsSchema, World as RecsWorld } from "@latticexyz/recs";
+import { World as RecsWorld } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { recsStorage } from "./recsStorage";
 import { defineInternalComponents } from "./defineInternalComponents";
-import { StoreComponentMetadata } from "./common";
 import { createStoreSync } from "../createStoreSync";
+import { ConfigToRecsComponents } from "./common";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
+import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
 
-type SyncToRecsOptions<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = SyncOptions<TConfig> & {
+type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
-  // TODO: generate these from config and return instead?
-  components: TComponents;
+  config: TConfig;
 };
 
-type SyncToRecsResult<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
-> = SyncResult<TConfig> & {
+type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
   // TODO: return publicClient?
-  components: TComponents & ReturnType<typeof defineInternalComponents>;
+  components: ConfigToRecsComponents<TConfig> &
+    ConfigToRecsComponents<typeof storeConfig> &
+    ConfigToRecsComponents<typeof worldConfig> &
+    ReturnType<typeof defineInternalComponents>;
 };
 
-export async function syncToRecs<
-  TConfig extends StoreConfig = StoreConfig,
-  TComponents extends Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>> = Record<
-    string,
-    RecsComponent<RecsSchema, StoreComponentMetadata>
-  >
->({
+export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
   config,
   address,
   publicClient,
-  components: initialComponents,
   startBlock = 0n,
   maxBlockRange,
   initialState,
   indexerUrl,
-}: SyncToRecsOptions<TConfig, TComponents>): Promise<SyncToRecsResult<TConfig, TComponents>> {
+}: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const components = {
-    ...initialComponents,
+    ...configToRecsComponents(world, config),
+    ...configToRecsComponents(world, storeConfig),
+    ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
   };
 
@@ -66,7 +54,7 @@ export async function syncToRecs<
   });
 
   const sub = storeSync.latestBlockNumber$.subscribe();
-  world.registerDisposer(sub.unsubscribe);
+  world.registerDisposer(() => sub.unsubscribe());
 
   return {
     ...storeSync,

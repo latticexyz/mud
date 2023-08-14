@@ -1,3 +1,3 @@
 export default {
-  "minimal-onchain": "Onchain components of getting started"
+  "minimal-onchain": "Onchain components of getting started",
 };

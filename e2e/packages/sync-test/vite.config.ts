@@ -4,8 +4,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "jsdom",
-    testTimeout: 80_000,
-    hookTimeout: 80_000,
+    testTimeout: 1000 * 60 * 2,
+    hookTimeout: 1000 * 60 * 2,
     singleThread: true,
+    globalSetup: ["./setup/globalSetup.ts"],
   },
 });
