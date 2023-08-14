@@ -203,6 +203,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           return {
             id: `${log.blockHash}:${log.logIndex}`,
             log,
+            address: getAddress(log.address),
             type: "SetRecord",
             ...tableId,
             key,
@@ -219,6 +220,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           return {
             id: `${log.blockHash}:${log.logIndex}`,
             log,
+            address: getAddress(log.address),
             type: "SetField",
             ...tableId,
             key,
@@ -231,6 +233,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           return {
             id: `${log.blockHash}:${log.logIndex}`,
             log,
+            address: getAddress(log.address),
             type: "DeleteRecord",
             ...tableId,
             key,
