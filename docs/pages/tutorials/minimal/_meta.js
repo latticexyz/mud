@@ -1,3 +1,4 @@
 export default {
-  add_system: "Add a system",
+  "extend_schema": "Extend the schema",
+  "add_system": "Add a system",
 };

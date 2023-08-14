@@ -1,0 +1,341 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Extend the schema
+
+In this tutorial you extend the schema to add a table of historical counter values and the time in which the counter reached those values.
+For the sake of simplicity, we will implement this in the `increment` function rather than use a [storage hook](/store/advanced-features#storage-hooks).
+
+## Setup
+
+Right now you need the `main` version of `mud`, not `next`.
+So if you followed the directions, you need to run this command in the root directory.
+
+```sh copy
+pnpm mud set-version --tag main && pnpm install
+```
+
+## Modify the MUD configuration file
+
+1. In an editor, open `packages/contracts/mud.config.ts` and add a table definition for `History`.
+
+   <CollapseCode>
+
+   ```ts filename="mud.config.ts" showLineNumbers copy {9-17}
+   import { mudConfig } from "@latticexyz/world/register";
+
+   export default mudConfig({
+     tables: {
+       Counter: {
+         keySchema: {},
+         schema: "uint32",
+       },
+       History: {
+         keySchema: {
+           counterValue: "uint32",
+         },
+         schema: {
+           blockNumber: "uint256",
+           time: "uint256",
+         },
+       },
+     },
+   });
+   ```
+
+   </CollapseCode>
+
+<details>
+<summary>Explanation</summary>
+
+A MUD table has two schemas:
+
+- `keySchema`, the key used to find entries
+- `schema`, the value in the entry
+
+Each schema is represented is a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
+
+In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
+The block number and time are both the results of opcodes, so they are represented by the standard Solidity data type, `uint256` (unsigned 256 bit integer).
+
+</details>
+
+2. Run this command in `packages/contracts` to regenerate the code.
+
+   ```sh copy
+   pnpm build:mud
+   ```
+
+## Update `IncrementSystem`
+
+1. In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
+
+   - Modify the second `import` line to import `History` (line 5)
+   - Modify the `increment` function to also update `History` (line 12).
+     To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud` to recreate it already).
+
+<CollapseCode>
+
+```solidity filename="IncrementSystem.sol.sol" copy showLineNumbers {5, 12}
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { System } from "@latticexyz/world/src/System.sol";
+import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+
+contract IncrementSystem is System {
+  function increment() public returns (uint32) {
+    uint32 counter = Counter.get();
+    uint32 newValue = counter + 1;
+    Counter.set(newValue);
+    History.set(newValue, block.number, block.timestamp);
+    return newValue;
+  }
+}
+```
+
+</CollapseCode>
+
+   <details>
+   <summary>Explanation</summary>
+
+```solidity
+import { Counter, History, HistoryData } from "../codegen/Tables.sol";
+```
+
+When a table has multiple fields in the value schema, MUD generates a [Solidity data structure](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
+Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
+
+```solidity
+struct HistoryData {
+  uint256 blockNumber;
+  uint256 time;
+}
+```
+
+Note that `IncrementSystem` doesn't need to use `HistoryData`, because it only writes to history, it doesn't read from it.
+However, this is part of manipulating the schema and therefore included in this tutorial.
+
+```solidity
+History.set(newValue, block.number, block.timestamp);
+```
+
+Set the value.
+All MUD tables have a `<table>.set` function with the parameters being the key schema fields in order and then the value schema fields in order.
+
+    </details>
+
+2. Run this command in `packages/contracts` to rebuild everything this package produces.
+
+   ```sh copy
+   pnpm build
+   ```
+
+## Update the user interface
+
+You can already run the application and see in the MUD Dev Tools that there is a `:History` table and it gets updates when you click **Increment**.
+Click the **Store data** tab and select the table **:History**.
+
+However, you can also add the history to the user interface.
+The directions here apply to the `vanilla` user interface, if you use anything else you'll need to modify them as appropriate.
+
+1. Install an additional package.
+   Run this command in `packages/client`.
+
+   ```sh copy
+   pnpm install @latticexyz/store-sync@main
+   ```
+
+1. Edit `packages/clients/index.html`.
+
+   <CollapseCode>
+
+   ```html filename="index.html" copy showLineNumbers {12-26}
+   <!DOCTYPE html>
+   <html lang="en">
+     <head>
+       <meta charset="UTF-8" />
+       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+       <title>a minimal MUD client</title>
+     </head>
+     <body>
+       <script type="module" src="/src/index.ts"></script>
+       <div>Counter: <span id="counter">0</span></div>
+       <button onclick="window.increment()">Increment</button>
+       <hr />
+       <h2>
+         History for value:
+         <select id="historyValue" onInput="window.readHistory(value)"></select>
+       </h2>
+       <table border>
+         <tr>
+           <th>Block number</th>
+           <th>Time</th>
+         </tr>
+         <tr>
+           <td id="blockNumber"></td>
+           <td id="timeStamp"></td>
+         </tr>
+       </table>
+     </body>
+   </html>
+   ```
+
+   </CollapseCode>
+
+<details>
+<summary>Explanation</summary>
+
+```html
+<hr />
+<h2>
+  History for value:
+  <select id="historyValue" onInput="window.readHistory(value)"></select>
+</h2>
+```
+
+This is the [input field](https://www.w3schools.com/tags/tag_select.asp) that lets the user select which counter value they'd like to get information about.
+The `id` attribute will be used by `packages/client/src/index.ts` to set the options. The `onInput` attribute is the JavaScript code to execute when the value changes.
+
+```html
+<table border></table>
+```
+
+A standard [HTML table](https://www.w3schools.com/html/html_tables.asp).
+
+```html
+<tr>
+  <th>Block number</th>
+  <th>Time</th>
+</tr>
+<tr>
+  <td id="blockNumber"></td>
+  <td id="timeStamp"></td>
+</tr>
+```
+
+A location for the values, which will be set by `window.readHistory` in `index.ts`.
+
+```html
+   </table>
+```
+
+Terminate the table in general.
+
+</details>
+
+3. Edit `packages/client/src/index.ts`.
+
+   - Import two more functions we need (lines 3-4).
+   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values (lines 18-22).
+   - Add a function that is called when the user selects a different option (lines 33-40).
+
+   <CollapseCode>
+
+   ```ts filename="index.ts" copy showLineNumbers {3-4,18-22,33-40}
+   import { mount as mountDevTools } from "@latticexyz/dev-tools";
+   import { setup } from "./mud/setup";
+   import { encodeEntity } from "@latticexyz/store-sync/recs";
+   import { getComponentValueStrict } from "@latticexyz/recs";
+
+   const {
+     components,
+     systemCalls: { increment },
+   } = await setup();
+
+   // Components expose a stream that triggers when the component is updated.
+   components.Counter.update$.subscribe((update) => {
+     const [nextValue, prevValue] = update.value;
+     console.log("Counter updated", update, { nextValue, prevValue });
+     document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
+
+     let options: String = "";
+     for (let i = 0; i <= nextValue?.value; i++) {
+       options += `<option value="${i}">${i}</option>`;
+     }
+     document.getElementById("historyValue")!.innerHTML = options;
+   });
+
+   // Just for demonstration purposes: we create a global function that can be
+   // called to invoke the Increment system contract via the world.
+   // (See IncrementSystem.sol)
+   (window as any).increment = async () => {
+     console.log("new counter value:", await increment());
+   };
+
+   (window as any).readHistory = async (counterValue) => {
+     const History = components.History;
+     const entity = encodeEntity(History.metadata.keySchema, { counterValue });
+     const { blockNumber, time } = getComponentValueStrict(History, entity);
+     document.getElementById("blockNumber")!.innerHTML = blockNumber;
+     document.getElementById("timeStamp")!.innerHTML = new Date(parseInt(Number(time) * 1000));
+   };
+
+   mountDevTools();
+   ```
+
+   </CollapseCode>
+
+<details>
+<summary>Explanation</summary>
+
+```typescript
+let options: String = "";
+```
+
+Create `options` as an empty string.
+This is the way you define a variable in TypeScript: `let <variable name>: <type>`.
+Here we initialize it to the empty string.
+
+```typescript
+for (let i = 0; i <= nextValue?.value; i++) {
+  options += `<option value="${i}">${i}</option>`;
+}
+```
+
+Create the list of options.
+
+```typescript
+document.getElementById("historyValue")!.innerHTML = options;
+```
+
+Set the internal HTML of the `historyValue` HTML tag to `options`.
+Notice the exclamation mark (`!`).
+`document.getElementById` may return either a tag that can be changed, or an empty value (if the parameter is not an id of any of the HTML tags).
+We know that `historyValue` exists in the HTML, but the TypeScript compiler does not.
+This exclamation point tells the compiler that it's OK, there will be a real value there.
+[See here for additional information](https://blog.logrocket.com/understanding-exclamation-mark-typescript/).
+
+```typescript
+(window as any).readHistory = async counterValue => {
+  const History = components.History
+  const entity = encodeEntity(History.metadata.keySchema, { counterValue });
+```
+
+`encodeEntity` creates a key in the format that MUD uses, which is based on [ABI argument encoding](https://docs.soliditylang.org/en/latest/abi-spec.html#argument-encoding).
+
+```typescript
+const { blockNumber, time } = getComponentValueStrict(History, entity);
+```
+
+Read the actual data.
+
+```typescript
+document.getElementById("blockNumber")!.innerHTML = blockNumber;
+```
+
+Update the value in the HTML table.
+
+```typescript
+  document.getElementById("timeStamp")!.innerHTML =
+    new Date(parseInt(Number(time) * 1000))
+}
+```
+
+Solidity uses [Unix time](https://en.wikipedia.org/wiki/Unix_time).
+JavaScript uses a similar system, but it measures times in milliseconds.
+So to get a readable date, we take the time (which is a [`BigInt`](https://www.w3schools.com/js/js_bigint.asp)), multiply it by a thousand, and then convert it to a [`Date`](https://www.w3schools.com/jsref/jsref_obj_date.asp) object.
+
+</details>
+
+4. Run `pnpm dev` in the application's root directory, browse to the app URL, and click **Increment** a few times.
+   Then select a counter value and see that the block number and correct time are written to the HTML table.
