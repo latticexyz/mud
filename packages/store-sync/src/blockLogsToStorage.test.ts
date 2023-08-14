@@ -122,6 +122,7 @@ describe("blockLogsToStorage", () => {
                 {
                   "fieldName": "amount",
                   "fieldValue": 8,
+                  "id": "0x03e962e7402b2ab295b92feac342a132111dd14b0d1fd4d4a0456fdc77981577:88",
                   "key": {
                     "item": 1,
                     "itemVariant": 1,
@@ -175,6 +176,7 @@ describe("blockLogsToStorage", () => {
           {
             "fieldName": "amount",
             "fieldValue": 8,
+            "id": "0x03e962e7402b2ab295b92feac342a132111dd14b0d1fd4d4a0456fdc77981577:88",
             "key": {
               "item": 1,
               "itemVariant": 1,
