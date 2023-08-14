@@ -7,7 +7,7 @@ import {
   TableSchema,
 } from "@latticexyz/protocol-parser";
 import { StoreConfig, ConfigToKeyPrimitives as Key, ConfigToValuePrimitives as Value } from "@latticexyz/store";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { Address, Hex, decodeAbiParameters, getAddress, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 import { isDefined } from "@latticexyz/common/utils";

@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { TableSchema } from "../common";
 import { decodeSchema } from "./decodeSchema";
 import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/IStore";

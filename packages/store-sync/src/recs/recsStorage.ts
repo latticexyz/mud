@@ -12,7 +12,7 @@ import {
   updateComponent,
 } from "@latticexyz/recs";
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/common";
+import { TableId } from "@latticexyz/common/deprecated";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { defineInternalComponents } from "./defineInternalComponents";

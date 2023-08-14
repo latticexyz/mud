@@ -1,7 +1,6 @@
 import React from "react";
 import { useStore } from "../store";
 import { Controls } from "./Controls";
-import { ECSBrowser } from "./ECSBrowser";
 import { LoadingScreen } from "./LoadingScreen";
 import { Wrapper } from "./Wrapper";
 import { Title } from "./Title";
@@ -19,7 +18,6 @@ export const UIRoot = () => {
   return (
     <Wrapper>
       <LoadingScreen />
-      <ECSBrowser />
       <Controls />
 
       <Title />

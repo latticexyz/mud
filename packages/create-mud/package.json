@@ -1,6 +1,6 @@
 {
   "name": "create-mud",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.1",
   "description": "Create a new MUD project",
   "license": "MIT",
   "author": "Lattice <mud@lattice.xyz>",

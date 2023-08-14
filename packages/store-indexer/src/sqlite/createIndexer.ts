@@ -54,9 +54,13 @@ export async function createIndexer({
     map((block) => block.number)
   );
 
+  let latestBlockNumber: bigint | null = null;
   const blockLogs$ = latestBlockNumber$.pipe(
-    tap((latestBlockNumber) => debug("latest block number", latestBlockNumber)),
-    map((latestBlockNumber) => ({ startBlock, endBlock: latestBlockNumber })),
+    tap((blockNumber) => {
+      latestBlockNumber = blockNumber;
+      debug("latest block number", blockNumber);
+    }),
+    map((blockNumber) => ({ startBlock, endBlock: blockNumber })),
     blockRangeToLogs({
       publicClient,
       events: storeEventsAbi,
@@ -68,11 +72,16 @@ export async function createIndexer({
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock)))
   );
 
+  let lastBlockNumberProcessed: bigint | null = null;
   const sub = blockLogs$
     .pipe(
       concatMap(blockLogsToStorage(await sqliteStorage({ database, publicClient }))),
       tap(({ blockNumber, operations }) => {
+        lastBlockNumberProcessed = blockNumber;
         debug("stored", operations.length, "operations for block", blockNumber);
+        if (latestBlockNumber === lastBlockNumberProcessed) {
+          debug("all caught up");
+        }
       })
     )
     .subscribe();
