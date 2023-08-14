@@ -4,16 +4,12 @@ import { setup } from "../../mud/setup";
 export type NetworkLayer = Awaited<ReturnType<typeof createNetworkLayer>>;
 
 export const createNetworkLayer = async () => {
-  const { components, systemCalls } = await setup();
-
-  // Give components a Human-readable ID
-  Object.entries(components).forEach(([name, component]) => {
-    component.id = name;
-  });
+  const { components, systemCalls, network } = await setup();
 
   return {
     world,
     components,
     systemCalls,
+    network,
   };
 };
