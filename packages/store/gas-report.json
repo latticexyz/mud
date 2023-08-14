@@ -873,7 +873,7 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testLength",
     "name": "Hooks: get length (cold)",
-    "gasUsed": 7536
+    "gasUsed": 7482
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",

@@ -186,7 +186,9 @@ library Mixed {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of a32 (using the specified store) */
@@ -195,7 +197,9 @@ library Mixed {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get an item of a32 (unchecked, returns invalid data if index overflows) */
@@ -304,7 +308,9 @@ library Mixed {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get the length of s (using the specified store) */
@@ -313,7 +319,9 @@ library Mixed {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get an item of s (unchecked, returns invalid data if index overflows) */

@@ -102,7 +102,9 @@ library AddressArray {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 20;
+    unchecked {
+      return _byteLength / 20;
+    }
   }
 
   /** Get the length of value (using the specified store) */
@@ -111,7 +113,9 @@ library AddressArray {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 20;
+    unchecked {
+      return _byteLength / 20;
+    }
   }
 
   /** Get an item of value (unchecked, returns invalid data if index overflows) */

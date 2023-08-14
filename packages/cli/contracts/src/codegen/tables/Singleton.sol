@@ -135,7 +135,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of v2 (using the specified store) */
@@ -143,7 +145,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get an item of v2 (unchecked, returns invalid data if index overflows) */
@@ -239,7 +243,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of v3 (using the specified store) */
@@ -247,7 +253,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get an item of v3 (unchecked, returns invalid data if index overflows) */
@@ -343,7 +351,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of v4 (using the specified store) */
@@ -351,7 +361,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get an item of v4 (unchecked, returns invalid data if index overflows) */

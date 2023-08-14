@@ -112,7 +112,9 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get the length of tableName (using the specified store) */
@@ -121,7 +123,9 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get an item of tableName (unchecked, returns invalid data if index overflows) */
@@ -233,7 +237,9 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get the length of abiEncodedFieldNames (using the specified store) */
@@ -242,7 +248,9 @@ library StoreMetadata {
     _keyTuple[0] = tableId;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get an item of abiEncodedFieldNames (unchecked, returns invalid data if index overflows) */

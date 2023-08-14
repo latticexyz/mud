@@ -61,7 +61,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
         ])}) internal view returns (uint256) {
           ${_keyTupleDefinition}
           uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, getSchema());
-          return _byteLength / ${portionData.elementLength};
+          unchecked {
+            return _byteLength / ${portionData.elementLength};
+          }
         }
       `
       );

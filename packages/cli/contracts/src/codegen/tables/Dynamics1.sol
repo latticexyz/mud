@@ -121,7 +121,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of staticB32 (using the specified store) */
@@ -130,7 +132,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of staticB32 (unchecked, returns invalid data if index overflows) */
@@ -239,7 +243,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of staticI32 (using the specified store) */
@@ -248,7 +254,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get an item of staticI32 (unchecked, returns invalid data if index overflows) */
@@ -357,7 +365,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 16;
+    unchecked {
+      return _byteLength / 16;
+    }
   }
 
   /** Get the length of staticU128 (using the specified store) */
@@ -366,7 +376,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 16;
+    unchecked {
+      return _byteLength / 16;
+    }
   }
 
   /** Get an item of staticU128 (unchecked, returns invalid data if index overflows) */
@@ -475,7 +487,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 20;
+    unchecked {
+      return _byteLength / 20;
+    }
   }
 
   /** Get the length of staticAddrs (using the specified store) */
@@ -484,7 +498,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 20;
+    unchecked {
+      return _byteLength / 20;
+    }
   }
 
   /** Get an item of staticAddrs (unchecked, returns invalid data if index overflows) */
@@ -593,7 +609,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 4, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get the length of staticBools (using the specified store) */
@@ -602,7 +620,9 @@ library Dynamics1 {
     _keyTuple[0] = key;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 4, getSchema());
-    return _byteLength / 1;
+    unchecked {
+      return _byteLength / 1;
+    }
   }
 
   /** Get an item of staticBools (unchecked, returns invalid data if index overflows) */

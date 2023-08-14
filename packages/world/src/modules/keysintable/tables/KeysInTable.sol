@@ -121,7 +121,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keys0 (using the specified store) */
@@ -130,7 +132,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of keys0 (unchecked, returns invalid data if index overflows) */
@@ -239,7 +243,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keys1 (using the specified store) */
@@ -248,7 +254,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of keys1 (unchecked, returns invalid data if index overflows) */
@@ -357,7 +365,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keys2 (using the specified store) */
@@ -366,7 +376,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of keys2 (unchecked, returns invalid data if index overflows) */
@@ -475,7 +487,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keys3 (using the specified store) */
@@ -484,7 +498,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of keys3 (unchecked, returns invalid data if index overflows) */
@@ -593,7 +609,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 4, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keys4 (using the specified store) */
@@ -602,7 +620,9 @@ library KeysInTable {
     _keyTuple[0] = sourceTable;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 4, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of keys4 (unchecked, returns invalid data if index overflows) */

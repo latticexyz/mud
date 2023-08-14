@@ -106,7 +106,9 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keysWithValue (using the specified store) */
@@ -115,7 +117,9 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get an item of keysWithValue (unchecked, returns invalid data if index overflows) */
