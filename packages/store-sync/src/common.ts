@@ -27,6 +27,8 @@ export type Table = {
   valueSchema: ValueSchema;
 };
 
+export type TableWithRecords = Table & { records: TableRecord[] };
+
 export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
@@ -106,7 +108,7 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   initialState?: {
     blockNumber: bigint | null;
-    tables: (Table & { records: TableRecord[] })[];
+    tables: TableWithRecords[];
   };
 };
 
