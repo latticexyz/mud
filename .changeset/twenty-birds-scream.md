@@ -8,15 +8,15 @@ Adds a `usePromise` hook that returns a [native `PromiseSettledResult` object](h
 const promise = fetch(url);
 const result = usePromise(promise);
 
-if (result.status === 'idle' || result.status === 'pending') {
+if (result.status === "idle" || result.status === "pending") {
   return <>fetching</>;
 }
 
-if (result.status === 'rejected') {
-  return <>error fetching: {String(result.reason)}</>
+if (result.status === "rejected") {
+  return <>error fetching: {String(result.reason)}</>;
 }
 
-if (result.status === 'fulfilled') {
-  return <>fetch status: {result.value.status}</>
+if (result.status === "fulfilled") {
+  return <>fetch status: {result.value.status}</>;
 }
 ```
