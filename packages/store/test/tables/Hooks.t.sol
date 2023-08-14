@@ -14,18 +14,18 @@ contract HooksTest is Test, GasReporter, StoreReadWithStubs {
     address[] memory addresses = new address[](1);
     addresses[0] = address(this);
 
-    startGasReport("set field in Hooks");
+    startGasReport("Hooks: set field");
     Hooks.set(key, addresses);
     endGasReport();
 
-    startGasReport("get field from Hooks (warm)");
+    startGasReport("Hooks: get field (warm)");
     address[] memory returnedAddresses = Hooks.get(key);
     endGasReport();
 
     assertEq(returnedAddresses.length, addresses.length);
     assertEq(returnedAddresses[0], addresses[0]);
 
-    startGasReport("push field to Hooks");
+    startGasReport("Hooks: push 1 element");
     Hooks.push(key, addresses[0]);
     endGasReport();
 
