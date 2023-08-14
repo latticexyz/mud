@@ -23,16 +23,16 @@ export function StorageOperationsTable({ operations }: Props) {
       </thead>
       <tbody className="font-mono text-xs">
         {operations.map((operation) => (
-          <tr key={`${operation.log.transactionHash}:${operation.log.transactionIndex}`} className="hover:bg-blue-800">
+          <tr key={operation.id} className="hover:bg-blue-800">
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">
-              {operation.log.blockNumber.toString()}
+              {operation.log?.blockNumber.toString()}
             </td>
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
               {operation.namespace}:{operation.name}
             </td>
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{serialize(operation.key)}</td>
             <td className="px-1 whitespace-nowrap">
-              <EventIcon eventName={operation.log.eventName} />
+              <EventIcon type={operation.type} />
             </td>
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
               {operation.type === "SetRecord" ? serialize(operation.value) : null}

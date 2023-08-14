@@ -201,6 +201,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           // TODO: decide if we should handle ephemeral records separately?
           //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
           return {
+            id: `${log.blockHash}:${log.logIndex}`,
             log,
             type: "SetRecord",
             ...tableId,
@@ -216,6 +217,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
             keyof TConfig["tables"]
           >[typeof fieldName];
           return {
+            id: `${log.blockHash}:${log.logIndex}`,
             log,
             type: "SetField",
             ...tableId,
@@ -227,6 +229,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
 
         if (log.eventName === "StoreDeleteRecord") {
           return {
+            id: `${log.blockHash}:${log.logIndex}`,
             log,
             type: "DeleteRecord",
             ...tableId,

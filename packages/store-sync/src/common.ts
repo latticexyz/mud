@@ -33,7 +33,8 @@ export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type BaseStorageOperation = {
-  log: NonPendingLog<StoreEventsLog>;
+  id: string; // TODO: better name for this to signal that this is client-only used for things like React keys
+  log?: NonPendingLog<StoreEventsLog>;
   namespace: TableNamespace;
   name: TableName;
 };

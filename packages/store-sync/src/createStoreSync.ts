@@ -1,4 +1,4 @@
-import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
+import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceipt } from "viem";
 import { SetRecordOperation, SyncOptions, SyncResult } from "./common";
 import {
@@ -29,7 +29,6 @@ type CreateStoreSyncResult<TConfig extends StoreConfig = StoreConfig> = SyncResu
 export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
   storageAdapter,
   onProgress,
-  config,
   address,
   publicClient,
   startBlock = 0n,
@@ -64,16 +63,15 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         await storageAdapter.storeOperations({
           blockNumber,
           operations: table.records.map(
-            (record) =>
+            (record, i) =>
               ({
+                id: `${blockNumber}:${table.namespace}:${table.name}:${i}`,
                 type: "SetRecord",
                 namespace: table.namespace,
                 name: table.name,
-                key: record.key,
-                value: record.value,
-                // TODO: refactor to not depend on log
-                log: {} as any,
-              } as SetRecordOperation<TConfig>)
+                key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
+                value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
+              } as const satisfies SetRecordOperation<TConfig>)
           ),
         });
 
@@ -81,13 +79,13 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         recordsProcessedSinceLastUpdate += table.records.length;
 
         if (recordsProcessedSinceLastUpdate > recordsPerProgressUpdate) {
+          recordsProcessedSinceLastUpdate = 0;
           onProgress?.({
             step: SyncStep.SNAPSHOT,
             percentage: (recordsProcessed / numRecords) * 100,
             latestBlockNumber: 0n,
             lastBlockNumberProcessed: blockNumber,
           });
-          recordsProcessedSinceLastUpdate = 0;
         }
 
         debug(`hydrated ${table.records.length} records for table ${table.namespace}:${table.name}`);
@@ -131,24 +129,23 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       debug("stored", operations.length, "operations for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
 
-      // if (
-      //   latestBlockNumber != null &&
-      //   getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE
-      // ) {
-      //   if (blockNumber < latestBlockNumber) {
-      //     setComponent(components.SyncProgress, singletonEntity, {
-      //       step: SyncStep.RPC,
-      //       message: `Hydrating from RPC to block ${latestBlockNumber}`,
-      //       percentage: (Number(blockNumber) / Number(latestBlockNumber)) * 100,
-      //     });
-      //   } else {
-      //     setComponent(components.SyncProgress, singletonEntity, {
-      //       step: SyncStep.LIVE,
-      //       message: `All caught up!`,
-      //       percentage: 100,
-      //     });
-      //   }
-      // }
+      if (onProgress != null && latestBlockNumber != null) {
+        if (blockNumber < latestBlockNumber) {
+          onProgress({
+            step: SyncStep.RPC,
+            percentage: Number((lastBlockNumberProcessed * 1000n) / (latestBlockNumber * 1000n)) / 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
+          });
+        } else {
+          onProgress({
+            step: SyncStep.LIVE,
+            percentage: 100,
+            latestBlockNumber,
+            lastBlockNumberProcessed,
+          });
+        }
+      }
     }),
     share()
   );

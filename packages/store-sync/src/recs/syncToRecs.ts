@@ -1,5 +1,5 @@
 import { StoreConfig } from "@latticexyz/store";
-import { World as RecsWorld } from "@latticexyz/recs";
+import { World as RecsWorld, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { recsStorage } from "./recsStorage";
 import { defineInternalComponents } from "./defineInternalComponents";
@@ -9,6 +9,7 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
+import { syncStepToMessage } from "./syncStepToMessage";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
@@ -51,6 +52,15 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     maxBlockRange,
     indexerUrl,
     initialState,
+    onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed }) => {
+      setComponent(components.SyncProgress, singletonEntity, {
+        step,
+        percentage,
+        latestBlockNumber,
+        lastBlockNumberProcessed,
+        message: syncStepToMessage(step),
+      });
+    },
   });
 
   const sub = storeSync.latestBlockNumber$.subscribe();
