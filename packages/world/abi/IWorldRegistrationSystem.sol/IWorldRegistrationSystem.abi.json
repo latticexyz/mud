@@ -37,17 +37,17 @@
     "inputs": [
       {
         "internalType": "bytes16",
-        "name": "namespaces",
+        "name": "namespace",
         "type": "bytes16"
       },
       {
         "internalType": "bytes16",
-        "name": "names",
+        "name": "name",
         "type": "bytes16"
       },
       {
         "internalType": "string[]",
-        "name": "systemFunctionName",
+        "name": "systemFunctionNames",
         "type": "string[]"
       },
       {

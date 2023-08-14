@@ -46,9 +46,9 @@ interface IWorldRegistrationSystem {
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerFunctionSelectors(
-    bytes16 namespaces,
-    bytes16 names,
-    string[] calldata systemFunctionName,
+    bytes16 namespace,
+    bytes16 name,
+    string[] calldata systemFunctionNames,
     string[] calldata systemFunctionArguments
   ) external;
 

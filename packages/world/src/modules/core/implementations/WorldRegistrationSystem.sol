@@ -219,13 +219,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * Register World function selectors in batch for the given namespace, name and system function.
    */
   function registerFunctionSelectors(
-    bytes16 namespaces,
-    bytes16 names,
-    string[] calldata systemFunctionName,
+    bytes16 namespace,
+    bytes16 name,
+    string[] calldata systemFunctionNames,
     string[] calldata systemFunctionArguments
   ) public {
-    for (uint256 i = 0; i < systemFunctionName.length; i++) {
-      registerFunctionSelector(namespaces[i], names[i], systemFunctionName[i], systemFunctionArguments[i]);
+    for (uint256 i = 0; i < systemFunctionNames.length; i++) {
+      registerFunctionSelector(namespace, name, systemFunctionNames[i], systemFunctionArguments[i]);
     }
   }
 
