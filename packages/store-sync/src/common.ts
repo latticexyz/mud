@@ -35,6 +35,7 @@ export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 export type BaseStorageOperation = {
   id: string; // TODO: better name for this to signal that this is client-only used for things like React keys
   log?: NonPendingLog<StoreEventsLog>;
+  address: Hex;
   namespace: TableNamespace;
   name: TableName;
 };

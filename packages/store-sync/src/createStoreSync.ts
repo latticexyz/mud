@@ -67,6 +67,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
               ({
                 id: `${blockNumber}:${table.namespace}:${table.name}:${i}`,
                 type: "SetRecord",
+                address: table.address,
                 namespace: table.namespace,
                 name: table.name,
                 key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
