@@ -50,12 +50,12 @@ pnpm mud set-version --tag main && pnpm install
 A MUD table has two schemas:
 
 - `keySchema`, the key used to find entries
-- `schema`, the value in the entry
+- `schema`, the value in the entry (soon to be renamed to `valueSchema`)
 
 Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
 
 In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
-The block number and time are both the results of opcodes, so they are represented by the standard Solidity data type, `uint256` (unsigned 256 bit integer).
+Block numbers and timestamps can be values up to `uint256`, so we'll use this type for these fields.
 
 </details>
 
@@ -138,13 +138,6 @@ Click the **Store data** tab and select the table **:History**.
 However, you can also add the history to the user interface.
 The directions here apply to the `vanilla` client template, if you use anything else you'll need to modify them as appropriate.
 
-1. Install an additional package.
-   Run this command in `packages/client`.
-
-   ```sh copy
-   pnpm install @latticexyz/store-sync@main
-   ```
-
 1. Edit `packages/clients/index.html`.
 
    <CollapseCode>
@@ -215,15 +208,9 @@ A standard [HTML table](https://www.w3schools.com/html/html_tables.asp).
 
 A location for the values, which will be set by `window.readHistory` in `index.ts`.
 
-```html
-   </table>
-```
-
-Terminate the table in general.
-
 </details>
 
-3. Edit `packages/client/src/index.ts`.
+2. Edit `packages/client/src/index.ts`.
 
    - Import two more functions we need (lines 3-4).
    - In `components.Counter.update$.subscribe`, add code that updates the selection of history values (lines 18-22).
@@ -249,7 +236,7 @@ Terminate the table in general.
      document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 
      let options: String = "";
-     for (let i = 0; i <= nextValue?.value; i++) {
+     for (let i = 1; i <= nextValue?.value; i++) {
        options += `<option value="${i}">${i}</option>`;
      }
      document.getElementById("historyValue")!.innerHTML = options;
@@ -287,7 +274,7 @@ This is the way you define a variable in TypeScript: `let <variable name>: <type
 Here we initialize it to the empty string.
 
 ```typescript
-for (let i = 0; i <= nextValue?.value; i++) {
+for (let i = 1; i <= nextValue?.value; i++) {
   options += `<option value="${i}">${i}</option>`;
 }
 ```
