@@ -52,14 +52,14 @@ A MUD table has two schemas:
 - `keySchema`, the key used to find entries
 - `schema`, the value in the entry
 
-Each schema is represented is a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
+Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
 
 In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
 The block number and time are both the results of opcodes, so they are represented by the standard Solidity data type, `uint256` (unsigned 256 bit integer).
 
 </details>
 
-2. Run this command in `packages/contracts` to regenerate the code.
+2. Run this command in `packages/contracts` to regenerate the table libraries.
 
    ```sh copy
    pnpm build:mud
@@ -102,7 +102,7 @@ contract IncrementSystem is System {
 import { Counter, History, HistoryData } from "../codegen/Tables.sol";
 ```
 
-When a table has multiple fields in the value schema, MUD generates a [Solidity data structure](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
+When a table has multiple fields in the value schema, MUD generates a [Struct](https://www.tutorialspoint.com/solidity/solidity_structs.htm) to hold a full value.
 Here is `HistoryData`, copied from `packages/contract/src/codegen/History.sol`.
 
 ```solidity
@@ -136,7 +136,7 @@ You can already run the application and see in the MUD Dev Tools that there is a
 Click the **Store data** tab and select the table **:History**.
 
 However, you can also add the history to the user interface.
-The directions here apply to the `vanilla` user interface, if you use anything else you'll need to modify them as appropriate.
+The directions here apply to the `vanilla` client template, if you use anything else you'll need to modify them as appropriate.
 
 1. Install an additional package.
    Run this command in `packages/client`.
