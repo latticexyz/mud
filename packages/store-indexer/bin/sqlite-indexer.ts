@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import { z } from "zod";
-import cors from "cors";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
+import fastify from "fastify";
+import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
@@ -108,13 +108,23 @@ combineLatest([latestBlockNumber$, blockStorageOperations$])
     console.log("all caught up");
   });
 
-const server = createHTTPServer({
-  middleware: cors(),
-  router: createAppRouter(),
-  createContext: async () => ({
-    storageAdapter: await createStorageAdapter(database),
-  }),
+// @see https://fastify.dev/docs/latest/
+const server = fastify({
+  maxParamLength: 5000,
 });
 
-const { port } = server.listen(env.PORT);
-console.log(`tRPC listening on http://127.0.0.1:${port}`);
+await server.register(import("@fastify/cors"));
+
+// @see https://trpc.io/docs/server/adapters/fastify
+server.register(fastifyTRPCPlugin, {
+  prefix: "/trpc",
+  trpcOptions: {
+    router: createAppRouter(),
+    createContext: async () => ({
+      storageAdapter: await createStorageAdapter(database),
+    }),
+  },
+});
+
+await server.listen({ port: env.PORT });
+console.log(`indexer server listening on http://127.0.0.1:${env.PORT}`);
