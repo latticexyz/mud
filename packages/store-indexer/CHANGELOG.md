@@ -1,5 +1,44 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.2
+
+### Major Changes
+
+- [#1232](https://github.com/latticexyz/mud/pull/1232) [`b621fb97`](https://github.com/latticexyz/mud/commit/b621fb97731a0ceed9b67d741f40648a8aa64817) Thanks [@holic](https://github.com/holic)! - Adds a [Fastify](https://fastify.dev/) server in front of tRPC and puts tRPC endpoints under `/trpc` to make way for other top-level endpoints (e.g. [tRPC panel](https://github.com/iway1/trpc-panel) or other API frontends like REST or gRPC).
+
+  If you're using `@latticexyz/store-sync` packages with an indexer (either `createIndexerClient` or `indexerUrl` argument of `syncToRecs`), then you'll want to update your indexer URL:
+
+  ```diff
+   createIndexerClient({
+  -  url: "https://indexer.dev.linfra.xyz",
+  +  url: "https://indexer.dev.linfra.xyz/trpc",
+   });
+  ```
+
+  ```diff
+   syncToRecs({
+     ...
+  -  indexerUrl: "https://indexer.dev.linfra.xyz",
+  +  indexerUrl: "https://indexer.dev.linfra.xyz/trpc",
+   });
+  ```
+
+### Minor Changes
+
+- [#1240](https://github.com/latticexyz/mud/pull/1240) [`753bdce4`](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e) Thanks [@holic](https://github.com/holic)! - Store sync logic is now consolidated into a `createStoreSync` function exported from `@latticexyz/store-sync`. This simplifies each storage sync strategy to just a simple wrapper around the storage adapter. You can now sync to RECS with `syncToRecs` or SQLite with `syncToSqlite` and PostgreSQL support coming soon.
+
+  There are no breaking changes if you were just using `syncToRecs` from `@latticexyz/store-sync` or running the `sqlite-indexer` binary from `@latticexyz/store-indexer`.
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+- Updated dependencies [[`a2588116`](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062), [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`753bdce4`](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e), [`5294a7d5`](https://github.com/latticexyz/mud/commit/5294a7d5983c52cb336373566afd6a8ec7fc4bfb), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)]:
+  - @latticexyz/store@2.0.0-next.2
+  - @latticexyz/common@2.0.0-next.2
+  - @latticexyz/store-sync@2.0.0-next.2
+  - @latticexyz/block-logs-stream@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Major Changes

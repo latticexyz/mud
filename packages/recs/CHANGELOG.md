@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies [[`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)]:
+  - @latticexyz/schema-type@2.0.0-next.2
+  - @latticexyz/utils@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Patch Changes

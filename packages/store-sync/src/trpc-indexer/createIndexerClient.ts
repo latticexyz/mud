@@ -4,7 +4,7 @@ import type { AppRouter } from "./createAppRouter";
 
 type CreateIndexerClientOptions = {
   /**
-   * tRPC endpoint URL like `https://indexer.dev.linfra.xyz`.
+   * tRPC endpoint URL like `https://indexer.dev.linfra.xyz/trpc`.
    */
   url: string;
 };
