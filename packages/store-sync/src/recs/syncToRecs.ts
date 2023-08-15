@@ -29,7 +29,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   config,
   address,
   publicClient,
-  startBlock = 0n,
+  startBlock,
   maxBlockRange,
   initialState,
   indexerUrl,
@@ -53,6 +53,8 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     indexerUrl,
     initialState,
     onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed }) => {
+      console.log("got progress", step, percentage);
+      // TODO: stop updating once live?
       setComponent(components.SyncProgress, singletonEntity, {
         step,
         percentage,
@@ -63,7 +65,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     },
   });
 
-  const sub = storeSync.latestBlockNumber$.subscribe();
+  const sub = storeSync.blockStorageOperations$.subscribe();
   world.registerDisposer(() => sub.unsubscribe());
 
   return {

@@ -18,8 +18,6 @@ export async function setupNetwork() {
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
 
-  console.log("client options", clientOptions);
-
   const publicClient = createPublicClient(clientOptions);
 
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);

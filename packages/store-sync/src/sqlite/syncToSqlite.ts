@@ -28,7 +28,7 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
   address,
-  startBlock = 0n,
+  startBlock,
   maxBlockRange,
   indexerUrl,
   initialState,

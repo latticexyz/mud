@@ -9,10 +9,12 @@ import {
 } from "@latticexyz/block-logs-stream";
 import { filter, map, tap, mergeMap, from, concatMap, share, firstValueFrom } from "rxjs";
 import { blockLogsToStorage } from "./blockLogsToStorage";
-import { debug } from "./debug";
+import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { BlockLogsToStorageOptions } from "./blockLogsToStorage";
 import { SyncStep } from "./SyncStep";
+
+const debug = parentDebug.extend("createStoreSync");
 
 type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   storageAdapter: BlockLogsToStorageOptions<TConfig>;
