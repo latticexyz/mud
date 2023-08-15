@@ -132,16 +132,17 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       debug("stored", operations.length, "operations for block", blockNumber);
       lastBlockNumberProcessed = blockNumber;
 
-      if (onProgress != null && latestBlockNumber != null) {
+      if (latestBlockNumber != null) {
         if (blockNumber < latestBlockNumber) {
-          onProgress({
+          onProgress?.({
             step: SyncStep.RPC,
             percentage: Number((lastBlockNumberProcessed * 1000n) / (latestBlockNumber * 1000n)) / 100,
             latestBlockNumber,
             lastBlockNumberProcessed,
           });
         } else {
-          onProgress({
+          debug("all caught up");
+          onProgress?.({
             step: SyncStep.LIVE,
             percentage: 100,
             latestBlockNumber,

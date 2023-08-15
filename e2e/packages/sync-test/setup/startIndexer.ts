@@ -17,7 +17,7 @@ export function startIndexer(
   const proc = execa("pnpm", ["start"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env: {
-      DEBUG: "mud:store-indexer",
+      DEBUG: "mud:*",
       PORT: port.toString(),
       CHAIN_ID: "31337",
       RPC_HTTP_URL: rpcUrl,
