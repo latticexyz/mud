@@ -141,7 +141,6 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
             lastBlockNumberProcessed,
           });
         } else {
-          debug("all caught up");
           onProgress?.({
             step: SyncStep.LIVE,
             percentage: 100,
