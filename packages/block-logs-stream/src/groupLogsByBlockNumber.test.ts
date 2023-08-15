@@ -47,7 +47,7 @@ describe("groupLogsByBlockNumber", () => {
         transactionHash: "0x",
         transactionIndex: 0,
       },
-    ] as any as Log[];
+    ] as any as Log<bigint, number, false>[];
 
     expect(groupLogsByBlockNumber(logs)).toMatchInlineSnapshot(`
       [
@@ -114,7 +114,7 @@ describe("groupLogsByBlockNumber", () => {
         transactionHash: "0x",
         transactionIndex: 0,
       },
-    ] as any as Log[];
+    ] as any as Log<bigint, number, false>[];
 
     expect(groupLogsByBlockNumber(logs, 2n)).toMatchInlineSnapshot(`
       [
@@ -147,7 +147,7 @@ describe("groupLogsByBlockNumber", () => {
         transactionHash: "0x",
         transactionIndex: 0,
       },
-    ] as any as Log[];
+    ] as any as Log<bigint, number, false>[];
 
     expect(groupLogsByBlockNumber(logs, 2n)).toMatchInlineSnapshot(`
       [

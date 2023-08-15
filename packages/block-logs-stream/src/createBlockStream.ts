@@ -1,14 +1,17 @@
 import { Observable } from "rxjs";
 import type { Block, BlockTag, PublicClient } from "viem";
 
-export type CreateBlockStreamOptions = {
+export type CreateBlockStreamOptions<TBlockTag extends BlockTag> = {
   publicClient: PublicClient;
-  blockTag: BlockTag;
+  blockTag: TBlockTag;
 };
 
-export type CreateBlockStreamResult = Observable<Block>;
+export type CreateBlockStreamResult<TBlockTag extends BlockTag> = Observable<Block<bigint, false, TBlockTag>>;
 
-export function createBlockStream({ publicClient, blockTag }: CreateBlockStreamOptions): CreateBlockStreamResult {
+export function createBlockStream<TBlockTag extends BlockTag>({
+  publicClient,
+  blockTag,
+}: CreateBlockStreamOptions<TBlockTag>): CreateBlockStreamResult<TBlockTag> {
   return new Observable(function subscribe(subscriber) {
     return publicClient.watchBlocks({
       blockTag,

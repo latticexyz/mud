@@ -10,23 +10,14 @@ A set of utilities for efficiently retrieving blockchain event logs. Built on to
 ```ts
 import { filter, map, mergeMap } from "rxjs";
 import { createPublicClient, parseAbi } from "viem";
-import {
-  createBlockStream,
-  isNonPendingBlock,
-  groupLogsByBlockNumber,
-  blockRangeToLogs,
-} from "@latticexyz/block-logs-stream";
+import { createBlockStream, groupLogsByBlockNumber, blockRangeToLogs } from "@latticexyz/block-logs-stream";
 
 const publicClient = createPublicClient({
   // your viem public client config here
 });
 
 const latestBlock$ = await createBlockStream({ publicClient, blockTag: "latest" });
-
-const latestBlockNumber$ = latestBlock$.pipe(
-  filter(isNonPendingBlock),
-  map((block) => block.number)
-);
+const latestBlockNumber$ = latestBlock$.pipe(map((block) => block.number));
 
 latestBlockNumber$
   .pipe(
