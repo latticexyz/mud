@@ -8,6 +8,7 @@ import {
   ConfigToValuePrimitives as Value,
   TableRecord,
   StoreEventsAbiItem,
+  StoreEventsAbi,
 } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { BlockStorageOperations } from "./blockLogsToStorage";
@@ -29,7 +30,7 @@ export type Table = {
 
 export type TableWithRecords = Table & { records: TableRecord[] };
 
-export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true>;
+export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type BaseStorageOperation = {
