@@ -39,7 +39,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "delete a composite record on a table with keysInTableModule installed",
-    "gasUsed": 259604
+    "gasUsed": 259406
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -57,7 +57,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "delete a record on a table with keysInTableModule installed",
-    "gasUsed": 136250
+    "gasUsed": 136184
   },
   {
     "file": "test/KeysWithValueModule.t.sol",

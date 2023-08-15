@@ -122,7 +122,10 @@ library KeysWithValue {
     }
   }
 
-  /** Get an item of keysWithValue (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keysWithValue
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -140,7 +143,10 @@ library KeysWithValue {
     }
   }
 
-  /** Get an item of keysWithValue (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keysWithValue (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(IStore _store, bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -183,20 +189,30 @@ library KeysWithValue {
     _store.popFromField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Update an element of keysWithValue at `_index` */
+  /**
+   * Update an element of keysWithValue at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(bytes32 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keysWithValue (using the specified store) at `_index` */
+  /**
+   * Update an element of keysWithValue (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(IStore _store, bytes32 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Tightly pack full data using this table's schema */

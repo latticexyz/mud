@@ -128,7 +128,10 @@ library StoreMetadata {
     }
   }
 
-  /** Get an item of tableName (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of tableName
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemTableName(bytes32 tableId, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -139,7 +142,10 @@ library StoreMetadata {
     }
   }
 
-  /** Get an item of tableName (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of tableName (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemTableName(IStore _store, bytes32 tableId, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -182,7 +188,10 @@ library StoreMetadata {
     _store.popFromField(_tableId, _keyTuple, 0, 1);
   }
 
-  /** Update a slice of tableName at `_index` */
+  /**
+   * Update a slice of tableName at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateTableName(bytes32 tableId, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -192,7 +201,10 @@ library StoreMetadata {
     }
   }
 
-  /** Update a slice of tableName (using the specified store) at `_index` */
+  /**
+   * Update a slice of tableName (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateTableName(IStore _store, bytes32 tableId, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -261,7 +273,10 @@ library StoreMetadata {
     }
   }
 
-  /** Get an item of abiEncodedFieldNames (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of abiEncodedFieldNames
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemAbiEncodedFieldNames(bytes32 tableId, uint256 _index) internal view returns (bytes memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -272,7 +287,10 @@ library StoreMetadata {
     }
   }
 
-  /** Get an item of abiEncodedFieldNames (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of abiEncodedFieldNames (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemAbiEncodedFieldNames(
     IStore _store,
     bytes32 tableId,
@@ -319,7 +337,10 @@ library StoreMetadata {
     _store.popFromField(_tableId, _keyTuple, 1, 1);
   }
 
-  /** Update a slice of abiEncodedFieldNames at `_index` */
+  /**
+   * Update a slice of abiEncodedFieldNames at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateAbiEncodedFieldNames(bytes32 tableId, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -329,7 +350,10 @@ library StoreMetadata {
     }
   }
 
-  /** Update a slice of abiEncodedFieldNames (using the specified store) at `_index` */
+  /**
+   * Update a slice of abiEncodedFieldNames (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateAbiEncodedFieldNames(IStore _store, bytes32 tableId, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;

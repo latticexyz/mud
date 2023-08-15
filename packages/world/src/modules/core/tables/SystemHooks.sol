@@ -121,7 +121,10 @@ library SystemHooks {
     }
   }
 
-  /** Get an item of value (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(bytes32 resourceSelector, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -139,7 +142,10 @@ library SystemHooks {
     }
   }
 
-  /** Get an item of value (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(IStore _store, bytes32 resourceSelector, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -182,20 +188,30 @@ library SystemHooks {
     _store.popFromField(_tableId, _keyTuple, 0, 20);
   }
 
-  /** Update an element of value at `_index` */
+  /**
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(bytes32 resourceSelector, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of value (using the specified store) at `_index` */
+  /**
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(IStore _store, bytes32 resourceSelector, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    }
   }
 
   /** Tightly pack full data using this table's schema */

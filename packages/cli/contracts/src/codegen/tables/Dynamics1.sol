@@ -137,7 +137,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticB32 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticB32
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticB32(bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -155,7 +158,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticB32 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticB32 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticB32(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -198,20 +204,30 @@ library Dynamics1 {
     _store.popFromField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Update an element of staticB32 at `_index` */
+  /**
+   * Update an element of staticB32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticB32(bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of staticB32 (using the specified store) at `_index` */
+  /**
+   * Update an element of staticB32 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticB32(IStore _store, bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Get staticI32 */
@@ -270,7 +286,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticI32 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticI32
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticI32(bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -281,7 +300,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticI32 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticI32 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticI32(IStore _store, bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -324,20 +346,30 @@ library Dynamics1 {
     _store.popFromField(_tableId, _keyTuple, 1, 4);
   }
 
-  /** Update an element of staticI32 at `_index` */
+  /**
+   * Update an element of staticI32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticI32(bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of staticI32 (using the specified store) at `_index` */
+  /**
+   * Update an element of staticI32 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticI32(IStore _store, bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Get staticU128 */
@@ -396,7 +428,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticU128 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticU128
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticU128(bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -414,7 +449,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticU128 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticU128 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticU128(IStore _store, bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -457,20 +495,30 @@ library Dynamics1 {
     _store.popFromField(_tableId, _keyTuple, 2, 16);
   }
 
-  /** Update an element of staticU128 at `_index` */
+  /**
+   * Update an element of staticU128 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticU128(bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of staticU128 (using the specified store) at `_index` */
+  /**
+   * Update an element of staticU128 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticU128(IStore _store, bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 2, _index * 16, abi.encodePacked((_element)));
+    }
   }
 
   /** Get staticAddrs */
@@ -529,7 +577,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticAddrs (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticAddrs
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticAddrs(bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -547,7 +598,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticAddrs (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticAddrs (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticAddrs(IStore _store, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -590,20 +644,30 @@ library Dynamics1 {
     _store.popFromField(_tableId, _keyTuple, 3, 20);
   }
 
-  /** Update an element of staticAddrs at `_index` */
+  /**
+   * Update an element of staticAddrs at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticAddrs(bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of staticAddrs (using the specified store) at `_index` */
+  /**
+   * Update an element of staticAddrs (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticAddrs(IStore _store, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 3, _index * 20, abi.encodePacked((_element)));
+    }
   }
 
   /** Get staticBools */
@@ -662,7 +726,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticBools (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticBools
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticBools(bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -673,7 +740,10 @@ library Dynamics1 {
     }
   }
 
-  /** Get an item of staticBools (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of staticBools (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemStaticBools(IStore _store, bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -716,20 +786,30 @@ library Dynamics1 {
     _store.popFromField(_tableId, _keyTuple, 4, 1);
   }
 
-  /** Update an element of staticBools at `_index` */
+  /**
+   * Update an element of staticBools at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticBools(bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of staticBools (using the specified store) at `_index` */
+  /**
+   * Update an element of staticBools (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateStaticBools(IStore _store, bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 4, _index * 1, abi.encodePacked((_element)));
+    }
   }
 
   /** Get the full data */
@@ -795,35 +875,46 @@ library Dynamics1 {
     set(_store, key, _table.staticB32, _table.staticI32, _table.staticU128, _table.staticAddrs, _table.staticBools);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema.
+   * Undefined behaviour for invalid blobs.
+   */
   function decode(bytes memory _blob) internal pure returns (Dynamics1Data memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
     // Store trims the blob if dynamic fields are all empty
     if (_blob.length > 0) {
-      uint256 _start;
       // skip static data length + dynamic lengths word
-      uint256 _end = 32;
-
-      _start = _end;
-      _end += _encodedLengths.atIndex(0);
+      uint256 _start = 32;
+      uint256 _end;
+      unchecked {
+        _end = 32 + _encodedLengths.atIndex(0);
+      }
       _table.staticB32 = toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(1);
+      unchecked {
+        _end += _encodedLengths.atIndex(1);
+      }
       _table.staticI32 = toStaticArray_int32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_int32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(2);
+      unchecked {
+        _end += _encodedLengths.atIndex(2);
+      }
       _table.staticU128 = toStaticArray_uint128_3(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint128());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(3);
+      unchecked {
+        _end += _encodedLengths.atIndex(3);
+      }
       _table.staticAddrs = toStaticArray_address_4(SliceLib.getSubslice(_blob, _start, _end).decodeArray_address());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(4);
+      unchecked {
+        _end += _encodedLengths.atIndex(4);
+      }
       _table.staticBools = toStaticArray_bool_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bool());
     }
   }

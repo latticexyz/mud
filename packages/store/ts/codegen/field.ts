@@ -71,7 +71,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
-        /** Get an item of ${field.name}${_commentSuffix} (unchecked, returns invalid data if index overflows) */
+        /**
+         * Get an item of ${field.name}${_commentSuffix}
+         * (unchecked, returns invalid data if index overflows)
+         */
         function getItem${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
@@ -128,7 +131,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
-        /** Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\` */
+        /**
+         * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
+         * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+         */
         function update${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,

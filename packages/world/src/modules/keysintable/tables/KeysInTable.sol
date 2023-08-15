@@ -137,7 +137,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys0 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys0
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys0(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -155,7 +158,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys0 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys0 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys0(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -198,20 +204,30 @@ library KeysInTable {
     _store.popFromField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Update an element of keys0 at `_index` */
+  /**
+   * Update an element of keys0 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys0(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keys0 (using the specified store) at `_index` */
+  /**
+   * Update an element of keys0 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys0(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Get keys1 */
@@ -270,7 +286,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys1 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys1
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys1(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -288,7 +307,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys1 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys1 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys1(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -331,20 +353,30 @@ library KeysInTable {
     _store.popFromField(_tableId, _keyTuple, 1, 32);
   }
 
-  /** Update an element of keys1 at `_index` */
+  /**
+   * Update an element of keys1 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys1(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keys1 (using the specified store) at `_index` */
+  /**
+   * Update an element of keys1 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys1(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.updateInField(_tableId, _keyTuple, 1, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 1, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Get keys2 */
@@ -403,7 +435,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys2 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys2
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys2(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -421,7 +456,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys2 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys2 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys2(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -464,20 +502,30 @@ library KeysInTable {
     _store.popFromField(_tableId, _keyTuple, 2, 32);
   }
 
-  /** Update an element of keys2 at `_index` */
+  /**
+   * Update an element of keys2 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys2(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keys2 (using the specified store) at `_index` */
+  /**
+   * Update an element of keys2 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys2(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 2, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Get keys3 */
@@ -536,7 +584,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys3 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys3
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys3(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -554,7 +605,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys3 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys3 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys3(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -597,20 +651,30 @@ library KeysInTable {
     _store.popFromField(_tableId, _keyTuple, 3, 32);
   }
 
-  /** Update an element of keys3 at `_index` */
+  /**
+   * Update an element of keys3 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys3(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keys3 (using the specified store) at `_index` */
+  /**
+   * Update an element of keys3 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys3(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.updateInField(_tableId, _keyTuple, 3, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 3, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Get keys4 */
@@ -669,7 +733,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys4 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys4
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys4(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -687,7 +754,10 @@ library KeysInTable {
     }
   }
 
-  /** Get an item of keys4 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keys4 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemKeys4(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -730,20 +800,30 @@ library KeysInTable {
     _store.popFromField(_tableId, _keyTuple, 4, 32);
   }
 
-  /** Update an element of keys4 at `_index` */
+  /**
+   * Update an element of keys4 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys4(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keys4 (using the specified store) at `_index` */
+  /**
+   * Update an element of keys4 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateKeys4(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.updateInField(_tableId, _keyTuple, 4, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 4, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Get the full data */
@@ -809,35 +889,46 @@ library KeysInTable {
     set(_store, sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema.
+   * Undefined behaviour for invalid blobs.
+   */
   function decode(bytes memory _blob) internal pure returns (KeysInTableData memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
     // Store trims the blob if dynamic fields are all empty
     if (_blob.length > 0) {
-      uint256 _start;
       // skip static data length + dynamic lengths word
-      uint256 _end = 32;
-
-      _start = _end;
-      _end += _encodedLengths.atIndex(0);
+      uint256 _start = 32;
+      uint256 _end;
+      unchecked {
+        _end = 32 + _encodedLengths.atIndex(0);
+      }
       _table.keys0 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(1);
+      unchecked {
+        _end += _encodedLengths.atIndex(1);
+      }
       _table.keys1 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(2);
+      unchecked {
+        _end += _encodedLengths.atIndex(2);
+      }
       _table.keys2 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(3);
+      unchecked {
+        _end += _encodedLengths.atIndex(3);
+      }
       _table.keys3 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(4);
+      unchecked {
+        _end += _encodedLengths.atIndex(4);
+      }
       _table.keys4 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
     }
   }

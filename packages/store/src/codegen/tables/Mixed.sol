@@ -202,7 +202,10 @@ library Mixed {
     }
   }
 
-  /** Get an item of a32 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of a32
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemA32(bytes32 key, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -213,7 +216,10 @@ library Mixed {
     }
   }
 
-  /** Get an item of a32 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of a32 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemA32(IStore _store, bytes32 key, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -256,7 +262,10 @@ library Mixed {
     _store.popFromField(_tableId, _keyTuple, 2, 4);
   }
 
-  /** Update an element of a32 at `_index` */
+  /**
+   * Update an element of a32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateA32(bytes32 key, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -266,7 +275,10 @@ library Mixed {
     }
   }
 
-  /** Update an element of a32 (using the specified store) at `_index` */
+  /**
+   * Update an element of a32 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateA32(IStore _store, bytes32 key, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -332,7 +344,10 @@ library Mixed {
     }
   }
 
-  /** Get an item of s (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of s
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemS(bytes32 key, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -343,7 +358,10 @@ library Mixed {
     }
   }
 
-  /** Get an item of s (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of s (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemS(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -386,7 +404,10 @@ library Mixed {
     _store.popFromField(_tableId, _keyTuple, 3, 1);
   }
 
-  /** Update a slice of s at `_index` */
+  /**
+   * Update a slice of s at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateS(bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -396,7 +417,10 @@ library Mixed {
     }
   }
 
-  /** Update a slice of s (using the specified store) at `_index` */
+  /**
+   * Update a slice of s (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateS(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
