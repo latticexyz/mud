@@ -1,10 +1,8 @@
 import { setup } from "./mud/setup";
-import { mount as mountDevTools } from "@latticexyz/dev-tools";
+import mudConfig from "contracts/mud.config";
 
-const {
-  components,
-  network: { worldContract, waitForTransaction },
-} = await setup();
+const { components, network } = await setup();
+const { worldContract, waitForTransaction } = network;
 
 // Components expose a stream that triggers when the component is updated.
 components.CounterTable.update$.subscribe((update) => {
@@ -56,4 +54,18 @@ document.getElementById("chat-form")?.addEventListener("submit", (e) => {
   (window as any).sendMessage();
 });
 
-mountDevTools();
+// https://vitejs.dev/guide/env-and-mode.html
+if (import.meta.env.DEV) {
+  const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+  mountDevTools({
+    config: mudConfig,
+    publicClient: network.publicClient,
+    walletClient: network.walletClient,
+    latestBlock$: network.latestBlock$,
+    blockStorageOperations$: network.blockStorageOperations$,
+    worldAddress: network.worldContract.address,
+    worldAbi: network.worldContract.abi,
+    write$: network.write$,
+    recsWorld: network.world,
+  });
+}

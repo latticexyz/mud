@@ -788,38 +788,104 @@
   {
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
-    "name": "set field in Callbacks",
+    "name": "Callbacks: set field",
     "gasUsed": 61383
   },
   {
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
-    "name": "get field from Callbacks (warm)",
+    "name": "Callbacks: get field (warm)",
     "gasUsed": 5051
   },
   {
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
-    "name": "push field to Callbacks",
+    "name": "Callbacks: push 1 element",
     "gasUsed": 39268
   },
   {
     "file": "test/tables/Hooks.t.sol",
-    "test": "testSetAndGet",
-    "name": "set field in Hooks",
+    "test": "testTable",
+    "name": "Hooks: set field (cold)",
     "gasUsed": 63374
   },
   {
     "file": "test/tables/Hooks.t.sol",
-    "test": "testSetAndGet",
-    "name": "get field from Hooks (warm)",
+    "test": "testTable",
+    "name": "Hooks: get field (warm)",
     "gasUsed": 5035
   },
   {
     "file": "test/tables/Hooks.t.sol",
-    "test": "testSetAndGet",
-    "name": "push field to Hooks",
-    "gasUsed": 39259
+    "test": "testTable",
+    "name": "Hooks: push 1 element (cold)",
+    "gasUsed": 39262
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testTable",
+    "name": "Hooks: pop 1 element (warm)",
+    "gasUsed": 15741
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testTable",
+    "name": "Hooks: push 1 element (warm)",
+    "gasUsed": 17449
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testTable",
+    "name": "Hooks: update 1 element (warm)",
+    "gasUsed": 17242
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testTable",
+    "name": "Hooks: delete record (warm)",
+    "gasUsed": 10501
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testTable",
+    "name": "Hooks: set field (warm)",
+    "gasUsed": 33677
+  },
+  {
+    "file": "test/tables/HooksColdLoad.t.sol",
+    "test": "testDelete",
+    "name": "Hooks: delete record (cold)",
+    "gasUsed": 21230
+  },
+  {
+    "file": "test/tables/HooksColdLoad.t.sol",
+    "test": "testGet",
+    "name": "Hooks: get field (cold)",
+    "gasUsed": 13020
+  },
+  {
+    "file": "test/tables/HooksColdLoad.t.sol",
+    "test": "testGetItem",
+    "name": "Hooks: get 1 element (cold)",
+    "gasUsed": 7786
+  },
+  {
+    "file": "test/tables/HooksColdLoad.t.sol",
+    "test": "testLength",
+    "name": "Hooks: get length (cold)",
+    "gasUsed": 7536
+  },
+  {
+    "file": "test/tables/HooksColdLoad.t.sol",
+    "test": "testPop",
+    "name": "Hooks: pop 1 element (cold)",
+    "gasUsed": 27833
+  },
+  {
+    "file": "test/tables/HooksColdLoad.t.sol",
+    "test": "testUpdate",
+    "name": "Hooks: update 1 element (cold)",
+    "gasUsed": 28755
   },
   {
     "file": "test/tightcoder/DecodeSlice.t.sol",
