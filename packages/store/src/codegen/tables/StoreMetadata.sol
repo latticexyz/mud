@@ -387,23 +387,28 @@ library StoreMetadata {
     set(_store, tableId, _table.tableName, _table.abiEncodedFieldNames);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema.
+   * Undefined behaviour for invalid blobs.
+   */
   function decode(bytes memory _blob) internal pure returns (StoreMetadataData memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
     // Store trims the blob if dynamic fields are all empty
     if (_blob.length > 0) {
-      uint256 _start;
       // skip static data length + dynamic lengths word
-      uint256 _end = 32;
-
-      _start = _end;
-      _end += _encodedLengths.atIndex(0);
+      uint256 _start = 32;
+      uint256 _end;
+      unchecked {
+        _end = 32 + _encodedLengths.atIndex(0);
+      }
       _table.tableName = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
 
       _start = _end;
-      _end += _encodedLengths.atIndex(1);
+      unchecked {
+        _end += _encodedLengths.atIndex(1);
+      }
       _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
     }
   }

@@ -454,7 +454,10 @@ library Mixed {
     set(_store, key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema.
+   * Undefined behaviour for invalid blobs.
+   */
   function decode(bytes memory _blob) internal pure returns (MixedData memory _table) {
     // 20 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
@@ -465,16 +468,18 @@ library Mixed {
 
     // Store trims the blob if dynamic fields are all empty
     if (_blob.length > 20) {
-      uint256 _start;
       // skip static data length + dynamic lengths word
-      uint256 _end = 52;
-
-      _start = _end;
-      _end += _encodedLengths.atIndex(0);
+      uint256 _start = 52;
+      uint256 _end;
+      unchecked {
+        _end = 52 + _encodedLengths.atIndex(0);
+      }
       _table.a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(1);
+      unchecked {
+        _end += _encodedLengths.atIndex(1);
+      }
       _table.s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
     }
   }

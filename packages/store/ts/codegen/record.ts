@@ -110,20 +110,31 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
       )}
       // Store trims the blob if dynamic fields are all empty
       if (_blob.length > ${totalStaticLength}) {
-        uint256 _start;
-        // skip static data length + dynamic lengths word
-        uint256 _end = ${totalStaticLength + 32};
         ${renderList(
           dynamicFields,
           // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
           // but it's assumed to be valid, and this function is meant to be mostly used internally
-          (field, index) => `
-          _start = _end;
-          unchecked {
-            _end += _encodedLengths.atIndex(${index});
+          (field, index) => {
+            if (index === 0) {
+              return `
+              // skip static data length + dynamic lengths word
+              uint256 _start = ${totalStaticLength + 32};
+              uint256 _end;
+              unchecked {
+                _end = ${totalStaticLength + 32} + _encodedLengths.atIndex(${index});
+              }
+              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+              `;
+            } else {
+              return `
+              _start = _end;
+              unchecked {
+                _end += _encodedLengths.atIndex(${index});
+              }
+              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+              `;
+            }
           }
-          ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-          `
         )}
       }
     }

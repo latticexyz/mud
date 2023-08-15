@@ -81,7 +81,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 2707
+    "gasUsed": 2571
   },
   {
     "file": "test/Gas.t.sol",
@@ -267,7 +267,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "get record from Mixed",
-    "gasUsed": 12408
+    "gasUsed": 12272
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -771,7 +771,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "get record from StoreMetadataTable",
-    "gasUsed": 11548
+    "gasUsed": 11412
   },
   {
     "file": "test/StoreSwitch.t.sol",
