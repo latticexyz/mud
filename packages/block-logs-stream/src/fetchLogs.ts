@@ -1,5 +1,5 @@
-import { AbiEvent, Address } from "abitype";
-import { PublicClient, BlockNumber, GetLogsReturnType } from "viem";
+import { AbiEvent } from "abitype";
+import { Address, PublicClient, BlockNumber, GetLogsReturnType } from "viem";
 import { bigIntMin, wait } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 
