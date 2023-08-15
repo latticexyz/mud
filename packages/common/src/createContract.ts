@@ -110,19 +110,6 @@ export function createContract<
           }
 
           async function write(options: WriteContractParameters): Promise<Hex> {
-            // Temporarily override base fee for our default anvil config
-            // TODO: replace with https://github.com/wagmi-dev/viem/pull/1006 once merged
-            // TODO: more specific mud foundry check? or can we safely assume anvil+mud will be block fee zero for now?
-            if (
-              walletClient.chain.id === 31337 &&
-              options.maxFeePerGas == null &&
-              options.maxPriorityFeePerGas == null
-            ) {
-              debug("assuming zero base fee for anvil chain");
-              options.maxFeePerGas = 0n;
-              options.maxPriorityFeePerGas = 0n;
-            }
-
             const preparedWrite = await prepareWrite(options);
 
             return await pRetry(

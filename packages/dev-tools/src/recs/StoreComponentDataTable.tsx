@@ -1,15 +1,14 @@
 import { useEntityQuery } from "@latticexyz/react";
-import { Component, Has, getComponentValueStrict, Type } from "@latticexyz/recs";
-import { decodeEntity } from "@latticexyz/store-sync/recs";
-import { serialize } from "../serialize";
+import { Component, Has, Schema, getComponentValueStrict } from "@latticexyz/recs";
+import { StoreComponentMetadata, decodeEntity } from "@latticexyz/store-sync/recs";
 
 // TODO: use react-table or similar for better perf with lots of logs
 
 type Props = {
-  component: Component;
+  component: Component<Schema, StoreComponentMetadata>;
 };
 
-export function ComponentDataTable({ component }: Props) {
+export function StoreComponentDataTable({ component }: Props) {
   // TODO: this breaks when navigating because its state still has entity IDs from prev page
   const entities = useEntityQuery([Has(component)]);
 
@@ -17,8 +16,12 @@ export function ComponentDataTable({ component }: Props) {
     <table className="w-full -mx-1">
       <thead className="sticky top-0 z-10 bg-slate-800 text-left">
         <tr className="text-amber-200/80 font-mono">
-          <th className="px-1 pt-1.5 font-normal">entity</th>
-          {Object.keys(component.schema).map((name) => (
+          {Object.keys(component.metadata.keySchema).map((name) => (
+            <th key={name} className="px-1 pt-1.5 font-normal">
+              {name}
+            </th>
+          ))}
+          {Object.keys(component.metadata.valueSchema).map((name) => (
             <th key={name} className="px-1 pt-1.5 font-normal">
               {name}
             </th>
@@ -27,19 +30,20 @@ export function ComponentDataTable({ component }: Props) {
       </thead>
       <tbody className="font-mono text-xs">
         {entities.map((entity) => {
+          const key = decodeEntity(component.metadata.keySchema, entity);
           const value = getComponentValueStrict(component, entity);
           return (
             <tr key={entity}>
-              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{entity}</td>
-              {Object.keys(component.schema).map((name) => {
+              {Object.keys(component.metadata.keySchema).map((name) => (
+                <td key={name} className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                  {String(key[name])}
+                </td>
+              ))}
+              {Object.keys(component.metadata.valueSchema).map((name) => {
                 const fieldValue = value[name];
                 return (
                   <td key={name} className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {component.schema[name] === Type.T
-                      ? serialize(fieldValue)
-                      : Array.isArray(fieldValue)
-                      ? fieldValue.map(String).join(", ")
-                      : String(fieldValue)}
+                    {Array.isArray(fieldValue) ? fieldValue.map(String).join(", ") : String(fieldValue)}
                   </td>
                 );
               })}

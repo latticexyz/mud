@@ -202,6 +202,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
           return {
             log,
+            address: getAddress(log.address),
             type: "SetRecord",
             ...tableId,
             key,
@@ -217,6 +218,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           >[typeof fieldName];
           return {
             log,
+            address: getAddress(log.address),
             type: "SetField",
             ...tableId,
             key,
@@ -228,6 +230,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
         if (log.eventName === "StoreDeleteRecord") {
           return {
             log,
+            address: getAddress(log.address),
             type: "DeleteRecord",
             ...tableId,
             key,

@@ -120,6 +120,7 @@ describe("blockLogsToStorage", () => {
               "blockNumber": 5448n,
               "operations": [
                 {
+                  "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
                   "fieldName": "amount",
                   "fieldValue": 8,
                   "key": {
@@ -173,6 +174,7 @@ describe("blockLogsToStorage", () => {
         "blockNumber": 5448n,
         "operations": [
           {
+            "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
             "fieldName": "amount",
             "fieldValue": 8,
             "key": {

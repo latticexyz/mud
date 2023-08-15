@@ -1,7 +1,6 @@
-import { AbiEvent, Address } from "abitype";
-import { PublicClient, BlockNumber } from "viem";
+import { AbiEvent } from "abitype";
+import { Address, PublicClient, BlockNumber, GetLogsReturnType } from "viem";
 import { bigIntMin, wait } from "@latticexyz/common/utils";
-import { GetLogsResult, getLogs } from "./getLogs";
 import { debug } from "./debug";
 
 export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
@@ -40,7 +39,7 @@ export type FetchLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
 export type FetchLogsResult<TAbiEvents extends readonly AbiEvent[]> = {
   fromBlock: BlockNumber;
   toBlock: BlockNumber;
-  logs: GetLogsResult<TAbiEvents>;
+  logs: GetLogsReturnType<undefined, TAbiEvents, true, BlockNumber, BlockNumber>;
 };
 
 /**
@@ -61,6 +60,7 @@ export type FetchLogsResult<TAbiEvents extends readonly AbiEvent[]> = {
 export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
   maxBlockRange = 1000n,
   maxRetryCount = 3,
+  publicClient,
   ...getLogsOpts
 }: FetchLogsOptions<TAbiEvents>): AsyncGenerator<FetchLogsResult<TAbiEvents>> {
   let fromBlock = getLogsOpts.fromBlock;
@@ -70,13 +70,14 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
   while (fromBlock <= getLogsOpts.toBlock) {
     try {
       const toBlock = fromBlock + blockRange;
-      const logs = await getLogs({ ...getLogsOpts, fromBlock, toBlock });
+      const logs = await publicClient.getLogs({ ...getLogsOpts, fromBlock, toBlock, strict: true });
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
       blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
     } catch (error: unknown) {
       if (!(error instanceof Error)) throw error;
 
+      // TODO: figure out actual rate limit message for RPCs
       if (error.message.includes("rate limit exceeded") && retryCount < maxRetryCount) {
         const seconds = 2 * retryCount;
         debug(`too many requests, retrying in ${seconds}s`, error);
@@ -85,6 +86,7 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
         continue;
       }
 
+      // TODO: figure out actual block range exceeded message for RPCs
       if (error.message.includes("block range exceeded")) {
         blockRange /= 2n;
         if (blockRange <= 0n) {

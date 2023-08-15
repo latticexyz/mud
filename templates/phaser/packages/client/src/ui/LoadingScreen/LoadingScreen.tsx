@@ -4,7 +4,8 @@ import { LoadingBar } from "./LoadingBar";
 import { BootScreen } from "./BootScreen";
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "../../store";
-import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+import { SyncStep } from "@latticexyz/store-sync";
 
 export const LoadingScreen = () => {
   const {

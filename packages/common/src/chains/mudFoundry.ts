@@ -3,5 +3,7 @@ import { MUDChain } from "./types";
 
 export const mudFoundry = {
   ...foundry,
-  // We may override chain settings here
+  fees: {
+    defaultPriorityFee: 0n,
+  },
 } as const satisfies MUDChain;
