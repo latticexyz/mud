@@ -1,0 +1,291 @@
+# State sync (TypeScript edition)
+
+State synchronization is arguably _the_ value proposition of MUD.
+Having the `World` state (or at least the state for selected namespaces) available on the client is the tool that lets us display the game world to the player.
+
+The main sychronization function is the one returned by `blockLogsToStorage` within [blockLogsToStorage.ts](https://github.com/latticexyz/mud/blob/main/packages/store-sync/src/blockLogsToStorage.ts).
+This function is called on each block when the client receives it.
+It performs several actions.
+
+## Find table registration events
+
+The data structure for a `World` is not static, new tables can be added om the fly.
+When new tables are added, the schema table (`mud:schema`) is updated with the table information, and the synchronization code uses that update.
+
+```ts
+const newTableKeys = new Set<TableKey>();
+```
+
+Create an empty [`Set`](https://www.w3schools.com/js/js_object_sets.asp) for new table names (tables that defined in this block).
+
+```ts
+    // First find all schema registration events.
+    block.logs.forEach((log) => {
+```
+
+For every log entry in the block, run this function.
+Use the link to [learn more about `forEach`](https://www.w3schools.com/jsref/jsref_foreach.asp).
+
+```ts
+if (log.eventName !== "StoreSetRecord") return;
+if (log.args.table !== schemaTableId.toHex()) return;
+```
+
+We are only oncerned here with [`StoreSetRecord` events](https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol#L41) that write to the schema table (`mudstore:schema`).
+
+```ts
+const [tableForSchema, ...otherKeys] = log.args.key;
+if (otherKeys.length) {
+  debug("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
+}
+```
+
+MUD keys can include multipe fields.
+However, in the case of events that write to the schema table, `mudstore:schema`, there should be only one key field, the table ID.
+So if there are multiple key fields log that problem.
+
+```ts
+const tableId = TableId.fromHex(tableForSchema);
+const schema = hexToTableSchema(log.args.data);
+```
+
+Use [`TableId.fromHex`](https://github.com/latticexyz/mud/blob/main/packages/common/src/hexToTableId.ts) to parse the table ID.
+
+<details>
+<summary>TableID hex format</summary>
+
+The TableID is a 32 byte value.
+The first 16 bytes are the namespace, ASCII encoded, with trailing zeros to fill up the entire 16 byte slot.
+The last 16 bytes are the table name, also ASCII encoded with trailing zeros.
+
+</details>
+
+The data, which is the schema for the table, is a variable number of bytes.
+It is parsed using [`hexToTableSchema`](https://github.com/latticexyz/mud/blob/main/packages/protocol-parser/src/hexToSchema.ts).
+
+<details>
+<summary>Schema hex format</summary>
+
+The schema hex format starts a four byte header:
+
+| Bytes | Field                                       |
+| ----: | ------------------------------------------- |
+|   0-1 | Total length of the static<sup>1</sup> data |
+|     2 | Number of static fields                     |
+|     3 | Number of dynamic<sup>2</sup> fields        |
+
+(1) _Static_, in this context, means data fields that are of fixed size such as `uint256`.  
+(2) _Dynamic_, in this context, means data fields who size could vary such as `string`.
+
+This is followed by a list of static field types, one byte per field, and then a list of dynamic field types, also one byte per field.
+The meaning of the byte values is specified [in the `schemaAbiTypes` table](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/typescript/schemaAbiTypes.ts):
+
+| Index (`n`) | Type            |
+| ----------: | --------------- |
+|        0-31 | uint`8(n+1)`    |
+|       32-63 | int`8(n-31)`    |
+|       64-95 | bytes`n-63`     |
+|          96 | bool            |
+|          97 | address         |
+|      98-129 | uint`8(n-97)`[] |
+|     130-161 | int`8(n-129)`[] |
+|     162-183 | bytes`n-161`[]  |
+|         184 | bool[]          |
+|         185 | address[]       |
+|         186 | bytes           |
+|         187 | string          |
+
+</details>
+
+```ts
+const key: TableKey = `${getAddress(log.address)}:${tableId.namespace}:${tableId.name}`;
+```
+
+Get the full table key, which is the `World` address, the table's namespace, and the table's name.
+These values are separated by colons (`:`).
+
+```ts
+      if (!visitedSchemas.has(key)) {
+        visitedSchemas.set(key, { address: getAddress(log.address), tableId, schema });
+        newTableKeys.add(key);
+      }
+    });
+```
+
+Add the full table key to the list of tables whose schema was changed.
+
+## Find metadata events
+
+```ts
+// Then find all metadata events. These should follow schema registration events and be in the same block (since they're in the same tx).
+// TODO: rework contracts so schemas+tables are combined and immutable (https://github.com/latticexyz/mud/pull/1182)
+block.logs.forEach((log) => {
+  if (log.eventName !== "StoreSetRecord") return;
+  if (log.args.table !== metadataTableId.toHex()) return;
+
+  const [tableForSchema, ...otherKeys] = log.args.key;
+  if (otherKeys.length) {
+    debug("setMetadata event is expected to have only one key in key tuple, but got multiple", log);
+  }
+
+  const tableId = TableId.fromHex(tableForSchema);
+  const [tableName, abiEncodedFieldNames] = decodeRecord(
+    // TODO: this is hardcoded for now while metadata is separate from table registration (https://github.com/latticexyz/mud/pull/1182)
+    { staticFields: [], dynamicFields: ["string", "bytes"] },
+    log.args.data
+  );
+  const valueNames = decodeAbiParameters(parseAbiParameters("string[]"), abiEncodedFieldNames as Hex)[0];
+  // TODO: add key names to table registration when we refactor it (https://github.com/latticexyz/mud/pull/1182)
+  const key: TableKey = `${getAddress(log.address)}:${tableId.namespace}:${tableName}`;
+  if (!visitedMetadata.has(key)) {
+    visitedMetadata.set(key, { address: getAddress(log.address), tableId, keyNames: [], valueNames });
+    newTableKeys.add(key);
+  }
+});
+```
+
+## Register new tables
+
+```ts
+const newTableIds = Array.from(newTableKeys).map((tableKey) => {
+  const [address, namespace, name] = tableKey.split(":");
+  return { address: address as Hex, tableId: new TableId(namespace, name) };
+});
+
+await registerTables({
+  blockNumber: block.blockNumber,
+  tables: newTableIds
+    .map(({ address, tableId }) => {
+      const schema = Array.from(visitedSchemas.values()).find(
+        ({ address: schemaAddress, tableId: schemaTableId }) =>
+          schemaAddress === address && schemaTableId.toHex() === tableId.toHex()
+      );
+      const metadata = Array.from(visitedMetadata.values()).find(
+        ({ address: metadataAddress, tableId: metadataTableId }) =>
+          metadataAddress === address && metadataTableId.toHex() === tableId.toHex()
+      );
+      if (!schema) {
+        debug(`no schema registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`);
+        return;
+      }
+      if (!metadata) {
+        debug(`no metadata registration found for table ${tableId.toString()} in block ${block.blockNumber}, skipping`);
+        return;
+      }
+      const valueAbiTypes = [...schema.schema.valueSchema.staticFields, ...schema.schema.valueSchema.dynamicFields];
+
+      return {
+        address,
+        tableId: schema.tableId.toHex(),
+        namespace: schema.tableId.namespace,
+        name: schema.tableId.name,
+        // TODO: replace with proper named key tuple (https://github.com/latticexyz/mud/pull/1182)
+        keySchema: Object.fromEntries(schema.schema.keySchema.staticFields.map((abiType, i) => [i, abiType])),
+        valueSchema: Object.fromEntries(valueAbiTypes.map((abiType, i) => [metadata.valueNames[i], abiType])),
+      };
+    })
+    .filter(isDefined),
+});
+```
+
+## Get the datastore operations
+
+```ts
+const tableIds = Array.from(
+  new Set(
+    block.logs.map((log) =>
+      JSON.stringify({
+        address: getAddress(log.address),
+        ...TableId.fromHex(log.args.table),
+      })
+    )
+  )
+);
+// TODO: combine these once we refactor table registration (https://github.com/latticexyz/mud/pull/1182)
+const tables = Object.fromEntries(
+  (
+    await getTables({
+      blockNumber: block.blockNumber,
+      tables: tableIds.map((json) => JSON.parse(json)),
+    })
+  ).map((table) => [`${table.address}:${new TableId(table.namespace, table.name).toHex()}`, table])
+) as Record<Hex, Table>;
+
+const operations = block.logs
+  .map((log): StorageOperation<TConfig> | undefined => {
+    const tableId = TableId.fromHex(log.args.table);
+    const table = tables[`${getAddress(log.address)}:${log.args.table}`];
+    if (!table) {
+      debug("no table found for event, skipping", tableId.toString(), log);
+      return;
+    }
+
+    const keyNames = Object.keys(table.keySchema);
+    const keyValues = decodeKeyTuple({ staticFields: Object.values(table.keySchema), dynamicFields: [] }, log.args.key);
+    const key = Object.fromEntries(keyValues.map((value, i) => [keyNames[i], value])) as Key<
+      TConfig,
+      keyof TConfig["tables"]
+    >;
+
+    const valueAbiTypes = Object.values(table.valueSchema);
+    const valueSchema = abiTypesToSchema(valueAbiTypes);
+    const fieldNames = Object.keys(table.valueSchema);
+
+    if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+      const valueTuple = decodeRecord(valueSchema, log.args.data);
+      const value = Object.fromEntries(fieldNames.map((name, i) => [name, valueTuple[i]])) as Value<
+        TConfig,
+        keyof TConfig["tables"]
+      >;
+      // TODO: decide if we should handle ephemeral records separately?
+      //       they'll eventually be turned into "events", but unclear if that should translate to client storage operations
+      return {
+        log,
+        type: "SetRecord",
+        ...tableId,
+        key,
+        value,
+      };
+    }
+
+    if (log.eventName === "StoreSetField") {
+      const fieldName = fieldNames[log.args.schemaIndex] as string & keyof Value<TConfig, keyof TConfig["tables"]>;
+      const fieldValue = decodeField(valueAbiTypes[log.args.schemaIndex], log.args.data) as Value<
+        TConfig,
+        keyof TConfig["tables"]
+      >[typeof fieldName];
+      return {
+        log,
+        type: "SetField",
+        ...tableId,
+        key,
+        fieldName,
+        fieldValue,
+      };
+    }
+
+    if (log.eventName === "StoreDeleteRecord") {
+      return {
+        log,
+        type: "DeleteRecord",
+        ...tableId,
+        key,
+      };
+    }
+
+    debug("unknown store event or log, skipping", log);
+    return;
+  })
+  .filter(isDefined);
+
+await storeOperations({ blockNumber: block.blockNumber, operations });
+```
+
+## Return value
+
+```ts
+return {
+  blockNumber: block.blockNumber,
+  operations,
+};
+```
