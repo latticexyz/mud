@@ -26,9 +26,6 @@ importers:
       '@latticexyz/dev-tools':
         specifier: link:../../../packages/dev-tools
         version: link:../../../packages/dev-tools
-      '@latticexyz/network':
-        specifier: link:../../../packages/network
-        version: link:../../../packages/network
       '@latticexyz/recs':
         specifier: link:../../../packages/recs
         version: link:../../../packages/recs
@@ -38,9 +35,6 @@ importers:
       '@latticexyz/services':
         specifier: link:../../../packages/services
         version: link:../../../packages/services
-      '@latticexyz/std-client':
-        specifier: link:../../../packages/std-client
-        version: link:../../../packages/std-client
       '@latticexyz/store-sync':
         specifier: link:../../../packages/store-sync
         version: link:../../../packages/store-sync
@@ -150,9 +144,6 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
-      '@latticexyz/network':
-        specifier: link:../../../packages/network
-        version: link:../../../packages/network
       '@latticexyz/recs':
         specifier: link:../../../packages/recs
         version: link:../../../packages/recs

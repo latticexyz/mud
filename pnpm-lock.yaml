@@ -851,9 +851,6 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
-      '@latticexyz/network':
-        specifier: workspace:*
-        version: link:../network
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs

@@ -8,7 +8,6 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
-    "@latticexyz/network": "link:../../../packages/network",
     "@latticexyz/recs": "link:../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../packages/schema-type",
     "@latticexyz/store": "link:../../../packages/store",

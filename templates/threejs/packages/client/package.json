@@ -14,7 +14,6 @@
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
-    "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
