@@ -65,9 +65,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         await storageAdapter.storeOperations({
           blockNumber,
           operations: table.records.map(
-            (record, i) =>
+            (record) =>
               ({
-                id: `${blockNumber}:${table.namespace}:${table.name}:${i}`,
                 type: "SetRecord",
                 address: table.address,
                 namespace: table.namespace,

@@ -23,7 +23,14 @@ export function StorageOperationsTable({ operations }: Props) {
       </thead>
       <tbody className="font-mono text-xs">
         {operations.map((operation) => (
-          <tr key={operation.id} className="hover:bg-blue-800">
+          <tr
+            key={
+              operation.log
+                ? `${operation.log.blockHash}:${operation.log.logIndex}`
+                : `${operation.namespace}:${operation.name}:${serialize(operation.key)}`
+            }
+            className="hover:bg-blue-800"
+          >
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">
               {operation.log?.blockNumber.toString()}
             </td>
