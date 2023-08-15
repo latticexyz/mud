@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { groupLogsByBlockNumber } from "./groupLogsByBlockNumber";
 import { Log } from "viem";
+import { AbiEvent } from "abitype";
 
 describe("groupLogsByBlockNumber", () => {
   it("groups logs by block number and correctly sorts them", () => {
@@ -47,7 +48,7 @@ describe("groupLogsByBlockNumber", () => {
         transactionHash: "0x",
         transactionIndex: 0,
       },
-    ] as any as Log<bigint, number, false>[];
+    ] as any as Log<bigint, number, false, AbiEvent, true>[];
 
     expect(groupLogsByBlockNumber(logs)).toMatchInlineSnapshot(`
       [
@@ -114,7 +115,7 @@ describe("groupLogsByBlockNumber", () => {
         transactionHash: "0x",
         transactionIndex: 0,
       },
-    ] as any as Log<bigint, number, false>[];
+    ] as any as Log<bigint, number, false, AbiEvent, true>[];
 
     expect(groupLogsByBlockNumber(logs, 2n)).toMatchInlineSnapshot(`
       [
@@ -147,7 +148,7 @@ describe("groupLogsByBlockNumber", () => {
         transactionHash: "0x",
         transactionIndex: 0,
       },
-    ] as any as Log<bigint, number, false>[];
+    ] as any as Log<bigint, number, false, AbiEvent, true>[];
 
     expect(groupLogsByBlockNumber(logs, 2n)).toMatchInlineSnapshot(`
       [

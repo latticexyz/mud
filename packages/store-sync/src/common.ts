@@ -1,13 +1,13 @@
-import { Address, Block, Hex, PublicClient, TransactionReceipt } from "viem";
-import { GetLogsResult, GroupLogsByBlockNumberResult, NonPendingLog } from "@latticexyz/block-logs-stream";
+import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
+import { GroupLogsByBlockNumberResult } from "@latticexyz/block-logs-stream";
 import {
-  StoreEventsAbi,
   StoreConfig,
   KeySchema,
   ValueSchema,
   ConfigToKeyPrimitives as Key,
   ConfigToValuePrimitives as Value,
   TableRecord,
+  StoreEventsAbiItem,
 } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { BlockStorageOperations } from "./blockLogsToStorage";
@@ -29,11 +29,11 @@ export type Table = {
 
 export type TableWithRecords = Table & { records: TableRecord[] };
 
-export type StoreEventsLog = GetLogsResult<StoreEventsAbi>[number];
+export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true>;
 export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
 
 export type BaseStorageOperation = {
-  log?: NonPendingLog<StoreEventsLog>;
+  log?: StoreEventsLog;
   address: Hex;
   namespace: TableNamespace;
   name: TableName;

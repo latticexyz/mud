@@ -1,7 +1,8 @@
 import { BlockNumber, Log } from "viem";
 import { bigIntSort, isDefined } from "@latticexyz/common/utils";
+import { AbiEvent } from "abitype";
 
-export type GroupLogsByBlockNumberResult<TLog extends Log<bigint, number, false>> = {
+export type GroupLogsByBlockNumberResult<TLog extends Log<bigint, number, false, AbiEvent, true>> = {
   blockNumber: BlockNumber;
   logs: TLog[];
 }[];
@@ -20,7 +21,7 @@ export type GroupLogsByBlockNumberResult<TLog extends Log<bigint, number, false>
  * @returns An array of objects where each object represents a distinct block and includes the block number,
  * the block hash, and an array of logs for that block.
  */
-export function groupLogsByBlockNumber<TLog extends Log<bigint, number, false>>(
+export function groupLogsByBlockNumber<TLog extends Log<bigint, number, false, AbiEvent, true>>(
   logs: readonly TLog[],
   toBlock?: BlockNumber
 ): GroupLogsByBlockNumberResult<TLog> {
