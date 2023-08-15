@@ -11,16 +11,13 @@ import { Slice, SliceLib } from "./Slice.sol";
 import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
-import { TableId } from "./TableId.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
-  using TableId for bytes32;
-
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 tableId, bytes32[] key);
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 table, bytes32[] key);
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   /**
@@ -36,10 +33,15 @@ library StoreCore {
     StoreSwitch.setStoreAddress(address(this));
 
     // Register internal schema table
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.BYTES32;
+    _valueSchema[1] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
     registerSchema(
       StoreCoreInternal.SCHEMA_TABLE,
-      SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
-      SchemaLib.encode(SchemaType.BYTES32) // The Schema table's keySchema is { tableId: BYTES32 }
+      SchemaLib.encode(_valueSchema), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
+      SchemaLib.encode(_keySchema) // The Schema table's keySchema is { tableId: BYTES32 }
     );
 
     // Register other internal tables
@@ -72,7 +74,7 @@ library StoreCore {
   function getSchema(bytes32 tableId) internal view returns (Schema schema) {
     schema = StoreCoreInternal._getSchema(tableId);
     if (schema.isEmpty()) {
-      revert IStoreErrors.StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
@@ -83,7 +85,7 @@ library StoreCore {
     keySchema = StoreCoreInternal._getKeySchema(tableId);
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
     if (!hasTable(tableId)) {
-      revert IStoreErrors.StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
@@ -104,7 +106,7 @@ library StoreCore {
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {
-      revert IStoreErrors.StoreCore_TableAlreadyExists(tableId, tableId.toString());
+      revert IStoreErrors.StoreCore_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
     // Register the schema

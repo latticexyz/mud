@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/dev-tools",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.2",
   "description": "MUD developer tools",
   "repository": {
     "type": "git",
@@ -23,9 +23,10 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "@latticexyz/network": "workspace:*",
     "@latticexyz/react": "workspace:*",
-    "@latticexyz/std-client": "workspace:*",
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/store-sync": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "abitype": "0.9.3",
@@ -35,7 +36,7 @@
     "rxjs": "7.5.5",
     "tailwind-merge": "^1.12.0",
     "use-local-storage-state": "^18.3.2",
-    "viem": "1.3.1",
+    "viem": "1.6.0",
     "zustand": "^4.3.7"
   },
   "devDependencies": {
@@ -49,10 +50,12 @@
     "vitest": "0.31.4"
   },
   "peerDependencies": {
-    "@latticexyz/network": "2.0.0-next.0",
-    "@latticexyz/std-client": "2.0.0-next.0",
-    "@latticexyz/utils": "2.0.0-next.0",
-    "@latticexyz/world": "2.0.0-next.0"
+    "@latticexyz/common": "2.0.0-next.2",
+    "@latticexyz/recs": "2.0.0-next.2",
+    "@latticexyz/store": "2.0.0-next.2",
+    "@latticexyz/store-sync": "2.0.0-next.2",
+    "@latticexyz/utils": "2.0.0-next.2",
+    "@latticexyz/world": "2.0.0-next.2"
   },
   "publishConfig": {
     "access": "public"

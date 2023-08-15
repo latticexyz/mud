@@ -1,5 +1,44 @@
 # Change Log
 
+## 2.0.0-next.2
+
+### Minor Changes
+
+- [#1284](https://github.com/latticexyz/mud/pull/1284) [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad) Thanks [@holic](https://github.com/holic)! - Adds a `usePromise` hook that returns a [native `PromiseSettledResult` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+
+  ```tsx
+  const promise = fetch(url);
+  const result = usePromise(promise);
+
+  if (result.status === "idle" || result.status === "pending") {
+    return <>fetching</>;
+  }
+
+  if (result.status === "rejected") {
+    return <>error fetching: {String(result.reason)}</>;
+  }
+
+  if (result.status === "fulfilled") {
+    return <>fetch status: {result.value.status}</>;
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`a2588116`](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062), [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473)]:
+  - @latticexyz/store@2.0.0-next.2
+  - @latticexyz/store-cache@2.0.0-next.2
+  - @latticexyz/recs@2.0.0-next.2
+
+## 2.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies [[`c963b46c`](https://github.com/latticexyz/mud/commit/c963b46c7eaceebc652930936643365b8c48a021), [`5c965a91`](https://github.com/latticexyz/mud/commit/5c965a919355bf98d7ea69463890fe605bcde206), [`60cfd089`](https://github.com/latticexyz/mud/commit/60cfd089fc7a17b98864b631d265f36718df35a9), [`afdba793`](https://github.com/latticexyz/mud/commit/afdba793fd84abf17eef5ef59dd56fabe353c8bd), [`cc2c8da0`](https://github.com/latticexyz/mud/commit/cc2c8da000c32c02a82a1a0fd17075d11eac56c3)]:
+  - @latticexyz/store@2.0.0-next.1
+  - @latticexyz/recs@2.0.0-next.1
+  - @latticexyz/store-cache@2.0.0-next.1
+
 ## 2.0.0-next.0
 
 ### Patch Changes

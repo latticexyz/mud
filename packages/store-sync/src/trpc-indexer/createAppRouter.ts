@@ -15,7 +15,7 @@ export function createAppRouter() {
       .input(
         z.object({
           chainId: z.number(),
-          address: z.string().refine(isHex),
+          address: z.string().refine(isHex).optional(),
         })
       )
       .query(async (opts): ReturnType<StorageAdapter["findAll"]> => {

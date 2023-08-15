@@ -1,6 +1,6 @@
 import { filterNullish } from "@latticexyz/utils";
 import { observable, ObservableSet } from "mobx";
-import { concat, concatMap, filter, from, map, merge, Observable, of, Subject } from "rxjs";
+import { concat, concatMap, filter, from, map, merge, Observable, of, share, Subject } from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -506,22 +506,9 @@ export function defineQuery(
       filterNullish()
     );
 
-  // Create a new Subject to allow multiple observers
-  // but only subscribe to the internal stream when the update stream is
-  // subscribed to, in order to get the same behavior as if exposing the
-  // internal stream directly (ie only running the internal$ pipe if there are subscribers)
-  const update$ = new Subject<ComponentUpdate & { type: UpdateType }>();
-  const world = fragments[0].component.world;
-  const subscribe = update$.subscribe.bind(update$);
-  update$.subscribe = (observer) => {
-    const subscription = internal$.subscribe(update$);
-    world.registerDisposer(() => subscription?.unsubscribe());
-    return subscribe(observer as Parameters<typeof subscribe>[0]);
-  };
-
   return {
     matching,
-    update$: concat(initial$, update$),
+    update$: concat(initial$, internal$).pipe(share()),
   };
 }
 

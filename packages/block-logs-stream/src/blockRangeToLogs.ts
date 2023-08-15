@@ -1,7 +1,7 @@
 import { EMPTY, OperatorFunction, concatMap, from, pipe, tap } from "rxjs";
 import { FetchLogsResult, fetchLogs } from "./fetchLogs";
-import { AbiEvent, Address } from "abitype";
-import { BlockNumber, PublicClient } from "viem";
+import { AbiEvent } from "abitype";
+import { Address, BlockNumber, PublicClient } from "viem";
 
 export type BlockRangeToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   /**
