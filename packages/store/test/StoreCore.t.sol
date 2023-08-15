@@ -51,7 +51,7 @@ contract StoreCoreTest is Test, StoreMock {
     Schema loadedKeySchema = IStore(this).getKeySchema(table);
     assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
 
-    Schema schemaTableSchema = SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32);
+    Schema schemaTableSchema = SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32);
     bytes memory schemaRecord = IStore(this).getRecord(StoreCoreInternal.SCHEMA_TABLE, key, schemaTableSchema);
     assertEq(schemaRecord, abi.encodePacked(schema.unwrap(), keySchema.unwrap()));
   }
@@ -321,14 +321,14 @@ contract StoreCoreTest is Test, StoreMock {
   function testSetAndGetField() public {
     bytes32 table = keccak256("some.table");
 
-      // Register table's schema
-      Schema schema = SchemaEncodeHelper.encode(
-        SchemaType.UINT128,
-        SchemaType.UINT256,
-        SchemaType.UINT32_ARRAY,
-        SchemaType.UINT32_ARRAY
-      );
-      IStore(this).registerSchema(table, schema, defaultKeySchema);
+    // Register table's schema
+    Schema schema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
