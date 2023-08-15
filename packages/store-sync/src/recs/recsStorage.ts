@@ -12,14 +12,12 @@ import {
   updateComponent,
 } from "@latticexyz/recs";
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/common/deprecated";
 import { schemaToDefaults } from "../schemaToDefaults";
-import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableKey } from "./getTableKey";
 import { StoreComponentMetadata } from "./common";
-
-// TODO: should we create components here from config rather than passing them in?
+import { tableIdToHex } from "@latticexyz/common";
+import { encodeEntity } from "./encodeEntity";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
@@ -52,26 +50,24 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         const table = getComponentValue(
           components.TableMetadata,
           getTableKey({
-            address: operation.log.address,
+            address: operation.address,
             namespace: operation.namespace,
             name: operation.name,
           }) as Entity
         )?.table;
         if (!table) {
-          debug(
-            `skipping update for unknown table: ${operation.namespace}:${operation.name} at ${operation.log.address}`
-          );
+          debug(`skipping update for unknown table: ${operation.namespace}:${operation.name} at ${operation.address}`);
           continue;
         }
 
-        const tableId = new TableId(operation.namespace, operation.name).toString();
-        const component = componentsByTableId[operation.log.args.table];
+        const tableId = tableIdToHex(operation.namespace, operation.name);
+        const component = componentsByTableId[tableId];
         if (!component) {
           debug(`skipping update for unknown component: ${tableId}. Available components: ${Object.keys(components)}`);
           continue;
         }
 
-        const entity = hexKeyTupleToEntity(operation.log.args.key);
+        const entity = encodeEntity(table.keySchema, operation.key);
 
         if (operation.type === "SetRecord") {
           debug("setting component", tableId, entity, operation.value);

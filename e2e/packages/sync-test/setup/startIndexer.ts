@@ -11,13 +11,17 @@ export function startIndexer(
 ) {
   let resolve: () => void;
   let reject: (reason?: string) => void;
+  const doneSyncing = new Promise<void>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
 
   console.log(chalk.magenta("[indexer]:"), "start syncing");
 
   const proc = execa("pnpm", ["start"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env: {
-      DEBUG: "mud:store-indexer",
+      DEBUG: "mud:*",
       PORT: port.toString(),
       CHAIN_ID: "31337",
       RPC_HTTP_URL: rpcUrl,
@@ -32,31 +36,23 @@ export function startIndexer(
     reject(errorMessage);
   });
 
-  proc.stdout?.on("data", (data) => {
-    const dataString = data.toString();
-    const errors = extractLineContaining("ERROR", dataString).join("\n");
+  function onLog(data: string) {
+    const errors = extractLineContaining("ERROR", data).join("\n");
     if (errors) {
-      console.log(chalk.magenta("[indexer error]:", errors));
-      reject(errors);
-    }
-    console.log(chalk.magentaBright("[indexer]:", dataString));
-  });
-
-  proc.stderr?.on("data", (data) => {
-    const dataString = data.toString();
-    const modeErrors = extractLineContaining("ERROR", dataString).join("\n");
-    if (modeErrors) {
-      const errorMessage = chalk.magenta("[indexer error]:", modeErrors);
+      const errorMessage = chalk.magenta("[indexer error]:", errors);
       console.log(errorMessage);
       reportError(errorMessage);
-      reject(modeErrors);
+      reject(errors);
     }
     if (data.toString().includes("all caught up")) {
       console.log(chalk.magenta("[indexer]:"), "done syncing");
       resolve();
     }
-    console.log(chalk.magentaBright("[indexer ingress]:", dataString));
-  });
+    console.log(chalk.magentaBright("[indexer]:", data));
+  }
+
+  proc.stdout?.on("data", (data) => onLog(data.toString()));
+  proc.stderr?.on("data", (data) => onLog(data.toString()));
 
   function cleanUp() {
     // attempt to clean up sqlite file
@@ -75,10 +71,7 @@ export function startIndexer(
 
   return {
     url: `http://127.0.0.1:${port}/trpc`,
-    doneSyncing: new Promise<void>((res, rej) => {
-      resolve = res;
-      reject = rej;
-    }),
+    doneSyncing,
     process: proc,
     kill: () =>
       new Promise<void>((resolve) => {
