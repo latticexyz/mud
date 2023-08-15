@@ -1,12 +1,7 @@
 import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceipt } from "viem";
 import { SetRecordOperation, SyncOptions, SyncResult } from "./common";
-import {
-  createBlockStream,
-  isNonPendingBlock,
-  blockRangeToLogs,
-  groupLogsByBlockNumber,
-} from "@latticexyz/block-logs-stream";
+import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import { filter, map, tap, mergeMap, from, concatMap, share, firstValueFrom } from "rxjs";
 import { blockLogsToStorage } from "./blockLogsToStorage";
 import { debug as parentDebug } from "./debug";
@@ -100,9 +95,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   debug("starting sync from block", startBlock);
 
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(share());
-
   const latestBlockNumber$ = latestBlock$.pipe(
-    filter(isNonPendingBlock),
     map((block) => block.number),
     share()
   );
