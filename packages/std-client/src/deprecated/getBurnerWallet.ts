@@ -12,6 +12,9 @@ function assertPrivateKey(privateKey: string, cacheKey: string): asserts private
   privateKeyToAccount(privateKey);
 }
 
+/**
+ * @deprecated use `getBurnerPrivateKey` from `@latticexyz/common` instead
+ */
 export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<Hex> {
   const cachedPrivateKey = localStorage.getItem(cacheKey);
 

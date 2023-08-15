@@ -764,6 +764,9 @@ importers:
       nice-grpc-common:
         specifier: ^2.0.2
         version: 2.0.2
+      nice-grpc-web:
+        specifier: ^2.0.1
+        version: 2.0.1(google-protobuf@3.21.2)
       protobufjs:
         specifier: ^7.2.3
         version: 7.2.3
