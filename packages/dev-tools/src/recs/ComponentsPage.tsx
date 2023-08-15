@@ -3,25 +3,26 @@ import { NavButton } from "../NavButton";
 import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { useDevToolsContext } from "../DevToolsContext";
-import { isStoreComponent } from "@latticexyz/store-sync/recs";
+import { getComponentName } from "./getComponentName";
 
 export function ComponentsPage() {
   const { recsWorld: world } = useDevToolsContext();
   if (!world) throw new Error("Missing recsWorld");
 
-  const components = world.components.filter(isStoreComponent);
+  const components = [...world.components].sort((a, b) => getComponentName(a).localeCompare(getComponentName(b)));
+
   // TODO: lift up selected component so we can remember previous selection between tab nav
   const { id: idParam } = useParams();
-  const selectedComponent = components.find((component) => component.id === idParam);
+  const selectedComponent = components.find((component) => component.id === idParam) ?? components[0];
 
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (components.length && !selectedComponent) {
-      navigate(components[0].id);
+    if (idParam !== selectedComponent.id) {
+      navigate(selectedComponent.id);
     }
-  }, [components, selectedComponent]);
+  }, [idParam, selectedComponent.id]);
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
@@ -45,7 +46,7 @@ export function ComponentsPage() {
             <summary className="group pointer-events-auto cursor-pointer inline-flex">
               <span className="inline-flex gap-2 px-3 py-2 items-center border-2 border-white/10 rounded group-hover:border-blue-700 group-hover:bg-blue-700 group-hover:text-white">
                 {selectedComponent ? (
-                  <span className="font-mono">{selectedComponent.metadata.componentName}</span>
+                  <span className="font-mono">{getComponentName(selectedComponent)}</span>
                 ) : (
                   <span>Pick a component…</span>
                 )}
@@ -68,7 +69,7 @@ export function ComponentsPage() {
                       }
                     }}
                   >
-                    {component.metadata.componentName}
+                    {getComponentName(component)}
                   </NavButton>
                 ))}
               </div>
