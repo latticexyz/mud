@@ -74,7 +74,7 @@ export function startIndexer(
   });
 
   return {
-    url: `http://127.0.0.1:${port}`,
+    url: `http://127.0.0.1:${port}/trpc`,
     doneSyncing: new Promise<void>((res, rej) => {
       resolve = res;
       reject = rej;
