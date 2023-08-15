@@ -187,7 +187,9 @@ library Hooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    }
   }
 
   /** Update an element of value (using the specified store) at `_index` */
@@ -195,7 +197,9 @@ library Hooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)));
+    }
   }
 
   /** Tightly pack full data using this table's schema */

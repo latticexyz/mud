@@ -261,7 +261,9 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Update an element of a32 (using the specified store) at `_index` */
@@ -269,7 +271,9 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Get s */
@@ -387,7 +391,9 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
+    }
   }
 
   /** Update a slice of s (using the specified store) at `_index` */
@@ -395,7 +401,9 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)));
+    }
   }
 
   /** Get the full data */

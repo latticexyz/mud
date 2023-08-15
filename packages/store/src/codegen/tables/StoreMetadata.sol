@@ -187,7 +187,9 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
+    }
   }
 
   /** Update a slice of tableName (using the specified store) at `_index` */
@@ -195,7 +197,9 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 1, bytes((_slice)));
+    }
   }
 
   /** Get abiEncodedFieldNames */
@@ -320,7 +324,9 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+    }
   }
 
   /** Update a slice of abiEncodedFieldNames (using the specified store) at `_index` */
@@ -328,7 +334,9 @@ library StoreMetadata {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)));
+    }
   }
 
   /** Get the full data */

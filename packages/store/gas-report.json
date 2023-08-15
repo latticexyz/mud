@@ -837,7 +837,7 @@
     "file": "test/tables/Hooks.t.sol",
     "test": "testTable",
     "name": "Hooks: update 1 element (warm)",
-    "gasUsed": 17242
+    "gasUsed": 17170
   },
   {
     "file": "test/tables/Hooks.t.sol",
@@ -885,7 +885,7 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testUpdate",
     "name": "Hooks: update 1 element (cold)",
-    "gasUsed": 28755
+    "gasUsed": 28683
   },
   {
     "file": "test/tightcoder/DecodeSlice.t.sol",

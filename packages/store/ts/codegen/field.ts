@@ -137,13 +137,15 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.updateInField(
-            _tableId,
-            _keyTuple,
-            ${schemaIndex},
-            _index * ${portionData.elementLength},
-            ${portionData.encoded}
-          );
+          unchecked {
+            ${_store}.updateInField(
+              _tableId,
+              _keyTuple,
+              ${schemaIndex},
+              _index * ${portionData.elementLength},
+              ${portionData.encoded}
+            );
+          }
         }
       `
       );

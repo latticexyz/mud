@@ -94,7 +94,10 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
     // decode static (optionally) and dynamic data
     return `
-    /** Decode the tightly packed blob using this table's schema */
+    /**
+     * Decode the tightly packed blob using this table's schema.
+     * Undefined behaviour for invalid blobs.
+     */
     function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
       // ${totalStaticLength} is the total byte length of static data
       PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
@@ -112,9 +115,13 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
         uint256 _end = ${totalStaticLength + 32};
         ${renderList(
           dynamicFields,
+          // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
+          // but it's assumed to be valid, and this function is meant to be mostly used internally
           (field, index) => `
           _start = _end;
-          _end += _encodedLengths.atIndex(${index});
+          unchecked {
+            _end += _encodedLengths.atIndex(${index});
+          }
           ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
           `
         )}
