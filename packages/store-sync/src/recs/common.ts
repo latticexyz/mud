@@ -10,13 +10,6 @@ export type StoreComponentMetadata = {
   valueSchema: ValueSchema;
 };
 
-export enum SyncStep {
-  INITIALIZE = "initialize",
-  SNAPSHOT = "snapshot",
-  RPC = "rpc",
-  LIVE = "live",
-}
-
 export type ConfigToRecsComponents<TConfig extends StoreConfig> = {
   [tableName in keyof TConfig["tables"] & string]: RecsComponent<
     {

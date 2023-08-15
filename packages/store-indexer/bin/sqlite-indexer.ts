@@ -7,13 +7,14 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
-import { createIndexer } from "../src/sqlite/createIndexer";
+import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
 import { isNotNull } from "@latticexyz/common/utils";
+import { combineLatest, filter, first } from "rxjs";
+import { debug } from "../src/debug";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -89,12 +90,23 @@ try {
   // ignore errors, this is optional
 }
 
-await createIndexer({
+const { latestBlockNumber$, blockStorageOperations$ } = await syncToSqlite({
   database,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
+
+combineLatest([latestBlockNumber$, blockStorageOperations$])
+  .pipe(
+    filter(
+      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed
+    ),
+    first()
+  )
+  .subscribe(() => {
+    console.log("all caught up");
+  });
 
 const server = createHTTPServer({
   middleware: cors(),
