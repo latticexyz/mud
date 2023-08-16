@@ -933,7 +933,7 @@ export interface IWorld extends BaseContract {
       keySchema: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
-      valueNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1251,7 +1251,7 @@ export interface IWorld extends BaseContract {
     keySchema: PromiseOrValue<BytesLike>,
     valueSchema: PromiseOrValue<BytesLike>,
     keyNames: PromiseOrValue<string>[],
-    valueNames: PromiseOrValue<string>[],
+    fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1567,7 +1567,7 @@ export interface IWorld extends BaseContract {
       keySchema: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
-      valueNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1930,7 +1930,7 @@ export interface IWorld extends BaseContract {
       keySchema: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
-      valueNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2249,7 +2249,7 @@ export interface IWorld extends BaseContract {
       keySchema: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
-      valueNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

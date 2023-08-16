@@ -42,14 +42,14 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     string[] memory keyNames = new string[](2);
     keyNames[0] = "key1";
     keyNames[1] = "key2";
-    string[] memory valueNames = new string[](4);
-    valueNames[0] = "value1";
-    valueNames[1] = "value2";
-    valueNames[2] = "value3";
-    valueNames[3] = "value4";
+    string[] memory fieldNames = new string[](4);
+    fieldNames[0] = "value1";
+    fieldNames[1] = "value2";
+    fieldNames[2] = "value3";
+    fieldNames[3] = "value4";
 
     startGasReport("StoreCore: register schema");
-    StoreCore.registerTable(table, keySchema, valueSchema, keyNames, valueNames);
+    StoreCore.registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
     endGasReport();
 
     startGasReport("StoreCore: get schema (warm)");

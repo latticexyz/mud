@@ -15,9 +15,9 @@ contract MirrorSubscriber is IStoreHook {
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
-    string[] memory valueNames
+    string[] memory fieldNames
   ) {
-    IStore(msg.sender).registerTable(indexerTableId, keySchema, valueSchema, keyNames, valueNames);
+    IStore(msg.sender).registerTable(indexerTableId, keySchema, valueSchema, keyNames, fieldNames);
     _table = table;
   }
 

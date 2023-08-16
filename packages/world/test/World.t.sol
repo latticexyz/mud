@@ -264,10 +264,10 @@ contract WorldTest is Test, GasReporter {
 
     string[] memory keyNames = new string[](1);
     keyNames[0] = "key1";
-    string[] memory valueNames = new string[](3);
-    valueNames[0] = "value1";
-    valueNames[1] = "value2";
-    valueNames[2] = "value3";
+    string[] memory fieldNames = new string[](3);
+    fieldNames[0] = "value1";
+    fieldNames[1] = "value2";
+    fieldNames[2] = "value3";
 
     startGasReport("Register a new table in the namespace");
     bytes32 tableSelector = world.registerTable(
@@ -276,7 +276,7 @@ contract WorldTest is Test, GasReporter {
       defaultKeySchema,
       valueSchema,
       keyNames,
-      valueNames
+      fieldNames
     );
     endGasReport();
 
@@ -290,20 +290,20 @@ contract WorldTest is Test, GasReporter {
     bytes memory loadedKeyNames = TableMetadata.getAbiEncodedKeyNames(world, tableSelector);
     assertEq(loadedKeyNames, abi.encode(keyNames), "key names should be registered");
 
-    bytes memory loadedValueNames = TableMetadata.getAbiEncodedFieldNames(world, tableSelector);
-    assertEq(loadedValueNames, abi.encode(valueNames), "value names should be registered");
+    bytes memory loadedfieldNames = TableMetadata.getAbiEncodedFieldNames(world, tableSelector);
+    assertEq(loadedfieldNames, abi.encode(fieldNames), "value names should be registered");
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableSelector.toString()));
-    world.registerTable(namespace, tableName, defaultKeySchema, valueSchema, keyNames, valueNames);
+    world.registerTable(namespace, tableName, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
     _expectAccessDenied(address(0x01), namespace, "");
-    world.registerTable(namespace, "otherTable", defaultKeySchema, valueSchema, keyNames, valueNames);
+    world.registerTable(namespace, "otherTable", defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect the World to be allowed to call registerTable
     vm.prank(address(world));
-    world.registerTable(namespace, "otherTable", defaultKeySchema, valueSchema, keyNames, valueNames);
+    world.registerTable(namespace, "otherTable", defaultKeySchema, valueSchema, keyNames, fieldNames);
   }
 
   function testRegisterSystem() public {

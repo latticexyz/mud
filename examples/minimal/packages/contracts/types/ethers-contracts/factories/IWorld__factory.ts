@@ -1156,7 +1156,7 @@ const _abi = [
       },
       {
         internalType: "string[]",
-        name: "valueNames",
+        name: "fieldNames",
         type: "string[]",
       },
     ],

@@ -76,13 +76,13 @@ library StoreSwitch {
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
-    string[] memory valueNames
+    string[] memory fieldNames
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerTable(table, keySchema, valueSchema, keyNames, valueNames);
+      StoreCore.registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
     } else {
-      IStore(_storeAddress).registerTable(table, keySchema, valueSchema, keyNames, valueNames);
+      IStore(_storeAddress).registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
     }
   }
 

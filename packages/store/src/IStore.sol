@@ -119,7 +119,7 @@ interface IStoreRegistration {
     Schema keySchema,
     Schema valueSchema,
     string[] calldata keyNames,
-    string[] calldata valueNames
+    string[] calldata fieldNames
   ) external;
 
   // Register hook to be called when a record or field is set or deleted

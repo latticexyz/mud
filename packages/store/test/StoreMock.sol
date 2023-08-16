@@ -75,9 +75,9 @@ contract StoreMock is IStore, StoreRead {
     Schema keySchema,
     Schema valueSchema,
     string[] calldata keyNames,
-    string[] calldata valueNames
+    string[] calldata fieldNames
   ) public {
-    StoreCore.registerTable(table, keySchema, valueSchema, keyNames, valueNames);
+    StoreCore.registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted
