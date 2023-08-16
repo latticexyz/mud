@@ -2,6 +2,7 @@
 "@latticexyz/cli": major
 "@latticexyz/store": major
 "@latticexyz/world": major
+"create-mud": patch
 ---
 
 All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
