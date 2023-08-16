@@ -380,6 +380,11 @@ const _abi = [
         name: "key",
         type: "bytes32[]",
       },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
+      },
     ],
     name: "deleteRecord",
     outputs: [],
@@ -402,6 +407,11 @@ const _abi = [
         internalType: "bytes32[]",
         name: "key",
         type: "bytes32[]",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "deleteRecord",
@@ -430,6 +440,11 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "emitEphemeralRecord",
@@ -453,6 +468,11 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "emitEphemeralRecord",
@@ -476,6 +496,11 @@ const _abi = [
         internalType: "uint8",
         name: "schemaIndex",
         type: "uint8",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "getField",
@@ -508,7 +533,7 @@ const _abi = [
       },
       {
         internalType: "Schema",
-        name: "schema",
+        name: "valueSchema",
         type: "bytes32",
       },
     ],
@@ -542,7 +567,7 @@ const _abi = [
       },
       {
         internalType: "Schema",
-        name: "schema",
+        name: "valueSchema",
         type: "bytes32",
       },
       {
@@ -600,32 +625,8 @@ const _abi = [
       },
       {
         internalType: "Schema",
-        name: "schema",
+        name: "valueSchema",
         type: "bytes32",
-      },
-    ],
-    name: "getRecord",
-    outputs: [
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "table",
-        type: "bytes32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
       },
     ],
     name: "getRecord",
@@ -727,6 +728,39 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "uint8",
+        name: "schemaIndex",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "byteLengthToPop",
+        type: "uint256",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
+      },
+    ],
+    name: "popFromField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes16",
         name: "namespace",
         type: "bytes16",
@@ -751,33 +785,10 @@ const _abi = [
         name: "byteLengthToPop",
         type: "uint256",
       },
-    ],
-    name: "popFromField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
       {
-        internalType: "bytes32",
-        name: "table",
+        internalType: "Schema",
+        name: "valueSchema",
         type: "bytes32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        internalType: "uint256",
-        name: "byteLengthToPop",
-        type: "uint256",
       },
     ],
     name: "popFromField",
@@ -838,6 +849,11 @@ const _abi = [
         name: "dataToPush",
         type: "bytes",
       },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
+      },
     ],
     name: "pushToField",
     outputs: [],
@@ -870,6 +886,11 @@ const _abi = [
         internalType: "bytes",
         name: "dataToPush",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "pushToField",
@@ -1175,34 +1196,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "table",
-        type: "bytes32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-    ],
-    name: "setField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes16",
         name: "namespace",
         type: "bytes16",
@@ -1226,6 +1219,44 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
+      },
+    ],
+    name: "setField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "uint8",
+        name: "schemaIndex",
+        type: "uint8",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "setField",
@@ -1287,14 +1318,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
       },
       {
         internalType: "bytes32[]",
@@ -1305,6 +1331,11 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "setRecord",
@@ -1315,9 +1346,14 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "table",
-        type: "bytes32",
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes16",
+        name: "name",
+        type: "bytes16",
       },
       {
         internalType: "bytes32[]",
@@ -1328,6 +1364,11 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "setRecord",
@@ -1381,6 +1422,11 @@ const _abi = [
         name: "dataToSet",
         type: "bytes",
       },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
+      },
     ],
     name: "updateInField",
     outputs: [],
@@ -1418,6 +1464,11 @@ const _abi = [
         internalType: "bytes",
         name: "dataToSet",
         type: "bytes",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
       },
     ],
     name: "updateInField",

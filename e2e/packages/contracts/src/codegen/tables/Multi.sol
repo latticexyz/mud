@@ -83,7 +83,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
@@ -95,7 +95,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
@@ -107,7 +107,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)), getSchema());
   }
 
   /** Set num (using the specified store) */
@@ -118,7 +118,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((num)), getSchema());
   }
 
   /** Get value */
@@ -129,7 +129,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -141,7 +141,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -153,7 +153,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)));
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)), getSchema());
   }
 
   /** Set value (using the specified store) */
@@ -164,7 +164,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)));
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((value)), getSchema());
   }
 
   /** Get the full data */
@@ -201,7 +201,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -214,7 +214,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setRecord(_tableId, _keyTuple, _data);
+    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Set the full data using the data struct */
@@ -256,7 +256,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -267,7 +267,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }
 

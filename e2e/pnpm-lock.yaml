@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -144,6 +140,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
+      '@latticexyz/protocol-parser':
+        specifier: link:../../../packages/protocol-parser
+        version: link:../../../packages/protocol-parser
       '@latticexyz/recs':
         specifier: link:../../../packages/recs
         version: link:../../../packages/recs
@@ -2565,3 +2564,7 @@ packages:
     name: forge-std
     version: 1.6.0
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
