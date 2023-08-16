@@ -76,12 +76,13 @@ contract WorldTestSystem is System {
 
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
     bytes32[] memory key = new bytes32[](0);
+    bytes32 tableId = ResourceSelector.from(namespace, name);
+    Schema valueSchema = StoreSwitch.getSchema(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      bytes32 tableId = ResourceSelector.from(namespace, name);
-      StoreCore.setRecord(tableId, key, abi.encodePacked(data));
+      StoreCore.setRecord(tableId, key, abi.encodePacked(data), valueSchema);
     } else {
-      IBaseWorld(msg.sender).setRecord(namespace, name, key, abi.encodePacked(data));
+      IBaseWorld(msg.sender).setRecord(namespace, name, key, abi.encodePacked(data), valueSchema);
     }
   }
 
@@ -107,20 +108,32 @@ contract PayableFallbackSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
-    emit HookCalled(abi.encode(table, key, data));
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+    emit HookCalled(abi.encode(table, key, data, valueSchema));
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
-    emit HookCalled(abi.encode(table, key, schemaIndex, data));
+  function onBeforeSetField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) public {
+    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
   }
 
-  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
-    emit HookCalled(abi.encode(table, key, schemaIndex, data));
+  function onAfterSetField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) public {
+    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
   }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
-    emit HookCalled(abi.encode(table, key));
+  function onDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+    emit HookCalled(abi.encode(table, key, valueSchema));
   }
 }
 
@@ -180,7 +193,11 @@ contract WorldTest is Test, GasReporter {
 
     bytes32[] memory schemaKey = new bytes32[](1);
     schemaKey[0] = StoreCoreInternal.SCHEMA_TABLE;
-    bytes memory value = world.getRecord(StoreCoreInternal.SCHEMA_TABLE, schemaKey);
+    bytes memory value = world.getRecord(
+      StoreCoreInternal.SCHEMA_TABLE,
+      schemaKey,
+      SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32)
+    );
     assertEq(
       value,
       abi.encodePacked(
@@ -405,42 +422,44 @@ contract WorldTest is Test, GasReporter {
   function testSetField() public {
     bytes16 namespace = "testSetField";
     bytes16 name = "testTable";
+    Schema schema = Bool.getSchema();
 
     // Register a new table
-    bytes32 tableId = world.registerTable(namespace, name, Bool.getSchema(), defaultKeySchema);
+    bytes32 tableId = world.registerTable(namespace, name, schema, defaultKeySchema);
 
     startGasReport("Write data to a table field");
-    world.setField(namespace, name, singletonKey, 0, abi.encodePacked(true));
+    world.setField(namespace, name, singletonKey, 0, abi.encodePacked(true), schema);
     endGasReport();
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
 
     // Write data to the table via its tableId
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(false));
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(false), schema);
 
     // Expect the data to be written
     assertFalse(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access when calling via the namespace
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true));
+    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true), schema);
 
     // Expect an error when trying to write from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true));
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), schema);
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true));
+    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true), schema);
   }
 
   function testPushToField() public {
     bytes16 namespace = "testPushToField";
     bytes16 name = "testTable";
+    Schema schema = AddressArray.getSchema();
 
     // Register a new table
-    bytes32 tableId = world.registerTable(namespace, name, AddressArray.getSchema(), defaultKeySchema);
+    bytes32 tableId = world.registerTable(namespace, name, schema, defaultKeySchema);
 
     // Create data
     address[] memory dataToPush = new address[](3);
@@ -450,75 +469,76 @@ contract WorldTest is Test, GasReporter {
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
     startGasReport("Push data to the table");
-    world.pushToField(namespace, name, keyTuple, 0, encodedData);
+    world.pushToField(namespace, name, keyTuple, 0, encodedData, schema);
     endGasReport();
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Delete the data
-    world.deleteRecord(namespace, name, keyTuple);
+    world.deleteRecord(namespace, name, keyTuple, schema);
 
     // Push data to the table via direct access
-    world.pushToField(tableId, keyTuple, 0, encodedData);
+    world.pushToField(tableId, keyTuple, 0, encodedData, schema);
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access (via namespace/name)
     _expectAccessDenied(address(0x01), namespace, name);
-    world.pushToField(namespace, name, keyTuple, 0, encodedData);
+    world.pushToField(namespace, name, keyTuple, 0, encodedData, schema);
 
     // Expect an error when trying to write from an address that doesn't have access (via tableId)
     _expectAccessDenied(address(0x01), namespace, name);
-    world.pushToField(tableId, keyTuple, 0, encodedData);
+    world.pushToField(tableId, keyTuple, 0, encodedData, schema);
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.pushToField(namespace, name, keyTuple, 0, encodedData);
+    world.pushToField(namespace, name, keyTuple, 0, encodedData, schema);
   }
 
   function testDeleteRecord() public {
     bytes16 namespace = "testDeleteRecord";
     bytes16 name = "testTable";
+    Schema schema = Bool.getSchema();
 
     // Register a new table
-    bytes32 tableId = world.registerTable(namespace, name, Bool.getSchema(), defaultKeySchema);
+    bytes32 tableId = world.registerTable(namespace, name, schema, defaultKeySchema);
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(namespace, name, singletonKey, abi.encodePacked(true));
+    world.setRecord(namespace, name, singletonKey, abi.encodePacked(true), schema);
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
-    world.deleteRecord(namespace, name, singletonKey);
+    world.deleteRecord(namespace, name, singletonKey, schema);
     endGasReport();
 
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true));
+    world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true), schema);
     assertTrue(Bool.get(world, tableId));
 
     // Delete the record via the tableId and expect it to be deleted
-    world.deleteRecord(tableId, singletonKey);
+    world.deleteRecord(tableId, singletonKey, schema);
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true));
+    world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true), schema);
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access when calling via the namespace
     _expectAccessDenied(address(0x01), "testDeleteRecord", "testTable");
-    world.deleteRecord("testDeleteRecord", "testTable", singletonKey);
+    world.deleteRecord("testDeleteRecord", "testTable", singletonKey, schema);
 
     // Expect an error when trying to delete from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x02), "testDeleteRecord", "testTable");
-    world.deleteRecord(tableId, singletonKey);
+    world.deleteRecord(tableId, singletonKey, schema);
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.deleteRecord("testDeleteRecord", "testTable", singletonKey);
+    world.deleteRecord("testDeleteRecord", "testTable", singletonKey, schema);
   }
 
   function testCall() public {
@@ -593,6 +613,8 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterTableHook() public {
+    Schema schema = Bool.getSchema();
+
     // Register a new table
     bytes32 tableId = world.registerTable("", "testTable", Bool.getSchema(), defaultKeySchema);
 
@@ -605,8 +627,8 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the hook to be notified when a record is written
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value));
-    world.setRecord(tableId, singletonKey, value);
+    emit HookCalled(abi.encode(tableId, singletonKey, value, schema));
+    world.setRecord(tableId, singletonKey, value, schema);
 
     // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
     // (See https://github.com/latticexyz/mud/issues/444)

@@ -144,6 +144,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
+      '@latticexyz/protocol-parser':
+        specifier: link:../../../packages/protocol-parser
+        version: link:../../../packages/protocol-parser
       '@latticexyz/recs':
         specifier: link:../../../packages/recs
         version: link:../../../packages/recs
@@ -1313,6 +1316,7 @@ packages:
   /esm@3.2.25:
     resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
     engines: {node: '>=6'}
+    requiresBuild: true
     dev: false
     optional: true
 

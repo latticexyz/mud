@@ -5,6 +5,7 @@ import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
@@ -68,12 +69,18 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Write a record in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */
-  function setRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, bytes calldata data) public virtual {
+  function setRecord(
+    bytes16 namespace,
+    bytes16 name,
+    bytes32[] calldata key,
+    bytes calldata data,
+    Schema valueSchema
+  ) public virtual {
     // Require access to the namespace or name
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(resourceSelector, key, data);
+    StoreCore.setRecord(resourceSelector, key, data, valueSchema);
   }
 
   /**
@@ -85,13 +92,14 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes calldata data
+    bytes calldata data,
+    Schema valueSchema
   ) public virtual {
     // Require access to namespace or name
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Set the field
-    StoreCore.setField(resourceSelector, key, schemaIndex, data);
+    StoreCore.setField(resourceSelector, key, schemaIndex, data, valueSchema);
   }
 
   /**
@@ -103,13 +111,14 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes calldata dataToPush
+    bytes calldata dataToPush,
+    Schema valueSchema
   ) public virtual {
     // Require access to namespace or name
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(resourceSelector, key, schemaIndex, dataToPush);
+    StoreCore.pushToField(resourceSelector, key, schemaIndex, dataToPush, valueSchema);
   }
 
   /**
@@ -121,13 +130,14 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 byteLengthToPop
+    uint256 byteLengthToPop,
+    Schema valueSchema
   ) public virtual {
     // Require access to namespace or name
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(resourceSelector, key, schemaIndex, byteLengthToPop);
+    StoreCore.popFromField(resourceSelector, key, schemaIndex, byteLengthToPop, valueSchema);
   }
 
   /**
@@ -140,25 +150,26 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet
+    bytes calldata dataToSet,
+    Schema valueSchema
   ) public virtual {
     // Require access to namespace or name
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(resourceSelector, key, schemaIndex, startByteIndex, dataToSet);
+    StoreCore.updateInField(resourceSelector, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
   }
 
   /**
    * Delete a record in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) public virtual {
+  function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, Schema valueSchema) public virtual {
     // Require access to namespace or name
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(resourceSelector, key);
+    StoreCore.deleteRecord(resourceSelector, key, valueSchema);
   }
 
   /************************************************************************
@@ -172,8 +183,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * This overload exists to conform with the `IStore` interface.
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
-    setRecord(tableId.getNamespace(), tableId.getName(), key, data);
+  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public virtual {
+    setRecord(tableId.getNamespace(), tableId.getName(), key, data, valueSchema);
   }
 
   /**
@@ -185,9 +196,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes calldata data
+    bytes calldata data,
+    Schema valueSchema
   ) public virtual override {
-    setField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, data);
+    setField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, data, valueSchema);
   }
 
   /**
@@ -199,9 +211,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes calldata dataToPush
+    bytes calldata dataToPush,
+    Schema valueSchema
   ) public override {
-    pushToField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, dataToPush);
+    pushToField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, dataToPush, valueSchema);
   }
 
   /**
@@ -213,9 +226,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 byteLengthToPop
+    uint256 byteLengthToPop,
+    Schema valueSchema
   ) public override {
-    popFromField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, byteLengthToPop);
+    popFromField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, byteLengthToPop, valueSchema);
   }
 
   /**
@@ -228,9 +242,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet
+    bytes calldata dataToSet,
+    Schema valueSchema
   ) public virtual {
-    updateInField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, startByteIndex, dataToSet);
+    updateInField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, startByteIndex, dataToSet, valueSchema);
   }
 
   /**
@@ -238,8 +253,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * This overload exists to conform with the `IStore` interface.
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key) public virtual override {
-    deleteRecord(tableId.getNamespace(), tableId.getName(), key);
+  function deleteRecord(bytes32 tableId, bytes32[] calldata key, Schema valueSchema) public virtual override {
+    deleteRecord(tableId.getNamespace(), tableId.getName(), key, valueSchema);
   }
 
   /************************************************************************

@@ -3,7 +3,7 @@ import { Data } from "./types";
 import { encodeTestData } from "./encodeTestData";
 import { callWorld } from "./callWorld";
 import { stringToBytes16 } from "@latticexyz/utils";
-import { Hex, toHex } from "viem";
+import { toHex } from "viem";
 
 /**
  * Writes contract data by calling `world.setRecord` via the client
@@ -17,8 +17,9 @@ export async function setContractData(page: Page, data: Data) {
         // TODO: add support for multiple namespaces after https://github.com/latticexyz/mud/issues/994 is resolved
         toHex(stringToBytes16("")),
         toHex(stringToBytes16(table)),
-        record.key as Hex[],
-        record.value as Hex,
+        record.key,
+        record.value,
+        record.valueSchema,
       ]);
 
       // Wait for transactions to be confirmed

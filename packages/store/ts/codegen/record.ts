@@ -42,7 +42,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
       ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _data);
+      ${_store}.setRecord(_tableId, _keyTuple, _data, getSchema());
     }
   `
   );

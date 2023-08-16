@@ -107,6 +107,9 @@ importers:
       '@latticexyz/gas-report':
         specifier: workspace:*
         version: link:../gas-report
+      '@latticexyz/protocol-parser':
+        specifier: workspace:*
+        version: link:../protocol-parser
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type

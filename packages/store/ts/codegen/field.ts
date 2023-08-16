@@ -25,7 +25,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
         ${_keyTupleDefinition}
-        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex});
+        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex}, getSchema());
         return ${renderDecodeFieldSingle(field)};
       }
     `
@@ -42,7 +42,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedFieldName,
       ])}) internal {
         ${_keyTupleDefinition}
-        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)});
+        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, getSchema());
       }
     `
     );
@@ -108,7 +108,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded});
+          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, getSchema());
         }
       `
       );
@@ -123,7 +123,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength});
+          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, getSchema());
         }
       `
       );
@@ -149,7 +149,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
               _keyTuple,
               ${schemaIndex},
               _index * ${portionData.elementLength},
-              ${portionData.encoded}
+              ${portionData.encoded},
+              getSchema()
             );
           }
         }

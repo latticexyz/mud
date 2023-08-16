@@ -34,6 +34,7 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
     "@latticexyz/solecs": "workspace:*",

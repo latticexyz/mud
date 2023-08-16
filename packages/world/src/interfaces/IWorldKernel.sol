@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 
@@ -14,7 +15,13 @@ interface IWorldData {
    * Write a record in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */
-  function setRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, bytes calldata data) external;
+  function setRecord(
+    bytes16 namespace,
+    bytes16 name,
+    bytes32[] calldata key,
+    bytes calldata data,
+    Schema valueSchema
+  ) external;
 
   /**
    * Write a field in the table at the given namespace and name.
@@ -25,7 +32,8 @@ interface IWorldData {
     bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes calldata data
+    bytes calldata data,
+    Schema valueSchema
   ) external;
 
   /**
@@ -37,7 +45,8 @@ interface IWorldData {
     bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes calldata dataToPush
+    bytes calldata dataToPush,
+    Schema valueSchema
   ) external;
 
   /**
@@ -49,7 +58,8 @@ interface IWorldData {
     bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 byteLengthToPop
+    uint256 byteLengthToPop,
+    Schema valueSchema
   ) external;
 
   /**
@@ -62,14 +72,15 @@ interface IWorldData {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 startByteIndex,
-    bytes calldata dataToSet
+    bytes calldata dataToSet,
+    Schema valueSchema
   ) external;
 
   /**
    * Delete a record in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) external;
+  function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, Schema valueSchema) external;
 }
 
 interface IWorldModuleInstallation {
