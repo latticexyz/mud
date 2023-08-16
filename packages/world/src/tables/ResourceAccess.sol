@@ -72,7 +72,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -82,7 +82,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -92,7 +92,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), getSchema());
   }
 
   /** Set access (using the specified store) */
@@ -101,7 +101,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), getSchema());
   }
 
   /** Tightly pack full data using this table's schema */
@@ -110,10 +110,12 @@ library ResourceAccess {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
+  function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
@@ -122,7 +124,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -131,7 +133,7 @@ library ResourceAccess {
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }
 

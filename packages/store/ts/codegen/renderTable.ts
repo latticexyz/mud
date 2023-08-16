@@ -135,9 +135,9 @@ library ${libraryName} {
   }
   
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](${keyTuple.length});
-    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
+  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
+    ${_keyTupleDefinition}
+    return _keyTuple;
   }
 
   ${
@@ -148,7 +148,7 @@ library ${libraryName} {
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_keyTupleDefinition}
-      ${_store}.deleteRecord(_tableId, _keyTuple);
+      ${_store}.deleteRecord(_tableId, _keyTuple, getSchema());
     }
   `
         )

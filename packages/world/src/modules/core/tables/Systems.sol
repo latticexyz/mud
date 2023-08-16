@@ -72,7 +72,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -81,7 +81,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -90,7 +90,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), getSchema());
   }
 
   /** Set system (using the specified store) */
@@ -98,7 +98,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), getSchema());
   }
 
   /** Get publicAccess */
@@ -106,7 +106,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -115,7 +115,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -124,7 +124,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)));
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), getSchema());
   }
 
   /** Set publicAccess (using the specified store) */
@@ -132,7 +132,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)));
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), getSchema());
   }
 
   /** Get the full data */
@@ -160,7 +160,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -170,7 +170,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setRecord(_tableId, _keyTuple, _data);
+    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -186,9 +186,11 @@ library Systems {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
@@ -196,7 +198,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -204,7 +206,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }
 

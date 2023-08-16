@@ -38,9 +38,6 @@ importers:
       '@latticexyz/dev-tools':
         specifier: link:../../../../packages/dev-tools
         version: link:../../../../packages/dev-tools
-      '@latticexyz/network':
-        specifier: link:../../../../packages/network
-        version: link:../../../../packages/network
       '@latticexyz/phaserx':
         specifier: link:../../../../packages/phaserx
         version: link:../../../../packages/phaserx
@@ -56,9 +53,6 @@ importers:
       '@latticexyz/services':
         specifier: link:../../../../packages/services
         version: link:../../../../packages/services
-      '@latticexyz/std-client':
-        specifier: link:../../../../packages/std-client
-        version: link:../../../../packages/std-client
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync
@@ -162,9 +156,6 @@ importers:
       '@latticexyz/dev-tools':
         specifier: link:../../../../packages/dev-tools
         version: link:../../../../packages/dev-tools
-      '@latticexyz/network':
-        specifier: link:../../../../packages/network
-        version: link:../../../../packages/network
       '@latticexyz/react':
         specifier: link:../../../../packages/react
         version: link:../../../../packages/react
@@ -177,9 +168,6 @@ importers:
       '@latticexyz/services':
         specifier: link:../../../../packages/services
         version: link:../../../../packages/services
-      '@latticexyz/std-client':
-        specifier: link:../../../../packages/std-client
-        version: link:../../../../packages/std-client
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync
@@ -265,9 +253,6 @@ importers:
       '@latticexyz/dev-tools':
         specifier: link:../../../../packages/dev-tools
         version: link:../../../../packages/dev-tools
-      '@latticexyz/network':
-        specifier: link:../../../../packages/network
-        version: link:../../../../packages/network
       '@latticexyz/recs':
         specifier: link:../../../../packages/recs
         version: link:../../../../packages/recs
@@ -277,9 +262,6 @@ importers:
       '@latticexyz/services':
         specifier: link:../../../../packages/services
         version: link:../../../../packages/services
-      '@latticexyz/std-client':
-        specifier: link:../../../../packages/std-client
-        version: link:../../../../packages/std-client
       '@latticexyz/store-sync':
         specifier: link:../../../../packages/store-sync
         version: link:../../../../packages/store-sync

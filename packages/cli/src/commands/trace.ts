@@ -5,14 +5,16 @@ import { ethers } from "ethers";
 import { loadConfig } from "@latticexyz/config/node";
 import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { TableId } from "@latticexyz/common/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import worldConfig from "@latticexyz/world/mud.config.js";
+import { tableIdToHex } from "@latticexyz/common";
 import { getChainId, getExistingContracts } from "../utils";
 
-const systemsTableId = new TableId("", "Systems");
+// TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
+const systemsTableId = tableIdToHex(worldConfig.namespace, worldConfig.tables.Systems.name);
 
 type Options = {
   tx: string;
@@ -70,11 +72,13 @@ const commandModule: CommandModule<Options, Options> = {
     const namespace = mudConfig.namespace;
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
+    // Fetch system table schema from chain
+    const systemTableSchema = await WorldContract.getSchema(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
-      const systemSelector = new TableId(namespace, name);
+      const systemSelector = tableIdToHex(namespace, name);
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId.toHex(), [systemSelector.toHex()], 0);
+      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableSchema);
       labels.push({ name, address });
     }
 

@@ -25,7 +25,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
         ${_keyTupleDefinition}
-        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex});
+        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex}, getSchema());
         return ${renderDecodeFieldSingle(field)};
       }
     `
@@ -42,7 +42,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedFieldName,
       ])}) internal {
         ${_keyTupleDefinition}
-        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)});
+        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, getSchema());
       }
     `
     );
@@ -61,7 +61,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
         ])}) internal view returns (uint256) {
           ${_keyTupleDefinition}
           uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, getSchema());
-          return _byteLength / ${portionData.elementLength};
+          unchecked {
+            return _byteLength / ${portionData.elementLength};
+          }
         }
       `
       );
@@ -69,7 +71,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
-        /** Get an item of ${field.name}${_commentSuffix} (unchecked, returns invalid data if index overflows) */
+        /**
+         * Get an item of ${field.name}${_commentSuffix}
+         * (unchecked, returns invalid data if index overflows)
+         */
         function getItem${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
@@ -77,15 +82,17 @@ export function renderFieldMethods(options: RenderTableOptions) {
           "uint256 _index",
         ])}) internal view returns (${portionData.typeWithLocation}) {
           ${_keyTupleDefinition}
-          bytes memory _blob = ${_store}.getFieldSlice(
-            _tableId,
-            _keyTuple,
-            ${schemaIndex},
-            getSchema(),
-            _index * ${portionData.elementLength},
-            (_index + 1) * ${portionData.elementLength}
-          );
-          return ${portionData.decoded};
+          unchecked {
+            bytes memory _blob = ${_store}.getFieldSlice(
+              _tableId,
+              _keyTuple,
+              ${schemaIndex},
+              getSchema(),
+              _index * ${portionData.elementLength},
+              (_index + 1) * ${portionData.elementLength}
+            );
+            return ${portionData.decoded};
+          }
         }
       `
       );
@@ -101,7 +108,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded});
+          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, getSchema());
         }
       `
       );
@@ -116,7 +123,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength});
+          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, getSchema());
         }
       `
       );
@@ -124,7 +131,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
-        /** Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\` */
+        /**
+         * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
+         * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+         */
         function update${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
@@ -133,13 +143,16 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.updateInField(
-            _tableId,
-            _keyTuple,
-            ${schemaIndex},
-            _index * ${portionData.elementLength},
-            ${portionData.encoded}
-          );
+          unchecked {
+            ${_store}.updateInField(
+              _tableId,
+              _keyTuple,
+              ${schemaIndex},
+              _index * ${portionData.elementLength},
+              ${portionData.encoded},
+              getSchema()
+            );
+          }
         }
       `
       );

@@ -74,7 +74,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
@@ -85,7 +85,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
@@ -96,7 +96,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getSchema());
   }
 
   /** Set amount (using the specified store) */
@@ -106,7 +106,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getSchema());
   }
 
   /** Tightly pack full data using this table's schema */
@@ -115,15 +115,13 @@ library Inventory {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(
-    address owner,
-    uint32 item,
-    uint32 itemVariant
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](3);
+  function encodeKeyTuple(address owner, uint32 item, uint32 itemVariant) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
@@ -133,7 +131,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -143,6 +141,6 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }

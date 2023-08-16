@@ -70,7 +70,7 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -79,7 +79,7 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -88,7 +88,7 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), getSchema());
   }
 
   /** Set owner (using the specified store) */
@@ -96,7 +96,7 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), getSchema());
   }
 
   /** Tightly pack full data using this table's schema */
@@ -105,9 +105,11 @@ library NamespaceOwner {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
@@ -115,7 +117,7 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -123,6 +125,6 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getSchema());
   }
 }
