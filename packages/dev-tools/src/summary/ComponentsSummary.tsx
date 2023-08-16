@@ -1,25 +1,25 @@
 import { World } from "@latticexyz/recs";
 import { NavButton } from "../NavButton";
-import { isStoreComponent } from "@latticexyz/store-sync/recs";
+import { getComponentName } from "../recs/getComponentName";
 
 type Props = {
   world: World;
 };
 
 export function ComponentsSummary({ world }: Props) {
-  const componentsWithName = world.components.filter(isStoreComponent);
+  const components = [...world.components].sort((a, b) => getComponentName(a).localeCompare(getComponentName(b)));
   return (
     <>
-      {componentsWithName.length ? (
+      {components.length ? (
         <>
           <div className="flex flex-col gap-1 items-start">
-            {componentsWithName.map((component) => (
+            {components.map((component) => (
               <NavButton
                 key={component.id}
                 to={`/components/${component.id}`}
                 className="font-mono text-xs hover:text-white"
               >
-                {String(component.metadata.componentName)}
+                {getComponentName(component)}
               </NavButton>
             ))}
           </div>

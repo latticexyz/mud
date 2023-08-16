@@ -1,5 +1,5 @@
 import { createPublicClient, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
-import { createFaucetService } from "@latticexyz/network";
+import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
@@ -17,8 +17,6 @@ export async function setupNetwork() {
     transport: transportObserver(http(networkConfig.rpcHttpUrl ?? undefined)),
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
-
-  console.log("client options", clientOptions);
 
   const publicClient = createPublicClient(clientOptions);
 

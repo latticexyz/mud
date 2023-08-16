@@ -1,4 +1,12 @@
-import { BlockTag, Hex, PublicClient } from "viem";
+import {
+  BaseError,
+  BlockTag,
+  Hex,
+  NonceTooHighError,
+  NonceTooLowError,
+  PublicClient,
+  TransactionExecutionError,
+} from "viem";
 import { debug as parentDebug } from "./debug";
 
 const debug = parentDebug.extend("createNonceManager");
@@ -55,7 +63,10 @@ export function createNonceManager({
   }
 
   function shouldResetNonce(error: unknown): boolean {
-    return /already known|nonce too low/.test(String(error));
+    return (
+      error instanceof BaseError &&
+      error.walk((e) => e instanceof NonceTooLowError || e instanceof NonceTooHighError) != null
+    );
   }
 
   return {

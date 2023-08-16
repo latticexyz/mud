@@ -192,18 +192,6 @@
     "gasUsed": 68048
   },
   {
-    "file": "test/SnapSyncModule.t.sol",
-    "test": "testSnapSyncGas",
-    "name": "Call snap sync on a table with 1 record",
-    "gasUsed": 38704
-  },
-  {
-    "file": "test/SnapSyncModule.t.sol",
-    "test": "testSnapSyncGas",
-    "name": "Call snap sync on a table with 2 records",
-    "gasUsed": 55555
-  },
-  {
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
