@@ -2,4 +2,4 @@
 "@latticexyz/store-sync": patch
 ---
 
-add more logging to waitForTransaction
+add more logging to `waitForTransaction`
