@@ -240,12 +240,14 @@ library Multi {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(uint32 a, bool b, uint256 c, int120 d) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](4);
+  function encodeKeyTuple(uint32 a, bool b, uint256 c, int120 d) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
     _keyTuple[1] = _boolToBytes32(b);
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */

@@ -164,14 +164,16 @@ library KeyEncoding {
     address k4,
     bool k5,
     ExampleEnum k6
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](6);
+  ) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
