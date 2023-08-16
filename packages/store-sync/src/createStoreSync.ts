@@ -157,9 +157,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
       debug("waiting for tx block to be processed", tx, receipt.blockNumber);
       await firstValueFrom(
-        blockStorageOperations$.pipe(
-          filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
-        )
+        blockStorageOperations$.pipe(filter(({ blockNumber }) => blockNumber >= receipt.blockNumber))
       );
     }
 
