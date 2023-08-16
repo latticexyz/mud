@@ -5,7 +5,6 @@ import {
   renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
-  renderValueTypeToBytes32,
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
