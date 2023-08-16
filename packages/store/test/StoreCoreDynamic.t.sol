@@ -36,7 +36,11 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
   function setUp() public {
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     StoreCore.registerTable(_table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key
