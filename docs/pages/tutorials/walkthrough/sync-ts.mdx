@@ -10,7 +10,7 @@ It performs several actions.
 ## Find table registration events
 
 The data structure for a `World` is not static, new tables can be added om the fly.
-When new tables are added, the schema table (`mud:schema`) is updated with the table information, and the synchronization code uses that update.
+When new tables are added, the schema table (`mud:schema`) is updated with the table information, and the synchronization code uses that update to identify the new table.
 
 ```ts
 const newTableKeys = new Set<TableKey>();
