@@ -135,7 +135,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of v2 (using the specified store) */
@@ -143,23 +145,35 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
-  /** Get an item of v2 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of v2
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemV2(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
-  /** Get an item of v2 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of v2 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemV2(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to v2 */
@@ -190,18 +204,28 @@ library Singleton {
     _store.popFromField(_tableId, _keyTuple, 1, 4);
   }
 
-  /** Update an element of v2 at `_index` */
+  /**
+   * Update an element of v2 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateV2(uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of v2 (using the specified store) at `_index` */
+  /**
+   * Update an element of v2 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateV2(IStore _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Get v3 */
@@ -239,7 +263,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of v3 (using the specified store) */
@@ -247,23 +273,35 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
-  /** Get an item of v3 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of v3
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemV3(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
-  /** Get an item of v3 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of v3 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemV3(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to v3 */
@@ -294,18 +332,28 @@ library Singleton {
     _store.popFromField(_tableId, _keyTuple, 2, 4);
   }
 
-  /** Update an element of v3 at `_index` */
+  /**
+   * Update an element of v3 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateV3(uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of v3 (using the specified store) at `_index` */
+  /**
+   * Update an element of v3 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateV3(IStore _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Get v4 */
@@ -343,7 +391,9 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of v4 (using the specified store) */
@@ -351,23 +401,35 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
-  /** Get an item of v4 (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of v4
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemV4(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
-  /** Get an item of v4 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of v4 (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItemV4(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to v4 */
@@ -398,18 +460,28 @@ library Singleton {
     _store.popFromField(_tableId, _keyTuple, 3, 4);
   }
 
-  /** Update an element of v4 at `_index` */
+  /**
+   * Update an element of v4 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateV4(uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of v4 (using the specified store) at `_index` */
+  /**
+   * Update an element of v4 (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function updateV4(IStore _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Get the full data */
@@ -448,7 +520,10 @@ library Singleton {
     _store.setRecord(_tableId, _keyTuple, _data);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema.
+   * Undefined behaviour for invalid blobs.
+   */
   function decode(
     bytes memory _blob
   ) internal pure returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
@@ -459,20 +534,24 @@ library Singleton {
 
     // Store trims the blob if dynamic fields are all empty
     if (_blob.length > 32) {
-      uint256 _start;
       // skip static data length + dynamic lengths word
-      uint256 _end = 64;
-
-      _start = _end;
-      _end += _encodedLengths.atIndex(0);
+      uint256 _start = 64;
+      uint256 _end;
+      unchecked {
+        _end = 64 + _encodedLengths.atIndex(0);
+      }
       v2 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(1);
+      unchecked {
+        _end += _encodedLengths.atIndex(1);
+      }
       v3 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
       _start = _end;
-      _end += _encodedLengths.atIndex(2);
+      unchecked {
+        _end += _encodedLengths.atIndex(2);
+      }
       v4 = toStaticArray_uint32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
     }
   }
