@@ -81,7 +81,7 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 2707
+    "gasUsed": 2571
   },
   {
     "file": "test/Gas.t.sol",
@@ -267,7 +267,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "get record from Mixed",
-    "gasUsed": 12406
+    "gasUsed": 12270
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -771,7 +771,7 @@
     "file": "test/StoreMetadata.t.sol",
     "test": "testSetAndGet",
     "name": "get record from StoreMetadataTable",
-    "gasUsed": 11544
+    "gasUsed": 11408
   },
   {
     "file": "test/StoreSwitch.t.sol",
@@ -837,7 +837,7 @@
     "file": "test/tables/Hooks.t.sol",
     "test": "testTable",
     "name": "Hooks: update 1 element (warm)",
-    "gasUsed": 17736
+    "gasUsed": 17664
   },
   {
     "file": "test/tables/Hooks.t.sol",
@@ -867,13 +867,13 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "Hooks: get 1 element (cold)",
-    "gasUsed": 7786
+    "gasUsed": 7560
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testLength",
     "name": "Hooks: get length (cold)",
-    "gasUsed": 7536
+    "gasUsed": 7482
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",
@@ -885,7 +885,7 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testUpdate",
     "name": "Hooks: update 1 element (cold)",
-    "gasUsed": 27309
+    "gasUsed": 27237
   },
   {
     "file": "test/tightcoder/DecodeSlice.t.sol",

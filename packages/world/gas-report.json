@@ -15,7 +15,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "set a record on a table with keysInTableModule installed",
-    "gasUsed": 192428
+    "gasUsed": 192374
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -39,7 +39,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "delete a composite record on a table with keysInTableModule installed",
-    "gasUsed": 285975
+    "gasUsed": 285045
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -57,7 +57,7 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "delete a record on a table with keysInTableModule installed",
-    "gasUsed": 146729
+    "gasUsed": 146383
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -129,31 +129,31 @@
     "file": "test/query.t.sol",
     "test": "testCombinedHasHasValueNotQuery",
     "name": "CombinedHasHasValueNotQuery",
-    "gasUsed": 160528
+    "gasUsed": 158332
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasHasValueQuery",
     "name": "CombinedHasHasValueQuery",
-    "gasUsed": 75468
+    "gasUsed": 74736
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasNotQuery",
     "name": "CombinedHasNotQuery",
-    "gasUsed": 219638
+    "gasUsed": 215752
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasQuery",
     "name": "CombinedHasQuery",
-    "gasUsed": 138134
+    "gasUsed": 135884
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasValueNotQuery",
     "name": "CombinedHasValueNotQuery",
-    "gasUsed": 137103
+    "gasUsed": 134907
   },
   {
     "file": "test/query.t.sol",
@@ -165,19 +165,19 @@
     "file": "test/query.t.sol",
     "test": "testHasQuery",
     "name": "HasQuery",
-    "gasUsed": 31173
+    "gasUsed": 30667
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery1000Keys",
     "name": "HasQuery with 1000 keys",
-    "gasUsed": 10655523
+    "gasUsed": 10429469
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery100Keys",
     "name": "HasQuery with 100 keys",
-    "gasUsed": 993826
+    "gasUsed": 971172
   },
   {
     "file": "test/query.t.sol",
@@ -189,19 +189,7 @@
     "file": "test/query.t.sol",
     "test": "testNotValueQuery",
     "name": "NotValueQuery",
-    "gasUsed": 69064
-  },
-  {
-    "file": "test/SnapSyncModule.t.sol",
-    "test": "testSnapSyncGas",
-    "name": "Call snap sync on a table with 1 record",
-    "gasUsed": 40012
-  },
-  {
-    "file": "test/SnapSyncModule.t.sol",
-    "test": "testSnapSyncGas",
-    "name": "Call snap sync on a table with 2 records",
-    "gasUsed": 58041
+    "gasUsed": 68332
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
