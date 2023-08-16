@@ -106,7 +106,9 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
   /** Get the length of keysWithValue (using the specified store) */
@@ -115,25 +117,44 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 32;
+    unchecked {
+      return _byteLength / 32;
+    }
   }
 
-  /** Get an item of keysWithValue (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keysWithValue
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getSchema(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
-  /** Get an item of keysWithValue (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of keysWithValue (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(IStore _store, bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
-    return (Bytes.slice32(_blob, 0));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 32, (_index + 1) * 32);
+      return (Bytes.slice32(_blob, 0));
+    }
   }
 
   /** Push an element to keysWithValue */
@@ -168,20 +189,30 @@ library KeysWithValue {
     _store.popFromField(_tableId, _keyTuple, 0, 32);
   }
 
-  /** Update an element of keysWithValue at `_index` */
+  /**
+   * Update an element of keysWithValue at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(bytes32 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of keysWithValue (using the specified store) at `_index` */
+  /**
+   * Update an element of keysWithValue (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(IStore _store, bytes32 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)));
+    }
   }
 
   /** Tightly pack full data using this table's schema */
@@ -194,9 +225,11 @@ library KeysWithValue {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 valueHash) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](1);
+  function encodeKeyTuple(bytes32 valueHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */

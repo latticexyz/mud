@@ -10,16 +10,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
-    "./dev": "./dist/dev/index.js"
+    "./deprecated": "./dist/deprecated.js"
   },
   "typesVersions": {
     "*": {
-      "index": [
-        "./src/index.ts"
-      ],
-      "dev": [
-        "./src/dev/index.ts"
+      "deprecated": [
+        "./src/deprecated/index.ts"
       ]
     }
   },
@@ -36,7 +32,6 @@
     "@latticexyz/cli": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/network": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/solecs": "workspace:*",
     "@latticexyz/store": "workspace:*",

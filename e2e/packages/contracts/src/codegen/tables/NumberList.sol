@@ -99,7 +99,9 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
   /** Get the length of value (using the specified store) */
@@ -107,23 +109,35 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
-    return _byteLength / 4;
+    unchecked {
+      return _byteLength / 4;
+    }
   }
 
-  /** Get an item of value (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
-  /** Get an item of value (using the specified store) (unchecked, returns invalid data if index overflows) */
+  /**
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
   function getItem(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 4, (_index + 1) * 4);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 4, (_index + 1) * 4);
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
   }
 
   /** Push an element to value */
@@ -154,18 +168,28 @@ library NumberList {
     _store.popFromField(_tableId, _keyTuple, 0, 4);
   }
 
-  /** Update an element of value at `_index` */
+  /**
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
-  /** Update an element of value (using the specified store) at `_index` */
+  /**
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
   function update(IStore _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)));
+    }
   }
 
   /** Tightly pack full data using this table's schema */
@@ -178,8 +202,10 @@ library NumberList {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](0);
+  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
