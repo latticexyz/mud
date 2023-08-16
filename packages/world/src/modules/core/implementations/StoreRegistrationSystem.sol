@@ -36,7 +36,7 @@ contract StoreRegistrationSystem is IStoreRegistration, System {
   ) public virtual {
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
-    // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
+    // We can't call IBaseWorld(this).registerTable directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: _msgSender(),
