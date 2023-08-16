@@ -8,8 +8,8 @@ const result = await indexer.findAll.query({
   address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
 });
 
-const blockNum = result.blockNumber;
-console.log(`Block number: ${blockNum}`);
+const blockNumber = result.blockNumber;
+console.log(`Block number: ${blockNumber}`);
 
 console.log(`Tables: ${result.tables.map((t) => t.name)}`);
 
