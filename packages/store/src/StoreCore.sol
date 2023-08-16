@@ -8,7 +8,7 @@ import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { Hooks, TableData, HooksTableId } from "./codegen/Tables.sol";
+import { Hooks, TableMetadata, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
@@ -33,7 +33,7 @@ library StoreCore {
     StoreSwitch.setStoreAddress(address(this));
 
     // Register internal tables
-    TableData.register();
+    TableMetadata.register();
     Hooks.register();
   }
 
@@ -47,7 +47,7 @@ library StoreCore {
    * Get the schema for the given tableId
    */
   function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
-    valueSchema = Schema.wrap(TableData.getValueSchema(tableId));
+    valueSchema = Schema.wrap(TableMetadata.getValueSchema(tableId));
     if (valueSchema.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
@@ -57,7 +57,7 @@ library StoreCore {
    * Get the key schema for the given tableId
    */
   function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
-    keySchema = Schema.wrap(TableData.getKeySchema(tableId));
+    keySchema = Schema.wrap(TableMetadata.getKeySchema(tableId));
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
     if (!hasTable(tableId)) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
@@ -68,7 +68,7 @@ library StoreCore {
    * Check if a table with the given tableId exists
    */
   function hasTable(bytes32 tableId) internal view returns (bool) {
-    return TableData.getValueSchema(tableId) != bytes32(0);
+    return TableMetadata.getValueSchema(tableId) != bytes32(0);
   }
 
   /**
@@ -101,7 +101,7 @@ library StoreCore {
     }
 
     // Register the schema
-    TableData.set(
+    TableMetadata.set(
       tableId,
       Schema.unwrap(keySchema),
       Schema.unwrap(valueSchema),

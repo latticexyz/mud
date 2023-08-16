@@ -17,17 +17,17 @@ import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("TableData")));
-bytes32 constant TableDataTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("TableMetadata")));
+bytes32 constant TableMetadataTableId = _tableId;
 
-struct TableDataData {
+struct TableMetadataData {
   bytes32 keySchema;
   bytes32 valueSchema;
   bytes abiEncodedKeyNames;
   bytes abiEncodedFieldNames;
 }
 
-library TableData {
+library TableMetadata {
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -453,7 +453,7 @@ library TableData {
   }
 
   /** Get the full data */
-  function get(bytes32 tableId) internal view returns (TableDataData memory _table) {
+  function get(bytes32 tableId) internal view returns (TableMetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -462,7 +462,7 @@ library TableData {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 tableId) internal view returns (TableDataData memory _table) {
+  function get(IStore _store, bytes32 tableId) internal view returns (TableMetadataData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -504,12 +504,12 @@ library TableData {
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 tableId, TableDataData memory _table) internal {
+  function set(bytes32 tableId, TableMetadataData memory _table) internal {
     set(tableId, _table.keySchema, _table.valueSchema, _table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 tableId, TableDataData memory _table) internal {
+  function set(IStore _store, bytes32 tableId, TableMetadataData memory _table) internal {
     set(_store, tableId, _table.keySchema, _table.valueSchema, _table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
   }
 
@@ -517,7 +517,7 @@ library TableData {
    * Decode the tightly packed blob using this table's schema.
    * Undefined behaviour for invalid blobs.
    */
-  function decode(bytes memory _blob) internal pure returns (TableDataData memory _table) {
+  function decode(bytes memory _blob) internal pure returns (TableMetadataData memory _table) {
     // 64 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 64));
 

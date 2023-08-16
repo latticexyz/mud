@@ -13,7 +13,7 @@ import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { TableData, TableDataTableId } from "../src/codegen/Tables.sol";
+import { TableMetadata, TableMetadataTableId } from "../src/codegen/Tables.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
@@ -55,9 +55,9 @@ contract StoreCoreTest is Test, StoreMock {
     key[0] = bytes32(table);
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(
-      TableDataTableId,
+      TableMetadataTableId,
       key,
-      TableData.encode(keySchema.unwrap(), valueSchema.unwrap(), abi.encode(keyNames), abi.encode(fieldNames))
+      TableMetadata.encode(keySchema.unwrap(), valueSchema.unwrap(), abi.encode(keyNames), abi.encode(fieldNames))
     );
     IStore(this).registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
 
@@ -67,10 +67,10 @@ contract StoreCoreTest is Test, StoreMock {
     Schema loadedKeySchema = IStore(this).getKeySchema(table);
     assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = TableData.getAbiEncodedKeyNames(IStore(this), table);
+    bytes memory loadedKeyNames = TableMetadata.getAbiEncodedKeyNames(IStore(this), table);
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = TableData.getAbiEncodedFieldNames(IStore(this), table);
+    bytes memory loadedFieldNames = TableMetadata.getAbiEncodedFieldNames(IStore(this), table);
     assertEq(loadedFieldNames, abi.encode(fieldNames));
   }
 
