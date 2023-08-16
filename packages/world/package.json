@@ -15,7 +15,6 @@
     "./node": "./dist/ts/node/index.js",
     "./abi/*": "./abi/*",
     "./types/*": "./types/*",
-    "./snapsync": "./dist/ts/plugins/snapsync/index.js",
     "./*": "./dist/*"
   },
   "typesVersions": {
@@ -28,9 +27,6 @@
       ],
       "node": [
         "./ts/node/index.ts"
-      ],
-      "snapsync": [
-        "./ts/plugins/snapsync/index.ts"
       ]
     }
   },
