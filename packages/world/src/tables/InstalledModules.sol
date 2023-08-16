@@ -179,13 +179,12 @@ library InstalledModules {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(
-    bytes16 moduleName,
-    bytes32 argumentsHash
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
+  function encodeKeyTuple(bytes16 moduleName, bytes32 argumentsHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */

@@ -110,10 +110,12 @@ library ResourceAccess {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](2);
+  function encodeKeyTuple(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = resourceSelector;
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */

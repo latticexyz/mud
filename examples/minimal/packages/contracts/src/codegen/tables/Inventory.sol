@@ -115,15 +115,13 @@ library Inventory {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(
-    address owner,
-    uint32 item,
-    uint32 itemVariant
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](3);
+  function encodeKeyTuple(address owner, uint32 item, uint32 itemVariant) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
