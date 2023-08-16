@@ -243,7 +243,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register KeyEncoding schema",
-    "gasUsed": 679614
+    "gasUsed": 679626
   },
   {
     "file": "test/Mixed.t.sol",
@@ -255,7 +255,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Mixed schema",
-    "gasUsed": 540053
+    "gasUsed": 540065
   },
   {
     "file": "test/Mixed.t.sol",
@@ -543,13 +543,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHasSchema",
     "name": "Check for existence of table (existent)",
-    "gasUsed": 6813
+    "gasUsed": 6819
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHasSchema",
     "name": "check for existence of table (non-existent)",
-    "gasUsed": 8815
+    "gasUsed": 8821
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -615,19 +615,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "StoreCore: register schema",
-    "gasUsed": 601170
+    "gasUsed": 601182
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "StoreCore: get schema (warm)",
-    "gasUsed": 6827
+    "gasUsed": 6833
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "StoreCore: get key schema (warm)",
-    "gasUsed": 13036
+    "gasUsed": 13048
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -921,7 +921,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Vector2 schema",
-    "gasUsed": 400673
+    "gasUsed": 400685
   },
   {
     "file": "test/Vector2.t.sol",
