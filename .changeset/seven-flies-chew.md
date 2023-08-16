@@ -1,5 +1,6 @@
 ---
 "@latticexyz/services": major
+"create-mud": patch
 ---
 
 Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.

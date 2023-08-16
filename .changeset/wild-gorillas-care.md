@@ -1,6 +1,7 @@
 ---
 "@latticexyz/std-client": major
 "@latticexyz/common": minor
+"create-mud": patch
 ---
 
 Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
