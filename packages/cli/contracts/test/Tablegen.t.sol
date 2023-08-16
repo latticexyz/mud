@@ -10,7 +10,7 @@ import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
 contract TablegenTest is Test, StoreReadWithStubs {
   function testStaticsSetAndGet() public {
-    Statics.registerSchema();
+    Statics.register();
 
     uint256 k1 = 1;
     int32 k2 = -1;
@@ -29,8 +29,8 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testDynamicsSetAndGet() public {
-    Dynamics1.registerSchema();
-    Dynamics2.registerSchema();
+    Dynamics1.register();
+    Dynamics2.register();
 
     bytes32 key = keccak256("key");
 
@@ -93,7 +93,7 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testDynamicsPushAndPop() public {
-    Dynamics2.registerSchema();
+    Dynamics2.register();
 
     bytes32 key = keccak256("key");
 
@@ -123,7 +123,7 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testSingletonSetAndGet() public {
-    Singleton.registerSchema();
+    Singleton.register();
 
     Singleton.set(-10, [uint32(1), 2], [uint32(3), 4], [uint32(5)]);
     assertEq(Singleton.getV1(), -10);
@@ -145,7 +145,7 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testEphemeral() public {
-    Ephemeral.registerSchema();
+    Ephemeral.register();
 
     Ephemeral.emitEphemeral("key", 123);
   }

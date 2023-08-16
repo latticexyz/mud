@@ -21,8 +21,16 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Funct
 bytes32 constant FunctionSelectorsTableId = _tableId;
 
 library FunctionSelectors {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
+  /** Get the table's key schema */
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.BYTES4;
+
+    return SchemaLib.encode(_schema);
+  }
+
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
     _schema[0] = SchemaType.BYTES16;
     _schema[1] = SchemaType.BYTES16;
@@ -31,42 +39,28 @@ library FunctionSelectors {
     return SchemaLib.encode(_schema);
   }
 
-  function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES4;
-
-    return SchemaLib.encode(_schema);
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](1);
+    keyNames[0] = "functionSelector";
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](3);
-    _fieldNames[0] = "namespace";
-    _fieldNames[1] = "name";
-    _fieldNames[2] = "systemFunctionSelector";
-    return ("FunctionSelectors", _fieldNames);
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](3);
+    fieldNames[0] = "namespace";
+    fieldNames[1] = "name";
+    fieldNames[2] = "systemFunctionSelector";
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Register the table's key schema, value schema, key names and value names */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
-  }
-
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
-  }
-
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get namespace */
@@ -74,7 +68,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (Bytes.slice16(_blob, 0));
   }
 
@@ -83,7 +77,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (Bytes.slice16(_blob, 0));
   }
 
@@ -92,7 +86,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((namespace)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((namespace)), getValueSchema());
   }
 
   /** Set namespace (using the specified store) */
@@ -100,7 +94,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((namespace)), getSchema());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((namespace)), getValueSchema());
   }
 
   /** Get name */
@@ -108,7 +102,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getValueSchema());
     return (Bytes.slice16(_blob, 0));
   }
 
@@ -117,7 +111,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getValueSchema());
     return (Bytes.slice16(_blob, 0));
   }
 
@@ -126,7 +120,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((name)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((name)), getValueSchema());
   }
 
   /** Set name (using the specified store) */
@@ -134,7 +128,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((name)), getSchema());
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((name)), getValueSchema());
   }
 
   /** Get systemFunctionSelector */
@@ -142,7 +136,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getValueSchema());
     return (Bytes.slice4(_blob, 0));
   }
 
@@ -154,7 +148,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getValueSchema());
     return (Bytes.slice4(_blob, 0));
   }
 
@@ -163,7 +157,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)), getValueSchema());
   }
 
   /** Set systemFunctionSelector (using the specified store) */
@@ -171,7 +165,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)), getSchema());
+    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((systemFunctionSelector)), getValueSchema());
   }
 
   /** Get the full data */
@@ -181,7 +175,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getValueSchema());
     return decode(_blob);
   }
 
@@ -193,7 +187,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getValueSchema());
     return decode(_blob);
   }
 
@@ -204,7 +198,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -220,7 +214,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
+    _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -252,7 +246,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -260,6 +254,6 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.deleteRecord(_tableId, _keyTuple, getSchema());
+    _store.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 }
