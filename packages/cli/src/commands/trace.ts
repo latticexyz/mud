@@ -10,13 +10,11 @@ import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config";
-import { schemaToHex } from "@latticexyz/protocol-parser";
 import { tableIdToHex } from "@latticexyz/common";
 import { getChainId, getExistingContracts } from "../utils";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = tableIdToHex(worldConfig.namespace, worldConfig.tables.Systems.name);
-const systemTableSchema = schemaToHex({ staticFields: ["address", "bool"], dynamicFields: [] });
 
 type Options = {
   tx: string;
@@ -74,6 +72,8 @@ const commandModule: CommandModule<Options, Options> = {
     const namespace = mudConfig.namespace;
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
+    // Fetch system table schema from chain
+    const systemTableSchema = await WorldContract.getValueSchema(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
       const systemSelector = tableIdToHex(namespace, name);
