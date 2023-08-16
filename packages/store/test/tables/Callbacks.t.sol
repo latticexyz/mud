@@ -8,7 +8,7 @@ import { Callbacks } from "../../src/codegen/Tables.sol";
 
 contract CallbacksTest is Test, GasReporter, StoreReadWithStubs {
   function testSetAndGet() public {
-    Callbacks.registerSchema();
+    Callbacks.register();
     bytes32 key = keccak256("somekey");
 
     bytes24[] memory callbacks = new bytes24[](1);

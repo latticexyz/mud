@@ -40,7 +40,7 @@ export interface IWorldInterface extends utils.Interface {
     "getFieldSlice(bytes32,bytes32[],uint8,bytes32,uint256,uint256)": FunctionFragment;
     "getKeySchema(bytes32)": FunctionFragment;
     "getRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
-    "getSchema(bytes32)": FunctionFragment;
+    "getValueSchema(bytes32)": FunctionFragment;
     "grantAccess(bytes16,bytes16,address)": FunctionFragment;
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
@@ -55,18 +55,16 @@ export interface IWorldInterface extends utils.Interface {
     "registerHook(bytes16,bytes16,address)": FunctionFragment;
     "registerNamespace(bytes16)": FunctionFragment;
     "registerRootFunctionSelector(bytes16,bytes16,bytes4,bytes4)": FunctionFragment;
-    "registerSchema(bytes32,bytes32,bytes32)": FunctionFragment;
     "registerStoreHook(bytes32,address)": FunctionFragment;
     "registerSystem(bytes16,bytes16,address,bool)": FunctionFragment;
     "registerSystemHook(bytes16,bytes16,address)": FunctionFragment;
-    "registerTable(bytes16,bytes16,bytes32,bytes32)": FunctionFragment;
+    "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])": FunctionFragment;
+    "registerTable(bytes32,bytes32,bytes32,string[],string[])": FunctionFragment;
     "registerTableHook(bytes16,bytes16,address)": FunctionFragment;
     "revokeAccess(bytes16,bytes16,address)": FunctionFragment;
     "set(uint32[])": FunctionFragment;
     "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
-    "setMetadata(bytes16,bytes16,string,string[])": FunctionFragment;
-    "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)": FunctionFragment;
     "stub(uint256)": FunctionFragment;
@@ -86,7 +84,7 @@ export interface IWorldInterface extends utils.Interface {
       | "getFieldSlice"
       | "getKeySchema"
       | "getRecord"
-      | "getSchema"
+      | "getValueSchema"
       | "grantAccess"
       | "installModule"
       | "installRootModule"
@@ -101,18 +99,16 @@ export interface IWorldInterface extends utils.Interface {
       | "registerHook"
       | "registerNamespace"
       | "registerRootFunctionSelector"
-      | "registerSchema"
       | "registerStoreHook"
       | "registerSystem"
       | "registerSystemHook"
-      | "registerTable"
+      | "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])"
+      | "registerTable(bytes32,bytes32,bytes32,string[],string[])"
       | "registerTableHook"
       | "revokeAccess"
       | "set"
       | "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"
       | "setField(bytes32,bytes32[],uint8,bytes,bytes32)"
-      | "setMetadata(bytes16,bytes16,string,string[])"
-      | "setMetadata(bytes32,string,string[])"
       | "setRecord(bytes32,bytes32[],bytes,bytes32)"
       | "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"
       | "stub"
@@ -206,7 +202,7 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "getSchema",
+    functionFragment: "getValueSchema",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -307,14 +303,6 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "registerSchema",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "registerStoreHook",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
@@ -336,12 +324,24 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "registerTable",
+    functionFragment: "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>[],
+      PromiseOrValue<string>[]
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "registerTable(bytes32,bytes32,bytes32,string[],string[])",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>[],
+      PromiseOrValue<string>[]
     ]
   ): string;
   encodeFunctionData(
@@ -383,23 +383,6 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setMetadata(bytes16,bytes16,string,string[])",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>[]
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setMetadata(bytes32,string,string[])",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>[]
     ]
   ): string;
   encodeFunctionData(
@@ -480,7 +463,10 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getRecord", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "getSchema", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getValueSchema",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "grantAccess",
     data: BytesLike
@@ -529,10 +515,6 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "registerSchema",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "registerStoreHook",
     data: BytesLike
   ): Result;
@@ -545,7 +527,11 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "registerTable",
+    functionFragment: "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "registerTable(bytes32,bytes32,bytes32,string[],string[])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -563,14 +549,6 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setField(bytes32,bytes32[],uint8,bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMetadata(bytes16,bytes16,string,string[])",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMetadata(bytes32,string,string[])",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -765,7 +743,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string] & { data: string }>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string] & { schema: string }>;
@@ -870,13 +848,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     registerStoreHook(
       table: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
@@ -898,11 +869,22 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    registerTable(
+    "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "registerTable(bytes32,bytes32,bytes32,string[],string[])"(
+      table: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -941,21 +923,6 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setMetadata(bytes32,string,string[])"(
-      table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -1080,7 +1047,7 @@ export interface IWorld extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getSchema(
+  getValueSchema(
     table: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -1185,13 +1152,6 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  registerSchema(
-    table: PromiseOrValue<BytesLike>,
-    schema: PromiseOrValue<BytesLike>,
-    keySchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   registerStoreHook(
     table: PromiseOrValue<BytesLike>,
     hook: PromiseOrValue<string>,
@@ -1213,11 +1173,22 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  registerTable(
+  "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])"(
     namespace: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
     keySchema: PromiseOrValue<BytesLike>,
+    valueSchema: PromiseOrValue<BytesLike>,
+    keyNames: PromiseOrValue<string>[],
+    fieldNames: PromiseOrValue<string>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "registerTable(bytes32,bytes32,bytes32,string[],string[])"(
+    table: PromiseOrValue<BytesLike>,
+    keySchema: PromiseOrValue<BytesLike>,
+    valueSchema: PromiseOrValue<BytesLike>,
+    keyNames: PromiseOrValue<string>[],
+    fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1256,21 +1227,6 @@ export interface IWorld extends BaseContract {
     schemaIndex: PromiseOrValue<BigNumberish>,
     data: PromiseOrValue<BytesLike>,
     valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setMetadata(bytes16,bytes16,string,string[])"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    tableName: PromiseOrValue<string>,
-    fieldNames: PromiseOrValue<string>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setMetadata(bytes32,string,string[])"(
-    table: PromiseOrValue<BytesLike>,
-    tableName: PromiseOrValue<string>,
-    fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1395,7 +1351,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -1498,13 +1454,6 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     registerStoreHook(
       table: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
@@ -1526,13 +1475,24 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    registerTable(
+    "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<string>;
+
+    "registerTable(bytes32,bytes32,bytes32,string[],string[])"(
+      table: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     registerTableHook(
       namespace: PromiseOrValue<BytesLike>,
@@ -1569,21 +1529,6 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setMetadata(bytes32,string,string[])"(
-      table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1755,7 +1700,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1860,13 +1805,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     registerStoreHook(
       table: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
@@ -1888,11 +1826,22 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    registerTable(
+    "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "registerTable(bytes32,bytes32,bytes32,string[],string[])"(
+      table: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1931,21 +1880,6 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setMetadata(bytes32,string,string[])"(
-      table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -2071,7 +2005,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -2176,13 +2110,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     registerStoreHook(
       table: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
@@ -2204,11 +2131,22 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    registerTable(
+    "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "registerTable(bytes32,bytes32,bytes32,string[],string[])"(
+      table: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2247,21 +2185,6 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setMetadata(bytes32,string,string[])"(
-      table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

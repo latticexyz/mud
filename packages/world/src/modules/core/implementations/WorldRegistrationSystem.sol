@@ -52,8 +52,10 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerTable(
     bytes16 namespace,
     bytes16 name,
+    Schema keySchema,
     Schema valueSchema,
-    Schema keySchema
+    string[] calldata keyNames,
+    string[] calldata fieldNames
   ) public virtual returns (bytes32 resourceSelector) {
     resourceSelector = ResourceSelector.from(namespace, name);
 
@@ -74,24 +76,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerSchema(resourceSelector, valueSchema, keySchema);
-  }
-
-  /**
-   * Register metadata (tableName, fieldNames) for the table at the given namespace and name.
-   * Requires the caller to own the namespace.
-   */
-  function setMetadata(
-    bytes16 namespace,
-    bytes16 name,
-    string calldata tableName,
-    string[] calldata fieldNames
-  ) public virtual {
-    // Require caller to own the namespace
-    bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
-
-    // Set the metadata
-    StoreCore.setMetadata(tableId, tableName, fieldNames);
+    StoreCore.registerTable(resourceSelector, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   /**

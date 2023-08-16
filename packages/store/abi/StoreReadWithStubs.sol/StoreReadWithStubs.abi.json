@@ -85,6 +85,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidKeyNamesLength",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "StoreCore_NotDynamicField",
     "type": "error"
@@ -450,7 +466,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "getSchema",
+    "name": "getValueSchema",
     "outputs": [
       {
         "internalType": "Schema",
@@ -535,17 +551,12 @@
         "type": "bytes32"
       },
       {
-        "internalType": "Schema",
+        "internalType": "contract IStoreHook",
         "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "Schema",
-        "name": "",
-        "type": "bytes32"
+        "type": "address"
       }
     ],
-    "name": "registerSchema",
+    "name": "registerStoreHook",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -558,12 +569,27 @@
         "type": "bytes32"
       },
       {
-        "internalType": "contract IStoreHook",
+        "internalType": "Schema",
         "name": "",
-        "type": "address"
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "",
+        "type": "string[]"
       }
     ],
-    "name": "registerStoreHook",
+    "name": "registerTable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -597,29 +623,6 @@
       }
     ],
     "name": "setField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      },
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "name": "setMetadata",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

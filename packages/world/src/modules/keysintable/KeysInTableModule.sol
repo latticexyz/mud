@@ -43,24 +43,8 @@ contract KeysInTableModule is IModule, WorldContext {
 
     if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables
-      world.registerTable(
-        KeysInTableTableId.getNamespace(),
-        KeysInTableTableId.getName(),
-        KeysInTable.getSchema(),
-        KeysInTable.getKeySchema()
-      );
-      world.registerTable(
-        UsedKeysIndexTableId.getNamespace(),
-        UsedKeysIndexTableId.getName(),
-        UsedKeysIndex.getSchema(),
-        UsedKeysIndex.getKeySchema()
-      );
-
-      // Register metadata for the tables
-      (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
-      world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
-      (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
-      world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
+      KeysInTable.register(world);
+      UsedKeysIndex.register(world);
 
       // Grant the hook access to the tables
       world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));

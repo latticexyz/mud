@@ -138,6 +138,22 @@ const _abi = [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidKeyNamesLength",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "StoreCore_NotDynamicField",
     type: "error",
@@ -648,7 +664,7 @@ const _abi = [
         type: "bytes32",
       },
     ],
-    name: "getSchema",
+    name: "getValueSchema",
     outputs: [
       {
         internalType: "Schema",
@@ -1010,29 +1026,6 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "Schema",
-        name: "schema",
-        type: "bytes32",
-      },
-      {
-        internalType: "Schema",
-        name: "keySchema",
-        type: "bytes32",
-      },
-    ],
-    name: "registerSchema",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "table",
-        type: "bytes32",
-      },
-      {
         internalType: "contract IStoreHook",
         name: "hook",
         type: "address",
@@ -1114,13 +1107,23 @@ const _abi = [
       },
       {
         internalType: "Schema",
-        name: "valueSchema",
+        name: "keySchema",
         type: "bytes32",
       },
       {
         internalType: "Schema",
-        name: "keySchema",
+        name: "valueSchema",
         type: "bytes32",
+      },
+      {
+        internalType: "string[]",
+        name: "keyNames",
+        type: "string[]",
+      },
+      {
+        internalType: "string[]",
+        name: "fieldNames",
+        type: "string[]",
       },
     ],
     name: "registerTable",
@@ -1131,6 +1134,39 @@ const _abi = [
         type: "bytes32",
       },
     ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "Schema",
+        name: "keySchema",
+        type: "bytes32",
+      },
+      {
+        internalType: "Schema",
+        name: "valueSchema",
+        type: "bytes32",
+      },
+      {
+        internalType: "string[]",
+        name: "keyNames",
+        type: "string[]",
+      },
+      {
+        internalType: "string[]",
+        name: "fieldNames",
+        type: "string[]",
+      },
+    ],
+    name: "registerTable",
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -1260,57 +1296,6 @@ const _abi = [
       },
     ],
     name: "setField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "string",
-        name: "tableName",
-        type: "string",
-      },
-      {
-        internalType: "string[]",
-        name: "fieldNames",
-        type: "string[]",
-      },
-    ],
-    name: "setMetadata",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "table",
-        type: "bytes32",
-      },
-      {
-        internalType: "string",
-        name: "tableName",
-        type: "string",
-      },
-      {
-        internalType: "string[]",
-        name: "fieldNames",
-        type: "string[]",
-      },
-    ],
-    name: "setMetadata",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

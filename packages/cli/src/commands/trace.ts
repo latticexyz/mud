@@ -73,7 +73,7 @@ const commandModule: CommandModule<Options, Options> = {
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
     // Fetch system table schema from chain
-    const systemTableSchema = await WorldContract.getSchema(systemsTableId);
+    const systemTableSchema = await WorldContract.getValueSchema(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
       const systemSelector = tableIdToHex(namespace, name);

@@ -57,29 +57,15 @@ contract CoreModule is IModule, WorldContext {
    * Register core tables in the World
    */
   function _registerCoreTables() internal {
-    NamespaceOwner.setMetadata();
+    InstalledModules.register();
+    ResourceAccess.register();
+    Systems.register();
+    FunctionSelectors.register();
+    SystemHooks.register();
+    SystemRegistry.register();
+    ResourceType.register();
 
-    InstalledModules.registerSchema();
-    InstalledModules.setMetadata();
-
-    ResourceAccess.registerSchema();
-    ResourceAccess.setMetadata();
     ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
-
-    Systems.registerSchema();
-    Systems.setMetadata();
-
-    FunctionSelectors.registerSchema();
-    FunctionSelectors.setMetadata();
-
-    SystemHooks.registerSchema();
-    SystemHooks.setMetadata();
-
-    SystemRegistry.registerSchema();
-    SystemRegistry.setMetadata();
-
-    ResourceType.registerSchema();
-    ResourceType.setMetadata();
     ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
   }
 
@@ -107,11 +93,10 @@ contract CoreModule is IModule, WorldContext {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[17] memory functionSelectors = [
+    bytes4[15] memory functionSelectors = [
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
       WorldRegistrationSystem.registerTable.selector,
-      WorldRegistrationSystem.setMetadata.selector,
       WorldRegistrationSystem.registerHook.selector,
       WorldRegistrationSystem.registerTableHook.selector,
       WorldRegistrationSystem.registerSystemHook.selector,
@@ -119,8 +104,7 @@ contract CoreModule is IModule, WorldContext {
       WorldRegistrationSystem.registerFunctionSelector.selector,
       WorldRegistrationSystem.registerRootFunctionSelector.selector,
       // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerSchema.selector,
-      StoreRegistrationSystem.setMetadata.selector,
+      StoreRegistrationSystem.registerTable.selector,
       StoreRegistrationSystem.registerStoreHook.selector,
       // --- ModuleInstallationSystem ---
       ModuleInstallationSystem.installModule.selector,

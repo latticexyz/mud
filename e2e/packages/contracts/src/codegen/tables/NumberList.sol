@@ -21,54 +21,47 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Numbe
 bytes32 constant NumberListTableId = _tableId;
 
 library NumberList {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT32_ARRAY;
-
-    return SchemaLib.encode(_schema);
-  }
-
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](0);
 
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "value";
-    return ("NumberList", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.UINT32_ARRAY;
+
+    return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](0);
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](1);
+    fieldNames[0] = "value";
   }
 
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get value */
   function get() internal view returns (uint32[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -76,7 +69,7 @@ library NumberList {
   function get(IStore _store) internal view returns (uint32[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -84,21 +77,21 @@ library NumberList {
   function set(uint32[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getValueSchema());
   }
 
   /** Set value (using the specified store) */
   function set(IStore _store, uint32[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getSchema());
+    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getValueSchema());
   }
 
   /** Get the length of value */
   function length() internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getSchema());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getValueSchema());
     unchecked {
       return _byteLength / 4;
     }
@@ -108,7 +101,7 @@ library NumberList {
   function length(IStore _store) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getSchema());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getValueSchema());
     unchecked {
       return _byteLength / 4;
     }
@@ -122,7 +115,14 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 4, (_index + 1) * 4);
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getValueSchema(),
+        _index * 4,
+        (_index + 1) * 4
+      );
       return (uint32(Bytes.slice4(_blob, 0)));
     }
   }
@@ -135,7 +135,7 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getSchema(), _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getValueSchema(), _index * 4, (_index + 1) * 4);
       return (uint32(Bytes.slice4(_blob, 0)));
     }
   }
@@ -144,28 +144,28 @@ library NumberList {
   function push(uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getSchema());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
   /** Push an element to value (using the specified store) */
   function push(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getSchema());
+    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
   /** Pop an element from value */
   function pop() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 4, getSchema());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 4, getValueSchema());
   }
 
   /** Pop an element from value (using the specified store) */
   function pop(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.popFromField(_tableId, _keyTuple, 0, 4, getSchema());
+    _store.popFromField(_tableId, _keyTuple, 0, 4, getValueSchema());
   }
 
   /**
@@ -176,7 +176,7 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)), getSchema());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)), getValueSchema());
     }
   }
 
@@ -188,7 +188,7 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)), getSchema());
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)), getValueSchema());
     }
   }
 
@@ -212,13 +212,13 @@ library NumberList {
   function deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.deleteRecord(_tableId, _keyTuple, getSchema());
+    _store.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 }

@@ -5,6 +5,7 @@ import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
 import { WorldContext } from "../../WorldContext.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
@@ -28,13 +29,11 @@ contract UniqueEntityModule is IModule, WorldContext {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table
-    world.registerTable(NAMESPACE, TABLE_NAME, UniqueEntity.getSchema(), UniqueEntity.getKeySchema());
-    // Set table's metadata
-    (string memory tableName, string[] memory fieldNames) = UniqueEntity.getMetadata();
-    world.setMetadata(NAMESPACE, TABLE_NAME, tableName, fieldNames);
+    UniqueEntity.register(world, ResourceSelector.from(NAMESPACE, TABLE_NAME));
 
     // Register system
     world.registerSystem(NAMESPACE, SYSTEM_NAME, uniqueEntitySystem, true);
+
     // Register system's functions
     world.registerFunctionSelector(NAMESPACE, SYSTEM_NAME, "getUniqueEntity", "()");
   }

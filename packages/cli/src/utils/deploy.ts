@@ -163,16 +163,15 @@ export async function deploy(
 
       await fastTxExecute(
         WorldContract,
-        "registerTable",
-        [toBytes16(namespace), toBytes16(name), encodeSchema(schemaTypes), encodeSchema(keyTypes)],
-        confirmations
-      );
-
-      // Register table metadata
-      await fastTxExecute(
-        WorldContract,
-        "setMetadata(bytes16,bytes16,string,string[])",
-        [toBytes16(namespace), toBytes16(name), tableName, Object.keys(schema)],
+        "registerTable(bytes16,bytes16,bytes32,bytes32,string[],string[])",
+        [
+          toBytes16(namespace),
+          toBytes16(name),
+          encodeSchema(keyTypes),
+          encodeSchema(schemaTypes),
+          Object.keys(keySchema),
+          Object.keys(schema),
+        ],
         confirmations
       );
 

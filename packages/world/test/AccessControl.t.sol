@@ -17,8 +17,8 @@ contract AccessControlTest is Test, StoreReadWithStubs {
   address caller = address(0x01);
 
   function setUp() public {
-    ResourceAccess.registerSchema();
-    NamespaceOwner.registerSchema();
+    ResourceAccess.register();
+    NamespaceOwner.register();
 
     NamespaceOwner.set(namespace, address(this));
     ResourceAccess.set(ResourceSelector.from(namespace, 0), address(this), true);

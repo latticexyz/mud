@@ -14,16 +14,11 @@ interface IWorldRegistrationSystem {
   function registerTable(
     bytes16 namespace,
     bytes16 name,
+    Schema keySchema,
     Schema valueSchema,
-    Schema keySchema
-  ) external returns (bytes32 resourceSelector);
-
-  function setMetadata(
-    bytes16 namespace,
-    bytes16 name,
-    string calldata tableName,
+    string[] calldata keyNames,
     string[] calldata fieldNames
-  ) external;
+  ) external returns (bytes32 resourceSelector);
 
   function registerHook(bytes16 namespace, bytes16 name, address hook) external;
 
