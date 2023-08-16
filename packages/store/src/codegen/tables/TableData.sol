@@ -24,7 +24,7 @@ struct TableDataData {
   bytes32 keySchema;
   bytes32 valueSchema;
   bytes abiEncodedKeyNames;
-  bytes abiEncodedValueNames;
+  bytes abiEncodedFieldNames;
 }
 
 library TableData {
@@ -59,7 +59,7 @@ library TableData {
     fieldNames[0] = "keySchema";
     fieldNames[1] = "valueSchema";
     fieldNames[2] = "abiEncodedKeyNames";
-    fieldNames[3] = "abiEncodedValueNames";
+    fieldNames[3] = "abiEncodedFieldNames";
   }
 
   /** Register the table's key schema, value schema, key names and value names */
@@ -296,8 +296,8 @@ library TableData {
     }
   }
 
-  /** Get abiEncodedValueNames */
-  function getAbiEncodedValueNames(bytes32 tableId) internal view returns (bytes memory abiEncodedValueNames) {
+  /** Get abiEncodedFieldNames */
+  function getAbiEncodedFieldNames(bytes32 tableId) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -305,11 +305,11 @@ library TableData {
     return (bytes(_blob));
   }
 
-  /** Get abiEncodedValueNames (using the specified store) */
-  function getAbiEncodedValueNames(
+  /** Get abiEncodedFieldNames (using the specified store) */
+  function getAbiEncodedFieldNames(
     IStore _store,
     bytes32 tableId
-  ) internal view returns (bytes memory abiEncodedValueNames) {
+  ) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -317,24 +317,24 @@ library TableData {
     return (bytes(_blob));
   }
 
-  /** Set abiEncodedValueNames */
-  function setAbiEncodedValueNames(bytes32 tableId, bytes memory abiEncodedValueNames) internal {
+  /** Set abiEncodedFieldNames */
+  function setAbiEncodedFieldNames(bytes32 tableId, bytes memory abiEncodedFieldNames) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((abiEncodedValueNames)), getValueSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((abiEncodedFieldNames)), getValueSchema());
   }
 
-  /** Set abiEncodedValueNames (using the specified store) */
-  function setAbiEncodedValueNames(IStore _store, bytes32 tableId, bytes memory abiEncodedValueNames) internal {
+  /** Set abiEncodedFieldNames (using the specified store) */
+  function setAbiEncodedFieldNames(IStore _store, bytes32 tableId, bytes memory abiEncodedFieldNames) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 3, bytes((abiEncodedValueNames)), getValueSchema());
+    _store.setField(_tableId, _keyTuple, 3, bytes((abiEncodedFieldNames)), getValueSchema());
   }
 
-  /** Get the length of abiEncodedValueNames */
-  function lengthAbiEncodedValueNames(bytes32 tableId) internal view returns (uint256) {
+  /** Get the length of abiEncodedFieldNames */
+  function lengthAbiEncodedFieldNames(bytes32 tableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -344,8 +344,8 @@ library TableData {
     }
   }
 
-  /** Get the length of abiEncodedValueNames (using the specified store) */
-  function lengthAbiEncodedValueNames(IStore _store, bytes32 tableId) internal view returns (uint256) {
+  /** Get the length of abiEncodedFieldNames (using the specified store) */
+  function lengthAbiEncodedFieldNames(IStore _store, bytes32 tableId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -356,10 +356,10 @@ library TableData {
   }
 
   /**
-   * Get an item of abiEncodedValueNames
+   * Get an item of abiEncodedFieldNames
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemAbiEncodedValueNames(bytes32 tableId, uint256 _index) internal view returns (bytes memory) {
+  function getItemAbiEncodedFieldNames(bytes32 tableId, uint256 _index) internal view returns (bytes memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -377,10 +377,10 @@ library TableData {
   }
 
   /**
-   * Get an item of abiEncodedValueNames (using the specified store)
+   * Get an item of abiEncodedFieldNames (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemAbiEncodedValueNames(
+  function getItemAbiEncodedFieldNames(
     IStore _store,
     bytes32 tableId,
     uint256 _index
@@ -394,32 +394,32 @@ library TableData {
     }
   }
 
-  /** Push a slice to abiEncodedValueNames */
-  function pushAbiEncodedValueNames(bytes32 tableId, bytes memory _slice) internal {
+  /** Push a slice to abiEncodedFieldNames */
+  function pushAbiEncodedFieldNames(bytes32 tableId, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getValueSchema());
   }
 
-  /** Push a slice to abiEncodedValueNames (using the specified store) */
-  function pushAbiEncodedValueNames(IStore _store, bytes32 tableId, bytes memory _slice) internal {
+  /** Push a slice to abiEncodedFieldNames (using the specified store) */
+  function pushAbiEncodedFieldNames(IStore _store, bytes32 tableId, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
     _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getValueSchema());
   }
 
-  /** Pop a slice from abiEncodedValueNames */
-  function popAbiEncodedValueNames(bytes32 tableId) internal {
+  /** Pop a slice from abiEncodedFieldNames */
+  function popAbiEncodedFieldNames(bytes32 tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1, getValueSchema());
   }
 
-  /** Pop a slice from abiEncodedValueNames (using the specified store) */
-  function popAbiEncodedValueNames(IStore _store, bytes32 tableId) internal {
+  /** Pop a slice from abiEncodedFieldNames (using the specified store) */
+  function popAbiEncodedFieldNames(IStore _store, bytes32 tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -427,10 +427,10 @@ library TableData {
   }
 
   /**
-   * Update a slice of abiEncodedValueNames at `_index`
+   * Update a slice of abiEncodedFieldNames at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateAbiEncodedValueNames(bytes32 tableId, uint256 _index, bytes memory _slice) internal {
+  function updateAbiEncodedFieldNames(bytes32 tableId, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -440,10 +440,10 @@ library TableData {
   }
 
   /**
-   * Update a slice of abiEncodedValueNames (using the specified store) at `_index`
+   * Update a slice of abiEncodedFieldNames (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateAbiEncodedValueNames(IStore _store, bytes32 tableId, uint256 _index, bytes memory _slice) internal {
+  function updateAbiEncodedFieldNames(IStore _store, bytes32 tableId, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
@@ -476,9 +476,9 @@ library TableData {
     bytes32 keySchema,
     bytes32 valueSchema,
     bytes memory abiEncodedKeyNames,
-    bytes memory abiEncodedValueNames
+    bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(keySchema, valueSchema, abiEncodedKeyNames, abiEncodedValueNames);
+    bytes memory _data = encode(keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -493,9 +493,9 @@ library TableData {
     bytes32 keySchema,
     bytes32 valueSchema,
     bytes memory abiEncodedKeyNames,
-    bytes memory abiEncodedValueNames
+    bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(keySchema, valueSchema, abiEncodedKeyNames, abiEncodedValueNames);
+    bytes memory _data = encode(keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
@@ -505,12 +505,12 @@ library TableData {
 
   /** Set the full data using the data struct */
   function set(bytes32 tableId, TableDataData memory _table) internal {
-    set(tableId, _table.keySchema, _table.valueSchema, _table.abiEncodedKeyNames, _table.abiEncodedValueNames);
+    set(tableId, _table.keySchema, _table.valueSchema, _table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, bytes32 tableId, TableDataData memory _table) internal {
-    set(_store, tableId, _table.keySchema, _table.valueSchema, _table.abiEncodedKeyNames, _table.abiEncodedValueNames);
+    set(_store, tableId, _table.keySchema, _table.valueSchema, _table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
   }
 
   /**
@@ -539,7 +539,7 @@ library TableData {
       unchecked {
         _end += _encodedLengths.atIndex(1);
       }
-      _table.abiEncodedValueNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+      _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
     }
   }
 
@@ -548,11 +548,11 @@ library TableData {
     bytes32 keySchema,
     bytes32 valueSchema,
     bytes memory abiEncodedKeyNames,
-    bytes memory abiEncodedValueNames
+    bytes memory abiEncodedFieldNames
   ) internal pure returns (bytes memory) {
     uint40[] memory _counters = new uint40[](2);
     _counters[0] = uint40(bytes(abiEncodedKeyNames).length);
-    _counters[1] = uint40(bytes(abiEncodedValueNames).length);
+    _counters[1] = uint40(bytes(abiEncodedFieldNames).length);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return
@@ -561,7 +561,7 @@ library TableData {
         valueSchema,
         _encodedLengths.unwrap(),
         bytes((abiEncodedKeyNames)),
-        bytes((abiEncodedValueNames))
+        bytes((abiEncodedFieldNames))
       );
   }
 

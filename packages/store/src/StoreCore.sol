@@ -8,7 +8,7 @@ import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreMetadata, Hooks, TableData, HooksTableId } from "./codegen/Tables.sol";
+import { Hooks, TableData, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
@@ -35,7 +35,6 @@ library StoreCore {
     // Register internal tables
     TableData.register();
     Hooks.register();
-    StoreMetadata.register();
   }
 
   /************************************************************************
@@ -520,7 +519,6 @@ library StoreCore {
 
 library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
-  bytes32 internal constant SCHEMA_TABLE = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("schema")));
 
   /************************************************************************
    *

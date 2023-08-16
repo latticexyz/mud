@@ -17,15 +17,6 @@ export default mudConfig({
         keySchema: "bytes32",
         valueSchema: "bytes32",
         abiEncodedKeyNames: "bytes",
-        abiEncodedValueNames: "bytes",
-      },
-    },
-    StoreMetadata: {
-      keySchema: {
-        tableId: "bytes32",
-      },
-      schema: {
-        tableName: "string",
         abiEncodedFieldNames: "bytes",
       },
     },
