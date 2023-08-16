@@ -7,7 +7,7 @@ export function defineInternalComponents(world: World) {
     Tables: defineComponent<{ table: Type.T }, Metadata, Table>(
       world,
       { table: Type.T },
-      { metadata: { componentName: "Tables" } }
+      { metadata: { componentName: "TableMetadata" } }
     ),
     SyncProgress: defineComponent(
       world,
