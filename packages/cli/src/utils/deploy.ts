@@ -242,8 +242,7 @@ export async function deploy(
               [toBytes16(namespace), toBytes16(name), worldFunctionSelectors, systemFunctionSelectors],
               confirmations
             );
-            // await fastTxExecute(WorldContract, "registerRootFunctionSelectors", [], confirmations);
-            console.log(chalk.green(`Registered root functions`));
+            console.log(chalk.green(`Registered root functions at ${name} ${namespace}`));
           }
 
           if (nonRootFunctionNames.length) {
@@ -254,7 +253,7 @@ export async function deploy(
               [toBytes16(namespace), toBytes16(name), nonRootFunctionNames, nonRootFunctionArguments],
               confirmations
             );
-            console.log(chalk.green(`Registered non-root functions`));
+            console.log(chalk.green(`Registered non-root functions at ${name} ${namespace}}`));
           }
         }
       }
