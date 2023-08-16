@@ -1,6 +1,6 @@
 ---
 "@latticexyz/std-client": major
-"@latticexyz/common": major
+"@latticexyz/common": minor
 ---
 
 Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
