@@ -72,7 +72,7 @@ library StoreCore {
   }
 
   /**
-   * Register a new table with key schema, value schema, key names and field names
+   * Register a new table with key schema, value schema, key names, and field names
    */
   function registerTable(
     bytes32 tableId,
