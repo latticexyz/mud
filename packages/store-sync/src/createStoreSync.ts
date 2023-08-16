@@ -149,10 +149,13 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     receipt: TransactionReceipt;
   }> {
     // Wait for tx to be mined
+    debug("waiting for tx receipt", tx);
     const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
+    debug("got tx receipt", tx, receipt);
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
     if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
+      debug("waiting for tx block to be processed", tx, receipt.blockNumber);
       await firstValueFrom(
         blockStorageOperations$.pipe(
           filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
