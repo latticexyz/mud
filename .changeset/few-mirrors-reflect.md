@@ -16,6 +16,7 @@ This decreases gas cost and removes circular dependencies of the Schema table (w
 +   Schema valueSchema
   ) external;
 ```
+
 The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
 
 This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
