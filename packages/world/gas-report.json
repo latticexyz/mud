@@ -1,5 +1,17 @@
 [
   {
+    "file": "test/AccessControl.t.sol",
+    "test": "testAccessControl",
+    "name": "AccessControl: hasAccess (cold)",
+    "gasUsed": 18359
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testAccessControl",
+    "name": "AccessControl: hasAccess (warm)",
+    "gasUsed": 4392
+  },
+  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
