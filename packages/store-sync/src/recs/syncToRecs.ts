@@ -1,5 +1,5 @@
 import { StoreConfig } from "@latticexyz/store";
-import { World as RecsWorld, setComponent } from "@latticexyz/recs";
+import { World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { recsStorage } from "./recsStorage";
 import { defineInternalComponents } from "./defineInternalComponents";
@@ -9,7 +9,8 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
-import { syncStepToMessage } from "./syncStepToMessage";
+import { SyncStep } from "../SyncStep";
+import { waitForIdle } from "@latticexyz/common/utils";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
@@ -52,16 +53,16 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     maxBlockRange,
     indexerUrl,
     initialState,
-    onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed }) => {
-      console.log("got progress", step, percentage);
-      // TODO: stop updating once live?
-      setComponent(components.SyncProgress, singletonEntity, {
-        step,
-        percentage,
-        latestBlockNumber,
-        lastBlockNumberProcessed,
-        message: syncStepToMessage(step),
-      });
+    onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
+      if (getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE) {
+        setComponent(components.SyncProgress, singletonEntity, {
+          step,
+          percentage,
+          latestBlockNumber,
+          lastBlockNumberProcessed,
+          message,
+        });
+      }
     },
   });
 
