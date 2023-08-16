@@ -13,7 +13,7 @@ import { hexToTableId, tableIdToHex } from "@latticexyz/common";
 import storeConfig from "@latticexyz/store/mud.config";
 
 // TODO: adjust when we get namespace support (https://github.com/latticexyz/mud/issues/994) and when table has namespace key (https://github.com/latticexyz/mud/issues/1201)
-const schemasTable = storeConfig.tables.TableMetadata;
+const schemasTable = storeConfig.tables.Tables;
 const schemasTableId = tableIdToHex(storeConfig.namespace, schemasTable.name);
 
 export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {

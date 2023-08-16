@@ -9,7 +9,7 @@ export default mudConfig({
   tables: {
     Hooks: "address[]",
     Callbacks: "bytes24[]",
-    TableMetadata: {
+    Tables: {
       keySchema: {
         tableId: "bytes32",
       },

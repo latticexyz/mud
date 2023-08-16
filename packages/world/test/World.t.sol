@@ -12,7 +12,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
-import { TableMetadata, TableMetadataTableId } from "@latticexyz/store/src/codegen/Tables.sol";
+import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
@@ -193,28 +193,16 @@ contract WorldTest is Test, GasReporter {
     new World();
 
     // Should have registered the table data table (fka schema table)
-    assertEq(TableMetadata.getKeySchema(world, TableMetadataTableId), Schema.unwrap(TableMetadata.getKeySchema()));
-    assertEq(TableMetadata.getValueSchema(world, TableMetadataTableId), Schema.unwrap(TableMetadata.getValueSchema()));
-    assertEq(TableMetadata.getAbiEncodedKeyNames(world, TableMetadataTableId), abi.encode(TableMetadata.getKeyNames()));
-    assertEq(
-      TableMetadata.getAbiEncodedFieldNames(world, TableMetadataTableId),
-      abi.encode(TableMetadata.getFieldNames())
-    );
+    assertEq(Tables.getKeySchema(world, TablesTableId), Schema.unwrap(Tables.getKeySchema()));
+    assertEq(Tables.getValueSchema(world, TablesTableId), Schema.unwrap(Tables.getValueSchema()));
+    assertEq(Tables.getAbiEncodedKeyNames(world, TablesTableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(world, TablesTableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
-    assertEq(TableMetadata.getKeySchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getKeySchema()));
-    assertEq(
-      TableMetadata.getValueSchema(world, NamespaceOwnerTableId),
-      Schema.unwrap(NamespaceOwner.getValueSchema())
-    );
-    assertEq(
-      TableMetadata.getAbiEncodedKeyNames(world, NamespaceOwnerTableId),
-      abi.encode(NamespaceOwner.getKeyNames())
-    );
-    assertEq(
-      TableMetadata.getAbiEncodedFieldNames(world, NamespaceOwnerTableId),
-      abi.encode(NamespaceOwner.getFieldNames())
-    );
+    assertEq(Tables.getKeySchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getKeySchema()));
+    assertEq(Tables.getValueSchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getValueSchema()));
+    assertEq(Tables.getAbiEncodedKeyNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
   }
 
   function testRootNamespace() public {
@@ -287,10 +275,10 @@ contract WorldTest is Test, GasReporter {
     assertEq(world.getKeySchema(tableSelector).unwrap(), defaultKeySchema.unwrap(), "key schema should be registered");
     assertEq(world.getValueSchema(tableSelector).unwrap(), valueSchema.unwrap(), "value schema should be registered");
 
-    bytes memory loadedKeyNames = TableMetadata.getAbiEncodedKeyNames(world, tableSelector);
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(world, tableSelector);
     assertEq(loadedKeyNames, abi.encode(keyNames), "key names should be registered");
 
-    bytes memory loadedfieldNames = TableMetadata.getAbiEncodedFieldNames(world, tableSelector);
+    bytes memory loadedfieldNames = Tables.getAbiEncodedFieldNames(world, tableSelector);
     assertEq(loadedfieldNames, abi.encode(fieldNames), "value names should be registered");
 
     // Expect an error when registering an existing table

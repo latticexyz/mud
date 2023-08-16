@@ -5,7 +5,7 @@ pragma solidity >=0.8.0;
 
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { Callbacks, CallbacksTableId } from "./tables/Callbacks.sol";
-import { TableMetadata, TableMetadataData, TableMetadataTableId } from "./tables/TableMetadata.sol";
+import { Tables, TablesData, TablesTableId } from "./tables/Tables.sol";
 import { Mixed, MixedData, MixedTableId } from "./tables/Mixed.sol";
 import { Vector2, Vector2Data, Vector2TableId } from "./tables/Vector2.sol";
 import { KeyEncoding, KeyEncodingTableId } from "./tables/KeyEncoding.sol";
