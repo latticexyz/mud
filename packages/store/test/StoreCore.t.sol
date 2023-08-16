@@ -13,7 +13,7 @@ import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { StoreMetadataData, StoreMetadata, TableData, TableDataTableId } from "../src/codegen/Tables.sol";
+import { TableData, TableDataTableId } from "../src/codegen/Tables.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
@@ -33,15 +33,20 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testRegisterAndGetSchema() public {
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     string[] memory keyNames = new string[](2);
     keyNames[0] = "key1";
     keyNames[1] = "key2";
-    string[] memory valueNames = new string[](4);
-    valueNames[0] = "value1";
-    valueNames[1] = "value2";
-    valueNames[2] = "value3";
-    valueNames[3] = "value4";
+    string[] memory fieldNames = new string[](4);
+    fieldNames[0] = "value1";
+    fieldNames[1] = "value2";
+    fieldNames[2] = "value3";
+    fieldNames[3] = "value4";
 
     bytes32 table = keccak256("some.table");
 
@@ -52,9 +57,9 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSetRecord(
       TableDataTableId,
       key,
-      TableData.encode(keySchema.unwrap(), valueSchema.unwrap(), abi.encode(keyNames), abi.encode(valueNames))
+      TableData.encode(keySchema.unwrap(), valueSchema.unwrap(), abi.encode(keyNames), abi.encode(fieldNames))
     );
-    IStore(this).registerTable(table, keySchema, valueSchema, keyNames, valueNames);
+    IStore(this).registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
 
     Schema loadedValueSchema = IStore(this).getValueSchema(table);
     assertEq(loadedValueSchema.unwrap(), valueSchema.unwrap());
@@ -65,29 +70,34 @@ contract StoreCoreTest is Test, StoreMock {
     bytes memory loadedKeyNames = TableData.getAbiEncodedKeyNames(IStore(this), table);
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedValueNames = TableData.getAbiEncodedValueNames(IStore(this), table);
-    assertEq(loadedValueNames, abi.encode(valueNames));
+    bytes memory loadedFieldNames = TableData.getAbiEncodedFieldNames(IStore(this), table);
+    assertEq(loadedFieldNames, abi.encode(fieldNames));
   }
 
   function testFailRegisterInvalidSchema() public {
     string[] memory keyNames = new string[](2);
-    string[] memory valueNames = new string[](4);
+    string[] memory fieldNames = new string[](4);
     IStore(this).registerTable(
       keccak256("table"),
       Schema.wrap(keccak256("random bytes as schema")),
       Schema.wrap(keccak256("random bytes as key schema")),
       keyNames,
-      valueNames
+      fieldNames
     );
   }
 
   function testHasSchema() public {
     string[] memory keyNames = new string[](1);
-    string[] memory valueNames = new string[](4);
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    string[] memory fieldNames = new string[](4);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, keyNames, valueNames);
+    IStore(this).registerTable(table, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
@@ -108,7 +118,12 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testRegisterTableRevertNames() public {
     bytes32 table = keccak256("some.table");
-    Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema keySchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8);
     string[] memory fourNames = new string[](4);
     string[] memory oneName = new string[](1);
@@ -167,7 +182,12 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testSetAndGetStaticData() public {
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
 
     bytes32 table = keccak256("some.table");
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
@@ -192,7 +212,12 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testFailSetAndGetStaticData() public {
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     bytes32 table = keccak256("some.table");
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
@@ -237,7 +262,11 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -448,7 +477,11 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -530,7 +563,11 @@ contract StoreCoreTest is Test, StoreMock {
     data.table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     IStore(this).registerTable(data.table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key
@@ -658,7 +695,11 @@ contract StoreCoreTest is Test, StoreMock {
     data.table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT64_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT64_ARRAY
+    );
     IStore(this).registerTable(data.table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key

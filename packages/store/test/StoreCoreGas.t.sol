@@ -13,7 +13,6 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
-import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
@@ -31,7 +30,12 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   function testRegisterAndGetSchema() public {
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
     bytes32 table = keccak256("some.table");
 
@@ -58,7 +62,12 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testHasSchema() public {
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
@@ -108,7 +117,12 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
   function testSetAndGetStaticData() public {
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     bytes32 table = keccak256("some.table");
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
@@ -156,7 +170,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -319,7 +337,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -374,7 +396,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key
@@ -456,7 +482,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT64_ARRAY);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT64_ARRAY
+    );
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key
