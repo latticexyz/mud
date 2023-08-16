@@ -73,7 +73,7 @@ Use this prodecure to view the output from [`anvil`](https://book.getfoundry.sh/
 1. Edit `packages/contracts/package.json` to change the `scripts.dev` definition.
 
    ```
-   "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud --rpc http://127.0.0.1:8545",
+   "dev": "pnpm mud dev-contracts --rpc http://127.0.0.1:8545",
    ```
 
    Use `127.0.0.1`, there is a weird bug that makes it a problem to use `localhost` is some circumstances.
