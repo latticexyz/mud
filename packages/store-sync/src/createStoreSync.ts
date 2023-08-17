@@ -89,7 +89,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
           }
         ).pipe(
           catchError((error) => {
-            debug("error fetching initial state", error);
+            debug("error fetching initial state from indexer", error);
 
             onProgress?.({
               step: SyncStep.SNAPSHOT,
