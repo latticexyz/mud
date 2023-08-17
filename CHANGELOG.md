@@ -1,3 +1,154 @@
+# Version 2.0.0-next.2
+
+## Major changes
+
+**[feat(store-indexer): use fastify, move trpc to /trpc (#1232)](https://github.com/latticexyz/mud/commit/b621fb97731a0ceed9b67d741f40648a8aa64817)** (@latticexyz/store-indexer)
+
+Adds a [Fastify](https://fastify.dev/) server in front of tRPC and puts tRPC endpoints under `/trpc` to make way for other top-level endpoints (e.g. [tRPC panel](https://github.com/iway1/trpc-panel) or other API frontends like REST or gRPC).
+
+If you're using `@latticexyz/store-sync` packages with an indexer (either `createIndexerClient` or `indexerUrl` argument of `syncToRecs`), then you'll want to update your indexer URL:
+
+```diff
+ createIndexerClient({
+-  url: "https://indexer.dev.linfra.xyz",
++  url: "https://indexer.dev.linfra.xyz/trpc",
+ });
+```
+
+```diff
+ syncToRecs({
+   ...
+-  indexerUrl: "https://indexer.dev.linfra.xyz",
++  indexerUrl: "https://indexer.dev.linfra.xyz/trpc",
+ });
+```
+
+**[refactor(store): remove TableId library (#1279)](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062)** (@latticexyz/store)
+
+Remove `TableId` library to simplify `store` package
+
+**[feat(create-mud): infer recs components from config (#1278)](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473)** (@latticexyz/cli, @latticexyz/std-client, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+RECS components are now dynamically created and inferred from your MUD config when using `syncToRecs`.
+
+To migrate existing projects after upgrading to this MUD version:
+
+1. Remove `contractComponents.ts` from `client/src/mud`
+2. Remove `components` argument from `syncToRecs`
+3. Update `build:mud` and `dev` scripts in `contracts/package.json` to remove tsgen
+
+   ```diff
+   - "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+   + "build:mud": "mud tablegen && mud worldgen",
+   ```
+
+   ```diff
+   - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+   + "dev": "pnpm mud dev-contracts",
+   ```
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/block-logs-stream)
+
+- removes our own `getLogs` function now that viem's `getLogs` supports using multiple `events` per RPC call.
+- removes `isNonPendingBlock` and `isNonPendingLog` helpers now that viem narrows `Block` and `Log` types based on inputs
+- simplifies `groupLogsByBlockNumber` types and tests
+
+**[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/dev-tools, create-mud)
+
+MUD dev tools is updated to latest sync stack. You must now pass in all of its data requirements rather than relying on magic globals.
+
+```diff
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+- mountDevTools();
++ mountDevTools({
++   config,
++   publicClient,
++   walletClient,
++   latestBlock$,
++   blockStorageOperations$,
++   worldAddress,
++   worldAbi,
++   write$,
++   // if you're using recs
++   recsWorld,
++ });
+```
+
+It's also advised to wrap dev tools so that it is only mounted during development mode. Here's how you do this with Vite:
+
+```ts
+// https://vitejs.dev/guide/env-and-mode.html
+if (import.meta.env.DEV) {
+  mountDevTools({ ... });
+}
+```
+
+## Minor changes
+
+**[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/common)
+
+`createContract` now has an `onWrite` callback so you can observe writes. This is useful for wiring up the transanction log in MUD dev tools.
+
+```ts
+import { createContract, ContractWrite } from "@latticexyz/common";
+import { Subject } from "rxjs";
+
+const write$ = new Subject<ContractWrite>();
+creactContract({
+  ...
+  onWrite: (write) => write$.next(write),
+});
+```
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/common)
+
+- adds `defaultPriorityFee` to `mudFoundry` for better support with MUD's default anvil config and removes workaround in `createContract`
+- improves nonce error detection using viem's custom errors
+
+**[feat(store-sync,store-indexer): consolidate sync logic, add syncToSqlite (#1240)](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e)** (@latticexyz/dev-tools, @latticexyz/store-indexer, @latticexyz/store-sync)
+
+Store sync logic is now consolidated into a `createStoreSync` function exported from `@latticexyz/store-sync`. This simplifies each storage sync strategy to just a simple wrapper around the storage adapter. You can now sync to RECS with `syncToRecs` or SQLite with `syncToSqlite` and PostgreSQL support coming soon.
+
+There are no breaking changes if you were just using `syncToRecs` from `@latticexyz/store-sync` or running the `sqlite-indexer` binary from `@latticexyz/store-indexer`.
+
+**[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/react)
+
+Adds a `usePromise` hook that returns a [native `PromiseSettledResult` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+
+```tsx
+const promise = fetch(url);
+const result = usePromise(promise);
+
+if (result.status === "idle" || result.status === "pending") {
+  return <>fetching</>;
+}
+
+if (result.status === "rejected") {
+  return <>error fetching: {String(result.reason)}</>;
+}
+
+if (result.status === "fulfilled") {
+  return <>fetch status: {result.value.status}</>;
+}
+```
+
+## Patch changes
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/dev-tools, @latticexyz/network, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/std-client, @latticexyz/store-indexer, @latticexyz/store-sync, create-mud)
+
+bump viem to 1.6.0
+
+**[feat(dev-tools): improve support for non-store recs components (#1302)](https://github.com/latticexyz/mud/commit/5294a7d5983c52cb336373566afd6a8ec7fc4bfb)** (@latticexyz/dev-tools, @latticexyz/store-sync)
+
+Improves support for internal/client-only RECS components
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/store-sync)
+
+remove usages of `isNonPendingBlock` and `isNonPendingLog` (fixed with more specific viem types)
+
+---
+
 # Version 2.0.0-next.1
 
 ## Major changes

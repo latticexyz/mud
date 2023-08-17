@@ -3,8 +3,8 @@ pragma solidity >=0.8.0;
 
 import { IWorldErrors } from "../../interfaces/IWorldErrors.sol";
 
-import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
+import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
@@ -15,8 +15,8 @@ import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.s
  */
 contract CoreSystem is
   IWorldErrors,
-  WorldRegistrationSystem,
   StoreRegistrationSystem,
+  WorldRegistrationSystem,
   ModuleInstallationSystem,
   AccessManagementSystem,
   EphemeralRecordSystem

@@ -1,5 +1,15 @@
 # @latticexyz/protocol-parser
 
+## 2.0.0-next.2
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+- Updated dependencies [[`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)]:
+  - @latticexyz/common@2.0.0-next.2
+  - @latticexyz/schema-type@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Patch Changes

@@ -89,8 +89,7 @@ export default mudConfig({
         functionSelector: "bytes4",
       },
       schema: {
-        namespace: "bytes16",
-        name: "bytes16",
+        resourceSelector: "bytes32",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
@@ -161,8 +160,6 @@ export default mudConfig({
     // TODO: Move optional modules into a separate package
     // (see https://github.com/latticexyz/mud/pull/584)
     "UniqueEntitySystem",
-
-    "SnapSyncSystem",
 
     // Worldgen currently does not support systems inheriting logic
     // from other contracts, so all parts of CoreSystem are named

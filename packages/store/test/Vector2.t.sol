@@ -11,17 +11,17 @@ import { Schema } from "../src/Schema.sol";
 contract Vector2Test is Test, GasReporter, StoreReadWithStubs {
   function testRegisterAndGetSchema() public {
     startGasReport("register Vector2 schema");
-    Vector2.registerSchema();
+    Vector2.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getSchema(Vector2TableId);
-    Schema declaredSchema = Vector2.getSchema();
+    Schema registeredSchema = StoreCore.getValueSchema(Vector2TableId);
+    Schema declaredSchema = Vector2.getValueSchema();
 
-    assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
+    assertEq(Schema.unwrap(registeredSchema), Schema.unwrap(declaredSchema));
   }
 
   function testSetAndGet() public {
-    Vector2.registerSchema();
+    Vector2.register();
     bytes32 key = keccak256("somekey");
 
     startGasReport("set Vector2 record");

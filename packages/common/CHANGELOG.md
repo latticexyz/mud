@@ -1,5 +1,32 @@
 # Change Log
 
+## 2.0.0-next.2
+
+### Minor Changes
+
+- [#1284](https://github.com/latticexyz/mud/pull/1284) [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad) Thanks [@holic](https://github.com/holic)! - `createContract` now has an `onWrite` callback so you can observe writes. This is useful for wiring up the transanction log in MUD dev tools.
+
+  ```ts
+  import { createContract, ContractWrite } from "@latticexyz/common";
+  import { Subject } from "rxjs";
+
+  const write$ = new Subject<ContractWrite>();
+  creactContract({
+    ...
+    onWrite: (write) => write$.next(write),
+  });
+  ```
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - - adds `defaultPriorityFee` to `mudFoundry` for better support with MUD's default anvil config and removes workaround in `createContract`
+  - improves nonce error detection using viem's custom errors
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+- Updated dependencies [[`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)]:
+  - @latticexyz/schema-type@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Major Changes

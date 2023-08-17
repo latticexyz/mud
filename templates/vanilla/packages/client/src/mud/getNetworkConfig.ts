@@ -1,4 +1,4 @@
-import { getBurnerWallet } from "@latticexyz/std-client";
+import { getBurnerPrivateKey } from "@latticexyz/common";
 import worldsJson from "contracts/worlds.json";
 import { supportedChains } from "./supportedChains";
 
@@ -24,7 +24,7 @@ export async function getNetworkConfig() {
     : world?.blockNumber ?? 0n;
 
   return {
-    privateKey: getBurnerWallet().value,
+    privateKey: getBurnerPrivateKey(),
     chainId,
     chain,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,

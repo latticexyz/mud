@@ -4,10 +4,10 @@ import { Table } from "../common";
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function defineInternalComponents(world: World) {
   return {
-    TableMetadata: defineComponent<{ table: Type.T }, Metadata, Table>(
+    RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(
       world,
       { table: Type.T },
-      { metadata: { componentName: "TableMetadata" } }
+      { metadata: { componentName: "RegisteredTables" } }
     ),
     SyncProgress: defineComponent(
       world,

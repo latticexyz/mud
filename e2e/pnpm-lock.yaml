@@ -26,9 +26,6 @@ importers:
       '@latticexyz/dev-tools':
         specifier: link:../../../packages/dev-tools
         version: link:../../../packages/dev-tools
-      '@latticexyz/network':
-        specifier: link:../../../packages/network
-        version: link:../../../packages/network
       '@latticexyz/recs':
         specifier: link:../../../packages/recs
         version: link:../../../packages/recs
@@ -38,9 +35,6 @@ importers:
       '@latticexyz/services':
         specifier: link:../../../packages/services
         version: link:../../../packages/services
-      '@latticexyz/std-client':
-        specifier: link:../../../packages/std-client
-        version: link:../../../packages/std-client
       '@latticexyz/store-sync':
         specifier: link:../../../packages/store-sync
         version: link:../../../packages/store-sync
@@ -150,9 +144,12 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
-      '@latticexyz/network':
-        specifier: link:../../../packages/network
-        version: link:../../../packages/network
+      '@latticexyz/common':
+        specifier: link:../../../packages/common
+        version: link:../../../packages/common
+      '@latticexyz/protocol-parser':
+        specifier: link:../../../packages/protocol-parser
+        version: link:../../../packages/protocol-parser
       '@latticexyz/recs':
         specifier: link:../../../packages/recs
         version: link:../../../packages/recs
@@ -1322,6 +1319,7 @@ packages:
   /esm@3.2.25:
     resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
     engines: {node: '>=6'}
+    requiresBuild: true
     dev: false
     optional: true
 
