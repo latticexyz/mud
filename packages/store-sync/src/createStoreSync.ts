@@ -149,11 +149,16 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
   }> {
-    // Wait for tx to be mined
-    debug("waiting for tx receipt", tx);
     // viem doesn't retry timeouts, so we'll wrap in a retry
     const receipt = await pRetry(
-      () => publicClient.waitForTransactionReceipt({ hash: tx, timeout: publicClient.pollingInterval }),
+      (attempt) => {
+        // Wait for tx to be mined
+        debug("waiting for tx receipt", tx, "attempt", attempt);
+        return publicClient.waitForTransactionReceipt({
+          hash: tx,
+          timeout: publicClient.pollingInterval * 2 * attempt,
+        });
+      },
       { retries: 3 }
     );
     debug("got tx receipt", tx, receipt);
