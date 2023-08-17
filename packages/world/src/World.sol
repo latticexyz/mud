@@ -87,7 +87,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 schemaIndex,
     bytes calldata data,
     Schema valueSchema
-  ) public virtual override {
+  ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -105,7 +105,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 schemaIndex,
     bytes calldata dataToPush,
     Schema valueSchema
-  ) public override {
+  ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -123,7 +123,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     Schema valueSchema
-  ) public override {
+  ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -154,7 +154,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key, Schema valueSchema) public virtual override {
+  function deleteRecord(bytes32 tableId, bytes32[] calldata key, Schema valueSchema) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
