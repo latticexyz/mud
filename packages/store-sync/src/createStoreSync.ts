@@ -159,6 +159,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       await firstValueFrom(
         blockStorageOperations$.pipe(filter(({ blockNumber }) => blockNumber >= receipt.blockNumber))
       );
+      debug("tx was processed", tx, receipt.blockNumber);
     }
 
     return { receipt };
