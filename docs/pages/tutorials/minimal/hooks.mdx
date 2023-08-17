@@ -1,0 +1,209 @@
+import { CollapseCode } from "../../../components/CollapseCode";
+
+# Hooks
+
+In this tutorial you add a contract that is called when the counter is modified, and ensures that the counter is always a single digit number.
+This demonstrates how you can use hooks to ensure data integrity, respond to changes in the data regardless of which system caused them, etc.
+
+Here we build a hook that is called when the counter is incremented.
+If the counter is still less than ten, the hook does nothing.
+If the counter is a higher value, the hook calls `IncrementSystem` to reset the counter back to zero.
+
+## Update and create files
+
+1. Add a `resetCounter` function to `IncrementSystem`.
+   We need to add this here, because by default hooks are allowed to read tables from the `World`, but not to modify them.
+
+      <CollapseCode>
+
+   ```solidity filename="packages/contracts/src/systems/IncrementSystem.sol" showLineNumbers copy {15-18}
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.0;
+
+   import { System } from "@latticexyz/world/src/System.sol";
+   import { Counter } from "../codegen/Tables.sol";
+
+   contract IncrementSystem is System {
+     function increment() public returns (uint32) {
+       uint32 counter = Counter.get();
+       uint32 newValue = counter + 1;
+       Counter.set(newValue);
+       return newValue;
+     }
+
+     function counterReset() public returns (uint32) {
+       Counter.set(0);
+       return 0;
+     }
+   }
+   ```
+
+      </CollapseCode>
+
+      <details>
+<summary>Explanation</summary>
+
+      </details>
+
+1. Create a contract to "hang" on the hook.
+
+   ```solidity filename="packages/contracts//src/hooks/CounterHook.sol" showLineNumbers copy
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.0;
+
+   import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+   import { Counter } from "../codegen/Tables.sol";
+   import { IWorld } from "../codegen/world/IWorld.sol";
+
+   contract CounterHook is IStoreHook {
+     IWorld world;
+     bool internal locked = false;
+
+     modifier notReentrant() {
+       if (locked) return;
+
+       locked = true;
+       _;
+       locked = false;
+     }
+
+     constructor(address worldAddr) {
+       world = IWorld(worldAddr);
+     }
+
+     function onAfterSetField(
+       bytes32 table,
+       bytes32[] memory key,
+       uint8 schemaIndex,
+       bytes memory data
+     ) external notReentrant {
+       uint32 counter = Counter.get();
+       if (counter > 9) {
+         world.counterReset();
+       }
+     }
+
+     function onBeforeSetField(
+       bytes32 table,
+       bytes32[] memory key,
+       uint8 schemaIndex,
+       bytes memory data
+     ) external notReentrant {
+       return;
+     }
+
+     function onDeleteRecord(bytes32 table, bytes32[] memory key) external notReentrant {
+       revert("onDeleteRecord");
+     }
+
+     function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external notReentrant {
+       revert("onSetRecord");
+     }
+   }
+   ```
+
+      <details>
+<summary>Explanation</summary>
+
+   ```solidity
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.0;
+
+   import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+   import { Counter } from "../codegen/Tables.sol";
+   import { IWorld } from "../codegen/world/IWorld.sol";
+
+   contract CounterHook is IStoreHook {
+     IWorld world;
+     bool internal locked = false;
+
+     modifier notReentrant() {
+       if (locked) return;
+
+       locked = true;
+       _;
+       locked = false;
+     }
+
+     constructor(address worldAddr) {
+       world = IWorld(worldAddr);
+     }
+
+     function onAfterSetField(
+       bytes32 table,
+       bytes32[] memory key,
+       uint8 schemaIndex,
+       bytes memory data
+     ) external notReentrant {
+       uint32 counter = Counter.get();
+       if (counter > 9) {
+         world.counterReset();
+       }
+     }
+
+     function onBeforeSetField(
+       bytes32 table,
+       bytes32[] memory key,
+       uint8 schemaIndex,
+       bytes memory data
+     ) external notReentrant {
+       return;
+     }
+
+     function onDeleteRecord(bytes32 table, bytes32[] memory key) external notReentrant {
+       revert("onDeleteRecord");
+     }
+
+     function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external notReentrant {
+       revert("onSetRecord");
+     }
+   }
+   ```
+
+      </details>
+
+1. Update the post deploy script.
+
+      <CollapseCode>
+
+   ```solidity filename="packages/contracts/scripts/IncrementSystem.sol" showLineNumbers copy {8-9,21-31}
+   // SPDX-License-Identifier: MIT
+   pragma solidity >=0.8.0;
+
+   import { Script } from "forge-std/Script.sol";
+   import { console } from "forge-std/console.sol";
+   import { IWorld } from "../src/codegen/world/IWorld.sol";
+
+   import { CounterTableId } from "../src/codegen/Tables.sol";
+   import { CounterHook } from "../src/hooks/CounterHook.sol";
+
+   contract PostDeploy is Script {
+     function run(address worldAddress) external {
+       // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+       uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+
+       // Start broadcasting transactions from the deployer account
+       vm.startBroadcast(deployerPrivateKey);
+
+       // ------------------ EXAMPLES ------------------
+
+       IWorld world = IWorld(worldAddress);
+
+       // Call increment on the world via the registered function selector
+       uint32 newValue = world.increment();
+       console.log("Increment via IWorld:", newValue);
+
+       CounterHook hook = new CounterHook(worldAddress);
+       world.registerTableHook(bytes16(CounterTableId), bytes16(uint128(uint256(CounterTableId))), hook);
+
+       vm.stopBroadcast();
+     }
+   }
+   ```
+
+      </CollapseCode>
+
+      <details>
+<summary>Explanation</summary>
+
+      </details>
