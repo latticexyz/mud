@@ -50,7 +50,7 @@ If the counter is a higher value, the hook calls `IncrementSystem` to reset the 
     - `onSetRecord`, which is called when a new record is created or when the entire record is set with a single call.
       This hook is not relevant here, because the `Counter` table is a singleton.
 
-    Note that MUD called either `onSetRecord` (before the change) or both `onBeforeSetField` and `onAfterSetField`.
+    Note that MUD calls either `onSetRecord` (before the change) or both `onBeforeSetField` and `onAfterSetField`.
     Therefore, if you do any sanity checks when the table values change, they should happen in both places.
 
     ```solidity filename="packages/contracts//src/hooks/CounterHook.sol" showLineNumbers copy
