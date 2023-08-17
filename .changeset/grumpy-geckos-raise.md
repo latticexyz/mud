@@ -1,6 +1,5 @@
 ---
 "@latticexyz/cli": major
-"@latticexyz/common": patch
 "@latticexyz/world": major
 ---
 
