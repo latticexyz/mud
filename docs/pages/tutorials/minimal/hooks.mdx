@@ -11,162 +11,277 @@ If the counter is a higher value, the hook calls `IncrementSystem` to reset the 
 
 ## Update and create files
 
-1. Add a `resetCounter` function to `IncrementSystem`.
-   We need to add this here, because by default hooks are allowed to read tables from the `World`, but not to modify them.
+1.  Add a `resetCounter` function to `IncrementSystem`.
+    We need to add this here, because by default hooks are allowed to read tables from the `World`, but not to modify them.
 
-      <CollapseCode>
+       <CollapseCode>
 
-   ```solidity filename="packages/contracts/src/systems/IncrementSystem.sol" showLineNumbers copy {15-18}
-   // SPDX-License-Identifier: MIT
-   pragma solidity >=0.8.0;
+    ```solidity filename="packages/contracts/src/systems/IncrementSystem.sol" showLineNumbers copy {15-18}
+    // SPDX-License-Identifier: MIT
+    pragma solidity >=0.8.0;
 
-   import { System } from "@latticexyz/world/src/System.sol";
-   import { Counter } from "../codegen/Tables.sol";
+    import { System } from "@latticexyz/world/src/System.sol";
+    import { Counter } from "../codegen/Tables.sol";
 
-   contract IncrementSystem is System {
-     function increment() public returns (uint32) {
-       uint32 counter = Counter.get();
-       uint32 newValue = counter + 1;
-       Counter.set(newValue);
-       return newValue;
-     }
+    contract IncrementSystem is System {
+      function increment() public returns (uint32) {
+        uint32 counter = Counter.get();
+        uint32 newValue = counter + 1;
+        Counter.set(newValue);
+        return newValue;
+      }
 
-     function counterReset() public returns (uint32) {
-       Counter.set(0);
-       return 0;
-     }
-   }
-   ```
+      function counterReset() public returns (uint32) {
+        Counter.set(0);
+        return 0;
+      }
+    }
+    ```
 
-      </CollapseCode>
+       </CollapseCode>
 
-      <details>
+1.  Create a contract with the functions to `hang` on the hooks.
+    Implementing `IStoreHook` requires four functions:
+
+    - `onBeforeSetField`, which is called before a specific field is set.
+    - `onAfterSetField`, which is called after a specific field is set.
+    - `onDeleteRecord`, which is called when a record is deleted.
+      This hook is not relevant here, because the `Counter` table is a singleton so records are never created or deleted.
+    - `onSetRecord`, which is called when a new record is created or when the entire record is set with a single call.
+      This hook is not relevant here, because the `Counter` table is a singleton.
+
+    Note that MUD called either `onSetRecord` (before the change) or both `onBeforeSetField` and `onAfterSetField`.
+    Therefore, if you do any sanity checks when the table values change, they should happen in both places.
+
+    ```solidity filename="packages/contracts//src/hooks/CounterHook.sol" showLineNumbers copy
+    // SPDX-License-Identifier: MIT
+    pragma solidity >=0.8.0;
+
+    import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+    import { Counter } from "../codegen/Tables.sol";
+    import { IWorld } from "../codegen/world/IWorld.sol";
+
+    contract CounterHook is IStoreHook {
+      IWorld world;
+      bool internal locked = false;
+
+      modifier notReentrant() {
+        if (locked) return;
+
+        locked = true;
+        _;
+        locked = false;
+      }
+
+      constructor(address worldAddr) {
+        world = IWorld(worldAddr);
+      }
+
+      function onBeforeSetField(
+        bytes32 table,
+        bytes32[] memory key,
+        uint8 schemaIndex,
+        bytes memory data
+      ) external notReentrant {
+        return;
+      }
+
+      function onAfterSetField(
+        bytes32 table,
+        bytes32[] memory key,
+        uint8 schemaIndex,
+        bytes memory data
+      ) external notReentrant {
+        uint32 counter = Counter.get();
+        if (counter > 9) {
+          world.counterReset();
+        }
+      }
+
+      function onDeleteRecord(bytes32 table, bytes32[] memory key) external notReentrant {
+        revert("onDeleteRecord");
+      }
+
+      function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external notReentrant {
+        revert("onSetRecord");
+      }
+    }
+    ```
+
+<details>
 <summary>Explanation</summary>
 
-      </details>
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
 
-1. Create a contract to "hang" on the hook.
+import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+```
 
-   ```solidity filename="packages/contracts//src/hooks/CounterHook.sol" showLineNumbers copy
-   // SPDX-License-Identifier: MIT
-   pragma solidity >=0.8.0;
+[`IStoreHook`]()https://github.com/latticexyz/mud/blob/main/packages/store/src/IStore.sol#L131-L152 is the interface that hooks need to implement.
 
-   import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-   import { Counter } from "../codegen/Tables.sol";
-   import { IWorld } from "../codegen/world/IWorld.sol";
+```solidity
+import { Counter } from "../codegen/Tables.sol";
+import { IWorld } from "../codegen/world/IWorld.sol";
 
-   contract CounterHook is IStoreHook {
-     IWorld world;
-     bool internal locked = false;
+contract CounterHook is IStoreHook {
+    IWorld world;
+```
 
-     modifier notReentrant() {
-       if (locked) return;
+The `World` to which we are connected.
+We need this information because hooks cannot change information, so if we want to reset the counter we need to go through the `IncrementSystem` logic.
 
-       locked = true;
-       _;
-       locked = false;
-     }
+Note that this is _not_ the common use case for hooks.
+In most cases, you just `revert()` when a change is not allowed, which is a lot simpler.
+However, modifying the value to a legitimate one is more complicated and error prone, so it is worth learning how to do it correctly.
 
-     constructor(address worldAddr) {
-       world = IWorld(worldAddr);
-     }
+```solidity
+    bool internal locked = false;
+```
 
-     function onAfterSetField(
-       bytes32 table,
-       bytes32[] memory key,
-       uint8 schemaIndex,
-       bytes memory data
-     ) external notReentrant {
-       uint32 counter = Counter.get();
-       if (counter > 9) {
-         world.counterReset();
-       }
-     }
+Code that isn't written for [reentrancy](<https://en.wikipedia.org/wiki/Reentrancy_(computing)>) can suffer from [serious problems](https://www.quicknode.com/guides/ethereum-development/smart-contracts/a-broad-overview-of-reentrancy-attacks-in-solidity-contracts).
+If we trigger a value change while in the middle of a value change, the second value change will also trigger its own hook call.
+This could lead to an infinite loop, which will only terminate once it uses up all the gas of the transaction, which will fail, or worse to unexpected effects that could compromise security.
 
-     function onBeforeSetField(
-       bytes32 table,
-       bytes32[] memory key,
-       uint8 schemaIndex,
-       bytes memory data
-     ) external notReentrant {
-       return;
-     }
+We use `locked` here to detect reentrancy.
+We can use a single boolean value because the `Counter` table is a singleton.
+In a more complicated table we would need to use a [`mapping`](https://www.tutorialspoint.com/solidity/solidity_mappings.htm) to lock specific records rather than the entire table.
 
-     function onDeleteRecord(bytes32 table, bytes32[] memory key) external notReentrant {
-       revert("onDeleteRecord");
-     }
+```solidity
+    modifier notReentrant() {
+```
 
-     function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external notReentrant {
-       revert("onSetRecord");
-     }
-   }
-   ```
+[Modifiers](https://www.tutorialspoint.com/solidity/solidity_function_modifiers.htm) are a type of Solidity function that modifies a normal contract function.
+They can include code that runs immediately before the function being modified, and code that runs immediately after it.
 
-      <details>
-<summary>Explanation</summary>
+```solidity
+        if (locked) return;
+```
 
-   ```solidity
-   // SPDX-License-Identifier: MIT
-   pragma solidity >=0.8.0;
+If `locked` is `true` then return immediately and don't do anything.
+This is the correct behavior in this case because we want hook functions that are called during a state change to accept the change.
+If we were to revert then the entire transaction would fail.
 
-   import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-   import { Counter } from "../codegen/Tables.sol";
-   import { IWorld } from "../codegen/world/IWorld.sol";
+```solidity
+        locked = true;
+        _;
+        locked = false;
+    }
+```
 
-   contract CounterHook is IStoreHook {
-     IWorld world;
-     bool internal locked = false;
+1. Set `locked` to `true`, and then run the function being modified.
+   Because `locked` is `true`, if we get to `notReentrant` again it will just return.
 
-     modifier notReentrant() {
-       if (locked) return;
+1. The syntax `_;` runs the function being modified.
 
-       locked = true;
-       _;
-       locked = false;
-     }
+1. Once we are done, set `locked` to `false`.
 
-     constructor(address worldAddr) {
-       world = IWorld(worldAddr);
-     }
+```solidity
+constructor(address worldAddr) {
+  world = IWorld(worldAddr);
+}
+```
 
-     function onAfterSetField(
-       bytes32 table,
-       bytes32[] memory key,
-       uint8 schemaIndex,
-       bytes memory data
-     ) external notReentrant {
-       uint32 counter = Counter.get();
-       if (counter > 9) {
-         world.counterReset();
-       }
-     }
+Set `world`. We need this information to be able to call `counterReset` as needed.
 
-     function onBeforeSetField(
-       bytes32 table,
-       bytes32[] memory key,
-       uint8 schemaIndex,
-       bytes memory data
-     ) external notReentrant {
-       return;
-     }
+```solidity
+    function onBeforeSetField(
+```
 
-     function onDeleteRecord(bytes32 table, bytes32[] memory key) external notReentrant {
-       revert("onDeleteRecord");
-     }
+All four hooks have very similar parameters:
 
-     function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external notReentrant {
-       revert("onSetRecord");
-     }
-   }
-   ```
+```solidity
+        bytes32 table,
+```
 
-      </details>
+The 32 byte table identitier.
+16 bytes for the namespace followed by 16 bytes for the table name.
+The same hook contract can be used for multiple tables.
 
-1. Update the post deploy script.
+```solidity
+        bytes32[] memory key,
+```
 
-      <CollapseCode>
+The key of the entry being modified.
+Keys in MUD can include multiple fields, each represented by a `byte32` value.
+Of course, because `Counter` is a singleton, here it would always be zero.
 
-   ```solidity filename="packages/contracts/scripts/IncrementSystem.sol" showLineNumbers copy {8-9,21-31}
+```solidity
+        uint8 schemaIndex,
+```
+
+The index of the field being modified in the schema.
+This parameter is only relevant to `onBeforeSetField` and `onAfterSetField`, so it does not appear in the the whole record functions (`onDeleteRecord` and `onSetRecord`).
+
+```solidity
+        bytes memory data
+```
+
+The field data.
+It is `bytes memory` because different field types have different lengths.
+
+```solidity
+    ) external notReentrant {
+```
+
+This is how you use a modifier, such as `notReentrant`, you put it at the end of the function signature, just before the code block.
+
+```solidity
+        return;
+    }
+```
+
+In this case there isn't anything we do in the hook, so we just return.
+Note that we don't really need `nonReentrant` here, because we don't do anything, but it is still safer to have it in case we need to add functionality here in the future and forget.
+
+```solidity
+    function onAfterSetField(
+        bytes32 table,
+        bytes32[] memory key,
+        uint8 schemaIndex,
+        bytes memory data
+    ) external notReentrant {
+        uint32 counter = Counter.get();
+```
+
+Read the value of `Counter`.
+We could have parsed the value from `data`, this method is just more readable.
+
+```solidity
+        if (counter > 9) {
+            world.counterReset();
+        }
+    }
+```
+
+If the value is above nine, call `world.counterReset()` to move it back to zero.
+
+```solidity
+    function onDeleteRecord(bytes32 table, bytes32[] memory key) external notReentrant {
+        revert("onDeleteRecord");
+    }
+
+    function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data)  external notReentrant {
+        revert("onSetRecord");
+    }
+}
+```
+
+These two hooks should not be called, so as a sanity check we `revert` so it will be visible if they are called for some reason.
+
+</details>
+
+3. Update the post deploy script.
+   In Foundry we deploy code to the blockchain using [Solidity scripts](https://book.getfoundry.sh/tutorials/solidity-scripting).
+   Here we need to perform two additional actions:
+
+   1. Deploy the `CounterHook` contract (line 27).
+      The constructor to this contract requires us to provide the `World` address.
+   1. Register the new `CounterHook` contract as the hook contract for the `Counter` table (line 28).
+
+   <CollapseCode>
+
+   ```solidity filename="packages/contracts/scripts/IncrementSystem.sol" showLineNumbers copy {8-9,21-28}
    // SPDX-License-Identifier: MIT
    pragma solidity >=0.8.0;
 
@@ -201,9 +316,36 @@ If the counter is a higher value, the hook calls `IncrementSystem` to reset the 
    }
    ```
 
-      </CollapseCode>
+   </CollapseCode>
 
-      <details>
+<details>
 <summary>Explanation</summary>
 
-      </details>
+```solidity
+import { CounterTableId } from "../src/codegen/Tables.sol";
+import { CounterHook } from "../src/hooks/CounterHook.sol";
+```
+
+```solidity
+IWorld world = IWorld(worldAddress);
+```
+
+We need the world address twice, so we'll just store it in a variable.
+
+```solidity
+// Call increment on the world via the registered function selector
+uint32 newValue = world.increment();
+console.log("Increment via IWorld:", newValue);
+
+CounterHook hook = new CounterHook(worldAddress);
+```
+
+Deploy the `CounterHook` contract.
+
+```solidity
+world.registerTableHook(bytes16(CounterTableId), bytes16(uint128(uint256(CounterTableId))), hook);
+```
+
+Register the `CounterHook` contract.
+
+</details>
