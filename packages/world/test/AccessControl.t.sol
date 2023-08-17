@@ -5,6 +5,7 @@ import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
+import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
@@ -60,5 +61,23 @@ contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
 
     // Check that the caller has no access to the namespace or name
     assertFalse(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
+  }
+
+  function testRequireAccess() public {
+    startGasReport("AccessControl: requireAccess (cold)");
+    AccessControl.requireAccess(ResourceSelector.from(namespace), address(this));
+    endGasReport();
+
+    startGasReport("AccessControl: requireAccess (warm)");
+    AccessControl.requireAccess(ResourceSelector.from(namespace), address(this));
+    endGasReport();
+  }
+
+  function testRequireAccessRevert() public {
+    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, ResourceSelector.toString(resourceSelector), caller)
+    );
+    AccessControl.requireAccess(resourceSelector, caller);
   }
 }
