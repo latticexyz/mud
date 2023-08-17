@@ -330,7 +330,7 @@ import { CounterHook } from "../src/hooks/CounterHook.sol";
 IWorld world = IWorld(worldAddress);
 ```
 
-We need the world address twice, so we'll just store it in a variable.
+We need the world contract twice, so we'll just store it in a variable.
 
 ```solidity
 // Call increment on the world via the registered function selector
@@ -346,6 +346,6 @@ Deploy the `CounterHook` contract.
 world.registerTableHook(bytes16(CounterTableId), bytes16(uint128(uint256(CounterTableId))), hook);
 ```
 
-Register the `CounterHook` contract.
+Register the `CounterHook` contract as a hook for the `Counter` table.
 
 </details>
