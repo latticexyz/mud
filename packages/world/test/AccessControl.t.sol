@@ -16,6 +16,7 @@ import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
   bytes16 constant namespace = "namespace";
   bytes16 constant name = "name";
+  address constant presetCaller = address(0x0123);
   address constant caller = address(0x01);
 
   function setUp() public {
@@ -23,7 +24,7 @@ contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
     NamespaceOwner.register();
 
     NamespaceOwner.set(namespace, address(this));
-    ResourceAccess.set(ResourceSelector.from(namespace), address(this), true);
+    ResourceAccess.set(ResourceSelector.from(namespace, name), presetCaller, true);
   }
 
   function testAccessControl() public {
@@ -39,7 +40,7 @@ contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
     ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, true);
 
     // Check that the caller has access to the namespace or name
-    startGasReport("AccessControl: hasAccess (warm)");
+    startGasReport("AccessControl: hasAccess (warm, namespace only)");
     hasAccess = AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller);
     endGasReport();
     assertTrue(hasAccess);
@@ -48,7 +49,10 @@ contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
     ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, false);
 
     // Check that the caller has no access to the namespace or name
-    assertFalse(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
+    startGasReport("AccessControl: hasAccess (warm)");
+    hasAccess = AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller);
+    endGasReport();
+    assertFalse(hasAccess);
 
     // Grant access to the name
     ResourceAccess.set(ResourceSelector.from(namespace, name), caller, true);
@@ -64,12 +68,17 @@ contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
   }
 
   function testRequireAccess() public {
+    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     startGasReport("AccessControl: requireAccess (cold)");
-    AccessControl.requireAccess(ResourceSelector.from(namespace), address(this));
+    AccessControl.requireAccess(resourceSelector, presetCaller);
     endGasReport();
 
     startGasReport("AccessControl: requireAccess (warm)");
-    AccessControl.requireAccess(ResourceSelector.from(namespace), address(this));
+    AccessControl.requireAccess(resourceSelector, presetCaller);
+    endGasReport();
+
+    startGasReport("AccessControl: requireAccess (this address)");
+    AccessControl.requireAccess(resourceSelector, address(this));
     endGasReport();
   }
 
