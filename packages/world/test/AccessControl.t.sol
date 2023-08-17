@@ -14,9 +14,9 @@ import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 
 contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
-  bytes16 namespace = "namespace";
-  bytes16 name = "name";
-  address caller = address(0x01);
+  bytes16 constant namespace = "namespace";
+  bytes16 constant name = "name";
+  address constant caller = address(0x01);
 
   function setUp() public {
     ResourceAccess.register();
