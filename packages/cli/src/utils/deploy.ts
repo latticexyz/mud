@@ -18,6 +18,8 @@ import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
+import { tableIdToHex } from "@latticexyz/common";
+import { abiTypesToSchema, schemaToHex } from "@latticexyz/protocol-parser";
 
 export interface DeployConfig {
   profile?: string;
@@ -164,15 +166,13 @@ export async function deploy(
       await fastTxExecute(
         WorldContract,
         "registerTable",
-        [toBytes16(namespace), toBytes16(name), encodeSchema(schemaTypes), encodeSchema(keyTypes)],
-        confirmations
-      );
-
-      // Register table metadata
-      await fastTxExecute(
-        WorldContract,
-        "setMetadata(bytes16,bytes16,string,string[])",
-        [toBytes16(namespace), toBytes16(name), tableName, Object.keys(schema)],
+        [
+          tableIdToHex(namespace, name),
+          encodeSchema(keyTypes),
+          encodeSchema(schemaTypes),
+          Object.keys(keySchema),
+          Object.keys(schema),
+        ],
         confirmations
       );
 
@@ -190,7 +190,7 @@ export async function deploy(
         await fastTxExecute(
           WorldContract,
           "registerSystem",
-          [toBytes16(namespace), toBytes16(name), await contractPromises[systemName], openAccess],
+          [tableIdToHex(namespace, name), await contractPromises[systemName], openAccess],
           confirmations
         );
         console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${name}`));
@@ -217,14 +217,14 @@ export async function deploy(
                 await fastTxExecute(
                   WorldContract,
                   "registerRootFunctionSelector",
-                  [toBytes16(namespace), toBytes16(name), worldFunctionSelector, systemFunctionSelector],
+                  [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector],
                   confirmations
                 );
               } else {
                 await fastTxExecute(
                   WorldContract,
                   "registerFunctionSelector",
-                  [toBytes16(namespace), toBytes16(name), functionName, functionArgs],
+                  [tableIdToHex(namespace, name), functionName, functionArgs],
                   confirmations
                 );
               }
@@ -249,12 +249,7 @@ export async function deploy(
       ...promises,
       ...accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
-        await fastTxExecute(
-          WorldContract,
-          "grantAccess",
-          [toBytes16(namespace), toBytes16(name), address],
-          confirmations
-        );
+        await fastTxExecute(WorldContract, "grantAccess", [tableIdToHex(namespace, name), address], confirmations);
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${name})`));
       }),
     ];
@@ -267,7 +262,7 @@ export async function deploy(
         await fastTxExecute(
           WorldContract,
           "grantAccess",
-          [toBytes16(namespace), toBytes16(name), await contractPromises[granteeSystem]],
+          [tableIdToHex(namespace, name), await contractPromises[granteeSystem]],
           confirmations
         );
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));

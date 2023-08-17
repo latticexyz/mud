@@ -2,8 +2,7 @@ import { Page } from "@playwright/test";
 import { Data } from "./types";
 import { encodeTestData } from "./encodeTestData";
 import { callWorld } from "./callWorld";
-import { stringToBytes16 } from "@latticexyz/utils";
-import { toHex } from "viem";
+import { tableIdToHex } from "@latticexyz/common";
 
 /**
  * Writes contract data by calling `world.setRecord` via the client
@@ -15,8 +14,7 @@ export async function setContractData(page: Page, data: Data) {
     for (const record of records) {
       const promise = await callWorld(page, "setRecord", [
         // TODO: add support for multiple namespaces after https://github.com/latticexyz/mud/issues/994 is resolved
-        toHex(stringToBytes16("")),
-        toHex(stringToBytes16(table)),
+        tableIdToHex("", table),
         record.key,
         record.value,
         record.valueSchema,

@@ -38,122 +38,85 @@ export type StringStructStructOutput = [string] & { value: string };
 
 export interface IWorldInterface extends utils.Interface {
   functions: {
-    "call(bytes16,bytes16,bytes)": FunctionFragment;
+    "call(bytes32,bytes)": FunctionFragment;
     "deleteRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
-    "deleteRecord(bytes16,bytes16,bytes32[],bytes32)": FunctionFragment;
     "dynamicArrayBytesStruct((bytes)[])": FunctionFragment;
     "dynamicArrayStringStruct((string)[])": FunctionFragment;
-    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)": FunctionFragment;
     "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
     "getField(bytes32,bytes32[],uint8,bytes32)": FunctionFragment;
     "getFieldLength(bytes32,bytes32[],uint8,bytes32)": FunctionFragment;
     "getFieldSlice(bytes32,bytes32[],uint8,bytes32,uint256,uint256)": FunctionFragment;
     "getKeySchema(bytes32)": FunctionFragment;
     "getRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
-    "getSchema(bytes32)": FunctionFragment;
-    "grantAccess(bytes16,bytes16,address)": FunctionFragment;
+    "getValueSchema(bytes32)": FunctionFragment;
+    "grantAccess(bytes32,address)": FunctionFragment;
     "increment()": FunctionFragment;
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
     "pickUp(uint32,uint32)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)": FunctionFragment;
-    "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)": FunctionFragment;
     "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
-    "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
-    "registerFunctionSelector(bytes16,bytes16,string,string)": FunctionFragment;
-    "registerHook(bytes16,bytes16,address)": FunctionFragment;
+    "registerFunctionSelector(bytes32,string,string)": FunctionFragment;
     "registerNamespace(bytes16)": FunctionFragment;
-    "registerRootFunctionSelector(bytes16,bytes16,bytes4,bytes4)": FunctionFragment;
-    "registerSchema(bytes32,bytes32,bytes32)": FunctionFragment;
+    "registerRootFunctionSelector(bytes32,bytes4,bytes4)": FunctionFragment;
     "registerStoreHook(bytes32,address)": FunctionFragment;
-    "registerSystem(bytes16,bytes16,address,bool)": FunctionFragment;
-    "registerSystemHook(bytes16,bytes16,address)": FunctionFragment;
-    "registerTable(bytes16,bytes16,bytes32,bytes32)": FunctionFragment;
-    "registerTableHook(bytes16,bytes16,address)": FunctionFragment;
-    "revokeAccess(bytes16,bytes16,address)": FunctionFragment;
+    "registerSystem(bytes32,address,bool)": FunctionFragment;
+    "registerSystemHook(bytes32,address)": FunctionFragment;
+    "registerTable(bytes32,bytes32,bytes32,string[],string[])": FunctionFragment;
+    "revokeAccess(bytes32,address)": FunctionFragment;
     "sendMessage(string)": FunctionFragment;
-    "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
-    "setMetadata(bytes16,bytes16,string,string[])": FunctionFragment;
-    "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
-    "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)": FunctionFragment;
     "staticArrayBytesStruct(tuple[1])": FunctionFragment;
     "staticArrayStringStruct(tuple[1])": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)": FunctionFragment;
-    "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)": FunctionFragment;
     "willRevert()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
       | "call"
-      | "deleteRecord(bytes32,bytes32[],bytes32)"
-      | "deleteRecord(bytes16,bytes16,bytes32[],bytes32)"
+      | "deleteRecord"
       | "dynamicArrayBytesStruct"
       | "dynamicArrayStringStruct"
-      | "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"
-      | "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)"
+      | "emitEphemeralRecord"
       | "getField"
       | "getFieldLength"
       | "getFieldSlice"
       | "getKeySchema"
       | "getRecord"
-      | "getSchema"
+      | "getValueSchema"
       | "grantAccess"
       | "increment"
       | "installModule"
       | "installRootModule"
       | "pickUp"
-      | "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)"
-      | "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)"
-      | "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)"
-      | "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"
+      | "popFromField"
+      | "pushToField"
       | "registerFunctionSelector"
-      | "registerHook"
       | "registerNamespace"
       | "registerRootFunctionSelector"
-      | "registerSchema"
       | "registerStoreHook"
       | "registerSystem"
       | "registerSystemHook"
       | "registerTable"
-      | "registerTableHook"
       | "revokeAccess"
       | "sendMessage"
-      | "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"
-      | "setField(bytes32,bytes32[],uint8,bytes,bytes32)"
-      | "setMetadata(bytes16,bytes16,string,string[])"
-      | "setMetadata(bytes32,string,string[])"
-      | "setRecord(bytes32,bytes32[],bytes,bytes32)"
-      | "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"
+      | "setField"
+      | "setRecord"
       | "staticArrayBytesStruct"
       | "staticArrayStringStruct"
-      | "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)"
-      | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)"
+      | "updateInField"
       | "willRevert"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "call",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
-    functionFragment: "deleteRecord(bytes32,bytes32[],bytes32)",
+    functionFragment: "deleteRecord",
     values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "deleteRecord(bytes16,bytes16,bytes32[],bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
       PromiseOrValue<BytesLike>
@@ -168,17 +131,7 @@ export interface IWorldInterface extends utils.Interface {
     values: [StringStructStruct[]]
   ): string;
   encodeFunctionData(
-    functionFragment: "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)",
+    functionFragment: "emitEphemeralRecord",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
@@ -228,16 +181,12 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "getSchema",
+    functionFragment: "getValueSchema",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "grantAccess",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>
-    ]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "increment", values?: undefined): string;
   encodeFunctionData(
@@ -253,7 +202,7 @@ export interface IWorldInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
-    functionFragment: "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)",
+    functionFragment: "popFromField",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
@@ -263,30 +212,8 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)",
+    functionFragment: "pushToField",
     values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
       PromiseOrValue<BigNumberish>,
@@ -298,16 +225,7 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "registerFunctionSelector",
     values: [
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
-      PromiseOrValue<string>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "registerHook",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<string>
     ]
   ): string;
@@ -317,15 +235,6 @@ export interface IWorldInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "registerRootFunctionSelector",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "registerSchema",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
@@ -340,18 +249,13 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "registerSystem",
     values: [
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
       PromiseOrValue<boolean>
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "registerSystemHook",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>
-    ]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "registerTable",
@@ -359,42 +263,20 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "registerTableHook",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>
+      PromiseOrValue<string>[],
+      PromiseOrValue<string>[]
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "revokeAccess",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>
-    ]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "sendMessage",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setField(bytes32,bytes32[],uint8,bytes,bytes32)",
+    functionFragment: "setField",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
@@ -404,35 +286,8 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "setMetadata(bytes16,bytes16,string,string[])",
+    functionFragment: "setRecord",
     values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>[]
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setMetadata(bytes32,string,string[])",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<string>,
-      PromiseOrValue<string>[]
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setRecord(bytes32,bytes32[],bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
       PromiseOrValue<BytesLike>,
@@ -448,20 +303,8 @@ export interface IWorldInterface extends utils.Interface {
     values: [[StringStructStruct]]
   ): string;
   encodeFunctionData(
-    functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)",
+    functionFragment: "updateInField",
     values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)",
-    values: [
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
       PromiseOrValue<BigNumberish>,
@@ -477,11 +320,7 @@ export interface IWorldInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: "call", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "deleteRecord(bytes32,bytes32[],bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "deleteRecord(bytes16,bytes16,bytes32[],bytes32)",
+    functionFragment: "deleteRecord",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -493,11 +332,7 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)",
+    functionFragment: "emitEphemeralRecord",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getField", data: BytesLike): Result;
@@ -514,7 +349,10 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getRecord", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "getSchema", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getValueSchema",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "grantAccess",
     data: BytesLike
@@ -530,27 +368,15 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "pickUp", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)",
+    functionFragment: "popFromField",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)",
+    functionFragment: "pushToField",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "registerFunctionSelector",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "registerHook",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -559,10 +385,6 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "registerRootFunctionSelector",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "registerSchema",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -582,10 +404,6 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "registerTableHook",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "revokeAccess",
     data: BytesLike
   ): Result;
@@ -593,30 +411,8 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "sendMessage",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(
-    functionFragment: "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setField(bytes32,bytes32[],uint8,bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMetadata(bytes16,bytes16,string,string[])",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setMetadata(bytes32,string,string[])",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRecord(bytes32,bytes32[],bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "setField", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setRecord", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "staticArrayBytesStruct",
     data: BytesLike
@@ -626,11 +422,7 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)",
+    functionFragment: "updateInField",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "willRevert", data: BytesLike): Result;
@@ -733,22 +525,13 @@ export interface IWorld extends BaseContract {
 
   functions: {
     call(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       funcSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "deleteRecord(bytes32,bytes32[],bytes32)"(
+    deleteRecord(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "deleteRecord(bytes16,bytes16,bytes32[],bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -764,16 +547,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)"(
+    emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
@@ -819,14 +593,13 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string] & { data: string }>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string] & { schema: string }>;
 
     grantAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -853,7 +626,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)"(
+    popFromField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -862,28 +635,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    pushToField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      dataToPush: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
@@ -892,17 +645,9 @@ export interface IWorld extends BaseContract {
     ): Promise<ContractTransaction>;
 
     registerFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       systemFunctionName: PromiseOrValue<string>,
       systemFunctionArguments: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    registerHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -912,17 +657,9 @@ export interface IWorld extends BaseContract {
     ): Promise<ContractTransaction>;
 
     registerRootFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       worldFunctionSelector: PromiseOrValue<BytesLike>,
       systemFunctionSelector: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -933,38 +670,29 @@ export interface IWorld extends BaseContract {
     ): Promise<ContractTransaction>;
 
     registerSystem(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       system: PromiseOrValue<string>,
       publicAccess: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     registerSystemHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     registerTable(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    registerTableHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     revokeAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -974,17 +702,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    setField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -993,32 +711,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setMetadata(bytes32,string,string[])"(
+    setRecord(
       table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setRecord(bytes32,bytes32[],bytes,bytes32)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
@@ -1035,19 +729,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)"(
+    updateInField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      startByteIndex: PromiseOrValue<BigNumberish>,
-      dataToSet: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
@@ -1062,22 +745,13 @@ export interface IWorld extends BaseContract {
   };
 
   call(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     funcSelectorAndArgs: PromiseOrValue<BytesLike>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "deleteRecord(bytes32,bytes32[],bytes32)"(
+  deleteRecord(
     table: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "deleteRecord(bytes16,bytes16,bytes32[],bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     valueSchema: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1093,16 +767,7 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    data: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)"(
+  emitEphemeralRecord(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     data: PromiseOrValue<BytesLike>,
@@ -1148,14 +813,13 @@ export interface IWorld extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getSchema(
+  getValueSchema(
     table: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
 
   grantAccess(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     grantee: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1182,7 +846,7 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)"(
+  popFromField(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
@@ -1191,28 +855,8 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    schemaIndex: PromiseOrValue<BigNumberish>,
-    byteLengthToPop: PromiseOrValue<BigNumberish>,
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+  pushToField(
     table: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    schemaIndex: PromiseOrValue<BigNumberish>,
-    dataToPush: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
     dataToPush: PromiseOrValue<BytesLike>,
@@ -1221,17 +865,9 @@ export interface IWorld extends BaseContract {
   ): Promise<ContractTransaction>;
 
   registerFunctionSelector(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     systemFunctionName: PromiseOrValue<string>,
     systemFunctionArguments: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  registerHook(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    hook: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1241,17 +877,9 @@ export interface IWorld extends BaseContract {
   ): Promise<ContractTransaction>;
 
   registerRootFunctionSelector(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     worldFunctionSelector: PromiseOrValue<BytesLike>,
     systemFunctionSelector: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  registerSchema(
-    table: PromiseOrValue<BytesLike>,
-    schema: PromiseOrValue<BytesLike>,
-    keySchema: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1262,38 +890,29 @@ export interface IWorld extends BaseContract {
   ): Promise<ContractTransaction>;
 
   registerSystem(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     system: PromiseOrValue<string>,
     publicAccess: PromiseOrValue<boolean>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   registerSystemHook(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     hook: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   registerTable(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
+    table: PromiseOrValue<BytesLike>,
     keySchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  registerTableHook(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    hook: PromiseOrValue<string>,
+    valueSchema: PromiseOrValue<BytesLike>,
+    keyNames: PromiseOrValue<string>[],
+    fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   revokeAccess(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
+    resourceSelector: PromiseOrValue<BytesLike>,
     grantee: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1303,17 +922,7 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    schemaIndex: PromiseOrValue<BigNumberish>,
-    data: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+  setField(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
@@ -1322,32 +931,8 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "setMetadata(bytes16,bytes16,string,string[])"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    tableName: PromiseOrValue<string>,
-    fieldNames: PromiseOrValue<string>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setMetadata(bytes32,string,string[])"(
+  setRecord(
     table: PromiseOrValue<BytesLike>,
-    tableName: PromiseOrValue<string>,
-    fieldNames: PromiseOrValue<string>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setRecord(bytes32,bytes32[],bytes,bytes32)"(
-    table: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    data: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     data: PromiseOrValue<BytesLike>,
     valueSchema: PromiseOrValue<BytesLike>,
@@ -1364,19 +949,8 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)"(
+  updateInField(
     table: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    schemaIndex: PromiseOrValue<BigNumberish>,
-    startByteIndex: PromiseOrValue<BigNumberish>,
-    dataToSet: PromiseOrValue<BytesLike>,
-    valueSchema: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
     startByteIndex: PromiseOrValue<BigNumberish>,
@@ -1391,22 +965,13 @@ export interface IWorld extends BaseContract {
 
   callStatic: {
     call(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       funcSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
 
-    "deleteRecord(bytes32,bytes32[],bytes32)"(
+    deleteRecord(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "deleteRecord(bytes16,bytes16,bytes32[],bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1422,16 +987,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)"(
+    emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
@@ -1477,14 +1033,13 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
 
     grantAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1509,7 +1064,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)"(
+    popFromField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -1518,28 +1073,8 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    pushToField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      dataToPush: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
@@ -1548,19 +1083,11 @@ export interface IWorld extends BaseContract {
     ): Promise<void>;
 
     registerFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       systemFunctionName: PromiseOrValue<string>,
       systemFunctionArguments: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    registerHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     registerNamespace(
       namespace: PromiseOrValue<BytesLike>,
@@ -1568,19 +1095,11 @@ export interface IWorld extends BaseContract {
     ): Promise<void>;
 
     registerRootFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       worldFunctionSelector: PromiseOrValue<BytesLike>,
       systemFunctionSelector: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
-
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     registerStoreHook(
       table: PromiseOrValue<BytesLike>,
@@ -1589,38 +1108,29 @@ export interface IWorld extends BaseContract {
     ): Promise<void>;
 
     registerSystem(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       system: PromiseOrValue<string>,
       publicAccess: PromiseOrValue<boolean>,
       overrides?: CallOverrides
-    ): Promise<string>;
+    ): Promise<void>;
 
     registerSystemHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     registerTable(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    registerTableHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
     revokeAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1630,17 +1140,7 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    setField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -1649,32 +1149,8 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setMetadata(bytes32,string,string[])"(
+    setRecord(
       table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setRecord(bytes32,bytes32[],bytes,bytes32)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
@@ -1691,19 +1167,8 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)"(
+    updateInField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      startByteIndex: PromiseOrValue<BigNumberish>,
-      dataToSet: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
@@ -1763,22 +1228,13 @@ export interface IWorld extends BaseContract {
 
   estimateGas: {
     call(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       funcSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "deleteRecord(bytes32,bytes32[],bytes32)"(
+    deleteRecord(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "deleteRecord(bytes16,bytes16,bytes32[],bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1794,16 +1250,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)"(
+    emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
@@ -1849,14 +1296,13 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     grantAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1883,7 +1329,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)"(
+    popFromField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -1892,28 +1338,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    pushToField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      dataToPush: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
@@ -1922,17 +1348,9 @@ export interface IWorld extends BaseContract {
     ): Promise<BigNumber>;
 
     registerFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       systemFunctionName: PromiseOrValue<string>,
       systemFunctionArguments: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    registerHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1942,17 +1360,9 @@ export interface IWorld extends BaseContract {
     ): Promise<BigNumber>;
 
     registerRootFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       worldFunctionSelector: PromiseOrValue<BytesLike>,
       systemFunctionSelector: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1963,38 +1373,29 @@ export interface IWorld extends BaseContract {
     ): Promise<BigNumber>;
 
     registerSystem(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       system: PromiseOrValue<string>,
       publicAccess: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     registerSystemHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     registerTable(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    registerTableHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     revokeAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -2004,17 +1405,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    setField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -2023,32 +1414,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setMetadata(bytes32,string,string[])"(
+    setRecord(
       table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setRecord(bytes32,bytes32[],bytes,bytes32)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
@@ -2065,19 +1432,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)"(
+    updateInField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      startByteIndex: PromiseOrValue<BigNumberish>,
-      dataToSet: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
@@ -2093,22 +1449,13 @@ export interface IWorld extends BaseContract {
 
   populateTransaction: {
     call(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       funcSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "deleteRecord(bytes32,bytes32[],bytes32)"(
+    deleteRecord(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "deleteRecord(bytes16,bytes16,bytes32[],bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -2124,16 +1471,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)"(
+    emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
@@ -2179,14 +1517,13 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getSchema(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     grantAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -2213,7 +1550,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)"(
+    popFromField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -2222,28 +1559,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "popFromField(bytes16,bytes16,bytes32[],uint8,uint256,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    pushToField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      dataToPush: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "pushToField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
@@ -2252,17 +1569,9 @@ export interface IWorld extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     registerFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       systemFunctionName: PromiseOrValue<string>,
       systemFunctionArguments: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    registerHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2272,17 +1581,9 @@ export interface IWorld extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     registerRootFunctionSelector(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       worldFunctionSelector: PromiseOrValue<BytesLike>,
       systemFunctionSelector: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    registerSchema(
-      table: PromiseOrValue<BytesLike>,
-      schema: PromiseOrValue<BytesLike>,
-      keySchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -2293,38 +1594,29 @@ export interface IWorld extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     registerSystem(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       system: PromiseOrValue<string>,
       publicAccess: PromiseOrValue<boolean>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     registerSystemHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       hook: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     registerTable(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BytesLike>,
       keySchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    registerTableHook(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      hook: PromiseOrValue<string>,
+      valueSchema: PromiseOrValue<BytesLike>,
+      keyNames: PromiseOrValue<string>[],
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     revokeAccess(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
+      resourceSelector: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -2334,17 +1626,7 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "setField(bytes16,bytes16,bytes32[],uint8,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setField(bytes32,bytes32[],uint8,bytes,bytes32)"(
+    setField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
@@ -2353,32 +1635,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "setMetadata(bytes16,bytes16,string,string[])"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setMetadata(bytes32,string,string[])"(
+    setRecord(
       table: PromiseOrValue<BytesLike>,
-      tableName: PromiseOrValue<string>,
-      fieldNames: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setRecord(bytes32,bytes32[],bytes,bytes32)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setRecord(bytes16,bytes16,bytes32[],bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
@@ -2395,19 +1653,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)"(
+    updateInField(
       table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      schemaIndex: PromiseOrValue<BigNumberish>,
-      startByteIndex: PromiseOrValue<BigNumberish>,
-      dataToSet: PromiseOrValue<BytesLike>,
-      valueSchema: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes,bytes32)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,

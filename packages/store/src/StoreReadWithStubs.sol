@@ -17,14 +17,7 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function registerSchema(bytes32, Schema, Schema) public virtual {
-    revert StoreReadWithStubs_NotImplemented();
-  }
-
-  /**
-   * Not implemented in StoreReadWithStubs
-   */
-  function setMetadata(bytes32, string calldata, string[] calldata) public virtual {
+  function registerTable(bytes32, Schema, Schema, string[] calldata, string[] calldata) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 

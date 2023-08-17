@@ -144,6 +144,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../packages/cli
         version: link:../../../packages/cli
+      '@latticexyz/common':
+        specifier: link:../../../packages/common
+        version: link:../../../packages/common
       '@latticexyz/protocol-parser':
         specifier: link:../../../packages/protocol-parser
         version: link:../../../packages/protocol-parser
