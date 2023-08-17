@@ -45,7 +45,7 @@ contract KeysWithValueModule is IModule, WorldContext {
     KeysWithValue.register(IBaseWorld(_world()), targetTableSelector);
 
     // Grant the hook access to the target table
-    IBaseWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getName(), address(hook));
+    IBaseWorld(_world()).grantAccess(targetTableSelector, address(hook));
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);

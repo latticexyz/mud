@@ -10,7 +10,7 @@ import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
-import { IWorldEphemeral } from "../../interfaces/IWorldEphemeral.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
@@ -81,8 +81,7 @@ contract CoreModule is IModule, WorldContext {
       value: 0,
       funcSelectorAndArgs: abi.encodeWithSelector(
         WorldRegistrationSystem.registerSystem.selector,
-        ROOT_NAMESPACE,
-        CORE_SYSTEM_NAME,
+        ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
         coreSystem,
         true
       )
@@ -93,12 +92,9 @@ contract CoreModule is IModule, WorldContext {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[15] memory functionSelectors = [
+    bytes4[11] memory functionSelectors = [
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
-      WorldRegistrationSystem.registerTable.selector,
-      WorldRegistrationSystem.registerHook.selector,
-      WorldRegistrationSystem.registerTableHook.selector,
       WorldRegistrationSystem.registerSystemHook.selector,
       WorldRegistrationSystem.registerSystem.selector,
       WorldRegistrationSystem.registerFunctionSelector.selector,
@@ -112,8 +108,7 @@ contract CoreModule is IModule, WorldContext {
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
       // --- EphemeralRecordSystem ---
-      IStoreEphemeral.emitEphemeralRecord.selector,
-      IWorldEphemeral.emitEphemeralRecord.selector
+      IStoreEphemeral.emitEphemeralRecord.selector
     ];
 
     for (uint256 i = 0; i < functionSelectors.length; i++) {
@@ -126,8 +121,7 @@ contract CoreModule is IModule, WorldContext {
         value: 0,
         funcSelectorAndArgs: abi.encodeWithSelector(
           WorldRegistrationSystem.registerRootFunctionSelector.selector,
-          ROOT_NAMESPACE,
-          CORE_SYSTEM_NAME,
+          ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
           functionSelectors[i],
           functionSelectors[i]
         )

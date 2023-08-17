@@ -320,14 +320,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
       },
       {
         internalType: "bytes",
@@ -352,34 +347,6 @@ const _abi = [
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-    ],
-    name: "deleteRecord",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
       },
       {
         internalType: "bytes32[]",
@@ -433,39 +400,6 @@ const _abi = [
       },
     ],
     name: "dynamicArrayStringStruct",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-    ],
-    name: "emitEphemeralRecord",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -680,14 +614,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
       },
       {
         internalType: "address",
@@ -803,44 +732,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        internalType: "uint256",
-        name: "byteLengthToPop",
-        type: "uint256",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-    ],
-    name: "popFromField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
@@ -874,52 +765,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        internalType: "bytes",
-        name: "dataToPush",
-        type: "bytes",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "bytes32",
+        name: "resourceSelector",
         type: "bytes32",
-      },
-    ],
-    name: "pushToField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
       },
       {
         internalType: "string",
@@ -950,29 +798,6 @@ const _abi = [
         name: "namespace",
         type: "bytes16",
       },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "address",
-        name: "hook",
-        type: "address",
-      },
-    ],
-    name: "registerHook",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
     ],
     name: "registerNamespace",
     outputs: [],
@@ -982,14 +807,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
       },
       {
         internalType: "bytes4",
@@ -1034,14 +854,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
       },
       {
         internalType: "contract System",
@@ -1055,27 +870,16 @@ const _abi = [
       },
     ],
     name: "registerSystem",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "resourceSelector",
-        type: "bytes32",
-      },
-    ],
+    outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
       },
       {
         internalType: "contract ISystemHook",
@@ -1085,50 +889,6 @@ const _abi = [
     ],
     name: "registerSystemHook",
     outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "Schema",
-        name: "keySchema",
-        type: "bytes32",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-      {
-        internalType: "string[]",
-        name: "keyNames",
-        type: "string[]",
-      },
-      {
-        internalType: "string[]",
-        name: "fieldNames",
-        type: "string[]",
-      },
-    ],
-    name: "registerTable",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "resourceSelector",
-        type: "bytes32",
-      },
-    ],
     stateMutability: "nonpayable",
     type: "function",
   },
@@ -1168,37 +928,9 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "contract IStoreHook",
-        name: "hook",
-        type: "address",
-      },
-    ],
-    name: "registerTableHook",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
       },
       {
         internalType: "address",
@@ -1227,44 +959,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-    ],
-    name: "setField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
@@ -1301,39 +995,6 @@ const _abi = [
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "bytes",
-        name: "data",
-        type: "bytes",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-    ],
-    name: "setRecord",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
       },
       {
         internalType: "bytes32[]",
@@ -1402,49 +1063,6 @@ const _abi = [
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
-      },
-      {
-        internalType: "bytes32[]",
-        name: "key",
-        type: "bytes32[]",
-      },
-      {
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        internalType: "uint256",
-        name: "startByteIndex",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "dataToSet",
-        type: "bytes",
-      },
-      {
-        internalType: "Schema",
-        name: "valueSchema",
-        type: "bytes32",
-      },
-    ],
-    name: "updateInField",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes16",
-        name: "namespace",
-        type: "bytes16",
-      },
-      {
-        internalType: "bytes16",
-        name: "name",
-        type: "bytes16",
       },
       {
         internalType: "bytes32[]",

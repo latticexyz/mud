@@ -21,35 +21,35 @@ contract AccessControlTest is Test, StoreReadWithStubs {
     NamespaceOwner.register();
 
     NamespaceOwner.set(namespace, address(this));
-    ResourceAccess.set(ResourceSelector.from(namespace, 0), address(this), true);
+    ResourceAccess.set(ResourceSelector.from(namespace), address(this), true);
   }
 
   function testAccessControl() public {
     // Check that the caller has no access to the namespace or name
-    assertFalse(AccessControl.hasAccess(namespace, name, caller));
+    assertFalse(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
 
     // Grant access to the namespace
     ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, true);
 
     // Check that the caller has access to the namespace or name
-    assertTrue(AccessControl.hasAccess(namespace, name, caller));
+    assertTrue(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
 
     // Revoke access to the namespace
     ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, false);
 
     // Check that the caller has no access to the namespace or name
-    assertFalse(AccessControl.hasAccess(namespace, name, caller));
+    assertFalse(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
 
     // Grant access to the name
     ResourceAccess.set(ResourceSelector.from(namespace, name), caller, true);
 
     // Check that the caller has access to the name
-    assertTrue(AccessControl.hasAccess(namespace, name, caller));
+    assertTrue(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
 
     // Revoke access to the name
     ResourceAccess.set(ResourceSelector.from(namespace, name), caller, false);
 
     // Check that the caller has no access to the namespace or name
-    assertFalse(AccessControl.hasAccess(namespace, name, caller));
+    assertFalse(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
   }
 }

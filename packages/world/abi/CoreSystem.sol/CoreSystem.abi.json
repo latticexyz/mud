@@ -226,14 +226,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes32[]",
@@ -260,41 +255,8 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "tableId",
+        "name": "resourceSelector",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
-      },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      },
-      {
-        "internalType": "Schema",
-        "name": "valueSchema",
-        "type": "bytes32"
-      }
-    ],
-    "name": "emitEphemeralRecord",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
       },
       {
         "internalType": "address",
@@ -328,14 +290,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "string",
@@ -365,29 +322,6 @@
         "internalType": "bytes16",
         "name": "namespace",
         "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "address",
-        "name": "hook",
-        "type": "address"
-      }
-    ],
-    "name": "registerHook",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
       }
     ],
     "name": "registerNamespace",
@@ -398,14 +332,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes4",
@@ -450,14 +379,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "contract System",
@@ -471,27 +395,16 @@
       }
     ],
     "name": "registerSystem",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceSelector",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "contract ISystemHook",
@@ -507,14 +420,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "Schema",
@@ -538,83 +446,16 @@
       }
     ],
     "name": "registerTable",
-    "outputs": [
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "bytes32",
         "name": "resourceSelector",
         "type": "bytes32"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "Schema",
-        "name": "keySchema",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "Schema",
-        "name": "valueSchema",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string[]",
-        "name": "keyNames",
-        "type": "string[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "fieldNames",
-        "type": "string[]"
-      }
-    ],
-    "name": "registerTable",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "contract IStoreHook",
-        "name": "hook",
-        "type": "address"
-      }
-    ],
-    "name": "registerTableHook",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
       },
       {
         "internalType": "address",
