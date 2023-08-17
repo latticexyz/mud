@@ -89,8 +89,7 @@ export default mudConfig({
         functionSelector: "bytes4",
       },
       schema: {
-        namespace: "bytes16",
-        name: "bytes16",
+        resourceSelector: "bytes32",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,

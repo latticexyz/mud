@@ -10,8 +10,8 @@ contract StoreRead is IStoreRead {
     StoreCore.initialize();
   }
 
-  function getSchema(bytes32 table) public view virtual returns (Schema schema) {
-    schema = StoreCore.getSchema(table);
+  function getValueSchema(bytes32 table) public view virtual returns (Schema schema) {
+    schema = StoreCore.getValueSchema(table);
   }
 
   function getKeySchema(bytes32 table) public view virtual returns (Schema schema) {

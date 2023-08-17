@@ -167,7 +167,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "getSchema",
+    "name": "getValueSchema",
     "outputs": [
       {
         "internalType": "Schema",

@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -462,6 +466,8 @@ importers:
       vitest:
         specifier: 0.31.4
         version: 0.31.4(jsdom@22.1.0)
+
+  packages/network: {}
 
   packages/noise:
     dependencies:
@@ -11823,7 +11829,3 @@ packages:
     resolution: {tarball: https://codeload.github.com/transmissions11/solmate/tar.gz/9cf1428245074e39090dceacb0c28b1f684f584c}
     name: solmate
     version: 6.5.0
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
