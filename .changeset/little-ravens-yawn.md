@@ -5,6 +5,7 @@
 "@latticexyz/services": major
 "@latticexyz/store-sync": major
 "@latticexyz/store": major
+"@latticexyz/world": patch
 ---
 
 Reverse PackedCounter encoding, to optimize gas for bitshifts.
