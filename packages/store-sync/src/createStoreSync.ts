@@ -6,7 +6,7 @@ import {
   storeEventsAbi,
 } from "@latticexyz/store";
 import { Hex, TransactionReceipt } from "viem";
-import { SetRecordOperation, SyncOptions, SyncResult, Table } from "./common";
+import { SetRecordOperation, SyncOptions, SyncResult, Table, TableWithRecords } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
@@ -14,6 +14,7 @@ import {
   tap,
   mergeMap,
   from,
+  concat,
   concatMap,
   share,
   firstValueFrom,
@@ -28,6 +29,7 @@ import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { BlockLogsToStorageOptions } from "./blockLogsToStorage";
 import { SyncStep } from "./SyncStep";
+import { isDefined } from "@latticexyz/common/utils";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -60,7 +62,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       ? defer(
           async (): Promise<{
             blockNumber: bigint | null;
-            tables: (Table & { records: TableRecord[] })[];
+            tables: TableWithRecords[];
           }> => {
             debug("fetching initial state from indexer", indexerUrl);
 
@@ -104,66 +106,97 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       : of(initialState);
 
   const startBlock$ = initialState$.pipe(
-    concatMap(async (initialState) => {
-      const { blockNumber, tables } = initialState ?? { blockNumber: null, tables: [] };
-      if (blockNumber == null || tables.length === 0) return initialStartBlock;
-
-      debug("hydrating from initial state to block", blockNumber);
-
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 0,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: blockNumber,
-        message: "Hydrating from snapshot",
-      });
-
-      await storageAdapter.registerTables({ blockNumber, tables });
-
-      // TODO: split into chunks at storage adapter level, expose some onProgress callback?
-      await storageAdapter.storeOperations({
-        blockNumber,
-        operations: tables.flatMap((table) =>
-          table.records.map(
-            (record) =>
-              ({
-                type: "SetRecord",
-                address: table.address,
-                namespace: table.namespace,
-                name: table.name,
-                key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
-                value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
-              } as const satisfies SetRecordOperation<TConfig>)
-          )
-        ),
-      });
-
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 100,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: blockNumber,
-        message: "Hydrating from snapshot",
-      });
-
-      return blockNumber;
-    }),
-    catchError((error) => {
-      debug("error hydrating from initial state", error);
-
-      onProgress?.({
-        step: SyncStep.SNAPSHOT,
-        percentage: 100,
-        latestBlockNumber: 0n,
-        lastBlockNumberProcessed: initialStartBlock,
-        message: "Failed to hydrate from snapshot",
-      });
-
-      return of(initialStartBlock);
-    }),
-    // TODO: if start block is still 0, find via deploy event
+    map((initialState) => initialState?.blockNumber ?? initialStartBlock),
     shareReplay(1)
   );
+  // TODO: figure out if we need startBlock$ to shareReplay(1)
+  // TODO: if start block is still 0, find via deploy event
+
+  const initialStorageOperations$ = initialState$.pipe(
+    filter(
+      (initialState): initialState is { blockNumber: bigint; tables: TableWithRecords[] } =>
+        initialState != null && initialState.blockNumber != null && initialState.tables.length > 0
+    ),
+    map(({ blockNumber, tables }) => ({
+      blockNumber,
+      operations: tables.flatMap((table) =>
+        table.records.map(
+          (record) =>
+            ({
+              type: "SetRecord",
+              address: table.address,
+              namespace: table.namespace,
+              name: table.name,
+              key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
+              value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
+            } as const satisfies SetRecordOperation<TConfig>)
+        )
+      ),
+    })),
+    shareReplay(1)
+  );
+
+  // const startBlock$ = initialState$.pipe(
+  //   concatMap(async (initialState) => {
+  //     const { blockNumber, tables } = initialState ?? { blockNumber: null, tables: [] };
+  //     if (blockNumber == null || tables.length === 0) return initialStartBlock;
+
+  //     debug("hydrating from initial state to block", blockNumber);
+
+  //     onProgress?.({
+  //       step: SyncStep.SNAPSHOT,
+  //       percentage: 0,
+  //       latestBlockNumber: 0n,
+  //       lastBlockNumberProcessed: blockNumber,
+  //       message: "Hydrating from snapshot",
+  //     });
+
+  //     await storageAdapter.registerTables({ blockNumber, tables });
+
+  //     // TODO: split into chunks at storage adapter level, expose some onProgress callback?
+  //     await storageAdapter.storeOperations({
+  //       blockNumber,
+  //       operations: tables.flatMap((table) =>
+  //         table.records.map(
+  //           (record) =>
+  //             ({
+  //               type: "SetRecord",
+  //               address: table.address,
+  //               namespace: table.namespace,
+  //               name: table.name,
+  //               key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
+  //               value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
+  //             } as const satisfies SetRecordOperation<TConfig>)
+  //         )
+  //       ),
+  //     });
+
+  //     onProgress?.({
+  //       step: SyncStep.SNAPSHOT,
+  //       percentage: 100,
+  //       latestBlockNumber: 0n,
+  //       lastBlockNumberProcessed: blockNumber,
+  //       message: "Hydrating from snapshot",
+  //     });
+
+  //     return blockNumber;
+  //   }),
+  //   catchError((error) => {
+  //     debug("error hydrating from initial state", error);
+
+  //     onProgress?.({
+  //       step: SyncStep.SNAPSHOT,
+  //       percentage: 100,
+  //       latestBlockNumber: 0n,
+  //       lastBlockNumberProcessed: initialStartBlock,
+  //       message: "Failed to hydrate from snapshot",
+  //     });
+
+  //     return of(initialStartBlock);
+  //   }),
+  //   // TODO: if start block is still 0, find via deploy event
+  //   shareReplay(1)
+  // );
 
   const latestBlock$ = createBlockStream({ publicClient, blockTag: "latest" }).pipe(shareReplay(1));
   const latestBlockNumber$ = latestBlock$.pipe(
@@ -194,36 +227,38 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   );
 
   let lastBlockNumberProcessed: bigint | null = null;
-  const blockStorageOperations$ = blockLogs$.pipe(
-    concatMap(blockLogsToStorage(storageAdapter)),
-    tap(({ blockNumber, operations }) => {
-      debug("stored", operations.length, "operations for block", blockNumber);
-      lastBlockNumberProcessed = blockNumber;
+  const blockStorageOperations$ = concat(
+    initialStorageOperations$,
+    blockLogs$.pipe(
+      concatMap(blockLogsToStorage(storageAdapter)),
+      tap(({ blockNumber, operations }) => {
+        debug("stored", operations.length, "operations for block", blockNumber);
+        lastBlockNumberProcessed = blockNumber;
 
-      if (startBlock != null && endBlock != null) {
-        if (blockNumber < endBlock) {
-          const totalBlocks = endBlock - startBlock;
-          const processedBlocks = lastBlockNumberProcessed - startBlock;
-          onProgress?.({
-            step: SyncStep.RPC,
-            percentage: Number((processedBlocks * 1000n) / totalBlocks) / 1000,
-            latestBlockNumber: endBlock,
-            lastBlockNumberProcessed,
-            message: "Hydrating from RPC",
-          });
-        } else {
-          onProgress?.({
-            step: SyncStep.LIVE,
-            percentage: 100,
-            latestBlockNumber: endBlock,
-            lastBlockNumberProcessed,
-            message: "All caught up!",
-          });
+        if (startBlock != null && endBlock != null) {
+          if (blockNumber < endBlock) {
+            const totalBlocks = endBlock - startBlock;
+            const processedBlocks = lastBlockNumberProcessed - startBlock;
+            onProgress?.({
+              step: SyncStep.RPC,
+              percentage: Number((processedBlocks * 1000n) / totalBlocks) / 1000,
+              latestBlockNumber: endBlock,
+              lastBlockNumberProcessed,
+              message: "Hydrating from RPC",
+            });
+          } else {
+            onProgress?.({
+              step: SyncStep.LIVE,
+              percentage: 100,
+              latestBlockNumber: endBlock,
+              lastBlockNumberProcessed,
+              message: "All caught up!",
+            });
+          }
         }
-      }
-    }),
-    share()
-  );
+      })
+    )
+  ).pipe(share());
 
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
@@ -247,7 +282,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     latestBlock$,
     latestBlockNumber$,
     blockLogs$,
-    blockStorageOperations$,
+    blockStorageOperations$: concat(initialStorageOperations$, blockStorageOperations$),
     waitForTransaction,
   };
 }
