@@ -20,6 +20,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "onAfterSetField",
@@ -48,6 +53,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "onBeforeSetField",
@@ -66,6 +76,11 @@
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "onDeleteRecord",
@@ -89,6 +104,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "onSetRecord",

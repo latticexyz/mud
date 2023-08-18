@@ -9,12 +9,14 @@ export default mudConfig({
   tables: {
     Hooks: "address[]",
     Callbacks: "bytes24[]",
-    StoreMetadata: {
+    Tables: {
       keySchema: {
         tableId: "bytes32",
       },
       schema: {
-        tableName: "string",
+        keySchema: "bytes32",
+        valueSchema: "bytes32",
+        abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },
     },

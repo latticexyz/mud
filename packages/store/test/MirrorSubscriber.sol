@@ -10,25 +10,37 @@ bytes32 constant indexerTableId = keccak256("indexer.table");
 contract MirrorSubscriber is IStoreHook {
   bytes32 _table;
 
-  constructor(bytes32 table, Schema schema, Schema keySchema) {
-    IStore(msg.sender).registerSchema(indexerTableId, schema, keySchema);
+  constructor(
+    bytes32 table,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] memory keyNames,
+    string[] memory fieldNames
+  ) {
+    IStore(msg.sender).registerTable(indexerTableId, keySchema, valueSchema, keyNames, fieldNames);
     _table = table;
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, key, data);
+    StoreSwitch.setRecord(indexerTableId, key, data, valueSchema);
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
+    StoreSwitch.setField(indexerTableId, key, schemaIndex, data, valueSchema);
   }
 
-  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory) public {}
+  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, Schema) public {}
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
+  function onDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.deleteRecord(indexerTableId, key);
+    StoreSwitch.deleteRecord(indexerTableId, key, valueSchema);
   }
 }

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { BlockLogsToStorageOptions, blockLogsToStorage } from "./blockLogsToStorage";
 import storeConfig from "@latticexyz/store/mud.config";
 import { isDefined } from "@latticexyz/common/utils";
-import { TableId } from "@latticexyz/common/deprecated";
+import { tableIdToHex } from "@latticexyz/common";
 
 const mockedCallbacks = {
   registerTables: vi.fn<
@@ -35,7 +35,7 @@ describe("blockLogsToStorage", () => {
           if (table.namespace === "" && table.name === "Inventory") {
             return {
               ...table,
-              tableId: TableId.toHex("", "Inventory"),
+              tableId: tableIdToHex("", "Inventory"),
               keySchema: {
                 owner: "address",
                 item: "uint32",

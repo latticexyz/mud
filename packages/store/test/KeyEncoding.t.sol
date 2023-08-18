@@ -12,17 +12,17 @@ import { Schema } from "../src/Schema.sol";
 contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
   function testRegisterAndGetSchema() public {
     startGasReport("register KeyEncoding schema");
-    KeyEncoding.registerSchema();
+    KeyEncoding.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getSchema(KeyEncodingTableId);
-    Schema declaredSchema = KeyEncoding.getSchema();
+    Schema registeredSchema = StoreCore.getValueSchema(KeyEncodingTableId);
+    Schema declaredSchema = KeyEncoding.getValueSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
 
   function testSetAndGet() public {
-    KeyEncoding.registerSchema();
+    KeyEncoding.register();
 
     KeyEncoding.set(
       42,
@@ -47,7 +47,7 @@ contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
   }
 
   function testKeyEncoding() public {
-    KeyEncoding.registerSchema();
+    KeyEncoding.register();
 
     bytes32[] memory keyTuple = KeyEncoding.encodeKeyTuple(
       42,

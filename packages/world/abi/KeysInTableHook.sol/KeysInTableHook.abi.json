@@ -77,22 +77,6 @@
     "inputs": [
       {
         "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "tableIdString",
-        "type": "string"
-      }
-    ],
-    "name": "StoreCore_TableNotFound",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
         "name": "table",
         "type": "bytes32"
       },
@@ -110,6 +94,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "onAfterSetField",
@@ -138,6 +127,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "onBeforeSetField",
@@ -156,6 +150,11 @@
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "onDeleteRecord",
@@ -179,6 +178,11 @@
         "internalType": "bytes",
         "name": "",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
       }
     ],
     "name": "onSetRecord",
