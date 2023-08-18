@@ -1,6 +1,5 @@
 ---
 "@latticexyz/cli": patch
-"@latticexyz/network": major
 "@latticexyz/protocol-parser": major
 "@latticexyz/services": major
 "@latticexyz/store-sync": major
