@@ -18,6 +18,7 @@ import {
   shareReplay,
   combineLatest,
 } from "rxjs";
+import pRetry from "p-retry";
 import { blockLogsToStorage } from "./blockLogsToStorage";
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
@@ -216,17 +217,28 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   async function waitForTransaction(tx: Hex): Promise<{
     receipt: TransactionReceipt;
   }> {
-    // Wait for tx to be mined
-    const receipt = await publicClient.waitForTransactionReceipt({ hash: tx });
+    // viem doesn't retry timeouts, so we'll wrap in a retry
+    const receipt = await pRetry(
+      (attempt) => {
+        // Wait for tx to be mined
+        debug("waiting for tx receipt", tx, "attempt", attempt);
+        return publicClient.waitForTransactionReceipt({
+          hash: tx,
+          timeout: publicClient.pollingInterval * 2 * attempt,
+        });
+      },
+      { retries: 3 }
+    );
+    debug("got tx receipt", tx, receipt);
 
     // If we haven't processed a block yet or we haven't processed the block for the tx, wait for it
     if (lastBlockNumberProcessed == null || lastBlockNumberProcessed < receipt.blockNumber) {
+      debug("waiting for tx block to be processed", tx, receipt.blockNumber);
       await firstValueFrom(
-        blockStorageOperations$.pipe(
-          filter(({ blockNumber }) => blockNumber != null && blockNumber >= receipt.blockNumber)
-        )
+        blockStorageOperations$.pipe(filter(({ blockNumber }) => blockNumber >= receipt.blockNumber))
       );
     }
+    debug("tx block was processed", tx, receipt.blockNumber);
 
     return { receipt };
   }
