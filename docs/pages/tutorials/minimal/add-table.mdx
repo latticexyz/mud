@@ -1,18 +1,13 @@
 import { CollapseCode } from "../../../components/CollapseCode";
 
-# Extend the schema
+# Add a table
 
-In this tutorial you extend the schema to add a table of historical counter values and the time in which the counter reached those values.
+In this tutorial you add a table of historical counter values and the time in which the counter reached those values.
 For the sake of simplicity, we will implement this in the `increment` function rather than use a [storage hook](/store/advanced-features#storage-hooks).
 
 ## Setup
 
-Right now you need the `main` version of `mud`, not `next`.
-So if you followed the directions, you need to run this command in the root directory.
-
-```sh copy
-pnpm mud set-version --tag main && pnpm install
-```
+[Create a new MUD application from the template](../minimal).
 
 ## Modify the MUD configuration file
 
@@ -69,8 +64,8 @@ Block numbers and timestamps can be values up to `uint256`, so we'll use this ty
 
 1. In an editor, open `packages/contracts/src/systems/IncrementSystem.sol`.
 
-   - Modify the second `import` line to import `History` (line 5)
-   - Modify the `increment` function to also update `History` (line 12).
+   - Modify the second `import` line to import `History`.
+   - Modify the `increment` function to also update `History`.
      To see the exact functions that are available, you can look at `packages/contracts/src/codegen/tables/History.sol` (that is the reason we ran `pnpm build:mud` to recreate it already).
 
 <CollapseCode>
@@ -140,21 +135,22 @@ The directions here apply to the `vanilla` client template, if you use anything 
 
 1. Edit `packages/client/src/index.ts`.
 
-   - Import two more functions we need (lines 3-4).
-   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values (lines 18-22).
-   - Add a function that is called when the user selects a different option (lines 31-37).
+   - Import two more functions we need.
+   - In `components.Counter.update$.subscribe`, add code that updates the selection of history values.
+   - Add a function that is called when the user selects a different option.
 
    <CollapseCode>
 
    ```ts filename="index.ts" copy showLineNumbers {3-4,18-22,31-37}
-   import { mount as mountDevTools } from "@latticexyz/dev-tools";
    import { setup } from "./mud/setup";
+   import mudConfig from "contracts/mud.config";
    import { encodeEntity } from "@latticexyz/store-sync/recs";
    import { getComponentValueStrict } from "@latticexyz/recs";
 
    const {
      components,
      systemCalls: { increment },
+     network,
    } = await setup();
 
    // Components expose a stream that triggers when the component is updated.
@@ -185,7 +181,20 @@ The directions here apply to the `vanilla` client template, if you use anything 
      document.getElementById("timeStamp")!.innerHTML = new Date(parseInt(Number(time) * 1000));
    };
 
-   mountDevTools();
+   if (import.meta.env.DEV) {
+     const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+     mountDevTools({
+       config: mudConfig,
+       publicClient: network.publicClient,
+       walletClient: network.walletClient,
+       latestBlock$: network.latestBlock$,
+       blockStorageOperations$: network.blockStorageOperations$,
+       worldAddress: network.worldContract.address,
+       worldAbi: network.worldContract.abi,
+       write$: network.write$,
+       recsWorld: network.world,
+     });
+   }
    ```
 
    </CollapseCode>
