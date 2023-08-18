@@ -218,9 +218,11 @@ library KeysWithValue {
 
   /** Tightly pack full data using this table's schema */
   function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](1);
-    _counters[0] = uint40(keysWithValue.length * 32);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(keysWithValue.length * 32);
+    }
 
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
   }

@@ -38,6 +38,17 @@
         "type": "uint256"
       }
     ],
+    "name": "PackedCounter_InvalidLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
     "name": "SchemaLib_InvalidLength",
     "type": "error"
   },
