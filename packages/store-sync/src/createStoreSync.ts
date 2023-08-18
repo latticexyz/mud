@@ -1,5 +1,5 @@
 import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceipt } from "viem";
+import { Hex, TransactionReceipt, WaitForTransactionReceiptTimeoutError } from "viem";
 import { SetRecordOperation, SyncOptions, SyncResult, TableWithRecords } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
@@ -227,7 +227,16 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
           timeout: publicClient.pollingInterval * 2 * attempt,
         });
       },
-      { retries: 3 }
+      {
+        retries: 3,
+        onFailedAttempt: (error) => {
+          if (error instanceof WaitForTransactionReceiptTimeoutError) {
+            debug("timed out waiting for tx receipt, trying again", tx);
+            return;
+          }
+          throw error;
+        },
+      }
     );
     debug("got tx receipt", tx, receipt);
 
