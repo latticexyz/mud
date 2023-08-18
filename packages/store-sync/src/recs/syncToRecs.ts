@@ -14,7 +14,7 @@ import { SyncStep } from "../SyncStep";
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
   config: TConfig;
-  subscribe?: boolean;
+  startSync?: boolean;
 };
 
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
@@ -22,6 +22,7 @@ type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TC
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
     ReturnType<typeof defineInternalComponents>;
+  stopSync: () => void;
 };
 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
@@ -33,6 +34,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   maxBlockRange,
   initialState,
   indexerUrl,
+  startSync = true,
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const components = {
     ...configToRecsComponents(world, config),
@@ -65,8 +67,16 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     },
   });
 
+  const sub = startSync ? storeSync.blockStorageOperations$.subscribe() : null;
+  const stopSync = (): void => {
+    sub?.unsubscribe();
+  };
+
+  world.registerDisposer(stopSync);
+
   return {
     ...storeSync,
     components,
+    stopSync,
   };
 }
