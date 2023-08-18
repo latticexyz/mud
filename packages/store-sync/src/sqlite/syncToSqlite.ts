@@ -13,10 +13,6 @@ type SyncToSqliteOptions<TConfig extends StoreConfig = StoreConfig> = SyncOption
   database: BaseSQLiteDatabase<"sync", any>;
 };
 
-type SyncToSqliteResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
-  destroy: () => void;
-};
-
 /**
  * Creates an indexer to process and store blockchain events.
  *
@@ -27,30 +23,12 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   config,
   database,
   publicClient,
-  address,
-  startBlock,
-  maxBlockRange,
-  indexerUrl,
-  initialState,
-}: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult<TConfig>> {
-  const storeSync = await createStoreSync({
+  ...createStoreSyncOptions
+}: SyncToSqliteOptions<TConfig>): Promise<SyncResult<TConfig>> {
+  return await createStoreSync({
     storageAdapter: await sqliteStorage({ database, publicClient, config }),
     config,
-    address,
     publicClient,
-    startBlock,
-    maxBlockRange,
-    indexerUrl,
-    initialState,
+    ...createStoreSyncOptions,
   });
-
-  // Start the sync
-  const sub = storeSync.blockStorageOperations$.subscribe();
-
-  return {
-    ...storeSync,
-    destroy: (): void => {
-      sub.unsubscribe();
-    },
-  };
 }

@@ -10,15 +10,14 @@ import worldConfig from "@latticexyz/world/mud.config";
 import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
-import { waitForIdle } from "@latticexyz/common/utils";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
   config: TConfig;
+  subscribe?: boolean;
 };
 
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
-  // TODO: return publicClient?
   components: ConfigToRecsComponents<TConfig> &
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
@@ -65,9 +64,6 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
       }
     },
   });
-
-  const sub = storeSync.blockStorageOperations$.subscribe();
-  world.registerDisposer(() => sub.unsubscribe());
 
   return {
     ...storeSync,

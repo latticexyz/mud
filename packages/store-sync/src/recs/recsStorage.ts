@@ -3,7 +3,6 @@ import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import {
   ComponentValue,
-  Entity,
   Component as RecsComponent,
   Schema as RecsSchema,
   getComponentValue,
