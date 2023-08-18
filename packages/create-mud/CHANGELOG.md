@@ -1,5 +1,251 @@
 # Change Log
 
+## 2.0.0-next.2
+
+### Major Changes
+
+- [#1278](https://github.com/latticexyz/mud/pull/1278) [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473) Thanks [@holic](https://github.com/holic)! - RECS components are now dynamically created and inferred from your MUD config when using `syncToRecs`.
+
+  To migrate existing projects after upgrading to this MUD version:
+
+  1. Remove `contractComponents.ts` from `client/src/mud`
+  2. Remove `components` argument from `syncToRecs`
+  3. Update `build:mud` and `dev` scripts in `contracts/package.json` to remove tsgen
+
+     ```diff
+     - "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+     + "build:mud": "mud tablegen && mud worldgen",
+     ```
+
+     ```diff
+     - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+     + "dev": "pnpm mud dev-contracts",
+     ```
+
+- [#1284](https://github.com/latticexyz/mud/pull/1284) [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad) Thanks [@holic](https://github.com/holic)! - MUD dev tools is updated to latest sync stack. You must now pass in all of its data requirements rather than relying on magic globals.
+
+  ```diff
+  import { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+  - mountDevTools();
+  + mountDevTools({
+  +   config,
+  +   publicClient,
+  +   walletClient,
+  +   latestBlock$,
+  +   blockStorageOperations$,
+  +   worldAddress,
+  +   worldAbi,
+  +   write$,
+  +   // if you're using recs
+  +   recsWorld,
+  + });
+  ```
+
+  It's also advised to wrap dev tools so that it is only mounted during development mode. Here's how you do this with Vite:
+
+  ```ts
+  // https://vitejs.dev/guide/env-and-mode.html
+  if (import.meta.env.DEV) {
+    mountDevTools({ ... });
+  }
+  ```
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+## 2.0.0-next.1
+
+### Major Changes
+
+- [#1214](https://github.com/latticexyz/mud/pull/1214) [`60cfd089`](https://github.com/latticexyz/mud/commit/60cfd089fc7a17b98864b631d265f36718df35a9) Thanks [@holic](https://github.com/holic)! - Templates and examples now use MUD's new sync packages, all built on top of [viem](https://viem.sh/). This greatly speeds up and stabilizes our networking code and improves types throughout.
+
+  These new sync packages come with support for our `recs` package, including `encodeEntity` and `decodeEntity` utilities for composite keys.
+
+  If you're using `store-cache` and `useRow`/`useRows`, you should wait to upgrade until we have a suitable replacement for those libraries. We're working on a [sql.js](https://github.com/sql-js/sql.js/)-powered sync module that will replace `store-cache`.
+
+  **Migrate existing RECS apps to new sync packages**
+
+  As you migrate, you may find some features replaced, removed, or not included by default. Please [open an issue](https://github.com/latticexyz/mud/issues/new) and let us know if we missed anything.
+
+  1. Add `@latticexyz/store-sync` package to your app's `client` package and make sure `viem` is pinned to version `1.3.1` (otherwise you may get type errors)
+
+  2. In your `supportedChains.ts`, replace `foundry` chain with our new `mudFoundry` chain.
+
+     ```diff
+     - import { foundry } from "viem/chains";
+     - import { MUDChain, latticeTestnet } from "@latticexyz/common/chains";
+     + import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
+
+     - export const supportedChains: MUDChain[] = [foundry, latticeTestnet];
+     + export const supportedChains: MUDChain[] = [mudFoundry, latticeTestnet];
+     ```
+
+  3. In `getNetworkConfig.ts`, remove the return type (to let TS infer it for now), remove now-unused config values, and add the viem `chain` object.
+
+     ```diff
+     - export async function getNetworkConfig(): Promise<NetworkConfig> {
+     + export async function getNetworkConfig() {
+     ```
+
+     ```diff
+       const initialBlockNumber = params.has("initialBlockNumber")
+         ? Number(params.get("initialBlockNumber"))
+     -   : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
+     +   : world?.blockNumber ?? 0n;
+     ```
+
+     ```diff
+     + return {
+     +   privateKey: getBurnerWallet().value,
+     +   chain,
+     +   worldAddress,
+     +   initialBlockNumber,
+     +   faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
+     + };
+     ```
+
+  4. In `setupNetwork.ts`, replace `setupMUDV2Network` with `syncToRecs`.
+
+     ```diff
+     - import { setupMUDV2Network } from "@latticexyz/std-client";
+     - import { createFastTxExecutor, createFaucetService, getSnapSyncRecords } from "@latticexyz/network";
+     + import { createFaucetService } from "@latticexyz/network";
+     + import { createPublicClient, fallback, webSocket, http, createWalletClient, getContract, Hex, parseEther, ClientConfig } from "viem";
+     + import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+     + import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+     ```
+
+     ```diff
+     - const result = await setupMUDV2Network({
+     -   ...
+     - });
+
+     + const clientOptions = {
+     +   chain: networkConfig.chain,
+     +   transport: transportObserver(fallback([webSocket(), http()])),
+     +   pollingInterval: 1000,
+     + } as const satisfies ClientConfig;
+
+     + const publicClient = createPublicClient(clientOptions);
+
+     + const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+     + const burnerWalletClient = createWalletClient({
+     +   ...clientOptions,
+     +   account: burnerAccount,
+     + });
+
+     + const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+     +   world,
+     +   config: storeConfig,
+     +   address: networkConfig.worldAddress as Hex,
+     +   publicClient,
+     +   components: contractComponents,
+     +   startBlock: BigInt(networkConfig.initialBlockNumber),
+     +   indexerUrl: networkConfig.indexerUrl ?? undefined,
+     + });
+
+     + const worldContract = createContract({
+     +   address: networkConfig.worldAddress as Hex,
+     +   abi: IWorld__factory.abi,
+     +   publicClient,
+     +   walletClient: burnerWalletClient,
+     + });
+     ```
+
+     ```diff
+       // Request drip from faucet
+     - const signer = result.network.signer.get();
+     - if (networkConfig.faucetServiceUrl && signer) {
+     -   const address = await signer.getAddress();
+     + if (networkConfig.faucetServiceUrl) {
+     +   const address = burnerAccount.address;
+     ```
+
+     ```diff
+       const requestDrip = async () => {
+     -   const balance = await signer.getBalance();
+     +   const balance = await publicClient.getBalance({ address });
+         console.info(`[Dev Faucet]: Player balance -> ${balance}`);
+     -   const lowBalance = balance?.lte(utils.parseEther("1"));
+     +   const lowBalance = balance < parseEther("1");
+     ```
+
+     You can remove the previous ethers `worldContract`, snap sync code, and fast transaction executor.
+
+     The return of `setupNetwork` is a bit different than before, so you may have to do corresponding app changes.
+
+     ```diff
+     + return {
+     +   world,
+     +   components,
+     +   playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+     +   publicClient,
+     +   walletClient: burnerWalletClient,
+     +   latestBlock$,
+     +   blockStorageOperations$,
+     +   waitForTransaction,
+     +   worldContract,
+     + };
+     ```
+
+  5. Update `createSystemCalls` with the new return type of `setupNetwork`.
+
+     ```diff
+       export function createSystemCalls(
+     -   { worldSend, txReduced$, singletonEntity }: SetupNetworkResult,
+     +   { worldContract, waitForTransaction }: SetupNetworkResult,
+         { Counter }: ClientComponents
+       ) {
+          const increment = async () => {
+     -      const tx = await worldSend("increment", []);
+     -      await awaitStreamValue(txReduced$, (txHash) => txHash === tx.hash);
+     +      const tx = await worldContract.write.increment();
+     +      await waitForTransaction(tx);
+            return getComponentValue(Counter, singletonEntity);
+          };
+     ```
+
+  6. (optional) If you still need a clock, you can create it with:
+
+     ```ts
+     import { map, filter } from "rxjs";
+     import { createClock } from "@latticexyz/network";
+
+     const clock = createClock({
+       period: 1000,
+       initialTime: 0,
+       syncInterval: 5000,
+     });
+
+     world.registerDisposer(() => clock.dispose());
+
+     latestBlock$
+       .pipe(
+         map((block) => Number(block.timestamp) * 1000), // Map to timestamp in ms
+         filter((blockTimestamp) => blockTimestamp !== clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
+         filter((blockTimestamp) => blockTimestamp !== clock.currentTime) // Ignore if the current local timestamp is correct
+       )
+       .subscribe(clock.update); // Update the local clock
+     ```
+
+  If you're using the previous `LoadingState` component, you'll want to migrate to the new `SyncProgress`:
+
+  ```ts
+  import { SyncStep, singletonEntity } from "@latticexyz/store-sync/recs";
+
+  const syncProgress = useComponentValue(SyncProgress, singletonEntity, {
+    message: "Connecting",
+    percentage: 0,
+    step: SyncStep.INITIALIZE,
+  });
+
+  if (syncProgress.step === SyncStep.LIVE) {
+    // we're live!
+  }
+  ```
+
 ## 2.0.0-next.0
 
 ### Patch Changes

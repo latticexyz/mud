@@ -1,7 +1,12 @@
+import type { StoreConfig } from "@latticexyz/store";
+import type { DevToolsOptions } from "./common";
+
 const containerId = "mud-dev-tools";
 
 // TODO: rework to always return a unmount function (not a promise or possibly undefined)
-export async function mount() {
+export async function mount<TConfig extends StoreConfig>(
+  opts: DevToolsOptions<TConfig>
+): Promise<(() => void) | undefined> {
   if (typeof window === "undefined") {
     console.warn("MUD dev-tools should only be used in browser bundles");
     return;
@@ -16,6 +21,7 @@ export async function mount() {
     const React = await import("react");
     const ReactDOM = await import("react-dom/client");
     const { App } = await import("./App");
+    const { DevToolsProvider } = await import("./DevToolsContext");
 
     const rootElement = document.createElement("div");
     rootElement.id = containerId;
@@ -30,7 +36,9 @@ export async function mount() {
     const root = ReactDOM.createRoot(rootElement);
     root.render(
       <React.StrictMode>
-        <App />
+        <DevToolsProvider value={opts as DevToolsOptions}>
+          <App />
+        </DevToolsProvider>
       </React.StrictMode>
     );
 

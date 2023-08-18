@@ -1,5 +1,19 @@
 # Change Log
 
+## 2.0.0-next.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.2
+
+## 2.0.0-next.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.1
+
 ## 2.0.0-next.0
 
 ### Patch Changes

@@ -13,9 +13,20 @@ npm install @latticexyz/dev-tools
 ## Usage
 
 ```ts
-import { mount as mountDevTools } from "@latticexyz/dev-tools";
-
-if (process.env.NODE_ENV !== "production") {
-  mountDevTools();
+// https://vitejs.dev/guide/env-and-mode.html
+if (import.meta.env.DEV) {
+  const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+  mountDevTools({
+    config,
+    publicClient,
+    walletClient,
+    latestBlock$,
+    blockStorageOperations$,
+    worldAddress,
+    worldAbi,
+    write$,
+    // if you're using recs
+    recsWorld,
+  });
 }
 ```

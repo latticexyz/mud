@@ -85,6 +85,11 @@
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "deleteRecord",
@@ -113,6 +118,11 @@
         "internalType": "uint256",
         "name": "byteLengthToPop",
         "type": "uint256"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "popFromField",
@@ -141,6 +151,11 @@
         "internalType": "bytes",
         "name": "dataToPush",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "pushToField",
@@ -169,6 +184,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setField",
@@ -192,6 +212,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setRecord",
@@ -225,6 +250,11 @@
         "internalType": "bytes",
         "name": "dataToSet",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "updateInField",

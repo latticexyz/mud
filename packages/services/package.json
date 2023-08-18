@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/services",
-  "version": "2.0.0-next.0",
+  "version": "2.0.0-next.2",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
         "./protobuf/ts/ecs-stream/ecs-stream.ts"
       ],
       "faucet": [
-        "./protobuf/ts/faucet/faucet.ts"
+        "./ts/faucet/index.ts"
       ],
       "mode": [
         "./protobuf/ts/mode/mode.ts"
@@ -47,6 +47,7 @@
   "dependencies": {
     "long": "^5.2.1",
     "nice-grpc-common": "^2.0.2",
+    "nice-grpc-web": "^2.0.1",
     "protobufjs": "^7.2.3"
   },
   "devDependencies": {

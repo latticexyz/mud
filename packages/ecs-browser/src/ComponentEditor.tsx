@@ -4,7 +4,7 @@ import { AnyComponent, Entity, Schema } from "@latticexyz/recs/src/types";
 import { ComponentBrowserButton, ComponentEditorContainer, ComponentTitle } from "./StyledComponents";
 import { ComponentValueEditor } from "./ComponentValueEditor";
 import { hasContract, SetContractComponentFunction } from "./types";
-import { useComponentValueStream } from "@latticexyz/std-client";
+import { useComponentValueStream } from "@latticexyz/std-client/deprecated";
 
 export const ComponentEditor = ({
   entity,

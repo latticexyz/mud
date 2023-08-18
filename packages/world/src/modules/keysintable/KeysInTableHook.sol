@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
@@ -39,17 +40,17 @@ contract KeysInTableHook is IStoreHook {
     }
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory) public {
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
     handleSet(table, key);
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {}
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {}
 
-  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {
+  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {
     handleSet(table, key);
   }
 
-  function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
+  function onDeleteRecord(bytes32 tableId, bytes32[] memory key, Schema) public {
     bytes32 keysHash = keccak256(abi.encode(key));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 

@@ -14,11 +14,11 @@
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
-    "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/services": "link:../../../../packages/services",
+    "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
     "@react-three/fiber": "^8.12.0",
@@ -26,7 +26,8 @@
     "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "viem": "1.3.1"
+    "rxjs": "7.5.5",
+    "viem": "1.6.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.6",

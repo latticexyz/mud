@@ -6,6 +6,7 @@ import { SchemaType } from "../SchemaType";
  * Port of `Schema.sol` from `@latticexyz/store`
  * @param schema The schema to encode SchemaType[]
  * @returns The encoded schema as a 32 byte hex string
+ * @deprecated use `schemaToHex` from `protocol-parser` instead
  */
 
 export function encodeSchema(schema: SchemaType[]): Uint8Array {

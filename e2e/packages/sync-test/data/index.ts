@@ -3,7 +3,7 @@ export * from "./encodeTestData";
 export * from "./expectClientData";
 export * from "./mergeTestData";
 export * from "./numberListSystem";
-export * from "./readClientStore";
+export * from "./readComponentValue";
 export * from "./setContractData";
 export * from "./testData";
 export * from "./types";

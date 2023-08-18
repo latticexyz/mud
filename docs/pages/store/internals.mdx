@@ -5,9 +5,5 @@ It is called within `StoreRead`'s constructor (which is implemented by `World`).
 
 ### Tables
 
-- `SCHEMA_TABLE` - a very low-level table with no library for it.
-  All table schemas are stored here.
-  Directly using it is not recommended, table libraries generated via `tablegen` have schema methods like `registerSchema`.
-  Alternatively, `StoreCore` exposes `getSchema`, `getKeySchema`, `hasTable`, `registerSchema`, `setMetadata`, most of which are used by table libraries internally.
-- `Hooks` - maps tableId to an array of table hooks
-- `StoreMetadata` - maps tableId to optional metadata, like table and field names
+- `Tables` - maps table ID to the table's key schema, value schema, key names, and field names.
+- `Hooks` - maps table ID to an array of table hooks
