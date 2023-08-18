@@ -1,5 +1,5 @@
 import { Component, Has, removeComponent } from "@latticexyz/recs";
-import { useQuery } from "@latticexyz/std-client";
+import { useQuery } from "@latticexyz/std-client/deprecated";
 import { useCallback, useEffect, useState } from "react";
 import type { Lang, IThemedToken } from "shiki";
 

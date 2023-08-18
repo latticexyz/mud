@@ -30,14 +30,14 @@ They are written under the assumption you are using `anvil` for your test chain,
 
 1. Start the indexer.
 
-   ```sh
+   ```sh copy
    cd packages/store-indexer
    pnpm start:local
    ```
 
 1. Run this command as a sanity check to verify the indexer is working correctly:
 
-   ```sh
+   ```sh copy
    curl 'http://localhost:3001/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
    ```
 
@@ -47,6 +47,122 @@ They are written under the assumption you are using `anvil` for your test chain,
 
 ### Using the indexer with TypeScript
 
+You can see [an example of an indexer client in the MUD repo](https://github.com/latticexyz/mud/tree/main/examples/indexer-client).
+To execute it:
+
+1. Download and build the example.
+
+   ```sh copy
+   git clone https://@github.com/latticexyz/mud.git
+   cd mud/examples/indexer-client
+   pnpm install
+   ```
+
+1. Run the example.
+
+   ```sh copy
+   pnpm read-indexer
+   ```
+
+If your indexer is indexing [the minimal template](/tutorials/minimal), the expected output should be similar to:
+
+```
+Block number: 2042
+Tables: schema,Hooks,StoreMetadata,NamespaceOwner,InstalledModules,ResourceAccess,Systems,FunctionSelector,SystemHooks,SystemRegistry,ResourceType,Counter
+Information about Counter
+{
+  id: '0x5FbDB2315678afecb367f032d93F642f64180aa3____Counter',
+  address: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+  tableId: '0x00000000000000000000000000000000436f756e746572000000000000000000',
+  namespace: '',
+  name: 'Counter',
+  keySchema: {},
+  valueSchema: { value: 'uint32' },
+  lastUpdatedBlockNumber: 2042n,
+  records: [ { key: {}, value: [Object] } ]
+}
+The actual value: 2
+```
+
+#### Detailed explanation
+
+```ts
+import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
+const indexer = createIndexerClient({
+  url: "http://localhost:3001",
+});
+```
+
+Create an indexer client. The URL, `http://localhost/3001`, is the one for the indexer you run on the local computer.
+If the indexer is elsewhere, modify the URL as appropriate.
+
+```ts
+const result = await indexer.findAll.query({
+  chainId: 31337,
+  address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+});
+```
+
+Connect to the indexer.
+The `chainId` value is for a sanity check, to ensure we are connecting to the correct indexer.
+The `address` parameter is the address of the `World` contract whose information we are reading.
+The same indexer can read from multiple `World` objects, as long as they are on the same blockchain.
+
+```ts
+console.log(`Block number: ${result.blockNumber}`);
+```
+
+The `result` has two fields:
+
+- `blockNumber`, the data is correct as of that block (it could change later).
+- `tables`, the tables of the `World` we are reading.
+
+```ts
+console.log(`Tables: ${result.tables.map((t) => t.name)}`);
+```
+
+Use [`map`](https://www.tutorialspoint.com/typescript/typescript_array_map.htm) to get the names of the tables.
+
+```ts
+const counterTable = result.tables.filter((t) => t.name == "Counter")[0];
+```
+
+Use [`filter`](https://www.tutorialspoint.com/typescript/typescript_array_filter.htm) to get the `Counter` table, assuming there is at least one.
+
+```ts
+console.log("Information about Counter");
+console.log(counterTable);
+```
+
+Log the information we have about the table.
+It contains these fields:
+
+| Field                  | Meaning                                                                               |
+| ---------------------- | ------------------------------------------------------------------------------------- |
+| id                     | Iinternal ID for uniqueness in the context of SQL                                     |
+| address                | `World` address                                                                       |
+| tableId                | `bytes32` hex encoded table ID (a concat of `bytes16(namespace)` and `bytes16(name)`) |
+| namespace              | Table's namespace                                                                     |
+| name                   | Table's name                                                                          |
+| keySchema              | Schema of the table key                                                               |
+| valueSchema            | Schema of the table value                                                             |
+| lastUpdatedBlockNumber | Block number for which the data is correct                                            |
+| records                | Actual table data                                                                     |
+
+```ts
+console.log(`The actual value: ${counterTable.records[0].value.value}`);
+```
+
+The actual value in `Counter`, which is in the first (and only) record.
+Every record has two fields:
+
+- `key`
+- `value`
+
+Both `key` and `value` can have multiple fields inside them, one for each field in the appropriate schema.
+In the case of `Counter` there is nothing in the `key`, but `value` has a single field, also called `value`.
+So the counter value is `value.value` of the record.
+
 ### Using HTTP
 
 <WarningBox
@@ -54,7 +170,7 @@ They are written under the assumption you are using `anvil` for your test chain,
   message={
     <>
       <p>
-        The parameters, especially the URL, may change as we adjust our [tRPC](https://trpc.io/) configuration.
+        The parameters, especially the URL, may change as we adjust our tRPC configuration.
 
         If you can use the TypeScript methods, those are more stable.
       </p>
@@ -102,14 +218,14 @@ To understand the result, it is easiest to look at it inside Node.
 
 1. Read the result and enter `node`:
 
-   ```sh
+   ```sh copy
    curl 'http://localhost:3001/findAll?batch=wd&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' > res.json
    node
    ```
 
 1. Read the result into a JavaScript object.
 
-   ```javascript
+   ```javascript copy
    res = JSON.parse(fs.readFileSync("res.json"));
    ```
 
@@ -117,7 +233,7 @@ To understand the result, it is easiest to look at it inside Node.
    This item has one key, `record`, whose value also has only one key, `data`.
    Run these commands to verify the statements above and then cut `res` to the actual result.
 
-   ```javascript
+   ```javascript copy
    res.length;
    Object.keys(res[0]);
    Object.keys(res[0].result);
@@ -136,12 +252,12 @@ To understand the result, it is easiest to look at it inside Node.
    You can use [the `filter` function](https://www.w3schools.com/jsref/jsref_filter.asp) to get a specific table.
    In this case, we are getting the `Counter` table.
 
-   ```javascript
+   ```javascript copy
    counterTable = res.json.tables.filter((t) => t.name === "Counter")[0];
    ```
 
 1. Finally, to get the actual record with the counter value, use:
 
-   ```javascript
+   ```javascript copy
    counterTable.records[0].value.value;
    ```

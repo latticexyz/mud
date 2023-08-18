@@ -1,19 +1,20 @@
 import fs from "node:fs";
 import { z } from "zod";
-import cors from "cors";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
-import { createHTTPServer } from "@trpc/server/adapters/standalone";
+import fastify from "fastify";
+import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { chainState, schemaVersion } from "@latticexyz/store-sync/sqlite";
-import { createIndexer } from "../src/sqlite/createIndexer";
+import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
 import { isNotNull } from "@latticexyz/common/utils";
+import { combineLatest, filter, first } from "rxjs";
+import { debug } from "../src/debug";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -89,20 +90,41 @@ try {
   // ignore errors, this is optional
 }
 
-await createIndexer({
+const { latestBlockNumber$, blockStorageOperations$ } = await syncToSqlite({
   database,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
-const server = createHTTPServer({
-  middleware: cors(),
-  router: createAppRouter(),
-  createContext: async () => ({
-    storageAdapter: await createStorageAdapter(database),
-  }),
+combineLatest([latestBlockNumber$, blockStorageOperations$])
+  .pipe(
+    filter(
+      ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed
+    ),
+    first()
+  )
+  .subscribe(() => {
+    console.log("all caught up");
+  });
+
+// @see https://fastify.dev/docs/latest/
+const server = fastify({
+  maxParamLength: 5000,
 });
 
-const { port } = server.listen(env.PORT);
-console.log(`tRPC listening on http://127.0.0.1:${port}`);
+await server.register(import("@fastify/cors"));
+
+// @see https://trpc.io/docs/server/adapters/fastify
+server.register(fastifyTRPCPlugin, {
+  prefix: "/trpc",
+  trpcOptions: {
+    router: createAppRouter(),
+    createContext: async () => ({
+      storageAdapter: await createStorageAdapter(database),
+    }),
+  },
+});
+
+await server.listen({ port: env.PORT });
+console.log(`indexer server listening on http://127.0.0.1:${env.PORT}`);

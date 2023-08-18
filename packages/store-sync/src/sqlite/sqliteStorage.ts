@@ -1,4 +1,4 @@
-import { Hex, PublicClient, encodePacked, getAddress } from "viem";
+import { PublicClient, concatHex, encodeAbiParameters, getAddress } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -76,7 +76,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           new Set(
             operations.map((operation) =>
               JSON.stringify({
-                address: getAddress(operation.log.address),
+                address: getAddress(operation.address),
                 namespace: operation.namespace,
                 name: operation.name,
               })
@@ -102,7 +102,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         for (const operation of operations) {
           const table = tables.find(
             (table) =>
-              table.address === getAddress(operation.log.address) &&
+              table.address === getAddress(operation.address) &&
               table.namespace === operation.namespace &&
               table.name === operation.name
           );
@@ -112,9 +112,10 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           }
 
           const sqliteTable = createSqliteTable(table);
-          const key = encodePacked(
-            operation.log.args.key.map(() => "bytes32"),
-            operation.log.args.key as Hex[]
+          const key = concatHex(
+            Object.entries(table.keySchema).map(([keyName, type]) =>
+              encodeAbiParameters([{ type }], [operation.key[keyName]])
+            )
           );
 
           if (operation.type === "SetRecord") {

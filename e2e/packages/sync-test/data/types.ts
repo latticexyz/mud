@@ -1,6 +1,7 @@
 // Note: this expects the config to not use shortcuts but the full definitions for table schemas
 import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
 import config from "../../contracts/mud.config";
+import { Hex } from "viem";
 type SchemaToPrimitive<Schema> = Schema extends Record<string, SchemaAbiType>
   ? { [key in keyof Schema]: SchemaAbiTypeToPrimitiveType<Schema[key]> }
   : never;
@@ -19,5 +20,5 @@ export type Datum<Table extends keyof (typeof config)["tables"] = keyof (typeof 
 export type Data = { [Table in keyof (typeof config)["tables"]]?: Array<Datum<Table>> };
 
 export type EncodedData<T extends Data = Data> = {
-  [Table in keyof T]: Array<{ key: string[]; value: string }>;
+  [Table in keyof T]: Array<{ key: Hex[]; value: Hex; valueSchema: Hex }>;
 };

@@ -1,21 +1,13 @@
-import { World, defineComponent, Type, Component, Schema } from "@latticexyz/recs";
+import { World, defineComponent, Type, Component, Schema, Metadata } from "@latticexyz/recs";
 import { Table } from "../common";
-import { StoreComponentMetadata } from "./common";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function defineInternalComponents(world: World) {
   return {
-    TableMetadata: defineComponent<{ table: Type.T }, StoreComponentMetadata, Table>(
+    RegisteredTables: defineComponent<{ table: Type.T }, Metadata, Table>(
       world,
       { table: Type.T },
-      {
-        metadata: {
-          componentName: "TableMetadata",
-          tableName: "recs:TableMetadata",
-          keySchema: {},
-          valueSchema: {},
-        },
-      }
+      { metadata: { componentName: "RegisteredTables" } }
     ),
     SyncProgress: defineComponent(
       world,
@@ -26,14 +18,7 @@ export function defineInternalComponents(world: World) {
         latestBlockNumber: Type.BigInt,
         lastBlockNumberProcessed: Type.BigInt,
       },
-      {
-        metadata: {
-          componentName: "SyncProgress",
-          tableName: "recs:SyncProgress",
-          keySchema: {},
-          valueSchema: {},
-        },
-      }
+      { metadata: { componentName: "SyncProgress" } }
     ),
-  } as const satisfies Record<string, Component<Schema, StoreComponentMetadata>>;
+  } as const satisfies Record<string, Component<Schema, Metadata>>;
 }

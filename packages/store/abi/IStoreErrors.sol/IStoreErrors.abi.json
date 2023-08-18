@@ -48,6 +48,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidKeyNamesLength",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "StoreCore_NotDynamicField",
     "type": "error"

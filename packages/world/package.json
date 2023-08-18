@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.0-next.1",
+  "version": "2.0.0-next.2",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -15,7 +15,6 @@
     "./node": "./dist/ts/node/index.js",
     "./abi/*": "./abi/*",
     "./types/*": "./types/*",
-    "./snapsync": "./dist/ts/plugins/snapsync/index.js",
     "./*": "./dist/*"
   },
   "typesVersions": {
@@ -28,9 +27,6 @@
       ],
       "node": [
         "./ts/node/index.ts"
-      ],
-      "snapsync": [
-        "./ts/plugins/snapsync/index.ts"
       ]
     }
   },
