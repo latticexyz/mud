@@ -137,8 +137,20 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         }))
       );
 
-      // TODO: split into chunks at storage adapter level, expose some onProgress callback?
-      await storageAdapter.storeOperations({ blockNumber, operations });
+      // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
+      // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
+      const chunkSize = Math.floor(operations.length / 100);
+      for (let i = 0; i < operations.length; i += chunkSize) {
+        const chunk = operations.slice(i, i + chunkSize);
+        await storageAdapter.storeOperations({ blockNumber, operations: chunk });
+        onProgress?.({
+          step: SyncStep.SNAPSHOT,
+          percentage: (i + chunk.length) / operations.length,
+          latestBlockNumber: 0n,
+          lastBlockNumberProcessed: blockNumber,
+          message: "Hydrated from snapshot",
+        });
+      }
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,
