@@ -24,6 +24,7 @@ import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { BlockLogsToStorageOptions } from "./blockLogsToStorage";
 import { SyncStep } from "./SyncStep";
+import { chunk } from "@latticexyz/common/utils";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -139,16 +140,18 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
       // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
-      const chunkSize = Math.floor(operations.length / 100);
-      for (let i = 0; i < operations.length; i += chunkSize) {
-        const chunk = operations.slice(i, i + chunkSize);
+      //
+      // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
+      const chunkSize = Math.max(100, Math.floor(operations.length / 50));
+      const chunks = Array.from(chunk(operations, chunkSize));
+      for (const [i, chunk] of chunks.entries()) {
         await storageAdapter.storeOperations({ blockNumber, operations: chunk });
         onProgress?.({
           step: SyncStep.SNAPSHOT,
-          percentage: (i + chunk.length) / operations.length,
+          percentage: (i + chunk.length) / chunks.length,
           latestBlockNumber: 0n,
           lastBlockNumberProcessed: blockNumber,
-          message: "Hydrated from snapshot",
+          message: "Hydrating from snapshot",
         });
       }
 
