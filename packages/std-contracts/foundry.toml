@@ -8,3 +8,7 @@ verbosity = 2
 allow_paths = ["../../node_modules", "../solecs"]
 src = "src"
 out = "out"
+
+[fmt]
+tab_width = 2
+bracket_spacing = true

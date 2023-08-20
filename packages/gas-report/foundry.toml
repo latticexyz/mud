@@ -9,3 +9,7 @@ allow_paths= ["../../node_modules"]
 src = "src"
 out = "out"
 bytecode_hash = "none"
+
+[fmt]
+tab_width = 2
+bracket_spacing = true

@@ -8,3 +8,7 @@ verbosity = 2
 allow_paths = ["../../node_modules"]
 src = "src"
 out = "out"
+
+[fmt]
+tab_width = 2
+bracket_spacing = true

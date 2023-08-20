@@ -20,5 +20,9 @@ extra_output_files = [
 ]
 fs_permissions = [{ access = "read", path = "./"}]
 
+[fmt]
+tab_width = 2
+bracket_spacing = true
+
 [profile.lattice-testnet]
 eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
