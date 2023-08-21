@@ -8,7 +8,7 @@ export default {
   store: "Store",
   world: "World",
   "client-side": "MUD client",
-  indexer: "Indexer",
+  "sync-strageties": "Synchronization strategies",
   cli: "CLI",
   ecs: "ECS and MUD",
   plugins: "Plugins",
