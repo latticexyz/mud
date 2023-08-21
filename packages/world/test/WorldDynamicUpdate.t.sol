@@ -4,8 +4,6 @@ pragma solidity >=0.8.0;
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
-
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -31,7 +29,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(32, 0);
   IBaseWorld internal world;
 
   bytes32 internal key;

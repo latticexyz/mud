@@ -6,7 +6,6 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -46,12 +45,12 @@ contract KeysInTableModuleTest is Test, GasReporter {
   uint256 val2 = 42;
 
   function setUp() public {
-    tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
-    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
-    compositeKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
+    tableValueSchema = SchemaEncodeHelper.encode(32, 0);
+    tableKeySchema = SchemaEncodeHelper.encode(32, 0);
+    compositeKeySchema = SchemaEncodeHelper.encode(32, 32, 32, 0);
 
-    SchemaType[] memory _schema = new SchemaType[](0);
-    singletonKeySchema = SchemaLib.encode(_schema);
+    uint256[] memory _schema = new uint256[](0);
+    singletonKeySchema = SchemaLib.encode(_schema, 0);
 
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));

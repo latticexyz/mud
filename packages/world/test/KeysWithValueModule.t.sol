@@ -6,7 +6,6 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -38,8 +37,8 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   bytes32 targetTableId;
 
   function setUp() public {
-    sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
-    sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+    sourceTableSchema = SchemaEncodeHelper.encode(32, 0);
+    sourceTableKeySchema = SchemaEncodeHelper.encode(32, 0);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);

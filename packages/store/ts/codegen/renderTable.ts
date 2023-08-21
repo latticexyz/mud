@@ -5,7 +5,6 @@ import {
   renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
-  renderValueTypeToBytes32,
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
@@ -36,9 +35,6 @@ export function renderTable(options: RenderTableOptions) {
   const shouldRenderDelete = !withEphemeralMethods;
 
   return `${renderedSolidityHeader}
-
-// Import schema type
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 // Import store internals
 import { IStore } from "${storeImportPath}IStore.sol";
@@ -75,18 +71,18 @@ ${
 library ${libraryName} {
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
-    ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+    uint256[] memory _schema = new uint256[](${keyTuple.length});
+    ${renderList(keyTuple, ({ staticByteLength }, index) => `_schema[${index}] = ${staticByteLength};`)}
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_schema, 0);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${fields.length});
-    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+    uint256[] memory _schema = new uint256[](${staticFields.length});
+    ${renderList(staticFields, ({ staticByteLength }, index) => `_schema[${index}] = ${staticByteLength};`)}
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_schema, ${dynamicFields.length});
   }
 
   /** Get the table's key names */

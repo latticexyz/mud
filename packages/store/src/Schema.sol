@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Bytes } from "./Bytes.sol";
 
 // - 2 bytes static length of the schema
@@ -17,7 +16,8 @@ using SchemaInstance for Schema global;
  */
 library SchemaLib {
   error SchemaLib_InvalidLength(uint256 length);
-  error SchemaLib_StaticTypeAfterDynamicType();
+  error SchemaLib_StaticTypeIsZero();
+  error SchemaLib_StaticTypeDoesNotFitInAWord();
 
   // Based on PackedCounter's capacity
   uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
@@ -25,45 +25,31 @@ library SchemaLib {
   /**
    * Encode the given schema into a single bytes32
    */
-  function encode(SchemaType[] memory _schema) internal pure returns (Schema) {
-    if (_schema.length > 28) revert SchemaLib_InvalidLength(_schema.length);
+  function encode(uint256[] memory _staticFields, uint256 numDynamicFields) internal pure returns (Schema) {
     uint256 schema;
     uint256 totalLength;
-    uint256 dynamicFields;
+    uint256 totalFields = _staticFields.length + numDynamicFields;
+    if (totalFields > 28) revert SchemaLib_InvalidLength(totalFields);
+    if (numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(numDynamicFields);
 
     // Compute the length of the schema and the number of static fields
     // and store the schema types in the encoded schema
-    for (uint256 i = 0; i < _schema.length; ) {
-      uint256 staticByteLength = _schema[i].getStaticByteLength();
-
+    for (uint256 i = 0; i < _staticFields.length; ) {
+      uint256 staticByteLength = _staticFields[i];
       if (staticByteLength == 0) {
-        // Increase the dynamic field count if the field is dynamic
-        // (safe because of the initial _schema.length check)
-        unchecked {
-          dynamicFields++;
-        }
-      } else if (dynamicFields > 0) {
-        // Revert if we have seen a dynamic field before, but now we see a static field
-        revert SchemaLib_StaticTypeAfterDynamicType();
+        revert SchemaLib_StaticTypeIsZero();
+      } else if (staticByteLength > 32) {
+        revert SchemaLib_StaticTypeDoesNotFitInAWord();
       }
 
       unchecked {
-        // (safe because 28 (max _schema.length) * 32 (max static length) < 2**16)
+        // (safe because 28 (max _staticFields.length) * 32 (max static length) < 2**16)
         totalLength += staticByteLength;
         // Sequentially store schema types after the first 4 bytes (which are reserved for length and field numbers)
-        // (safe because of the initial _schema.length check)
-        schema |= uint256(_schema[i]) << ((31 - 4 - i) * 8);
+        // (safe because of the initial _staticFields.length check)
+        schema |= uint256(_staticFields[i]) << ((31 - 4 - i) * 8);
         i++;
       }
-    }
-
-    // Require MAX_DYNAMIC_FIELDS
-    if (dynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib_InvalidLength(dynamicFields);
-
-    // Get the static field count
-    uint256 staticFields;
-    unchecked {
-      staticFields = _schema.length - dynamicFields;
     }
 
     // Store total static length in the first 2 bytes,
@@ -71,8 +57,8 @@ library SchemaLib {
     // number of dynamic fields in the 4th byte
     // (optimizer can handle this, no need for unchecked or single-line assignment)
     schema |= totalLength << ((32 - 2) * 8);
-    schema |= staticFields << ((32 - 2 - 1) * 8);
-    schema |= dynamicFields << ((32 - 2 - 1 - 1) * 8);
+    schema |= _staticFields.length << ((32 - 2 - 1) * 8);
+    schema |= numDynamicFields << ((32 - 2 - 1 - 1) * 8);
 
     return Schema.wrap(bytes32(schema));
   }
@@ -83,18 +69,18 @@ library SchemaLib {
  */
 library SchemaInstance {
   /**
-   * Get the length of the static data for the given schema
+   * Get the total static byte length for the given schema
    */
   function staticDataLength(Schema schema) internal pure returns (uint256) {
     return uint256(Schema.unwrap(schema)) >> ((32 - 2) * 8);
   }
 
   /**
-   * Get the type of the data for the given schema at the given index
+   * Get the static byte length at the given index
    */
-  function atIndex(Schema schema, uint256 index) internal pure returns (SchemaType) {
+  function atIndex(Schema schema, uint256 index) internal pure returns (uint256) {
     unchecked {
-      return SchemaType(uint8(uint256(schema.unwrap()) >> ((31 - 4 - index) * 8)));
+      return uint8(uint256(schema.unwrap()) >> ((31 - 4 - index) * 8));
     }
   }
 
@@ -137,37 +123,22 @@ library SchemaInstance {
     if (_numDynamicFields > SchemaLib.MAX_DYNAMIC_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = schema.numStaticFields();
-    // Schema must not have more than 28 fields in total
+    // Schema must not have more than 28 lengths in total
     uint256 _numTotalFields = _numStaticFields + _numDynamicFields;
     if (_numTotalFields > 28) revert SchemaLib.SchemaLib_InvalidLength(_numTotalFields);
 
-    // No static field can be after a dynamic field
-    uint256 countStaticFields;
-    uint256 countDynamicFields;
-    for (uint256 i; i < _numTotalFields; ) {
-      if (schema.atIndex(i).getStaticByteLength() > 0) {
-        // Static field in dynamic part
-        if (i >= _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
-        unchecked {
-          countStaticFields++;
-        }
-      } else {
-        // Dynamic field in static part
-        if (i < _numStaticFields) revert SchemaLib.SchemaLib_StaticTypeAfterDynamicType();
-        unchecked {
-          countDynamicFields++;
-        }
+    // Static lengths must be valid
+    for (uint256 i; i < _numStaticFields; ) {
+      uint256 staticByteLength = schema.atIndex(i);
+      if (staticByteLength == 0) {
+        revert SchemaLib.SchemaLib_StaticTypeIsZero();
+      } else if (staticByteLength > 32) {
+        revert SchemaLib.SchemaLib_StaticTypeDoesNotFitInAWord();
       }
       unchecked {
         i++;
       }
     }
-
-    // Number of static fields must match
-    if (countStaticFields != _numStaticFields) revert SchemaLib.SchemaLib_InvalidLength(countStaticFields);
-
-    // Number of dynamic fields must match
-    if (countDynamicFields != _numDynamicFields) revert SchemaLib.SchemaLib_InvalidLength(countDynamicFields);
   }
 
   /**

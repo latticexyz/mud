@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
@@ -12,7 +11,7 @@ import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
 contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
-  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(32, 0);
 
   bytes32[] internal _key;
   bytes32 internal _table = keccak256("some.table");
@@ -36,11 +35,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
   function setUp() public {
     // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(
-      SchemaType.UINT256,
-      SchemaType.UINT32_ARRAY,
-      SchemaType.UINT32_ARRAY
-    );
+    Schema valueSchema = SchemaEncodeHelper.encode(32, 2);
     StoreCore.registerTable(_table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key

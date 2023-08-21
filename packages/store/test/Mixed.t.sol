@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";

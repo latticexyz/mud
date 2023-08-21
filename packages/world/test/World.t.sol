@@ -4,8 +4,6 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
-
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
@@ -158,7 +156,7 @@ contract WorldTest is Test, GasReporter {
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+  Schema defaultKeySchema = SchemaEncodeHelper.encode(32, 0);
   IBaseWorld world;
 
   bytes32 key;
@@ -247,7 +245,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterTable() public {
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
+    Schema valueSchema = SchemaEncodeHelper.encode(1, 32, 1);
     bytes16 namespace = "testNamespace";
     bytes16 tableName = "testTable";
     bytes32 tableSelector = ResourceSelector.from(namespace, tableName);

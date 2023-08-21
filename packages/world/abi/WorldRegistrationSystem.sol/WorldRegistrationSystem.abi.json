@@ -105,7 +105,12 @@
   },
   {
     "inputs": [],
-    "name": "SchemaLib_StaticTypeAfterDynamicType",
+    "name": "SchemaLib_StaticTypeDoesNotFitInAWord",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SchemaLib_StaticTypeIsZero",
     "type": "error"
   },
   {

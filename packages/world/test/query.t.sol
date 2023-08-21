@@ -6,7 +6,6 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -44,8 +43,8 @@ contract QueryTest is Test, GasReporter {
   QueryFragment[] fragmentsHasNot;
 
   function setUp() public {
-    tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
-    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+    tableValueSchema = SchemaEncodeHelper.encode(32, 0);
+    tableKeySchema = SchemaEncodeHelper.encode(32, 0);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
 

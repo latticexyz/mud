@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
@@ -483,8 +482,7 @@ library StoreCore {
   ) internal view returns (uint256) {
     uint8 numStaticFields = uint8(valueSchema.numStaticFields());
     if (schemaIndex < numStaticFields) {
-      SchemaType schemaType = valueSchema.atIndex(schemaIndex);
-      return schemaType.getStaticByteLength();
+      return valueSchema.atIndex(schemaIndex);
     } else {
       // Get the length and storage location of the dynamic field
       uint8 dynamicSchemaIndex = schemaIndex - numStaticFields;
@@ -534,9 +532,9 @@ library StoreCoreInternal {
     bytes memory data
   ) internal {
     // verify the value has the correct length for the field
-    SchemaType schemaType = valueSchema.atIndex(schemaIndex);
-    if (schemaType.getStaticByteLength() != data.length) {
-      revert IStoreErrors.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
+    uint256 staticByteLength = valueSchema.atIndex(schemaIndex);
+    if (staticByteLength != data.length) {
+      revert IStoreErrors.StoreCore_InvalidDataLength(staticByteLength, data.length);
     }
 
     // Store the provided value in storage
@@ -651,14 +649,13 @@ library StoreCoreInternal {
     Schema valueSchema
   ) internal view returns (bytes memory) {
     // Get the length, storage location and offset of the static field
-    SchemaType schemaType = valueSchema.atIndex(schemaIndex);
-    uint256 dataLength = schemaType.getStaticByteLength();
+    uint256 staticByteLength = valueSchema.atIndex(schemaIndex);
     uint256 location = _getStaticDataLocation(tableId, key);
     uint256 offset = _getStaticDataOffset(valueSchema, schemaIndex);
 
     // Load the data from storage
 
-    return Storage.load({ storagePointer: location, length: dataLength, offset: offset });
+    return Storage.load({ storagePointer: location, length: staticByteLength, offset: offset });
   }
 
   /**
@@ -723,7 +720,7 @@ library StoreCoreInternal {
   function _getStaticDataOffset(Schema valueSchema, uint8 schemaIndex) internal pure returns (uint256) {
     uint256 offset = 0;
     for (uint256 i; i < schemaIndex; i++) {
-      offset += valueSchema.atIndex(i).getStaticByteLength();
+      offset += valueSchema.atIndex(i);
     }
     return offset;
   }
