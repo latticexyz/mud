@@ -998,7 +998,7 @@ importers:
         version: 4.3.4(supports-color@8.1.1)
       drizzle-orm:
         specifier: ^0.27.0
-        version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
+        version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(postgres@3.3.5)(sql.js@1.8.0)
       fastify:
         specifier: ^4.21.0
         version: 4.21.0
@@ -1071,13 +1071,16 @@ importers:
         version: 4.3.4(supports-color@8.1.1)
       drizzle-orm:
         specifier: ^0.27.0
-        version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0)
+        version: 0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(postgres@3.3.5)(sql.js@1.8.0)
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
       p-retry:
         specifier: ^5.1.2
         version: 5.1.2
+      postgres:
+        specifier: ^3.3.5
+        version: 3.3.5
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
@@ -5258,7 +5261,7 @@ packages:
       detect-libc: 1.0.3
     dev: true
 
-  /drizzle-orm@0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(sql.js@1.8.0):
+  /drizzle-orm@0.27.0(@types/better-sqlite3@7.6.4)(@types/sql.js@1.4.4)(better-sqlite3@8.4.0)(kysely@0.26.1)(postgres@3.3.5)(sql.js@1.8.0):
     resolution: {integrity: sha512-LGiJ0icB+wQwgbSCOvAjONY8Ec6G/EDzQQP5PmUaQYeI9OqgpVKHC2T1fFIbvk5dabWsbokJ5NOciVAxriStig==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -5324,6 +5327,7 @@ packages:
       '@types/sql.js': 1.4.4
       better-sqlite3: 8.4.0
       kysely: 0.26.1
+      postgres: 3.3.5
       sql.js: 1.8.0
     dev: false
 
@@ -9270,6 +9274,10 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
     dev: true
+
+  /postgres@3.3.5:
+    resolution: {integrity: sha512-+JD93VELV9gHkqpV5gdL5/70HdGtEw4/XE1S4BC8f1mcPmdib3K5XsKVbnR1XcAyC41zOnifJ+9YRKxdIsXiUw==}
+    dev: false
 
   /prebuild-install@7.1.1:
     resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
