@@ -302,13 +302,13 @@
   {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
-    "name": "initialize schema array with 6 entries",
+    "name": "initialize schema array with 5 entries",
     "gasUsed": 439
   },
   {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
-    "name": "encode schema with 6 entries",
+    "name": "encode schema with 5+1 entries",
     "gasUsed": 1651
   },
   {

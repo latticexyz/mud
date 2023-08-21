@@ -9,7 +9,7 @@ import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 // TODO add tests for all schema types
 contract SchemaTest is Test, GasReporter {
   function testEncodeDecodeSchema() public {
-    startGasReport("initialize schema array with 6 entries");
+    startGasReport("initialize schema array with 5 entries");
     uint256[] memory _schema = new uint256[](5);
     _schema[0] = 1;
     _schema[1] = 2;
@@ -18,7 +18,7 @@ contract SchemaTest is Test, GasReporter {
     _schema[4] = 32;
     endGasReport();
 
-    startGasReport("encode schema with 6 entries");
+    startGasReport("encode schema with 5+1 entries");
     Schema schema = SchemaLib.encode(_schema, 1);
     endGasReport();
 
