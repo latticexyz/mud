@@ -1,36 +1,8 @@
 # Synchronization Strategies
 
 For a client to show the user any information, it needs to know what is happening onchain.
-There are two main mechanisms you can use to read information from MUD:
 
-1. Use the [events](https://www.tutorialspoint.com/solidity/solidity_events.htm) emitted by MUD.
-   This is the default strategy used by the template provided by `pnpm create mud@<version>`.
+The initial synchronization is best done using the [Indexer](sync-strategies/indexer) to get the starting state.
+This is preferable to the other option which is to look at [events](https://www.tutorialspoint.com/solidity/solidity_events.htm) beginning when the `World` was first deployed.
 
-   Pros:
-
-   - System simplicity.
-     There is no additional component that could fail.
-   - Decentralized.
-     The client gets the information directly from the blockchain.
-
-   Cons:
-
-   - Client processing cost.
-     The client has to listen to all the relevant events from the world, so it has to process any change, whether it is relevant or not.
-
-1. Use the [Indexer](sync-strategies/indexer).
-   The Indexer is a TypeScript service that reads information from a `World` and provides it [through HTTP](sync-strategies/indexer#using-http).
-
-   Pro:
-
-   - Ease of deployment.
-     The Indexer is already written and [simple to deploy](sync-strategies/indexer#installation).
-
-   Cons:
-
-   - System complexity.
-     Adding another component means another piece that could fail.
-   - Centralized.
-     In theory, the indexer could provide different information from what is on the chain.
-
-In most cases, we recommend that client use the Indexer to get the state when they are started, and then follow the block chain directly using the events.
+Once the client is in sync, it can listen to blockchain events emitted by the `World` to update the local copy of the state as needed.
