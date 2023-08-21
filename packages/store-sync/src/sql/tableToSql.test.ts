@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { tableToSql } from "./tableToSql";
 import { bigint, integer, pgTable, text } from "drizzle-orm/pg-core";
-import { Kysely, PostgresAdapter, DummyDriver, PostgresIntrospector, PostgresQueryCompiler } from "kysely";
 
 // TODO: bring over sqlite tests
 
@@ -16,7 +15,7 @@ describe("tableToSql", () => {
         blockNumber: bigint("block_number", { mode: "bigint" }).notNull().default(1000n),
       });
 
-      const sql = tableToSql("postgres", table);
+      const sql = tableToSql("postgres", "public", table);
 
       expect(sql).toMatchInlineSnapshot(
         '"create table if not exists \\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" bigint default \'1000\' not null, constraint \\"some table__primaryKey\\" primary key (\\"x\\", \\"y\\"))"'
@@ -29,7 +28,7 @@ describe("tableToSql", () => {
         name: text("name").notNull().default(""),
       });
 
-      const sql = tableToSql("postgres", table);
+      const sql = tableToSql("postgres", "public", table);
 
       expect(sql).toMatchInlineSnapshot(
         '"create table if not exists \\"some table\\" (\\"name\\" text default \'\' not null)"'
@@ -42,7 +41,7 @@ describe("tableToSql", () => {
         camelCase: text("snake_case").notNull().default("").primaryKey(),
       });
 
-      const sql = tableToSql("postgres", table);
+      const sql = tableToSql("postgres", "public", table);
 
       expect(sql).toMatchInlineSnapshot(
         '"create table if not exists \\"some table\\" (\\"snake_case\\" text default \'\' not null, constraint \\"some table__primaryKey\\" primary key (\\"snake_case\\"))"'

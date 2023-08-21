@@ -1,4 +1,4 @@
-import { AnyPgColumnBuilder, PgTableWithColumns, pgTable } from "drizzle-orm/pg-core";
+import { AnyPgColumnBuilder, PgTableWithColumns, pgSchema, pgTable } from "drizzle-orm/pg-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildColumn } from "./buildColumn";
 import { Address } from "viem";
@@ -33,6 +33,7 @@ type CreateTableOptions<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = {
+  schema?: string;
   address: Address;
   namespace: string;
   name: string;
@@ -49,6 +50,7 @@ export function createTable<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 >({
+  schema,
   address,
   namespace,
   name,
@@ -76,7 +78,7 @@ export function createTable<
     ...metaColumns,
   };
 
-  const table = pgTable(tableName, columns);
+  const table = schema ? pgSchema(schema).table(tableName, columns) : pgTable(tableName, columns);
 
   return table as PgTableFromSchema<TKeySchema, TValueSchema>;
 }

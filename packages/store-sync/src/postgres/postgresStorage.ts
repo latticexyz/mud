@@ -7,7 +7,7 @@ import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
-import { chainState, mudStoreTables } from "./internalTables";
+import { createInternalTables } from "./createInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 import { tableToSql } from "../sql/tableToSql";
@@ -15,18 +15,22 @@ import { tableIdToHex } from "@latticexyz/common";
 
 export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
+  schema,
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
+  schema: string;
   publicClient: PublicClient;
   config?: TConfig;
 }): Promise<BlockLogsToStorageOptions<TConfig>> {
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
+  const internalTables = createInternalTables(schema);
+
   // TODO: should these run lazily before first `registerTables`?
   await database.transaction(async (tx) => {
-    await tx.execute(sql.raw(tableToSql("postgres", chainState)));
-    await tx.execute(sql.raw(tableToSql("postgres", mudStoreTables)));
+    await tx.execute(sql.raw(tableToSql("postgres", schema, internalTables.chain)));
+    await tx.execute(sql.raw(tableToSql("postgres", schema, internalTables.tables)));
   });
 
   return {
@@ -36,6 +40,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
           const sqlTable = createTable({
+            schema,
             address: table.address,
             namespace: table.namespace,
             name: table.name,
@@ -43,10 +48,10 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             valueSchema: table.valueSchema,
           });
 
-          await tx.execute(sql.raw(tableToSql("postgres", sqlTable)));
+          await tx.execute(sql.raw(tableToSql("postgres", schema, sqlTable)));
 
           await tx
-            .insert(mudStoreTables)
+            .insert(internalTables.tables)
             .values({
               schemaVersion,
               id: getTableName(table.address, table.namespace, table.name),
@@ -66,7 +71,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
     async getTables({ tables }) {
       // TODO: fetch any missing schemas from RPC
       // TODO: cache schemas in memory?
-      return getTables(database, tables);
+      return getTables(database, schema, tables);
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
@@ -75,6 +80,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
       const tables = await getTables(
         database,
+        schema,
         Array.from(
           new Set(
             operations.map((operation) =>
@@ -91,15 +97,16 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
       await database.transaction(async (tx) => {
         for (const { address, namespace, name } of tables) {
           await tx
-            .update(mudStoreTables)
+            .update(internalTables.tables)
             .set({ lastUpdatedBlockNumber: blockNumber })
             .where(
               and(
-                eq(mudStoreTables.address, address),
-                eq(mudStoreTables.namespace, namespace),
-                eq(mudStoreTables.name, name)
+                eq(internalTables.tables.address, address),
+                eq(internalTables.tables.namespace, namespace),
+                eq(internalTables.tables.name, name)
               )
-            );
+            )
+            .execute();
         }
 
         for (const operation of operations) {
@@ -114,7 +121,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             continue;
           }
 
-          const sqlTable = createTable(table);
+          const sqlTable = createTable({ ...table, schema });
           const key = concatHex(
             Object.entries(table.keySchema).map(([keyName, type]) =>
               encodeAbiParameters([{ type }], [operation.key[keyName]])
@@ -139,7 +146,8 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
                   __isDeleted: false,
                   ...operation.value,
                 },
-              });
+              })
+              .execute();
           } else if (operation.type === "SetField") {
             debug("SetField", operation);
             await tx
@@ -159,7 +167,8 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
                   __isDeleted: false,
                   [operation.fieldName]: operation.fieldValue,
                 },
-              });
+              })
+              .execute();
           } else if (operation.type === "DeleteRecord") {
             // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
             debug("DeleteRecord", operation);
@@ -169,23 +178,25 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: true,
               })
-              .where(eq(sqlTable.__key, key));
+              .where(eq(sqlTable.__key, key))
+              .execute();
           }
         }
 
         await tx
-          .insert(chainState)
+          .insert(internalTables.chain)
           .values({
             schemaVersion,
             chainId,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoUpdate({
-            target: [chainState.schemaVersion, chainState.chainId],
+            target: [internalTables.chain.schemaVersion, internalTables.chain.chainId],
             set: {
               lastUpdatedBlockNumber: blockNumber,
             },
-          });
+          })
+          .execute();
       });
     },
   } as BlockLogsToStorageOptions<TConfig>;

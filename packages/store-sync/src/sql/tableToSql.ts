@@ -36,12 +36,13 @@ function getDialect(dialect: "sqlite" | "postgres"): Dialect {
   assertExhaustive(dialect, `Dialect '${dialect}' not supported.`);
 }
 
-export function tableToSql(dialect: "sqlite" | "postgres", table: PgTableWithColumns<any>): string {
+export function tableToSql(dialect: "sqlite" | "postgres", schemaName: string, table: PgTableWithColumns<any>): string {
   const db = new Kysely({ dialect: getDialect(dialect) });
   const tableName = getTableName(table);
+  // TODO: figure out how to get schema from table
 
   // TODO: should we allow this to fail (remove ifNotExists) so we can catch issues with our logic that creates tables?
-  let query = db.schema.createTable(tableName).ifNotExists();
+  let query = db.withSchema(schemaName).schema.createTable(tableName).ifNotExists();
 
   const columns = Object.values(getTableColumns(table)) as AnyPgColumn[];
   for (const column of columns) {
@@ -58,7 +59,7 @@ export function tableToSql(dialect: "sqlite" | "postgres", table: PgTableWithCol
 
   const primaryKeys = columns.filter((column) => column.primary).map((column) => column.name);
   if (primaryKeys.length) {
-    query = query.addPrimaryKeyConstraint(`${tableName}__primaryKey`, primaryKeys as any);
+    query = query.addPrimaryKeyConstraint(`${tableName}__pk`, primaryKeys as any);
   }
 
   const { sql } = query.compile();
