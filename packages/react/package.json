@@ -24,7 +24,6 @@
   "dependencies": {
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/store-cache": "workspace:*",
     "fast-deep-equal": "^3.1.3",
     "mobx": "^6.7.0",
     "react": "^18.2.0",
