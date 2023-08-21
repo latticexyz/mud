@@ -15,11 +15,13 @@ library Bytes {
     }
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    UTILS
    *
-   ************************************************************************/
+   *
+   */
 
   function equals(bytes memory a, bytes memory b) internal pure returns (bool) {
     if (a.length != b.length) {
@@ -38,11 +40,13 @@ library Bytes {
     return input;
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    SET
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Overwrite a single byte of a `bytes32` value and return the new value.
@@ -123,13 +127,17 @@ library Bytes {
     return output;
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    SLICE
    *
-   ************************************************************************/
+   *
+   */
 
-  /** Slice bytes to bytes1 without copying data */
+  /**
+   * Slice bytes to bytes1 without copying data
+   */
   function slice1(bytes memory data, uint256 start) internal pure returns (bytes1) {
     bytes1 output;
     assembly {
@@ -146,7 +154,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes2 without copying data */
+  /**
+   * Slice bytes to bytes2 without copying data
+   */
   function slice2(bytes memory data, uint256 start) internal pure returns (bytes2) {
     bytes2 output;
     assembly {
@@ -163,7 +173,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes3 without copying data */
+  /**
+   * Slice bytes to bytes3 without copying data
+   */
   function slice3(bytes memory data, uint256 start) internal pure returns (bytes3) {
     bytes3 output;
     assembly {
@@ -172,7 +184,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes4 without copying data */
+  /**
+   * Slice bytes to bytes4 without copying data
+   */
   function slice4(bytes memory data, uint256 start) internal pure returns (bytes4) {
     bytes4 output;
     assembly {
@@ -189,7 +203,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes5 without copying data */
+  /**
+   * Slice bytes to bytes5 without copying data
+   */
   function slice5(bytes memory data, uint256 start) internal pure returns (bytes5) {
     bytes5 output;
     assembly {
@@ -206,7 +222,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes6 without copying data */
+  /**
+   * Slice bytes to bytes6 without copying data
+   */
   function slice6(bytes memory data, uint256 start) internal pure returns (bytes6) {
     bytes6 output;
     assembly {
@@ -215,7 +233,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes7 without copying data */
+  /**
+   * Slice bytes to bytes7 without copying data
+   */
   function slice7(bytes memory data, uint256 start) internal pure returns (bytes7) {
     bytes7 output;
     assembly {
@@ -224,7 +244,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes8 without copying data */
+  /**
+   * Slice bytes to bytes8 without copying data
+   */
   function slice8(bytes memory data, uint256 start) internal pure returns (bytes8) {
     bytes8 output;
     assembly {
@@ -233,7 +255,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes9 without copying data */
+  /**
+   * Slice bytes to bytes9 without copying data
+   */
   function slice9(bytes memory data, uint256 start) internal pure returns (bytes9) {
     bytes9 output;
     assembly {
@@ -242,7 +266,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes10 without copying data */
+  /**
+   * Slice bytes to bytes10 without copying data
+   */
   function slice10(bytes memory data, uint256 start) internal pure returns (bytes10) {
     bytes10 output;
     assembly {
@@ -251,7 +277,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes11 without copying data */
+  /**
+   * Slice bytes to bytes11 without copying data
+   */
   function slice11(bytes memory data, uint256 start) internal pure returns (bytes11) {
     bytes11 output;
     assembly {
@@ -260,7 +288,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes12 without copying data */
+  /**
+   * Slice bytes to bytes12 without copying data
+   */
   function slice12(bytes memory data, uint256 start) internal pure returns (bytes12) {
     bytes12 output;
     assembly {
@@ -269,7 +299,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes13 without copying data */
+  /**
+   * Slice bytes to bytes13 without copying data
+   */
   function slice13(bytes memory data, uint256 start) internal pure returns (bytes13) {
     bytes13 output;
     assembly {
@@ -278,7 +310,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes14 without copying data */
+  /**
+   * Slice bytes to bytes14 without copying data
+   */
   function slice14(bytes memory data, uint256 start) internal pure returns (bytes14) {
     bytes14 output;
     assembly {
@@ -287,7 +321,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes15 without copying data */
+  /**
+   * Slice bytes to bytes15 without copying data
+   */
   function slice15(bytes memory data, uint256 start) internal pure returns (bytes15) {
     bytes15 output;
     assembly {
@@ -296,7 +332,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes16 without copying data */
+  /**
+   * Slice bytes to bytes16 without copying data
+   */
   function slice16(bytes memory data, uint256 start) internal pure returns (bytes16) {
     bytes16 output;
     assembly {
@@ -305,7 +343,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes17 without copying data */
+  /**
+   * Slice bytes to bytes17 without copying data
+   */
   function slice17(bytes memory data, uint256 start) internal pure returns (bytes17) {
     bytes17 output;
     assembly {
@@ -314,7 +354,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes18 without copying data */
+  /**
+   * Slice bytes to bytes18 without copying data
+   */
   function slice18(bytes memory data, uint256 start) internal pure returns (bytes18) {
     bytes18 output;
     assembly {
@@ -323,7 +365,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes19 without copying data */
+  /**
+   * Slice bytes to bytes19 without copying data
+   */
   function slice19(bytes memory data, uint256 start) internal pure returns (bytes19) {
     bytes19 output;
     assembly {
@@ -332,7 +376,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes20 without copying data */
+  /**
+   * Slice bytes to bytes20 without copying data
+   */
   function slice20(bytes memory data, uint256 start) internal pure returns (bytes20) {
     bytes20 output;
     assembly {
@@ -341,7 +387,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes21 without copying data */
+  /**
+   * Slice bytes to bytes21 without copying data
+   */
   function slice21(bytes memory data, uint256 start) internal pure returns (bytes21) {
     bytes21 output;
     assembly {
@@ -350,7 +398,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes22 without copying data */
+  /**
+   * Slice bytes to bytes22 without copying data
+   */
   function slice22(bytes memory data, uint256 start) internal pure returns (bytes22) {
     bytes22 output;
     assembly {
@@ -359,7 +409,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes23 without copying data */
+  /**
+   * Slice bytes to bytes23 without copying data
+   */
   function slice23(bytes memory data, uint256 start) internal pure returns (bytes23) {
     bytes23 output;
     assembly {
@@ -368,7 +420,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes24 without copying data */
+  /**
+   * Slice bytes to bytes24 without copying data
+   */
   function slice24(bytes memory data, uint256 start) internal pure returns (bytes24) {
     bytes24 output;
     assembly {
@@ -377,7 +431,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes25 without copying data */
+  /**
+   * Slice bytes to bytes25 without copying data
+   */
   function slice25(bytes memory data, uint256 start) internal pure returns (bytes25) {
     bytes25 output;
     assembly {
@@ -386,7 +442,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes26 without copying data */
+  /**
+   * Slice bytes to bytes26 without copying data
+   */
   function slice26(bytes memory data, uint256 start) internal pure returns (bytes26) {
     bytes26 output;
     assembly {
@@ -395,7 +453,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes27 without copying data */
+  /**
+   * Slice bytes to bytes27 without copying data
+   */
   function slice27(bytes memory data, uint256 start) internal pure returns (bytes27) {
     bytes27 output;
     assembly {
@@ -404,7 +464,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes28 without copying data */
+  /**
+   * Slice bytes to bytes28 without copying data
+   */
   function slice28(bytes memory data, uint256 start) internal pure returns (bytes28) {
     bytes28 output;
     assembly {
@@ -413,7 +475,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes29 without copying data */
+  /**
+   * Slice bytes to bytes29 without copying data
+   */
   function slice29(bytes memory data, uint256 start) internal pure returns (bytes29) {
     bytes29 output;
     assembly {
@@ -422,7 +486,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes30 without copying data */
+  /**
+   * Slice bytes to bytes30 without copying data
+   */
   function slice30(bytes memory data, uint256 start) internal pure returns (bytes30) {
     bytes30 output;
     assembly {
@@ -431,7 +497,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes31 without copying data */
+  /**
+   * Slice bytes to bytes31 without copying data
+   */
   function slice31(bytes memory data, uint256 start) internal pure returns (bytes31) {
     bytes31 output;
     assembly {
@@ -440,7 +508,9 @@ library Bytes {
     return output;
   }
 
-  /** Slice bytes to bytes32 without copying data */
+  /**
+   * Slice bytes to bytes32 without copying data
+   */
   function slice32(bytes memory data, uint256 start) internal pure returns (bytes32) {
     bytes32 output;
     assembly {

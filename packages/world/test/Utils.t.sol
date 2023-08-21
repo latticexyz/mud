@@ -19,6 +19,7 @@ contract UtilsTestSystem is System {
 
 contract UtilsTest is Test {
   using ResourceSelector for bytes32;
+
   IBaseWorld internal world;
 
   function setUp() public {

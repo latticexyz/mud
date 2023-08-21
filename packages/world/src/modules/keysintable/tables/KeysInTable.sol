@@ -29,7 +29,9 @@ struct KeysInTableData {
 }
 
 library KeysInTable {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32;
@@ -37,7 +39,9 @@ library KeysInTable {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](5);
     _schema[0] = SchemaType.BYTES32_ARRAY;
@@ -49,13 +53,17 @@ library KeysInTable {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "sourceTable";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](5);
     fieldNames[0] = "keys0";
@@ -65,17 +73,23 @@ library KeysInTable {
     fieldNames[4] = "keys4";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get keys0 */
+  /**
+   * Get keys0
+   */
   function getKeys0(bytes32 sourceTable) internal view returns (bytes32[] memory keys0) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -84,7 +98,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keys0 (using the specified store) */
+  /**
+   * Get keys0 (using the specified store)
+   */
   function getKeys0(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys0) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -93,7 +109,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keys0 */
+  /**
+   * Set keys0
+   */
   function setKeys0(bytes32 sourceTable, bytes32[] memory keys0) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -101,7 +119,9 @@ library KeysInTable {
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)), getValueSchema());
   }
 
-  /** Set keys0 (using the specified store) */
+  /**
+   * Set keys0 (using the specified store)
+   */
   function setKeys0(IStore _store, bytes32 sourceTable, bytes32[] memory keys0) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -109,7 +129,9 @@ library KeysInTable {
     _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keys0)), getValueSchema());
   }
 
-  /** Get the length of keys0 */
+  /**
+   * Get the length of keys0
+   */
   function lengthKeys0(bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -120,7 +142,9 @@ library KeysInTable {
     }
   }
 
-  /** Get the length of keys0 (using the specified store) */
+  /**
+   * Get the length of keys0 (using the specified store)
+   */
   function lengthKeys0(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -173,7 +197,9 @@ library KeysInTable {
     }
   }
 
-  /** Push an element to keys0 */
+  /**
+   * Push an element to keys0
+   */
   function pushKeys0(bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -181,7 +207,9 @@ library KeysInTable {
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to keys0 (using the specified store) */
+  /**
+   * Push an element to keys0 (using the specified store)
+   */
   function pushKeys0(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -189,7 +217,9 @@ library KeysInTable {
     _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from keys0 */
+  /**
+   * Pop an element from keys0
+   */
   function popKeys0(bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -197,7 +227,9 @@ library KeysInTable {
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 32, getValueSchema());
   }
 
-  /** Pop an element from keys0 (using the specified store) */
+  /**
+   * Pop an element from keys0 (using the specified store)
+   */
   function popKeys0(IStore _store, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -231,7 +263,9 @@ library KeysInTable {
     }
   }
 
-  /** Get keys1 */
+  /**
+   * Get keys1
+   */
   function getKeys1(bytes32 sourceTable) internal view returns (bytes32[] memory keys1) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -240,7 +274,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keys1 (using the specified store) */
+  /**
+   * Get keys1 (using the specified store)
+   */
   function getKeys1(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys1) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -249,7 +285,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keys1 */
+  /**
+   * Set keys1
+   */
   function setKeys1(bytes32 sourceTable, bytes32[] memory keys1) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -257,7 +295,9 @@ library KeysInTable {
     StoreSwitch.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)), getValueSchema());
   }
 
-  /** Set keys1 (using the specified store) */
+  /**
+   * Set keys1 (using the specified store)
+   */
   function setKeys1(IStore _store, bytes32 sourceTable, bytes32[] memory keys1) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -265,7 +305,9 @@ library KeysInTable {
     _store.setField(_tableId, _keyTuple, 1, EncodeArray.encode((keys1)), getValueSchema());
   }
 
-  /** Get the length of keys1 */
+  /**
+   * Get the length of keys1
+   */
   function lengthKeys1(bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -276,7 +318,9 @@ library KeysInTable {
     }
   }
 
-  /** Get the length of keys1 (using the specified store) */
+  /**
+   * Get the length of keys1 (using the specified store)
+   */
   function lengthKeys1(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -329,7 +373,9 @@ library KeysInTable {
     }
   }
 
-  /** Push an element to keys1 */
+  /**
+   * Push an element to keys1
+   */
   function pushKeys1(bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -337,7 +383,9 @@ library KeysInTable {
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to keys1 (using the specified store) */
+  /**
+   * Push an element to keys1 (using the specified store)
+   */
   function pushKeys1(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -345,7 +393,9 @@ library KeysInTable {
     _store.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from keys1 */
+  /**
+   * Pop an element from keys1
+   */
   function popKeys1(bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -353,7 +403,9 @@ library KeysInTable {
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 32, getValueSchema());
   }
 
-  /** Pop an element from keys1 (using the specified store) */
+  /**
+   * Pop an element from keys1 (using the specified store)
+   */
   function popKeys1(IStore _store, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -387,7 +439,9 @@ library KeysInTable {
     }
   }
 
-  /** Get keys2 */
+  /**
+   * Get keys2
+   */
   function getKeys2(bytes32 sourceTable) internal view returns (bytes32[] memory keys2) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -396,7 +450,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keys2 (using the specified store) */
+  /**
+   * Get keys2 (using the specified store)
+   */
   function getKeys2(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys2) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -405,7 +461,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keys2 */
+  /**
+   * Set keys2
+   */
   function setKeys2(bytes32 sourceTable, bytes32[] memory keys2) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -413,7 +471,9 @@ library KeysInTable {
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)), getValueSchema());
   }
 
-  /** Set keys2 (using the specified store) */
+  /**
+   * Set keys2 (using the specified store)
+   */
   function setKeys2(IStore _store, bytes32 sourceTable, bytes32[] memory keys2) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -421,7 +481,9 @@ library KeysInTable {
     _store.setField(_tableId, _keyTuple, 2, EncodeArray.encode((keys2)), getValueSchema());
   }
 
-  /** Get the length of keys2 */
+  /**
+   * Get the length of keys2
+   */
   function lengthKeys2(bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -432,7 +494,9 @@ library KeysInTable {
     }
   }
 
-  /** Get the length of keys2 (using the specified store) */
+  /**
+   * Get the length of keys2 (using the specified store)
+   */
   function lengthKeys2(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -485,7 +549,9 @@ library KeysInTable {
     }
   }
 
-  /** Push an element to keys2 */
+  /**
+   * Push an element to keys2
+   */
   function pushKeys2(bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -493,7 +559,9 @@ library KeysInTable {
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to keys2 (using the specified store) */
+  /**
+   * Push an element to keys2 (using the specified store)
+   */
   function pushKeys2(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -501,7 +569,9 @@ library KeysInTable {
     _store.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from keys2 */
+  /**
+   * Pop an element from keys2
+   */
   function popKeys2(bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -509,7 +579,9 @@ library KeysInTable {
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 32, getValueSchema());
   }
 
-  /** Pop an element from keys2 (using the specified store) */
+  /**
+   * Pop an element from keys2 (using the specified store)
+   */
   function popKeys2(IStore _store, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -543,7 +615,9 @@ library KeysInTable {
     }
   }
 
-  /** Get keys3 */
+  /**
+   * Get keys3
+   */
   function getKeys3(bytes32 sourceTable) internal view returns (bytes32[] memory keys3) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -552,7 +626,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keys3 (using the specified store) */
+  /**
+   * Get keys3 (using the specified store)
+   */
   function getKeys3(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys3) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -561,7 +637,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keys3 */
+  /**
+   * Set keys3
+   */
   function setKeys3(bytes32 sourceTable, bytes32[] memory keys3) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -569,7 +647,9 @@ library KeysInTable {
     StoreSwitch.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)), getValueSchema());
   }
 
-  /** Set keys3 (using the specified store) */
+  /**
+   * Set keys3 (using the specified store)
+   */
   function setKeys3(IStore _store, bytes32 sourceTable, bytes32[] memory keys3) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -577,7 +657,9 @@ library KeysInTable {
     _store.setField(_tableId, _keyTuple, 3, EncodeArray.encode((keys3)), getValueSchema());
   }
 
-  /** Get the length of keys3 */
+  /**
+   * Get the length of keys3
+   */
   function lengthKeys3(bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -588,7 +670,9 @@ library KeysInTable {
     }
   }
 
-  /** Get the length of keys3 (using the specified store) */
+  /**
+   * Get the length of keys3 (using the specified store)
+   */
   function lengthKeys3(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -641,7 +725,9 @@ library KeysInTable {
     }
   }
 
-  /** Push an element to keys3 */
+  /**
+   * Push an element to keys3
+   */
   function pushKeys3(bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -649,7 +735,9 @@ library KeysInTable {
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to keys3 (using the specified store) */
+  /**
+   * Push an element to keys3 (using the specified store)
+   */
   function pushKeys3(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -657,7 +745,9 @@ library KeysInTable {
     _store.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from keys3 */
+  /**
+   * Pop an element from keys3
+   */
   function popKeys3(bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -665,7 +755,9 @@ library KeysInTable {
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 32, getValueSchema());
   }
 
-  /** Pop an element from keys3 (using the specified store) */
+  /**
+   * Pop an element from keys3 (using the specified store)
+   */
   function popKeys3(IStore _store, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -699,7 +791,9 @@ library KeysInTable {
     }
   }
 
-  /** Get keys4 */
+  /**
+   * Get keys4
+   */
   function getKeys4(bytes32 sourceTable) internal view returns (bytes32[] memory keys4) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -708,7 +802,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keys4 (using the specified store) */
+  /**
+   * Get keys4 (using the specified store)
+   */
   function getKeys4(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys4) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -717,7 +813,9 @@ library KeysInTable {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keys4 */
+  /**
+   * Set keys4
+   */
   function setKeys4(bytes32 sourceTable, bytes32[] memory keys4) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -725,7 +823,9 @@ library KeysInTable {
     StoreSwitch.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)), getValueSchema());
   }
 
-  /** Set keys4 (using the specified store) */
+  /**
+   * Set keys4 (using the specified store)
+   */
   function setKeys4(IStore _store, bytes32 sourceTable, bytes32[] memory keys4) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -733,7 +833,9 @@ library KeysInTable {
     _store.setField(_tableId, _keyTuple, 4, EncodeArray.encode((keys4)), getValueSchema());
   }
 
-  /** Get the length of keys4 */
+  /**
+   * Get the length of keys4
+   */
   function lengthKeys4(bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -744,7 +846,9 @@ library KeysInTable {
     }
   }
 
-  /** Get the length of keys4 (using the specified store) */
+  /**
+   * Get the length of keys4 (using the specified store)
+   */
   function lengthKeys4(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -797,7 +901,9 @@ library KeysInTable {
     }
   }
 
-  /** Push an element to keys4 */
+  /**
+   * Push an element to keys4
+   */
   function pushKeys4(bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -805,7 +911,9 @@ library KeysInTable {
     StoreSwitch.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to keys4 (using the specified store) */
+  /**
+   * Push an element to keys4 (using the specified store)
+   */
   function pushKeys4(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -813,7 +921,9 @@ library KeysInTable {
     _store.pushToField(_tableId, _keyTuple, 4, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from keys4 */
+  /**
+   * Pop an element from keys4
+   */
   function popKeys4(bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -821,7 +931,9 @@ library KeysInTable {
     StoreSwitch.popFromField(_tableId, _keyTuple, 4, 32, getValueSchema());
   }
 
-  /** Pop an element from keys4 (using the specified store) */
+  /**
+   * Pop an element from keys4 (using the specified store)
+   */
   function popKeys4(IStore _store, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -855,7 +967,9 @@ library KeysInTable {
     }
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(bytes32 sourceTable) internal view returns (KeysInTableData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -864,7 +978,9 @@ library KeysInTable {
     return decode(_blob);
   }
 
-  /** Get the full data (using the specified store) */
+  /**
+   * Get the full data (using the specified store)
+   */
   function get(IStore _store, bytes32 sourceTable) internal view returns (KeysInTableData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
@@ -873,7 +989,9 @@ library KeysInTable {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * Set the full data using individual values
+   */
   function set(
     bytes32 sourceTable,
     bytes32[] memory keys0,
@@ -890,7 +1008,9 @@ library KeysInTable {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
-  /** Set the full data using individual values (using the specified store) */
+  /**
+   * Set the full data using individual values (using the specified store)
+   */
   function set(
     IStore _store,
     bytes32 sourceTable,
@@ -908,12 +1028,16 @@ library KeysInTable {
     _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * Set the full data using the data struct
+   */
   function set(bytes32 sourceTable, KeysInTableData memory _table) internal {
     set(sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
   }
 
-  /** Set the full data using the data struct (using the specified store) */
+  /**
+   * Set the full data using the data struct (using the specified store)
+   */
   function set(IStore _store, bytes32 sourceTable, KeysInTableData memory _table) internal {
     set(_store, sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
   }
@@ -962,7 +1086,9 @@ library KeysInTable {
     }
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(
     bytes32[] memory keys0,
     bytes32[] memory keys1,
@@ -993,7 +1119,9 @@ library KeysInTable {
       );
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes32 sourceTable) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;

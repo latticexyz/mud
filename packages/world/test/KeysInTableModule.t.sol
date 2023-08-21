@@ -20,6 +20,7 @@ import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
+
   IBaseWorld world;
   KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
 

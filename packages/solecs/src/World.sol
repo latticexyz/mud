@@ -141,17 +141,23 @@ contract World is IWorld {
     emit ComponentValueRemoved(getIdByAddress(_components, msg.sender), msg.sender, entity);
   }
 
-  /** Deprecated, but left here for backward compatibility. TODO: refactor all consumers. */
+  /**
+   * Deprecated, but left here for backward compatibility. TODO: refactor all consumers.
+   */
   function getComponent(uint256 id) external view returns (address) {
     return getAddressById(_components, id);
   }
 
-  /** Deprecated, but left here for backward compatibility. TODO: refactor all consumers. */
+  /**
+   * Deprecated, but left here for backward compatibility. TODO: refactor all consumers.
+   */
   function getComponentIdFromAddress(address componentAddr) external view returns (uint256) {
     return getIdByAddress(_components, componentAddr);
   }
 
-  /** Deprecated, but left here for backward compatibility. TODO: refactor all consumers. */
+  /**
+   * Deprecated, but left here for backward compatibility. TODO: refactor all consumers.
+   */
   function getSystemAddress(uint256 systemId) external view returns (address) {
     return getAddressById(_systems, systemId);
   }

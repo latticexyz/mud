@@ -3,7 +3,9 @@ pragma solidity >=0.8.0;
 
 library OwnableWritableStorage {
   struct Layout {
-    /** Addresses with write access */
+    /**
+     * Addresses with write access
+     */
     mapping(address => bool) writeAccess;
   }
 

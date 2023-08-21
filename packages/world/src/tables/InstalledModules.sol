@@ -25,7 +25,9 @@ struct InstalledModulesData {
 }
 
 library InstalledModules {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.BYTES16;
@@ -34,7 +36,9 @@ library InstalledModules {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.ADDRESS;
@@ -42,30 +46,40 @@ library InstalledModules {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](2);
     keyNames[0] = "moduleName";
     keyNames[1] = "argumentsHash";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "moduleAddress";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get moduleAddress */
+  /**
+   * Get moduleAddress
+   */
   function getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -75,7 +89,9 @@ library InstalledModules {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Get moduleAddress (using the specified store) */
+  /**
+   * Get moduleAddress (using the specified store)
+   */
   function getModuleAddress(
     IStore _store,
     bytes16 moduleName,
@@ -89,7 +105,9 @@ library InstalledModules {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Set moduleAddress */
+  /**
+   * Set moduleAddress
+   */
   function setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -98,7 +116,9 @@ library InstalledModules {
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getValueSchema());
   }
 
-  /** Set moduleAddress (using the specified store) */
+  /**
+   * Set moduleAddress (using the specified store)
+   */
   function setModuleAddress(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -107,7 +127,9 @@ library InstalledModules {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getValueSchema());
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (InstalledModulesData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
@@ -117,7 +139,9 @@ library InstalledModules {
     return decode(_blob);
   }
 
-  /** Get the full data (using the specified store) */
+  /**
+   * Get the full data (using the specified store)
+   */
   function get(
     IStore _store,
     bytes16 moduleName,
@@ -131,7 +155,9 @@ library InstalledModules {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * Set the full data using individual values
+   */
   function set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes memory _data = encode(moduleAddress);
 
@@ -142,7 +168,9 @@ library InstalledModules {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
-  /** Set the full data using individual values (using the specified store) */
+  /**
+   * Set the full data using individual values (using the specified store)
+   */
   function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes memory _data = encode(moduleAddress);
 
@@ -153,27 +181,37 @@ library InstalledModules {
     _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * Set the full data using the data struct
+   */
   function set(bytes16 moduleName, bytes32 argumentsHash, InstalledModulesData memory _table) internal {
     set(moduleName, argumentsHash, _table.moduleAddress);
   }
 
-  /** Set the full data using the data struct (using the specified store) */
+  /**
+   * Set the full data using the data struct (using the specified store)
+   */
   function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, InstalledModulesData memory _table) internal {
     set(_store, moduleName, argumentsHash, _table.moduleAddress);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema
+   */
   function decode(bytes memory _blob) internal pure returns (InstalledModulesData memory _table) {
     _table.moduleAddress = (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(address moduleAddress) internal pure returns (bytes memory) {
     return abi.encodePacked(moduleAddress);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes16 moduleName, bytes32 argumentsHash) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);

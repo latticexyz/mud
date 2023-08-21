@@ -165,21 +165,24 @@ library Perlin {
 
   /**
    * Computes t * t * t * (t * (t * 6 - 15) + 10)
-   **/
+   *
+   */
   function fade(int128 t) internal pure returns (int128) {
     return Math.mul(t, Math.mul(t, Math.mul(t, (Math.add(Math.mul(t, (Math.sub(Math.mul(t, _6), _15))), _10)))));
   }
 
   /**
    * Computes a + t * (b - a)
-   **/
+   *
+   */
   function lerp(int128 t, int128 a, int128 b) internal pure returns (int128) {
     return Math.add(a, Math.mul(t, (Math.sub(b, a))));
   }
 
   /**
    * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
-   **/
+   *
+   */
   function grad(int16 _hash, int128 x, int128 y, int128 z) internal pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
     int16 h = _hash & 0xF;
@@ -225,7 +228,8 @@ library Perlin {
 
   /**
    * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
-   **/
+   *
+   */
   function grad2d(int16 _hash, int128 x, int128 y) internal pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
     int16 h = _hash & 0xF;

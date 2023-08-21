@@ -13,13 +13,17 @@ import { getSystemAddressById, getAddressById } from "./utils.sol";
  * The intialization is done automatically for any contract inheriting System or MudTest.
  */
 library SystemStorage {
-  /** Data that the system stores */
+  /**
+   * Data that the system stores
+   */
   struct Layout {
     IUint256Component components;
     IWorld world;
   }
 
-  /** Location in memory where the Layout struct will be stored */
+  /**
+   * Location in memory where the Layout struct will be stored
+   */
   bytes32 internal constant STORAGE_SLOT = keccak256("solecs.contracts.storage.System");
 
   /**

@@ -21,7 +21,9 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Names
 bytes32 constant NamespaceOwnerTableId = _tableId;
 
 library NamespaceOwner {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES16;
@@ -29,7 +31,9 @@ library NamespaceOwner {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.ADDRESS;
@@ -37,29 +41,39 @@ library NamespaceOwner {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "namespace";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "owner";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get owner */
+  /**
+   * Get owner
+   */
   function get(bytes16 namespace) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
@@ -68,7 +82,9 @@ library NamespaceOwner {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Get owner (using the specified store) */
+  /**
+   * Get owner (using the specified store)
+   */
   function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
@@ -77,7 +93,9 @@ library NamespaceOwner {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Set owner */
+  /**
+   * Set owner
+   */
   function set(bytes16 namespace, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
@@ -85,7 +103,9 @@ library NamespaceOwner {
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), getValueSchema());
   }
 
-  /** Set owner (using the specified store) */
+  /**
+   * Set owner (using the specified store)
+   */
   function set(IStore _store, bytes16 namespace, address owner) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
@@ -93,12 +113,16 @@ library NamespaceOwner {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), getValueSchema());
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(address owner) internal pure returns (bytes memory) {
     return abi.encodePacked(owner);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);

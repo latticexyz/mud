@@ -44,6 +44,7 @@ struct WorldTestSystemReturn {
 
 contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
+
   event WorldTestSystemLog(string log);
 
   function getStoreAddress() public view returns (address) {

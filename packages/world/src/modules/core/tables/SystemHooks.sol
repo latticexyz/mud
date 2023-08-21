@@ -21,7 +21,9 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Syste
 bytes32 constant SystemHooksTableId = _tableId;
 
 library SystemHooks {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32;
@@ -29,7 +31,9 @@ library SystemHooks {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.ADDRESS_ARRAY;
@@ -37,29 +41,39 @@ library SystemHooks {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "resourceSelector";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "value";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get value */
+  /**
+   * Get value
+   */
   function get(bytes32 resourceSelector) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -68,7 +82,9 @@ library SystemHooks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /** Get value (using the specified store) */
+  /**
+   * Get value (using the specified store)
+   */
   function get(IStore _store, bytes32 resourceSelector) internal view returns (address[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -77,7 +93,9 @@ library SystemHooks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /** Set value */
+  /**
+   * Set value
+   */
   function set(bytes32 resourceSelector, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -85,7 +103,9 @@ library SystemHooks {
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getValueSchema());
   }
 
-  /** Set value (using the specified store) */
+  /**
+   * Set value (using the specified store)
+   */
   function set(IStore _store, bytes32 resourceSelector, address[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -93,7 +113,9 @@ library SystemHooks {
     _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getValueSchema());
   }
 
-  /** Get the length of value */
+  /**
+   * Get the length of value
+   */
   function length(bytes32 resourceSelector) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -104,7 +126,9 @@ library SystemHooks {
     }
   }
 
-  /** Get the length of value (using the specified store) */
+  /**
+   * Get the length of value (using the specified store)
+   */
   function length(IStore _store, bytes32 resourceSelector) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -157,7 +181,9 @@ library SystemHooks {
     }
   }
 
-  /** Push an element to value */
+  /**
+   * Push an element to value
+   */
   function push(bytes32 resourceSelector, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -165,7 +191,9 @@ library SystemHooks {
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to value (using the specified store) */
+  /**
+   * Push an element to value (using the specified store)
+   */
   function push(IStore _store, bytes32 resourceSelector, address _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -173,7 +201,9 @@ library SystemHooks {
     _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from value */
+  /**
+   * Pop an element from value
+   */
   function pop(bytes32 resourceSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -181,7 +211,9 @@ library SystemHooks {
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 20, getValueSchema());
   }
 
-  /** Pop an element from value (using the specified store) */
+  /**
+   * Pop an element from value (using the specified store)
+   */
   function pop(IStore _store, bytes32 resourceSelector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -215,7 +247,9 @@ library SystemHooks {
     }
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(address[] memory value) internal pure returns (bytes memory) {
     PackedCounter _encodedLengths;
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
@@ -226,7 +260,9 @@ library SystemHooks {
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;

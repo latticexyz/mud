@@ -59,11 +59,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     InstalledModules.set(module.getName(), keccak256(args), address(module));
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    WORLD STORE METHODS
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Write a record in the table at the given tableId.
@@ -162,11 +164,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     StoreCore.deleteRecord(tableId, key, valueSchema);
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    SYSTEM CALLS
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Call the system at the given resourceSelector.
@@ -222,11 +226,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    DYNAMIC FUNCTION SELECTORS
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Allow the World to receive ETH

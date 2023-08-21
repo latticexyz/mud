@@ -12,12 +12,16 @@ import { OwnableWritableStorage } from "./OwnableWritableStorage.sol";
 abstract contract OwnableWritable is IOwnableWritable, Ownable {
   error OwnableWritable__NotWriter();
 
-  /** Whether given operator has write access */
+  /**
+   * Whether given operator has write access
+   */
   function writeAccess(address operator) public view virtual returns (bool) {
     return OwnableWritableStorage.layout().writeAccess[operator] || operator == owner();
   }
 
-  /** Revert if caller does not have write access to this component */
+  /**
+   * Revert if caller does not have write access to this component
+   */
   modifier onlyWriter() {
     if (!writeAccess(msg.sender)) {
       revert OwnableWritable__NotWriter();
