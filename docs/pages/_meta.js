@@ -9,6 +9,7 @@ export default {
   world: "World",
   "client-side": "MUD client",
   indexer: "Indexer",
+  "other-env": "Tooling for other environments",
   cli: "CLI",
   ecs: "ECS and MUD",
   plugins: "Plugins",
