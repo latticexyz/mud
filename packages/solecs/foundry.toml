@@ -12,3 +12,4 @@ out = "out"
 [fmt]
 tab_width = 2
 bracket_spacing = true
+ignore = ['**/codegen/**/*.sol']
