@@ -1,3 +1,150 @@
+# Version 2.0.0-next.3
+
+## Major changes
+
+**[feat(world, store): stop loading schema from storage, require schema as an argument (#1174)](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world, create-mud)
+
+All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
+This decreases gas cost and removes circular dependencies of the Schema table (where it was not possible to write to the Schema table before the Schema table was registered).
+
+```diff
+  function setRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata data,
++   Schema valueSchema
+  ) external;
+```
+
+The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
+
+This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
+so downstream projects only need to regenerate their table libraries after updating MUD.
+
+**[refactor(world): combine name and namespace to resource selector in World methods (#1208)](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c)** (@latticexyz/cli, @latticexyz/world)
+
+- All `World` function selectors that previously had `bytes16 namespace, bytes16 name` arguments now use `bytes32 resourceSelector` instead.
+  This includes `setRecord`, `setField`, `pushToField`, `popFromField`, `updateInField`, `deleteRecord`, `call`, `grantAccess`, `revokeAccess`, `registerTable`,
+  `registerStoreHook`, `registerSystemHook`, `registerFunctionSelector`, `registerSystem` and `registerRootFunctionSelector`.
+  This change aligns the `World` function selectors with the `Store` function selectors, reduces clutter, reduces gas cost and reduces the `World`'s contract size.
+
+- The `World`'s `registerHook` function is removed. Use `registerStoreHook` or `registerSystemHook` instead.
+
+- The `deploy` script is updated to integrate the World interface changes
+
+**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/world)
+
+The `SnapSyncModule` is removed. The recommended way of loading the initial state of a MUD app is via the new [`store-indexer`](https://mud.dev/indexer). Loading state via contract getter functions is not recommended, as it's computationally heavy on the RPC, can't be cached, and is an easy way to shoot yourself in the foot with exploding RPC costs.
+
+The `@latticexyz/network` package was deprecated and is now removed. All consumers should upgrade to the new sync stack from `@latticexyz/store-sync`.
+
+**[refactor(store): optimize PackedCounter (#1231)](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db)** (@latticexyz/cli, @latticexyz/protocol-parser, @latticexyz/services, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world)
+
+Reverse PackedCounter encoding, to optimize gas for bitshifts.
+Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+- Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+- New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+**[feat(store,world): combine schema and metadata registration, rename getSchema to getValueSchema, change Schema table id (#1182)](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world, @latticexyz/store-sync, create-mud)
+
+- `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+- `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+  ```diff
+  -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+  -
+  -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+  +  function registerTable(
+  +    bytes32 table,
+  +    Schema keySchema,
+  +    Schema valueSchema,
+  +    string[] calldata keyNames,
+  +    string[] calldata fieldNames
+  +  ) external;
+  ```
+
+- `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+- The `getSchema` method is renamed to `getValueSchema` on all interfaces
+  ```diff
+  - function getSchema(bytes32 table) external view returns (Schema schema);
+  + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+  ```
+- The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/services, create-mud)
+
+Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.
+
+```diff
+- import { createFaucetService } from "@latticexyz/network";
++ import { createFaucetService } from "@latticexyz/services/faucet";
+```
+
+**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/std-client, @latticexyz/common, create-mud)
+
+Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
+
+- `getBurnerWallet` is replaced by `getBurnerPrivateKey` from `@latticexyz/common`. It now returns a `Hex` string instead of an `rxjs` `BehaviorSubject`.
+
+  ```
+  - import { getBurnerWallet } from "@latticexyz/std-client";
+  + import { getBurnerPrivateKey } from "@latticexyz/common";
+
+  - const privateKey = getBurnerWallet().value;
+  - const privateKey = getBurnerPrivateKey();
+  ```
+
+- All functions from `std-client` that depended on v1 network code are removed (most notably `setupMUDNetwork` and `setupMUDV2Network`). Consumers should upgrade to v2 networking code from `@latticexyz/store-sync`.
+
+- The following functions are removed from `std-client` because they are very use-case specific and depend on deprecated code: `getCurrentTurn`, `getTurnAtTime`, `getGameConfig`, `isUntraversable`, `getPlayerEntity`, `resolveRelationshipChain`, `findEntityWithComponentInRelationshipChain`, `findInRelationshipChain`. Consumers should vendor these functions if they are still needed.
+
+- Remaining exports from `std-client` are moved to `/deprecated`. The package will be removed in a future release (once there are replacements for the deprecated exports).
+
+  ```diff
+  - import { ... } from "@latticexyz/std-client";
+  + import { ... } from "@latticexyz/std-client/deprecated";
+  ```
+
+## Patch changes
+
+**[feat(common,store-sync): improve initial sync to not block returned promise (#1315)](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e)** (@latticexyz/common, @latticexyz/store-sync)
+
+Initial sync from indexer no longer blocks the promise returning from `createStoreSync`, `syncToRecs`, and `syncToSqlite`. This should help with rendering loading screens using the `SyncProgress` RECS component and avoid the long flashes of no content in templates.
+
+By default, `syncToRecs` and `syncToSqlite` will start syncing (via observable subscription) immediately after called.
+
+If your app needs to control when syncing starts, you can use the `startSync: false` option and then `blockStoreOperations$.subscribe()` to start the sync yourself. Just be sure to unsubscribe to avoid memory leaks.
+
+```ts
+const { blockStorageOperations$ } = syncToRecs({
+  ...
+  startSync: false,
+});
+
+// start sync manually by subscribing to `blockStorageOperation$`
+const subcription = blockStorageOperation$.subscribe();
+
+// clean up subscription
+subscription.unsubscribe();
+```
+
+**[refactor(store): optimize table libraries (#1303)](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd)** (@latticexyz/store)
+
+Optimize autogenerated table libraries
+
+**[feat(store-sync): add more logging to waitForTransaction (#1317)](https://github.com/latticexyz/mud/commit/3e024fcf395a1c1b38d12362fc98472290eb7cf1)** (@latticexyz/store-sync)
+
+add retry attempts and more logging to `waitForTransaction`
+
+**[refactor(store): optimize Schema (#1252)](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61)** (@latticexyz/store, @latticexyz/world)
+
+Optimize Schema methods.
+Return `uint256` instead of `uint8` in SchemaInstance numFields methods
+
+---
+
 # Version 2.0.0-next.2
 
 ## Major changes
