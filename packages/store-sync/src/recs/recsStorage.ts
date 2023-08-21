@@ -3,7 +3,6 @@ import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import {
   ComponentValue,
-  Entity,
   Component as RecsComponent,
   Schema as RecsSchema,
   getComponentValue,
@@ -14,7 +13,7 @@ import {
 import { isDefined } from "@latticexyz/common/utils";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { defineInternalComponents } from "./defineInternalComponents";
-import { getTableKey } from "./getTableKey";
+import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { tableIdToHex } from "@latticexyz/common";
 import { encodeEntity } from "./encodeEntity";
@@ -36,24 +35,24 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     async registerTables({ tables }) {
       for (const table of tables) {
         // TODO: check if table exists already and skip/warn?
-        setComponent(components.RegisteredTables, getTableKey(table) as Entity, { table });
+        setComponent(components.RegisteredTables, getTableEntity(table), { table });
       }
     },
     async getTables({ tables }) {
       // TODO: fetch schema from RPC if table not found?
       return tables
-        .map((table) => getComponentValue(components.RegisteredTables, getTableKey(table) as Entity)?.table)
+        .map((table) => getComponentValue(components.RegisteredTables, getTableEntity(table))?.table)
         .filter(isDefined);
     },
     async storeOperations({ operations }) {
       for (const operation of operations) {
         const table = getComponentValue(
           components.RegisteredTables,
-          getTableKey({
+          getTableEntity({
             address: operation.address,
             namespace: operation.namespace,
             name: operation.name,
-          }) as Entity
+          })
         )?.table;
         if (!table) {
           debug(`skipping update for unknown table: ${operation.namespace}:${operation.name} at ${operation.address}`);

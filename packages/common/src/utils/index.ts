@@ -7,3 +7,4 @@ export * from "./curry";
 export * from "./isDefined";
 export * from "./isNotNull";
 export * from "./wait";
+export * from "./waitForIdle";

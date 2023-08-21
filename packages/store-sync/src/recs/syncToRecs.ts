@@ -1,5 +1,5 @@
 import { StoreConfig } from "@latticexyz/store";
-import { World as RecsWorld, setComponent } from "@latticexyz/recs";
+import { World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { recsStorage } from "./recsStorage";
 import { defineInternalComponents } from "./defineInternalComponents";
@@ -9,19 +9,20 @@ import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
-import { syncStepToMessage } from "./syncStepToMessage";
+import { SyncStep } from "../SyncStep";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
   config: TConfig;
+  startSync?: boolean;
 };
 
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
-  // TODO: return publicClient?
   components: ConfigToRecsComponents<TConfig> &
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
     ReturnType<typeof defineInternalComponents>;
+  stopSync: () => void;
 };
 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
@@ -33,6 +34,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   maxBlockRange,
   initialState,
   indexerUrl,
+  startSync = true,
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
   const components = {
     ...configToRecsComponents(world, config),
@@ -52,24 +54,29 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     maxBlockRange,
     indexerUrl,
     initialState,
-    onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed }) => {
-      console.log("got progress", step, percentage);
-      // TODO: stop updating once live?
-      setComponent(components.SyncProgress, singletonEntity, {
-        step,
-        percentage,
-        latestBlockNumber,
-        lastBlockNumberProcessed,
-        message: syncStepToMessage(step),
-      });
+    onProgress: ({ step, percentage, latestBlockNumber, lastBlockNumberProcessed, message }) => {
+      if (getComponentValue(components.SyncProgress, singletonEntity)?.step !== SyncStep.LIVE) {
+        setComponent(components.SyncProgress, singletonEntity, {
+          step,
+          percentage,
+          latestBlockNumber,
+          lastBlockNumberProcessed,
+          message,
+        });
+      }
     },
   });
 
-  const sub = storeSync.blockStorageOperations$.subscribe();
-  world.registerDisposer(() => sub.unsubscribe());
+  const sub = startSync ? storeSync.blockStorageOperations$.subscribe() : null;
+  const stopSync = (): void => {
+    sub?.unsubscribe();
+  };
+
+  world.registerDisposer(stopSync);
 
   return {
     ...storeSync,
     components,
+    stopSync,
   };
 }
