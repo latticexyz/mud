@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
@@ -59,7 +60,9 @@ library ResourceSelector {
    */
   function toTrimmedString(bytes16 selector) internal pure returns (string memory) {
     uint256 length;
-    for (; length < 16; length++) if (Bytes.slice1(selector, length) == 0) break;
+    for (; length < 16; length++) {
+      if (Bytes.slice1(selector, length) == 0) break;
+    }
     bytes memory packedSelector = abi.encodePacked(selector);
     return string(Bytes.setLength(packedSelector, length));
   }

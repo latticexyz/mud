@@ -21,7 +21,9 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("UsedK
 bytes32 constant UsedKeysIndexTableId = _tableId;
 
 library UsedKeysIndex {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.BYTES32;
@@ -30,7 +32,9 @@ library UsedKeysIndex {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.BOOL;
@@ -39,31 +43,41 @@ library UsedKeysIndex {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](2);
     keyNames[0] = "sourceTable";
     keyNames[1] = "keysHash";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](2);
     fieldNames[0] = "has";
     fieldNames[1] = "index";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get has */
+  /**
+   * Get has
+   */
   function getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -73,7 +87,9 @@ library UsedKeysIndex {
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
-  /** Get has (using the specified store) */
+  /**
+   * Get has (using the specified store)
+   */
   function getHas(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -83,7 +99,9 @@ library UsedKeysIndex {
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
-  /** Set has */
+  /**
+   * Set has
+   */
   function setHas(bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -92,7 +110,9 @@ library UsedKeysIndex {
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getValueSchema());
   }
 
-  /** Set has (using the specified store) */
+  /**
+   * Set has (using the specified store)
+   */
   function setHas(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -101,7 +121,9 @@ library UsedKeysIndex {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getValueSchema());
   }
 
-  /** Get index */
+  /**
+   * Get index
+   */
   function getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -111,7 +133,9 @@ library UsedKeysIndex {
     return (uint40(Bytes.slice5(_blob, 0)));
   }
 
-  /** Get index (using the specified store) */
+  /**
+   * Get index (using the specified store)
+   */
   function getIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -121,7 +145,9 @@ library UsedKeysIndex {
     return (uint40(Bytes.slice5(_blob, 0)));
   }
 
-  /** Set index */
+  /**
+   * Set index
+   */
   function setIndex(bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -130,7 +156,9 @@ library UsedKeysIndex {
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getValueSchema());
   }
 
-  /** Set index (using the specified store) */
+  /**
+   * Set index (using the specified store)
+   */
   function setIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -139,7 +167,9 @@ library UsedKeysIndex {
     _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getValueSchema());
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -149,7 +179,9 @@ library UsedKeysIndex {
     return decode(_blob);
   }
 
-  /** Get the full data (using the specified store) */
+  /**
+   * Get the full data (using the specified store)
+   */
   function get(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
@@ -159,7 +191,9 @@ library UsedKeysIndex {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * Set the full data using individual values
+   */
   function set(bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _data = encode(has, index);
 
@@ -170,7 +204,9 @@ library UsedKeysIndex {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
-  /** Set the full data using individual values (using the specified store) */
+  /**
+   * Set the full data using individual values (using the specified store)
+   */
   function set(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _data = encode(has, index);
 
@@ -181,19 +217,25 @@ library UsedKeysIndex {
     _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema
+   */
   function decode(bytes memory _blob) internal pure returns (bool has, uint40 index) {
     has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
 
     index = (uint40(Bytes.slice5(_blob, 1)));
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(bool has, uint40 index) internal pure returns (bytes memory) {
     return abi.encodePacked(has, index);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes32 sourceTable, bytes32 keysHash) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;

@@ -18,7 +18,9 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 library KeysWithValue {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32;
@@ -26,7 +28,9 @@ library KeysWithValue {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32_ARRAY;
@@ -34,29 +38,39 @@ library KeysWithValue {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "valueHash";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "keysWithValue";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register(bytes32 _tableId) internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get keysWithValue */
+  /**
+   * Get keysWithValue
+   */
   function get(bytes32 _tableId, bytes32 valueHash) internal view returns (bytes32[] memory keysWithValue) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -65,7 +79,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Get keysWithValue (using the specified store) */
+  /**
+   * Get keysWithValue (using the specified store)
+   */
   function get(
     IStore _store,
     bytes32 _tableId,
@@ -78,7 +94,9 @@ library KeysWithValue {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
-  /** Set keysWithValue */
+  /**
+   * Set keysWithValue
+   */
   function set(bytes32 _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -86,7 +104,9 @@ library KeysWithValue {
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)), getValueSchema());
   }
 
-  /** Set keysWithValue (using the specified store) */
+  /**
+   * Set keysWithValue (using the specified store)
+   */
   function set(IStore _store, bytes32 _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -94,7 +114,9 @@ library KeysWithValue {
     _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)), getValueSchema());
   }
 
-  /** Get the length of keysWithValue */
+  /**
+   * Get the length of keysWithValue
+   */
   function length(bytes32 _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -105,7 +127,9 @@ library KeysWithValue {
     }
   }
 
-  /** Get the length of keysWithValue (using the specified store) */
+  /**
+   * Get the length of keysWithValue (using the specified store)
+   */
   function length(IStore _store, bytes32 _tableId, bytes32 valueHash) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -158,7 +182,9 @@ library KeysWithValue {
     }
   }
 
-  /** Push an element to keysWithValue */
+  /**
+   * Push an element to keysWithValue
+   */
   function push(bytes32 _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -166,7 +192,9 @@ library KeysWithValue {
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Push an element to keysWithValue (using the specified store) */
+  /**
+   * Push an element to keysWithValue (using the specified store)
+   */
   function push(IStore _store, bytes32 _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -174,7 +202,9 @@ library KeysWithValue {
     _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueSchema());
   }
 
-  /** Pop an element from keysWithValue */
+  /**
+   * Pop an element from keysWithValue
+   */
   function pop(bytes32 _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -182,7 +212,9 @@ library KeysWithValue {
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 32, getValueSchema());
   }
 
-  /** Pop an element from keysWithValue (using the specified store) */
+  /**
+   * Pop an element from keysWithValue (using the specified store)
+   */
   function pop(IStore _store, bytes32 _tableId, bytes32 valueHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;
@@ -216,7 +248,9 @@ library KeysWithValue {
     }
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
     PackedCounter _encodedLengths;
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
@@ -227,7 +261,9 @@ library KeysWithValue {
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes32 valueHash) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = valueHash;

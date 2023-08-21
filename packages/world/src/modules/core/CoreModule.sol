@@ -33,7 +33,7 @@ import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.s
 
 /**
  * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
-
+ *
  * Note:
  * This module is required to be delegatecalled (via `World.registerRootSystem`),
  * because it needs to install root tables, systems and function selectors.

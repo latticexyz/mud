@@ -22,6 +22,7 @@ import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelec
 
 contract KeysWithValueModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
+
   IBaseWorld world;
   KeysWithValueModule keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
 

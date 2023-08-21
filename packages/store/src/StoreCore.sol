@@ -37,11 +37,13 @@ library StoreCore {
     Hooks.register();
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    SCHEMA
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Get the schema for the given tableId
@@ -110,11 +112,13 @@ library StoreCore {
     );
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    REGISTER HOOKS
    *
-   ************************************************************************/
+   *
+   */
 
   /*
    * Register hooks to be called when a record or field is set or deleted
@@ -123,11 +127,13 @@ library StoreCore {
     Hooks.push(tableId, address(hook));
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    SET DATA
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Set full data record for the given tableId and key tuple and schema
@@ -375,11 +381,13 @@ library StoreCore {
     }
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    EPHEMERAL SET DATA
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
@@ -399,11 +407,13 @@ library StoreCore {
     }
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    GET DATA
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value schema
@@ -520,11 +530,13 @@ library StoreCore {
 library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
 
-  /************************************************************************
+  /**
+   *
    *
    *    SET DATA
    *
-   ************************************************************************/
+   *
+   */
 
   function _setStaticField(
     bytes32 tableId,
@@ -624,11 +636,13 @@ library StoreCoreInternal {
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startByteIndex, dataToSet);
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    GET DATA
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Get full static data for the given tableId and key tuple, with the given static length
@@ -678,11 +692,13 @@ library StoreCoreInternal {
     return Storage.load({ storagePointer: location, length: dataLength, offset: 0 });
   }
 
-  /************************************************************************
+  /**
+   *
    *
    *    HELPER FUNCTIONS
    *
-   ************************************************************************/
+   *
+   */
 
   /**
    * Verify static data length + dynamic data length matches the given data

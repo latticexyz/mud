@@ -20,13 +20,19 @@ import { OwnableWritable } from "./OwnableWritable.sol";
 abstract contract BareComponent is IComponent, OwnableWritable {
   error BareComponent__NotImplemented();
 
-  /** Reference to the World contract this component is registered in */
+  /**
+   * Reference to the World contract this component is registered in
+   */
   address public world;
 
-  /** Mapping from entity id to value in this component */
+  /**
+   * Mapping from entity id to value in this component
+   */
   mapping(uint256 => bytes) internal entityToValue;
 
-  /** Public identifier of this component */
+  /**
+   * Public identifier of this component
+   */
   uint256 public id;
 
   constructor(address _world, uint256 _id) {
@@ -81,17 +87,23 @@ abstract contract BareComponent is IComponent, OwnableWritable {
     return entityToValue[entity];
   }
 
-  /** Not implemented in BareComponent */
+  /**
+   * Not implemented in BareComponent
+   */
   function getEntities() public view virtual override returns (uint256[] memory) {
     revert BareComponent__NotImplemented();
   }
 
-  /** Not implemented in BareComponent */
+  /**
+   * Not implemented in BareComponent
+   */
   function getEntitiesWithValue(bytes memory) public view virtual override returns (uint256[] memory) {
     revert BareComponent__NotImplemented();
   }
 
-  /** Not implemented in BareComponent */
+  /**
+   * Not implemented in BareComponent
+   */
   function registerIndexer(address) external virtual override {
     revert BareComponent__NotImplemented();
   }

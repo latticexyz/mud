@@ -20,6 +20,7 @@ import { query, QueryFragment, QueryType } from "../src/modules/keysintable/quer
 
 contract QueryTest is Test, GasReporter {
   using ResourceSelector for bytes32;
+
   IBaseWorld world;
   KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
   KeysWithValueModule keysWithValueModule = new KeysWithValueModule();

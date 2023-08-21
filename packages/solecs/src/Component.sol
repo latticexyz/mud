@@ -17,13 +17,19 @@ import { LibTypes } from "./LibTypes.sol";
  * Everyone has read access.
  */
 abstract contract Component is BareComponent {
-  /** Set of entities with values in this component */
+  /**
+   * Set of entities with values in this component
+   */
   Set internal entities;
 
-  /** Reverse mapping from value to set of entities */
+  /**
+   * Reverse mapping from value to set of entities
+   */
   MapSet internal valueToEntities;
 
-  /** List of indexers to be updated when a component value changes */
+  /**
+   * List of indexers to be updated when a component value changes
+   */
   IEntityIndexer[] internal indexers;
 
   constructor(address _world, uint256 _id) BareComponent(_world, _id) {

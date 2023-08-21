@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
 import { BareComponent } from "solecs/BareComponent.sol";
 import { LibTypes } from "solecs/LibTypes.sol";
 

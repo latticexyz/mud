@@ -5,7 +5,9 @@ import { IOwnableWritable } from "./IOwnableWritable.sol";
 import { LibTypes } from "../LibTypes.sol";
 
 interface IComponent is IOwnableWritable {
-  /** Return the keys and value types of the schema of this component. */
+  /**
+   * Return the keys and value types of the schema of this component.
+   */
   function getSchema() external pure returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
   function set(uint256 entity, bytes memory value) external;

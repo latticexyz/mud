@@ -24,7 +24,9 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Resou
 bytes32 constant ResourceTypeTableId = _tableId;
 
 library ResourceType {
-  /** Get the table's key schema */
+  /**
+   * Get the table's key schema
+   */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32;
@@ -32,7 +34,9 @@ library ResourceType {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's value schema */
+  /**
+   * Get the table's value schema
+   */
   function getValueSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.UINT8;
@@ -40,29 +44,39 @@ library ResourceType {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's key names */
+  /**
+   * Get the table's key names
+   */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
     keyNames[0] = "resourceSelector";
   }
 
-  /** Get the table's field names */
+  /**
+   * Get the table's field names
+   */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
     fieldNames[0] = "resourceType";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /**
+   * Register the table's key schema, value schema, key names and value names
+   */
   function register() internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /**
+   * Register the table's key schema, value schema, key names and value names (using the specified store)
+   */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get resourceType */
+  /**
+   * Get resourceType
+   */
   function get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -71,7 +85,9 @@ library ResourceType {
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Get resourceType (using the specified store) */
+  /**
+   * Get resourceType (using the specified store)
+   */
   function get(IStore _store, bytes32 resourceSelector) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -80,7 +96,9 @@ library ResourceType {
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Set resourceType */
+  /**
+   * Set resourceType
+   */
   function set(bytes32 resourceSelector, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -88,7 +106,9 @@ library ResourceType {
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), getValueSchema());
   }
 
-  /** Set resourceType (using the specified store) */
+  /**
+   * Set resourceType (using the specified store)
+   */
   function set(IStore _store, bytes32 resourceSelector, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -96,12 +116,16 @@ library ResourceType {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), getValueSchema());
   }
 
-  /** Tightly pack full data using this table's schema */
+  /**
+   * Tightly pack full data using this table's schema
+   */
   function encode(Resource resourceType) internal pure returns (bytes memory) {
     return abi.encodePacked(resourceType);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /**
+   * Encode keys as a bytes32 array using this table's schema
+   */
   function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
