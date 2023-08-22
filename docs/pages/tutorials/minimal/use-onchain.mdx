@@ -1,0 +1,49 @@
+# Add a system
+
+In this tutorial you learn how to use a `World` and the systems in it from code that runs on the blockchain.
+You can use this knowledge to add sub-systems to a `World` or to use MUD as part of a bigger dapp.
+
+## Setup
+
+[Create a minimal application](../minimal) and run it.
+
+## Use the `World` from Foundry
+
+As a first step, we can access the `World` from Foundry.
+This is the easiest method to experiment.
+
+1. Set some variables.
+   This is assuming you are running the minimal application locally through `pnpm dev` and have not modified any contracts.
+   If that is not correct in your case modify as needed.
+
+   ```sh copy
+   export ETH_RPC_URL=http://localhost:8545
+   WORLD_ADDR=0x5FbDB2315678afecb367f032d93F642f64180aa3
+   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+   COUNTER_TABLE=0x00000000000000000000000000000000436f756e746572000000000000000000
+   ```
+
+   The convention (which is not enforced by onchain code) for identifying tables is to have two ASCII strings, one starting in byte 0 (namespace) and one starting in byte 16 (table name).
+   The values are then padded with zeros to make them into 16 bytes.
+
+   If the case of `Counter`, the namespace is empty (it is in the root namespace) and the name of the table is `Counter`.
+   [You can see the code that calculates that `tableId` in the template](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/src/codegen/tables/Counter.sol#L20-L21).
+   You can also use [this calculator](https://www.duplichecker.com/text-to-hex.php) to translate text into ASCII hexadecimal.
+
+1. Get the value schema for `Counter`.
+
+   ```sh copy
+   COUNTER_VAL_SCHEMA=`cast call $WORLD_ADDR "getValueSchema(bytes32)" $COUNTER_TABLE`
+   ``
+
+   Values
+
+   ```
+
+1. Read the counter value.
+
+   ```sh
+   cast call $WORLD_ADDR 'getRecord(bytes32,bytes32[] calldata,bytes32)' $COUNTER_TABLE '[]' $COUNTER_VAL_SCHEMA
+   ```
+
+   **Add explanation how to interpret this value**
