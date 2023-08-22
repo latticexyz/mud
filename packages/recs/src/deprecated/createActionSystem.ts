@@ -142,7 +142,7 @@ export function createActionSystem<M = unknown>(
 
     // Set all pending updates of this action
     for (const { component, value, entity, id } of overrides) {
-      componentsWithOptimisticUpdates[component as string].addOverride(id, { entity, value });
+      componentsWithOptimisticUpdates[component].addOverride(id, { entity, value });
     }
 
     try {

@@ -45,7 +45,7 @@ describe("ActionSystem", () => {
       id: "action",
       components: {},
       requirement: () => true,
-      updates: () => [] as [],
+      updates: () => [],
       execute: () => {
         mockFn();
       },
@@ -63,7 +63,7 @@ describe("ActionSystem", () => {
       id: "action",
       components: {},
       requirement: () => false,
-      updates: () => [] as [],
+      updates: () => [],
       execute: () => {
         mockFn();
       },
@@ -79,7 +79,7 @@ describe("ActionSystem", () => {
       id: "action",
       components: {},
       requirement: () => true,
-      updates: () => [] as [],
+      updates: () => [],
       execute: () => promise,
     });
 
@@ -95,7 +95,7 @@ describe("ActionSystem", () => {
       id: "action",
       components: {},
       requirement: () => false,
-      updates: () => [] as [],
+      updates: () => [],
       execute: () => void 0,
     });
 
@@ -112,7 +112,7 @@ describe("ActionSystem", () => {
       id: "action",
       components: {},
       requirement: () => true,
-      updates: () => [] as [],
+      updates: () => [],
       execute: () => promise,
     });
 
