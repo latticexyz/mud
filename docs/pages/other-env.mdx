@@ -11,4 +11,183 @@ This is a lot more efficient than reading the entire state of the world from the
 
 ## Reading and interpreting MUD events
 
-To be written
+### Data events
+
+Data events emitted by a `World` only have a single topic, the event type, and these parameters:
+
+- `bytes32 table`, which is a single 32 byte value that contains both the namespace and the tableID.
+- `bytes32[] key`, which includes all the key schema values for the record.
+- `uint8 schemaIndex`, the number in the data schema of the relevant field.
+  This parameter only appears is only the field specific event, `StoreSetField`.
+- `bytes data`, the data either in the applicable field, or the entire record.
+  This parameter does not appear in `StoreDeleteRecord`.
+
+There are four data event types:
+
+- `StoreSetRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is changed or created.
+- `StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)`, when one of the data fields in the schema is changed.
+- `StoreDeleteRecord(bytes32 table, bytes32[] key)`, when a record is deleted.
+- `StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is created in an [ephemeral table](/store/advanced-features#ephemeral-tables).
+  Ephemeral tables are not stored onchain, which makes them a lot cheaper.
+  The content of an ephemeral table is available to clients, but not to onchain code.
+
+<details>
+
+<summary>Interpreting data events</summary>
+
+Here is a sample event:
+
+```json
+{
+  "address": "0x5fbdb2315678afecb367f032d93f642f64180aa3",
+  "topics": ["0x912af873e852235aae78a1d25ae9bb28b616a67c36898c53a14fd8184504ee32"],
+  "data": "0x6d756473746f726500000000000000005461626c657300000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000016d756473746f726500000000000000005461626c65730000000000000000000000000000000000000000000000000000000000000000000000000000000002c0002001005f000000000000000000000000000000000000000000000000000000004002025f5fc4c400000000000000000000000000000000000000000000000000000000000000000000000000000000000001c000000000a00000000000026000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000077461626c6549640000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000014000000000000000000000000000000000000000000000000000000000000000096b6579536368656d610000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b76616c7565536368656d610000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000012616269456e636f6465644b65794e616d657300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000014616269456e636f6465644669656c644e616d6573000000000000000000000000",
+  "blockHash": "0xedb36756d11b591fb79b47be430b434b963abb2fb29a9c3766b505dd4f446333",
+  "blockNumber": "0xe",
+  "transactionHash": "0xf9ea723c30accef7b4c6b2bee9ab44c26d31ca40569d7c61f532ebc53312b249",
+  "transactionIndex": "0x0",
+  "logIndex": "0x0",
+  "transactionLogIndex": "0x0",
+  "removed": false
+}
+```
+
+The relevant fields are `address`, `topics`, and `data`.
+
+- `address` is the address of the `World` that emitted the event.
+- `topics` includes 32 byte values that are indexed by the blockchain.
+  By convention, the first topic is a hash of the event type.
+  For known event types (such as those in MUD), you can look for the original event type [in `4byte.directory`](https://www.4byte.directory/event-signatures/).
+- `data` is all the non indexed fields.
+  Fields are stored in 32 byte chunks.
+
+For our event, [you can see the event type here](https://www.4byte.directory/event-signatures/?bytes_signature=0x912af873e852235aae78a1d25ae9bb28b616a67c36898c53a14fd8184504ee32).
+
+```solidity
+StoreSetRecord(bytes32,bytes32[],bytes)
+```
+
+This is the begining of the data, divided into 32 byte words:
+
+| Word number | Data                                                             |
+| ----------: | ---------------------------------------------------------------- |
+|           0 | 6d756473746f726500000000000000005461626c657300000000000000000000 |
+|           1 | 0000000000000000000000000000000000000000000000000000000000000060 |
+|           2 | 00000000000000000000000000000000000000000000000000000000000000a0 |
+
+The first word is the table.
+It is two ASCII strings, one in byte 0 and one in byte 16.
+If a string is not 16 characters long, it is padded with zeros.
+The first string is `6d756473746f72650`, which translates to `mudstore`.
+This is the namespace that contains the metadata that MUD needs to function.
+The second string is `Tables`, so we are creating a record in the `Tables` table (adding a table).
+You can use [this calculator](https://www.duplichecker.com/hex-to-text.php) to translate ASCII into strings.
+
+Static fields such as `bytes32` are encoded directly.
+But for dynamic fields, whose length is unknown, the standard is the encode a 32 byte word with the offset to where the field starts.
+The next word tells us that `bytes32[] key` starts at offset 0x60, or word 3 (a 32 byte word is 0x20 in hex).
+The following one tells that `bytes data` starts at offset 0xA0, or word 5.
+
+| Word number | Data                                                             |
+| ----------: | ---------------------------------------------------------------- |
+|           3 | 0000000000000000000000000000000000000000000000000000000000000001 |
+|           4 | 6d756473746f726500000000000000005461626c657300000000000000000000 |
+
+These are the key schema fields.
+To interpret them, we need to know the key schema and key field names for `mudstore:Tables`, [which are specified in the source code](https://github.com/latticexyz/mud/blob/main/packages/store/mud.config.ts):
+
+```solidity {3-5}
+tables: {
+    Tables: {
+      keySchema: {
+        tableId: "bytes32",
+      },
+      schema: {
+        keySchema: "bytes32",
+        valueSchema: "bytes32",
+        abiEncodedKeyNames: "bytes",
+        abiEncodedFieldNames: "bytes",
+      },
+}
+```
+
+So there is one 32 bytes field, which is the `tableId`.
+Word 3 is the size of the key array (one item), and word 4 is the table to which this record applies, which is the same `mudstore:Tables`.
+
+| Word number | Data                                                             |
+| ----------: | ---------------------------------------------------------------- |
+|           5 | 00000000000000000000000000000000000000000000000000000000000002c0 |
+
+Word 5 is the length of the table data, in bytes.
+It is `0x2c0=704` which is 22 32-byte words, which is exactly the number of remaining words in the data field of the log entry.
+If we just want to synchronize a client table with the onchain table, we can stop here.
+It is not necessary to understand the data schema, just to copy it as data.
+
+However, this specific table contains useful information about the data we synchronize, so we will interpret it all the way. To do so we need to consult [`mud.config.ts`](https://github.com/latticexyz/mud/blob/main/packages/store/mud.config.ts) again.
+
+```solidity {6-11}
+tables: {
+    Tables: {
+      keySchema: {
+        tableId: "bytes32",
+      },
+      schema: {
+        keySchema: "bytes32",
+        valueSchema: "bytes32",
+        abiEncodedKeyNames: "bytes",
+        abiEncodedFieldNames: "bytes",
+      },
+}
+```
+
+So the first two fields are the key and value schema, respectable, and they are one 32-byte word each.
+The other two are `bytes`, of unspecified length.
+
+| Word number | Data                                                                    |
+| ----------: | ----------------------------------------------------------------------- |
+|           6 | 0020,01,00,5f,000000000000000000000000000000000000000000000000000000    |
+|           7 | 0040,02,02,5f,5f,c4,c4,000000000000000000000000000000000000000000000000 |
+
+To interpret the schema fields we can look at the [`Schema.sol`](https://github.com/latticexyz/mud/blob/main/packages/store/src/Schema.sol). The first two bytes are the total static length, followed by the number of static fields and then the number of dynamic fields.
+This is followed by a list of field types, which are specified in [`SchemaType.sol`](https://github.com/latticexyz/mud/blob/main/packages/schema-type/src/solidity/SchemaType.sol).
+
+So, for the key schema for `mudstore:Tables` we have one static field and no dynamic fields.
+The static field is type `0x5f`, which is `bytes32`.
+The total length of the static fields is indeed `0x20=32` bytes.
+
+For the value schema we have two static fields, each of type `bytes32` again, for a total length of `0x40=64` bytes.
+This is followed by two fields of type `0xc4`, which is bytes.
+
+| Word number | Data                                                             |
+| ----------: | ---------------------------------------------------------------- |
+|          12 | 0000000000000000000000000000000000000000000000000000000000000007 |
+|          13 | 7461626c65496400000000000000000000000000000000000000000000000000 |
+|          20 | 0000000000000000000000000000000000000000000000000000000000000009 |
+|          21 | 6b6579536368656d610000000000000000000000000000000000000000000000 |
+|          22 | 000000000000000000000000000000000000000000000000000000000000000b |
+|          23 | 76616c7565536368656d61000000000000000000000000000000000000000000 |
+|          24 | 0000000000000000000000000000000000000000000000000000000000000012 |
+|          25 | 616269456e636f6465644b65794e616d65730000000000000000000000000000 |
+|          26 | 0000000000000000000000000000000000000000000000000000000000000014 |
+|          27 | 616269456e636f6465644669656c644e616d6573000000000000000000000000 |
+
+The internal representation of the list of field names is complicated, but we identify the actual strings because there's a word with the length in characters followed by a word which starts with those ASCII characters. Using [an online calculator](https://www.duplichecker.com/hex-to-text.php), this gives us these field names:
+
+| Word | Field Name           |
+| ---: | -------------------- |
+|   13 | tableId              |
+|   21 | keySchema            |
+|   23 | valueSchema          |
+|   25 | abiEncodedKeyNames   |
+|   27 | abiEncodedFieldNames |
+
+</details>
+
+### Component events
+
+```solidity
+  event ComponentValueSet(uint256 indexed componentId, address indexed component, uint256 indexed entity, bytes data);
+  event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
+```
+
+### `HelloWorld()`
