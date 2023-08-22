@@ -8,11 +8,11 @@ import {
   componentValueEquals,
   getEntitiesWithValue,
   overridableComponent,
-} from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity, getEntitySymbol } from "../src/Entity";
-import { AnyComponent, Entity, World } from "../src/types";
-import { createWorld } from "../src/World";
+} from "./Component";
+import { Type } from "./constants";
+import { createEntity, getEntitySymbol } from "./Entity";
+import { AnyComponent, Entity, World } from "./types";
+import { createWorld } from "./World";
 
 describe("Component", () => {
   let world: World;
