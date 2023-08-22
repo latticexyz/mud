@@ -8,7 +8,9 @@ Moved `createActionSystem` from `std-client` to `recs` package and updated it to
 If you want to use `createActionSystem` alongside `syncToRecs`, you'll need to pass in arguments like so:
 
 ```ts
+import { syncToRecs } from "@latticexyz/store-sync/recs";
 import { createActionSystem } from "@latticexyz/recs/deprecated";
+import { from, mergeMap } from "rxjs";
 
 const { blockLogsStorage$, waitForTransaction } = syncToRecs({
   world,
