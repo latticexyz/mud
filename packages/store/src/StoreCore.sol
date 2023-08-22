@@ -16,7 +16,7 @@ import { StoreSwitch } from "./StoreSwitch.sol";
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreSpliceRecord(bytes32 tableId, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
@@ -196,9 +196,6 @@ library StoreCore {
     bytes memory data,
     Schema valueSchema
   ) internal {
-    // Emit event to notify indexers
-    emit StoreSetField(tableId, key, schemaIndex, data);
-
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(tableId);
 
@@ -260,14 +257,11 @@ library StoreCore {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
-    // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
+    // TODO add push-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData = abi.encodePacked(
       StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueSchema),
       dataToPush
     );
-
-    // Emit event to notify indexers
-    emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(tableId);
@@ -299,15 +293,12 @@ library StoreCore {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
-    // TODO add pop-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
+    // TODO add pop-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData;
     {
       bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueSchema);
       fullData = SliceLib.getSubslice(oldData, 0, oldData.length - byteLengthToPop).toBytes();
     }
-
-    // Emit event to notify indexers
-    emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(tableId);
@@ -345,7 +336,7 @@ library StoreCore {
       revert IStoreErrors.StoreCore_DataIndexOverflow(type(uint40).max, startByteIndex);
     }
 
-    // TODO add setItem-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
+    // TODO add setItem-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData;
     {
       bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueSchema);
@@ -355,9 +346,6 @@ library StoreCore {
         SliceLib.getSubslice(oldData, startByteIndex + dataToSet.length, oldData.length).toBytes()
       );
     }
-
-    // Emit event to notify indexers
-    emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(tableId);
@@ -533,16 +521,16 @@ library StoreCoreInternal {
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    // verify the value has the correct length for the field
-    SchemaType schemaType = valueSchema.atIndex(schemaIndex);
-    if (schemaType.getStaticByteLength() != data.length) {
-      revert IStoreErrors.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
-    }
-
-    // Store the provided value in storage
     uint256 location = _getStaticDataLocation(tableId, key);
     uint256 offset = _getStaticDataOffset(valueSchema, schemaIndex);
+
     Storage.store({ storagePointer: location, offset: offset, data: data });
+
+    // Prepare data for the splice event
+    uint256 start = offset;
+    uint256 deleteCount = valueSchema.atIndex(schemaIndex).getStaticByteLength();
+    // Emit event to notify indexers
+    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), data);
   }
 
   function _setDynamicField(
@@ -554,12 +542,32 @@ library StoreCoreInternal {
   ) internal {
     uint8 dynamicSchemaIndex = schemaIndex - uint8(valueSchema.numStaticFields());
 
-    // Update the dynamic data length
-    _setDynamicDataLengthAtIndex(tableId, key, dynamicSchemaIndex, data.length);
+    // Load dynamic data length from storage
+    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, key);
+    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
+
+    // Update the encoded length
+    uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
+    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, data.length);
+    // Set the new lengths
+    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
 
     // Store the provided value in storage
     uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
     Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: data });
+
+    // Prepare data for the splice event
+    uint256 start;
+    unchecked {
+      // (safe because it's a few uint40 values, which can't overflow uint48)
+      start = valueSchema.staticDataLength() + 32;
+      for (uint8 i; i < dynamicSchemaIndex; i++) {
+        start += encodedLengths.atIndex(i);
+      }
+    }
+    uint256 deleteCount = oldFieldLength;
+    // Emit event to notify indexers
+    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), data);
   }
 
   function _pushToDynamicField(
@@ -578,12 +586,24 @@ library StoreCoreInternal {
     // Update the encoded length
     uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
     encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength + dataToPush.length);
-
     // Set the new length
     Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
 
     // Append `dataToPush` to the end of the data in storage
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, oldFieldLength, dataToPush);
+
+    // Prepare data for the splice event
+    uint256 start;
+    unchecked {
+      // (safe because it's a few uint40 values, which can't overflow uint48)
+      start = valueSchema.staticDataLength() + 32 + encodedLengths.atIndex(dynamicSchemaIndex);
+      for (uint8 i; i < dynamicSchemaIndex; i++) {
+        start += encodedLengths.atIndex(i);
+      }
+    }
+    uint256 deleteCount = 0;
+    // Emit event to notify indexers
+    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), dataToPush);
   }
 
   function _popFromDynamicField(
@@ -602,11 +622,23 @@ library StoreCoreInternal {
     // Update the encoded length
     uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
     encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength - byteLengthToPop);
-
     // Set the new length
     Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
 
     // Data can be left unchanged, push/set do not assume storage to be 0s
+
+    // Prepare data for the splice event
+    uint256 start;
+    unchecked {
+      // (safe because it's a few uint40 values, which can't overflow uint48)
+      start = valueSchema.staticDataLength() + 32 + encodedLengths.atIndex(dynamicSchemaIndex) - byteLengthToPop;
+      for (uint8 i; i < dynamicSchemaIndex; i++) {
+        start += encodedLengths.atIndex(i);
+      }
+    }
+    uint256 deleteCount = byteLengthToPop;
+    // Emit event to notify indexers
+    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), new bytes(0));
   }
 
   // startOffset is measured in bytes
@@ -620,8 +652,25 @@ library StoreCoreInternal {
   ) internal {
     uint8 dynamicSchemaIndex = schemaIndex - uint8(valueSchema.numStaticFields());
 
+    // Load dynamic data length from storage
+    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, key);
+    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
+
     // Set `dataToSet` at the given index
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startByteIndex, dataToSet);
+
+    // Prepare data for the splice event
+    uint256 start;
+    unchecked {
+      // (safe because it's a few uint40 values, which can't overflow uint48)
+      start = valueSchema.staticDataLength() + 32 + encodedLengths.atIndex(dynamicSchemaIndex) + startByteIndex;
+      for (uint8 i; i < dynamicSchemaIndex; i++) {
+        start += encodedLengths.atIndex(i);
+      }
+    }
+    uint256 deleteCount = dataToSet.length;
+    // Emit event to notify indexers
+    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), dataToSet);
   }
 
   /************************************************************************
