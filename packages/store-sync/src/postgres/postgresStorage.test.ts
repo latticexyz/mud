@@ -35,8 +35,8 @@ describe("postgresStorage", async () => {
   it("should create tables and data from block log", async () => {
     const internalTables = createInternalTables(schemaName);
 
-    expect(db.select().from(internalTables.chain)).rejects.toMatch(/relation "\w+.__chain" does not exist/);
-    expect(db.select().from(internalTables.tables)).rejects.toMatch(/relation "\w+.__tables" does not exist/);
+    await expect(db.select().from(internalTables.chain)).rejects.toThrow(/relation "\w+.__chain" does not exist/);
+    await expect(db.select().from(internalTables.tables)).rejects.toThrow(/relation "\w+.__tables" does not exist/);
 
     const storageAdapter = await postgresStorage({ database: db, schemaName, publicClient });
 
