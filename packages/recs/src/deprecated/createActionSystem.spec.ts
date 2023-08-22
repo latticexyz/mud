@@ -83,7 +83,7 @@ describe("ActionSystem", () => {
       execute: () => promise,
     });
 
-    reject(new Error("Error"));
+    reject(new Error("action failed"));
 
     await waitForActionCompletion(Action, entity);
 
