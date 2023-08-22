@@ -123,9 +123,6 @@ importers:
       '@latticexyz/solecs':
         specifier: workspace:*
         version: link:../solecs
-      '@latticexyz/std-contracts':
-        specifier: workspace:*
-        version: link:../std-contracts
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
@@ -387,45 +384,7 @@ importers:
         specifier: 0.31.4
         version: 0.31.4(jsdom@22.1.0)
 
-  packages/ecs-browser:
-    dependencies:
-      '@latticexyz/recs':
-        specifier: workspace:*
-        version: link:../recs
-      '@latticexyz/std-client':
-        specifier: workspace:*
-        version: link:../std-client
-      '@latticexyz/utils':
-        specifier: workspace:*
-        version: link:../utils
-      goober:
-        specifier: ^2.1.11
-        version: 2.1.11(csstype@3.1.2)
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      mobx:
-        specifier: ^6.7.0
-        version: 6.9.0
-      mobx-react-lite:
-        specifier: ^3.4.0
-        version: 3.4.0(mobx@6.9.0)(react@18.2.0)
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      shiki:
-        specifier: ^0.11.1
-        version: 0.11.1
-    devDependencies:
-      '@types/lodash':
-        specifier: ^4.14.182
-        version: 4.14.182
-      '@types/react':
-        specifier: ^18.2.6
-        version: 18.2.6
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
+  packages/ecs-browser: {}
 
   packages/gas-report:
     dependencies:
@@ -789,35 +748,7 @@ importers:
         specifier: 0.31.4
         version: 0.31.4(jsdom@22.1.0)
 
-  packages/std-contracts:
-    devDependencies:
-      '@solidstate/contracts':
-        specifier: ^0.0.52
-        version: 0.0.52
-      '@typechain/ethers-v5':
-        specifier: ^10.2.0
-        version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
-      ds-test:
-        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
-        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
-      forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
-      hardhat:
-        specifier: ^2.10.2
-        version: 2.10.2(typescript@5.1.6)
-      memmove:
-        specifier: https://github.com/dk1a/memmove.git#ffd71cd77b1708574ef46a667b23ca3a5cc9fa27
-        version: github.com/dk1a/memmove/ffd71cd77b1708574ef46a667b23ca3a5cc9fa27
-      solhint:
-        specifier: ^3.3.7
-        version: 3.3.7
-      solmate:
-        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
-        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
-      typechain:
-        specifier: ^8.1.1
-        version: 8.1.1(typescript@5.1.6)
+  packages/std-contracts: {}
 
   packages/store:
     dependencies:
@@ -849,9 +780,6 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@latticexyz/std-contracts':
-        specifier: workspace:*
-        version: link:../std-contracts
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
@@ -1124,9 +1052,6 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@latticexyz/std-contracts':
-        specifier: workspace:*
-        version: link:../std-contracts
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
@@ -3185,10 +3110,6 @@ packages:
       antlr4ts: 0.5.0-alpha.4
     dev: false
 
-  /@solidstate/contracts@0.0.52:
-    resolution: {integrity: sha512-xSBn5oLnfYtgNYrsRq/COlWHt0NxK26PFQ3FvI2DDMAFpZKFsffGLzUl8umezj2gVKpN7EZ+EVLdPKjqx6eUOw==}
-    dev: true
-
   /@testing-library/react-hooks@8.0.1(@types/react@18.2.6)(react-test-renderer@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Aqhl2IVmLt8IovEVarNDFuJDVWVvhnr9/GCU6UUnrYXwgDFF9h2L2o2P9KBni1AST5sT6riAyoukFLyjQUgD/g==}
     engines: {node: '>=12'}
@@ -4978,6 +4899,7 @@ packages:
 
   /csstype@3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
+    dev: true
 
   /csv-generate@3.4.3:
     resolution: {integrity: sha512-w/T+rqR0vwvHqWs/1ZyMDWtHHSJaN06klRqJXBEpDJaM/+dZkso0OKh1VcuuYvK3XM53KysVNq8Ko/epCK8wOw==}
@@ -6546,14 +6468,6 @@ packages:
       merge2: 1.4.1
       slash: 3.0.0
 
-  /goober@2.1.11(csstype@3.1.2):
-    resolution: {integrity: sha512-5SS2lmxbhqH0u9ABEWq7WPU69a4i2pYcHeCxqaNq6Cw3mnrF0ghWNM4tEGid4dKy8XNIAUbuThuozDHHKJVh3A==}
-    peerDependencies:
-      csstype: ^3.0.10
-    dependencies:
-      csstype: 3.1.2
-    dev: false
-
   /google-protobuf@3.21.2:
     resolution: {integrity: sha512-3MSOYFO5U9mPGikIYCzK0SaThypfGgS6bHqrUGXG3DPHCrb+txNqeEcns1W0lkGfk0rCyNXm7xB9rMxnCiZOoA==}
     dev: false
@@ -7807,6 +7721,7 @@ packages:
 
   /jsonc-parser@3.2.0:
     resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
+    dev: true
 
   /jsonfile@2.4.0:
     resolution: {integrity: sha512-PKllAqbgLgxHaj8TElYymKCAgrASebJrWpTnEkOaTowt23VKXXN0sUeriJ+eh7y6ufb/CC5ap11pz71/cM0hUw==}
@@ -8491,23 +8406,6 @@ packages:
     resolution: {integrity: sha512-FPUtkhtJ0efmEFGpU14x7jGbTB+s18LrzRL2KgoWz9YvcY3cPomz8tih01GbHwnGk/OmkOKfqd/RAQoc8Lm7DQ==}
     dependencies:
       obliterator: 2.0.4
-    dev: false
-
-  /mobx-react-lite@3.4.0(mobx@6.9.0)(react@18.2.0):
-    resolution: {integrity: sha512-bRuZp3C0itgLKHu/VNxi66DN/XVkQG7xtoBVWxpvC5FhAqbOCP21+nPhULjnzEqd7xBMybp6KwytdUpZKEgpIQ==}
-    peerDependencies:
-      mobx: ^6.1.0
-      react: ^16.8.0 || ^17 || ^18
-      react-dom: '*'
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-    dependencies:
-      mobx: 6.9.0
-      react: 18.2.0
     dev: false
 
   /mobx@6.9.0:
@@ -9970,14 +9868,6 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  /shiki@0.11.1:
-    resolution: {integrity: sha512-EugY9VASFuDqOexOgXR18ZV+TbFrQHeCpEYaXamO+SZlsnT/2LxuLBX25GGtIrwaEVFXUAbUQ601SWE2rMwWHA==}
-    dependencies:
-      jsonc-parser: 3.2.0
-      vscode-oniguruma: 1.7.0
-      vscode-textmate: 6.0.0
-    dev: false
-
   /side-channel@1.0.4:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
     dependencies:
@@ -11304,14 +11194,6 @@ packages:
       - terser
     dev: true
 
-  /vscode-oniguruma@1.7.0:
-    resolution: {integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==}
-    dev: false
-
-  /vscode-textmate@6.0.0:
-    resolution: {integrity: sha512-gu73tuZfJgu+mvCSy4UZwd2JXykjK9zAZsfmDeut5dx/1a7FeTk0XwJsSuqQn+cuMCGVbIBfl+s53X4T19DnzQ==}
-    dev: false
-
   /w3c-xmlserializer@4.0.0:
     resolution: {integrity: sha512-d+BFHzbiCx6zGfz0HyQ6Rg69w9k19nviJspaj4yNscGjrHu94sVP+aRm75yEbCh+r2/yR+7q6hux9LVtbuTGBw==}
     engines: {node: '>=14'}
@@ -11752,12 +11634,6 @@ packages:
     name: ds-test
     version: 1.0.0
 
-  github.com/dk1a/memmove/ffd71cd77b1708574ef46a667b23ca3a5cc9fa27:
-    resolution: {tarball: https://codeload.github.com/dk1a/memmove/tar.gz/ffd71cd77b1708574ef46a667b23ca3a5cc9fa27}
-    name: memmove
-    version: 0.1.0
-    dev: true
-
   github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
     name: forge-std
@@ -11785,9 +11661,3 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
-
-  github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c:
-    resolution: {tarball: https://codeload.github.com/transmissions11/solmate/tar.gz/9cf1428245074e39090dceacb0c28b1f684f584c}
-    name: solmate
-    version: 6.5.0
-    dev: true
