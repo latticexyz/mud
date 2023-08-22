@@ -90,7 +90,7 @@ describe("ActionSystem", () => {
     expect(getComponentValueStrict(Action, entity).state).toBe(ActionState.Failed);
   });
 
-  it.skip("should set the Action component of cancelled actions", async () => {
+  it("should set the Action component of cancelled actions", async () => {
     const entity = actions.add({
       id: "action",
       components: {},
@@ -181,8 +181,7 @@ describe("ActionSystem", () => {
     );
   });
 
-  // TODO: get tests to pass
-  it.skip("should not remove pending update until all corresponding tx have been reduced", async () => {
+  it("should not remove pending update until all corresponding tx have been reduced", async () => {
     const player = createEntity(world, [withValue(Resource, { amount: 100 })]);
 
     const entity1 = actions.add({
@@ -410,7 +409,7 @@ describe("ActionSystem", () => {
   });
 
   // TODO: get tests to pass
-  it.skip("should rerun the requirement function only if a component value accessed in the requirement changed", () => {
+  it.only("should rerun the requirement function only if a component value accessed in the requirement changed", () => {
     const player = createEntity(world, [withValue(Resource, { amount: 0 })]);
     const requirementSpy = jest.fn();
 
