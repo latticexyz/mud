@@ -83,8 +83,9 @@ export function createActionSystem<M = unknown>(
 
     // Add components that are not tracked yet to internal overridable component map.
     // Pending updates will be applied to internal overridable components.
-    for (const [key, component] of Object.entries(actionRequest.components)) {
-      if (!componentsWithOptimisticUpdates[key]) componentsWithOptimisticUpdates[key] = overridableComponent(component);
+    for (const component of Object.values(actionRequest.components)) {
+      if (!componentsWithOptimisticUpdates[component.id])
+        componentsWithOptimisticUpdates[component.id] = overridableComponent(component);
     }
 
     // Store relevant components with pending updates along the action's requirement and execution logic
@@ -141,11 +142,11 @@ export function createActionSystem<M = unknown>(
       .map((o) => ({ ...o, id: uuid() }));
 
     // Store overrides on Action component to be able to remove when action is done
-    updateComponent(Action, action.entity, { overrides: overrides.map((o) => `${o.id}/${o.component}`) });
+    updateComponent(Action, action.entity, { overrides: overrides.map((o) => `${o.id}/${o.component.id}`) });
 
     // Set all pending updates of this action
     for (const { component, value, entity, id } of overrides) {
-      componentsWithOptimisticUpdates[component].addOverride(id, { entity, value });
+      componentsWithOptimisticUpdates[component.id].addOverride(id, { entity, value });
     }
 
     try {
@@ -215,8 +216,8 @@ export function createActionSystem<M = unknown>(
     const actionEntity = actionId as Entity;
     const overrides = (actionEntity != null && getComponentValue(Action, actionEntity)?.overrides) || [];
     for (const override of overrides) {
-      const [id, componentKey] = override.split("/");
-      const component = componentsWithOptimisticUpdates[componentKey];
+      const [id, componentId] = override.split("/");
+      const component = componentsWithOptimisticUpdates[componentId];
       component.removeOverride(id);
     }
 

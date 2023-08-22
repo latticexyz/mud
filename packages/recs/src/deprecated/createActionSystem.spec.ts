@@ -191,7 +191,7 @@ describe("ActionSystem", () => {
       requirement: () => true,
       updates: ({ Resource }) => [
         {
-          component: "Resource",
+          component: Resource,
           entity: player,
           value: { amount: getComponentValueStrict(Resource, player).amount - 1 },
         },
@@ -217,6 +217,7 @@ describe("ActionSystem", () => {
     // Now it's done
     await waitForComponentValueIn(Action, entity1, [{ state: ActionState.Complete }]);
     expect(getComponentValueStrict(Action, entity1).state).toBe(ActionState.Complete);
+    await sleep(0);
     expect(getComponentValueStrict(Action, entity2).state).toBe(ActionState.Complete);
   });
 
@@ -247,7 +248,7 @@ describe("ActionSystem", () => {
       // When this action is executed it will subtract 100 from the resource amount
       updates: ({ Resource }) => [
         {
-          component: "Resource",
+          component: Resource,
           entity: player,
           value: { amount: getComponentValueStrict(Resource, player).amount - 100 },
         },
@@ -278,7 +279,7 @@ describe("ActionSystem", () => {
       },
       updates: ({ Resource }) => [
         {
-          component: "Resource",
+          component: Resource,
           entity: player,
           value: { amount: getComponentValueStrict(Resource, player).amount - 100 },
         },
@@ -307,7 +308,7 @@ describe("ActionSystem", () => {
         requirementSpy2();
         return true;
       },
-      updates: () => [{ component: "Resource", entity: player, value: { amount: 100 } }],
+      updates: () => [{ component: Resource, entity: player, value: { amount: 100 } }],
       execute: async () => {
         executeSpy2(nonce++);
         await action2Promise;
@@ -394,7 +395,7 @@ describe("ActionSystem", () => {
       id: "action",
       components: { Resource },
       requirement: () => true,
-      updates: () => [{ component: "Resource", entity: player, value: { amount: 1000 } }],
+      updates: () => [{ component: Resource, entity: player, value: { amount: 1000 } }],
       execute: async () => {
         await promise;
       },
@@ -475,7 +476,7 @@ describe("ActionSystem", () => {
       id: "action3",
       components: { Resource },
       requirement: () => true,
-      updates: () => [{ component: "Resource", entity: player2, value: { amount: 1000 } }],
+      updates: () => [{ component: Resource, entity: player2, value: { amount: 1000 } }],
       execute: () => void 0,
     });
 
@@ -488,7 +489,7 @@ describe("ActionSystem", () => {
       id: "action4",
       components: { Resource },
       requirement: () => true,
-      updates: () => [{ component: "Resource", entity: player1, value: { amount: 10000 } }],
+      updates: () => [{ component: Resource, entity: player1, value: { amount: 10000 } }],
       execute: async () => {
         await promise;
       },

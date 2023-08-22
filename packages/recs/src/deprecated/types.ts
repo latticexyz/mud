@@ -3,7 +3,7 @@ import { Components, Entity, Override, SchemaOf } from "../types";
 
 export type ComponentUpdate<C extends Components> = ValueOf<{
   [key in keyof C]: {
-    component: key;
+    component: C[key];
     entity: Entity;
     value: Override<SchemaOf<C[key]>>["value"];
   };
