@@ -1,26 +1,19 @@
-import {
-  Components,
-  World,
-  createEntity,
-  getComponentValue,
-  OverridableComponent,
-  Schema,
-  overridableComponent,
-  updateComponent,
-  Component,
-  setComponent,
-  Metadata,
-  Entity,
-} from "@latticexyz/recs";
+import { merge, Observable } from "rxjs";
 import { mapObject, awaitStreamValue, uuid } from "@latticexyz/utils";
 import { ActionState } from "./constants";
 import { ActionData, ActionRequest } from "./types";
-import { defineActionComponent } from "../../components";
-import { merge, Observable } from "rxjs";
+import { defineActionComponent } from "./defineActionComponent";
+import { overridableComponent, setComponent, getComponentValue, updateComponent } from "../Component";
+import { createEntity } from "../Entity";
+import { World, OverridableComponent, Metadata, Component, Components, Entity, Schema } from "../types";
 
 export type ActionSystem = ReturnType<typeof createActionSystem>;
 
-export function createActionSystem<M = unknown>(world: World, txReduced$: Observable<string>) {
+export function createActionSystem<M = unknown>(
+  world: World,
+  txReduced$: Observable<string>,
+  waitForTransaction?: (tx: string) => Promise<void>
+) {
   // Action component
   const Action = defineActionComponent<M>(world);
 
@@ -159,11 +152,17 @@ export function createActionSystem<M = unknown>(world: World, txReduced$: Observ
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
       if (tx) {
         // Wait for all tx events to be reduced
-        updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
-        const txConfirmed = tx.wait().catch((e) => handleError(e, action)); // Also catch the error if not awaiting
-        await awaitStreamValue(txReduced$, (v) => v === tx.hash);
+        updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx });
+        await awaitStreamValue(txReduced$, (v) => v === tx);
         updateComponent(Action, action.entity, { state: ActionState.TxReduced });
-        if (action.awaitConfirmation) await txConfirmed;
+        // TODO: extend ActionData type to be aware of whether waitForTransaction is set
+        if (action.awaitConfirmation) {
+          if (waitForTransaction) {
+            await waitForTransaction(tx);
+          } else {
+            throw new Error("action has awaitConfirmation but no waitForTransaction specified in createActionSystem");
+          }
+        }
       }
 
       updateComponent(Action, action.entity, { state: ActionState.Complete });

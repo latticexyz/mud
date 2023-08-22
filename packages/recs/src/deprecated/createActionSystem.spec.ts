@@ -1,28 +1,21 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import {
-  createEntity,
-  withValue,
-  setComponent,
-  World,
-  createWorld,
-  Component,
-  Type,
-  defineComponent,
-  getComponentValueStrict,
-  HasValue,
-  runQuery,
-} from "@latticexyz/recs";
-import { deferred } from "@latticexyz/utils";
+import { deferred, sleep } from "@latticexyz/utils";
 import { ReplaySubject } from "rxjs";
-import { ActionState, createActionSystem } from ".";
-import { waitForComponentValueIn } from "../../utils";
-import { waitForActionCompletion } from "./utils";
+import { defineComponent, getComponentValueStrict, withValue, setComponent } from "../Component";
+import { createEntity } from "../Entity";
+import { runQuery, HasValue } from "../Query";
+import { createWorld } from "../World";
+import { Type } from "../constants";
+import { World, Component } from "../types";
+import { waitForComponentValueIn } from "./waitForComponentValueIn";
+import { ActionState } from "./constants";
+import { createActionSystem } from "./createActionSystem";
+import { waitForActionCompletion } from "./waitForActionCompletion";
 
 describe("ActionSystem", () => {
   let world: World;
   let Resource: Component<{ amount: Type.Number }>;
   let Action: Component<{
-    state: Type.Number;
+    state: Type.String;
     on: Type.OptionalEntity;
     metadata: Type.OptionalT;
     overrides: Type.OptionalStringArray;
@@ -34,9 +27,10 @@ describe("ActionSystem", () => {
   beforeEach(async () => {
     world = createWorld();
     txReduced$ = new ReplaySubject<string>();
-    actions = createActionSystem(world, txReduced$);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    actions = createActionSystem(world, txReduced$, async () => {
+      // mimic wait for tx
+      await sleep(100);
+    });
     Action = actions.Action;
     Resource = defineComponent(world, { amount: Type.Number });
   });
@@ -201,7 +195,7 @@ describe("ActionSystem", () => {
           value: { amount: getComponentValueStrict(Resource, player).amount - 1 },
         },
       ],
-      execute: async () => Promise.resolve({ hash: "tx1", wait: async (): Promise<void> => void 0 }),
+      execute: async () => Promise.resolve("tx1"),
     });
 
     const entity2 = actions.add({
@@ -346,7 +340,7 @@ describe("ActionSystem", () => {
 
     // Now resolve action2
     resolveAction2();
-    await waitForActionCompletion(Action, entity2!);
+    await waitForActionCompletion(Action, entity2);
 
     // The real component amount should be at 100 now
     expect(getComponentValueStrict(Resource, player).amount).toBe(100);
