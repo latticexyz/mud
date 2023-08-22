@@ -8,6 +8,8 @@ Moved `createActionSystem` from `std-client` to `recs` package and updated it to
 If you want to use `createActionSystem` alongside `syncToRecs`, you'll need to pass in arguments like so:
 
 ```ts
+import { createActionSystem } from "@latticexyz/recs/deprecated";
+
 const { blockLogsStorage$, waitForTransaction } = syncToRecs({
   world,
   ...
