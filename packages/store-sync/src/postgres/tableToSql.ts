@@ -1,48 +1,34 @@
 import { AnyPgColumn, PgTableWithColumns } from "drizzle-orm/pg-core";
+import { getTableColumns, getTableName } from "drizzle-orm";
 import {
   ColumnDataType,
-  Dialect,
   DummyDriver,
   Kysely,
   PostgresAdapter,
   PostgresIntrospector,
   PostgresQueryCompiler,
-  SqliteAdapter,
-  SqliteIntrospector,
-  SqliteQueryCompiler,
 } from "kysely";
-import { getTableColumns, getTableName } from "drizzle-orm";
-import { assertExhaustive } from "@latticexyz/common/utils";
+import { getSchema } from "./getSchema";
 
-function getDialect(dialect: "sqlite" | "postgres"): Dialect {
-  if (dialect === "postgres") {
-    return {
+export function tableToSql(table: PgTableWithColumns<any>): string {
+  let db = new Kysely({
+    dialect: {
       createAdapter: (): PostgresAdapter => new PostgresAdapter(),
       createDriver: (): DummyDriver => new DummyDriver(),
       createIntrospector: (db: Kysely<unknown>): PostgresIntrospector => new PostgresIntrospector(db),
       createQueryCompiler: (): PostgresQueryCompiler => new PostgresQueryCompiler(),
-    } satisfies Dialect;
+    },
+  });
+
+  const schema = getSchema(table);
+  if (schema) {
+    db = db.withSchema(schema);
   }
 
-  if (dialect === "sqlite") {
-    return {
-      createAdapter: (): SqliteAdapter => new SqliteAdapter(),
-      createDriver: (): DummyDriver => new DummyDriver(),
-      createIntrospector: (db: Kysely<unknown>): SqliteIntrospector => new SqliteIntrospector(db),
-      createQueryCompiler: (): SqliteQueryCompiler => new SqliteQueryCompiler(),
-    } satisfies Dialect;
-  }
-
-  assertExhaustive(dialect, `Dialect '${dialect}' not supported.`);
-}
-
-export function tableToSql(dialect: "sqlite" | "postgres", schemaName: string, table: PgTableWithColumns<any>): string {
-  const db = new Kysely({ dialect: getDialect(dialect) });
   const tableName = getTableName(table);
-  // TODO: figure out how to get schema from table
 
   // TODO: should we allow this to fail (remove ifNotExists) so we can catch issues with our logic that creates tables?
-  let query = db.withSchema(schemaName).schema.createTable(tableName).ifNotExists();
+  let query = db.schema.createTable(tableName).ifNotExists();
 
   const columns = Object.values(getTableColumns(table)) as AnyPgColumn[];
   for (const column of columns) {

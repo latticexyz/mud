@@ -51,7 +51,6 @@
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
-    "better-sqlite3": "^8.4.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
     "kysely": "^0.26.1",
@@ -64,7 +63,6 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.4",
     "@types/debug": "^4.1.7",
     "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",

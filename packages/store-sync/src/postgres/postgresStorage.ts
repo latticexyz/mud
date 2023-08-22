@@ -10,7 +10,7 @@ import { getTableName } from "./getTableName";
 import { createInternalTables } from "./createInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
-import { tableToSql } from "../sql/tableToSql";
+import { tableToSql } from "./tableToSql";
 import { tableIdToHex } from "@latticexyz/common";
 
 export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
@@ -29,8 +29,8 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
   // TODO: should these run lazily before first `registerTables`?
   await database.transaction(async (tx) => {
-    await tx.execute(sql.raw(tableToSql("postgres", schemaName, internalTables.chain)));
-    await tx.execute(sql.raw(tableToSql("postgres", schemaName, internalTables.tables)));
+    await tx.execute(sql.raw(tableToSql(internalTables.chain)));
+    await tx.execute(sql.raw(tableToSql(internalTables.tables)));
   });
 
   return {
@@ -48,7 +48,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             valueSchema: table.valueSchema,
           });
 
-          await tx.execute(sql.raw(tableToSql("postgres", schemaName, sqlTable)));
+          await tx.execute(sql.raw(tableToSql(sqlTable)));
 
           await tx
             .insert(internalTables.tables)
