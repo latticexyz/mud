@@ -120,9 +120,6 @@ importers:
       '@latticexyz/services':
         specifier: workspace:*
         version: link:../services
-      '@latticexyz/solecs':
-        specifier: workspace:*
-        version: link:../solecs
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
@@ -651,45 +648,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
 
-  packages/solecs:
-    dependencies:
-      '@ethersproject/abi':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2
-      '@solidstate/contracts':
-        specifier: ^0.0.52
-        version: 0.0.52
-      ds-test:
-        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
-        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
-      memmove:
-        specifier: https://github.com/dk1a/memmove.git#ffd71cd77b1708574ef46a667b23ca3a5cc9fa27
-        version: github.com/dk1a/memmove/ffd71cd77b1708574ef46a667b23ca3a5cc9fa27
-      solmate:
-        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
-        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
-    devDependencies:
-      '@typechain/ethers-v5':
-        specifier: ^10.2.0
-        version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
-      forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
-      hardhat:
-        specifier: ^2.10.2
-        version: 2.10.2(typescript@5.1.6)
-      solhint:
-        specifier: ^3.3.7
-        version: 3.3.7
-      typechain:
-        specifier: ^8.1.1
-        version: 8.1.1(typescript@5.1.6)
+  packages/solecs: {}
 
   packages/solhint-config-mud:
     devDependencies:
@@ -727,9 +686,6 @@ importers:
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs
-      '@latticexyz/solecs':
-        specifier: workspace:*
-        version: link:../solecs
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
@@ -3117,10 +3073,6 @@ packages:
     resolution: {integrity: sha512-ESipEcHyRHg4Np4SqBCfcXwyxxna1DgFVz69bgpLV8vzl/NP1DtcKsJ4dJZXWQhY/Z4J2LeKBiOkOVZn9ct33Q==}
     dependencies:
       antlr4ts: 0.5.0-alpha.4
-    dev: false
-
-  /@solidstate/contracts@0.0.52:
-    resolution: {integrity: sha512-xSBn5oLnfYtgNYrsRq/COlWHt0NxK26PFQ3FvI2DDMAFpZKFsffGLzUl8umezj2gVKpN7EZ+EVLdPKjqx6eUOw==}
     dev: false
 
   /@testing-library/react-hooks@8.0.1(@types/react@18.2.6)(react-test-renderer@18.2.0)(react@18.2.0):
@@ -11575,12 +11527,6 @@ packages:
     name: ds-test
     version: 1.0.0
 
-  github.com/dk1a/memmove/ffd71cd77b1708574ef46a667b23ca3a5cc9fa27:
-    resolution: {tarball: https://codeload.github.com/dk1a/memmove/tar.gz/ffd71cd77b1708574ef46a667b23ca3a5cc9fa27}
-    name: memmove
-    version: 0.1.0
-    dev: false
-
   github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
     name: forge-std
@@ -11607,10 +11553,4 @@ packages:
       yargs-interactive: 3.0.1
     transitivePeerDependencies:
       - encoding
-    dev: false
-
-  github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c:
-    resolution: {tarball: https://codeload.github.com/transmissions11/solmate/tar.gz/9cf1428245074e39090dceacb0c28b1f684f584c}
-    name: solmate
-    version: 6.5.0
     dev: false

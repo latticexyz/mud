@@ -33,7 +33,6 @@
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/recs": "workspace:*",
-    "@latticexyz/solecs": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
