@@ -35,7 +35,6 @@
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/solecs": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@latticexyz/store-cache": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
     "abitype": "0.9.3",
