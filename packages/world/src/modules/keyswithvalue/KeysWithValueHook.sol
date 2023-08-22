@@ -17,7 +17,6 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 /**
  * This is a very naive and inefficient implementation for now.
  * We can optimize this by adding support for `setIndexOfField` in Store
- * and then replicate logic from solecs's Set.sol.
  * (See https://github.com/latticexyz/mud/issues/444)
  *
  * Note: if a table with composite keys is used, only the first key is indexed

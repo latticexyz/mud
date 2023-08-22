@@ -20,7 +20,6 @@ export type Schema = {
 
 /**
  * Used to add arbitrary metadata to components.
- * (Eg `contractId` for components that have a corresponding solecs component contract.)
  */
 export type Metadata =
   | {

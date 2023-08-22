@@ -1,6 +1,6 @@
 import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
 const indexer = createIndexerClient({
-  url: "http://localhost:3001",
+  url: "http://localhost:3001/trpc",
 });
 
 const result = await indexer.findAll.query({
