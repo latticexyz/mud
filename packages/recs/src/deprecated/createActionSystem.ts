@@ -9,6 +9,9 @@ import { World, OverridableComponent, Metadata, Component, Components, Entity, S
 
 export type ActionSystem = ReturnType<typeof createActionSystem>;
 
+/**
+ * @deprecated For now, we suggest using `overridableComponent(Component)` and `addOverride`/`removeOverride` to manage overrides yourself.
+ */
 export function createActionSystem<M = unknown>(
   world: World,
   txReduced$: Observable<string>,
