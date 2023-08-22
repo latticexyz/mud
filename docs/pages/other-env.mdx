@@ -4,18 +4,17 @@ The main client-side feature of MUD is _synchronization_, having a local on-clie
 To support other environments, such as [Unity](https://unity.com/) or [Unreal Engine](https://www.unrealengine.com/), this is the main functionality that needs to be ported.
 
 The initial synchronization is best done using the [Indexer](indexer) to get the starting state.
-The Indexer is written in TypeScript, but it can be [accessed through HTTP](./indexer#using-http)
+The Indexer is a separate application that can be [accessed through HTTP](./indexer#using-http) and provides data in JSON format.
 
 Once the client is in sync, it can listen to blockchain events emitted by the `World` to update the local copy of the state as needed.
 This is a lot more efficient than reading the entire state of the world from the Indexer repeatedly.
 
 ## Reading and interpreting MUD events
 
-### Data events
-
 Data events emitted by a `World` only have a single topic, the event type, and these parameters:
 
-- `bytes32 table`, which is a single 32 byte value that contains both the namespace and the tableId.
+- `bytes32 table`, which is a single 32 byte value.
+  By convention, it contains both the namespace and the tableId - but that convention is not enforced by the onchain code.
 - `bytes32[] key`, which includes all the key schema values for the record.
 - `uint8 schemaIndex`, the number in the data schema of the relevant field.
   This parameter only appears in the field specific event, `StoreSetField`.
@@ -25,10 +24,12 @@ Data events emitted by a `World` only have a single topic, the event type, and t
 There are four data event types:
 
 - `StoreSetRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is changed or created.
-- `StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)`, when one of the data fields in the schema is changed.
+- `StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)`, when one of the value fields in the schema is changed.
+  Note that this can also happen when creating a new record, in which case all the other value fields remain at the default (zero, empty string, etc.)
 - `StoreDeleteRecord(bytes32 table, bytes32[] key)`, when a record is deleted.
+  Note that it is possible to delete a non-existent record, there is no onchain verification in the interests of reducing gas expenditure.
 - `StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is emitted in an [ephemeral table](/store/advanced-features#ephemeral-tables).
-  Ephemeral tables are not stored onchain, which makes them a lot cheaper.
+  Ephemeral tables are not stored onchain (except as events), which makes them a lot cheaper.
   The content of an ephemeral table is available to clients, but not to onchain code.
 
 <details>
@@ -75,12 +76,12 @@ This is the begining of the data, divided into 32 byte words:
 |           1 | 0000000000000000000000000000000000000000000000000000000000000060 |
 |           2 | 00000000000000000000000000000000000000000000000000000000000000a0 |
 
-The first word is the table.
-It is two ASCII strings, one in byte 0 and one in byte 16.
+The first word identifies the table.
+By convention, it is two ASCII strings, one starting in byte 0 (namespace) and one starting in byte 16 (tableId).
 If a string is not 16 characters long, it is padded with zeros.
 The first string is `6d756473746f72650`, which translates to `mudstore`.
 This is the namespace that contains the metadata that MUD needs to function.
-The second string is `Tables`, so we are creating a record in the `Tables` table (adding a table).
+The second string is `Tables`, so we are creating a record in the `Tables` table (normally, this would mean adding a table).
 You can use [this calculator](https://www.duplichecker.com/hex-to-text.php) to translate ASCII into strings.
 
 Static fields such as `bytes32` are encoded directly.
@@ -96,7 +97,7 @@ The following one tells that `bytes data` starts at offset 0xA0, or word 5.
 These are the key schema fields.
 To interpret them, we need to know the key schema and key field names for `mudstore:Tables`, [which are specified in the source code](https://github.com/latticexyz/mud/blob/main/packages/store/mud.config.ts):
 
-```solidity {3-5}
+```json {3-5}
 tables: {
     Tables: {
       keySchema: {
@@ -125,7 +126,7 @@ It is not necessary to understand the data schema, just to copy it as data.
 
 However, this specific table contains useful information about the data we synchronize, so we will interpret it all the way. To do so we need to consult [`mud.config.ts`](https://github.com/latticexyz/mud/blob/main/packages/store/mud.config.ts) again.
 
-```solidity {6-11}
+```json {6-11}
 tables: {
     Tables: {
       keySchema: {
@@ -181,13 +182,56 @@ The internal representation of the list of field names is complicated, but we id
 |   25 | abiEncodedKeyNames   |
 |   27 | abiEncodedFieldNames |
 
-</details>
+<details>
 
-### Component events
+<summary>Interpreting a `StoreSetField` event</summary>
 
-```solidity
-  event ComponentValueSet(uint256 indexed componentId, address indexed component, uint256 indexed entity, bytes data);
-  event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
+As an extra example, this is how you interpret a `StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)` event.
+
+The topic for these events is [0xd01f9f1368f831528fc9fe6442366b2b7d957fbfff3bcf7c24d9ab5fe51f8c46](https://www.4byte.directory/event-signatures/?bytes_signature=0xd01f9f1368f831528fc9fe6442366b2b7d957fbfff3bcf7c24d9ab5fe51f8c46).
+
+The event data, when divided to words, looks like this:
+
+| Word number | Data                                                             |
+| ----------: | ---------------------------------------------------------------- |
+|           0 | 00000000000000000000000000000000436f756e746572000000000000000000 |
+|           1 | 0000000000000000000000000000000000000000000000000000000000000080 |
+|           2 | 0000000000000000000000000000000000000000000000000000000000000000 |
+|           3 | 00000000000000000000000000000000000000000000000000000000000000a0 |
+
+Word 0 again identifies the table.
+There is no namespace, because this table is part of the root namespace.
+The table itself is called `Counter`.
+It's part of the template, used to show to how use MUD, so you can see the schema [in the template source code](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/mud.config.ts).
+
+```json
+    Counter: {
+      keySchema: {},
+      schema: "uint32",
+    },
 ```
 
-### `HelloWorld()`
+Because `bytes32[]` is a variable length field, word 1 specifies where it starts - at byte 0x80, which is word 4.
+
+Word 2 is the number of the data field being changed.
+As the schema shows, there is only one data field, so it is number zero.
+
+The data is also a variable length field, so word 3 specifies where it starts - at byte 0xA0, which is word 5.
+
+| Word number | Data                                                             |
+| ----------: | ---------------------------------------------------------------- |
+|           4 | 0000000000000000000000000000000000000000000000000000000000000000 |
+
+The `Counter` table is a singleton, so the key length is zero.
+
+| Word number | Data                                                              |
+| ----------: | ----------------------------------------------------------------- |
+|           5 | 0000000000000000000000000000000000000000000000000000000000000004  |
+|           6 | 0000000c 00000000000000000000000000000000000000000000000000000000 |
+
+The data is a `uint32` field, so word 5 give us the total length, four bytes.
+The first four bytes give us the new value of the counter, which happens to be twelve.
+
+</details>
+
+</details>
