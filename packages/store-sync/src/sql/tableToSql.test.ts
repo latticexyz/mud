@@ -18,7 +18,7 @@ describe("tableToSql", () => {
       const sql = tableToSql("postgres", "public", table);
 
       expect(sql).toMatchInlineSnapshot(
-        '"create table if not exists \\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" bigint default \'1000\' not null, constraint \\"some table__primaryKey\\" primary key (\\"x\\", \\"y\\"))"'
+        '"create table if not exists \\"public\\".\\"some table\\" (\\"x\\" integer not null, \\"y\\" integer not null, \\"name\\" text default \'\' not null, \\"block_number\\" bigint default \'1000\' not null, constraint \\"some table__pk\\" primary key (\\"x\\", \\"y\\"))"'
       );
     });
 
@@ -31,7 +31,7 @@ describe("tableToSql", () => {
       const sql = tableToSql("postgres", "public", table);
 
       expect(sql).toMatchInlineSnapshot(
-        '"create table if not exists \\"some table\\" (\\"name\\" text default \'\' not null)"'
+        '"create table if not exists \\"public\\".\\"some table\\" (\\"name\\" text default \'\' not null)"'
       );
     });
 
@@ -44,7 +44,7 @@ describe("tableToSql", () => {
       const sql = tableToSql("postgres", "public", table);
 
       expect(sql).toMatchInlineSnapshot(
-        '"create table if not exists \\"some table\\" (\\"snake_case\\" text default \'\' not null, constraint \\"some table__primaryKey\\" primary key (\\"snake_case\\"))"'
+        '"create table if not exists \\"public\\".\\"some table\\" (\\"snake_case\\" text default \'\' not null, constraint \\"some table__pk\\" primary key (\\"snake_case\\"))"'
       );
     });
   });
