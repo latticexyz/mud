@@ -13,6 +13,9 @@ const { blockLogsStorage$, waitForTransaction } = syncToRecs({
   ...
 });
 
-const txReduced$ = blockLogsStorage$.pipe(mergeMap(({ operations }) => from(operations.map((op) => op.log?.transactionHash).filter(isDefined))));
+const txReduced$ = blockLogsStorage$.pipe(
+  mergeMap(({ operations }) => from(operations.map((op) => op.log?.transactionHash).filter(isDefined)))
+);
+
 const actionSystem = createActionSystem(world, txReduced$, waitForTransaction);
 ```
