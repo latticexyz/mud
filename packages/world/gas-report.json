@@ -1,5 +1,41 @@
 [
   {
+    "file": "test/AccessControl.t.sol",
+    "test": "testAccessControl",
+    "name": "AccessControl: hasAccess (cold)",
+    "gasUsed": 14088
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testAccessControl",
+    "name": "AccessControl: hasAccess (warm, namespace only)",
+    "gasUsed": 4122
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testAccessControl",
+    "name": "AccessControl: hasAccess (warm)",
+    "gasUsed": 8121
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testRequireAccess",
+    "name": "AccessControl: requireAccess (cold)",
+    "gasUsed": 14131
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testRequireAccess",
+    "name": "AccessControl: requireAccess (warm)",
+    "gasUsed": 8137
+  },
+  {
+    "file": "test/AccessControl.t.sol",
+    "test": "testRequireAccess",
+    "name": "AccessControl: requireAccess (this address)",
+    "gasUsed": 153
+  },
+  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
