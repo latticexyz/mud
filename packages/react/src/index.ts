@@ -3,4 +3,3 @@ export * from "./useDeprecatedComputedValue";
 export * from "./useEntityQuery";
 export * from "./useObservableValue";
 export * from "./usePromise";
-export * from "./store-cache";
