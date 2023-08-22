@@ -120,9 +120,6 @@ importers:
       '@latticexyz/services':
         specifier: workspace:*
         version: link:../services
-      '@latticexyz/solecs':
-        specifier: workspace:*
-        version: link:../solecs
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
