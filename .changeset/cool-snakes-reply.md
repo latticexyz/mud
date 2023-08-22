@@ -3,7 +3,7 @@
 "@latticexyz/std-client": major
 ---
 
-Moved `createActionSystem` to from `std-client` to `recs` package and updated it to better support v2 sync stack.
+Moved `createActionSystem` from `std-client` to `recs` package and updated it to better support v2 sync stack.
 
 If you want to use `createActionSystem` alongside `syncToRecs`, you'll need to pass in arguments like so:
 
