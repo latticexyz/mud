@@ -15,10 +15,10 @@ This is a lot more efficient than reading the entire state of the world from the
 
 Data events emitted by a `World` only have a single topic, the event type, and these parameters:
 
-- `bytes32 table`, which is a single 32 byte value that contains both the namespace and the tableID.
+- `bytes32 table`, which is a single 32 byte value that contains both the namespace and the tableId.
 - `bytes32[] key`, which includes all the key schema values for the record.
 - `uint8 schemaIndex`, the number in the data schema of the relevant field.
-  This parameter only appears is only the field specific event, `StoreSetField`.
+  This parameter only appears in the field specific event, `StoreSetField`.
 - `bytes data`, the data either in the applicable field, or the entire record.
   This parameter does not appear in `StoreDeleteRecord`.
 
@@ -27,7 +27,7 @@ There are four data event types:
 - `StoreSetRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is changed or created.
 - `StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)`, when one of the data fields in the schema is changed.
 - `StoreDeleteRecord(bytes32 table, bytes32[] key)`, when a record is deleted.
-- `StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is created in an [ephemeral table](/store/advanced-features#ephemeral-tables).
+- `StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data)`, when a record is emitted in an [ephemeral table](/store/advanced-features#ephemeral-tables).
   Ephemeral tables are not stored onchain, which makes them a lot cheaper.
   The content of an ephemeral table is available to clients, but not to onchain code.
 
@@ -84,7 +84,7 @@ The second string is `Tables`, so we are creating a record in the `Tables` table
 You can use [this calculator](https://www.duplichecker.com/hex-to-text.php) to translate ASCII into strings.
 
 Static fields such as `bytes32` are encoded directly.
-But for dynamic fields, whose length is unknown, the standard is the encode a 32 byte word with the offset to where the field starts.
+But for dynamic fields, whose length is unknown, the standard is to encode a 32 byte word with the offset to where the field starts.
 The next word tells us that `bytes32[] key` starts at offset 0x60, or word 3 (a 32 byte word is 0x20 in hex).
 The following one tells that `bytes data` starts at offset 0xA0, or word 5.
 
@@ -140,7 +140,7 @@ tables: {
 }
 ```
 
-So the first two fields are the key and value schema, respectable, and they are one 32-byte word each.
+So the first two fields are the key and value schema, respectively, and they are one 32-byte word each.
 The other two are `bytes`, of unspecified length.
 
 | Word number | Data                                                                    |
