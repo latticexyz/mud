@@ -15,22 +15,22 @@ import { tableIdToHex } from "@latticexyz/common";
 
 export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
-  schema,
+  schemaName,
   publicClient,
 }: {
   database: PgDatabase<QueryResultHKT>;
-  schema: string;
+  schemaName: string;
   publicClient: PublicClient;
   config?: TConfig;
 }): Promise<BlockLogsToStorageOptions<TConfig>> {
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
-  const internalTables = createInternalTables(schema);
+  const internalTables = createInternalTables(schemaName);
 
   // TODO: should these run lazily before first `registerTables`?
   await database.transaction(async (tx) => {
-    await tx.execute(sql.raw(tableToSql("postgres", schema, internalTables.chain)));
-    await tx.execute(sql.raw(tableToSql("postgres", schema, internalTables.tables)));
+    await tx.execute(sql.raw(tableToSql("postgres", schemaName, internalTables.chain)));
+    await tx.execute(sql.raw(tableToSql("postgres", schemaName, internalTables.tables)));
   });
 
   return {
@@ -40,7 +40,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
           const sqlTable = createTable({
-            schema,
+            schemaName,
             address: table.address,
             namespace: table.namespace,
             name: table.name,
@@ -48,7 +48,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             valueSchema: table.valueSchema,
           });
 
-          await tx.execute(sql.raw(tableToSql("postgres", schema, sqlTable)));
+          await tx.execute(sql.raw(tableToSql("postgres", schemaName, sqlTable)));
 
           await tx
             .insert(internalTables.tables)
@@ -71,7 +71,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
     async getTables({ tables }) {
       // TODO: fetch any missing schemas from RPC
       // TODO: cache schemas in memory?
-      return getTables(database, schema, tables);
+      return getTables(database, schemaName, tables);
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
@@ -80,7 +80,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
       const tables = await getTables(
         database,
-        schema,
+        schemaName,
         Array.from(
           new Set(
             operations.map((operation) =>
@@ -121,7 +121,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             continue;
           }
 
-          const sqlTable = createTable({ ...table, schema });
+          const sqlTable = createTable({ ...table, schemaName });
           const key = concatHex(
             Object.entries(table.keySchema).map(([keyName, type]) =>
               encodeAbiParameters([{ type }], [operation.key[keyName]])

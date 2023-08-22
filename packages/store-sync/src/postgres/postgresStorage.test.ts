@@ -13,7 +13,7 @@ import postgres from "postgres";
 
 describe("postgresStorage", async () => {
   let db: PgDatabase<QueryResultHKT>;
-  const schema = `store_sync_tests_${process.pid}_${process.env.VITEST_POOL_ID}`;
+  const schemaName = `store_sync_tests_${process.pid}_${process.env.VITEST_POOL_ID}`;
 
   const publicClient = createPublicClient({
     chain: foundry,
@@ -24,21 +24,21 @@ describe("postgresStorage", async () => {
     db = drizzle(postgres(process.env.DATABASE_URL!), {
       logger: new DefaultLogger(),
     });
-    await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schema} CASCADE`));
-    await db.execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS ${schema}`));
+    await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`));
+    await db.execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS ${schemaName}`));
   });
 
   afterEach(async () => {
-    await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schema} CASCADE`));
+    await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`));
   });
 
   it("should create tables and data from block log", async () => {
-    const internalTables = createInternalTables(schema);
+    const internalTables = createInternalTables(schemaName);
 
     expect(db.select().from(internalTables.chain)).rejects.toMatch(/relation "\w+.__chain" does not exist/);
     expect(db.select().from(internalTables.tables)).rejects.toMatch(/relation "\w+.__tables" does not exist/);
 
-    const storageAdapter = await postgresStorage({ database: db, schema, publicClient });
+    const storageAdapter = await postgresStorage({ database: db, schemaName, publicClient });
 
     expect(await db.select().from(internalTables.chain)).toMatchInlineSnapshot("[]");
     expect(await db.select().from(internalTables.tables)).toMatchInlineSnapshot("[]");
@@ -118,7 +118,7 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const tables = await getTables(db, schema);
+    const tables = await getTables(db, schemaName);
     expect(tables).toMatchInlineSnapshot(`
       [
         {
@@ -140,7 +140,7 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const sqlTable = createTable({ ...tables[0], schema });
+    const sqlTable = createTable({ ...tables[0], schemaName });
     expect(await db.select().from(sqlTable)).toMatchInlineSnapshot("[]");
   });
 });

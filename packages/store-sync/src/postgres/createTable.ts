@@ -4,6 +4,7 @@ import { buildColumn } from "./buildColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
 
+// TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
   __key: buildColumn("__key", "bytes").notNull().primaryKey(),
   __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
@@ -33,7 +34,7 @@ type CreateTableOptions<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = {
-  schema?: string;
+  schemaName?: string;
   address: Address;
   namespace: string;
   name: string;
@@ -50,7 +51,7 @@ export function createTable<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 >({
-  schema,
+  schemaName,
   address,
   namespace,
   name,
@@ -78,7 +79,7 @@ export function createTable<
     ...metaColumns,
   };
 
-  const table = schema ? pgSchema(schema).table(tableName, columns) : pgTable(tableName, columns);
+  const table = schemaName ? pgSchema(schemaName).table(tableName, columns) : pgTable(tableName, columns);
 
   return table as PgTableFromSchema<TKeySchema, TValueSchema>;
 }
