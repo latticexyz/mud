@@ -70,15 +70,14 @@ More more information on how to get started, have a look at the [MUD documentati
 
 MUD consists of several libraries. They can be used independently, but are best used together.
 
-| Package                                                                                                                   | Version                                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **[@latticexyz/network](/packages/network)** <br />TypeScript networking library for automatic contract/client state sync | [![npm version](https://img.shields.io/npm/v/@latticexyz/network.svg)](https://www.npmjs.org/package/@latticexyz/network)             |
-| **[@latticexyz/recs](/packages/recs)** <br />TypeScript Reactive Entity Component System library                          | [![npm version](https://img.shields.io/npm/v/@latticexyz/recs.svg)](https://www.npmjs.org/package/@latticexyz/recs)                   |
-| **[@latticexyz/services](/packages/services)** <br />Go services for indexer, faucet, message relay                       | [![npm version](https://img.shields.io/npm/v/@latticexyz/services.svg)](https://www.npmjs.org/package/@latticexyz/services)           |
-| **[@latticexyz/cli](/packages/cli)** <br />Command line interface for types, testing, faucet, deployment and more         | [![npm version](https://img.shields.io/npm/v/@latticexyz/cli.svg)](https://www.npmjs.org/package/@latticexyz/cli)                     |
-| **[@latticexyz/std-contracts](/packages/std-contracts)** <br />Solidity standard library                                  | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-contracts.svg)](https://www.npmjs.org/package/@latticexyz/std-contracts) |
-| **[@latticexyz/std-client](/packages/std-client)** <br />Typescript standard library                                      | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-client.svg)](https://www.npmjs.org/package/@latticexyz/std-client)       |
-| **[@latticexyz/noise](/packages/noise)** <br />Solidity and AssemblyScript implementations of Perlin noise                | [![npm version](https://img.shields.io/npm/v/@latticexyz/noise.svg)](https://www.npmjs.org/package/@latticexyz/noise)                 |
+| Package                                                                                                                   | Version                                                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **[@latticexyz/network](/packages/network)** <br />TypeScript networking library for automatic contract/client state sync | [![npm version](https://img.shields.io/npm/v/@latticexyz/network.svg)](https://www.npmjs.org/package/@latticexyz/network)       |
+| **[@latticexyz/recs](/packages/recs)** <br />TypeScript Reactive Entity Component System library                          | [![npm version](https://img.shields.io/npm/v/@latticexyz/recs.svg)](https://www.npmjs.org/package/@latticexyz/recs)             |
+| **[@latticexyz/services](/packages/services)** <br />Go services for indexer, faucet, message relay                       | [![npm version](https://img.shields.io/npm/v/@latticexyz/services.svg)](https://www.npmjs.org/package/@latticexyz/services)     |
+| **[@latticexyz/cli](/packages/cli)** <br />Command line interface for types, testing, faucet, deployment and more         | [![npm version](https://img.shields.io/npm/v/@latticexyz/cli.svg)](https://www.npmjs.org/package/@latticexyz/cli)               |
+| **[@latticexyz/std-client](/packages/std-client)** <br />Typescript standard library                                      | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-client.svg)](https://www.npmjs.org/package/@latticexyz/std-client) |
+| **[@latticexyz/noise](/packages/noise)** <br />Solidity and AssemblyScript implementations of Perlin noise                | [![npm version](https://img.shields.io/npm/v/@latticexyz/noise.svg)](https://www.npmjs.org/package/@latticexyz/noise)           |
 
 ## Contribute
 

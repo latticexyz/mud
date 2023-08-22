@@ -37,7 +37,6 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
-    "@latticexyz/solecs": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
