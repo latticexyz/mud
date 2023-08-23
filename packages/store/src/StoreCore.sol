@@ -16,7 +16,7 @@ import { StoreSwitch } from "./StoreSwitch.sol";
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSpliceRecord(bytes32 tableId, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
