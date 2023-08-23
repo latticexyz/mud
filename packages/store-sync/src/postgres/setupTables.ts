@@ -66,11 +66,13 @@ export async function setupTables(
   });
 
   return async () => {
-    await db.transaction(async (tx) => {
-      for (const schemaName of schemaNames) {
+    for (const schemaName of schemaNames) {
+      try {
         debug(`dropping namespace ${schemaName} and all of its tables`);
-        await tx.execute(sql.raw(mockDb.schema.dropSchema(schemaName).ifExists().cascade().compile().sql));
+        await db.execute(sql.raw(mockDb.schema.dropSchema(schemaName).ifExists().cascade().compile().sql));
+      } catch (error) {
+        debug(`failed to drop namespace ${schemaName}`, error);
       }
-    });
+    }
   };
 }
