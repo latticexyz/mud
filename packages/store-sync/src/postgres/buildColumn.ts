@@ -74,6 +74,7 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "int240":
     case "int248":
     case "int256":
+      // TODO: bigint is only 64 bits, so we'll need to reimplement >uint64 with numeric
       return bigint(name, { mode: "bigint" });
 
     case "bytes1":

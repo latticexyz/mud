@@ -88,7 +88,7 @@ try {
         schemaVersion,
         "recreating database"
       );
-      fs.truncateSync(env.DATABASE_URL);
+      // TODO: drop everything?
     } else if (currentChainState.lastUpdatedBlockNumber != null) {
       console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
       startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
