@@ -1,9 +1,9 @@
-import { defineComponent as defineComponentV2, setComponent as setComponentV2 } from "../src/Component";
-import { createWorld as createWorldV2 } from "../src/World";
-import { createEntity as createEntityV2 } from "../src/Entity";
-import { Type as TypeV2 } from "../src/constants";
-import { HasValue as HasValueV2 } from "../src/Query";
-import { defineSystem } from "../src/System";
+import { defineComponent as defineComponentV2, setComponent as setComponentV2 } from "./Component";
+import { createWorld as createWorldV2 } from "./World";
+import { createEntity as createEntityV2 } from "./Entity";
+import { Type as TypeV2 } from "./constants";
+import { HasValue as HasValueV2 } from "./Query";
+import { defineSystem } from "./System";
 
 export function timeIt(fn: () => unknown) {
   const start = Date.now();

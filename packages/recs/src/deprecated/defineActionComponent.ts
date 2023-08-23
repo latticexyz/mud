@@ -1,10 +1,12 @@
-import { defineComponent, World, Type, Component, Metadata, SchemaOf } from "@latticexyz/recs";
+import { defineComponent } from "../Component";
+import { Type } from "../constants";
+import { World, Component, SchemaOf, Metadata } from "../types";
 
 export function defineActionComponent<T = unknown>(world: World) {
   const Action = defineComponent(
     world,
     {
-      state: Type.Number,
+      state: Type.String,
       on: Type.OptionalEntity,
       metadata: Type.OptionalT,
       overrides: Type.OptionalStringArray,

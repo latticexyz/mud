@@ -1,5 +1,16 @@
 # Change Log
 
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/config@2.0.0-next.4
+  - @latticexyz/gas-report@2.0.0-next.4
+  - @latticexyz/schema-type@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+
 ## 2.0.0-next.3
 
 ### Major Changes
