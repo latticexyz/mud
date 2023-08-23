@@ -1,27 +1,24 @@
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { inArray } from "drizzle-orm";
 import { Table } from "../common";
-import { getTableId } from "./getTableId";
+import { getTableKey } from "./getTableKey";
 import { createInternalTables } from "./createInternalTables";
 import { tableIdToHex } from "@latticexyz/common";
 
 export async function getTables(
   db: PgDatabase<any>,
-  conditions: Pick<Table, "address" | "namespace" | "name">[] = [],
+  ids: string[] = [],
   getSchemaName?: (schemaName: string) => string
 ): Promise<Table[]> {
   const internalTables = createInternalTables(getSchemaName);
 
-  const ids = Array.from(
-    new Set(conditions.map((condition) => getTableId(condition.address, condition.namespace, condition.name)))
-  );
   const tables = await db
     .select()
     .from(internalTables.tables)
-    .where(ids.length ? inArray(internalTables.tables.id, ids) : undefined);
+    .where(ids.length ? inArray(internalTables.tables.id, [...new Set(ids)]) : undefined);
 
   return tables.map((table) => ({
-    id: getTableId(table.address, table.namespace, table.name),
+    id: getTableKey(table),
     address: table.address,
     tableId: tableIdToHex(table.namespace, table.name),
     namespace: table.namespace,

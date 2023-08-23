@@ -1,4 +1,4 @@
-import { PublicClient, concatHex, encodeAbiParameters, getAddress } from "viem";
+import { PublicClient, concatHex, encodeAbiParameters } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { and, eq } from "drizzle-orm";
 import { createTable } from "./createTable";
@@ -10,10 +10,9 @@ import { createInternalTables } from "./createInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 import { tableIdToHex } from "@latticexyz/common";
-import { identity, isDefined } from "@latticexyz/common/utils";
+import { identity } from "@latticexyz/common/utils";
 import { setupTables } from "./setupTables";
-import { getTableId } from "./getTableId";
-import { getSchema } from "./getSchema";
+import { getTableKey } from "./getTableKey";
 
 // Currently assumes one DB per chain ID
 
@@ -60,7 +59,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .insert(internalTables.tables)
             .values({
               schemaVersion,
-              id: getTableId(table.address, table.namespace, table.name),
+              id: getTableKey(table),
               address: table.address,
               tableId: tableIdToHex(table.namespace, table.name),
               namespace: table.namespace,
@@ -77,28 +76,14 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
     async getTables({ tables }) {
       // TODO: fetch any missing schemas from RPC
       // TODO: cache schemas in memory?
-      return getTables(database, tables, getSchemaName);
+      return getTables(database, tables.map(getTableKey), getSchemaName);
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
       // This may need to change if we decide to put multiple worlds into one DB (e.g. a namespace per world, but all under one DB).
       // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
 
-      const tables = await getTables(
-        database,
-        Array.from(
-          new Set(
-            operations.map((operation) =>
-              JSON.stringify({
-                address: getAddress(operation.address),
-                namespace: operation.namespace,
-                name: operation.name,
-              })
-            )
-          )
-        ).map((json) => JSON.parse(json)),
-        getSchemaName
-      );
+      const tables = await getTables(database, operations.map(getTableKey), getSchemaName);
 
       await database.transaction(async (tx) => {
         for (const { address, namespace, name } of tables) {
@@ -116,12 +101,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
         }
 
         for (const operation of operations) {
-          const table = tables.find(
-            (table) =>
-              table.address === getAddress(operation.address) &&
-              table.namespace === operation.namespace &&
-              table.name === operation.name
-          );
+          const table = tables.find((table) => getTableKey(table) === getTableKey(operation));
           if (!table) {
             debug(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
             continue;
