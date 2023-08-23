@@ -13,7 +13,8 @@ import { isNotNull } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { createInternalTables, schemaVersion, syncToPostgres } from "@latticexyz/store-sync/postgres";
+import { postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
+import { createStoreSync } from "@latticexyz/store-sync";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -66,13 +67,14 @@ const database = drizzle(postgres(env.DATABASE_URL), {
 
 let startBlock = env.START_BLOCK;
 
+const storage = await postgresStorage({ database, publicClient });
+
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 try {
-  const internalTables = createInternalTables();
   const currentChainStates = await database
     .select()
-    .from(internalTables.chain)
-    .where(eq(internalTables.chain.chainId, chainId))
+    .from(storage.internalTables.chain)
+    .where(eq(storage.internalTables.chain.chainId, chainId))
     .execute();
   // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
@@ -96,8 +98,8 @@ try {
   // ignore errors, this is optional
 }
 
-const { latestBlockNumber$, blockStorageOperations$ } = await syncToPostgres({
-  database,
+const { latestBlockNumber$, blockStorageOperations$ } = await createStoreSync({
+  storageAdapter: storage,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,

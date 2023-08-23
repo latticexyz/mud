@@ -9,7 +9,7 @@ import { blockLogsToStorage } from "../blockLogsToStorage";
 import * as transformSchemaNameExports from "./transformSchemaName";
 import { getTables } from "./getTables";
 import { postgresStorage } from "./postgresStorage";
-import { createTable } from "./createTable";
+import { createTable } from "./buildTable";
 
 vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
   (schemaName) => `${process.pid}_${process.env.VITEST_POOL_ID}__${schemaName}`

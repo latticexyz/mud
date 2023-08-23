@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createTable } from "./createTable";
+import { buildTable } from "./buildTable";
 
-describe("createTable", () => {
+describe("buildTable", () => {
   it("should create table from schema", async () => {
-    const table = createTable({
+    const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
       namespace: "test",
       name: "users",
@@ -250,7 +250,7 @@ describe("createTable", () => {
   });
 
   it("can create a singleton table", async () => {
-    const table = createTable({
+    const table = buildTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
       namespace: "test",
       name: "users",

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createInternalTables } from "./createInternalTables";
+import { buildInternalTables } from "./buildInternalTables";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { DefaultLogger } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
@@ -21,7 +21,7 @@ describe("setupTables", async () => {
   });
 
   it("should set up tables with schemas and clean up", async () => {
-    const internalTables = createInternalTables();
+    const internalTables = buildInternalTables();
 
     await expect(db.select().from(internalTables.chain)).rejects.toThrow(
       /relation "\w+mud_internal.chain" does not exist/

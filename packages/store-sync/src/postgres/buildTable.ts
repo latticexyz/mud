@@ -30,7 +30,7 @@ type PgTableFromSchema<
   };
 }>;
 
-type CreateTableOptions<
+type BuildTableOptions<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = {
@@ -41,12 +41,12 @@ type CreateTableOptions<
   valueSchema: TValueSchema;
 };
 
-type CreateTableResult<
+type BuildTableResult<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = PgTableFromSchema<TKeySchema, TValueSchema>;
 
-export function createTable<
+export function buildTable<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 >({
@@ -55,7 +55,7 @@ export function createTable<
   name,
   keySchema,
   valueSchema,
-}: CreateTableOptions<TKeySchema, TValueSchema>): CreateTableResult<TKeySchema, TValueSchema> {
+}: BuildTableOptions<TKeySchema, TValueSchema>): BuildTableResult<TKeySchema, TValueSchema> {
   const schemaName = transformSchemaName(`${getAddress(address)}__${namespace}`);
 
   const keyColumns = Object.fromEntries(

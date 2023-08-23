@@ -1,12 +1,12 @@
 import { PublicClient, concatHex, encodeAbiParameters } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
-import { and, eq, inArray } from "drizzle-orm";
-import { createTable } from "./createTable";
+import { eq, inArray } from "drizzle-orm";
+import { buildTable } from "./buildTable";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
-import { createInternalTables } from "./createInternalTables";
+import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 import { tableIdToHex } from "@latticexyz/common";
@@ -16,7 +16,7 @@ import { getTableKey } from "./getTableKey";
 // Currently assumes one DB per chain ID
 
 type PostgresStorage<TConfig extends StoreConfig> = BlockLogsToStorageOptions<TConfig> & {
-  internalTables: ReturnType<typeof createInternalTables>;
+  internalTables: ReturnType<typeof buildInternalTables>;
   cleanUp: () => Promise<void>;
 };
 
@@ -32,13 +32,13 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
-  const internalTables = createInternalTables();
+  const internalTables = buildInternalTables();
   cleanUp.push(await setupTables(database, Object.values(internalTables)));
 
   const storage = {
     async registerTables({ blockNumber, tables }) {
       const sqlTables = tables.map((table) =>
-        createTable({
+        buildTable({
           address: table.address,
           namespace: table.namespace,
           name: table.name,
@@ -100,7 +100,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             continue;
           }
 
-          const sqlTable = createTable(table);
+          const sqlTable = buildTable(table);
           const key = concatHex(
             Object.entries(table.keySchema).map(([keyName, type]) =>
               encodeAbiParameters([{ type }], [operation.key[keyName]])

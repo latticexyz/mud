@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { PgDatabase } from "drizzle-orm/pg-core";
-import { createTable, createInternalTables, getTables } from "@latticexyz/store-sync/postgres";
+import { buildTable, buildInternalTables, getTables } from "@latticexyz/store-sync/postgres";
 import { StorageAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 import { getAddress } from "viem";
@@ -14,14 +14,14 @@ import { getAddress } from "viem";
 export async function createStorageAdapter(database: PgDatabase<any>): Promise<StorageAdapter> {
   const adapter: StorageAdapter = {
     async findAll(chainId, address) {
-      const internalTables = createInternalTables();
+      const internalTables = buildInternalTables();
       const tables = (await getTables(database)).filter(
         (table) => address != null && getAddress(address) === getAddress(table.address)
       );
 
       const tablesWithRecords = await Promise.all(
         tables.map(async (table) => {
-          const sqliteTable = createTable(table);
+          const sqliteTable = buildTable(table);
           const records = await database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).execute();
           return {
             ...table,

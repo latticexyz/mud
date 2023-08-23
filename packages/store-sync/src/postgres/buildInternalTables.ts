@@ -4,7 +4,7 @@ import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { transformSchemaName } from "./transformSchemaName";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function createInternalTables() {
+export function buildInternalTables() {
   const schema = pgSchema(transformSchemaName("__mud_internal"));
   return {
     chain: schema.table("chain", {

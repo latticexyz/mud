@@ -2,11 +2,11 @@ import { PgDatabase } from "drizzle-orm/pg-core";
 import { inArray } from "drizzle-orm";
 import { Table } from "../common";
 import { getTableKey } from "./getTableKey";
-import { createInternalTables } from "./createInternalTables";
+import { buildInternalTables } from "./buildInternalTables";
 import { tableIdToHex } from "@latticexyz/common";
 
 export async function getTables(db: PgDatabase<any>, ids: string[] = []): Promise<Table[]> {
-  const internalTables = createInternalTables();
+  const internalTables = buildInternalTables();
 
   const tables = await db
     .select()
