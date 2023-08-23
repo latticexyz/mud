@@ -1,5 +1,17 @@
 # Change Log
 
+## 2.0.0-next.4
+
+### Major Changes
+
+- [#1343](https://github.com/latticexyz/mud/pull/1343) [`e3de1a33`](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1) Thanks [@holic](https://github.com/holic)! - Removes `useRow` and `useRows` hooks, previously powered by `store-cache`, which is now deprecated. Please use `recs` and the corresponding `useEntityQuery` and `useComponentValue` hooks. We'll have more hooks soon for SQL.js sync backends.
+
+### Patch Changes
+
+- Updated dependencies [[`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64), [`c14f8bf1`](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c)]:
+  - @latticexyz/recs@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+
 ## 2.0.0-next.3
 
 ### Patch Changes
