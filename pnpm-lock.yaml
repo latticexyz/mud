@@ -669,75 +669,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
 
-  packages/std-client:
-    dependencies:
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2
-      '@latticexyz/cli':
-        specifier: workspace:*
-        version: link:../cli
-      '@latticexyz/common':
-        specifier: workspace:*
-        version: link:../common
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
-      '@latticexyz/recs':
-        specifier: workspace:*
-        version: link:../recs
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
-      '@latticexyz/utils':
-        specifier: workspace:*
-        version: link:../utils
-      '@latticexyz/world':
-        specifier: workspace:*
-        version: link:../world
-      abitype:
-        specifier: 0.9.3
-        version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
-      mobx:
-        specifier: ^6.7.0
-        version: 6.9.0
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      rxjs:
-        specifier: 7.5.5
-        version: 7.5.5
-      viem:
-        specifier: 1.6.0
-        version: 1.6.0(typescript@5.1.6)(zod@3.21.4)
-    devDependencies:
-      '@types/jest':
-        specifier: ^27.4.1
-        version: 27.4.1
-      '@types/lodash':
-        specifier: ^4.14.182
-        version: 4.14.182
-      '@types/react':
-        specifier: ^18.2.6
-        version: 18.2.6
-      '@types/react-collapse':
-        specifier: ^5.0.1
-        version: 5.0.1
-      '@types/uuid':
-        specifier: ^8.3.4
-        version: 8.3.4
-      tsup:
-        specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
-      tsx:
-        specifier: ^3.12.6
-        version: 3.12.6
-      vitest:
-        specifier: 0.31.4
-        version: 0.31.4(jsdom@22.1.0)
+  packages/std-client: {}
 
   packages/std-contracts: {}
 
@@ -3277,10 +3209,6 @@ packages:
       '@types/node': 18.15.11
     dev: true
 
-  /@types/lodash@4.14.182:
-    resolution: {integrity: sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==}
-    dev: true
-
   /@types/long@4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
     dev: true
@@ -3348,12 +3276,6 @@ packages:
 
   /@types/prop-types@15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
-    dev: true
-
-  /@types/react-collapse@5.0.1:
-    resolution: {integrity: sha512-Iq3OrqvzCIP0DmAawU4T2VKH6XAplbjo/D7Qk14mcfQ92plU+OrA2SF10r2XrcFg1Wvya/5f8w1vS29RVpdoLQ==}
-    dependencies:
-      '@types/react': 18.2.6
     dev: true
 
   /@types/react-dom@18.2.4:
