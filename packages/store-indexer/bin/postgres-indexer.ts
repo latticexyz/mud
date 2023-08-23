@@ -4,8 +4,8 @@ import { DefaultLogger, eq } from "drizzle-orm";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { createStorageAdapter } from "../src/postgres/createStorageAdapter";
+import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
+import { createQueryAdapter } from "../src/postgres/createQueryAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
@@ -67,14 +67,14 @@ const database = drizzle(postgres(env.DATABASE_URL), {
 
 let startBlock = env.START_BLOCK;
 
-const storage = await postgresStorage({ database, publicClient });
+const storageAdapter = await postgresStorage({ database, publicClient });
 
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 try {
   const currentChainStates = await database
     .select()
-    .from(storage.internalTables.chain)
-    .where(eq(storage.internalTables.chain.chainId, chainId))
+    .from(storageAdapter.internalTables.chain)
+    .where(eq(storageAdapter.internalTables.chain.chainId, chainId))
     .execute();
   // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
@@ -99,7 +99,7 @@ try {
 }
 
 const { latestBlockNumber$, blockStorageOperations$ } = await createStoreSync({
-  storageAdapter: storage,
+  storageAdapter,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
@@ -124,12 +124,12 @@ const server = fastify({
 await server.register(import("@fastify/cors"));
 
 // @see https://trpc.io/docs/server/adapters/fastify
-server.register(fastifyTRPCPlugin, {
+server.register(fastifyTRPCPlugin<AppRouter>, {
   prefix: "/trpc",
   trpcOptions: {
     router: createAppRouter(),
     createContext: async () => ({
-      storageAdapter: await createStorageAdapter(database),
+      queryAdapter: await createQueryAdapter(database),
     }),
   },
 });

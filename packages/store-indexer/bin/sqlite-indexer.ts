@@ -6,9 +6,9 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
+import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
-import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
+import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
@@ -115,12 +115,12 @@ const server = fastify({
 await server.register(import("@fastify/cors"));
 
 // @see https://trpc.io/docs/server/adapters/fastify
-server.register(fastifyTRPCPlugin, {
+server.register(fastifyTRPCPlugin<AppRouter>, {
   prefix: "/trpc",
   trpcOptions: {
     router: createAppRouter(),
     createContext: async () => ({
-      storageAdapter: await createStorageAdapter(database),
+      queryAdapter: await createQueryAdapter(database),
     }),
   },
 });

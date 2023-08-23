@@ -9,7 +9,7 @@ import { blockLogsToStorage } from "../blockLogsToStorage";
 import * as transformSchemaNameExports from "./transformSchemaName";
 import { getTables } from "./getTables";
 import { postgresStorage } from "./postgresStorage";
-import { createTable } from "./buildTable";
+import { buildTable } from "./buildTable";
 
 vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
   (schemaName) => `${process.pid}_${process.env.VITEST_POOL_ID}__${schemaName}`
@@ -30,9 +30,9 @@ describe("postgresStorage", async () => {
   });
 
   it("should create tables and data from block log", async () => {
-    const storage = await postgresStorage({ database: db, publicClient });
+    const storageAdapter = await postgresStorage({ database: db, publicClient });
 
-    await blockLogsToStorage(storage)({
+    await blockLogsToStorage(storageAdapter)({
       blockNumber: 5448n,
       logs: [
         {
@@ -73,7 +73,7 @@ describe("postgresStorage", async () => {
       ],
     });
 
-    expect(await db.select().from(storage.internalTables.chain)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storageAdapter.internalTables.chain)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
@@ -84,7 +84,7 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    expect(await db.select().from(storage.internalTables.tables)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storageAdapter.internalTables.tables)).toMatchInlineSnapshot(`
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -129,9 +129,9 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const sqlTable = createTable(tables[0]);
+    const sqlTable = buildTable(tables[0]);
     expect(await db.select().from(sqlTable)).toMatchInlineSnapshot("[]");
 
-    await storage.cleanUp();
+    await storageAdapter.cleanUp();
   });
 });

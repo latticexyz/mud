@@ -3,7 +3,6 @@ import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { eq, inArray } from "drizzle-orm";
 import { buildTable } from "./buildTable";
 import { schemaToDefaults } from "../schemaToDefaults";
-import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { buildInternalTables } from "./buildInternalTables";
@@ -12,10 +11,11 @@ import { schemaVersion } from "./schemaVersion";
 import { tableIdToHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { getTableKey } from "./getTableKey";
+import { StorageAdapter } from "../common";
 
 // Currently assumes one DB per chain ID
 
-type PostgresStorage<TConfig extends StoreConfig> = BlockLogsToStorageOptions<TConfig> & {
+type PostgresStorageAdapter<TConfig extends StoreConfig> = StorageAdapter<TConfig> & {
   internalTables: ReturnType<typeof buildInternalTables>;
   cleanUp: () => Promise<void>;
 };
@@ -27,7 +27,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
   config?: TConfig;
-}): Promise<PostgresStorage<TConfig>> {
+}): Promise<PostgresStorageAdapter<TConfig>> {
   const cleanUp: (() => Promise<void>)[] = [];
 
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
@@ -35,7 +35,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
   const internalTables = buildInternalTables();
   cleanUp.push(await setupTables(database, Object.values(internalTables)));
 
-  const storage = {
+  const storageAdapter = {
     async registerTables({ blockNumber, tables }) {
       const sqlTables = tables.map((table) =>
         buildTable({
@@ -178,10 +178,10 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           .execute();
       });
     },
-  } as BlockLogsToStorageOptions<TConfig>;
+  } as StorageAdapter<TConfig>;
 
   return {
-    ...storage,
+    ...storageAdapter,
     internalTables,
     cleanUp: async (): Promise<void> => {
       for (const fn of cleanUp) {

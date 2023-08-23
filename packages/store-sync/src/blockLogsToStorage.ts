@@ -8,7 +8,7 @@ import {
 import { decodeAbiParameters, getAddress, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 import { isDefined } from "@latticexyz/common/utils";
-import { BlockLogs, StorageOperation, Table } from "./common";
+import { BlockLogs, StorageAdapter, StorageOperation, Table } from "./common";
 import { hexToTableId, tableIdToHex } from "@latticexyz/common";
 import storeConfig from "@latticexyz/store/mud.config";
 
@@ -16,17 +16,7 @@ import storeConfig from "@latticexyz/store/mud.config";
 const schemasTable = storeConfig.tables.Tables;
 const schemasTableId = tableIdToHex(storeConfig.namespace, schemasTable.name);
 
-export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
-  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: Table[] }) => Promise<void>;
-  getTables: (opts: {
-    blockNumber: BlockLogs["blockNumber"];
-    tables: Pick<Table, "address" | "namespace" | "name">[];
-  }) => Promise<Table[]>;
-  storeOperations: (opts: {
-    blockNumber: BlockLogs["blockNumber"];
-    operations: StorageOperation<TConfig>[];
-  }) => Promise<void>;
-};
+export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = StorageAdapter<TConfig>;
 
 export type BlockStorageOperations<TConfig extends StoreConfig = StoreConfig> = {
   blockNumber: BlockLogs["blockNumber"];
