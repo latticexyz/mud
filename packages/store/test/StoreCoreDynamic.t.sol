@@ -89,7 +89,13 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(_table, _key, 1, newDataBytes);
+    emit StoreSpliceRecord(
+      _table,
+      _key,
+      uint48(32 + 32 + secondDataBytes.length - byteLengthToPop),
+      uint40(byteLengthToPop),
+      new bytes(0)
+    );
 
     // Pop from second field
     startGasReport("pop from field (cold, 1 slot, 1 uint32 item)");
@@ -128,7 +134,13 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
     // Expect a StoreSetField event to be emitted after pop
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(_table, _key, 2, dataBytes);
+    emit StoreSpliceRecord(
+      _table,
+      _key,
+      uint48(32 + 32 + secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
+      uint40(byteLengthToPop),
+      new bytes(0)
+    );
 
     // Pop from the field
     startGasReport("pop from field (cold, 2 slots, 10 uint32 items)");
