@@ -354,7 +354,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(table, key, 0, firstDataPacked);
+    emit StoreSpliceRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
 
     // Set first field
     IStore(this).setField(table, key, 0, firstDataPacked, valueSchema);
@@ -380,7 +380,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(table, key, 1, secondDataPacked);
+    emit StoreSpliceRecord(
+      table,
+      key,
+      uint48(firstDataPacked.length),
+      uint40(secondDataPacked.length),
+      secondDataPacked
+    );
 
     IStore(this).setField(table, key, 1, secondDataPacked, valueSchema);
 
@@ -426,7 +432,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(table, key, 2, thirdDataBytes);
+    emit StoreSpliceRecord(
+      table,
+      key,
+      uint48(firstDataPacked.length + secondDataPacked.length + 32),
+      0,
+      thirdDataBytes
+    );
 
     // Set third field
     IStore(this).setField(table, key, 2, thirdDataBytes, valueSchema);
@@ -448,7 +460,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(table, key, 3, fourthDataBytes);
+    emit StoreSpliceRecord(
+      table,
+      key,
+      uint48(firstDataPacked.length + secondDataPacked.length + 32 + thirdDataBytes.length),
+      0,
+      fourthDataBytes
+    );
 
     // Set fourth field
     IStore(this).setField(table, key, 3, fourthDataBytes, valueSchema);
@@ -468,6 +486,29 @@ contract StoreCoreTest is Test, StoreMock {
         abi.encodePacked(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes)
       )
     );
+
+    // Set fourth field again, changing it to be equal to third field
+    // (non-zero deleteCount must be emitted when the array exists)
+
+    // Expect a StoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit StoreSpliceRecord(
+      table,
+      key,
+      uint48(firstDataPacked.length + secondDataPacked.length + 32 + thirdDataBytes.length),
+      uint40(fourthDataBytes.length),
+      thirdDataBytes
+    );
+
+    // Set fourth field
+    IStore(this).setField(table, key, 3, thirdDataBytes, valueSchema);
+
+    // Get fourth field
+    loadedData = IStore(this).getField(table, key, 3, valueSchema);
+
+    // Verify loaded data is correct
+    assertEq(loadedData.length, thirdDataBytes.length);
+    assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
   }
 
   function testDeleteData() public {
@@ -599,9 +640,15 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newSecondDataBytes = abi.encodePacked(data.secondDataBytes, data.secondDataToPush);
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(data.table, data.key, 1, data.newSecondDataBytes);
+    emit StoreSpliceRecord(
+      data.table,
+      data.key,
+      uint48(data.firstDataBytes.length + 32 + data.secondDataBytes.length),
+      0,
+      data.secondDataToPush
+    );
 
     // Push to second field
     IStore(this).pushToField(data.table, data.key, 1, data.secondDataToPush, valueSchema);
@@ -637,7 +684,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(data.table, data.key, 2, data.newThirdDataBytes);
+    emit StoreSpliceRecord(
+      data.table,
+      data.key,
+      uint48(data.firstDataBytes.length + 32 + data.newSecondDataBytes.length + data.thirdDataBytes.length),
+      0,
+      data.thirdDataToPush
+    );
 
     // Push to third field
     IStore(this).pushToField(data.table, data.key, 2, data.thirdDataToPush, valueSchema);
@@ -732,7 +785,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(data.table, data.key, 1, data.newSecondDataBytes);
+    emit StoreSpliceRecord(
+      data.table,
+      data.key,
+      uint48(data.firstDataBytes.length + 32 + 4 * 1),
+      4 * 1,
+      data.secondDataForUpdate
+    );
 
     // Update index 1 in second field (4 = byte length of uint32)
     IStore(this).updateInField(data.table, data.key, 1, 4 * 1, data.secondDataForUpdate, valueSchema);
@@ -770,7 +829,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(data.table, data.key, 2, data.newThirdDataBytes);
+    emit StoreSpliceRecord(
+      data.table,
+      data.key,
+      uint48(data.firstDataBytes.length + 32 + data.newSecondDataBytes.length + 8 * 1),
+      8 * 4,
+      data.thirdDataForUpdate
+    );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
     IStore(this).updateInField(data.table, data.key, 2, 8 * 1, data.thirdDataForUpdate, valueSchema);
