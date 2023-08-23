@@ -24,18 +24,16 @@ type PostgresStorageAdapter<TConfig extends StoreConfig> = BlockLogsToStorageOpt
 export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
-  getSchemaName = identity,
 }: {
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
-  getSchemaName?: (schemaName: string) => string;
   config?: TConfig;
 }): Promise<PostgresStorageAdapter<TConfig>> {
   const cleanUp: (() => Promise<void>)[] = [];
 
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
-  const internalTables = createInternalTables(getSchemaName);
+  const internalTables = createInternalTables();
   cleanUp.push(await setupTables(database, Object.values(internalTables)));
 
   const adapter = {
@@ -47,7 +45,6 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           name: table.name,
           keySchema: table.keySchema,
           valueSchema: table.valueSchema,
-          getSchemaName,
         })
       );
 
@@ -76,14 +73,14 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
     async getTables({ tables }) {
       // TODO: fetch any missing schemas from RPC
       // TODO: cache schemas in memory?
-      return getTables(database, tables.map(getTableKey), getSchemaName);
+      return getTables(database, tables.map(getTableKey));
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
       // This may need to change if we decide to put multiple worlds into one DB (e.g. a namespace per world, but all under one DB).
       // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
 
-      const tables = await getTables(database, operations.map(getTableKey), getSchemaName);
+      const tables = await getTables(database, operations.map(getTableKey));
 
       await database.transaction(async (tx) => {
         for (const { address, namespace, name } of tables) {
@@ -107,7 +104,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             continue;
           }
 
-          const sqlTable = createTable({ ...table, getSchemaName });
+          const sqlTable = createTable(table);
           const key = concatHex(
             Object.entries(table.keySchema).map(([keyName, type]) =>
               encodeAbiParameters([{ type }], [operation.key[keyName]])

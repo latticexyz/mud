@@ -2,7 +2,7 @@ import { AnyPgColumnBuilder, PgTableWithColumns, pgSchema } from "drizzle-orm/pg
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildColumn } from "./buildColumn";
 import { Address, getAddress } from "viem";
-import { identity } from "@latticexyz/common/utils";
+import { transformSchemaName } from "./transformSchemaName";
 
 // TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
@@ -39,7 +39,6 @@ type CreateTableOptions<
   name: string;
   keySchema: TKeySchema;
   valueSchema: TValueSchema;
-  getSchemaName?: (schemaName: string) => string;
 };
 
 type CreateTableResult<
@@ -56,9 +55,8 @@ export function createTable<
   name,
   keySchema,
   valueSchema,
-  getSchemaName = identity,
 }: CreateTableOptions<TKeySchema, TValueSchema>): CreateTableResult<TKeySchema, TValueSchema> {
-  const schemaName = getSchemaName(`${getAddress(address)}__${namespace}`);
+  const schemaName = transformSchemaName(`${getAddress(address)}__${namespace}`);
 
   const keyColumns = Object.fromEntries(
     Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])

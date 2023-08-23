@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { postgresStorage } from "./postgresStorage";
 import { getTables } from "./getTables";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
@@ -9,10 +9,14 @@ import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
 import { blockLogsToStorage } from "../blockLogsToStorage";
 import postgres from "postgres";
+import * as transformSchemaNameExports from "./transformSchemaName";
+
+vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
+  (schemaName) => `${process.pid}_${process.env.VITEST_POOL_ID}__${schemaName}`
+);
 
 describe("postgresStorage", async () => {
   let db: PgDatabase<QueryResultHKT>;
-  const getSchemaName = (schemaName: string): string => `${process.pid}_${process.env.VITEST_POOL_ID}__${schemaName}`;
 
   const publicClient = createPublicClient({
     chain: foundry,
@@ -26,7 +30,7 @@ describe("postgresStorage", async () => {
   });
 
   it("should create tables and data from block log", async () => {
-    const adapter = await postgresStorage({ database: db, publicClient, getSchemaName });
+    const adapter = await postgresStorage({ database: db, publicClient });
 
     await blockLogsToStorage(adapter)({
       blockNumber: 5448n,
@@ -103,7 +107,7 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const tables = await getTables(db, [], getSchemaName);
+    const tables = await getTables(db, []);
     expect(tables).toMatchInlineSnapshot(`
       [
         {
@@ -125,8 +129,7 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const table = tables[0];
-    const sqlTable = createTable({ ...table, getSchemaName });
+    const sqlTable = createTable(tables[0]);
     expect(await db.select().from(sqlTable)).toMatchInlineSnapshot("[]");
 
     await adapter.cleanUp();

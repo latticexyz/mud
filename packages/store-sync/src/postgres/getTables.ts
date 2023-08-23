@@ -5,12 +5,8 @@ import { getTableKey } from "./getTableKey";
 import { createInternalTables } from "./createInternalTables";
 import { tableIdToHex } from "@latticexyz/common";
 
-export async function getTables(
-  db: PgDatabase<any>,
-  ids: string[] = [],
-  getSchemaName?: (schemaName: string) => string
-): Promise<Table[]> {
-  const internalTables = createInternalTables(getSchemaName);
+export async function getTables(db: PgDatabase<any>, ids: string[] = []): Promise<Table[]> {
+  const internalTables = createInternalTables();
 
   const tables = await db
     .select()

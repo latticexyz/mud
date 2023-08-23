@@ -1,11 +1,11 @@
 import { bigint, integer, pgSchema, text } from "drizzle-orm/pg-core";
 import { address, json } from "./columnTypes";
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
-import { identity } from "@latticexyz/common/utils";
+import { transformSchemaName } from "./transformSchemaName";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function createInternalTables(getSchemaName: (schemaName: string) => string = identity) {
-  const schema = pgSchema(getSchemaName("__mud_internal"));
+export function createInternalTables() {
+  const schema = pgSchema(transformSchemaName("__mud_internal"));
   return {
     chain: schema.table("chain", {
       schemaVersion: integer("schema_version").notNull().primaryKey(),
