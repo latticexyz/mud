@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { DefaultLogger } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -8,7 +7,7 @@ import { foundry } from "viem/chains";
 import { blockLogsToStorage } from "../blockLogsToStorage";
 import * as transformSchemaNameExports from "./transformSchemaName";
 import { getTables } from "./getTables";
-import { postgresStorage } from "./postgresStorage";
+import { PostgresStorageAdapter, postgresStorage } from "./postgresStorage";
 import { buildTable } from "./buildTable";
 
 vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
@@ -16,22 +15,23 @@ vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
 );
 
 describe("postgresStorage", async () => {
-  let db: PgDatabase<QueryResultHKT>;
+  const db = drizzle(postgres(process.env.DATABASE_URL!), {
+    logger: new DefaultLogger(),
+  });
 
   const publicClient = createPublicClient({
     chain: foundry,
     transport: http(),
   });
 
+  let storageAdapter: PostgresStorageAdapter;
+
   beforeEach(async () => {
-    db = drizzle(postgres(process.env.DATABASE_URL!), {
-      logger: new DefaultLogger(),
-    });
+    storageAdapter = await postgresStorage({ database: db, publicClient });
+    return storageAdapter.cleanUp;
   });
 
   it("should create tables and data from block log", async () => {
-    const storageAdapter = await postgresStorage({ database: db, publicClient });
-
     await blockLogsToStorage(storageAdapter)({
       blockNumber: 5448n,
       logs: [

@@ -15,7 +15,7 @@ import { StorageAdapter } from "../common";
 
 // Currently assumes one DB per chain ID
 
-type PostgresStorageAdapter<TConfig extends StoreConfig> = StorageAdapter<TConfig> & {
+export type PostgresStorageAdapter<TConfig extends StoreConfig = StoreConfig> = StorageAdapter<TConfig> & {
   internalTables: ReturnType<typeof buildInternalTables>;
   cleanUp: () => Promise<void>;
 };

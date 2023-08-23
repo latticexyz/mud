@@ -13,6 +13,7 @@ vi.spyOn(transformSchemaNameExports, "transformSchemaName").mockImplementation(
 
 describe("setupTables", async () => {
   let db: PgDatabase<QueryResultHKT>;
+  const internalTables = buildInternalTables();
 
   beforeEach(async () => {
     db = drizzle(postgres(process.env.DATABASE_URL!), {
@@ -20,28 +21,26 @@ describe("setupTables", async () => {
     });
   });
 
-  it("should set up tables with schemas and clean up", async () => {
-    const internalTables = buildInternalTables();
+  describe("before running", () => {
+    it("should be missing schemas", async () => {
+      await expect(db.select().from(internalTables.chain)).rejects.toThrow(
+        /relation "\w+mud_internal.chain" does not exist/
+      );
+      await expect(db.select().from(internalTables.tables)).rejects.toThrow(
+        /relation "\w+mud_internal.tables" does not exist/
+      );
+    });
+  });
 
-    await expect(db.select().from(internalTables.chain)).rejects.toThrow(
-      /relation "\w+mud_internal.chain" does not exist/
-    );
-    await expect(db.select().from(internalTables.tables)).rejects.toThrow(
-      /relation "\w+mud_internal.tables" does not exist/
-    );
+  describe("after running", () => {
+    beforeEach(async () => {
+      const cleanUp = await setupTables(db, Object.values(internalTables));
+      return cleanUp;
+    });
 
-    const cleanUp = await setupTables(db, Object.values(internalTables));
-
-    expect(await db.select().from(internalTables.chain)).toMatchInlineSnapshot("[]");
-    expect(await db.select().from(internalTables.tables)).toMatchInlineSnapshot("[]");
-
-    await cleanUp();
-
-    await expect(db.select().from(internalTables.chain)).rejects.toThrow(
-      /relation "\w+mud_internal.chain" does not exist/
-    );
-    await expect(db.select().from(internalTables.tables)).rejects.toThrow(
-      /relation "\w+mud_internal.tables" does not exist/
-    );
+    it("should have schemas", async () => {
+      expect(await db.select().from(internalTables.chain)).toMatchInlineSnapshot("[]");
+      expect(await db.select().from(internalTables.tables)).toMatchInlineSnapshot("[]");
+    });
   });
 });
