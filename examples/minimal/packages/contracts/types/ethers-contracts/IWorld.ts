@@ -431,15 +431,15 @@ export interface IWorldInterface extends utils.Interface {
     "HelloWorld()": EventFragment;
     "StoreDeleteRecord(bytes32,bytes32[])": EventFragment;
     "StoreEphemeralRecord(bytes32,bytes32[],bytes)": EventFragment;
-    "StoreSetField(bytes32,bytes32[],uint8,bytes)": EventFragment;
     "StoreSetRecord(bytes32,bytes32[],bytes)": EventFragment;
+    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "HelloWorld"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreDeleteRecord"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreEphemeralRecord"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "StoreSetField"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreSetRecord"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StoreSpliceRecord"): EventFragment;
 }
 
 export interface HelloWorldEventObject {}
@@ -472,19 +472,6 @@ export type StoreEphemeralRecordEvent = TypedEvent<
 export type StoreEphemeralRecordEventFilter =
   TypedEventFilter<StoreEphemeralRecordEvent>;
 
-export interface StoreSetFieldEventObject {
-  table: string;
-  key: string[];
-  schemaIndex: number;
-  data: string;
-}
-export type StoreSetFieldEvent = TypedEvent<
-  [string, string[], number, string],
-  StoreSetFieldEventObject
->;
-
-export type StoreSetFieldEventFilter = TypedEventFilter<StoreSetFieldEvent>;
-
 export interface StoreSetRecordEventObject {
   table: string;
   key: string[];
@@ -496,6 +483,21 @@ export type StoreSetRecordEvent = TypedEvent<
 >;
 
 export type StoreSetRecordEventFilter = TypedEventFilter<StoreSetRecordEvent>;
+
+export interface StoreSpliceRecordEventObject {
+  tableId: string;
+  key: string[];
+  start: number;
+  deleteCount: number;
+  data: string;
+}
+export type StoreSpliceRecordEvent = TypedEvent<
+  [string, string[], number, number, string],
+  StoreSpliceRecordEventObject
+>;
+
+export type StoreSpliceRecordEventFilter =
+  TypedEventFilter<StoreSpliceRecordEvent>;
 
 export interface IWorld extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -1201,19 +1203,6 @@ export interface IWorld extends BaseContract {
       data?: null
     ): StoreEphemeralRecordEventFilter;
 
-    "StoreSetField(bytes32,bytes32[],uint8,bytes)"(
-      table?: null,
-      key?: null,
-      schemaIndex?: null,
-      data?: null
-    ): StoreSetFieldEventFilter;
-    StoreSetField(
-      table?: null,
-      key?: null,
-      schemaIndex?: null,
-      data?: null
-    ): StoreSetFieldEventFilter;
-
     "StoreSetRecord(bytes32,bytes32[],bytes)"(
       table?: null,
       key?: null,
@@ -1224,6 +1213,21 @@ export interface IWorld extends BaseContract {
       key?: null,
       data?: null
     ): StoreSetRecordEventFilter;
+
+    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes)"(
+      tableId?: null,
+      key?: null,
+      start?: null,
+      deleteCount?: null,
+      data?: null
+    ): StoreSpliceRecordEventFilter;
+    StoreSpliceRecord(
+      tableId?: null,
+      key?: null,
+      start?: null,
+      deleteCount?: null,
+      data?: null
+    ): StoreSpliceRecordEventFilter;
   };
 
   estimateGas: {

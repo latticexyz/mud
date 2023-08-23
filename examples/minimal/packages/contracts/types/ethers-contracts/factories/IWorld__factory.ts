@@ -278,18 +278,12 @@ const _abi = [
       },
       {
         indexed: false,
-        internalType: "uint8",
-        name: "schemaIndex",
-        type: "uint8",
-      },
-      {
-        indexed: false,
         internalType: "bytes",
         name: "data",
         type: "bytes",
       },
     ],
-    name: "StoreSetField",
+    name: "StoreSetRecord",
     type: "event",
   },
   {
@@ -298,7 +292,7 @@ const _abi = [
       {
         indexed: false,
         internalType: "bytes32",
-        name: "table",
+        name: "tableId",
         type: "bytes32",
       },
       {
@@ -309,12 +303,24 @@ const _abi = [
       },
       {
         indexed: false,
+        internalType: "uint48",
+        name: "start",
+        type: "uint48",
+      },
+      {
+        indexed: false,
+        internalType: "uint40",
+        name: "deleteCount",
+        type: "uint40",
+      },
+      {
+        indexed: false,
         internalType: "bytes",
         name: "data",
         type: "bytes",
       },
     ],
-    name: "StoreSetRecord",
+    name: "StoreSpliceRecord",
     type: "event",
   },
   {

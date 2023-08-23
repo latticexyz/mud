@@ -66,22 +66,6 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "expected",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "received",
-        "type": "uint256"
-      }
-    ],
-    "name": "StoreCore_InvalidDataLength",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
         "internalType": "bytes32",
         "name": "resourceSelector",
         "type": "bytes32"
