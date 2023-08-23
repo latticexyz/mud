@@ -109,6 +109,7 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "bytes31":
     case "bytes32":
     case "bytes":
+      // TODO: https://github.com/drizzle-team/drizzle-orm/issues/298
       return text(name);
 
     case "address":
