@@ -1,9 +1,8 @@
-import { beforeEach, afterEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { postgresStorage } from "./postgresStorage";
 import { getTables } from "./getTables";
-import { createInternalTables } from "./createInternalTables";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
-import { DefaultLogger, sql } from "drizzle-orm";
+import { DefaultLogger } from "drizzle-orm";
 import { createTable } from "./createTable";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { createPublicClient, http } from "viem";
@@ -13,7 +12,7 @@ import postgres from "postgres";
 
 describe("postgresStorage", async () => {
   let db: PgDatabase<QueryResultHKT>;
-  const schemaName = `store_sync_tests_${process.pid}_${process.env.VITEST_POOL_ID}`;
+  const getSchemaName = (schemaName: string): string => `${process.pid}_${process.env.VITEST_POOL_ID}__${schemaName}`;
 
   const publicClient = createPublicClient({
     chain: foundry,
@@ -24,26 +23,12 @@ describe("postgresStorage", async () => {
     db = drizzle(postgres(process.env.DATABASE_URL!), {
       logger: new DefaultLogger(),
     });
-    await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`));
-    await db.execute(sql.raw(`CREATE SCHEMA IF NOT EXISTS ${schemaName}`));
-  });
-
-  afterEach(async () => {
-    await db.execute(sql.raw(`DROP SCHEMA IF EXISTS ${schemaName} CASCADE`));
   });
 
   it("should create tables and data from block log", async () => {
-    const internalTables = createInternalTables(schemaName);
+    const adapter = await postgresStorage({ database: db, publicClient, getSchemaName });
 
-    await expect(db.select().from(internalTables.chain)).rejects.toThrow(/relation "\w+.__chain" does not exist/);
-    await expect(db.select().from(internalTables.tables)).rejects.toThrow(/relation "\w+.__tables" does not exist/);
-
-    const storageAdapter = await postgresStorage({ database: db, schemaName, publicClient });
-
-    expect(await db.select().from(internalTables.chain)).toMatchInlineSnapshot("[]");
-    expect(await db.select().from(internalTables.tables)).toMatchInlineSnapshot("[]");
-
-    await blockLogsToStorage(storageAdapter)({
+    await blockLogsToStorage(adapter)({
       blockNumber: 5448n,
       logs: [
         {
@@ -84,7 +69,7 @@ describe("postgresStorage", async () => {
       ],
     });
 
-    expect(await db.select().from(internalTables.chain)).toMatchInlineSnapshot(`
+    expect(await db.select().from(adapter.internalTables.chain)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
@@ -95,11 +80,11 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    expect(await db.select().from(internalTables.tables)).toMatchInlineSnapshot(`
+    expect(await db.select().from(adapter.internalTables.tables)).toMatchInlineSnapshot(`
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
+          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3::Inventory",
           "keySchema": {
             "item": "uint32",
             "itemVariant": "uint32",
@@ -118,12 +103,12 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const tables = await getTables(db, schemaName);
+    const tables = await getTables(db, [], getSchemaName);
     expect(tables).toMatchInlineSnapshot(`
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
+          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3::Inventory",
           "keySchema": {
             "item": "uint32",
             "itemVariant": "uint32",
@@ -140,7 +125,10 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    const sqlTable = createTable({ ...tables[0], schemaName });
+    const table = tables[0];
+    const sqlTable = createTable({ ...table, getSchemaName });
     expect(await db.select().from(sqlTable)).toMatchInlineSnapshot("[]");
+
+    await adapter.cleanUp();
   });
 });

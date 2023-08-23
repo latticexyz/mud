@@ -1,8 +1,8 @@
-import { AnyPgColumnBuilder, PgTableWithColumns, pgSchema, pgTable } from "drizzle-orm/pg-core";
+import { AnyPgColumnBuilder, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildColumn } from "./buildColumn";
-import { Address } from "viem";
-import { getTableName } from "./getTableName";
+import { Address, getAddress } from "viem";
+import { identity } from "@latticexyz/common/utils";
 
 // TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
@@ -34,12 +34,12 @@ type CreateTableOptions<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = {
-  schemaName?: string;
   address: Address;
   namespace: string;
   name: string;
   keySchema: TKeySchema;
   valueSchema: TValueSchema;
+  getSchemaName?: (schemaName: string) => string;
 };
 
 type CreateTableResult<
@@ -51,14 +51,14 @@ export function createTable<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 >({
-  schemaName,
   address,
   namespace,
   name,
   keySchema,
   valueSchema,
+  getSchemaName = identity,
 }: CreateTableOptions<TKeySchema, TValueSchema>): CreateTableResult<TKeySchema, TValueSchema> {
-  const tableName = getTableName(address, namespace, name);
+  const schemaName = getSchemaName(`${getAddress(address)}__${namespace}`);
 
   const keyColumns = Object.fromEntries(
     Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
@@ -79,7 +79,7 @@ export function createTable<
     ...metaColumns,
   };
 
-  const table = schemaName ? pgSchema(schemaName).table(tableName, columns) : pgTable(tableName, columns);
+  const table = pgSchema(schemaName).table(name, columns);
 
   return table as PgTableFromSchema<TKeySchema, TValueSchema>;
 }

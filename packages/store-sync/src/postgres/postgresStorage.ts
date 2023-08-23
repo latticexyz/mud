@@ -1,20 +1,26 @@
 import { PublicClient, concatHex, encodeAbiParameters, getAddress } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { createTable } from "./createTable";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
-import { getTableName } from "./getTableName";
 import { createInternalTables } from "./createInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
-import { tableToSql } from "./tableToSql";
 import { tableIdToHex } from "@latticexyz/common";
-import { identity } from "@latticexyz/common/utils";
+import { identity, isDefined } from "@latticexyz/common/utils";
+import { setupTables } from "./setupTables";
+import { getTableId } from "./getTableId";
+import { getSchema } from "./getSchema";
 
 // Currently assumes one DB per chain ID
+
+type PostgresStorageAdapter<TConfig extends StoreConfig> = BlockLogsToStorageOptions<TConfig> & {
+  internalTables: ReturnType<typeof createInternalTables>;
+  cleanUp: () => Promise<void>;
+};
 
 export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
@@ -25,39 +31,36 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
   publicClient: PublicClient;
   getSchemaName?: (schemaName: string) => string;
   config?: TConfig;
-}): Promise<BlockLogsToStorageOptions<TConfig>> {
+}): Promise<PostgresStorageAdapter<TConfig>> {
+  const cleanUp: (() => Promise<void>)[] = [];
+
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
   const internalTables = createInternalTables(getSchemaName);
+  cleanUp.push(await setupTables(database, Object.values(internalTables)));
 
-  // TODO: should these run lazily before first `registerTables`?
-  await database.transaction(async (tx) => {
-    await tx.execute(sql.raw(tableToSql(internalTables.chain)));
-    await tx.execute(sql.raw(tableToSql(internalTables.tables)));
-  });
-
-  return {
+  const adapter = {
     async registerTables({ blockNumber, tables }) {
+      const sqlTables = tables.map((table) =>
+        createTable({
+          address: table.address,
+          namespace: table.namespace,
+          name: table.name,
+          keySchema: table.keySchema,
+          valueSchema: table.valueSchema,
+          getSchemaName,
+        })
+      );
+
+      cleanUp.push(await setupTables(database, sqlTables));
+
       await database.transaction(async (tx) => {
         for (const table of tables) {
-          debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
-
-          const sqlTable = createTable({
-            schemaName: getSchemaName(`${table.namespace}__${table.name}`),
-            address: table.address,
-            namespace: table.namespace,
-            name: table.name,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
-          });
-
-          await tx.execute(sql.raw(tableToSql(sqlTable)));
-
           await tx
             .insert(internalTables.tables)
             .values({
               schemaVersion,
-              id: getTableName(table.address, table.namespace, table.name),
+              id: getTableId(table.address, table.namespace, table.name),
               address: table.address,
               tableId: tableIdToHex(table.namespace, table.name),
               namespace: table.namespace,
@@ -74,7 +77,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
     async getTables({ tables }) {
       // TODO: fetch any missing schemas from RPC
       // TODO: cache schemas in memory?
-      return getTables(database, schemaName, tables);
+      return getTables(database, tables, getSchemaName);
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
@@ -124,7 +127,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             continue;
           }
 
-          const sqlTable = createTable({ ...table, schemaName });
+          const sqlTable = createTable({ ...table, getSchemaName });
           const key = concatHex(
             Object.entries(table.keySchema).map(([keyName, type]) =>
               encodeAbiParameters([{ type }], [operation.key[keyName]])
@@ -203,4 +206,14 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
       });
     },
   } as BlockLogsToStorageOptions<TConfig>;
+
+  return {
+    ...adapter,
+    internalTables,
+    cleanUp: async (): Promise<void> => {
+      for (const fn of cleanUp) {
+        await fn();
+      }
+    },
+  };
 }

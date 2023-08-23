@@ -39,7 +39,7 @@
     "dev": "tsup --watch",
     "lint": "eslint .",
     "test": "vitest --run",
-    "test:local": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest --run"
+    "test:local": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",

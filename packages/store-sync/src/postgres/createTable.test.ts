@@ -124,9 +124,9 @@ describe("createTable", () => {
           "primary": false,
           "table": [Circular],
         },
-        Symbol(drizzle:Name): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
-        Symbol(drizzle:OriginalName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
-        Symbol(drizzle:Schema): undefined,
+        Symbol(drizzle:Name): "users",
+        Symbol(drizzle:OriginalName): "users",
+        Symbol(drizzle:Schema): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test",
         Symbol(drizzle:Columns): {
           "__isDeleted": PgBoolean {
             "config": {
@@ -240,7 +240,7 @@ describe("createTable", () => {
             "table": [Circular],
           },
         },
-        Symbol(drizzle:BaseName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
+        Symbol(drizzle:BaseName): "users",
         Symbol(drizzle:IsAlias): false,
         Symbol(drizzle:ExtraConfigBuilder): undefined,
         Symbol(drizzle:IsDrizzleTable): true,
@@ -327,9 +327,9 @@ describe("createTable", () => {
           "sqlName": "text",
           "table": [Circular],
         },
-        Symbol(drizzle:Name): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
-        Symbol(drizzle:OriginalName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
-        Symbol(drizzle:Schema): undefined,
+        Symbol(drizzle:Name): "users",
+        Symbol(drizzle:OriginalName): "users",
+        Symbol(drizzle:Schema): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test",
         Symbol(drizzle:Columns): {
           "__isDeleted": PgBoolean {
             "config": {
@@ -399,7 +399,7 @@ describe("createTable", () => {
             "table": [Circular],
           },
         },
-        Symbol(drizzle:BaseName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
+        Symbol(drizzle:BaseName): "users",
         Symbol(drizzle:IsAlias): false,
         Symbol(drizzle:ExtraConfigBuilder): undefined,
         Symbol(drizzle:IsDrizzleTable): true,

@@ -1,7 +1,7 @@
 import { PgDatabase } from "drizzle-orm/pg-core";
 import { inArray } from "drizzle-orm";
 import { Table } from "../common";
-import { getTableName } from "./getTableName";
+import { getTableId } from "./getTableId";
 import { createInternalTables } from "./createInternalTables";
 import { tableIdToHex } from "@latticexyz/common";
 
@@ -13,7 +13,7 @@ export async function getTables(
   const internalTables = createInternalTables(getSchemaName);
 
   const ids = Array.from(
-    new Set(conditions.map((condition) => getTableName(condition.address, condition.namespace, condition.name)))
+    new Set(conditions.map((condition) => getTableId(condition.address, condition.namespace, condition.name)))
   );
   const tables = await db
     .select()
@@ -21,7 +21,7 @@ export async function getTables(
     .where(ids.length ? inArray(internalTables.tables.id, ids) : undefined);
 
   return tables.map((table) => ({
-    id: getTableName(table.address, table.namespace, table.name),
+    id: getTableId(table.address, table.namespace, table.name),
     address: table.address,
     tableId: tableIdToHex(table.namespace, table.name),
     namespace: table.namespace,
