@@ -998,10 +998,13 @@ importers:
         version: 4.3.4(supports-color@8.1.1)
       drizzle-orm:
         specifier: ^0.27.0
-        version: 0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0)
+        version: 0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0)(postgres@3.3.5)
       fastify:
         specifier: ^4.21.0
         version: 4.21.0
+      postgres:
+        specifier: ^3.3.5
+        version: 3.3.5
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
@@ -5255,7 +5258,7 @@ packages:
       detect-libc: 1.0.3
     dev: true
 
-  /drizzle-orm@0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0):
+  /drizzle-orm@0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0)(postgres@3.3.5):
     resolution: {integrity: sha512-LGiJ0icB+wQwgbSCOvAjONY8Ec6G/EDzQQP5PmUaQYeI9OqgpVKHC2T1fFIbvk5dabWsbokJ5NOciVAxriStig==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -5319,6 +5322,7 @@ packages:
     dependencies:
       '@types/better-sqlite3': 7.6.4
       better-sqlite3: 8.4.0
+      postgres: 3.3.5
     dev: false
 
   /drizzle-orm@0.27.0(@types/sql.js@1.4.4)(kysely@0.26.1)(postgres@3.3.5)(sql.js@1.8.0):

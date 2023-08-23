@@ -1,20 +1,20 @@
 import { StoreConfig } from "@latticexyz/store";
-import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
+import { PgDatabase } from "drizzle-orm/pg-core";
 import { SyncOptions, SyncResult } from "../common";
-import { sqliteStorage } from "./postgresStorage";
+import { postgresStorage } from "./postgresStorage";
 import { createStoreSync } from "../createStoreSync";
 
-type SyncToSqliteOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
+type SyncToPostgresOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   /**
-   * [SQLite database object from Drizzle][0].
+   * [Postgres database object from Drizzle][0].
    *
-   * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/sqlite/better-sqlite3
+   * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/postgresql/postgresjs
    */
-  database: BaseSQLiteDatabase<"sync", any>;
+  database: PgDatabase<any>;
   startSync?: boolean;
 };
 
-type SyncToSqliteResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
+type SyncToPostgresResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
   stopSync: () => void;
 };
 
@@ -24,7 +24,7 @@ type SyncToSqliteResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<
  * @param {CreateIndexerOptions} options See `CreateIndexerOptions`.
  * @returns A function to unsubscribe from the block stream, effectively stopping the indexer.
  */
-export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
+export async function syncToPostgres<TConfig extends StoreConfig = StoreConfig>({
   config,
   database,
   publicClient,
@@ -34,9 +34,9 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   indexerUrl,
   initialState,
   startSync = true,
-}: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult<TConfig>> {
+}: SyncToPostgresOptions<TConfig>): Promise<SyncToPostgresResult<TConfig>> {
   const storeSync = await createStoreSync({
-    storageAdapter: await sqliteStorage({ database, publicClient, config }),
+    storageAdapter: await postgresStorage({ database, publicClient, config }),
     config,
     address,
     publicClient,

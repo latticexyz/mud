@@ -3,4 +3,5 @@ export * from "./getTables";
 export * from "./createInternalTables";
 export * from "./schemaVersion";
 export * from "./postgresStorage";
-export * from "./syncToSqlite";
+export * from "./setupTables";
+export * from "./syncToPostgres";

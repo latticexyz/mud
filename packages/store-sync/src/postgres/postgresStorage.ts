@@ -1,6 +1,6 @@
 import { PublicClient, concatHex, encodeAbiParameters } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { createTable } from "./createTable";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
@@ -10,7 +10,6 @@ import { createInternalTables } from "./createInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 import { tableIdToHex } from "@latticexyz/common";
-import { identity } from "@latticexyz/common/utils";
 import { setupTables } from "./setupTables";
 import { getTableKey } from "./getTableKey";
 
@@ -83,17 +82,14 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
       const tables = await getTables(database, operations.map(getTableKey));
 
       await database.transaction(async (tx) => {
-        for (const { address, namespace, name } of tables) {
+        const tablesWithOperations = tables.filter((table) =>
+          operations.some((op) => getTableKey(op) === getTableKey(table))
+        );
+        if (tablesWithOperations.length) {
           await tx
             .update(internalTables.tables)
             .set({ lastUpdatedBlockNumber: blockNumber })
-            .where(
-              and(
-                eq(internalTables.tables.address, address),
-                eq(internalTables.tables.namespace, namespace),
-                eq(internalTables.tables.name, name)
-              )
-            )
+            .where(inArray(internalTables.tables.id, [...new Set(tablesWithOperations.map(getTableKey))]))
             .execute();
         }
 

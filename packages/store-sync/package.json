@@ -11,8 +11,9 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./sqlite": "./dist/sqlite/index.js",
+    "./postgres": "./dist/postgres/index.js",
     "./recs": "./dist/recs/index.js",
+    "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js"
   },
   "typesVersions": {
@@ -20,11 +21,14 @@
       "index": [
         "./src/index.ts"
       ],
-      "sqlite": [
-        "./src/sqlite/index.ts"
+      "postgres": [
+        "./src/postgres/index.ts"
       ],
       "recs": [
         "./src/recs/index.ts"
+      ],
+      "sqlite": [
+        "./src/sqlite/index.ts"
       ],
       "trpc-indexer": [
         "./src/trpc-indexer/index.ts"
