@@ -1,26 +1,22 @@
-import {
-  Components,
-  World,
-  createEntity,
-  getComponentValue,
-  OverridableComponent,
-  Schema,
-  overridableComponent,
-  updateComponent,
-  Component,
-  setComponent,
-  Metadata,
-  Entity,
-} from "@latticexyz/recs";
+import { merge, Observable } from "rxjs";
 import { mapObject, awaitStreamValue, uuid } from "@latticexyz/utils";
 import { ActionState } from "./constants";
 import { ActionData, ActionRequest } from "./types";
-import { defineActionComponent } from "../../components";
-import { merge, Observable } from "rxjs";
+import { defineActionComponent } from "./defineActionComponent";
+import { overridableComponent, setComponent, getComponentValue, updateComponent } from "../Component";
+import { createEntity } from "../Entity";
+import { World, OverridableComponent, Metadata, Component, Components, Entity, Schema } from "../types";
 
 export type ActionSystem = ReturnType<typeof createActionSystem>;
 
-export function createActionSystem<M = unknown>(world: World, txReduced$: Observable<string>) {
+/**
+ * @deprecated For now, we suggest using `overridableComponent(Component)` and `addOverride`/`removeOverride` to manage overrides yourself.
+ */
+export function createActionSystem<M = unknown>(
+  world: World,
+  txReduced$: Observable<string>,
+  waitForTransaction?: (tx: string) => Promise<void>
+) {
   // Action component
   const Action = defineActionComponent<M>(world);
 
@@ -87,8 +83,9 @@ export function createActionSystem<M = unknown>(world: World, txReduced$: Observ
 
     // Add components that are not tracked yet to internal overridable component map.
     // Pending updates will be applied to internal overridable components.
-    for (const [key, component] of Object.entries(actionRequest.components)) {
-      if (!componentsWithOptimisticUpdates[key]) componentsWithOptimisticUpdates[key] = overridableComponent(component);
+    for (const component of Object.values(actionRequest.components)) {
+      if (!componentsWithOptimisticUpdates[component.id])
+        componentsWithOptimisticUpdates[component.id] = overridableComponent(component);
     }
 
     // Store relevant components with pending updates along the action's requirement and execution logic
@@ -145,11 +142,11 @@ export function createActionSystem<M = unknown>(world: World, txReduced$: Observ
       .map((o) => ({ ...o, id: uuid() }));
 
     // Store overrides on Action component to be able to remove when action is done
-    updateComponent(Action, action.entity, { overrides: overrides.map((o) => `${o.id}/${o.component}`) });
+    updateComponent(Action, action.entity, { overrides: overrides.map((o) => `${o.id}/${o.component.id}`) });
 
     // Set all pending updates of this action
     for (const { component, value, entity, id } of overrides) {
-      componentsWithOptimisticUpdates[component as string].addOverride(id, { entity, value });
+      componentsWithOptimisticUpdates[component.id].addOverride(id, { entity, value });
     }
 
     try {
@@ -159,11 +156,17 @@ export function createActionSystem<M = unknown>(world: World, txReduced$: Observ
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
       if (tx) {
         // Wait for all tx events to be reduced
-        updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
-        const txConfirmed = tx.wait().catch((e) => handleError(e, action)); // Also catch the error if not awaiting
-        await awaitStreamValue(txReduced$, (v) => v === tx.hash);
+        updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx });
+        await awaitStreamValue(txReduced$, (v) => v === tx);
         updateComponent(Action, action.entity, { state: ActionState.TxReduced });
-        if (action.awaitConfirmation) await txConfirmed;
+        // TODO: extend ActionData type to be aware of whether waitForTransaction is set
+        if (action.awaitConfirmation) {
+          if (waitForTransaction) {
+            await waitForTransaction(tx);
+          } else {
+            throw new Error("action has awaitConfirmation but no waitForTransaction specified in createActionSystem");
+          }
+        }
       }
 
       updateComponent(Action, action.entity, { state: ActionState.Complete });
@@ -213,8 +216,8 @@ export function createActionSystem<M = unknown>(world: World, txReduced$: Observ
     const actionEntity = actionId as Entity;
     const overrides = (actionEntity != null && getComponentValue(Action, actionEntity)?.overrides) || [];
     for (const override of overrides) {
-      const [id, componentKey] = override.split("/");
-      const component = componentsWithOptimisticUpdates[componentKey];
+      const [id, componentId] = override.split("/");
+      const component = componentsWithOptimisticUpdates[componentId];
       component.removeOverride(id);
     }
 
