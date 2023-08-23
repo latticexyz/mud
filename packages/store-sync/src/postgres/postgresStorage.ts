@@ -16,7 +16,7 @@ import { getTableKey } from "./getTableKey";
 
 // Currently assumes one DB per chain ID
 
-type PostgresStorageAdapter<TConfig extends StoreConfig> = BlockLogsToStorageOptions<TConfig> & {
+type PostgresStorage<TConfig extends StoreConfig> = BlockLogsToStorageOptions<TConfig> & {
   internalTables: ReturnType<typeof createInternalTables>;
   cleanUp: () => Promise<void>;
 };
@@ -28,7 +28,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
   database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
   config?: TConfig;
-}): Promise<PostgresStorageAdapter<TConfig>> {
+}): Promise<PostgresStorage<TConfig>> {
   const cleanUp: (() => Promise<void>)[] = [];
 
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
@@ -36,7 +36,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
   const internalTables = createInternalTables();
   cleanUp.push(await setupTables(database, Object.values(internalTables)));
 
-  const adapter = {
+  const storage = {
     async registerTables({ blockNumber, tables }) {
       const sqlTables = tables.map((table) =>
         createTable({
@@ -185,7 +185,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
   } as BlockLogsToStorageOptions<TConfig>;
 
   return {
-    ...adapter,
+    ...storage,
     internalTables,
     cleanUp: async (): Promise<void> => {
       for (const fn of cleanUp) {

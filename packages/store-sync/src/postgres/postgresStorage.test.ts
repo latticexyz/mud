@@ -30,9 +30,9 @@ describe("postgresStorage", async () => {
   });
 
   it("should create tables and data from block log", async () => {
-    const adapter = await postgresStorage({ database: db, publicClient });
+    const storage = await postgresStorage({ database: db, publicClient });
 
-    await blockLogsToStorage(adapter)({
+    await blockLogsToStorage(storage)({
       blockNumber: 5448n,
       logs: [
         {
@@ -73,7 +73,7 @@ describe("postgresStorage", async () => {
       ],
     });
 
-    expect(await db.select().from(adapter.internalTables.chain)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storage.internalTables.chain)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
@@ -84,7 +84,7 @@ describe("postgresStorage", async () => {
       ]
     `);
 
-    expect(await db.select().from(adapter.internalTables.tables)).toMatchInlineSnapshot(`
+    expect(await db.select().from(storage.internalTables.tables)).toMatchInlineSnapshot(`
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
@@ -132,6 +132,6 @@ describe("postgresStorage", async () => {
     const sqlTable = createTable(tables[0]);
     expect(await db.select().from(sqlTable)).toMatchInlineSnapshot("[]");
 
-    await adapter.cleanUp();
+    await storage.cleanUp();
   });
 });
