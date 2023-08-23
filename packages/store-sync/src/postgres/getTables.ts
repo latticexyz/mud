@@ -7,10 +7,10 @@ import { tableIdToHex } from "@latticexyz/common";
 
 export async function getTables(
   db: PgDatabase<any>,
-  schema: string,
-  conditions: Pick<Table, "address" | "namespace" | "name">[] = []
+  conditions: Pick<Table, "address" | "namespace" | "name">[] = [],
+  getSchemaName?: (schemaName: string) => string
 ): Promise<Table[]> {
-  const internalTables = createInternalTables(schema);
+  const internalTables = createInternalTables(getSchemaName);
 
   const ids = Array.from(
     new Set(conditions.map((condition) => getTableName(condition.address, condition.namespace, condition.name)))

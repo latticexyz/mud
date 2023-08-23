@@ -22,6 +22,7 @@ export function tableToSql(table: PgTableWithColumns<any>): string {
 
   const schema = getSchema(table);
   if (schema) {
+    // TODO: create schema if we have one
     db = db.withSchema(schema);
   }
 

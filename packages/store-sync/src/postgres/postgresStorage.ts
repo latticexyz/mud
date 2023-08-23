@@ -12,20 +12,23 @@ import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
 import { tableToSql } from "./tableToSql";
 import { tableIdToHex } from "@latticexyz/common";
+import { identity } from "@latticexyz/common/utils";
+
+// Currently assumes one DB per chain ID
 
 export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
-  schemaName,
   publicClient,
+  getSchemaName = identity,
 }: {
   database: PgDatabase<QueryResultHKT>;
-  schemaName: string;
   publicClient: PublicClient;
+  getSchemaName?: (schemaName: string) => string;
   config?: TConfig;
 }): Promise<BlockLogsToStorageOptions<TConfig>> {
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
-  const internalTables = createInternalTables(schemaName);
+  const internalTables = createInternalTables(getSchemaName);
 
   // TODO: should these run lazily before first `registerTables`?
   await database.transaction(async (tx) => {
@@ -40,7 +43,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
           const sqlTable = createTable({
-            schemaName,
+            schemaName: getSchemaName(`${table.namespace}__${table.name}`),
             address: table.address,
             namespace: table.namespace,
             name: table.name,
@@ -80,7 +83,6 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
       const tables = await getTables(
         database,
-        schemaName,
         Array.from(
           new Set(
             operations.map((operation) =>
@@ -91,7 +93,8 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               })
             )
           )
-        ).map((json) => JSON.parse(json))
+        ).map((json) => JSON.parse(json)),
+        getSchemaName
       );
 
       await database.transaction(async (tx) => {
