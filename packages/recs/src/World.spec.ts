@@ -1,10 +1,10 @@
 import { arrayToIterator } from "@latticexyz/utils";
 import { Subject } from "rxjs";
-import { defineComponent, setComponent } from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
-import { World, AnyComponent, EntitySymbol } from "../src/types";
-import { createWorld, getEntityComponents } from "../src/World";
+import { defineComponent, setComponent } from "./Component";
+import { Type } from "./constants";
+import { createEntity } from "./Entity";
+import { World, AnyComponent, EntitySymbol } from "./types";
+import { createWorld, getEntityComponents } from "./World";
 
 describe("World", () => {
   describe("createWorld", () => {
