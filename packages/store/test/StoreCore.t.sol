@@ -352,7 +352,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory firstDataPacked = abi.encodePacked(firstDataBytes);
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
 
@@ -378,7 +378,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory secondDataPacked = abi.encodePacked(secondDataBytes);
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       table,
@@ -430,7 +430,7 @@ contract StoreCoreTest is Test, StoreMock {
       fourthDataBytes = EncodeArray.encode(fourthData);
     }
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       table,
@@ -458,7 +458,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(bytes16(IStore(this).getField(table, key, 0, valueSchema)), bytes16(firstDataBytes));
     assertEq(bytes32(IStore(this).getField(table, key, 1, valueSchema)), bytes32(secondDataBytes));
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       table,
@@ -490,7 +490,7 @@ contract StoreCoreTest is Test, StoreMock {
     // Set fourth field again, changing it to be equal to third field
     // (non-zero deleteCount must be emitted when the array exists)
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       table,
@@ -682,7 +682,7 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newThirdDataBytes = abi.encodePacked(data.thirdDataBytes, data.thirdDataToPush);
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       data.table,
@@ -783,7 +783,7 @@ contract StoreCoreTest is Test, StoreMock {
       data.newSecondDataBytes = abi.encodePacked(data.secondData[0], _secondDataForUpdate[0]);
     }
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       data.table,
@@ -827,7 +827,7 @@ contract StoreCoreTest is Test, StoreMock {
       );
     }
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       data.table,

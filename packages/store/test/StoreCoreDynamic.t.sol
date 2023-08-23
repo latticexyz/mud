@@ -87,7 +87,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 2);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 2 - 1);
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       _table,
@@ -132,7 +132,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 10);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 10 - 10);
 
-    // Expect a StoreSetField event to be emitted after pop
+    // Expect a StoreSpliceRecord event to be emitted after pop
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceRecord(
       _table,
