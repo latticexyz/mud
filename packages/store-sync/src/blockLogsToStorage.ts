@@ -83,10 +83,12 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       .filter(isDefined);
 
     // Then register tables before we start storing data in them
-    await registerTables({
-      blockNumber: block.blockNumber,
-      tables: newTables,
-    });
+    if (newTables.length > 0) {
+      await registerTables({
+        blockNumber: block.blockNumber,
+        tables: newTables,
+      });
+    }
 
     const tablesToFetch = Array.from(
       new Set(

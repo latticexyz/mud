@@ -524,7 +524,7 @@ func (schema *Schema) DecodeFieldData(encoding []byte) *DecodedData {
 			// since all uints are handled the same to handle those > Go uint64.
 			dataLengthString, _ := packedCounterCounterType.DecodeStaticField(
 				dynamicDataSlice,
-				packedCounterAccumulatorType.StaticByteLength()+uint64(i)*packedCounterCounterType.StaticByteLength(),
+				32-packedCounterAccumulatorType.StaticByteLength()-uint64(i+1)*packedCounterCounterType.StaticByteLength(),
 			).(string)
 
 			// Convert the length to a uint64.

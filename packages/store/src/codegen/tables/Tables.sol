@@ -550,10 +550,11 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](2);
-    _counters[0] = uint40(bytes(abiEncodedKeyNames).length);
-    _counters[1] = uint40(bytes(abiEncodedFieldNames).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(bytes(abiEncodedKeyNames).length, bytes(abiEncodedFieldNames).length);
+    }
 
     return
       abi.encodePacked(

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.0-next.2",
+  "version": "2.0.0-next.3",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -37,8 +37,6 @@
     "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
-    "@latticexyz/solecs": "workspace:*",
-    "@latticexyz/std-contracts": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
