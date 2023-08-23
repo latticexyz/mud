@@ -596,7 +596,7 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32 + encodedLengths.atIndex(dynamicSchemaIndex);
+      start = valueSchema.staticDataLength() + 32 + oldFieldLength;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
@@ -631,7 +631,7 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32 + encodedLengths.atIndex(dynamicSchemaIndex) - byteLengthToPop;
+      start = valueSchema.staticDataLength() + 32 + oldFieldLength - byteLengthToPop;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
@@ -663,7 +663,7 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32 + encodedLengths.atIndex(dynamicSchemaIndex) + startByteIndex;
+      start = valueSchema.staticDataLength() + 32 + startByteIndex;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
