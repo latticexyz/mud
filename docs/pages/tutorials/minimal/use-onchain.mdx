@@ -19,7 +19,34 @@ This is the easiest method to experiment.
    ```sh copy
    export ETH_RPC_URL=http://localhost:8545
    WORLD_ADDR=0x5FbDB2315678afecb367f032d93F642f64180aa3
-   PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+   PRIVATE_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6
+   ```
+
+   Note that the private key is _not_ [the one used to deploy the `World`](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/.env).
+   This is on purpose, to ensure that you can use everything in this tutorial to extend other people's `World`s.
+
+1. View the value of `Counter` on the user interface.
+
+1. Increment the counter.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY $WORLD_ADDR "increment()"
+   ```
+
+1. View the value of `Counter` on the user interface, see that it was incremented.
+
+<details>
+
+<summary>How do I get the counter value from the `World`?</summary>
+
+The process to get a value directly from a MUD table as an EOA (externally owned account) is a bit complicated.
+Normally, we'd expect onchain code to use [the library](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/src/codegen/tables/Counter.sol), but that library is not available on the command line.
+
+If you want to do it anyway, here are the steps.
+
+1. Specify the identifier for the `Counter` table.
+
+   ```sh
    COUNTER_TABLE=0x00000000000000000000000000000000436f756e746572000000000000000000
    ```
 
@@ -36,12 +63,40 @@ This is the easiest method to experiment.
    COUNTER_VAL_SCHEMA=`cast call $WORLD_ADDR "getValueSchema(bytes32)" $COUNTER_TABLE`
    ```
 
-   [Here is the `getValueSchema` function](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreRead.sol#L13-L15).
+   We need to provide the value schema to the function that actually gets the record.
+   [You can read the `getValueSchema` function in the source code](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreRead.sol#L13-L15).
 
 1. Read the counter value.
 
    ```sh
-   cast call $WORLD_ADDR 'getRecord(bytes32,bytes32[] calldata,bytes32)' $COUNTER_TABLE '[]' $COUNTER_VAL_SCHEMA
+   cast call $WORLD_ADDR 'getField(bytes32,bytes32[] calldata,uint8,bytes32)' $COUNTER_TABLE '[]' 0 $COUNTER_VAL_SCHEMA
    ```
 
-   **Add explanation how to interpret this value**
+   `getField` takes four parameters:
+
+   - The identifier for the table.
+   - The array of key values, which in this case is empty.
+   - The number of the field we want within the value schema.
+     The first field (the only one in `Counter`) is zero.
+   - The value schema we got in the previous step.
+
+   [You can also read this function in the source code](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreRead.sol#L30-L38).
+
+   The output is ABI encoded as an array of variable length fields, so it is a bit difficult to read.
+   Here it is, divided into 32 byte words.
+
+   | Word | Value                                                                |
+   | ---: | -------------------------------------------------------------------- |
+   |    0 | 00000000000000000000000000000000000000000000000000000000000000**20** |
+   |    1 | 00000000000000000000000000000000000000000000000000000000000000**04** |
+   |    2 | **00000006**00000000000000000000000000000000000000000000000000000000 |
+
+   Word 0 tells us that the data starts at byte number 0x20=32, which is word 1.
+   Word 1 tells us that the data for the field we care about is four bytes long (the size of `uint32`).
+   Word 2 actually gives us the value, padded by zeros to complete the word.
+
+It is much easier for offchain code to just synchronize from [an Indexer](\indexer) and listen for events.
+
+</details>
+
+## Use the `World` from a contracts
