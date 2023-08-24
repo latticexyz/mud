@@ -1,4 +1,4 @@
 export default {
   "add-system": "Add a system",
-  "use-onchain": "Use a World from onchain code",
+  "use-onchain": "Use MUD from onchain code",
 };
