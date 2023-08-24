@@ -37,7 +37,7 @@ This is the easiest method to experiment.
 
 <details>
 
-<summary>How do I get the counter value from the `World`?</summary>
+<summary>How do I get the counter value in Foundry?</summary>
 
 The process to get a value directly from a MUD table as an EOA (externally owned account) is a bit complicated.
 Normally, we'd expect onchain code to use [the library](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/src/codegen/tables/Counter.sol), but that library is not available on the command line.
@@ -46,7 +46,7 @@ If you want to do it anyway, here are the steps.
 
 1. Specify the identifier for the `Counter` table.
 
-   ```sh
+   ```sh copy
    COUNTER_TABLE=0x00000000000000000000000000000000436f756e746572000000000000000000
    ```
 
@@ -68,7 +68,7 @@ If you want to do it anyway, here are the steps.
 
 1. Read the counter value.
 
-   ```sh
+   ```sh copy
    cast call $WORLD_ADDR 'getField(bytes32,bytes32[] calldata,uint8,bytes32)' $COUNTER_TABLE '[]' 0 $COUNTER_VAL_SCHEMA
    ```
 
@@ -100,3 +100,150 @@ It is much easier for offchain code to just synchronize from [an Indexer](\index
 </details>
 
 ## Use the `World` from a contract
+
+You can use the contract [in the examples directory](https://github.com/latticexyz/mud/tree/main/examples/onchain-client).
+
+1. Download the source code and install the necessary packages.
+
+   ```sh copy
+   https://github.com/latticexyz/mud.git
+   cd mud/examples/onchain-client/
+   pnpm install
+   ```
+
+1. Set the necessary environment variables.
+
+   ```sh copy
+   . .env
+   ```
+
+   This file specifies two variables:
+
+   | Variable    | Meaning                                                                                                                 |
+   | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+   | PRIVATE_KEY | A private key that has ETH on the blockchain. This is a different private key than the one that deployed the `World`.   |
+   | WORLD_ADDR  | The address of the `World` contract. The value in `.env` is the initial world deployed by `pnpm dev`, change as needed. |
+
+1. Deploy the sample contact.
+
+   ```sh copy
+   forge create OnchainClient --private-key $PRIVATE_KEY --constructor-args $WORLD_ADDR
+   ```
+
+1. Set `CLIENT_ADDR` to the address to which the contract is deployed.
+   On the first deployment to a new Anvil instance, this is `0xb19b36b1456E65E3A6D514D3F715f204BD59f431`.
+
+1. Get the value of `Counter` from the client.
+
+   ```sh copy
+   cast call $CLIENT_ADDR "readCounter()"
+   ```
+
+1. Increment `Counter` and read the value again.
+   See it is one more.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY $CLIENT_ADDR "add1()"
+   cast call $CLIENT_ADDR "readCounter()"
+   ```
+
+1. Attempt to reset the counter, which bypasses the `System` logic and modifies `Counter` directly.
+   See that this attempt fails.
+
+   ```sh copy
+   cast send --private-key $PRIVATE_KEY $CLIENT_ADDR "reset()"
+   ```
+
+<details>
+
+<summary>Explanation of `src/OnchainClient.sol`</summary>
+
+Let's go over the contract source code (`src/OnchainClient.sol`).
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { Counter } from "codegen/Tables.sol";
+import { IWorld } from "codegen/world/IWorld.sol";
+```
+
+We import `Counter` and `IWorld` from the code that was generated using `mud codegen`.
+The entire `src/codegen` directory is copied [from the template](https://github.com/latticexyz/mud/tree/main/templates/vanilla/packages/contracts/src/codegen) into the new application's `lib` directory.
+
+```solidity
+contract OnchainClient {
+  IWorld world;
+
+  constructor(address world_) {
+    world = IWorld(world_);
+  }
+```
+
+Define a variable to hold the address of the `World`.
+The constructor provides its value.
+
+```solidity
+function readCounter() public view returns (uint32) {
+  return Counter.get(world);
+}
+```
+
+To get the value of the counter we use the `Counter` library we imported from `codegen/Tables.sol`.
+There are two versions of `get` in that library.
+
+[This version](https://github.com/latticexyz/mud/blob/230822-use-onchain/examples/onchain-client/lib/codegen/tables/Counter.sol#L60-L66) reads from the `World` of which it is a part.
+It is the version you use in a `System` deployed to that `World`.
+
+[This version](https://github.com/latticexyz/mud/blob/230822-use-onchain/examples/onchain-client/lib/codegen/tables/Counter.sol#L68-L74) gets a parameter which is the address of the `World`.
+It is the version you use in code which is not part of the `World` with the relevant table.
+
+```
+  function add1() public {
+    world.increment();
+  }
+```
+
+When a `System` is in the root namespace of a `World`, its functions are available from the `World` itself.
+This is the way to activate the logic in a `System`.
+
+```
+  function reset() public {
+    Counter.set(world, 0);
+  }
+}
+```
+
+This function attempts to bypass the `System` logic and set the counter value directly.
+As you have already seen, it fails.
+
+</details>
+
+<details>
+
+<summary>Setting up a Foundry project for MUD access</summary>
+
+The example is already set up for MUD access, but these are the steps you do to add it to other Foundry projects.
+
+1. Create the Foundry project.
+
+   ```sh copy
+   forge init
+   ```
+
+1. Copy the `src/codegen` directory into `lib`.
+
+1. At the root of the Foundry project, create a Node project for the libraries (Solidity libraries are usually published as [npm packages](https://www.npmjs.com/) and ours are no exception).
+
+   ```sh copy
+   pnpm init
+   pnpm install @latticexyz/world@next @latticexyz/store@next @latticexyz/schema-type@next
+   ```
+
+1. Create a remapping file to inform Foundry where the MUD libraries are located.
+
+   ```text filename="remappings.txt" copy
+   @latticexyz=node_modules/@latticexyz
+   ```
+
+</details>
