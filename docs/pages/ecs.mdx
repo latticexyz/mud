@@ -140,13 +140,13 @@ import { useEntityQuery, useComponentValue } from "@latticexyz/react";
 import { getComponentValueStrict, Has, Not } from "@latticexyz/recs";
 const {
   components: { PositionComponent, NameComponent, PlayerComponent },
-  playerEntity,
+  network: { playerEntity },
 } = useMUD();
 // A. Subscribe to all player position
 //   1. subscribe to all entities that are players and have a position
 const players = useEntityQuery([
-  Has(Player) /** All entities with a Player component */,
-  Has(Position) /** With a position */,
+  Has(PlayerComponent) /** All entities with a Player component */,
+  Has(PositionComponent) /** With a position */,
 ]);
 //   2. map all entities to their position (they must have one, so we can use getComponentValueStrict)
 const playerPositions = players.map((player) => getComponentValueStrict(PositionComponent, player));
@@ -154,8 +154,8 @@ const playerPositions = players.map((player) => getComponentValueStrict(Position
 // B. Subscribe to all monster position
 //   1. subscribe to all entities that are *not* players and have a position
 const monsters = useEntityQuery([
-  Not(Player) /** All entities without a player component */,
-  Has(Position) /** With a position */,
+  Not(PlayerComponent) /** All entities without a player component */,
+  Has(PositionComponent) /** With a position */,
 ]);
 //   2. map all entities to their position (they must have one, so we can use getComponentValueStrict)
 const monsterPositions = monsters.map((monster) => getComponentValueStrict(PositionComponent, monster));

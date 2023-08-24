@@ -1,7 +1,7 @@
-import { Entity } from "@latticexyz/recs";
-import { defineActionComponent } from "../../../components";
-import { waitForComponentValueIn } from "../../../utils";
-import { ActionState } from "../constants";
+import { Entity } from "../types";
+import { ActionState } from "./constants";
+import { defineActionComponent } from "./defineActionComponent";
+import { waitForComponentValueIn } from "./waitForComponentValueIn";
 
 export async function waitForActionCompletion(
   Action: ReturnType<typeof defineActionComponent>,
