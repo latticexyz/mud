@@ -24,7 +24,6 @@ export async function setupTables(
 
       const tableName = getTableName(table);
 
-      // TODO: should we allow this to fail (remove ifNotExists) so we can catch issues with our logic that creates tables?
       let query = scopedDb.schema.createTable(tableName).ifNotExists();
 
       const columns = Object.values(getTableColumns(table)) as AnyPgColumn[];

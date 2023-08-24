@@ -17,7 +17,7 @@ type PgTableFromSchema<
   TValueSchema extends Record<string, SchemaAbiType>
 > = PgTableWithColumns<{
   name: string;
-  schema: string | undefined;
+  schema: string;
   columns: {
     // TODO: figure out column types
     [metaColumn in keyof typeof metaColumns]: any;
@@ -65,8 +65,6 @@ export function buildTable<
   const valueColumns = Object.fromEntries(
     Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
   );
-
-  // TODO: unique constraint on key columns?
 
   // TODO: make sure there are no meta columns that overlap with key/value columns
   // TODO: index meta columns?

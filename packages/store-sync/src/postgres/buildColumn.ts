@@ -12,18 +12,24 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "uint16":
     case "uint24":
     case "uint32":
-    case "uint40":
-    case "uint48":
     case "int8":
     case "int16":
     case "int24":
     case "int32":
+      return integer(name);
+
+    case "uint40":
+    case "uint48":
     case "int40":
     case "int48":
-      return integer(name);
+      return bigint(name, { mode: "number" });
 
     case "uint56":
     case "uint64":
+    case "int56":
+    case "int64":
+      return bigint(name, { mode: "bigint" });
+
     case "uint72":
     case "uint80":
     case "uint88":
@@ -48,8 +54,6 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "uint240":
     case "uint248":
     case "uint256":
-    case "int56":
-    case "int64":
     case "int72":
     case "int80":
     case "int88":
