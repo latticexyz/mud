@@ -1,4 +1,4 @@
-import { decodeField, decodeKeyTuple, decodeRecord, abiTypesToSchema, hexToSchema } from "@latticexyz/protocol-parser";
+import { decodeKeyTuple, decodeRecord, abiTypesToSchema, hexToSchema } from "@latticexyz/protocol-parser";
 import {
   StoreConfig,
   ConfigToKeyPrimitives as Key,
@@ -151,21 +151,17 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           };
         }
 
-        if (log.eventName === "StoreSetField") {
-          const fieldName = fieldNames[log.args.schemaIndex] as string & keyof Value<TConfig, keyof TConfig["tables"]>;
-          const fieldValue = decodeField(valueAbiTypes[log.args.schemaIndex], log.args.data) as Value<
-            TConfig,
-            keyof TConfig["tables"]
-          >[typeof fieldName];
+        if (log.eventName === "StoreSpliceRecord") {
           return {
             log,
             address: getAddress(log.address),
             namespace: table.namespace,
             name: table.name,
-            type: "SetField",
+            type: "SpliceRecord",
             key,
-            fieldName,
-            fieldValue,
+            data: log.args.data,
+            start: log.args.start,
+            deleteCount: log.args.deleteCount,
           };
         }
 

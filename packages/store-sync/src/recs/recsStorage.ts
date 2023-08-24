@@ -8,7 +8,6 @@ import {
   getComponentValue,
   removeComponent,
   setComponent,
-  updateComponent,
 } from "@latticexyz/recs";
 import { isDefined } from "@latticexyz/common/utils";
 import { schemaToDefaults } from "../schemaToDefaults";
@@ -17,6 +16,9 @@ import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { tableIdToHex } from "@latticexyz/common";
 import { encodeEntity } from "./encodeEntity";
+import { abiTypesToSchema, decodeRecord, encodeRecord } from "@latticexyz/protocol-parser";
+import { DynamicPrimitiveType, StaticPrimitiveType } from "@latticexyz/schema-type";
+import { concat, size, slice } from "viem";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
@@ -71,16 +73,25 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         if (operation.type === "SetRecord") {
           debug("setting component", tableId, entity, operation.value);
           setComponent(component, entity, operation.value as ComponentValue);
-        } else if (operation.type === "SetField") {
-          debug("updating component", tableId, entity, {
-            [operation.fieldName]: operation.fieldValue,
-          });
-          updateComponent(
-            component,
-            entity,
-            { [operation.fieldName]: operation.fieldValue } as ComponentValue,
-            schemaToDefaults(table.valueSchema) as ComponentValue
+        } else if (operation.type === "SpliceRecord") {
+          const schema = abiTypesToSchema(Object.values(table.valueSchema));
+          const oldValueTuple = Object.values(
+            getComponentValue(component, entity) ?? schemaToDefaults(table.valueSchema)
           );
+          const oldRecord = encodeRecord(schema, oldValueTuple as (StaticPrimitiveType | DynamicPrimitiveType)[]);
+          const end = operation.start + operation.deleteCount;
+          const newRecord = concat([
+            slice(oldRecord, 0, operation.start),
+            operation.data,
+            end >= size(oldRecord) ? "0x" : slice(oldRecord, end),
+          ]);
+          const newValueTuple = decodeRecord(schema, newRecord);
+
+          const fieldNames = Object.keys(table.valueSchema);
+          const value = Object.fromEntries(fieldNames.map((name, i) => [name, newValueTuple[i]]));
+
+          debug("setting component (splice)", tableId, entity, newRecord);
+          setComponent(component, entity, value);
         } else if (operation.type === "DeleteRecord") {
           debug("deleting component", tableId, entity);
           removeComponent(component, entity);
