@@ -13,7 +13,7 @@ import { isNotNull } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
+import { cleanDatabase, postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
@@ -86,9 +86,9 @@ try {
         currentChainState.schemaVersion,
         "to",
         schemaVersion,
-        "recreating database"
+        "cleaning database"
       );
-      // TODO: drop everything?
+      await cleanDatabase(database);
     } else if (currentChainState.lastUpdatedBlockNumber != null) {
       console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
       startBlock = currentChainState.lastUpdatedBlockNumber + 1n;

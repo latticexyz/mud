@@ -1,25 +1,10 @@
-import { AnyPgColumn, PgTableWithColumns, PgTransaction, PgDatabase } from "drizzle-orm/pg-core";
+import { AnyPgColumn, PgTableWithColumns, PgDatabase } from "drizzle-orm/pg-core";
 import { getTableColumns, getTableName, sql } from "drizzle-orm";
-import {
-  ColumnDataType,
-  DummyDriver,
-  Kysely,
-  PostgresAdapter,
-  PostgresIntrospector,
-  PostgresQueryCompiler,
-} from "kysely";
+import { ColumnDataType } from "kysely";
 import { getSchema } from "./getSchema";
 import { isDefined } from "@latticexyz/common/utils";
 import { debug } from "./debug";
-
-const mockDb = new Kysely({
-  dialect: {
-    createAdapter: (): PostgresAdapter => new PostgresAdapter(),
-    createDriver: (): DummyDriver => new DummyDriver(),
-    createIntrospector: (db: Kysely<unknown>): PostgresIntrospector => new PostgresIntrospector(db),
-    createQueryCompiler: (): PostgresQueryCompiler => new PostgresQueryCompiler(),
-  },
-});
+import { pgDialect } from "./pgDialect";
 
 export async function setupTables(
   db: PgDatabase<any>,
@@ -30,12 +15,12 @@ export async function setupTables(
   await db.transaction(async (tx) => {
     for (const schemaName of schemaNames) {
       debug(`creating namespace ${schemaName}`);
-      await tx.execute(sql.raw(mockDb.schema.createSchema(schemaName).ifNotExists().compile().sql));
+      await tx.execute(sql.raw(pgDialect.schema.createSchema(schemaName).ifNotExists().compile().sql));
     }
 
     for (const table of tables) {
       const schemaName = getSchema(table);
-      const scopedDb = schemaName ? mockDb.withSchema(schemaName) : mockDb;
+      const scopedDb = schemaName ? pgDialect.withSchema(schemaName) : pgDialect;
 
       const tableName = getTableName(table);
 
@@ -69,7 +54,7 @@ export async function setupTables(
     for (const schemaName of schemaNames) {
       try {
         debug(`dropping namespace ${schemaName} and all of its tables`);
-        await db.execute(sql.raw(mockDb.schema.dropSchema(schemaName).ifExists().cascade().compile().sql));
+        await db.execute(sql.raw(pgDialect.schema.dropSchema(schemaName).ifExists().cascade().compile().sql));
       } catch (error) {
         debug(`failed to drop namespace ${schemaName}`, error);
       }
