@@ -10,6 +10,9 @@ export async function setupTables(
   db: PgDatabase<any>,
   tables: PgTableWithColumns<any>[]
 ): Promise<() => Promise<void>> {
+  // TODO: add table to internal tables here
+  // TODO: look up table schema and check if it matches expected schema, drop if not
+
   const schemaNames = [...new Set(tables.map(getSchema).filter(isDefined))];
 
   await db.transaction(async (tx) => {

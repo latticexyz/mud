@@ -12,6 +12,8 @@ import { pgDialect } from "./pgDialect";
 
 export async function cleanDatabase(db: PgDatabase<any>): Promise<void> {
   const internalTables = buildInternalTables();
+  // TODO: check if internalTables schema matches, delete if not
+
   const tables = (await getTables(db)).map(buildTable);
 
   const schemaNames = [...new Set(tables.map(getSchema))].filter(isDefined);

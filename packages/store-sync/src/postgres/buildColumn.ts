@@ -1,7 +1,7 @@
-import { AnyPgColumnBuilder, boolean, text, customType } from "drizzle-orm/pg-core";
+import { AnyPgColumnBuilder, boolean, text } from "drizzle-orm/pg-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { address, bytes, json } from "./columnTypes";
+import { asAddress, asBigInt, asHex, asJson, asNumber } from "./columnTypes";
 
 export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgColumnBuilder {
   switch (schemaAbiType) {
@@ -12,69 +12,29 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "uint16":
     case "int8":
     case "int16":
-      return customType<{ data: number; driverData: string }>({
-        dataType() {
-          // 2 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
-          return "smallint";
-        },
-        toDriver(data: number): string {
-          return String(data);
-        },
-        fromDriver(driverData: string): number {
-          return Number(driverData);
-        },
-      })(name);
+      // smallint = 2 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asNumber(name, "smallint");
 
     case "uint24":
     case "uint32":
     case "int24":
     case "int32":
-      return customType<{ data: number; driverData: string }>({
-        dataType() {
-          // 4 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
-          return "integer";
-        },
-        toDriver(data: number): string {
-          return String(data);
-        },
-        fromDriver(driverData: string): number {
-          return Number(driverData);
-        },
-      })(name);
+      // integer = 4 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asNumber(name, "integer");
 
     case "uint40":
     case "uint48":
     case "int40":
     case "int48":
-      return customType<{ data: number; driverData: string }>({
-        dataType() {
-          // 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
-          return "bigint";
-        },
-        toDriver(data: number): string {
-          return String(data);
-        },
-        fromDriver(driverData: string): number {
-          return Number(driverData);
-        },
-      })(name);
+      // bigint = 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asNumber(name, "bigint");
 
     case "uint56":
     case "uint64":
     case "int56":
     case "int64":
-      return customType<{ data: bigint; driverData: string }>({
-        dataType() {
-          // 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
-          return "bigint";
-        },
-        toDriver(data: bigint): string {
-          return String(data);
-        },
-        fromDriver(driverData: string): bigint {
-          return BigInt(driverData);
-        },
-      })(name);
+      // bigint = 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+      return asBigInt(name, "bigint");
 
     case "uint72":
     case "uint80":
@@ -124,19 +84,9 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "int240":
     case "int248":
     case "int256":
-      return customType<{ data: bigint; driverData: string }>({
-        dataType() {
-          // variable length (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL)
-          // we could refine this to the specific length for each type, but maybe not worth it
-          return "numeric";
-        },
-        toDriver(data: bigint): string {
-          return String(data);
-        },
-        fromDriver(driverData: string): bigint {
-          return BigInt(driverData);
-        },
-      })(name);
+      // variable length (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL)
+      // we could refine this to the specific length for each type, but maybe not worth it
+      return asBigInt(name, "numeric");
 
     case "bytes1":
     case "bytes2":
@@ -171,10 +121,10 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "bytes31":
     case "bytes32":
     case "bytes":
-      return bytes(name);
+      return asHex(name);
 
     case "address":
-      return address(name);
+      return asAddress(name);
 
     case "uint8[]":
     case "uint16[]":
@@ -273,11 +223,11 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "bytes31[]":
     case "bytes32[]":
     case "bool[]":
-      return json(name);
+      return asJson(name);
 
     // TODO: normalize like address column type
     case "address[]":
-      return json(name);
+      return asJson(name);
 
     case "string":
       return text(name);

@@ -55,7 +55,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .insert(internalTables.tables)
             .values({
               schemaVersion,
-              id: getTableKey(table),
+              key: getTableKey(table),
               address: table.address,
               tableId: tableIdToHex(table.namespace, table.name),
               namespace: table.namespace,
@@ -89,7 +89,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           await tx
             .update(internalTables.tables)
             .set({ lastUpdatedBlockNumber: blockNumber })
-            .where(inArray(internalTables.tables.id, [...new Set(tablesWithOperations.map(getTableKey))]))
+            .where(inArray(internalTables.tables.key, [...new Set(tablesWithOperations.map(getTableKey))]))
             .execute();
         }
 
