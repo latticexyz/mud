@@ -292,7 +292,7 @@ const _abi = [
       {
         indexed: false,
         internalType: "bytes32",
-        name: "tableId",
+        name: "table",
         type: "bytes32",
       },
       {

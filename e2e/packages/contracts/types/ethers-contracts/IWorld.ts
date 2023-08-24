@@ -441,7 +441,7 @@ export type StoreSetRecordEvent = TypedEvent<
 export type StoreSetRecordEventFilter = TypedEventFilter<StoreSetRecordEvent>;
 
 export interface StoreSpliceRecordEventObject {
-  tableId: string;
+  table: string;
   key: string[];
   start: number;
   deleteCount: number;
@@ -1131,14 +1131,14 @@ export interface IWorld extends BaseContract {
     ): StoreSetRecordEventFilter;
 
     "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes)"(
-      tableId?: null,
+      table?: null,
       key?: null,
       start?: null,
       deleteCount?: null,
       data?: null
     ): StoreSpliceRecordEventFilter;
     StoreSpliceRecord(
-      tableId?: null,
+      table?: null,
       key?: null,
       start?: null,
       deleteCount?: null,
