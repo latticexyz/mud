@@ -88,7 +88,7 @@ describe("postgresStorage", async () => {
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3::Inventory",
+          "key": "0x5FbDB2315678afecb367f032d93F642f64180aa3::Inventory",
           "keySchema": {
             "item": "uint32",
             "itemVariant": "uint32",
@@ -112,7 +112,6 @@ describe("postgresStorage", async () => {
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3::Inventory",
           "keySchema": {
             "item": "uint32",
             "itemVariant": "uint32",
