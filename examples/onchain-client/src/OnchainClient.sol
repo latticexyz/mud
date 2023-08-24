@@ -5,7 +5,7 @@ import { Counter } from "codegen/Tables.sol";
 import { IWorld } from "codegen/world/IWorld.sol";
 
 contract OnchainClient {
-  IWorld world;
+  IWorld immutable world;
 
   constructor(address world_) {
     world = IWorld(world_);

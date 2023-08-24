@@ -69,7 +69,8 @@ If you want to do it anyway, here are the steps.
 1. Read the counter value.
 
    ```sh copy
-   cast call $WORLD_ADDR 'getField(bytes32,bytes32[] calldata,uint8,bytes32)' $COUNTER_TABLE '[]' 0 $COUNTER_VAL_SCHEMA
+   cast call $WORLD_ADDR 'getField(bytes32,bytes32[] calldata,uint8,bytes32)' \
+             $COUNTER_TABLE '[]' 0 $COUNTER_VAL_SCHEMA
    ```
 
    `getField` takes four parameters:
@@ -106,7 +107,7 @@ You can use the contract [in the examples directory](https://github.com/latticex
 1. Download the source code and install the necessary packages.
 
    ```sh copy
-   https://github.com/latticexyz/mud.git
+   git clone https://github.com/latticexyz/mud.git
    cd mud/examples/onchain-client/
    pnpm install
    ```
@@ -131,7 +132,6 @@ You can use the contract [in the examples directory](https://github.com/latticex
    ```
 
 1. Set `CLIENT_ADDR` to the address to which the contract is deployed.
-   On the first deployment to a new Anvil instance, this is `0xb19b36b1456E65E3A6D514D3F715f204BD59f431`.
 
 1. Get the value of `Counter` from the client.
 
@@ -154,6 +154,12 @@ You can use the contract [in the examples directory](https://github.com/latticex
    cast send --private-key $PRIVATE_KEY $CLIENT_ADDR "reset()"
    ```
 
+   The error message should be similar to:
+
+   ```
+   (code: 3, message: execution reverted, data: Some(String("0x")))
+   ```
+
 <details>
 
 <summary>Explanation of `src/OnchainClient.sol`</summary>
@@ -173,7 +179,7 @@ The entire `src/codegen` directory is copied [from the template](https://github.
 
 ```solidity
 contract OnchainClient {
-  IWorld world;
+  IWorld immutable world;
 
   constructor(address world_) {
     world = IWorld(world_);
@@ -181,7 +187,7 @@ contract OnchainClient {
 ```
 
 Define a variable to hold the address of the `World`.
-The constructor provides its value.
+The constructor receives the value for it.
 
 ```solidity
 function readCounter() public view returns (uint32) {
