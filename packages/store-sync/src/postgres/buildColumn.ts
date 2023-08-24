@@ -1,7 +1,7 @@
-import { AnyPgColumnBuilder, boolean, integer, bigint, text } from "drizzle-orm/pg-core";
+import { AnyPgColumnBuilder, boolean, text, customType } from "drizzle-orm/pg-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { address, json } from "./columnTypes";
+import { address, bytes, json } from "./columnTypes";
 
 export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgColumnBuilder {
   switch (schemaAbiType) {
@@ -10,25 +10,71 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
 
     case "uint8":
     case "uint16":
-    case "uint24":
-    case "uint32":
     case "int8":
     case "int16":
+      return customType<{ data: number; driverData: string }>({
+        dataType() {
+          // 2 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+          return "smallint";
+        },
+        toDriver(data: number): string {
+          return String(data);
+        },
+        fromDriver(driverData: string): number {
+          return Number(driverData);
+        },
+      })(name);
+
+    case "uint24":
+    case "uint32":
     case "int24":
     case "int32":
-      return integer(name);
+      return customType<{ data: number; driverData: string }>({
+        dataType() {
+          // 4 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+          return "integer";
+        },
+        toDriver(data: number): string {
+          return String(data);
+        },
+        fromDriver(driverData: string): number {
+          return Number(driverData);
+        },
+      })(name);
 
     case "uint40":
     case "uint48":
     case "int40":
     case "int48":
-      return bigint(name, { mode: "number" });
+      return customType<{ data: number; driverData: string }>({
+        dataType() {
+          // 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+          return "bigint";
+        },
+        toDriver(data: number): string {
+          return String(data);
+        },
+        fromDriver(driverData: string): number {
+          return Number(driverData);
+        },
+      })(name);
 
     case "uint56":
     case "uint64":
     case "int56":
     case "int64":
-      return bigint(name, { mode: "bigint" });
+      return customType<{ data: bigint; driverData: string }>({
+        dataType() {
+          // 8 bytes (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-INT)
+          return "bigint";
+        },
+        toDriver(data: bigint): string {
+          return String(data);
+        },
+        fromDriver(driverData: string): bigint {
+          return BigInt(driverData);
+        },
+      })(name);
 
     case "uint72":
     case "uint80":
@@ -78,8 +124,19 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "int240":
     case "int248":
     case "int256":
-      // TODO: bigint is only 64 bits, so we'll need to reimplement >uint64 with numeric
-      return bigint(name, { mode: "bigint" });
+      return customType<{ data: bigint; driverData: string }>({
+        dataType() {
+          // variable length (https://www.postgresql.org/docs/current/datatype-numeric.html#DATATYPE-NUMERIC-DECIMAL)
+          // we could refine this to the specific length for each type, but maybe not worth it
+          return "numeric";
+        },
+        toDriver(data: bigint): string {
+          return String(data);
+        },
+        fromDriver(driverData: string): bigint {
+          return BigInt(driverData);
+        },
+      })(name);
 
     case "bytes1":
     case "bytes2":
@@ -114,8 +171,7 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
     case "bytes31":
     case "bytes32":
     case "bytes":
-      // TODO: https://github.com/drizzle-team/drizzle-orm/issues/298
-      return text(name);
+      return bytes(name);
 
     case "address":
       return address(name);
@@ -227,6 +283,6 @@ export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgCo
       return text(name);
 
     default:
-      assertExhaustive(schemaAbiType, `Missing SQLite column type for schema ABI type ${schemaAbiType}`);
+      assertExhaustive(schemaAbiType, `Missing column type for schema ABI type ${schemaAbiType}`);
   }
 }

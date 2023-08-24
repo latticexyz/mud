@@ -1,7 +1,7 @@
 import { customType, PgCustomColumnBuilder } from "drizzle-orm/pg-core";
 import { ColumnBuilderBaseConfig } from "drizzle-orm";
 import superjson from "superjson";
-import { Address, ByteArray, bytesToHex, getAddress, hexToBytes } from "viem";
+import { Address, ByteArray, bytesToHex, getAddress, Hex, hexToBytes } from "viem";
 
 export const json = <TData>(
   name: string
@@ -16,6 +16,21 @@ export const json = <TData>(
     },
     fromDriver(driverData: string): TData {
       return superjson.parse(driverData);
+    },
+  })(name);
+
+export const bytes = (
+  name: string
+): PgCustomColumnBuilder<ColumnBuilderBaseConfig & { data: Hex; driverParam: ByteArray }> =>
+  customType<{ data: Hex; driverData: ByteArray }>({
+    dataType() {
+      return "bytea";
+    },
+    toDriver(data: Hex): ByteArray {
+      return hexToBytes(data);
+    },
+    fromDriver(driverData: ByteArray): Hex {
+      return bytesToHex(driverData);
     },
   })(name);
 
