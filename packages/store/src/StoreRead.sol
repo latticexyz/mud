@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreRead, IStoreHook } from "./IStore.sol";
+import { IStoreRead } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -10,35 +10,31 @@ contract StoreRead is IStoreRead {
     StoreCore.initialize();
   }
 
-  function getSchema(bytes32 table) public view virtual returns (Schema schema) {
-    schema = StoreCore.getSchema(table);
+  function getValueSchema(bytes32 table) public view virtual returns (Schema schema) {
+    schema = StoreCore.getValueSchema(table);
   }
 
   function getKeySchema(bytes32 table) public view virtual returns (Schema schema) {
     schema = StoreCore.getKeySchema(table);
   }
 
-  // Get full record (static and dynamic data, load schema from storage)
-  function getRecord(bytes32 table, bytes32[] calldata key) public view virtual returns (bytes memory data) {
-    data = StoreCore.getRecord(table, key);
-  }
-
   // Get full record (static and dynamic data)
   function getRecord(
     bytes32 table,
     bytes32[] calldata key,
-    Schema schema
+    Schema valueSchema
   ) public view virtual returns (bytes memory data) {
-    data = StoreCore.getRecord(table, key, schema);
+    data = StoreCore.getRecord(table, key, valueSchema);
   }
 
   // Get partial data at schema index
   function getField(
     bytes32 table,
     bytes32[] calldata key,
-    uint8 schemaIndex
+    uint8 schemaIndex,
+    Schema valueSchema
   ) public view virtual returns (bytes memory data) {
-    data = StoreCore.getField(table, key, schemaIndex);
+    data = StoreCore.getField(table, key, schemaIndex, valueSchema);
   }
 
   function getFieldLength(
@@ -60,6 +56,4 @@ contract StoreRead is IStoreRead {
   ) public view virtual returns (bytes memory) {
     return StoreCore.getFieldSlice(tableId, key, schemaIndex, schema, start, end);
   }
-
-  function isStore() public view {}
 }

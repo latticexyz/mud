@@ -17,5 +17,9 @@ runs:
       shell: bash
       run: pnpm turbo run build --cache-dir=.turbo --concurrency 10
 
+    - name: Install node dependencies again to update workspace binaries
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
     - name: Outdated files, run `pnpm build` and commit them
       uses: ./.github/actions/require-empty-diff

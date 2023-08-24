@@ -7,29 +7,6 @@
         "type": "bytes32"
       },
       {
-        "internalType": "Schema",
-        "name": "schema",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "Schema",
-        "name": "keySchema",
-        "type": "bytes32"
-      }
-    ],
-    "name": "registerSchema",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "table",
-        "type": "bytes32"
-      },
-      {
         "internalType": "contract IStoreHook",
         "name": "hook",
         "type": "address"
@@ -48,9 +25,19 @@
         "type": "bytes32"
       },
       {
-        "internalType": "string",
-        "name": "tableName",
-        "type": "string"
+        "internalType": "Schema",
+        "name": "keySchema",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string[]",
+        "name": "keyNames",
+        "type": "string[]"
       },
       {
         "internalType": "string[]",
@@ -58,7 +45,7 @@
         "type": "string[]"
       }
     ],
-    "name": "setMetadata",
+    "name": "registerTable",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

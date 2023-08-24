@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
@@ -14,17 +14,17 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
 
   function testRegisterAndGetSchema() public {
     startGasReport("register Mixed schema");
-    Mixed.registerSchema();
+    Mixed.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getSchema(MixedTableId);
-    Schema declaredSchema = Mixed.getSchema();
+    Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
+    Schema declaredSchema = Mixed.getValueSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
 
   function testSetAndGet() public {
-    Mixed.registerSchema();
+    Mixed.register();
     bytes32 key = keccak256("somekey");
 
     uint32[] memory a32 = new uint32[](2);
@@ -65,7 +65,7 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
 
     assertEq(
       Mixed.encode(1, 2, a32, s),
-      hex"0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
+      hex"0000000100000000000000000000000000000002000000000000000000000000000000000000000b0000000008000000000000130000000300000004736f6d6520737472696e67"
     );
   }
 }

@@ -14,15 +14,13 @@
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
-    "@latticexyz/network": "link:../../../../packages/network",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/services": "link:../../../../packages/services",
-    "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/store-sync": "link:../../../../packages/store-sync",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
-    "@wagmi/chains": "^0.2.22",
     "async-mutex": "^0.4.0",
     "contracts": "workspace:*",
     "ethers": "^5.7.2",
@@ -35,7 +33,7 @@
     "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
     "threads": "^1.7.0",
-    "viem": "1.1.7"
+    "viem": "1.6.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.6",

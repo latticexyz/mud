@@ -7,13 +7,13 @@ const config: DocsThemeConfig = {
   useNextSeoProps() {
     const { asPath } = useRouter();
     return {
-      titleTemplate: asPath === "/" ? "%s" : "%s – MUD",
+      titleTemplate: asPath === "/" ? "MUD – a framework for ambitious Ethereum applications" : "%s – MUD",
     };
   },
   project: {
     link: "https://github.com/latticexyz/mud",
   },
-  docsRepositoryBase: "https://github.com/latticexyz/mud/tree/main/docs/pages",
+  docsRepositoryBase: "https://github.com/latticexyz/mud/tree/main/docs",
   head: (
     <>
       <meta property="title" content="MUD documentation" />

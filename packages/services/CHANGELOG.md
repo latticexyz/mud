@@ -1,5 +1,38 @@
 # Change Log
 
+## 2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Major Changes
+
+- [#1231](https://github.com/latticexyz/mud/pull/1231) [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db) Thanks [@dk1a](https://github.com/dk1a)! - Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- [#1311](https://github.com/latticexyz/mud/pull/1311) [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1) Thanks [@alvrs](https://github.com/alvrs)! - Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.
+
+  ```diff
+  - import { createFaucetService } from "@latticexyz/network";
+  + import { createFaucetService } from "@latticexyz/services/faucet";
+  ```
+
+## 2.0.0-next.2
+
+## 2.0.0-next.1
+
+### Patch Changes
+
+- [#1116](https://github.com/latticexyz/mud/pull/1116) [`3236f799`](https://github.com/latticexyz/mud/commit/3236f799e501be227da6e42e7b41a4928750115c) Thanks [@authcall](https://github.com/authcall)! - protocol-parser in Go
+
+## 2.0.0-next.0
+
+### Patch Changes
+
+- [#1074](https://github.com/latticexyz/mud/pull/1074) [`086be4ef`](https://github.com/latticexyz/mud/commit/086be4ef4f3c1ecb3eac0e9554d7d4eb64531fc2) Thanks [@alvrs](https://github.com/alvrs)! - fix a bug related to encoding negative bigints in MODE
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 

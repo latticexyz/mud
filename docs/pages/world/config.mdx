@@ -47,48 +47,45 @@ export default mudConfig({
 
 ### Global configuration keys
 
-**`namespace` (optional)**: a `string`: which namespace to deploy the resources defined in the config into. The default value is the ROOT namespace.
+All of these global configuration keys are optional.
 
-**`excludeSystems` (optional)**: an array of `string`: which systems to not deploy, even if their name includes “system”.
+- **`namespace`**: a `string`: which namespace to deploy the resources defined in the config into. The default value is the ROOT namespace.
 
-**`worldContractName` (optional)**: a `string`: the name of a contract in your project implementing the `IWorld` interface. Useful if you want to modify the default World implementation. Here be dragons 🐲
+- **`excludeSystems`**: an array of `string`: which systems to not deploy, even if their name includes “system”.
 
-**`deploysDirectory` (optional)** a `string`: which folder to put the deployment artifacts into after deployment.
+- **`worldContractName`**: a `string`: the name of a contract in your project implementing the `IWorld` interface. Useful if you want to modify the default World implementation. Here be dragons 🐲
 
-**`modules` (optional)** an array of module definition: module definition have a `name`, `root` (optional), and `args` key.
+- **`deploysDirectory`** a `string`: which folder to put the deployment artifacts into after deployment.
 
-`name`: Name of the module to instantiate. The same module can be instantiated multiple times. This should be the name of the contract file without `.sol` (eg: if the contract is named `DopeModule.sol`, the name of the module is `DopeModule`)
+- **`modules`** an array of module definition: module definition have a `name`, `root` (optional), and `args` key.
 
-`root`: wether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
+  - `name`: Name of the module to instantiate. The same module can be instantiated multiple times. This should be the name of the contract file without `.sol` (eg: if the contract is named `DopeModule.sol`, the name of the module is `DopeModule`)
 
-`args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use special functions:
+  - `root`: whether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
 
-1. `resolveTableId`: This function will turn a table name from your config into its low-level ID in the World. Useful to pass references of a table to a module.
+  - `args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use the function `resolveTableId`. This function will turn a table name from your config into its low-level ID in the World. It is useful to pass references of a table to a module.
 
-### System configuration keys
+- **`systems`**: a dictionary of system definitions. The keys in the array are file names without the `.sol` extension. For example, if your system is named `SystemA.sol`, use `SystemA` as the.
 
-Adding a system is done by adding an entry to the **`systems`** key. The name of the record is the name of the file (if your system is named `SystemA.sol`, use `SystemA` as the key to add to the **`systems`** dictionary.
+  The value is a dictionary of system configuration properties:
 
-Example:
+  - `fileSelector` (optional): a `string`: the file selector for the system.
+  - `openAccess` (optional, default `true`): a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed from the accessList.
 
-```tsx
-import { mudConfig } from "@latticexyz/world/register";
+  - `accessList` (required if openAccess is `false`): an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
 
-export default mudConfig({
-  systems: {
-    SystemA: {
-      name: "systema",
-      openAccess: true,
+  Example:
+
+  ```tsx
+  import { mudConfig } from "@latticexyz/world/register";
+
+  export default mudConfig({
+    systems: {
+      SystemA: {
+        name: "systema",
+        openAccess: true,
+      },
     },
-  },
-  tables: {},
-});
-```
-
-The system configuration can have these properties:
-
-**`fileSelector` (optional)**: a `string`: the file selector for the system.
-
-**`openAccess` (optional)**: a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed from the accessList. Default is `true`.
-
-**`accessList` (required if openAccess is `false`)**: an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.
+    tables: {},
+  });
+  ```

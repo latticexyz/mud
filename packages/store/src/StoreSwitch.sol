@@ -9,103 +9,134 @@ import { Schema } from "./Schema.sol";
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
  */
 library StoreSwitch {
-  error StoreSwitch_InvalidInsideConstructor();
+  bytes32 private constant STORAGE_SLOT = keccak256("mud.store.storage.StoreSwitch");
 
-  /**
-   * Detect whether the current call is a delegatecall or regular call.
-   * (The isStore method doesn't return a value to save gas, but it if exists, the call will succeed.)
-   */
-  function isDelegateCall() internal view returns (bool success) {
-    // Detect calls from within a constructor
-    uint256 codeSize;
+  struct StorageSlotLayout {
+    address storeAddress;
+  }
+
+  function _layout() private pure returns (StorageSlotLayout storage layout) {
+    bytes32 slot = STORAGE_SLOT;
     assembly {
-      codeSize := extcodesize(address())
-    }
-
-    // If the call is from within a constructor, use StoreCore to write to own storage
-    if (codeSize == 0) return true;
-
-    // Check whether this contract implements the IStore interface
-    try IStore(address(this)).isStore() {
-      success = true;
-    } catch {
-      success = false;
+      layout.slot := slot
     }
   }
 
-  function inferStoreAddress() internal view returns (address) {
-    return isDelegateCall() ? address(this) : msg.sender;
+  /**
+   * Get the Store address for use by other StoreSwitch functions.
+   * 0x00 is a magic number for msg.sender
+   * (which means that uninitialized storeAddress is msg.sender by default)
+   */
+  function getStoreAddress() internal view returns (address) {
+    address _storeAddress = _layout().storeAddress;
+    if (_storeAddress == address(0)) {
+      return msg.sender;
+    } else {
+      return _storeAddress;
+    }
+  }
+
+  /**
+   * Set the Store address for use by other StoreSwitch functions.
+   * If it stays uninitialized, StoreSwitch falls back to calling store methods on msg.sender.
+   */
+  function setStoreAddress(address _storeAddress) internal {
+    _layout().storeAddress = _storeAddress;
   }
 
   function registerStoreHook(bytes32 table, IStoreHook hook) internal {
-    if (isDelegateCall()) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
       StoreCore.registerStoreHook(table, hook);
     } else {
-      IStore(msg.sender).registerStoreHook(table, hook);
+      IStore(_storeAddress).registerStoreHook(table, hook);
     }
   }
 
-  function getSchema(bytes32 table) internal view returns (Schema schema) {
-    if (isDelegateCall()) {
-      schema = StoreCore.getSchema(table);
+  function getValueSchema(bytes32 table) internal view returns (Schema valueSchema) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      valueSchema = StoreCore.getValueSchema(table);
     } else {
-      schema = IStore(msg.sender).getSchema(table);
+      valueSchema = IStore(_storeAddress).getValueSchema(table);
     }
   }
 
   function getKeySchema(bytes32 table) internal view returns (Schema keySchema) {
-    if (isDelegateCall()) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
       keySchema = StoreCore.getKeySchema(table);
     } else {
-      keySchema = IStore(msg.sender).getKeySchema(table);
+      keySchema = IStore(_storeAddress).getKeySchema(table);
     }
   }
 
-  function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
-    if (isDelegateCall()) {
-      StoreCore.setMetadata(table, tableName, fieldNames);
+  function registerTable(
+    bytes32 table,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] memory keyNames,
+    string[] memory fieldNames
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
     } else {
-      IStore(msg.sender).setMetadata(table, tableName, fieldNames);
+      IStore(_storeAddress).registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
     }
   }
 
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) internal {
-    if (isDelegateCall()) {
-      StoreCore.registerSchema(table, schema, keySchema);
+  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.setRecord(table, key, data, valueSchema);
     } else {
-      IStore(msg.sender).registerSchema(table, schema, keySchema);
+      IStore(_storeAddress).setRecord(table, key, data, valueSchema);
     }
   }
 
-  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
-    if (isDelegateCall()) {
-      StoreCore.setRecord(table, key, data);
+  function setField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.setField(table, key, fieldIndex, data, valueSchema);
     } else {
-      IStore(msg.sender).setRecord(table, key, data);
+      IStore(_storeAddress).setField(table, key, fieldIndex, data, valueSchema);
     }
   }
 
-  function setField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory data) internal {
-    if (isDelegateCall()) {
-      StoreCore.setField(table, key, fieldIndex, data);
+  function pushToField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    bytes memory dataToPush,
+    Schema valueSchema
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.pushToField(table, key, fieldIndex, dataToPush, valueSchema);
     } else {
-      IStore(msg.sender).setField(table, key, fieldIndex, data);
+      IStore(_storeAddress).pushToField(table, key, fieldIndex, dataToPush, valueSchema);
     }
   }
 
-  function pushToField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
-    if (isDelegateCall()) {
-      StoreCore.pushToField(table, key, fieldIndex, dataToPush);
+  function popFromField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    uint256 byteLengthToPop,
+    Schema valueSchema
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop, valueSchema);
     } else {
-      IStore(msg.sender).pushToField(table, key, fieldIndex, dataToPush);
-    }
-  }
-
-  function popFromField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
-    if (isDelegateCall()) {
-      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop);
-    } else {
-      IStore(msg.sender).popFromField(table, key, fieldIndex, byteLengthToPop);
+      IStore(_storeAddress).popFromField(table, key, fieldIndex, byteLengthToPop, valueSchema);
     }
   }
 
@@ -114,52 +145,55 @@ library StoreSwitch {
     bytes32[] memory key,
     uint8 fieldIndex,
     uint256 startByteIndex,
-    bytes memory dataToSet
+    bytes memory dataToSet,
+    Schema valueSchema
   ) internal {
-    if (isDelegateCall()) {
-      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueSchema);
     } else {
-      IStore(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+      IStore(_storeAddress).updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueSchema);
     }
   }
 
-  function deleteRecord(bytes32 table, bytes32[] memory key) internal {
-    if (isDelegateCall()) {
-      StoreCore.deleteRecord(table, key);
+  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.deleteRecord(table, key, valueSchema);
     } else {
-      IStore(msg.sender).deleteRecord(table, key);
+      IStore(_storeAddress).deleteRecord(table, key, valueSchema);
     }
   }
 
-  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
-    if (isDelegateCall()) {
-      StoreCore.emitEphemeralRecord(table, key, data);
+  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
     } else {
-      IStore(msg.sender).emitEphemeralRecord(table, key, data);
+      IStore(_storeAddress).emitEphemeralRecord(table, key, data, valueSchema);
     }
   }
 
-  function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
-      return StoreCore.getRecord(table, key);
+  function getRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getRecord(table, key, valueSchema);
     } else {
-      return IStore(msg.sender).getRecord(table, key);
+      return IStore(_storeAddress).getRecord(table, key, valueSchema);
     }
   }
 
-  function getRecord(bytes32 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
-      return StoreCore.getRecord(table, key, schema);
+  function getField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema valueSchema
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getField(table, key, fieldIndex, valueSchema);
     } else {
-      return IStore(msg.sender).getRecord(table, key, schema);
-    }
-  }
-
-  function getField(bytes32 table, bytes32[] memory key, uint8 fieldIndex) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
-      return StoreCore.getField(table, key, fieldIndex);
-    } else {
-      return IStore(msg.sender).getField(table, key, fieldIndex);
+      return IStore(_storeAddress).getField(table, key, fieldIndex, valueSchema);
     }
   }
 
@@ -169,10 +203,11 @@ library StoreSwitch {
     uint8 fieldIndex,
     Schema schema
   ) internal view returns (uint256) {
-    if (isDelegateCall()) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
       return StoreCore.getFieldLength(table, key, fieldIndex, schema);
     } else {
-      return IStore(msg.sender).getFieldLength(table, key, fieldIndex, schema);
+      return IStore(_storeAddress).getFieldLength(table, key, fieldIndex, schema);
     }
   }
 
@@ -184,10 +219,11 @@ library StoreSwitch {
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
       return StoreCore.getFieldSlice(table, key, fieldIndex, schema, start, end);
     } else {
-      return IStore(msg.sender).getFieldSlice(table, key, fieldIndex, schema, start, end);
+      return IStore(_storeAddress).getFieldSlice(table, key, fieldIndex, schema, start, end);
     }
   }
 }

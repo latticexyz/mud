@@ -48,6 +48,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidKeyNamesLength",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "StoreCore_NotDynamicField",
     "type": "error"
@@ -200,6 +216,11 @@
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "deleteRecord",
@@ -223,6 +244,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "emitEphemeralRecord",
@@ -246,6 +272,11 @@
         "internalType": "uint8",
         "name": "schemaIndex",
         "type": "uint8"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "getField",
@@ -278,7 +309,7 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "valueSchema",
         "type": "bytes32"
       }
     ],
@@ -312,7 +343,7 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "valueSchema",
         "type": "bytes32"
       },
       {
@@ -370,7 +401,7 @@
       },
       {
         "internalType": "Schema",
-        "name": "schema",
+        "name": "valueSchema",
         "type": "bytes32"
       }
     ],
@@ -391,33 +422,9 @@
         "internalType": "bytes32",
         "name": "table",
         "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "key",
-        "type": "bytes32[]"
       }
     ],
-    "name": "getRecord",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "table",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getSchema",
+    "name": "getValueSchema",
     "outputs": [
       {
         "internalType": "Schema",
@@ -425,13 +432,6 @@
         "type": "bytes32"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "isStore",
-    "outputs": [],
     "stateMutability": "view",
     "type": "function"
   },
@@ -456,6 +456,11 @@
         "internalType": "uint256",
         "name": "byteLengthToPop",
         "type": "uint256"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "popFromField",
@@ -484,32 +489,14 @@
         "internalType": "bytes",
         "name": "dataToPush",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "pushToField",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "table",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "Schema",
-        "name": "schema",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "Schema",
-        "name": "keySchema",
-        "type": "bytes32"
-      }
-    ],
-    "name": "registerSchema",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -540,6 +527,39 @@
         "type": "bytes32"
       },
       {
+        "internalType": "Schema",
+        "name": "keySchema",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "string[]",
+        "name": "keyNames",
+        "type": "string[]"
+      },
+      {
+        "internalType": "string[]",
+        "name": "fieldNames",
+        "type": "string[]"
+      }
+    ],
+    "name": "registerTable",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "table",
+        "type": "bytes32"
+      },
+      {
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
@@ -553,6 +573,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setField",
@@ -568,29 +593,6 @@
         "type": "bytes32"
       },
       {
-        "internalType": "string",
-        "name": "tableName",
-        "type": "string"
-      },
-      {
-        "internalType": "string[]",
-        "name": "fieldNames",
-        "type": "string[]"
-      }
-    ],
-    "name": "setMetadata",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "table",
-        "type": "bytes32"
-      },
-      {
         "internalType": "bytes32[]",
         "name": "key",
         "type": "bytes32[]"
@@ -599,6 +601,11 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "setRecord",
@@ -632,6 +639,11 @@
         "internalType": "bytes",
         "name": "dataToSet",
         "type": "bytes"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
+        "type": "bytes32"
       }
     ],
     "name": "updateInField",

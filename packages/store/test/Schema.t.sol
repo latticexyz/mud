@@ -2,24 +2,27 @@
 pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
+import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
 // TODO add tests for all schema types
 contract SchemaTest is Test, GasReporter {
   function testEncodeDecodeSchema() public {
-    uint256 gas = gasleft();
-    Schema schema = SchemaLib.encode(
-      SchemaType.UINT8, // 1 byte
-      SchemaType.UINT16, // 2 bytes
-      SchemaType.UINT32, // 4 bytes
-      SchemaType.UINT128, // 16 bytes
-      SchemaType.UINT256, // 32 bytes
-      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
-    );
-    gas = gas - gasleft();
-    console.log("GAS REPORT: encode schema with 6 entries [SchemaLib.encode]: %s", gas);
+    startGasReport("initialize schema array with 6 entries");
+    SchemaType[] memory _schema = new SchemaType[](6);
+    _schema[0] = SchemaType.UINT8; // 1 byte
+    _schema[1] = SchemaType.UINT16; // 2 bytes
+    _schema[2] = SchemaType.UINT32; // 4 bytes
+    _schema[3] = SchemaType.UINT128; // 16 bytes
+    _schema[4] = SchemaType.UINT256; // 32 bytes
+    _schema[5] = SchemaType.UINT32_ARRAY; // 0 bytes (because it's dynamic)
+    endGasReport();
+
+    startGasReport("encode schema with 6 entries");
+    Schema schema = SchemaLib.encode(_schema);
+    endGasReport();
 
     startGasReport("get schema type at index");
     SchemaType schemaType1 = schema.atIndex(0);
@@ -34,7 +37,7 @@ contract SchemaTest is Test, GasReporter {
   }
 
   function testFailInvalidSchemaStaticAfterDynamic() public pure {
-    SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT32_ARRAY, SchemaType.UINT16);
+    SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT32_ARRAY, SchemaType.UINT16);
   }
 
   function testEncodeMaxValidLength() public {
@@ -130,7 +133,7 @@ contract SchemaTest is Test, GasReporter {
   }
 
   function testGetStaticSchemaLength() public {
-    Schema schema = SchemaLib.encode(
+    Schema schema = SchemaEncodeHelper.encode(
       SchemaType.UINT8, // 1 byte
       SchemaType.UINT16, // 2 bytes
       SchemaType.UINT32, // 4 bytes
@@ -147,7 +150,7 @@ contract SchemaTest is Test, GasReporter {
   }
 
   function testGetNumStaticFields() public {
-    Schema schema = SchemaLib.encode(
+    Schema schema = SchemaEncodeHelper.encode(
       SchemaType.UINT8, // 1 byte
       SchemaType.UINT16, // 2 bytes
       SchemaType.UINT32, // 4 bytes
@@ -164,7 +167,7 @@ contract SchemaTest is Test, GasReporter {
   }
 
   function testGetNumDynamicFields() public {
-    Schema schema = SchemaLib.encode(
+    Schema schema = SchemaEncodeHelper.encode(
       SchemaType.UINT8, // 1 byte
       SchemaType.UINT16, // 2 bytes
       SchemaType.UINT32, // 4 bytes
@@ -178,6 +181,23 @@ contract SchemaTest is Test, GasReporter {
     endGasReport();
 
     assertEq(num, 1);
+  }
+
+  function testGetNumFields() public {
+    Schema schema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8, // 1 byte
+      SchemaType.UINT16, // 2 bytes
+      SchemaType.UINT32, // 4 bytes
+      SchemaType.UINT128, // 16 bytes
+      SchemaType.UINT256, // 32 bytes
+      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
+    );
+
+    startGasReport("get number of all fields from schema");
+    uint256 num = schema.numFields();
+    endGasReport();
+
+    assertEq(num, 6);
   }
 
   function testValidate() public {
@@ -233,7 +253,7 @@ contract SchemaTest is Test, GasReporter {
   }
 
   function testIsEmptyFalse() public {
-    Schema encodedSchema = SchemaLib.encode(SchemaType.UINT256);
+    Schema encodedSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
 
     startGasReport("check if schema is empty (non-empty schema)");
     bool empty = encodedSchema.isEmpty();

@@ -11,7 +11,7 @@ import {
   RenderDynamicField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
-import { renderEncodeField, renderFieldMethods } from "./field";
+import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
 
@@ -73,14 +73,7 @@ ${
 }
 
 library ${libraryName} {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](${fields.length});
-    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
-
-    return SchemaLib.encode(_schema);
-  }
-
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
     ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
@@ -88,29 +81,32 @@ library ${libraryName} {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](${fields.length});
-    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
-    return ("${libraryName}", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](${fields.length});
+    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+
+    return SchemaLib.encode(_schema);
+  }
+
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](${keyTuple.length});
+    ${renderList(keyTuple, (keyElement, index) => `keyNames[${index}] = "${keyElement.name}";`)}
+  }
+
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](${fields.length});
+    ${renderList(fields, (field, index) => `fieldNames[${index}] = "${field.name}";`)}
   }
 
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Register the table's schema${_commentSuffix} */
-    function registerSchema(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerSchema(_tableId, getSchema(), getKeySchema());
-    }
-  `
-  )}
-  ${renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
-    /** Set the table's metadata${_commentSuffix} */
-    function setMetadata(${renderArguments([_typedStore, _typedTableId])}) internal {
-      (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-      ${_store}.setMetadata(_tableId, _tableName, _fieldNames);
+    /** Register the table's key schema, value schema, key names and value names${_commentSuffix} */
+    function register(${renderArguments([_typedStore, _typedTableId])}) internal {
+      ${_store}.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
   `
   )}
@@ -124,22 +120,20 @@ library ${libraryName} {
   /** Tightly pack full data using this table's schema */
   function encode(${renderArguments(
     options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-  )}) internal view returns (bytes memory) {
+  )}) internal pure returns (bytes memory) {
     ${renderEncodedLengths(dynamicFields)}
     return abi.encodePacked(${renderArguments([
       renderArguments(staticFields.map(({ name }) => name)),
-      // TODO try gas optimization (preallocate for all, encodePacked statics, and direct encode dynamics)
-      // (see https://github.com/latticexyz/mud/issues/444)
       ...(dynamicFields.length === 0
         ? []
-        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
+        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))]),
     ])});
   }
   
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](${keyTuple.length});
-    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
+  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
+    ${_keyTupleDefinition}
+    return _keyTuple;
   }
 
   ${
@@ -150,7 +144,7 @@ library ${libraryName} {
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_keyTupleDefinition}
-      ${_store}.deleteRecord(_tableId, _keyTuple);
+      ${_store}.deleteRecord(_tableId, _keyTuple, getValueSchema());
     }
   `
         )
@@ -166,15 +160,21 @@ ${renderTypeHelpers(options)}
 function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length > 0) {
     return `
-    uint40[] memory _counters = new uint40[](${dynamicFields.length});
-    ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
-      if (arrayElement) {
-        return `_counters[${index}] = uint40(${name}.length * ${arrayElement.staticByteLength});`;
-      } else {
-        return `_counters[${index}] = uint40(bytes(${name}).length);`;
-      }
-    })}
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(
+        ${renderArguments(
+          dynamicFields.map(({ name, arrayElement }) => {
+            if (arrayElement) {
+              return `${name}.length * ${arrayElement.staticByteLength}`;
+            } else {
+              return `bytes(${name}).length`;
+            }
+          })
+        )}
+      );
+    }
     `;
   } else {
     return "";

@@ -22,7 +22,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
     ])}) internal view returns (${renderDecodedRecord(options)}) {
       ${_keyTupleDefinition}
-      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getSchema());
+      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getValueSchema());
       return decode(_blob);
     }
   `
@@ -42,7 +42,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
       ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _data);
+      ${_store}.setRecord(_tableId, _keyTuple, _data, getValueSchema());
     }
   `
   );
@@ -94,8 +94,11 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
     // decode static (optionally) and dynamic data
     return `
-    /** Decode the tightly packed blob using this table's schema */
-    function decode(bytes memory _blob) internal view returns (${renderedDecodedRecord}) {
+    /**
+     * Decode the tightly packed blob using this table's schema.
+     * Undefined behaviour for invalid blobs.
+     */
+    function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
       // ${totalStaticLength} is the total byte length of static data
       PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
 
@@ -107,16 +110,31 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
       )}
       // Store trims the blob if dynamic fields are all empty
       if (_blob.length > ${totalStaticLength}) {
-        uint256 _start;
-        // skip static data length + dynamic lengths word
-        uint256 _end = ${totalStaticLength + 32};
         ${renderList(
           dynamicFields,
-          (field, index) => `
-          _start = _end;
-          _end += _encodedLengths.atIndex(${index});
-          ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-          `
+          // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
+          // but it's assumed to be valid, and this function is meant to be mostly used internally
+          (field, index) => {
+            if (index === 0) {
+              return `
+              // skip static data length + dynamic lengths word
+              uint256 _start = ${totalStaticLength + 32};
+              uint256 _end;
+              unchecked {
+                _end = ${totalStaticLength + 32} + _encodedLengths.atIndex(${index});
+              }
+              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+              `;
+            } else {
+              return `
+              _start = _end;
+              unchecked {
+                _end += _encodedLengths.atIndex(${index});
+              }
+              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+              `;
+            }
+          }
         )}
       }
     }

@@ -1,0 +1,50 @@
+name: Snapshot release
+
+# Releases a snapshot release when new commits merge to main
+# This ensures the release process is working as expected
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-snapshot:
+    name: Publish snapshot release to npm
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Set deployment token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Remove this once https://github.com/changesets/changesets/issues/1195 is addressed
+      - name: Temporarily exit pre-release mode to release a snapshot
+        run: pnpm changeset pre exit
+
+      - name: Clean
+        shell: bash
+        run: pnpm turbo run clean --force --concurrency 10
+
+      # Build without cache to ensure we release with the most accurate output
+      - name: Build
+        shell: bash
+        run: pnpm turbo run build --force --concurrency 10
+
+      - name: Publish snapshots
+        uses: seek-oss/changesets-snapshot@v0
+        with:
+          pre-publish: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

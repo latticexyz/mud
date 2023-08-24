@@ -2,9 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
-import { GasReporter } from "@latticexyz/std-contracts/src/test/GasReporter.sol";
+import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Storage } from "../src/Storage.sol";
-import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 
 contract StorageTest is Test, GasReporter {
@@ -28,10 +27,10 @@ contract StorageTest is Test, GasReporter {
     // First store some data to storage at the target slot and two slots after the target slot
 
     startGasReport("store 1 storage slot");
-    Storage.store({ storagePointer: storagePointer, data: originalDataFirstSlot });
+    Storage.store({ storagePointer: storagePointer, offset: 0, data: originalDataFirstSlot });
     endGasReport();
 
-    Storage.store({ storagePointer: storagePointerTwoSlotsAfter, data: originalDataLastSlot });
+    Storage.store({ storagePointer: storagePointerTwoSlotsAfter, offset: 0, data: originalDataLastSlot });
 
     // Then set the target slot, partially overwriting the first and third slot, but using safeTrail and offset
 

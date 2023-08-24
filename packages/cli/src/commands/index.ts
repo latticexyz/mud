@@ -1,11 +1,11 @@
 import { CommandModule } from "yargs";
 
+import gasReport from "@latticexyz/gas-report";
+
 import devnode from "./devnode";
 import faucet from "./faucet";
-import gasReport from "./gas-report";
 import hello from "./hello";
 import tablegen from "./tablegen";
-import tsgen from "./tsgen";
 import deploy from "./deploy";
 import worldgen from "./worldgen";
 import setVersion from "./set-version";
@@ -18,10 +18,9 @@ export const commands: CommandModule<any, any>[] = [
   deploy,
   devnode,
   faucet,
-  gasReport,
+  gasReport as CommandModule,
   hello,
   tablegen,
-  tsgen,
   worldgen,
   setVersion,
   test,

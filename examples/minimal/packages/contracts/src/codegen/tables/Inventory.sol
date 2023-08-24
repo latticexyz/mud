@@ -21,14 +21,7 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Inven
 bytes32 constant InventoryTableId = _tableId;
 
 library Inventory {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT32;
-
-    return SchemaLib.encode(_schema);
-  }
-
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
     _schema[0] = SchemaType.ADDRESS;
@@ -38,33 +31,36 @@ library Inventory {
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "amount";
-    return ("Inventory", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.UINT32;
+
+    return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](3);
+    keyNames[0] = "owner";
+    keyNames[1] = "item";
+    keyNames[2] = "itemVariant";
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](1);
+    fieldNames[0] = "amount";
   }
 
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get amount */
@@ -74,7 +70,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
@@ -85,7 +81,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueSchema());
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
@@ -96,7 +92,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getValueSchema());
   }
 
   /** Set amount (using the specified store) */
@@ -106,24 +102,22 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)));
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getValueSchema());
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 amount) internal view returns (bytes memory) {
+  function encode(uint32 amount) internal pure returns (bytes memory) {
     return abi.encodePacked(amount);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(
-    address owner,
-    uint32 item,
-    uint32 itemVariant
-  ) internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](3);
+  function encodeKeyTuple(address owner, uint32 item, uint32 itemVariant) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    return _keyTuple;
   }
 
   /* Delete all data for given keys */
@@ -133,7 +127,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -143,6 +137,6 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.deleteRecord(_tableId, _keyTuple);
+    _store.deleteRecord(_tableId, _keyTuple, getValueSchema());
   }
 }

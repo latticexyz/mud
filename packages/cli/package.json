@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "1.42.0",
+  "version": "2.0.0-next.4",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -17,14 +17,14 @@
     "mud": "./dist/mud.js"
   },
   "scripts": {
-    "build": "pnpm run build:js",
+    "build": "pnpm run build:js && pnpm run build:test-tables",
     "build:js": "tsup && chmod +x ./dist/mud.js",
+    "build:test-tables": "tsx ./scripts/generate-test-tables.ts",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit && pnpm run generate-test-tables && forge test"
+    "test": "tsc --noEmit && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
@@ -33,10 +33,10 @@
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
+    "@latticexyz/gas-report": "workspace:*",
+    "@latticexyz/protocol-parser": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
-    "@latticexyz/solecs": "workspace:*",
-    "@latticexyz/std-contracts": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
     "@latticexyz/world": "workspace:*",
@@ -51,11 +51,9 @@
     "nice-grpc-web": "^2.0.1",
     "openurl": "^1.1.1",
     "path": "^0.12.7",
-    "strip-ansi": "^7.1.0",
-    "table": "^6.8.1",
     "throttle-debounce": "^5.0.0",
     "typechain": "^8.1.1",
-    "typescript": "^4.9.5",
+    "typescript": "5.1.6",
     "yargs": "^17.7.1",
     "zod": "^3.21.4",
     "zod-validation-error": "^1.3.0"
@@ -67,8 +65,8 @@
     "@types/openurl": "^1.0.0",
     "@types/throttle-debounce": "^5.0.0",
     "@types/yargs": "^17.0.10",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
+    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vitest": "0.31.4"
