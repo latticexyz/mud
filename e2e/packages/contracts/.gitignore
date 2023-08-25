@@ -8,3 +8,4 @@ broadcast/
 
 # Ignore all deploy artifacts
 deploys/**/*.json
+worlds.json
