@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "pnpm run test:rpc && pnpm run test:sqlite-indexer && pnpm run test:postgres-indexer",
+    "test:local": "DATABASE_URL=postgres://127.0.0.1/postgres pnpm run test",
     "test:postgres-indexer": "INDEXER=postgres vitest --run indexerSync.test.ts",
     "test:rpc": "vitest --run rpcSync.test.ts",
     "test:sqlite-indexer": "INDEXER=sqlite vitest --run indexerSync.test.ts"
