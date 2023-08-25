@@ -11,10 +11,11 @@ type SyncToSqliteOptions<TConfig extends StoreConfig = StoreConfig> = SyncOption
    * [0]: https://orm.drizzle.team/docs/installation-and-db-connection/sqlite/better-sqlite3
    */
   database: BaseSQLiteDatabase<"sync", any>;
+  startSync?: boolean;
 };
 
 type SyncToSqliteResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
-  destroy: () => void;
+  stopSync: () => void;
 };
 
 /**
@@ -32,6 +33,7 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   maxBlockRange,
   indexerUrl,
   initialState,
+  startSync = true,
 }: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult<TConfig>> {
   const storeSync = await createStoreSync({
     storageAdapter: await sqliteStorage({ database, publicClient, config }),
@@ -44,13 +46,13 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
     initialState,
   });
 
-  // Start the sync
-  const sub = storeSync.blockStorageOperations$.subscribe();
+  const sub = startSync ? storeSync.blockStorageOperations$.subscribe() : null;
+  const stopSync = (): void => {
+    sub?.unsubscribe();
+  };
 
   return {
     ...storeSync,
-    destroy: (): void => {
-      sub.unsubscribe();
-    },
+    stopSync,
   };
 }

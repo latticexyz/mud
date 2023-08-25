@@ -160,15 +160,21 @@ ${renderTypeHelpers(options)}
 function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length > 0) {
     return `
-    uint40[] memory _counters = new uint40[](${dynamicFields.length});
-    ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
-      if (arrayElement) {
-        return `_counters[${index}] = uint40(${name}.length * ${arrayElement.staticByteLength});`;
-      } else {
-        return `_counters[${index}] = uint40(bytes(${name}).length);`;
-      }
-    })}
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(
+        ${renderArguments(
+          dynamicFields.map(({ name, arrayElement }) => {
+            if (arrayElement) {
+              return `${name}.length * ${arrayElement.staticByteLength}`;
+            } else {
+              return `bytes(${name}).length`;
+            }
+          })
+        )}
+      );
+    }
     `;
   } else {
     return "";

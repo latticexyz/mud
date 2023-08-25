@@ -7,7 +7,7 @@ import (
 )
 
 func TestHexToPackedCounter(t *testing.T) {
-	hex := "0x0000000000008000000000200000000020000000004000000000000000000000"
+	hex := "0x0000000000000000000000000000400000000020000000002000000000000080"
 	expectedCounter := protocolparser.PackedCounter{
 		TotalByteLength: uint64(128),
 		FieldByteLengths: []uint64{
@@ -47,7 +47,7 @@ func TestHexToPackedCounterLengthMismatch(t *testing.T) {
 		}
 	}()
 
-	hex := "0x0000000000004000000000200000000020000000004000000000000000000000"
+	hex := "0x0000000000000000000000000000400000000020000000002000000000000040"
 	protocolparser.HexToPackedCounter(hex)
 	t.Error("expected panic")
 }
