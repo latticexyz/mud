@@ -27,18 +27,19 @@ export function startIndexer(opts: StartIndexerOptions) {
     reject = rej;
   });
 
-  console.log(chalk.magenta("[indexer]:"), "start syncing");
+  const env = {
+    DEBUG: "mud:*",
+    PORT: opts.port.toString(),
+    CHAIN_ID: "31337",
+    RPC_HTTP_URL: opts.rpcUrl,
+    SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
+    DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
+  };
+  console.log(chalk.magenta("[indexer]:"), "starting indexer", env);
 
   const proc = execa("pnpm", opts.indexer === "postgres" ? ["start:postgres"] : ["start:sqlite"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
-    env: {
-      DEBUG: "mud:*",
-      PORT: opts.port.toString(),
-      CHAIN_ID: "31337",
-      RPC_HTTP_URL: opts.rpcUrl,
-      SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
-      DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
-    },
+    env,
   });
 
   proc.on("error", (error) => {
