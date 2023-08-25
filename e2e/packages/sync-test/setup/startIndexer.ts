@@ -3,12 +3,23 @@ import { execa } from "execa";
 import { rmSync } from "node:fs";
 import path from "node:path";
 
-export function startIndexer(
-  port: number,
-  sqliteFilename: string,
-  rpcUrl: string,
-  reportError: (error: string) => void
-) {
+type IndexerOptions =
+  | {
+      indexer: "sqlite";
+      sqliteFilename: string;
+    }
+  | {
+      indexer: "postgres";
+      databaseUrl: string;
+    };
+
+type StartIndexerOptions = {
+  port: number;
+  rpcUrl: string;
+  reportError: (error: string) => void;
+} & IndexerOptions;
+
+export function startIndexer(opts: StartIndexerOptions) {
   let resolve: () => void;
   let reject: (reason?: string) => void;
   const doneSyncing = new Promise<void>((res, rej) => {
@@ -18,14 +29,14 @@ export function startIndexer(
 
   console.log(chalk.magenta("[indexer]:"), "start syncing");
 
-  const proc = execa("pnpm", ["start"], {
+  const proc = execa("pnpm", opts.indexer === "postgres" ? ["start:postgres"] : ["start:sqlite"], {
     cwd: path.join(__dirname, "..", "..", "..", "..", "packages", "store-indexer"),
     env: {
       DEBUG: "mud:*",
-      PORT: port.toString(),
+      PORT: opts.port.toString(),
       CHAIN_ID: "31337",
-      RPC_HTTP_URL: rpcUrl,
-      SQLITE_FILENAME: sqliteFilename,
+      RPC_HTTP_URL: opts.rpcUrl,
+      SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
     },
   });
 
@@ -56,10 +67,12 @@ export function startIndexer(
 
   function cleanUp() {
     // attempt to clean up sqlite file
-    try {
-      rmSync(sqliteFilename);
-    } catch (error) {
-      console.log("could not delete", sqliteFilename, error);
+    if (opts.indexer === "sqlite") {
+      try {
+        rmSync(opts.sqliteFilename);
+      } catch (error) {
+        console.log("could not delete", opts.sqliteFilename, error);
+      }
     }
   }
 
@@ -70,7 +83,7 @@ export function startIndexer(
   });
 
   return {
-    url: `http://127.0.0.1:${port}/trpc`,
+    url: `http://127.0.0.1:${opts.port}/trpc`,
     doneSyncing,
     process: proc,
     kill: () =>

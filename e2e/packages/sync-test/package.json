@@ -4,7 +4,13 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "test": "vitest --run"
+    "test": "pnpm run test:rpc && pnpm run test:sqlite-indexer && pnpm run test:postgres-indexer",
+    "test:postgres-indexer": "INDEXER=postgres vitest --run indexerSync.test.ts",
+    "test:rpc": "vitest --run rpcSync.test.ts",
+    "test:sqlite-indexer": "INDEXER=sqlite vitest --run indexerSync.test.ts"
+  },
+  "dependencies": {
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",

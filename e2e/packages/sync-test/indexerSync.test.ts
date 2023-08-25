@@ -23,12 +23,29 @@ import {
 import { range } from "@latticexyz/utils";
 import path from "node:path";
 import { rpcHttpUrl } from "./setup/constants";
+import { z } from "zod";
 
 describe("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
+
+  const env = z
+    .union([
+      z.object({
+        INDEXER: z.enum(["sqlite"]),
+      }),
+      z.object({
+        INDEXER: z.enum(["postgres"]),
+        DATABASE_URL: z.string(),
+      }),
+    ])
+    .parse(process.env, {
+      errorMap: (issue) => ({
+        message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
+      }),
+    });
 
   beforeEach(async () => {
     await deployContracts(rpcHttpUrl);
@@ -61,7 +78,14 @@ describe("Sync from indexer", async () => {
     beforeEach(async () => {
       // Start indexer
       const port = 3000 + indexerIteration++;
-      indexer = startIndexer(port, path.join(__dirname, `anvil-${port}.db`), rpcHttpUrl, asyncErrorHandler.reportError);
+      indexer = startIndexer({
+        port,
+        rpcUrl: rpcHttpUrl,
+        reportError: asyncErrorHandler.reportError,
+        ...(env.INDEXER === "postgres"
+          ? { indexer: "postgres", databaseUrl: env.DATABASE_URL }
+          : { indexer: "sqlite", sqliteFilename: path.join(__dirname, `anvil-${port}.db`) }),
+      });
       await indexer.doneSyncing;
     });
 
