@@ -32,15 +32,9 @@ describe("Sync from indexer", async () => {
   let page: Page;
 
   const env = z
-    .union([
-      z.object({
-        INDEXER: z.enum(["sqlite"]),
-      }),
-      z.object({
-        INDEXER: z.enum(["postgres"]),
-        DATABASE_URL: z.string(),
-      }),
-    ])
+    .object({
+      DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres"),
+    })
     .parse(process.env, {
       errorMap: (issue) => ({
         message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
@@ -71,7 +65,7 @@ describe("Sync from indexer", async () => {
     expect(asyncErrorHandler.getErrors()[0]).toContain("error fetching initial state from indexer");
   });
 
-  describe("indexer online", () => {
+  describe.each([["sqlite"], ["postgres"]] as const)("%s indexer", (indexerType) => {
     let indexerIteration = 1;
     let indexer: ReturnType<typeof startIndexer>;
 
@@ -82,7 +76,7 @@ describe("Sync from indexer", async () => {
         port,
         rpcUrl: rpcHttpUrl,
         reportError: asyncErrorHandler.reportError,
-        ...(env.INDEXER === "postgres"
+        ...(indexerType === "postgres"
           ? { indexer: "postgres", databaseUrl: env.DATABASE_URL }
           : { indexer: "sqlite", sqliteFilename: path.join(__dirname, `anvil-${port}.db`) }),
       });

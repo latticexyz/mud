@@ -37,6 +37,7 @@ export function startIndexer(opts: StartIndexerOptions) {
       CHAIN_ID: "31337",
       RPC_HTTP_URL: opts.rpcUrl,
       SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
+      DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
     },
   });
 
