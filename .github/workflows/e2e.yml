@@ -49,5 +49,7 @@ jobs:
         uses: ./.github/actions/require-empty-diff
 
       - name: Run sync tests
+        env:
+          DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
         working-directory: ./e2e/packages/sync-test
         run: pnpm test

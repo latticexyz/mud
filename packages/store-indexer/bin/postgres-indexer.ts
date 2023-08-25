@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import { z } from "zod";
 import { DefaultLogger, eq } from "drizzle-orm";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";

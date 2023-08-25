@@ -15,7 +15,7 @@ type IndexerOptions =
 
 type StartIndexerOptions = {
   port: number;
-  rpcUrl: string;
+  rpcHttpUrl: string;
   reportError: (error: string) => void;
 } & IndexerOptions;
 
@@ -31,7 +31,7 @@ export function startIndexer(opts: StartIndexerOptions) {
     DEBUG: "mud:*",
     PORT: opts.port.toString(),
     CHAIN_ID: "31337",
-    RPC_HTTP_URL: opts.rpcUrl,
+    RPC_HTTP_URL: opts.rpcHttpUrl,
     SQLITE_FILENAME: opts.indexer === "sqlite" ? opts.sqliteFilename : undefined,
     DATABASE_URL: opts.indexer === "postgres" ? opts.databaseUrl : undefined,
   };

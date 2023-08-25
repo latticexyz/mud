@@ -25,21 +25,21 @@ import path from "node:path";
 import { rpcHttpUrl } from "./setup/constants";
 import { z } from "zod";
 
+const env = z
+  .object({
+    DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres"),
+  })
+  .parse(process.env, {
+    errorMap: (issue) => ({
+      message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
+    }),
+  });
+
 describe("Sync from indexer", async () => {
   const asyncErrorHandler = createAsyncErrorHandler();
   let webserver: ViteDevServer;
   let browser: Browser;
   let page: Page;
-
-  const env = z
-    .object({
-      DATABASE_URL: z.string().default("postgres://127.0.0.1/postgres"),
-    })
-    .parse(process.env, {
-      errorMap: (issue) => ({
-        message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
-      }),
-    });
 
   beforeEach(async () => {
     await deployContracts(rpcHttpUrl);
@@ -74,7 +74,7 @@ describe("Sync from indexer", async () => {
       const port = 3000 + indexerIteration++;
       indexer = startIndexer({
         port,
-        rpcUrl: rpcHttpUrl,
+        rpcHttpUrl,
         reportError: asyncErrorHandler.reportError,
         ...(indexerType === "postgres"
           ? { indexer: "postgres", databaseUrl: env.DATABASE_URL }
