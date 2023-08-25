@@ -27,6 +27,7 @@ const env = z
     START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     PORT: z.coerce.number().positive().default(3001),
+    HOST: z.string().default("0.0.0.0"),
     SQLITE_FILENAME: z.string().default("indexer.db"),
   })
   .parse(process.env, {
@@ -126,5 +127,5 @@ server.register(fastifyTRPCPlugin, {
   },
 });
 
-await server.listen({ port: env.PORT });
-console.log(`indexer server listening on http://127.0.0.1:${env.PORT}`);
+await server.listen({ host: env.HOST, port: env.PORT });
+console.log(`indexer server listening on http://${env.HOST}:${env.PORT}`);
