@@ -95,8 +95,8 @@ export default mudConfig({
         functionSelector: "bytes4",
       },
       schema: {
-        resourceSelector: "bytes32",
         staticCallOnly: "bool",
+        resourceSelector: "bytes32",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,

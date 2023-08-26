@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/dev/observables.ts"],"sourcesContent":["import { Abi } from \"abitype\";\nimport { BehaviorSubject } from \"rxjs\";\n\nexport const worldAbi$ = new BehaviorSubject<Abi | null>(null);\n"],"mappings":"AACA,OAAS,mBAAAA,MAAuB,OAEzB,IAAMC,EAAY,IAAID,EAA4B,IAAI","names":["BehaviorSubject","worldAbi$"]}

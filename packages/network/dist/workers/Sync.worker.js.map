@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../src/workers/Sync.worker.ts"],"sourcesContent":["import { runWorker } from \"@latticexyz/utils\";\nimport { SyncWorker } from \"./SyncWorker\";\n\nrunWorker(new SyncWorker());\n"],"mappings":"yCAAA,OAAS,aAAAA,MAAiB,oBAG1BC,EAAU,IAAIC,CAAY","names":["runWorker","runWorker","SyncWorker"]}

@@ -29,7 +29,7 @@ contract KeysWithValueHook is IStoreHook {
     return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
-  function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data) public {
+  function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
