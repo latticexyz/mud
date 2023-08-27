@@ -20,7 +20,6 @@ export const useStore = create<Store>(() => ({
   devMode: false,
 }));
 
-
 export const useMUD = () => {
   const { networkLayer, phaserLayer, devMode } = useStore();
 
