@@ -7,7 +7,7 @@ import { console } from "forge-std/console.sol";
 import { Counter } from "codegen/Tables.sol";
 import { IWorld } from "codegen/world/IWorld.sol";
 
-contract ScriptClient is Script {
+contract Fail is Script {
   IWorld world;
 
   function run() external {
@@ -23,10 +23,8 @@ contract ScriptClient is Script {
 
     console.log("The counter values is now ", Counter.get(world));
 
-    console.log("Incrementing the counter");
-    world.increment();
-
-    console.log("The counter values is now ", Counter.get(world));
+    // Try to set `Counter` directly. See that it fails.
+    Counter.set(world, 0);
 
     // Stop broadcasting transactions from the account
     vm.stopBroadcast();
