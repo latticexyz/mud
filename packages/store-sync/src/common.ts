@@ -119,5 +119,5 @@ export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
+  waitForTransaction: (tx: Hex) => Promise<void>;
 };
