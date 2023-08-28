@@ -1,6 +1,7 @@
 # Compiler files
 cache/
 out/
+src/codegen
 
 # Ignores development broadcast logs
 !/broadcast

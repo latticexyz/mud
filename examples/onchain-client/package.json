@@ -7,9 +7,12 @@
   "author": "",
   "main": "index.js",
   "scripts": {
+    "build:mud": "mud tablegen && mud worldgen",
+    "script": "forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:ScriptClient",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@latticexyz/cli": "2.0.0-next.4",
     "@latticexyz/schema-type": "2.0.0-next.4",
     "@latticexyz/store": "2.0.0-next.4",
     "@latticexyz/world": "2.0.0-next.4"
