@@ -5,106 +5,9 @@ You can use this knowledge to add sub-systems to a `World` or to use MUD as part
 
 ## Setup
 
-[Create a minimal application](../minimal) and run it.
+1. [Create a minimal application](../minimal) and run it.
 
-## Use the `World` from Foundry
-
-As a first step, we can access the `World` from Foundry.
-This is the easiest method to experiment.
-
-1. Set some variables.
-   This is assuming you are running the minimal application locally through `pnpm dev` and have not modified any contracts.
-   If that is not correct in your case modify as needed.
-
-   ```sh copy
-   export ETH_RPC_URL=http://localhost:8545
-   WORLD_ADDR=0x5FbDB2315678afecb367f032d93F642f64180aa3
-   PRIVATE_KEY=0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6
-   ```
-
-   Note that the private key is _not_ [the one used to deploy the `World`](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/.env).
-   This is on purpose, to ensure that you can use everything in this tutorial to extend other people's `World`s.
-
-1. View the value of `Counter` on the user interface.
-
-1. Increment the counter.
-
-   ```sh copy
-   cast send --private-key $PRIVATE_KEY $WORLD_ADDR "increment()"
-   ```
-
-1. View the value of `Counter` on the user interface, see that it was incremented.
-
-<details>
-
-<summary>How do I get the counter value in Foundry?</summary>
-
-The process to get a value directly from a MUD table as an EOA (externally owned account) is a bit complicated.
-Normally, we'd expect onchain code to use [the library](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/src/codegen/tables/Counter.sol), but that library is not available on the command line.
-
-If you want to do it anyway, here are the steps.
-
-1. Specify the identifier for the `Counter` table.
-
-   ```sh copy
-   COUNTER_TABLE=0x00000000000000000000000000000000436f756e746572000000000000000000
-   ```
-
-   The convention (which is not enforced by onchain code) for identifying tables is to have two ASCII strings, one starting in byte 0 (namespace) and one starting in byte 16 (table name).
-   The values are then padded with zeros to make them into 16 bytes.
-
-   If the case of `Counter`, the namespace is empty (it is in the root namespace) and the name of the table is `Counter`.
-   [You can see the code that calculates that `tableId` in the template](https://github.com/latticexyz/mud/blob/main/templates/vanilla/packages/contracts/src/codegen/tables/Counter.sol#L20-L21).
-   You can also use [this calculator](https://www.duplichecker.com/text-to-hex.php) to translate text into ASCII hexadecimal.
-
-1. Get the value schema for `Counter`.
-
-   ```sh copy
-   COUNTER_VAL_SCHEMA=`cast call $WORLD_ADDR "getValueSchema(bytes32)" $COUNTER_TABLE`
-   ```
-
-   We need to provide the value schema to the function that actually gets the record.
-   [You can read the `getValueSchema` function in the source code](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreRead.sol#L13-L15).
-
-1. Read the counter value.
-
-   ```sh copy
-   cast call $WORLD_ADDR 'getField(bytes32,bytes32[] calldata,uint8,bytes32)' \
-             $COUNTER_TABLE '[]' 0 $COUNTER_VAL_SCHEMA
-   ```
-
-   `getField` takes four parameters:
-
-   - The identifier for the table.
-   - The array of key values, which in this case is empty.
-   - The number of the field we want within the value schema.
-     The first field (the only one in `Counter`) is zero.
-   - The value schema we got in the previous step.
-
-   [You can also read this function in the source code](https://github.com/latticexyz/mud/blob/main/packages/store/src/StoreRead.sol#L30-L38).
-
-   The output is ABI encoded as an array of variable length fields, so it is a bit difficult to read.
-   Here it is, divided into 32 byte words.
-
-   | Word | Value                                                                |
-   | ---: | -------------------------------------------------------------------- |
-   |    0 | 00000000000000000000000000000000000000000000000000000000000000**20** |
-   |    1 | 00000000000000000000000000000000000000000000000000000000000000**04** |
-   |    2 | **00000006**00000000000000000000000000000000000000000000000000000000 |
-
-   Word 0 tells us that the data starts at byte number 0x20=32, which is word 1.
-   Word 1 tells us that the data for the field we care about is four bytes long (the size of `uint32`).
-   Word 2 actually gives us the value, padded by zeros to complete the word.
-
-It is much easier for offchain code to just synchronize from [an Indexer](\indexer) and listen for events.
-
-</details>
-
-## Use the `World` from a contract
-
-You can use the contract [in the examples directory](https://github.com/latticexyz/mud/tree/main/examples/onchain-client).
-
-1. Download the source code and install the necessary packages.
+1. In a separate command line window, clone the MUD repository and install the necessary packages.
 
    ```sh copy
    git clone https://github.com/latticexyz/mud.git
@@ -112,18 +15,185 @@ You can use the contract [in the examples directory](https://github.com/latticex
    pnpm install
    ```
 
-1. Set the necessary environment variables.
-
-   ```sh copy
-   . .env
-   ```
-
-   This file specifies two variables:
+1. Set the necessary environment variables in `.env`. This file specifies two variables:
 
    | Variable    | Meaning                                                                                                                 |
    | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
    | PRIVATE_KEY | A private key that has ETH on the blockchain. This is a different private key than the one that deployed the `World`.   |
    | WORLD_ADDR  | The address of the `World` contract. The value in `.env` is the initial world deployed by `pnpm dev`, change as needed. |
+
+   If these values need to be different from the default ones, edit `.env` appropriately.
+
+1. Generate MUD code.
+
+   ```sh copy
+   pnpm build:mud
+   ```
+
+<details>
+
+<summary>Generating MUD code</summary>
+
+The definitions for this `World` are contained in two files:
+
+- [`mud.config.ts` which contains the data schema](/tutorials/walkthrough/minimal-onchain#mudconfigts).
+- [`src/systems/IncremetSystem.sol`, which contains the logic](https://mud.dev/tutorials/walkthrough/minimal-onchain#incrementsystemsol).
+
+When we run `pnpm build:mud`, MUD generates the files in `src/codegen` that represent this `World` in Solidity.
+You can read a description of the resulting data definitions [in the onchain walkthrough](/tutorials/walkthrough/minimal-onchain) (expand **The autogenerated files**).
+The `World` definition in `src/codegen/world/IWorld.sol` simply tells other Solidity files about the functions that are included in the `World`, including `increment`.
+
+</details>
+
+## Use the `World` from a forge script
+
+Before we actually use a contract, we'll use a [forge script](https://book.getfoundry.sh/reference/forge/forge-script),
+The advantage of scripts is they make it easier to experiment.
+
+To run the script, use this command:
+
+```sh copy
+pnpm script
+```
+
+Looking in `package.json`, so see that the script gets executed by this command:
+
+```sh
+forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:ScriptClient
+```
+
+- `--rpc-url` specifies the URL to the blockchain.
+  In this case, this is one that runs locally.
+  If your blockchain runs anywhere else, modify as needed.
+- `--broadcast` tells Foundry that we don't want to just simulate the transactions, but actually send them to the blockchain
+- `script/ScriptClient.s.sol:ScriptClient` is the contract to run as a script.
+  By convention, forge scripts are stored in `script` and have the extension `.s.sol`.
+
+<details>
+
+<summary>Content of `script/ScriptClient.s.sol`</summary>
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+```
+
+This is standard Solidity boilerplate.
+
+```solidity
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+```
+
+These lines are standard Foundry imports:
+
+- `lib/forge-std/Script.sol` is the script definitions.
+- `lib/forge-std/console.log` lets us emit console messages (you can see them in the output of the command above).
+
+```solidity
+import { Counter } from "codegen/Tables.sol";
+import { IWorld } from "codegen/world/IWorld.sol";
+```
+
+These lines import from the generated MUD code the definitions we need:
+
+- `Counter`, the counter with which we wish to interact.
+- `IWorld`, an interface to the `World` with all the functions from the various systems.
+
+```solidity
+contract ScriptClient is Script {
+  IWorld world;
+
+  function run() external {
+```
+
+This is the function that runs the script.
+
+```solidity
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 myPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from that account
+    vm.startBroadcast(myPrivateKey);
+```
+
+Read the private key from the environment (which includes the content of the `.env` file) and use it to issue transactions.
+
+```solidity
+    // Connect to the world using `WORLD_ADDR` from .env
+    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDR"));
+    world = IWorld(vm.envAddress("WORLD_ADDR"));
+```
+
+Connect to the `World` at `WORLD_ADDR`.
+
+```solidity
+    console.log("The counter values is now ", Counter.get(world));
+
+    console.log("Incrementing the counter");
+    world.increment();
+
+    console.log("The counter values is now ", Counter.get(world));
+```
+
+This is the actual script.
+Note that it has access to `Counter.get(world)` to read the data, but to modify it you have to go through a `System`.
+Remember, _there are no secrets on the blockchain_ and therefore we can assume that anybody can read anything at any time after it is posted - so we might as well provide read access directly.
+
+<details>
+
+<summary>Try to bypass security</summary>
+
+There is another script `BypassSecurity`, which attempts to bypass the `System` logic and set `Counter` directly.
+You can run it with this command.
+
+```sh copy
+forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:BypassSecurity
+```
+
+It fails with this error:
+
+```
+== Logs ==
+  Connecting to world at  0x5FbDB2315678afecb367f032d93F642f64180aa3
+  Just before trying to reset the counter
+Error:
+e64c0348:ROOT_NAMESPACE/Counter
+```
+
+This is the relevant portion of the code.
+
+```solidity
+    // Try to set `Counter` directly. See that it fails.
+    console.log("Just before trying to reset the counter");
+    Counter.set(world, 0);
+    console.log("Just after trying to reset the counter");
+```
+
+We know the the failure happens in the `Counter.set(world, 0);` line because we see the log entry for the line before it, but not the one for the line immediately after it.
+
+</details>
+
+```solidity
+    // Stop broadcasting transactions from te account
+    vm.stopBroadcast();
+  }
+}
+```
+
+Finally, stop broadcasting transactions using the private key.
+
+</details>
+
+## Use the `World` from a contract
+
+You can use the contract [in the examples directory](https://github.com/latticexyz/mud/tree/main/examples/onchain-client).
+
+1. Read the environment variables.
+
+   ```sh copy
+   . .env
+   ```
 
 1. Deploy the sample contact.
 
@@ -175,7 +245,6 @@ import { IWorld } from "codegen/world/IWorld.sol";
 ```
 
 We import `Counter` and `IWorld` from the code that was generated using `mud codegen`.
-The entire `src/codegen` directory is copied [from the template](https://github.com/latticexyz/mud/tree/main/templates/vanilla/packages/contracts/src/codegen) into the new application's `lib` directory.
 
 ```solidity
 contract OnchainClient {
@@ -225,9 +294,7 @@ As you have already seen, it fails.
 
 </details>
 
-<details>
-
-<summary>Setting up a Foundry project for MUD access</summary>
+## Setting up a Foundry project for MUD access
 
 The example is already set up for MUD access, but these are the steps you do to add it to other Foundry projects.
 
@@ -237,13 +304,12 @@ The example is already set up for MUD access, but these are the steps you do to 
    forge init
    ```
 
-1. Copy the `src/codegen` directory into `lib`.
-
-1. At the root of the Foundry project, create a Node project for the libraries (Solidity libraries are usually published as [npm packages](https://www.npmjs.com/) and ours are no exception).
+1. At the root of the Foundry project, create a Node project for the libraries.
+   Solidity libraries are usually published as [npm packages](https://www.npmjs.com/) and ours are no exception.
 
    ```sh copy
    pnpm init
-   pnpm install @latticexyz/world@next @latticexyz/store@next @latticexyz/schema-type@next
+   pnpm install @latticexyz/world@next @latticexyz/store@next @latticexyz/schema-type@next @latticexyz/cli
    ```
 
 1. Create a remapping file to inform Foundry where the MUD libraries are located.
@@ -252,4 +318,11 @@ The example is already set up for MUD access, but these are the steps you do to 
    @latticexyz=node_modules/@latticexyz
    ```
 
-</details>
+1. Copy `mud.config.ts` to the root directory of the project and the `System` source files into `src/systems` (which you'll need to create).
+
+1. Run code generation.
+
+   ```sh copy
+   pnpm mud tablegen
+   pnpm mud worldgen
+   ```
