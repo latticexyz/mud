@@ -32,3 +32,27 @@ contract ScriptClient is Script {
     vm.stopBroadcast();
   }
 }
+
+contract BypassSecurity is Script {
+  IWorld world;
+
+  function run() external {
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 myPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from that account
+    vm.startBroadcast(myPrivateKey);
+
+    // Connect to the world using `WORLD_ADDR` from .env
+    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDR"));
+    world = IWorld(vm.envAddress("WORLD_ADDR"));
+
+    // Try to set `Counter` directly. See that it fails.
+    console.log("Just before trying to reset the counter");
+    Counter.set(world, 0);
+    console.log("Just after trying to reset the counter");
+
+    // Stop broadcasting transactions from the account
+    vm.stopBroadcast();
+  }
+}
