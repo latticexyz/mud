@@ -1,6 +1,6 @@
 import { Component, Type as RecsType } from "@latticexyz/recs";
 import { describe, expectTypeOf } from "vitest";
-import storeConfig from "@latticexyz/store/mud.config";
+import storeConfig from "@latticexyz/store/mud.config.js";
 import { ConfigToRecsComponents } from "./common";
 
 describe("ConfigToRecsComponents", () => {

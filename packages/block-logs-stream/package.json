@@ -28,7 +28,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "0.9.3",
     "debug": "^4.3.4",
-    "rxjs": "7.5.5",
+    "rxjs": "7.8.1",
     "viem": "1.6.0"
   },
   "devDependencies": {

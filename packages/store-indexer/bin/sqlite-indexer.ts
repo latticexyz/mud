@@ -35,6 +35,8 @@ const env = z
     }),
   });
 
+console.log(env);
+
 const chain = env.CHAIN_ID != null ? possibleChains.find((c) => c.id === env.CHAIN_ID) : undefined;
 if (env.CHAIN_ID != null && !chain) {
   console.warn(`No chain found for chain ID ${env.CHAIN_ID}`);
