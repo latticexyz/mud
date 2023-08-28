@@ -60,6 +60,66 @@
     "gasUsed": 36
   },
   {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testEncodeDecodeFieldLayout",
+    "name": "initialize field layout array with 5 entries",
+    "gasUsed": 439
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testEncodeDecodeFieldLayout",
+    "name": "encode field layout with 5+1 entries",
+    "gasUsed": 1651
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testEncodeDecodeFieldLayout",
+    "name": "get static byte length at index",
+    "gasUsed": 101
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testGetNumDynamicFields",
+    "name": "get number of dynamic fields from field layout",
+    "gasUsed": 68
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testGetNumFields",
+    "name": "get number of all fields from field layout",
+    "gasUsed": 34
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testGetNumStaticFields",
+    "name": "get number of static fields from field layout",
+    "gasUsed": 79
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testGetStaticFieldLayoutLength",
+    "name": "get static data length from field layout",
+    "gasUsed": 33
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testIsEmptyFalse",
+    "name": "check if field layout is empty (non-empty field layout)",
+    "gasUsed": 7
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testIsEmptyTrue",
+    "name": "check if field layout is empty (empty field layout)",
+    "gasUsed": 7
+  },
+  {
+    "file": "test/FieldLayout.t.sol",
+    "test": "testValidate",
+    "name": "validate field layout",
+    "gasUsed": 4861
+  },
+  {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "abi encode",
@@ -241,8 +301,8 @@
   },
   {
     "file": "test/KeyEncoding.t.sol",
-    "test": "testRegisterAndGetSchema",
-    "name": "register KeyEncoding schema",
+    "test": "testRegisterAndGetFieldLayout",
+    "name": "register KeyEncoding table",
     "gasUsed": 662728
   },
   {
@@ -253,8 +313,8 @@
   },
   {
     "file": "test/Mixed.t.sol",
-    "test": "testRegisterAndGetSchema",
-    "name": "register Mixed schema",
+    "test": "testRegisterAndGetFieldLayout",
+    "name": "register Mixed table",
     "gasUsed": 524051
   },
   {
@@ -298,66 +358,6 @@
     "test": "testSetAtIndex",
     "name": "set value at index of PackedCounter",
     "gasUsed": 286
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testEncodeDecodeSchema",
-    "name": "initialize schema array with 5 entries",
-    "gasUsed": 439
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testEncodeDecodeSchema",
-    "name": "encode schema with 5+1 entries",
-    "gasUsed": 1651
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testEncodeDecodeSchema",
-    "name": "get static byte length at index",
-    "gasUsed": 101
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testGetNumDynamicFields",
-    "name": "get number of dynamic fields from schema",
-    "gasUsed": 68
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testGetNumFields",
-    "name": "get number of all fields from schema",
-    "gasUsed": 34
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testGetNumStaticFields",
-    "name": "get number of static fields from schema",
-    "gasUsed": 79
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testGetStaticSchemaLength",
-    "name": "get static data length from schema",
-    "gasUsed": 33
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testIsEmptyFalse",
-    "name": "check if schema is empty (non-empty schema)",
-    "gasUsed": 7
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testIsEmptyTrue",
-    "name": "check if schema is empty (empty schema)",
-    "gasUsed": 7
-  },
-  {
-    "file": "test/Schema.t.sol",
-    "test": "testValidate",
-    "name": "validate schema",
-    "gasUsed": 4861
   },
   {
     "file": "test/Slice.t.sol",
@@ -559,13 +559,13 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testHasSchema",
+    "test": "testHasFieldLayout",
     "name": "Check for existence of table (existent)",
     "gasUsed": 3625
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testHasSchema",
+    "test": "testHasFieldLayout",
     "name": "check for existence of table (non-existent)",
     "gasUsed": 5628
   },
@@ -579,19 +579,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 69285
+    "gasUsed": 69286
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 24779
+    "gasUsed": 24736
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 17679
+    "gasUsed": 17635
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -603,19 +603,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 162133
+    "gasUsed": 162134
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 27055
+    "gasUsed": 27012
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 19283
+    "gasUsed": 19239
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -631,19 +631,19 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testRegisterAndGetSchema",
+    "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: register schema",
     "gasUsed": 589347
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testRegisterAndGetSchema",
+    "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: get schema (warm)",
     "gasUsed": 3640
   },
   {
     "file": "test/StoreCoreGas.t.sol",
-    "test": "testRegisterAndGetSchema",
+    "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: get key schema (warm)",
     "gasUsed": 6889
   },
@@ -937,7 +937,7 @@
   },
   {
     "file": "test/Vector2.t.sol",
-    "test": "testRegisterAndGetSchema",
+    "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 schema",
     "gasUsed": 387505
   },
