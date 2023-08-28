@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
@@ -37,8 +37,8 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    */
   function registerTable(
     bytes32 resourceSelector,
-    Schema keySchema,
-    Schema valueSchema,
+    FieldLayout keyFieldLayout,
+    FieldLayout valueFieldLayout,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) public virtual {
@@ -48,7 +48,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     // If the namespace doesn't exist yet, register it
     bytes16 namespace = resourceSelector.getNamespace();
     if (ResourceType.get(namespace) == Resource.NONE) {
-      // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
+      // We can't call IBaseWorld(this).registerNamespace directly because it would be handled like
       // an external call, so msg.sender would be the address of the World contract
       (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
       Call.withSender({
@@ -72,7 +72,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerTable(resourceSelector, keySchema, valueSchema, keyNames, fieldNames);
+    StoreCore.registerTable(resourceSelector, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
   }
 
   /**

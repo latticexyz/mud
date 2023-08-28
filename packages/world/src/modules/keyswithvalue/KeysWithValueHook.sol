@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
@@ -29,11 +29,16 @@ contract KeysWithValueHook is IStoreHook {
     return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
-  function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+  function onSetRecord(
+    bytes32 sourceTableId,
+    bytes32[] memory key,
+    bytes memory data,
+    FieldLayout valueFieldLayout
+  ) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueSchema));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueFieldLayout));
 
     // Remove the key from the list of keys with the previous value
     _removeKeyFromList(targetTableId, key[0], previousValue);
@@ -47,10 +52,10 @@ contract KeysWithValueHook is IStoreHook {
     bytes32[] memory key,
     uint8,
     bytes memory,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueSchema));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueFieldLayout));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }
@@ -60,17 +65,17 @@ contract KeysWithValueHook is IStoreHook {
     bytes32[] memory key,
     uint8,
     bytes memory,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
     // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, key, valueSchema));
+    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, key, valueFieldLayout));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, key[0]);
   }
 
-  function onDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, Schema valueSchema) public {
+  function onDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, FieldLayout valueFieldLayout) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueSchema));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueFieldLayout));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }

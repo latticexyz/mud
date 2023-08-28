@@ -7,7 +7,17 @@
         "type": "uint256"
       }
     ],
-    "name": "PackedCounter_InvalidLength",
+    "name": "FieldLayoutLib_InvalidLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FieldLayoutLib_StaticTypeDoesNotFitInAWord",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FieldLayoutLib_StaticTypeIsZero",
     "type": "error"
   },
   {
@@ -18,17 +28,7 @@
         "type": "uint256"
       }
     ],
-    "name": "SchemaLib_InvalidLength",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SchemaLib_StaticTypeDoesNotFitInAWord",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SchemaLib_StaticTypeIsZero",
+    "name": "PackedCounter_InvalidLength",
     "type": "error"
   },
   {
@@ -112,7 +112,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -145,7 +145,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -168,7 +168,7 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -196,7 +196,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }

@@ -5,7 +5,7 @@ import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
@@ -69,12 +69,17 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Write a record in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public virtual {
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] calldata key,
+    bytes calldata data,
+    FieldLayout valueFieldLayout
+  ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, key, data, valueSchema);
+    StoreCore.setRecord(tableId, key, data, valueFieldLayout);
   }
 
   /**
@@ -86,13 +91,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableId, key, schemaIndex, data, valueSchema);
+    StoreCore.setField(tableId, key, schemaIndex, data, valueFieldLayout);
   }
 
   /**
@@ -104,13 +109,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, valueSchema);
+    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, valueFieldLayout);
   }
 
   /**
@@ -122,13 +127,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, valueSchema);
+    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, valueFieldLayout);
   }
 
   /**
@@ -141,25 +146,25 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
+    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, valueFieldLayout);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key, Schema valueSchema) public virtual {
+  function deleteRecord(bytes32 tableId, bytes32[] calldata key, FieldLayout valueFieldLayout) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, key, valueSchema);
+    StoreCore.deleteRecord(tableId, key, valueFieldLayout);
   }
 
   /************************************************************************

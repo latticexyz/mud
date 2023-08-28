@@ -25,13 +25,13 @@
         "type": "bytes32"
       },
       {
-        "internalType": "Schema",
-        "name": "keySchema",
+        "internalType": "FieldLayout",
+        "name": "keyFieldLayout",
         "type": "bytes32"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       },
       {

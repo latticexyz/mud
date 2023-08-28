@@ -2,33 +2,33 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "FieldLayoutLib_InvalidLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FieldLayoutLib_StaticTypeDoesNotFitInAWord",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "FieldLayoutLib_StaticTypeIsZero",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "resourceSelector",
         "type": "string"
       }
     ],
     "name": "RequiredModuleNotFound",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "length",
-        "type": "uint256"
-      }
-    ],
-    "name": "SchemaLib_InvalidLength",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SchemaLib_StaticTypeDoesNotFitInAWord",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "SchemaLib_StaticTypeIsZero",
     "type": "error"
   },
   {

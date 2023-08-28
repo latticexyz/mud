@@ -23,17 +23,17 @@
         "type": "uint256"
       }
     ],
-    "name": "SchemaLib_InvalidLength",
+    "name": "FieldLayoutLib_InvalidLength",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "SchemaLib_StaticTypeDoesNotFitInAWord",
+    "name": "FieldLayoutLib_StaticTypeDoesNotFitInAWord",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "SchemaLib_StaticTypeIsZero",
+    "name": "FieldLayoutLib_StaticTypeIsZero",
     "type": "error"
   },
   {
@@ -116,8 +116,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],

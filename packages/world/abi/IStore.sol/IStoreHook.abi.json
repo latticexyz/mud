@@ -22,8 +22,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -55,8 +55,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -78,8 +78,8 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -106,8 +106,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],

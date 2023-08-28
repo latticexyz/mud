@@ -7,9 +7,8 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
+import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
@@ -76,12 +75,12 @@ contract WorldTestSystem is System {
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
     bytes32[] memory key = new bytes32[](0);
     bytes32 tableId = ResourceSelector.from(namespace, name);
-    Schema valueSchema = StoreSwitch.getValueSchema(tableId);
+    FieldLayout valueFieldLayout = StoreSwitch.getValueFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, key, abi.encodePacked(data), valueSchema);
+      StoreCore.setRecord(tableId, key, abi.encodePacked(data), valueFieldLayout);
     } else {
-      IBaseWorld(msg.sender).setRecord(tableId, key, abi.encodePacked(data), valueSchema);
+      IBaseWorld(msg.sender).setRecord(tableId, key, abi.encodePacked(data), valueFieldLayout);
     }
   }
 
@@ -107,8 +106,8 @@ contract PayableFallbackSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, data, valueSchema));
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout valueFieldLayout) public {
+    emit HookCalled(abi.encode(table, key, data, valueFieldLayout));
   }
 
   function onBeforeSetField(
@@ -116,9 +115,9 @@ contract WorldTestTableHook is IStoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
-    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
+    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueFieldLayout));
   }
 
   function onAfterSetField(
@@ -126,13 +125,13 @@ contract WorldTestTableHook is IStoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
-    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
+    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueFieldLayout));
   }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, valueSchema));
+  function onDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout valueFieldLayout) public {
+    emit HookCalled(abi.encode(table, key, valueFieldLayout));
   }
 }
 
@@ -156,7 +155,7 @@ contract WorldTest is Test, GasReporter {
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  Schema defaultKeySchema = SchemaEncodeHelper.encode(32, 0);
+  FieldLayout defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
   IBaseWorld world;
 
   bytes32 key;
@@ -191,14 +190,20 @@ contract WorldTest is Test, GasReporter {
     new World();
 
     // Should have registered the table data table (fka schema table)
-    assertEq(Tables.getKeySchema(world, TablesTableId), Schema.unwrap(Tables.getKeySchema()));
-    assertEq(Tables.getValueSchema(world, TablesTableId), Schema.unwrap(Tables.getValueSchema()));
+    assertEq(Tables.getKeyFieldLayout(world, TablesTableId), FieldLayout.unwrap(Tables.getKeyFieldLayout()));
+    assertEq(Tables.getValueFieldLayout(world, TablesTableId), FieldLayout.unwrap(Tables.getValueFieldLayout()));
     assertEq(Tables.getAbiEncodedKeyNames(world, TablesTableId), abi.encode(Tables.getKeyNames()));
     assertEq(Tables.getAbiEncodedFieldNames(world, TablesTableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
-    assertEq(Tables.getKeySchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getKeySchema()));
-    assertEq(Tables.getValueSchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getValueSchema()));
+    assertEq(
+      Tables.getKeyFieldLayout(world, NamespaceOwnerTableId),
+      FieldLayout.unwrap(NamespaceOwner.getKeyFieldLayout())
+    );
+    assertEq(
+      Tables.getValueFieldLayout(world, NamespaceOwnerTableId),
+      FieldLayout.unwrap(NamespaceOwner.getValueFieldLayout())
+    );
     assertEq(Tables.getAbiEncodedKeyNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
     assertEq(Tables.getAbiEncodedFieldNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
   }
@@ -245,7 +250,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterTable() public {
-    Schema valueSchema = SchemaEncodeHelper.encode(1, 32, 1);
+    FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 32, 1);
     bytes16 namespace = "testNamespace";
     bytes16 tableName = "testTable";
     bytes32 tableSelector = ResourceSelector.from(namespace, tableName);
@@ -257,15 +262,23 @@ contract WorldTest is Test, GasReporter {
     fieldNames[2] = "value3";
 
     startGasReport("Register a new table in the namespace");
-    world.registerTable(tableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(tableSelector, defaultKeyFieldLayout, valueFieldLayout, keyNames, fieldNames);
     endGasReport();
 
     // Expect the namespace to be created and owned by the caller
     assertEq(NamespaceOwner.get(world, namespace), address(this), "namespace should be created by caller");
 
     // Expect the table to be registered
-    assertEq(world.getKeySchema(tableSelector).unwrap(), defaultKeySchema.unwrap(), "key schema should be registered");
-    assertEq(world.getValueSchema(tableSelector).unwrap(), valueSchema.unwrap(), "value schema should be registered");
+    assertEq(
+      world.getKeyFieldLayout(tableSelector).unwrap(),
+      defaultKeyFieldLayout.unwrap(),
+      "key schema should be registered"
+    );
+    assertEq(
+      world.getValueFieldLayout(tableSelector).unwrap(),
+      valueFieldLayout.unwrap(),
+      "value schema should be registered"
+    );
 
     bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(world, tableSelector);
     assertEq(loadedKeyNames, abi.encode(keyNames), "key names should be registered");
@@ -275,16 +288,16 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableSelector.toString()));
-    world.registerTable(tableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(tableSelector, defaultKeyFieldLayout, valueFieldLayout, keyNames, fieldNames);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
     bytes32 otherTableSelector = ResourceSelector.from(namespace, "otherTable");
     _expectAccessDenied(address(0x01), namespace, "");
-    world.registerTable(otherTableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(otherTableSelector, defaultKeyFieldLayout, valueFieldLayout, keyNames, fieldNames);
 
     // Expect the World to be allowed to call registerTable
     vm.prank(address(world));
-    world.registerTable(otherTableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(otherTableSelector, defaultKeyFieldLayout, valueFieldLayout, keyNames, fieldNames);
   }
 
   function testRegisterSystem() public {
@@ -345,7 +358,13 @@ contract WorldTest is Test, GasReporter {
   function testDuplicateSelectors() public {
     // Register a new table
     bytes32 resourceSelector = ResourceSelector.from("namespace", "name");
-    world.registerTable(resourceSelector, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
+    world.registerTable(
+      resourceSelector,
+      defaultKeyFieldLayout,
+      Bool.getValueFieldLayout(),
+      new string[](1),
+      new string[](1)
+    );
 
     // Deploy a new system
     System system = new System();
@@ -360,7 +379,13 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a table at the same selector
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector2.toString()));
-    world.registerTable(resourceSelector2, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
+    world.registerTable(
+      resourceSelector2,
+      defaultKeyFieldLayout,
+      Bool.getValueFieldLayout(),
+      new string[](1),
+      new string[](1)
+    );
   }
 
   function testGrantAccess() public {
@@ -374,7 +399,7 @@ contract WorldTest is Test, GasReporter {
   function testSetRecord() public {
     bytes32 tableId = ResourceSelector.from("testSetRecord", "testTable");
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, Bool.getValueFieldLayout(), new string[](1), new string[](1));
 
     startGasReport("Write data to the table");
     Bool.set(world, tableId, true);
@@ -396,45 +421,45 @@ contract WorldTest is Test, GasReporter {
     bytes16 namespace = "testSetField";
     bytes16 name = "testTable";
     bytes32 tableId = ResourceSelector.from(namespace, name);
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout valueFieldLayout = Bool.getValueFieldLayout();
 
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
 
     startGasReport("Write data to a table field");
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueSchema);
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueFieldLayout);
     endGasReport();
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
 
     // Write data to the table via its tableId
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(false), valueSchema);
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(false), valueFieldLayout);
 
     // Expect the data to be written
     assertFalse(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access when calling via the namespace
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueSchema);
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueFieldLayout);
 
     // Expect an error when trying to write from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueSchema);
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueFieldLayout);
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueSchema);
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), valueFieldLayout);
   }
 
   function testPushToField() public {
     bytes16 namespace = "testPushToField";
     bytes16 name = "testTable";
     bytes32 tableId = ResourceSelector.from(namespace, name);
-    Schema valueSchema = AddressArray.getValueSchema();
+    FieldLayout valueFieldLayout = AddressArray.getValueFieldLayout();
 
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
 
     // Create data
     address[] memory dataToPush = new address[](3);
@@ -444,69 +469,69 @@ contract WorldTest is Test, GasReporter {
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
     startGasReport("Push data to the table");
-    world.pushToField(tableId, keyTuple, 0, encodedData, valueSchema);
+    world.pushToField(tableId, keyTuple, 0, encodedData, valueFieldLayout);
     endGasReport();
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Delete the data
-    world.deleteRecord(tableId, keyTuple, valueSchema);
+    world.deleteRecord(tableId, keyTuple, valueFieldLayout);
 
     // Push data to the table via direct access
-    world.pushToField(tableId, keyTuple, 0, encodedData, valueSchema);
+    world.pushToField(tableId, keyTuple, 0, encodedData, valueFieldLayout);
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), namespace, name);
-    world.pushToField(tableId, keyTuple, 0, encodedData, valueSchema);
+    world.pushToField(tableId, keyTuple, 0, encodedData, valueFieldLayout);
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.pushToField(tableId, keyTuple, 0, encodedData, valueSchema);
+    world.pushToField(tableId, keyTuple, 0, encodedData, valueFieldLayout);
   }
 
   function testDeleteRecord() public {
     bytes16 namespace = "testDeleteRecord";
     bytes16 name = "testTable";
     bytes32 tableId = ResourceSelector.from(namespace, name);
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout valueFieldLayout = Bool.getValueFieldLayout();
 
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueSchema);
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueFieldLayout);
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
-    world.deleteRecord(tableId, singletonKey, valueSchema);
+    world.deleteRecord(tableId, singletonKey, valueFieldLayout);
     endGasReport();
 
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueSchema);
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueFieldLayout);
     assertTrue(Bool.get(world, tableId));
 
     // Delete the record via the tableId and expect it to be deleted
-    world.deleteRecord(tableId, singletonKey, valueSchema);
+    world.deleteRecord(tableId, singletonKey, valueFieldLayout);
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueSchema);
+    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueFieldLayout);
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
     _expectAccessDenied(address(0x02), "testDeleteRecord", "testTable");
-    world.deleteRecord(tableId, singletonKey, valueSchema);
+    world.deleteRecord(tableId, singletonKey, valueFieldLayout);
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.deleteRecord(tableId, singletonKey, valueSchema);
+    world.deleteRecord(tableId, singletonKey, valueFieldLayout);
   }
 
   function testCall() public {
@@ -577,11 +602,11 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterTableHook() public {
-    Schema valueSchema = Bool.getValueSchema();
+    FieldLayout valueFieldLayout = Bool.getValueFieldLayout();
     bytes32 tableId = ResourceSelector.from("", "testTable");
 
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
 
     // Register a new hook
     IStoreHook tableHook = new WorldTestTableHook();
@@ -592,8 +617,8 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the hook to be notified when a record is written
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, valueSchema));
-    world.setRecord(tableId, singletonKey, value, valueSchema);
+    emit HookCalled(abi.encode(tableId, singletonKey, value, valueFieldLayout));
+    world.setRecord(tableId, singletonKey, value, valueFieldLayout);
 
     // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
     // (See https://github.com/latticexyz/mud/issues/444)
@@ -629,7 +654,7 @@ contract WorldTest is Test, GasReporter {
   function testWriteRootSystem() public {
     bytes32 tableId = ResourceSelector.from("namespace", "testTable");
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, Bool.getValueFieldLayout(), new string[](1), new string[](1));
 
     // Register a new system
     bytes32 rootSystemId = ResourceSelector.from("", "testSystem");
@@ -649,7 +674,7 @@ contract WorldTest is Test, GasReporter {
   function testWriteAutonomousSystem() public {
     bytes32 tableId = ResourceSelector.from("namespace", "testTable");
     // Register a new table
-    world.registerTable(tableId, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
+    world.registerTable(tableId, defaultKeyFieldLayout, Bool.getValueFieldLayout(), new string[](1), new string[](1));
 
     // Register a new system
     bytes32 systemId = ResourceSelector.from("namespace", "testSystem");

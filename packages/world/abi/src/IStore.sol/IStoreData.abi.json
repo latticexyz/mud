@@ -87,8 +87,8 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -115,8 +115,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -149,8 +149,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -183,8 +183,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       },
       {
@@ -217,11 +217,11 @@
         "type": "bytes32"
       }
     ],
-    "name": "getKeySchema",
+    "name": "getKeyFieldLayout",
     "outputs": [
       {
-        "internalType": "Schema",
-        "name": "schema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -241,8 +241,8 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -265,11 +265,11 @@
         "type": "bytes32"
       }
     ],
-    "name": "getValueSchema",
+    "name": "getValueFieldLayout",
     "outputs": [
       {
-        "internalType": "Schema",
-        "name": "schema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -299,8 +299,8 @@
         "type": "uint256"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -332,8 +332,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -365,8 +365,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -393,8 +393,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -431,8 +431,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
