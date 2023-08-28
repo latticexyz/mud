@@ -19,7 +19,7 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
 
       ${_keyTupleDefinition}
 
-      ${_store}.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
+      ${_store}.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
     }
   `
   );

@@ -2,18 +2,18 @@
 pragma solidity >=0.8.0;
 
 import { IStoreErrors } from "./IStoreErrors.sol";
-import { Schema } from "./Schema.sol";
+import { FieldLayout } from "./FieldLayout.sol";
 
 interface IStoreRead {
-  function getValueSchema(bytes32 table) external view returns (Schema schema);
+  function getValueFieldLayout(bytes32 table) external view returns (FieldLayout fieldLayout);
 
-  function getKeySchema(bytes32 table) external view returns (Schema schema);
+  function getKeyFieldLayout(bytes32 table) external view returns (FieldLayout fieldLayout);
 
   // Get full record (including full array)
   function getRecord(
     bytes32 table,
     bytes32[] calldata key,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external view returns (bytes memory data);
 
   // Get partial data at schema index
@@ -21,7 +21,7 @@ interface IStoreRead {
     bytes32 table,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external view returns (bytes memory data);
 
   // Get field length at schema index
@@ -29,7 +29,7 @@ interface IStoreRead {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external view returns (uint256);
 
   // Get start:end slice of the field at schema index
@@ -37,7 +37,7 @@ interface IStoreRead {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    Schema valueSchema,
+    FieldLayout valueFieldLayout,
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
@@ -49,7 +49,7 @@ interface IStoreWrite {
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) external;
+  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, FieldLayout valueFieldLayout) external;
 
   // Set partial data at schema index
   function setField(
@@ -57,7 +57,7 @@ interface IStoreWrite {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external;
 
   // Push encoded items to the dynamic field at schema index
@@ -66,7 +66,7 @@ interface IStoreWrite {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external;
 
   // Pop byte length from the dynamic field at schema index
@@ -75,7 +75,7 @@ interface IStoreWrite {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external;
 
   // Change encoded items within the dynamic field at schema index
@@ -85,18 +85,23 @@ interface IStoreWrite {
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external;
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) external;
+  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout valueFieldLayout) external;
 }
 
 interface IStoreEphemeral {
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) external;
+  function emitEphemeralRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata data,
+    FieldLayout valueFieldLayout
+  ) external;
 }
 
 /**
@@ -109,15 +114,15 @@ interface IStoreData is IStoreRead, IStoreWrite {
 }
 
 /**
- * The IStoreRegistration interface includes methods for managing table schemas,
+ * The IStoreRegistration interface includes methods for managing table field layouts,
  * metadata, and hooks, which are usually called once in the setup phase of an application,
  * making them less performance critical than the IStoreData methods.
  */
 interface IStoreRegistration {
   function registerTable(
     bytes32 table,
-    Schema keySchema,
-    Schema valueSchema,
+    FieldLayout keyFieldLayout,
+    FieldLayout valueFieldLayout,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) external;
@@ -129,7 +134,7 @@ interface IStoreRegistration {
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
 interface IStoreHook {
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout valueFieldLayout) external;
 
   // Split onSetField into pre and post to simplify the implementation of hooks
   function onBeforeSetField(
@@ -137,7 +142,7 @@ interface IStoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external;
 
   function onAfterSetField(
@@ -145,8 +150,8 @@ interface IStoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) external;
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) external;
+  function onDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout valueFieldLayout) external;
 }

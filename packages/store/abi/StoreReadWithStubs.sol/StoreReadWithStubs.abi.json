@@ -7,17 +7,17 @@
         "type": "uint256"
       }
     ],
-    "name": "SchemaLib_InvalidLength",
+    "name": "FieldLayoutLib_InvalidLength",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "SchemaLib_StaticTypeDoesNotFitInAWord",
+    "name": "FieldLayoutLib_StaticTypeDoesNotFitInAWord",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "SchemaLib_StaticTypeIsZero",
+    "name": "FieldLayoutLib_StaticTypeIsZero",
     "type": "error"
   },
   {
@@ -86,7 +86,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StoreCore_InvalidFieldNamesLength",
+    "name": "StoreCore_InvalidKeyNamesLength",
     "type": "error"
   },
   {
@@ -102,7 +102,7 @@
         "type": "uint256"
       }
     ],
-    "name": "StoreCore_InvalidKeyNamesLength",
+    "name": "StoreCore_InvalidValueNamesLength",
     "type": "error"
   },
   {
@@ -265,7 +265,7 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -293,7 +293,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -321,8 +321,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -355,8 +355,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "schema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -389,8 +389,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "schema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       },
       {
@@ -423,11 +423,11 @@
         "type": "bytes32"
       }
     ],
-    "name": "getKeySchema",
+    "name": "getKeyFieldLayout",
     "outputs": [
       {
-        "internalType": "Schema",
-        "name": "schema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -447,8 +447,8 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "valueFieldLayout",
         "type": "bytes32"
       }
     ],
@@ -471,11 +471,11 @@
         "type": "bytes32"
       }
     ],
-    "name": "getValueSchema",
+    "name": "getValueFieldLayout",
     "outputs": [
       {
-        "internalType": "Schema",
-        "name": "schema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -505,7 +505,7 @@
         "type": "uint256"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -538,7 +538,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -574,12 +574,12 @@
         "type": "bytes32"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       },
@@ -622,7 +622,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -650,7 +650,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }
@@ -688,7 +688,7 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
+        "internalType": "FieldLayout",
         "name": "",
         "type": "bytes32"
       }

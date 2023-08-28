@@ -44,7 +44,7 @@ import { Bytes } from "${storeImportPath}Bytes.sol";
 import { Memory } from "${storeImportPath}Memory.sol";
 import { SliceLib } from "${storeImportPath}Slice.sol";
 import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
-import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
+import { FieldLayout, FieldLayoutLib } from "${storeImportPath}FieldLayout.sol";
 import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
 
 ${
@@ -69,20 +69,20 @@ ${
 }
 
 library ${libraryName} {
-  /** Get the table's key schema */
-  function getKeySchema() internal pure returns (Schema) {
-    uint256[] memory _schema = new uint256[](${keyTuple.length});
-    ${renderList(keyTuple, ({ staticByteLength }, index) => `_schema[${index}] = ${staticByteLength};`)}
+  /** Get the table keys' field layout */
+  function getKeyFieldLayout() internal pure returns (FieldLayout) {
+    uint256[] memory _fieldLayout = new uint256[](${keyTuple.length});
+    ${renderList(keyTuple, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
 
-    return SchemaLib.encode(_schema, 0);
+    return FieldLayoutLib.encode(_fieldLayout, 0);
   }
 
-  /** Get the table's value schema */
-  function getValueSchema() internal pure returns (Schema) {
-    uint256[] memory _schema = new uint256[](${staticFields.length});
-    ${renderList(staticFields, ({ staticByteLength }, index) => `_schema[${index}] = ${staticByteLength};`)}
+  /** Get the table values' field layout */
+  function getValueFieldLayout() internal pure returns (FieldLayout) {
+    uint256[] memory _fieldLayout = new uint256[](${staticFields.length});
+    ${renderList(staticFields, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
 
-    return SchemaLib.encode(_schema, ${dynamicFields.length});
+    return FieldLayoutLib.encode(_fieldLayout, ${dynamicFields.length});
   }
 
   /** Get the table's key names */
@@ -100,9 +100,9 @@ library ${libraryName} {
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Register the table's key schema, value schema, key names and value names${_commentSuffix} */
+    /** Register the table keys' and values' field layout, key names and value names${_commentSuffix} */
     function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+      ${_store}.registerTable(_tableId, getKeyFieldLayout(), getValueFieldLayout(), getKeyNames(), getFieldNames());
     }
   `
   )}
@@ -113,7 +113,7 @@ library ${libraryName} {
 
   ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
-  /** Tightly pack full data using this table's schema */
+  /** Tightly pack full data using this table's field layout */
   function encode(${renderArguments(
     options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
   )}) internal pure returns (bytes memory) {
@@ -126,7 +126,7 @@ library ${libraryName} {
     ])});
   }
   
-  /** Encode keys as a bytes32 array using this table's schema */
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
     ${_keyTupleDefinition}
     return _keyTuple;
@@ -140,7 +140,7 @@ library ${libraryName} {
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_keyTupleDefinition}
-      ${_store}.deleteRecord(_tableId, _keyTuple, getValueSchema());
+      ${_store}.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
     }
   `
         )

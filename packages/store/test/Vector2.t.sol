@@ -6,18 +6,18 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
-import { Schema } from "../src/Schema.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 
 contract Vector2Test is Test, GasReporter, StoreReadWithStubs {
-  function testRegisterAndGetSchema() public {
+  function testRegisterAndGetFieldLayout() public {
     startGasReport("register Vector2 schema");
     Vector2.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getValueSchema(Vector2TableId);
-    Schema declaredSchema = Vector2.getValueSchema();
+    FieldLayout registeredFieldLayout = StoreCore.getValueFieldLayout(Vector2TableId);
+    FieldLayout declaredFieldLayout = Vector2.getValueFieldLayout();
 
-    assertEq(Schema.unwrap(registeredSchema), Schema.unwrap(declaredSchema));
+    assertEq(FieldLayout.unwrap(registeredFieldLayout), FieldLayout.unwrap(declaredFieldLayout));
   }
 
   function testSetAndGet() public {

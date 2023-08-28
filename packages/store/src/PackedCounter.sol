@@ -127,7 +127,7 @@ library PackedCounterInstance {
     }
 
     // Set the new accumulated value and value at index
-    // (7 bytes total length, 5 bytes per dynamic schema)
+    // (7 bytes total length, 5 bytes per dynamic field)
     uint256 offset;
     unchecked {
       offset = ACC_BITS + VAL_BITS * index;

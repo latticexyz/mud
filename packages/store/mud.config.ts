@@ -14,8 +14,8 @@ export default mudConfig({
         tableId: "bytes32",
       },
       schema: {
-        keySchema: "bytes32",
-        valueSchema: "bytes32",
+        keyFieldLayout: "bytes32",
+        valueFieldLayout: "bytes32",
         abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },

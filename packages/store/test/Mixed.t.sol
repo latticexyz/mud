@@ -6,20 +6,20 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
-import { Schema } from "../src/Schema.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 
 contract MixedTest is Test, GasReporter, StoreReadWithStubs {
   MixedData private testMixed;
 
-  function testRegisterAndGetSchema() public {
-    startGasReport("register Mixed schema");
+  function testRegisterAndGetFieldLayout() public {
+    startGasReport("register Mixed table");
     Mixed.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
-    Schema declaredSchema = Mixed.getValueSchema();
+    FieldLayout registeredFieldLayout = StoreCore.getValueFieldLayout(MixedTableId);
+    FieldLayout declaredFieldLayout = Mixed.getValueFieldLayout();
 
-    assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
+    assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
   }
 
   function testSetAndGet() public {

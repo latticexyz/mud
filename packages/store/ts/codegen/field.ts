@@ -25,7 +25,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
         ${_keyTupleDefinition}
-        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex}, getValueSchema());
+        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex}, getValueFieldLayout());
         return ${renderDecodeFieldSingle(field)};
       }
     `
@@ -42,7 +42,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedFieldName,
       ])}) internal {
         ${_keyTupleDefinition}
-        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, getValueSchema());
+        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(
+        field
+      )}, getValueFieldLayout());
       }
     `
     );
@@ -60,7 +62,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
         ])}) internal view returns (uint256) {
           ${_keyTupleDefinition}
-          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, getValueSchema());
+          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, getValueFieldLayout());
           unchecked {
             return _byteLength / ${portionData.elementLength};
           }
@@ -87,7 +89,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               _tableId,
               _keyTuple,
               ${schemaIndex},
-              getValueSchema(),
+              getValueFieldLayout(),
               _index * ${portionData.elementLength},
               (_index + 1) * ${portionData.elementLength}
             );
@@ -108,7 +110,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, getValueSchema());
+          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, getValueFieldLayout());
         }
       `
       );
@@ -123,7 +125,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, getValueSchema());
+          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${
+          portionData.elementLength
+        }, getValueFieldLayout());
         }
       `
       );
@@ -150,7 +154,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               ${schemaIndex},
               _index * ${portionData.elementLength},
               ${portionData.encoded},
-              getValueSchema()
+              getValueFieldLayout()
             );
           }
         }

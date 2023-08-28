@@ -7,18 +7,18 @@ import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
 import { ExampleEnum } from "../src/codegen/Types.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
-import { Schema } from "../src/Schema.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 
 contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
-  function testRegisterAndGetSchema() public {
-    startGasReport("register KeyEncoding schema");
+  function testRegisterAndGetFieldLayout() public {
+    startGasReport("register KeyEncoding table");
     KeyEncoding.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getValueSchema(KeyEncodingTableId);
-    Schema declaredSchema = KeyEncoding.getValueSchema();
+    FieldLayout registeredFieldLayout = StoreCore.getValueFieldLayout(KeyEncodingTableId);
+    FieldLayout declaredFieldLayout = KeyEncoding.getValueFieldLayout();
 
-    assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
+    assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
   }
 
   function testSetAndGet() public {

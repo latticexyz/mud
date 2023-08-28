@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { Schema } from "../src/Schema.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreRead } from "../src/StoreRead.sol";
 
 /**
@@ -11,8 +11,8 @@ import { StoreRead } from "../src/StoreRead.sol";
  */
 contract StoreMock is IStore, StoreRead {
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
-    StoreCore.setRecord(table, key, data, valueSchema);
+  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, FieldLayout valueFieldLayout) public {
+    StoreCore.setRecord(table, key, data, valueFieldLayout);
   }
 
   // Set partial data at schema index
@@ -21,9 +21,9 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
-    StoreCore.setField(table, key, schemaIndex, data, valueSchema);
+    StoreCore.setField(table, key, schemaIndex, data, valueFieldLayout);
   }
 
   // Push encoded items to the dynamic field at schema index
@@ -32,9 +32,9 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
-    StoreCore.pushToField(table, key, schemaIndex, dataToPush, valueSchema);
+    StoreCore.pushToField(table, key, schemaIndex, dataToPush, valueFieldLayout);
   }
 
   // Pop byte length from the dynamic field at schema index
@@ -43,9 +43,9 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
-    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, valueSchema);
+    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, valueFieldLayout);
   }
 
   // Change encoded items within the dynamic field at schema index
@@ -55,29 +55,34 @@ contract StoreMock is IStore, StoreRead {
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
-    Schema valueSchema
+    FieldLayout valueFieldLayout
   ) public {
-    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
+    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet, valueFieldLayout);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
-    StoreCore.deleteRecord(table, key, valueSchema);
+  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout valueFieldLayout) public {
+    StoreCore.deleteRecord(table, key, valueFieldLayout);
   }
 
   // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
-    StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
+  function emitEphemeralRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata data,
+    FieldLayout valueFieldLayout
+  ) public {
+    StoreCore.emitEphemeralRecord(table, key, data, valueFieldLayout);
   }
 
   function registerTable(
     bytes32 table,
-    Schema keySchema,
-    Schema valueSchema,
+    FieldLayout keyFieldLayout,
+    FieldLayout valueFieldLayout,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) public {
-    StoreCore.registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
+    StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted

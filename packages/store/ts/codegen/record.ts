@@ -22,7 +22,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
     ])}) internal view returns (${renderDecodedRecord(options)}) {
       ${_keyTupleDefinition}
-      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getValueSchema());
+      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getValueFieldLayout());
       return decode(_blob);
     }
   `
@@ -42,7 +42,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
       ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+      ${_store}.setRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
     }
   `
   );
@@ -95,7 +95,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     // decode static (optionally) and dynamic data
     return `
     /**
-     * Decode the tightly packed blob using this table's schema.
+     * Decode the tightly packed blob using this table's field layout.
      * Undefined behaviour for invalid blobs.
      */
     function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
@@ -142,7 +142,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
   } else {
     // decode only static data
     return `
-    /** Decode the tightly packed blob using this table's schema */
+    /** Decode the tightly packed blob using this table's field layout */
     function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
       ${renderList(
         staticFields,
