@@ -30,7 +30,8 @@
     "clean:js": "rimraf dist/typescript",
     "dev": "tsup --watch",
     "gas-report": "mud-gas-report --save gas-report.json",
-    "test": "vitest typecheck --run && vitest --run && forge test"
+    "test": "vitest typecheck --run && vitest --run && forge test",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "abitype": "0.9.3",

@@ -16,7 +16,8 @@
     "clean:wasm": "rimraf build",
     "dev": "tsup --watch",
     "start": "npx serve .",
-    "test": "forge test && tsc --noEmit"
+    "test": "forge test && tsc --noEmit",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "abdk-libraries-solidity": "^3.0.0",
