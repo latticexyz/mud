@@ -3,6 +3,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "addr",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "salt",
+        "type": "uint256"
+      }
+    ],
+    "name": "ContractDeployed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "newContract",
@@ -15,14 +34,39 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "bytes",
+        "name": "byteCode",
+        "type": "bytes"
+      },
+      {
+        "internalType": "uint256",
         "name": "salt",
-        "type": "bytes32"
+        "type": "uint256"
       }
     ],
+    "name": "deployContract",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "deployWorld",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "worldCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   }
 ]

@@ -14,16 +14,26 @@ contract WorldFactory is IWorldFactory {
     coreModule = _coreModule;
   }
 
-  function deployWorld() public {
-    address newContractAddress;
-    bytes memory bytecode = type(World).creationCode;
-    bytes32 salt = bytes32(worldCount);
+  function create2Deploy(bytes memory byteCode, uint256 salt) internal returns (address addr) {
     assembly {
-      newContractAddress := create2(0, add(bytecode, 0x20), mload(bytecode), salt)
+      addr := create2(0, add(byteCode, 0x20), mload(byteCode), salt)
+      if iszero(extcodesize(addr)) {
+        revert(0, 0)
+      }
     }
-    IBaseWorld world = IBaseWorld(newContractAddress);
+  }
+
+  function deployContract(bytes memory byteCode, uint256 salt) public {
+    address addr = create2Deploy(byteCode, salt);
+    emit ContractDeployed(addr, salt);
+  }
+
+  function deployWorld() public {
+    bytes memory bytecode = type(World).creationCode;
+    address worldAddress = create2Deploy(bytecode, worldCount);
+    IBaseWorld world = IBaseWorld(worldAddress);
     world.installRootModule(coreModule, new bytes(0));
-    emit WorldDeployed(newContractAddress);
+    emit WorldDeployed(worldAddress);
     worldCount++;
   }
 }
