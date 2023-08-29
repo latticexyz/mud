@@ -36,6 +36,9 @@ export function renderTable(options: RenderTableOptions) {
 
   return `${renderedSolidityHeader}
 
+// Import schema type
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
+
 // Import store internals
 import { IStore } from "${storeImportPath}IStore.sol";
 import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
@@ -45,6 +48,7 @@ import { Memory } from "${storeImportPath}Memory.sol";
 import { SliceLib } from "${storeImportPath}Slice.sol";
 import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "${storeImportPath}FieldLayout.sol";
+import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
 import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
 
 ${
@@ -85,6 +89,22 @@ library ${libraryName} {
     return FieldLayoutLib.encode(_fieldLayout, ${dynamicFields.length});
   }
 
+  /** Get the table's key schema */
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
+    ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+
+    return SchemaLib.encode(_schema);
+  }
+
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](${fields.length});
+    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](${keyTuple.length});
@@ -102,7 +122,7 @@ library ${libraryName} {
     (_typedStore, _store, _commentSuffix) => `
     /** Register the table keys' and values' field layout, key names and value names${_commentSuffix} */
     function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerTable(_tableId, getKeyFieldLayout(), getValueFieldLayout(), getKeyNames(), getFieldNames());
+      ${_store}.registerTable(_tableId, getKeyFieldLayout(), getValueFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
   `
   )}

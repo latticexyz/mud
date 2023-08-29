@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "../src/IStore.sol";
+import { Schema } from "../src/Schema.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreRead } from "../src/StoreRead.sol";
@@ -79,10 +80,12 @@ contract StoreMock is IStore, StoreRead {
     bytes32 table,
     FieldLayout keyFieldLayout,
     FieldLayout valueFieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) public {
-    StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+    StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted

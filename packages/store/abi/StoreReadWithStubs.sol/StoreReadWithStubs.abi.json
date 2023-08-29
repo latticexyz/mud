@@ -23,6 +23,22 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "SchemaLib_InvalidLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SchemaLib_StaticTypeAfterDynamicType",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
@@ -102,7 +118,39 @@
         "type": "uint256"
       }
     ],
+    "name": "StoreCore_InvalidKeySchemaLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
     "name": "StoreCore_InvalidValueNamesLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidValueSchemaLength",
     "type": "error"
   },
   {
@@ -580,6 +628,16 @@
       },
       {
         "internalType": "FieldLayout",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
         "name": "",
         "type": "bytes32"
       },

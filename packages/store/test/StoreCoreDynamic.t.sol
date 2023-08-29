@@ -3,15 +3,19 @@ pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { Schema } from "../src/Schema.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
+import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
 contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
   FieldLayout internal defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
+  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _key;
   bytes32 internal _table = keccak256("some.table");
@@ -36,7 +40,20 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
   function setUp() public {
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
-    StoreCore.registerTable(_table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    StoreCore.registerTable(
+      _table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     _key = new bytes32[](1);

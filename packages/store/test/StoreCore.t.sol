@@ -2,11 +2,13 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
@@ -14,6 +16,7 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
+import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
 
@@ -28,11 +31,19 @@ contract StoreCoreTest is Test, StoreMock {
 
   mapping(uint256 => bytes) private testMapping;
   FieldLayout defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
+  Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   string[] defaultKeyNames = new string[](1);
 
   function testRegisterAndGetFieldLayout() public {
     FieldLayout keyFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 0);
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
+    Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     string[] memory keyNames = new string[](2);
     keyNames[0] = "key1";
     keyNames[1] = "key2";
@@ -51,9 +62,16 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSetRecord(
       TablesTableId,
       key,
-      Tables.encode(keyFieldLayout.unwrap(), valueFieldLayout.unwrap(), abi.encode(keyNames), abi.encode(fieldNames))
+      Tables.encode(
+        keyFieldLayout.unwrap(),
+        valueFieldLayout.unwrap(),
+        keySchema.unwrap(),
+        valueSchema.unwrap(),
+        abi.encode(keyNames),
+        abi.encode(fieldNames)
+      )
     );
-    IStore(this).registerTable(table, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+    IStore(this).registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, keyNames, fieldNames);
 
     FieldLayout loadedValueFieldLayout = IStore(this).getValueFieldLayout(table);
     assertEq(loadedValueFieldLayout.unwrap(), valueFieldLayout.unwrap());
@@ -75,6 +93,8 @@ contract StoreCoreTest is Test, StoreMock {
       keccak256("table"),
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
       FieldLayout.wrap(keccak256("random bytes as key field layout")),
+      Schema.wrap(keccak256("random bytes as schema")),
+      Schema.wrap(keccak256("random bytes as key schema")),
       keyNames,
       fieldNames
     );
@@ -84,9 +104,23 @@ contract StoreCoreTest is Test, StoreMock {
     string[] memory keyNames = new string[](1);
     string[] memory fieldNames = new string[](4);
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      keyNames,
+      fieldNames
+    );
 
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
@@ -109,25 +143,47 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32 table = keccak256("some.table");
     FieldLayout keyFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
+    Schema keySchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8);
     string[] memory fourNames = new string[](4);
     string[] memory oneName = new string[](1);
 
     // Register table with invalid key names
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidKeyNamesLength.selector, 4, 1));
-    IStore(this).registerTable(table, keyFieldLayout, valueFieldLayout, oneName, oneName);
+    IStore(this).registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, oneName, oneName);
 
     // Register table with invalid value names
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidValueNamesLength.selector, 1, 4));
-    IStore(this).registerTable(table, keyFieldLayout, valueFieldLayout, fourNames, fourNames);
+    IStore(this).registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, fourNames, fourNames);
   }
 
   function testSetAndGetDynamicDataLength() public {
     bytes32 table = keccak256("some.table");
 
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT32,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
 
     // Register table
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](5));
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](5)
+    );
 
     // Create some key
     bytes32[] memory key = new bytes32[](1);
@@ -161,9 +217,23 @@ contract StoreCoreTest is Test, StoreMock {
   function testSetAndGetStaticData() public {
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
 
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](4));
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](4)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -186,8 +256,22 @@ contract StoreCoreTest is Test, StoreMock {
   function testFailSetAndGetStaticData() public {
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](4));
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](4)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
@@ -202,8 +286,17 @@ contract StoreCoreTest is Test, StoreMock {
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](2));
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](2)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(
@@ -231,7 +324,20 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -301,7 +407,21 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](4));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](4)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -434,7 +554,20 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -513,7 +646,20 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
-    IStore(this).registerTable(data.table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    IStore(this).registerTable(
+      data.table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     data.key = new bytes32[](1);
@@ -641,7 +787,20 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
-    IStore(this).registerTable(data.table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT64_ARRAY
+    );
+    IStore(this).registerTable(
+      data.table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     data.key = new bytes32[](1);
@@ -744,8 +903,17 @@ contract StoreCoreTest is Test, StoreMock {
   function testAccessEmptyData() public {
     bytes32 table = keccak256("some.table");
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](2));
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](2)
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -774,13 +942,24 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](1)
+    );
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
       table,
       defaultKeyFieldLayout,
       valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -817,13 +996,24 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 1);
-    IStore(this).registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](2));
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
+    IStore(this).registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](2)
+    );
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
       table,
       defaultKeyFieldLayout,
       valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
       new string[](1),
       new string[](2)
     );

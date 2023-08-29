@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Bytes } from "./Bytes.sol";
-
 // - 2 bytes for total length of all static fields
 // - 1 byte for number of static size fields
 // - 1 byte for number of dynamic size fields

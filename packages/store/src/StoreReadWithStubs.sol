@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
+import { Schema } from "./Schema.sol";
 import { StoreRead } from "./StoreRead.sol";
 
 /**
@@ -17,7 +18,15 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function registerTable(bytes32, FieldLayout, FieldLayout, string[] calldata, string[] calldata) public virtual {
+  function registerTable(
+    bytes32,
+    FieldLayout,
+    FieldLayout,
+    Schema,
+    Schema,
+    string[] calldata,
+    string[] calldata
+  ) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 

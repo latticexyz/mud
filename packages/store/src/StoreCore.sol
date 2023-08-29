@@ -5,6 +5,7 @@ import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
+import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
@@ -77,21 +78,34 @@ library StoreCore {
     bytes32 tableId,
     FieldLayout keyFieldLayout,
     FieldLayout valueFieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     string[] memory keyNames,
     string[] memory valueNames
   ) internal {
     // Verify the field layout is valid
     keyFieldLayout.validate({ allowEmpty: true });
     valueFieldLayout.validate({ allowEmpty: false });
+    // Verify the schema is valid
+    keySchema.validate({ allowEmpty: true });
+    valueSchema.validate({ allowEmpty: false });
 
-    // Verify the number of key names corresponds to the number of keys in the length
+    // Verify the number of key names
     if (keyNames.length != keyFieldLayout.numFields()) {
       revert IStoreErrors.StoreCore_InvalidKeyNamesLength(keyFieldLayout.numFields(), keyNames.length);
     }
+    // Verify the number of key schema types
+    if (keySchema.numFields() != keyFieldLayout.numFields()) {
+      revert IStoreErrors.StoreCore_InvalidKeySchemaLength(keyFieldLayout.numFields(), keySchema.numFields());
+    }
 
-    // Verify the number of field names corresponds to the number of values in the layout
+    // Verify the number of value names
     if (valueNames.length != valueFieldLayout.numFields()) {
       revert IStoreErrors.StoreCore_InvalidValueNamesLength(valueFieldLayout.numFields(), valueNames.length);
+    }
+    // Verify the number of value schema types
+    if (valueSchema.numFields() != valueFieldLayout.numFields()) {
+      revert IStoreErrors.StoreCore_InvalidValueSchemaLength(valueFieldLayout.numFields(), valueSchema.numFields());
     }
 
     // Verify the field layout doesn't exist yet
@@ -104,6 +118,8 @@ library StoreCore {
       tableId,
       FieldLayout.unwrap(keyFieldLayout),
       FieldLayout.unwrap(valueFieldLayout),
+      Schema.unwrap(keySchema),
+      Schema.unwrap(valueSchema),
       abi.encode(keyNames),
       abi.encode(valueNames)
     );

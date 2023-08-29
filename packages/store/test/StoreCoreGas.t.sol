@@ -3,16 +3,19 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
+import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
 
@@ -26,11 +29,19 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   TestStruct private testStruct;
 
   mapping(uint256 => bytes) private testMapping;
+  Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   FieldLayout defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
 
   function testRegisterAndGetFieldLayout() public {
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     FieldLayout keyFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
+    Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
     bytes32 table = keccak256("some.table");
 
     string[] memory keyNames = new string[](2);
@@ -43,7 +54,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     fieldNames[3] = "value4";
 
     startGasReport("StoreCore: register schema");
-    StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+    StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     endGasReport();
 
     startGasReport("StoreCore: get schema (warm)");
@@ -56,10 +67,24 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testHasFieldLayout() public {
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](4));
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](4)
+    );
 
     startGasReport("Check for existence of table (existent)");
     StoreCore.hasTable(table);
@@ -73,10 +98,26 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   function testSetAndGetDynamicDataLength() public {
     bytes32 table = keccak256("some.table");
 
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT32,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
 
     // Register schema
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](5));
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](5)
+    );
 
     // Create some key
     bytes32[] memory key = new bytes32[](1);
@@ -100,9 +141,23 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
   function testSetAndGetStaticData() public {
     // Register table's schema
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT8,
+      SchemaType.UINT16
+    );
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     bytes32 table = keccak256("some.table");
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](4));
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](4)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -121,9 +176,18 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table's schema
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
     bytes32 table = keccak256("some.table");
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](2));
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](2)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(
@@ -149,7 +213,20 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -220,7 +297,21 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](4));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](4)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -304,7 +395,20 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT128,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -356,7 +460,20 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
+    );
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -438,7 +555,20 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](3));
+    Schema valueSchema = SchemaEncodeHelper.encode(
+      SchemaType.UINT256,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT64_ARRAY
+    );
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -507,8 +637,17 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   function testAccessEmptyData() public {
     bytes32 table = keccak256("some.table");
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](2));
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](2)
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -542,13 +681,24 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](1)
+    );
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
       table,
       defaultKeyFieldLayout,
       valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
       new string[](1),
       new string[](1)
     );
@@ -581,13 +731,24 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Register table's schema
     FieldLayout valueFieldLayout = FieldLayoutEncodeHelper.encode(16, 1);
-    StoreCore.registerTable(table, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](2));
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
+    StoreCore.registerTable(
+      table,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](2)
+    );
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
       table,
       defaultKeyFieldLayout,
       valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
       new string[](1),
       new string[](2)
     );

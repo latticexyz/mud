@@ -11,5 +11,7 @@ interface IStoreErrors {
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
   error StoreCore_InvalidKeyNamesLength(uint256 expected, uint256 received);
   error StoreCore_InvalidValueNamesLength(uint256 expected, uint256 received);
+  error StoreCore_InvalidKeySchemaLength(uint256 expected, uint256 received);
+  error StoreCore_InvalidValueSchemaLength(uint256 expected, uint256 received);
   error StoreCore_DataIndexOverflow(uint256 length, uint256 received);
 }

@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { FieldLayout } from "./FieldLayout.sol";
+import { Schema } from "./Schema.sol";
 
 interface IStoreRead {
   function getValueFieldLayout(bytes32 table) external view returns (FieldLayout fieldLayout);
@@ -123,6 +124,8 @@ interface IStoreRegistration {
     bytes32 table,
     FieldLayout keyFieldLayout,
     FieldLayout valueFieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) external;

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "./IStore.sol";
+import { Schema } from "./Schema.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 
@@ -75,14 +76,24 @@ library StoreSwitch {
     bytes32 table,
     FieldLayout keyFieldLayout,
     FieldLayout valueFieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+      StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     } else {
-      IStore(_storeAddress).registerTable(table, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+      IStore(_storeAddress).registerTable(
+        table,
+        keyFieldLayout,
+        valueFieldLayout,
+        keySchema,
+        valueSchema,
+        keyNames,
+        fieldNames
+      );
     }
   }
 

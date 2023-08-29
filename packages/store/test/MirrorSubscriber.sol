@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { Schema } from "../src/Schema.sol";
 
 bytes32 constant indexerTableId = keccak256("indexer.table");
 
@@ -14,10 +15,20 @@ contract MirrorSubscriber is IStoreHook {
     bytes32 table,
     FieldLayout keyFieldLayout,
     FieldLayout valueFieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     string[] memory keyNames,
     string[] memory fieldNames
   ) {
-    IStore(msg.sender).registerTable(indexerTableId, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+    IStore(msg.sender).registerTable(
+      indexerTableId,
+      keyFieldLayout,
+      valueFieldLayout,
+      keySchema,
+      valueSchema,
+      keyNames,
+      fieldNames
+    );
     _table = table;
   }
 
