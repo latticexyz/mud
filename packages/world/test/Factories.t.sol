@@ -3,11 +3,13 @@ pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
 import { World } from "../src/World.sol";
-import { WorldFactory } from "../src/WorldFactory.sol";
-import { IWorldFactory } from "../src/interfaces/IWorldFactory.sol";
+import { Create2Factory } from "../src/factories/Create2Factory.sol";
+import { WorldFactory } from "../src/factories/WorldFactory.sol";
+import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
-contract WorldFactoryTest is Test {
+contract Factories is Test {
+  event ContractDeployed(address addr, uint256 salt);
   event WorldDeployed(address indexed newContract);
   event HelloWorld();
 
@@ -21,7 +23,23 @@ contract WorldFactoryTest is Test {
     return address(uint160(uint256(data)));
   }
 
-  function testDeployWorld() public {
+  function testCreate2Factory() public {
+    Create2Factory create2Factory = new Create2Factory();
+    // Encode constructor arguments for WorldFactory
+    bytes memory encodedArguments = abi.encode(new CoreModule());
+    bytes memory combinedBytes = abi.encodePacked(type(WorldFactory).creationCode, encodedArguments);
+    // Address we expect for deployed WorldFactory
+    address calculatedAddress = calculateAddress(address(create2Factory), bytes32(0), combinedBytes);
+    // Confirm event for deployment
+    vm.expectEmit(true, false, false, false);
+    emit ContractDeployed(calculatedAddress, uint256(0));
+    create2Factory.deployContract(combinedBytes, uint256(0));
+    // Confirm worldFactory was deployed correctly
+    IWorldFactory worldFactory = IWorldFactory(calculatedAddress);
+    assertEq(uint256(worldFactory.worldCount()), uint256(0));
+  }
+
+  function testWorldFactory() public {
     // Deploy WorldFactory with current CoreModule
     address worldFactoryAddress = address(new WorldFactory(new CoreModule()));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
