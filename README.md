@@ -1,8 +1,8 @@
 # MUD
 
 <div align="center">
-  <img src="docs/public/logo512-black-w-background.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
-  <p>MUD - Engine for Autonomous Worlds</p>
+<img src="docs/public/logo512-black-w-background.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<p>MUD - Engine for Autonomous Worlds</p>
 </div>
 
 <p align="center">
