@@ -5,7 +5,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { SystemRegistry } from "./Tables.sol";
 
-library Utils {
+library SystemUtils {
   /**
    * Get the namespace of this system.
    * Must be used within the context of a system (either directly, or within libraries called by a system).
@@ -20,5 +20,15 @@ library Utils {
       bytes32 resourceSelector = SystemRegistry.get(address(this));
       return ResourceSelector.getNamespace(resourceSelector);
     }
+  }
+}
+
+/**
+ * Utility function to revert with raw bytes (eg. coming from a low level call or from a previously encoded error)
+ */
+function revertWithBytes(bytes memory reason) pure {
+  assembly {
+    // reason+32 is a pointer to the error message, mload(reason) is the length of the error message
+    revert(add(reason, 0x20), mload(reason))
   }
 }

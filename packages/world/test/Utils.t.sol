@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 
-import { Utils } from "../src/Utils.sol";
+import { SystemUtils, revertWithBytes } from "../src/utils.sol";
 import { System } from "../src/System.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -13,13 +13,15 @@ import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
 contract UtilsTestSystem is System {
   function systemNamespace() public view returns (bytes16) {
-    return Utils.systemNamespace();
+    return SystemUtils.systemNamespace();
   }
 }
 
 contract UtilsTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld internal world;
+
+  error SomeError(uint256 someValue, string someString);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -53,5 +55,13 @@ contract UtilsTest is Test {
     namespace = "maxlen_namespace";
     returnedNamespace = _registerAndGetNamespace(namespace);
     assertEq(returnedNamespace, namespace);
+  }
+
+  function testRevertWithBytes() public {
+    vm.expectRevert(abi.encodeWithSelector(SomeError.selector, 1, "test"));
+    revert SomeError(1, "test");
+
+    vm.expectRevert(abi.encodeWithSelector(SomeError.selector, 1, "test"));
+    revertWithBytes(abi.encodeWithSelector(SomeError.selector, 1, "test"));
   }
 }
