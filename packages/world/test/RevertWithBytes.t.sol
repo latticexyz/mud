@@ -5,7 +5,6 @@ import { Test } from "forge-std/Test.sol";
 import { revertWithBytes } from "../src/revertWithBytes.sol";
 
 contract RevertWithBytesTest is Test {
-
   error SomeError(uint256 someValue, string someString);
 
   function testRegularRevert() public {
