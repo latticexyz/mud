@@ -1,13 +1,13 @@
 # Use MUD from onchain code
 
-In this tutorial you learn how to use a `World` and the systems in it from code that runs on the blockchain.
-You can use this knowledge to add sub-systems to a `World` or to use MUD as part of a bigger dapp.
+In this tutorial you will learn how to use a `World` and the systems in it from Solidity code (via forge scripts in your command line or via deployed contracts).
+You can use this knowledge to add sub-systems to a `World` or to access MUD state in contracts outside the `World`.
 
 ## Setup
 
 1. [Create a minimal application](../minimal) and run it.
 
-1. In a separate command line window, clone the MUD repository and install the necessary packages.
+1. In a separate command line window, clone the MUD repository and install the necessary packages to run the `onchain-client` example project.
 
    ```sh copy
    git clone https://github.com/latticexyz/mud.git
@@ -24,7 +24,7 @@ You can use this knowledge to add sub-systems to a `World` or to use MUD as part
 
    If these values need to be different from the default ones, edit `.env` appropriately.
 
-1. Generate MUD code.
+1. Run the MUD codegen to generate table libraries and World interfaces from your MUD config.
 
    ```sh copy
    pnpm build:mud
@@ -48,7 +48,7 @@ The `World` definition in `src/codegen/world/IWorld.sol` simply tells other Soli
 ## Use the `World` from a forge script
 
 Before we actually use a contract, we'll use a [forge script](https://book.getfoundry.sh/reference/forge/forge-script),
-The advantage of scripts is they make it easier to experiment.
+The advantage of scripts is that they allow you to run Solidity code from your command line without deploying a contract, making it easier to experiment.
 
 To run the script, use this command:
 
@@ -56,13 +56,13 @@ To run the script, use this command:
 pnpm script
 ```
 
-Looking in `package.json`, so see that the script gets executed by this command:
+You can check `package.json` to see that the script is executed by this command:
 
 ```sh
 forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:ScriptClient
 ```
 
-- `--rpc-url` specifies the URL to the blockchain.
+- `--rpc-url` specifies the URL to an RPC node of the blockchain we want to interact with.
   In this case, this is one that runs locally.
   If your blockchain runs anywhere else, modify as needed.
 - `--broadcast` tells Foundry that we don't want to just simulate the transactions, but actually send them to the blockchain
@@ -151,7 +151,7 @@ You can run it with this command.
 forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:BypassSecurity
 ```
 
-It fails with this error:
+It fails with this error, because we don't have the necessary access rights to write to the `Counter` table:
 
 ```
 == Logs ==
@@ -175,7 +175,7 @@ We know the the failure happens in the `Counter.set(world, 0);` line because we 
 </details>
 
 ```solidity
-    // Stop broadcasting transactions from te account
+    // Stop broadcasting transactions from the account
     vm.stopBroadcast();
   }
 }
@@ -218,7 +218,7 @@ You can use the contract [in the examples directory](https://github.com/latticex
    ```
 
 1. Attempt to reset the counter, which bypasses the `System` logic and modifies `Counter` directly.
-   See that this attempt fails.
+   See that this attempt fails, since our contract doesn't have the necessary access rights to write to the `Counter` table.
 
    ```sh copy
    cast send --private-key $PRIVATE_KEY $CLIENT_ADDR "reset()"
@@ -279,8 +279,7 @@ It is the version you use in code which is not part of the `World` with the rele
   }
 ```
 
-When a `System` is in the root namespace of a `World`, its functions are available from the `World` itself.
-This is the way to activate the logic in a `System`.
+When a `System` is in the root namespace of a `World`, its functions are available from the `World` itself, so we can call the function on the `World` to execute the `System` logic.
 
 ```
   function reset() public {
@@ -290,7 +289,7 @@ This is the way to activate the logic in a `System`.
 ```
 
 This function attempts to bypass the `System` logic and set the counter value directly.
-As you have already seen, it fails.
+As you have already seen, it fails because the contract doesn't have the necessary access rights to write to the `Counter` table.
 
 </details>
 
@@ -309,7 +308,7 @@ The example is already set up for MUD access, but these are the steps you do to 
 
    ```sh copy
    pnpm init
-   pnpm install @latticexyz/world@next @latticexyz/store@next @latticexyz/schema-type@next @latticexyz/cli
+   pnpm install @latticexyz/world@next @latticexyz/store@next @latticexyz/schema-type@next @latticexyz/cli@next
    ```
 
 1. Create a remapping file to inform Foundry where the MUD libraries are located.
