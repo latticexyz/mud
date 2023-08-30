@@ -36,30 +36,6 @@
     "gasUsed": 153
   },
   {
-    "file": "test/DelegationsModule.t.sol",
-    "test": "testCallFromDisposableDelegation",
-    "name": "register a disposable delegation with a non-root module",
-    "gasUsed": 112653
-  },
-  {
-    "file": "test/DelegationsModule.t.sol",
-    "test": "testCallFromDisposableDelegation",
-    "name": "call a system via a disposable delegation with a non-root module",
-    "gasUsed": 54285
-  },
-  {
-    "file": "test/DelegationsModule.t.sol",
-    "test": "testCallFromDisposableDelegationRoot",
-    "name": "register a disposable delegation with a root module",
-    "gasUsed": 104604
-  },
-  {
-    "file": "test/DelegationsModule.t.sol",
-    "test": "testCallFromDisposableDelegationRoot",
-    "name": "call a system via a disposable delegation with a root module",
-    "gasUsed": 45638
-  },
-  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
@@ -250,6 +226,30 @@
     "test": "testNotValueQuery",
     "name": "NotValueQuery",
     "gasUsed": 69612
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromDisposableDelegation",
+    "name": "register a disposable delegation",
+    "gasUsed": 122165
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromDisposableDelegation",
+    "name": "call a system via a disposable delegation",
+    "gasUsed": 45650
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromTimeboundDelegation",
+    "name": "register a timebound delegation",
+    "gasUsed": 116582
+  },
+  {
+    "file": "test/StandardDelegationsModule.t.sol",
+    "test": "testCallFromTimeboundDelegation",
+    "name": "call a system via a timebound delegation",
+    "gasUsed": 34791
   },
   {
     "file": "test/UniqueEntityModule.t.sol",

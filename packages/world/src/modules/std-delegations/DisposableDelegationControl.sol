@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { DISPOSABLE_DELEGATION_TABLE } from "./constants.sol";
 import { DelegationControl } from "../../DelegationControl.sol";
 import { DisposableDelegations } from "./tables/DisposableDelegations.sol";
 
@@ -14,7 +13,6 @@ contract DisposableDelegationControl is DelegationControl {
 
     // Get the number of available calls for the given delegator, resourceSelector and funcSelectorAndArgs
     uint256 availableCalls = DisposableDelegations.get({
-      _tableId: DISPOSABLE_DELEGATION_TABLE,
       delegator: delegator,
       delegatee: _msgSender(),
       resourceSelector: resourceSelector,
@@ -24,7 +22,6 @@ contract DisposableDelegationControl is DelegationControl {
     if (availableCalls > 0) {
       // Decrement the number of available calls
       DisposableDelegations.set({
-        _tableId: DISPOSABLE_DELEGATION_TABLE,
         delegator: delegator,
         delegatee: _msgSender(),
         resourceSelector: resourceSelector,
@@ -48,7 +45,6 @@ contract DisposableDelegationControl is DelegationControl {
     uint256 numCalls
   ) public {
     DisposableDelegations.set({
-      _tableId: DISPOSABLE_DELEGATION_TABLE,
       delegator: _msgSender(),
       delegatee: delegatee,
       resourceSelector: resourceSelector,

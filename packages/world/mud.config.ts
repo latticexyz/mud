@@ -141,7 +141,7 @@ export default mudConfig({
       storeArgument: true,
     },
     DisposableDelegations: {
-      directory: "modules/delegations/tables",
+      directory: "modules/std-delegations/tables",
       keySchema: {
         delegator: "address",
         delegatee: "address",
@@ -151,8 +151,16 @@ export default mudConfig({
       schema: {
         availableCalls: "uint256",
       },
-      tableIdArgument: true,
-      storeArgument: true,
+    },
+    TimeboundDelegations: {
+      directory: "modules/std-delegations/tables",
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+      },
+      schema: {
+        maxTimestamp: "uint256",
+      },
     },
     /************************************************************************
      *
