@@ -36,9 +36,10 @@ contract CounterTest is MudTest {
     assertEq(counter, 2);
   }
 
-  function testKeysWithValue() public {
-    uint32 counter = CounterTable.get();
-    bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
-    assertEq(keysWithValue.length, 1);
-  }
+  // TODO: re-enable the KeysWithValueModule in mud.config.ts once it supports singleton keys
+  // function testKeysWithValue() public {
+  //   uint32 counter = CounterTable.get();
+  //   bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
+  //   assertEq(keysWithValue.length, 1);
+  // }
 }
