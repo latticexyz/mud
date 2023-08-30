@@ -39,6 +39,7 @@ export type StringStructStructOutput = [string] & { value: string };
 export interface IWorldInterface extends utils.Interface {
   functions: {
     "call(bytes32,bytes)": FunctionFragment;
+    "callFrom(address,bytes32,bytes)": FunctionFragment;
     "deleteRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
     "dynamicArrayBytesStruct((bytes)[])": FunctionFragment;
     "dynamicArrayStringStruct((string)[])": FunctionFragment;
@@ -56,6 +57,7 @@ export interface IWorldInterface extends utils.Interface {
     "pickUp(uint32,uint32)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256,bytes32)": FunctionFragment;
     "pushToField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
+    "registerDelegation(address,bytes32,bytes)": FunctionFragment;
     "registerFunctionSelector(bytes32,string,string)": FunctionFragment;
     "registerNamespace(bytes16)": FunctionFragment;
     "registerRootFunctionSelector(bytes32,bytes4,bytes4)": FunctionFragment;
@@ -76,6 +78,7 @@ export interface IWorldInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "call"
+      | "callFrom"
       | "deleteRecord"
       | "dynamicArrayBytesStruct"
       | "dynamicArrayStringStruct"
@@ -93,6 +96,7 @@ export interface IWorldInterface extends utils.Interface {
       | "pickUp"
       | "popFromField"
       | "pushToField"
+      | "registerDelegation"
       | "registerFunctionSelector"
       | "registerNamespace"
       | "registerRootFunctionSelector"
@@ -113,6 +117,14 @@ export interface IWorldInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "call",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "callFrom",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "deleteRecord",
@@ -222,6 +234,14 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "registerDelegation",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "registerFunctionSelector",
     values: [
       PromiseOrValue<BytesLike>,
@@ -319,6 +339,7 @@ export interface IWorldInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "call", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "callFrom", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "deleteRecord",
     data: BytesLike
@@ -373,6 +394,10 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "pushToField",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "registerDelegation",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -530,6 +555,13 @@ export interface IWorld extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    callFrom(
+      delegator: PromiseOrValue<string>,
+      resourceSelector: PromiseOrValue<BytesLike>,
+      funcSelectorAndArgs: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     deleteRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -644,6 +676,13 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    registerDelegation(
+      delegatee: PromiseOrValue<string>,
+      delegationControl: PromiseOrValue<BytesLike>,
+      initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     registerFunctionSelector(
       resourceSelector: PromiseOrValue<BytesLike>,
       systemFunctionName: PromiseOrValue<string>,
@@ -745,6 +784,13 @@ export interface IWorld extends BaseContract {
   };
 
   call(
+    resourceSelector: PromiseOrValue<BytesLike>,
+    funcSelectorAndArgs: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  callFrom(
+    delegator: PromiseOrValue<string>,
     resourceSelector: PromiseOrValue<BytesLike>,
     funcSelectorAndArgs: PromiseOrValue<BytesLike>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
@@ -864,6 +910,13 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  registerDelegation(
+    delegatee: PromiseOrValue<string>,
+    delegationControl: PromiseOrValue<BytesLike>,
+    initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   registerFunctionSelector(
     resourceSelector: PromiseOrValue<BytesLike>,
     systemFunctionName: PromiseOrValue<string>,
@@ -965,6 +1018,13 @@ export interface IWorld extends BaseContract {
 
   callStatic: {
     call(
+      resourceSelector: PromiseOrValue<BytesLike>,
+      funcSelectorAndArgs: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    callFrom(
+      delegator: PromiseOrValue<string>,
       resourceSelector: PromiseOrValue<BytesLike>,
       funcSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1079,6 +1139,13 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    registerDelegation(
+      delegatee: PromiseOrValue<string>,
+      delegationControl: PromiseOrValue<BytesLike>,
+      initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1233,6 +1300,13 @@ export interface IWorld extends BaseContract {
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    callFrom(
+      delegator: PromiseOrValue<string>,
+      resourceSelector: PromiseOrValue<BytesLike>,
+      funcSelectorAndArgs: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     deleteRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1347,6 +1421,13 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    registerDelegation(
+      delegatee: PromiseOrValue<string>,
+      delegationControl: PromiseOrValue<BytesLike>,
+      initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     registerFunctionSelector(
       resourceSelector: PromiseOrValue<BytesLike>,
       systemFunctionName: PromiseOrValue<string>,
@@ -1449,6 +1530,13 @@ export interface IWorld extends BaseContract {
 
   populateTransaction: {
     call(
+      resourceSelector: PromiseOrValue<BytesLike>,
+      funcSelectorAndArgs: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    callFrom(
+      delegator: PromiseOrValue<string>,
       resourceSelector: PromiseOrValue<BytesLike>,
       funcSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
@@ -1565,6 +1653,13 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    registerDelegation(
+      delegatee: PromiseOrValue<string>,
+      delegationControl: PromiseOrValue<BytesLike>,
+      initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

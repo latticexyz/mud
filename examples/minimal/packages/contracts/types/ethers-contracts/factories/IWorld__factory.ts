@@ -26,6 +26,22 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "delegator",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+    ],
+    name: "DelegationNotFound",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes4",
         name: "functionSelector",
         type: "bytes4",
@@ -331,6 +347,35 @@ const _abi = [
       },
     ],
     name: "call",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "delegator",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "funcSelectorAndArgs",
+        type: "bytes",
+      },
+    ],
+    name: "callFrom",
     outputs: [
       {
         internalType: "bytes",
@@ -758,6 +803,29 @@ const _abi = [
       },
     ],
     name: "pushToField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "delegationControl",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "initFuncSelectorAndArgs",
+        type: "bytes",
+      },
+    ],
+    name: "registerDelegation",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
