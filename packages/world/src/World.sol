@@ -202,15 +202,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
     // Call the function and forward the call data
-    (bool success, bytes memory returnData) = SystemCall.callWithHooks(
-      msg.sender,
-      resourceSelector,
-      callData,
-      msg.value
-    );
-
-    // If the call was not successful, revert with the return data
-    if (!success) revertWithBytes(returnData);
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
 
     // If the call was successful, return the return data
     assembly {
