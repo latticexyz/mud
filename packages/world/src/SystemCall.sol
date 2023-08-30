@@ -20,9 +20,8 @@ library SystemCall {
   using ResourceSelector for bytes32;
 
   /**
-   * Call the system at the given namespace.
-   * If the system is not public, the caller must have access to the namespace or name.
-   * Returns the success status and any return data.
+   * Calls a system via its resource selector and perform access control checks.
+   * Does not revert if the call fails, but returns a `success` flag along with the returndata.
    */
   function call(
     address caller,
@@ -55,9 +54,8 @@ library SystemCall {
   }
 
   /**
-   * Call the system at the given namespace and call any hooks registered for it.
-   * If the system is not public, the caller must have access to the namespace or name.
-   * Returns the success status and any return data.
+   * Calls a system via its resource selector, perform access control checks and trigger hooks registered for the system.
+   * Does not revert if the call fails, but returns a `success` flag along with the returndata.
    */
   function callWithHooks(
     address caller,
@@ -85,10 +83,8 @@ library SystemCall {
   }
 
   /**
-   * Call the system at the given namespace and call any hooks registered for it.
-   * If the system is not public, the caller must have access to the namespace or name.
-   * Reverts with the error if the call was not successful.
-   * Else returns any return data.
+   * Calls a system via its resource selector, perform access control checks and trigger hooks registered for the system.
+   * Reverts if the call fails.
    */
   function callWithHooksOrRevert(
     address caller,
