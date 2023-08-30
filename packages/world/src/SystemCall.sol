@@ -7,7 +7,7 @@ import { AccessControl } from "./AccessControl.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
-import { revertWithBytes } from "./utils.sol";
+import { revertWithBytes } from "./revertWithBytes.sol";
 
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { revertWithBytes } from "./utils.sol";
+import { revertWithBytes } from "./revertWithBytes.sol";
 
 // Similar to https://eips.ethereum.org/EIPS/eip-2771, but any contract can be the trusted forwarder.
 // This should only be used for contracts without own storage, like Systems.
