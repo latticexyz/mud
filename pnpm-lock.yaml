@@ -856,9 +856,6 @@ importers:
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
-      p-retry:
-        specifier: ^5.1.2
-        version: 5.1.2
       rxjs:
         specifier: 7.5.5
         version: 7.5.5
