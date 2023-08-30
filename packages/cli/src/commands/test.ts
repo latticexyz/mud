@@ -34,7 +34,7 @@ const commandModule: CommandModule<Options, Options> = {
       anvil(anvilArgs);
     }
 
-    const forkRpc = args.worldAddress ? await getRpcUrl(args.profile) : `http://127.0.0.1:${args.port}`;
+    const forkRpc = args.worldAddress ? await getRpcUrl(args.profile) : `http://localhost:${args.port}`;
 
     const worldAddress =
       args.worldAddress ??
