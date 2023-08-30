@@ -18,7 +18,7 @@ runs:
     - name: Setup foundry
       uses: foundry-rs/foundry-toolchain@v1
       with:
-        version: nightly-d369d2486f85576eec4ca41d277391dfdae21ba7
+        version: nightly-bff4ed912bb023d7bf9b20eda581aa4867a1cf70
 
     - name: Setup protoc
       uses: arduino/setup-protoc@v1
