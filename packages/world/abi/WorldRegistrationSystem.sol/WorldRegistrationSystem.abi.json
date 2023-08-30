@@ -18,6 +18,22 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      }
+    ],
+    "name": "DelegationNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "functionSelector",
         "type": "bytes4"
@@ -160,6 +176,29 @@
     ],
     "name": "SystemExists",
     "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "delegationControl",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "initFuncSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "registerDelegation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [
