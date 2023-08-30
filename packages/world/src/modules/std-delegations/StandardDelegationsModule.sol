@@ -15,7 +15,7 @@ import { MODULE_NAME, NAMESPACE, DISPOSABLE_DELEGATION, DISPOSABLE_DELEGATION_RO
 /**
  * This module registers tables and delegation control systems required for standard delegations
  */
-contract DelegationsModule is IModule, WorldContextConsumer {
+contract StandardDelegationsModule is IModule, WorldContextConsumer {
   DisposableDelegationControl immutable disposableDelegationControl = new DisposableDelegationControl();
 
   function getName() public pure returns (bytes16) {

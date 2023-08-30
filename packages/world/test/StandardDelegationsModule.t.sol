@@ -10,13 +10,13 @@ import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
-import { DelegationsModule } from "../src/modules/delegations/DelegationsModule.sol";
-import { DisposableDelegationControl } from "../src/modules/delegations/DisposableDelegationControl.sol";
-import { DISPOSABLE_DELEGATION, DISPOSABLE_DELEGATION_ROOT } from "../src/modules/delegations/DelegationsModule.sol";
+import { StandardDelegationsModule } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
+import { DisposableDelegationControl } from "../src/modules/std-delegations/DisposableDelegationControl.sol";
+import { DISPOSABLE_DELEGATION, DISPOSABLE_DELEGATION_ROOT } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
 
 import { WorldTestSystem } from "./World.t.sol";
 
-contract DelegationsModuleTest is Test, GasReporter {
+contract StandardDelegationsModuleTest is Test, GasReporter {
   IBaseWorld world;
   bytes32 systemResourceSelector = ResourceSelector.from("namespace", "testSystem");
   address delegator = address(1);
@@ -33,7 +33,7 @@ contract DelegationsModuleTest is Test, GasReporter {
 
   function testCallFromDisposableDelegationRoot() public {
     // Install Delegations module as root module
-    world.installRootModule(new DelegationsModule(), new bytes(0));
+    world.installRootModule(new StandardDelegationsModule(), new bytes(0));
 
     // Register the disposable delegation for one call to the system's msgSender function
     vm.prank(delegator);
@@ -73,7 +73,7 @@ contract DelegationsModuleTest is Test, GasReporter {
 
   function testCallFromDisposableDelegation() public {
     // Install Delegations module as root module
-    world.installModule(new DelegationsModule(), new bytes(0));
+    world.installModule(new StandardDelegationsModule(), new bytes(0));
 
     // Register the disposable delegation for one call to the system's msgSender function
     vm.prank(delegator);
