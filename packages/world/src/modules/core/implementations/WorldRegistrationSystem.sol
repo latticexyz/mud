@@ -6,10 +6,11 @@ import { WorldContextConsumer } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { SystemCall } from "../../../SystemCall.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
+import { Delegations } from "../../../tables/Delegations.sol";
 import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
@@ -151,5 +152,27 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
 
     return worldFunctionSelector;
+  }
+
+  /**
+   * Register a delegation from the caller to the given delegatee.
+   */
+  function registerDelegation(
+    address delegatee,
+    bytes32 delegationControl,
+    bytes memory initFuncSelectorAndArgs
+  ) public {
+    // Store the delegation control contract address
+    Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControl: delegationControl });
+
+    // If the delegation is not unlimited, call the delegation control contract's init function
+    if (delegationControl != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
+      SystemCall.call({
+        caller: _msgSender(),
+        resourceSelector: delegationControl,
+        funcSelectorAndArgs: initFuncSelectorAndArgs,
+        value: 0
+      });
+    }
   }
 }

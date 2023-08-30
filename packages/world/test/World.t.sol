@@ -18,7 +18,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -578,6 +578,66 @@ contract WorldTest is Test, GasReporter {
 
     returnedAddress = abi.decode(abi.decode(nestedReturndata, (bytes)), (address));
     assertEq(returnedAddress, address(this), "subsystem returned wrong address");
+  }
+
+  function testCallFromUnlimitedDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    // Register an unlimited delegation
+    address delegator = address(1);
+    address delegatee = address(2);
+    vm.prank(delegator);
+    startGasReport("register an unlimited delegation");
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+    endGasReport();
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    startGasReport("call a system via an unlimited delegation");
+    bytes memory returnData = world.callFrom(
+      delegator,
+      resourceSelector,
+      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+    );
+    endGasReport();
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+  }
+
+  function testCallFromFailDelegationNotFound() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.DelegationNotFound.selector,
+        address(2), // Delegator
+        address(1) // Delegatee
+      )
+    );
+    vm.prank(address(1));
+    world.callFrom(address(2), resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+  }
+
+  function testCallFromLimitedDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    // Register a limited delegation
+    address delegator = address(1);
+    address delegatee = address(2);
+    vm.prank(delegator);
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
   }
 
   function testRegisterTableHook() public {

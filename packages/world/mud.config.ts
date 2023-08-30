@@ -42,6 +42,15 @@ export default mudConfig({
       // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
       dataStruct: true,
     },
+    Delegations: {
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+      },
+      schema: {
+        delegationControl: "bytes32",
+      },
+    },
     /************************************************************************
      *
      *    MODULE TABLES
@@ -128,6 +137,20 @@ export default mudConfig({
       directory: "modules/uniqueentity/tables",
       keySchema: {},
       schema: "uint256",
+      tableIdArgument: true,
+      storeArgument: true,
+    },
+    DisposableDelegations: {
+      directory: "modules/delegations/tables",
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+        resourceSelector: "bytes32",
+        funcSelectorAndArgsHash: "bytes32",
+      },
+      schema: {
+        availableCalls: "uint256",
+      },
       tableIdArgument: true,
       storeArgument: true,
     },
