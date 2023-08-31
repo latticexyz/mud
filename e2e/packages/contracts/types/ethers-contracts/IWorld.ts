@@ -59,6 +59,7 @@ export interface IWorldInterface extends utils.Interface {
     "setField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
     "stub(uint256)": FunctionFragment;
+    "transferOwnership(bytes16,address)": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes,bytes32)": FunctionFragment;
   };
 
@@ -93,6 +94,7 @@ export interface IWorldInterface extends utils.Interface {
       | "setField"
       | "setRecord"
       | "stub"
+      | "transferOwnership"
       | "updateInField"
   ): FunctionFragment;
 
@@ -281,6 +283,10 @@ export interface IWorldInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateInField",
     values: [
       PromiseOrValue<BytesLike>,
@@ -378,6 +384,10 @@ export interface IWorldInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "setField", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setRecord", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "stub", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "updateInField",
     data: BytesLike
@@ -675,6 +685,12 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    transferOwnership(
+      namespace: PromiseOrValue<BytesLike>,
+      newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     updateInField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -881,6 +897,12 @@ export interface IWorld extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  transferOwnership(
+    namespace: PromiseOrValue<BytesLike>,
+    newOwner: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   updateInField(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1084,6 +1106,12 @@ export interface IWorld extends BaseContract {
       arg: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    transferOwnership(
+      namespace: PromiseOrValue<BytesLike>,
+      newOwner: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     updateInField(
       table: PromiseOrValue<BytesLike>,
@@ -1338,6 +1366,12 @@ export interface IWorld extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    transferOwnership(
+      namespace: PromiseOrValue<BytesLike>,
+      newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     updateInField(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1543,6 +1577,12 @@ export interface IWorld extends BaseContract {
     stub(
       arg: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      namespace: PromiseOrValue<BytesLike>,
+      newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     updateInField(
