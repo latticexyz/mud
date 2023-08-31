@@ -30,17 +30,18 @@ In this tutorial you deploy the application to a public blockchain, either the L
 1. Run the user interface.
 
    ```sh copy
-   cd packages/clients
+   cd packages/client
    pnpm vite
    ```
 
 1. Browse to the URL for the application.
 
 1. You can view transactions [on the Otter explorer](https://explorer.testnet-chain.linfra.xyz/).
+   The addresses for the `World` and the user account are available in the MUD dev tool.
 
 ## Deploying to a third party blockchain (Sepolia, Optimism Goerli, etc.)
 
-Obtain these things for the blockchain you are using:
+To use a third party blockchain you need:
 
 - URLs for both HTTP and WebSocket.
 - Address (and the private key for it)
@@ -51,15 +52,15 @@ Obtain these things for the blockchain you are using:
 
 1. Edit the environment file for the contracts.
 
-   ```sh filename="packages/contracts/.env"
+   ```sh filename="packages/contracts/.env" copy
    PRIVATE_KEY=<your private key>
    ```
 
 1. Add a section to the Foundry configuration file:
 
-   ```toml filename="packages/contracts/foundry.toml"
+   ```toml filename="packages/contracts/foundry.toml" copy
    [profile.mychain]
-   eth_rpc_url = " <your URL goes here> "
+   eth_rpc_url = " <your HTTPS URL goes here> "
    ```
 
 1. Deploy the contracts.
@@ -73,9 +74,9 @@ Obtain these things for the blockchain you are using:
 
 ### Run the user interface
 
-1. Edit the supported chains list to add the blockchain you use (unless it's the Lattice test network).
-   To know what blockchain to import, [see the list of supported blockchains](https://github.com/wagmi-dev/viem/blob/main/src/chains/index.ts).
-   If your network is not supported, [see the directions on creating a custom blockchain](https://viem.sh/docs/clients/chains.html#custom-chains).
+1. Edit the supported chains list to add the blockchain you use.
+   To know get the blockchain name to import, [see the list of supported blockchains](https://github.com/wagmi-dev/viem/blob/main/src/chains/index.ts).
+   If your blockchain is not supported, [see the directions on creating a custom blockchain](https://viem.sh/docs/clients/chains.html#custom-chains).
 
    ```ts filename="packages/client/src/mud/supportedChains.ts" copy showLineNumbers {2,4-5,8}
    import { MUDChain, latticeTestnet, mudFoundry } from "@latticexyz/common/chains";
@@ -94,7 +95,7 @@ Obtain these things for the blockchain you are using:
    export VITE_CHAIN_ID=<chain ID for the blockchain you use>
    ```
 
-   Note that you can also do this from the browser, by appending `?chainID=<chainID` to the user interface URL.
+   Note that you can also do this from the browser, by appending `?chainID=<chainID>` to the user interface URL.
 
 1. Run the user interface.
 
@@ -263,7 +264,15 @@ Because user approval is required, `createWalletClient` does not write the addre
 Therefore, we need to do it manually because MUD code expects the address to be in `walletClient.account.address`.
 
 ```ts
+  return {
+    .
+    .
+    .
     playerEntity: encodeEntity({ address: "address" }, { address: walletClient.account.address }),
+    .
+    .
+    .
+  };
 ```
 
 We need to return the address of `walletClient` we created, not of the burner wallet we ignore.
