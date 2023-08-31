@@ -141,12 +141,12 @@ contract WorldTestTableHook is IStoreHook {
 contract WorldTestSystemHook is ISystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("before", msgSender, systemAddress, funcSelectorAndArgs));
+  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, funcSelectorAndArgs));
   }
 
-  function onAfterCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("after", msgSender, systemAddress, funcSelectorAndArgs));
+  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, funcSelectorAndArgs));
   }
 }
 
@@ -550,7 +550,9 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(resourceSelector, system, false);
 
     // Call a system function without arguments via the World
+    startGasReport("call a system via the World");
     bytes memory result = world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    endGasReport();
 
     // Expect the system to have received the caller's address
     assertEq(address(uint160(uint256(bytes32(result)))), address(this));
@@ -634,30 +636,30 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterSystemHook() public {
-    bytes32 tableId = ResourceSelector.from("namespace", "testTable");
+    bytes32 systemId = ResourceSelector.from("namespace", "testTable");
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(tableId, system, false);
+    world.registerSystem(systemId, system, false);
 
     // Register a new hook
     ISystemHook systemHook = new WorldTestSystemHook();
-    world.registerSystemHook(tableId, systemHook);
+    world.registerSystemHook(systemId, systemHook);
 
     bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect the hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("before", address(this), address(system), funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
 
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("fallback");
 
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("after", address(this), address(system), funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
 
     // Call a system fallback function without arguments via the World
-    world.call(tableId, funcSelectorAndArgs);
+    world.call(systemId, funcSelectorAndArgs);
   }
 
   function testWriteRootSystem() public {

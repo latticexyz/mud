@@ -859,7 +859,7 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "contract System",
+        internalType: "contract WorldContextConsumer",
         name: "system",
         type: "address",
       },
