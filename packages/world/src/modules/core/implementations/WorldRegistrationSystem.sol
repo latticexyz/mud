@@ -62,13 +62,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * If the namespace doesn't exist yet, it is registered.
    * The system is granted access to its namespace, so it can write to any table in the same namespace.
    * If publicAccess is true, no access control check is performed for calling the system.
+   *
+   * Note: this function doesn't check whether a system already exists at the given selector,
+   * making it possible to upgrade systems.
    */
   function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) public virtual {
     // Require the name to not be the namespace's root name
     if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
-
-    // Require the system to not exist yet
-    if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
@@ -76,13 +76,26 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
     else AccessControl.requireOwnerOrSelf(namespace, _msgSender());
 
-    // Require no resource to exist at this selector yet
-    if (ResourceType.get(resourceSelector) != Resource.NONE) {
+    // Require no resource other than a system to exist at this selector yet
+    Resource resourceType = ResourceType.get(resourceSelector);
+    if (resourceType != Resource.NONE && resourceType != Resource.SYSTEM) {
       revert ResourceExists(resourceSelector.toString());
     }
 
-    // Store the system resource type
-    ResourceType.set(resourceSelector, Resource.SYSTEM);
+    // Check if a system already exists at this resource selector
+    address existingSystem = Systems.getSystem(resourceSelector);
+
+    // If there is an existing system with this resource selector, remove it
+    if (existingSystem != address(0)) {
+      // Remove the existing system from the system registry
+      SystemRegistry.deleteRecord(existingSystem);
+
+      // Remove the existing system's access to its namespace
+      ResourceAccess.deleteRecord(resourceSelector, existingSystem);
+    } else {
+      // Otherwise, this is a new system, so register its resource type
+      ResourceType.set(resourceSelector, Resource.SYSTEM);
+    }
 
     // Systems = mapping from resourceSelector to system address and publicAccess
     Systems.set(resourceSelector, address(system), publicAccess);

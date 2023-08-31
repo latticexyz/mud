@@ -376,6 +376,10 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
   }
 
+  function testUpgradeSystem() public {
+    revert("TODO");
+  }
+
   function testDuplicateSelectors() public {
     // Register a new table
     bytes32 resourceSelector = ResourceSelector.from("namespace", "name");
