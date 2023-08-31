@@ -18,8 +18,7 @@ runs:
     - name: Setup foundry
       uses: foundry-rs/foundry-toolchain@v1
       with:
-        # Pinning until https://github.com/foundry-rs/foundry/issues/5749 is fixed
-        version: nightly-bff4ed912bb023d7bf9b20eda581aa4867a1cf70
+        version: nightly
 
     - name: Setup protoc
       uses: arduino/setup-protoc@v1
