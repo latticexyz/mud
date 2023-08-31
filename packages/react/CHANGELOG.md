@@ -1,5 +1,56 @@
 # Change Log
 
+## 2.0.0-next.4
+
+### Major Changes
+
+- [#1343](https://github.com/latticexyz/mud/pull/1343) [`e3de1a33`](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1) Thanks [@holic](https://github.com/holic)! - Removes `useRow` and `useRows` hooks, previously powered by `store-cache`, which is now deprecated. Please use `recs` and the corresponding `useEntityQuery` and `useComponentValue` hooks. We'll have more hooks soon for SQL.js sync backends.
+
+### Patch Changes
+
+- Updated dependencies [[`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64), [`c14f8bf1`](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c)]:
+  - @latticexyz/recs@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- Updated dependencies [[`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57), [`d5b73b12`](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd), [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db), [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab), [`0d12db8c`](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61)]:
+  - @latticexyz/store@2.0.0-next.3
+  - @latticexyz/store-cache@2.0.0-next.3
+  - @latticexyz/recs@2.0.0-next.3
+
+## 2.0.0-next.2
+
+### Minor Changes
+
+- [#1284](https://github.com/latticexyz/mud/pull/1284) [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad) Thanks [@holic](https://github.com/holic)! - Adds a `usePromise` hook that returns a [native `PromiseSettledResult` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+
+  ```tsx
+  const promise = fetch(url);
+  const result = usePromise(promise);
+
+  if (result.status === "idle" || result.status === "pending") {
+    return <>fetching</>;
+  }
+
+  if (result.status === "rejected") {
+    return <>error fetching: {String(result.reason)}</>;
+  }
+
+  if (result.status === "fulfilled") {
+    return <>fetch status: {result.value.status}</>;
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`a2588116`](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062), [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473)]:
+  - @latticexyz/store@2.0.0-next.2
+  - @latticexyz/store-cache@2.0.0-next.2
+  - @latticexyz/recs@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Patch Changes

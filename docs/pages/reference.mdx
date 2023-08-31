@@ -35,3 +35,84 @@
   ```
   pnpm mud set-version --commit <hash> && pnpm install
   ```
+
+## Debugging
+
+### Onchain components
+
+#### Foundry debugging
+
+The MUD onchain components typically use the [Foundry development stack](https://book.getfoundry.sh/), meaning any of Foundry's debugging tools are available.
+Use this prodecure to view the output from [`anvil`](https://book.getfoundry.sh/reference/anvil/):
+
+1. Add `console.log` to your systems, edit their Solidity files.
+
+   - Import console.log.
+
+     ```solidity
+     import { console } from "forge-std/console.sol";
+     ```
+
+   - Add `console.log` statements inside your Solidity functions.
+
+     ```solidity
+     console.log("newValue:", newValue);
+     ```
+
+1. Run `anvil` manually.
+
+   ```sh
+   anvil -b 1 --base-fee 0 | uniq | tee anvil.log
+   ```
+
+   Note that due to a bug, there might be multiple copies of the same `console.log` message.
+   Piping through [`uniq`](https://man7.org/linux/man-pages/man1/uniq.1.html) helps reduce this issue.
+
+   You do not have to use `tee anvil.log`, but `anvil` logs so much that it is often useful to be able to look for information in the log file after it has scrolled off the screen.
+
+1. Edit `packages/contracts/package.json` to change the `scripts.dev` definition.
+
+   ```
+   "dev": "pnpm mud dev-contracts --rpc http://127.0.0.1:8545",
+   ```
+
+   Use `127.0.0.1`, there is a weird bug that makes it a problem to use `localhost` is some circumstances.
+
+1. Run `pnpm dev` normally.
+
+#### MUD dev tools
+
+You can also see what is happening from your application by enabling to MUD dev tools.
+To do so, add this code to the client side of your application:
+
+```javascript
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
+// https://vitejs.dev/guide/env-and-mode.html
+if (import.meta.env.DEV) {
+  const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+  mountDevTools({
+    config: mudConfig,
+    publicClient: network.publicClient,
+    walletClient: network.walletClient,
+    latestBlock$: network.latestBlock$,
+    blockStorageOperations$: network.blockStorageOperations$,
+    worldAddress: network.worldContract.address,
+    worldAbi: network.worldContract.abi,
+    write$: network.write$,
+    recsWorld: network.world,
+  });
+}
+```
+
+In the minimal application you get from `pnpm create mud@<version> <app>`, the MUD dev tools are already included.
+
+### Server components
+
+At present there is only one MUD server component, [the Indexer](/indexer).
+To produce debug outputs, specify the environment variable `DEBUG` before you start the indexer.
+
+| Information about                         | `DEBUG` value       |
+| ----------------------------------------- | ------------------- |
+| Synchronization with the onchain database | `mud:store-sync:*`  |
+| Requests for information from clients     | `mud:store-indexer` |
+| Everything                                | `mud:*`             |

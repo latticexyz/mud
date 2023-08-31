@@ -1,3 +1,4 @@
 export default {
-  add_system: "Add a system",
+  "add-table": "Add a table",
+  "add-system": "Add a system",
 };

@@ -1,5 +1,83 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies [[`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64), [`c14f8bf1`](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c), [`e3de1a33`](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1)]:
+  - @latticexyz/recs@2.0.0-next.4
+  - @latticexyz/react@2.0.0-next.4
+  - @latticexyz/store-sync@2.0.0-next.4
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+  - @latticexyz/utils@2.0.0-next.4
+  - @latticexyz/world@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- Updated dependencies [[`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57), [`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e), [`c32a9269`](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1), [`d5b73b12`](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd), [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db), [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab), [`3e024fcf`](https://github.com/latticexyz/mud/commit/3e024fcf395a1c1b38d12362fc98472290eb7cf1), [`0d12db8c`](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)]:
+  - @latticexyz/store@2.0.0-next.3
+  - @latticexyz/world@2.0.0-next.3
+  - @latticexyz/common@2.0.0-next.3
+  - @latticexyz/store-sync@2.0.0-next.3
+  - @latticexyz/react@2.0.0-next.3
+  - @latticexyz/recs@2.0.0-next.3
+  - @latticexyz/utils@2.0.0-next.3
+
+## 2.0.0-next.2
+
+### Major Changes
+
+- [#1284](https://github.com/latticexyz/mud/pull/1284) [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad) Thanks [@holic](https://github.com/holic)! - MUD dev tools is updated to latest sync stack. You must now pass in all of its data requirements rather than relying on magic globals.
+
+  ```diff
+  import { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+  - mountDevTools();
+  + mountDevTools({
+  +   config,
+  +   publicClient,
+  +   walletClient,
+  +   latestBlock$,
+  +   blockStorageOperations$,
+  +   worldAddress,
+  +   worldAbi,
+  +   write$,
+  +   // if you're using recs
+  +   recsWorld,
+  + });
+  ```
+
+  It's also advised to wrap dev tools so that it is only mounted during development mode. Here's how you do this with Vite:
+
+  ```ts
+  // https://vitejs.dev/guide/env-and-mode.html
+  if (import.meta.env.DEV) {
+    mountDevTools({ ... });
+  }
+  ```
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+- [#1240](https://github.com/latticexyz/mud/pull/1240) [`753bdce4`](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e) Thanks [@holic](https://github.com/holic)! - Store sync logic is now consolidated into a `createStoreSync` function exported from `@latticexyz/store-sync`. This simplifies each storage sync strategy to just a simple wrapper around the storage adapter. You can now sync to RECS with `syncToRecs` or SQLite with `syncToSqlite` and PostgreSQL support coming soon.
+
+  There are no breaking changes if you were just using `syncToRecs` from `@latticexyz/store-sync` or running the `sqlite-indexer` binary from `@latticexyz/store-indexer`.
+
+- [#1302](https://github.com/latticexyz/mud/pull/1302) [`5294a7d5`](https://github.com/latticexyz/mud/commit/5294a7d5983c52cb336373566afd6a8ec7fc4bfb) Thanks [@holic](https://github.com/holic)! - Improves support for internal/client-only RECS components
+
+- Updated dependencies [[`a2588116`](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062), [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`753bdce4`](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e), [`5294a7d5`](https://github.com/latticexyz/mud/commit/5294a7d5983c52cb336373566afd6a8ec7fc4bfb), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)]:
+  - @latticexyz/store@2.0.0-next.2
+  - @latticexyz/common@2.0.0-next.2
+  - @latticexyz/store-sync@2.0.0-next.2
+  - @latticexyz/world@2.0.0-next.2
+  - @latticexyz/react@2.0.0-next.2
+  - @latticexyz/recs@2.0.0-next.2
+  - @latticexyz/utils@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Patch Changes

@@ -36,10 +36,10 @@ tables: {
 ```solidity
 // Setting a record
 uint256[] memory fooArray = new uint256[](1);
-uint256[] memory barArray = new uint256[](2);
+uint256[2] memory barArray;
 barArray[0] = 69;
 barArray[1] = 85;
-fooArray[0] = 42
+fooArray[0] = 42;
 // args: key, foo, bar, fooArray, staticArray
 MyTable.set(keccak256("some.key"), 45, false, fooArray, barArray);
 ```
@@ -53,9 +53,9 @@ MyTable.setFoo(keccak256("some.key"), 33);
 MyTable.setBar(keccak256("some.key"), false);
 // Setting fooArray
 uint256[] memory fooArray = new uint256[](3);
-fooArray[0] = 42
-fooArray[1] = 15
-fooArray[2] = 3
+fooArray[0] = 42;
+fooArray[1] = 15;
+fooArray[2] = 3;
 MyTable.setFooArray(keccak256("some.key"), fooArray);
 ```
 

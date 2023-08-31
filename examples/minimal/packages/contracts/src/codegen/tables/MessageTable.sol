@@ -21,47 +21,40 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Messa
 bytes32 constant MessageTableTableId = _tableId;
 
 library MessageTable {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.STRING;
-
-    return SchemaLib.encode(_schema);
-  }
-
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](0);
 
     return SchemaLib.encode(_schema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "value";
-    return ("MessageTable", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.STRING;
+
+    return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](0);
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](1);
+    fieldNames[0] = "value";
   }
 
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Emit the ephemeral event using individual values */
@@ -70,7 +63,7 @@ library MessageTable {
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
@@ -79,20 +72,24 @@ library MessageTable {
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data);
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
   }
 
   /** Tightly pack full data using this table's schema */
   function encode(string memory value) internal pure returns (bytes memory) {
-    uint40[] memory _counters = new uint40[](1);
-    _counters[0] = uint40(bytes(value).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+    PackedCounter _encodedLengths;
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(bytes(value).length);
+    }
 
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple() internal pure returns (bytes32[] memory _keyTuple) {
-    _keyTuple = new bytes32[](0);
+  function encodeKeyTuple() internal pure returns (bytes32[] memory) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    return _keyTuple;
   }
 }

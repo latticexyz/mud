@@ -1,12 +1,12 @@
-import { EventsTable } from "../events/EventsTable";
-import { useStore } from "../useStore";
 import { NavButton } from "../NavButton";
+import { useDevToolsContext } from "../DevToolsContext";
+import { StorageOperationsTable } from "../events/StorageOperationsTable";
 
 export function EventsSummary() {
-  const events = useStore((state) => state.storeEvents.slice(-10));
+  const { storageOperations } = useDevToolsContext();
   return (
     <>
-      <EventsTable events={events} />
+      <StorageOperationsTable operations={storageOperations.slice(-10)} />
       <NavButton to="/events" className="block w-full bg-white/5 hover:bg-blue-700 hover:text-white">
         See more
       </NavButton>

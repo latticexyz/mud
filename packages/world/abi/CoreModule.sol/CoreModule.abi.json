@@ -2,6 +2,17 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "PackedCounter_InvalidLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "resourceSelector",
         "type": "string"
@@ -82,17 +93,17 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
       },
       {
-        "internalType": "string",
-        "name": "tableIdString",
-        "type": "string"
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
       }
     ],
-    "name": "StoreCore_TableAlreadyExists",
+    "name": "StoreCore_InvalidKeyNamesLength",
     "type": "error"
   },
   {
@@ -108,7 +119,7 @@
         "type": "string"
       }
     ],
-    "name": "StoreCore_TableNotFound",
+    "name": "StoreCore_TableAlreadyExists",
     "type": "error"
   },
   {

@@ -1,98 +1,102 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Bytes } from "./Bytes.sol";
-
-// - 7 bytes accumulated counter
-// - 5 bytes length per counter
+// - Last 7 bytes (uint56) are used for the total byte length of the dynamic data
+// - The next 5 byte (uint40) sections are used for the byte length of each field, indexed from right to left
 type PackedCounter is bytes32;
 
-using PackedCounterLib for PackedCounter global;
+using PackedCounterInstance for PackedCounter global;
 
+// Number of bits for the 7-byte accumulator
+uint256 constant ACC_BITS = 7 * 8;
+// Number of bits for the 5-byte sections
+uint256 constant VAL_BITS = 5 * 8;
+// Maximum value of a 5-byte section
+uint256 constant MAX_VAL = type(uint40).max;
+
+/**
+ * Static functions for PackedCounter
+ * The caller must ensure that the value arguments are <= MAX_VAL
+ */
 library PackedCounterLib {
-  /************************************************************************
-   *
-   *    STATIC FUNCTIONS
-   *
-   ************************************************************************/
-
-  /**
-   * Encode the given counters into a single packed counter
-   * - 7 bytes for the accumulated length
-   * - 5 bytes per counter -> max 5 counters
-   */
-  function pack(uint40[] memory counters) internal pure returns (PackedCounter) {
-    bytes32 packedCounter;
-    uint56 accumulator;
-
-    // Compute the sum of all counters
-    // and pack the counters
-    for (uint256 i; i < counters.length; ) {
-      packedCounter = Bytes.setBytes5(packedCounter, 7 + 5 * i, bytes5(counters[i]));
-      accumulator += counters[i];
-      unchecked {
-        i++;
-      }
+  function pack(uint256 a) internal pure returns (PackedCounter) {
+    uint256 packedCounter;
+    unchecked {
+      packedCounter = a;
+      packedCounter |= (uint256(a) << (ACC_BITS + VAL_BITS * 0));
     }
-
-    // Store total length
-    packedCounter = Bytes.setBytes7(packedCounter, 0, bytes7(accumulator));
-
-    return PackedCounter.wrap(packedCounter);
+    return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  // Overrides for pack function
-  function pack(uint40 a) internal pure returns (PackedCounter) {
-    uint40[] memory counters = new uint40[](1);
-    counters[0] = a;
-    return pack(counters);
+  function pack(uint256 a, uint256 b) internal pure returns (PackedCounter) {
+    uint256 packedCounter;
+    unchecked {
+      packedCounter = a + b;
+      packedCounter |= (uint256(a) << (ACC_BITS + VAL_BITS * 0));
+      packedCounter |= (uint256(b) << (ACC_BITS + VAL_BITS * 1));
+    }
+    return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b) internal pure returns (PackedCounter) {
-    uint40[] memory counters = new uint40[](2);
-    counters[0] = a;
-    counters[1] = b;
-    return pack(counters);
+  function pack(uint256 a, uint256 b, uint256 c) internal pure returns (PackedCounter) {
+    uint256 packedCounter;
+    unchecked {
+      packedCounter = a + b + c;
+      packedCounter |= (uint256(a) << (ACC_BITS + VAL_BITS * 0));
+      packedCounter |= (uint256(b) << (ACC_BITS + VAL_BITS * 1));
+      packedCounter |= (uint256(c) << (ACC_BITS + VAL_BITS * 2));
+    }
+    return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b, uint40 c) internal pure returns (PackedCounter) {
-    uint40[] memory counters = new uint40[](3);
-    counters[0] = a;
-    counters[1] = b;
-    counters[2] = c;
-    return pack(counters);
+  function pack(uint256 a, uint256 b, uint256 c, uint256 d) internal pure returns (PackedCounter) {
+    uint256 packedCounter;
+    unchecked {
+      packedCounter = a + b + c + d;
+      packedCounter |= (uint256(a) << (ACC_BITS + VAL_BITS * 0));
+      packedCounter |= (uint256(b) << (ACC_BITS + VAL_BITS * 1));
+      packedCounter |= (uint256(c) << (ACC_BITS + VAL_BITS * 2));
+      packedCounter |= (uint256(d) << (ACC_BITS + VAL_BITS * 3));
+    }
+    return PackedCounter.wrap(bytes32(packedCounter));
   }
 
-  function pack(uint40 a, uint40 b, uint40 c, uint40 d) internal pure returns (PackedCounter) {
-    uint40[] memory counters = new uint40[](4);
-    counters[0] = a;
-    counters[1] = b;
-    counters[2] = c;
-    counters[3] = d;
-    return pack(counters);
+  function pack(uint256 a, uint256 b, uint256 c, uint256 d, uint256 e) internal pure returns (PackedCounter) {
+    uint256 packedCounter;
+    unchecked {
+      packedCounter = a + b + c + d + e;
+      packedCounter |= (uint256(a) << (ACC_BITS + VAL_BITS * 0));
+      packedCounter |= (uint256(b) << (ACC_BITS + VAL_BITS * 1));
+      packedCounter |= (uint256(c) << (ACC_BITS + VAL_BITS * 2));
+      packedCounter |= (uint256(d) << (ACC_BITS + VAL_BITS * 3));
+      packedCounter |= (uint256(e) << (ACC_BITS + VAL_BITS * 4));
+    }
+    return PackedCounter.wrap(bytes32(packedCounter));
   }
+}
 
-  /************************************************************************
-   *
-   *    INSTANCE FUNCTIONS
-   *
-   ************************************************************************/
+/**
+ * Instance functions for PackedCounter
+ */
+library PackedCounterInstance {
+  error PackedCounter_InvalidLength(uint256 length);
 
   /**
    * Decode the accumulated counter
-   * (first 7 bytes of packed counter)
+   * (right-most 7 bytes of packed counter)
    */
   function total(PackedCounter packedCounter) internal pure returns (uint256) {
-    return uint256(uint56(bytes7(PackedCounter.unwrap(packedCounter))));
+    return uint56(uint256(PackedCounter.unwrap(packedCounter)));
   }
 
   /**
    * Decode the counter at the given index
-   * (5 bytes per counter after the first 7 bytes)
+   * (right-to-left, 5 bytes per counter after the right-most 7 bytes)
    */
-  function atIndex(PackedCounter packedCounter, uint256 index) internal pure returns (uint256) {
-    uint256 offset = 7 + index * 5;
-    return uint256(uint40(Bytes.slice5(PackedCounter.unwrap(packedCounter), offset)));
+  function atIndex(PackedCounter packedCounter, uint8 index) internal pure returns (uint256) {
+    unchecked {
+      return uint40(uint256(PackedCounter.unwrap(packedCounter) >> (ACC_BITS + VAL_BITS * index)));
+    }
   }
 
   /**
@@ -100,28 +104,44 @@ library PackedCounterLib {
    */
   function setAtIndex(
     PackedCounter packedCounter,
-    uint256 index,
+    uint8 index,
     uint256 newValueAtIndex
   ) internal pure returns (PackedCounter) {
-    bytes32 rawPackedCounter = PackedCounter.unwrap(packedCounter);
+    if (newValueAtIndex > MAX_VAL) {
+      revert PackedCounter_InvalidLength(newValueAtIndex);
+    }
+
+    uint256 rawPackedCounter = uint256(PackedCounter.unwrap(packedCounter));
 
     // Get current lengths (total and at index)
     uint256 accumulator = total(packedCounter);
-    uint256 currentValueAtIndex = atIndex(packedCounter, uint8(index));
+    uint256 currentValueAtIndex = atIndex(packedCounter, index);
 
     // Compute the difference and update the total value
-    if (newValueAtIndex >= currentValueAtIndex) {
-      accumulator += newValueAtIndex - currentValueAtIndex;
-    } else {
-      accumulator -= currentValueAtIndex - newValueAtIndex;
+    unchecked {
+      if (newValueAtIndex >= currentValueAtIndex) {
+        accumulator += newValueAtIndex - currentValueAtIndex;
+      } else {
+        accumulator -= currentValueAtIndex - newValueAtIndex;
+      }
     }
 
     // Set the new accumulated value and value at index
-    uint256 offset = 7 + index * 5; // (7 bytes total length, 5 bytes per dynamic schema)
-    rawPackedCounter = Bytes.setBytes7(rawPackedCounter, 0, bytes7(uint56(accumulator)));
-    rawPackedCounter = Bytes.setBytes5(rawPackedCounter, offset, bytes5(uint40(newValueAtIndex)));
+    // (7 bytes total length, 5 bytes per dynamic schema)
+    uint256 offset;
+    unchecked {
+      offset = ACC_BITS + VAL_BITS * index;
+    }
+    // Bitmask with 1s at the 5 bytes that form the value slot at the given index
+    uint256 mask = uint256(type(uint40).max) << offset;
 
-    return PackedCounter.wrap(rawPackedCounter);
+    // First set the last 7 bytes to 0, then set them to the new length
+    rawPackedCounter = (rawPackedCounter & ~uint256(type(uint56).max)) | accumulator;
+
+    // Zero out the value slot at the given index, then set the new value
+    rawPackedCounter = (rawPackedCounter & ~mask) | ((newValueAtIndex << offset) & mask);
+
+    return PackedCounter.wrap(bytes32(rawPackedCounter));
   }
 
   /*

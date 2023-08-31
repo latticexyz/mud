@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.4
+
+## 2.0.0-next.3
+
+## 2.0.0-next.2
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
 ## 2.0.0-next.1
 
 ### Minor Changes

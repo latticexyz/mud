@@ -14,17 +14,17 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
 
   function testRegisterAndGetSchema() public {
     startGasReport("register Mixed schema");
-    Mixed.registerSchema();
+    Mixed.register();
     endGasReport();
 
-    Schema registeredSchema = StoreCore.getSchema(MixedTableId);
-    Schema declaredSchema = Mixed.getSchema();
+    Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
+    Schema declaredSchema = Mixed.getValueSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
 
   function testSetAndGet() public {
-    Mixed.registerSchema();
+    Mixed.register();
     bytes32 key = keccak256("somekey");
 
     uint32[] memory a32 = new uint32[](2);
@@ -65,7 +65,7 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
 
     assertEq(
       Mixed.encode(1, 2, a32, s),
-      hex"0000000100000000000000000000000000000002000000000000130000000008000000000b0000000000000000000000000000000000000300000004736f6d6520737472696e67"
+      hex"0000000100000000000000000000000000000002000000000000000000000000000000000000000b0000000008000000000000130000000300000004736f6d6520737472696e67"
     );
   }
 }

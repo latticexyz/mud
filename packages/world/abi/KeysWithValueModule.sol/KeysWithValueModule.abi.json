@@ -2,6 +2,17 @@
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "length",
+        "type": "uint256"
+      }
+    ],
+    "name": "PackedCounter_InvalidLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "resourceSelector",
         "type": "string"
@@ -50,22 +61,6 @@
   {
     "inputs": [],
     "name": "StoreCore_NotDynamicField",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "tableId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "tableIdString",
-        "type": "string"
-      }
-    ],
-    "name": "StoreCore_TableNotFound",
     "type": "error"
   },
   {

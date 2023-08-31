@@ -1,17 +1,15 @@
 import { createPublicClient, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
-import { createFaucetService } from "@latticexyz/network";
+import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
-import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import storeConfig from "contracts/mud.config";
 import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
-  const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
 
   const clientOptions = {
@@ -19,8 +17,6 @@ export async function setupNetwork() {
     transport: transportObserver(http(networkConfig.rpcHttpUrl ?? undefined)),
     pollingInterval: 1000,
   } as const satisfies ClientConfig;
-
-  console.log("client options", clientOptions);
 
   const publicClient = createPublicClient(clientOptions);
 
@@ -39,10 +35,9 @@ export async function setupNetwork() {
 
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
     world,
-    config: storeConfig,
+    config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
-    components: contractComponents,
     startBlock: BigInt(networkConfig.initialBlockNumber),
     indexerUrl: networkConfig.indexerUrl ?? undefined,
   });

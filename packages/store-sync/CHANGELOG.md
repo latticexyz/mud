@@ -1,5 +1,131 @@
 # @latticexyz/store-sync
 
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies [[`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64), [`c14f8bf1`](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c)]:
+  - @latticexyz/recs@2.0.0-next.4
+  - @latticexyz/block-logs-stream@2.0.0-next.4
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/protocol-parser@2.0.0-next.4
+  - @latticexyz/schema-type@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+  - @latticexyz/world@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Major Changes
+
+- [#1231](https://github.com/latticexyz/mud/pull/1231) [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db) Thanks [@dk1a](https://github.com/dk1a)! - Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- [#1182](https://github.com/latticexyz/mud/pull/1182) [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab) Thanks [@alvrs](https://github.com/alvrs)! - - `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+
+  - `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+    ```diff
+    -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+    -
+    -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+    +  function registerTable(
+    +    bytes32 table,
+    +    Schema keySchema,
+    +    Schema valueSchema,
+    +    string[] calldata keyNames,
+    +    string[] calldata fieldNames
+    +  ) external;
+    ```
+
+  - `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+  - The `getSchema` method is renamed to `getValueSchema` on all interfaces
+    ```diff
+    - function getSchema(bytes32 table) external view returns (Schema schema);
+    + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+    ```
+  - The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+### Patch Changes
+
+- [#1315](https://github.com/latticexyz/mud/pull/1315) [`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e) Thanks [@holic](https://github.com/holic)! - Initial sync from indexer no longer blocks the promise returning from `createStoreSync`, `syncToRecs`, and `syncToSqlite`. This should help with rendering loading screens using the `SyncProgress` RECS component and avoid the long flashes of no content in templates.
+
+  By default, `syncToRecs` and `syncToSqlite` will start syncing (via observable subscription) immediately after called.
+
+  If your app needs to control when syncing starts, you can use the `startSync: false` option and then `blockStoreOperations$.subscribe()` to start the sync yourself. Just be sure to unsubscribe to avoid memory leaks.
+
+  ```ts
+  const { blockStorageOperations$ } = syncToRecs({
+    ...
+    startSync: false,
+  });
+
+  // start sync manually by subscribing to `blockStorageOperation# @latticexyz/store-sync
+  const subcription = blockStorageOperation$.subscribe();
+
+  // clean up subscription
+  subscription.unsubscribe();
+  ```
+
+- [#1317](https://github.com/latticexyz/mud/pull/1317) [`3e024fcf`](https://github.com/latticexyz/mud/commit/3e024fcf395a1c1b38d12362fc98472290eb7cf1) Thanks [@holic](https://github.com/holic)! - add retry attempts and more logging to `waitForTransaction`
+
+- Updated dependencies [[`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57), [`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e), [`c32a9269`](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1), [`d5b73b12`](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd), [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db), [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab), [`0d12db8c`](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)]:
+  - @latticexyz/store@2.0.0-next.3
+  - @latticexyz/world@2.0.0-next.3
+  - @latticexyz/common@2.0.0-next.3
+  - @latticexyz/protocol-parser@2.0.0-next.3
+  - @latticexyz/block-logs-stream@2.0.0-next.3
+  - @latticexyz/recs@2.0.0-next.3
+  - @latticexyz/schema-type@2.0.0-next.3
+
+## 2.0.0-next.2
+
+### Major Changes
+
+- [#1278](https://github.com/latticexyz/mud/pull/1278) [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473) Thanks [@holic](https://github.com/holic)! - RECS components are now dynamically created and inferred from your MUD config when using `syncToRecs`.
+
+  To migrate existing projects after upgrading to this MUD version:
+
+  1. Remove `contractComponents.ts` from `client/src/mud`
+  2. Remove `components` argument from `syncToRecs`
+  3. Update `build:mud` and `dev` scripts in `contracts/package.json` to remove tsgen
+
+     ```diff
+     - "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+     + "build:mud": "mud tablegen && mud worldgen",
+     ```
+
+     ```diff
+     - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+     + "dev": "pnpm mud dev-contracts",
+     ```
+
+### Minor Changes
+
+- [#1240](https://github.com/latticexyz/mud/pull/1240) [`753bdce4`](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e) Thanks [@holic](https://github.com/holic)! - Store sync logic is now consolidated into a `createStoreSync` function exported from `@latticexyz/store-sync`. This simplifies each storage sync strategy to just a simple wrapper around the storage adapter. You can now sync to RECS with `syncToRecs` or SQLite with `syncToSqlite` and PostgreSQL support coming soon.
+
+  There are no breaking changes if you were just using `syncToRecs` from `@latticexyz/store-sync` or running the `sqlite-indexer` binary from `@latticexyz/store-indexer`.
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+- [#1302](https://github.com/latticexyz/mud/pull/1302) [`5294a7d5`](https://github.com/latticexyz/mud/commit/5294a7d5983c52cb336373566afd6a8ec7fc4bfb) Thanks [@holic](https://github.com/holic)! - Improves support for internal/client-only RECS components
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - remove usages of `isNonPendingBlock` and `isNonPendingLog` (fixed with more specific viem types)
+
+- Updated dependencies [[`a2588116`](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062), [`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`48c51b52`](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)]:
+  - @latticexyz/store@2.0.0-next.2
+  - @latticexyz/common@2.0.0-next.2
+  - @latticexyz/world@2.0.0-next.2
+  - @latticexyz/block-logs-stream@2.0.0-next.2
+  - @latticexyz/protocol-parser@2.0.0-next.2
+  - @latticexyz/schema-type@2.0.0-next.2
+  - @latticexyz/recs@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Major Changes

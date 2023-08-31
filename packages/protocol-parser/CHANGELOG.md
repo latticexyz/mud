@@ -1,5 +1,39 @@
 # @latticexyz/protocol-parser
 
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/schema-type@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Major Changes
+
+- [#1231](https://github.com/latticexyz/mud/pull/1231) [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db) Thanks [@dk1a](https://github.com/dk1a)! - Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+### Patch Changes
+
+- Updated dependencies [[`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)]:
+  - @latticexyz/common@2.0.0-next.3
+  - @latticexyz/schema-type@2.0.0-next.3
+
+## 2.0.0-next.2
+
+### Patch Changes
+
+- [#1308](https://github.com/latticexyz/mud/pull/1308) [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39) Thanks [@holic](https://github.com/holic)! - bump viem to 1.6.0
+
+- Updated dependencies [[`939916bc`](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39), [`b8a6158d`](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)]:
+  - @latticexyz/common@2.0.0-next.2
+  - @latticexyz/schema-type@2.0.0-next.2
+
 ## 2.0.0-next.1
 
 ### Patch Changes

@@ -1,3 +1,377 @@
+# Version 2.0.0-next.4
+
+## Major changes
+
+**[docs: changeset for deleted network package (#1348)](https://github.com/latticexyz/mud/commit/42c7d898630c93805a5e345bdc8d87c2674b5110)** (@latticexyz/network)
+
+Removes `network` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
+
+**[chore: delete std-contracts package (#1341)](https://github.com/latticexyz/mud/commit/c32c8e8f2ccac02c4242f715f296bffd5465bd71)** (@latticexyz/cli, @latticexyz/std-contracts)
+
+Removes `std-contracts` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+**[chore: delete solecs package (#1340)](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64)** (@latticexyz/cli, @latticexyz/recs, @latticexyz/solecs, @latticexyz/std-client)
+
+Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+**[feat(recs,std-client): move action system to recs (#1351)](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c)** (@latticexyz/recs, @latticexyz/std-client)
+
+- Moved `createActionSystem` from `std-client` to `recs` package and updated it to better support v2 sync stack.
+
+  If you want to use `createActionSystem` alongside `syncToRecs`, you'll need to pass in arguments like so:
+
+  ```ts
+  import { syncToRecs } from "@latticexyz/store-sync/recs";
+  import { createActionSystem } from "@latticexyz/recs/deprecated";
+  import { from, mergeMap } from "rxjs";
+
+  const { blockLogsStorage$, waitForTransaction } = syncToRecs({
+    world,
+    ...
+  });
+
+  const txReduced$ = blockLogsStorage$.pipe(
+    mergeMap(({ operations }) => from(operations.map((op) => op.log?.transactionHash).filter(isDefined)))
+  );
+
+  const actionSystem = createActionSystem(world, txReduced$, waitForTransaction);
+  ```
+
+- Fixed a bug in `waitForComponentValueIn` that caused the promise to not resolve if the component value was already set when the function was called.
+
+- Fixed a bug in `createActionSystem` that caused optimistic updates to be incorrectly propagated to requirement checks. To fix the bug, you must now pass in the full component object to the action's `updates` instead of just the component name.
+
+  ```diff
+    actions.add({
+      updates: () => [
+        {
+  -       component: "Resource",
+  +       component: Resource,
+          ...
+        }
+      ],
+      ...
+    });
+  ```
+
+**[chore: delete std-client package (#1342)](https://github.com/latticexyz/mud/commit/c03aff39e9882c8a827a3ed1ee81816231973816)** (@latticexyz/std-client)
+
+Removes `std-client` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
+
+**[chore: delete ecs-browser package (#1339)](https://github.com/latticexyz/mud/commit/6255a314240b1d36a8735f3dc7eb1672e16bac1a)** (@latticexyz/ecs-browser)
+
+Removes `ecs-browser` package. This has now been replaced by `dev-tools`, which comes out-of-the-box when creating a new MUD app from the templates (`pnpm create mud@next your-app-name`). We'll be adding deeper RECS support (querying for entities) in a future release.
+
+**[chore: delete store-cache package (#1343)](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1)** (@latticexyz/store-cache)
+
+Removes `store-cache` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
+
+If you need reactivity, we recommend using `recs` package and `syncToRecs`. We'll be adding reactivity to `syncToSqlite` in a future release.
+
+**[chore: delete store-cache package (#1343)](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1)** (@latticexyz/react)
+
+Removes `useRow` and `useRows` hooks, previously powered by `store-cache`, which is now deprecated. Please use `recs` and the corresponding `useEntityQuery` and `useComponentValue` hooks. We'll have more hooks soon for SQL.js sync backends.
+
+---
+
+# Version 2.0.0-next.3
+
+## Major changes
+
+**[feat(world, store): stop loading schema from storage, require schema as an argument (#1174)](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world, create-mud)
+
+All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
+This decreases gas cost and removes circular dependencies of the Schema table (where it was not possible to write to the Schema table before the Schema table was registered).
+
+```diff
+  function setRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata data,
++   Schema valueSchema
+  ) external;
+```
+
+The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
+
+This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
+so downstream projects only need to regenerate their table libraries after updating MUD.
+
+**[refactor(world): combine name and namespace to resource selector in World methods (#1208)](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c)** (@latticexyz/cli, @latticexyz/world)
+
+- All `World` function selectors that previously had `bytes16 namespace, bytes16 name` arguments now use `bytes32 resourceSelector` instead.
+  This includes `setRecord`, `setField`, `pushToField`, `popFromField`, `updateInField`, `deleteRecord`, `call`, `grantAccess`, `revokeAccess`, `registerTable`,
+  `registerStoreHook`, `registerSystemHook`, `registerFunctionSelector`, `registerSystem` and `registerRootFunctionSelector`.
+  This change aligns the `World` function selectors with the `Store` function selectors, reduces clutter, reduces gas cost and reduces the `World`'s contract size.
+
+- The `World`'s `registerHook` function is removed. Use `registerStoreHook` or `registerSystemHook` instead.
+
+- The `deploy` script is updated to integrate the World interface changes
+
+**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/world)
+
+The `SnapSyncModule` is removed. The recommended way of loading the initial state of a MUD app is via the new [`store-indexer`](https://mud.dev/indexer). Loading state via contract getter functions is not recommended, as it's computationally heavy on the RPC, can't be cached, and is an easy way to shoot yourself in the foot with exploding RPC costs.
+
+The `@latticexyz/network` package was deprecated and is now removed. All consumers should upgrade to the new sync stack from `@latticexyz/store-sync`.
+
+**[refactor(store): optimize PackedCounter (#1231)](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db)** (@latticexyz/cli, @latticexyz/protocol-parser, @latticexyz/services, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world)
+
+Reverse PackedCounter encoding, to optimize gas for bitshifts.
+Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+- Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+- New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+**[feat(store,world): combine schema and metadata registration, rename getSchema to getValueSchema, change Schema table id (#1182)](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world, @latticexyz/store-sync, create-mud)
+
+- `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+- `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+  ```diff
+  -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+  -
+  -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+  +  function registerTable(
+  +    bytes32 table,
+  +    Schema keySchema,
+  +    Schema valueSchema,
+  +    string[] calldata keyNames,
+  +    string[] calldata fieldNames
+  +  ) external;
+  ```
+
+- `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+- The `getSchema` method is renamed to `getValueSchema` on all interfaces
+  ```diff
+  - function getSchema(bytes32 table) external view returns (Schema schema);
+  + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+  ```
+- The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/services, create-mud)
+
+Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.
+
+```diff
+- import { createFaucetService } from "@latticexyz/network";
++ import { createFaucetService } from "@latticexyz/services/faucet";
+```
+
+**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/std-client, @latticexyz/common, create-mud)
+
+Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
+
+- `getBurnerWallet` is replaced by `getBurnerPrivateKey` from `@latticexyz/common`. It now returns a `Hex` string instead of an `rxjs` `BehaviorSubject`.
+
+  ```
+  - import { getBurnerWallet } from "@latticexyz/std-client";
+  + import { getBurnerPrivateKey } from "@latticexyz/common";
+
+  - const privateKey = getBurnerWallet().value;
+  - const privateKey = getBurnerPrivateKey();
+  ```
+
+- All functions from `std-client` that depended on v1 network code are removed (most notably `setupMUDNetwork` and `setupMUDV2Network`). Consumers should upgrade to v2 networking code from `@latticexyz/store-sync`.
+
+- The following functions are removed from `std-client` because they are very use-case specific and depend on deprecated code: `getCurrentTurn`, `getTurnAtTime`, `getGameConfig`, `isUntraversable`, `getPlayerEntity`, `resolveRelationshipChain`, `findEntityWithComponentInRelationshipChain`, `findInRelationshipChain`. Consumers should vendor these functions if they are still needed.
+
+- Remaining exports from `std-client` are moved to `/deprecated`. The package will be removed in a future release (once there are replacements for the deprecated exports).
+
+  ```diff
+  - import { ... } from "@latticexyz/std-client";
+  + import { ... } from "@latticexyz/std-client/deprecated";
+  ```
+
+## Patch changes
+
+**[feat(common,store-sync): improve initial sync to not block returned promise (#1315)](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e)** (@latticexyz/common, @latticexyz/store-sync)
+
+Initial sync from indexer no longer blocks the promise returning from `createStoreSync`, `syncToRecs`, and `syncToSqlite`. This should help with rendering loading screens using the `SyncProgress` RECS component and avoid the long flashes of no content in templates.
+
+By default, `syncToRecs` and `syncToSqlite` will start syncing (via observable subscription) immediately after called.
+
+If your app needs to control when syncing starts, you can use the `startSync: false` option and then `blockStoreOperations$.subscribe()` to start the sync yourself. Just be sure to unsubscribe to avoid memory leaks.
+
+```ts
+const { blockStorageOperations$ } = syncToRecs({
+  ...
+  startSync: false,
+});
+
+// start sync manually by subscribing to `blockStorageOperation$`
+const subcription = blockStorageOperation$.subscribe();
+
+// clean up subscription
+subscription.unsubscribe();
+```
+
+**[refactor(store): optimize table libraries (#1303)](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd)** (@latticexyz/store)
+
+Optimize autogenerated table libraries
+
+**[feat(store-sync): add more logging to waitForTransaction (#1317)](https://github.com/latticexyz/mud/commit/3e024fcf395a1c1b38d12362fc98472290eb7cf1)** (@latticexyz/store-sync)
+
+add retry attempts and more logging to `waitForTransaction`
+
+**[refactor(store): optimize Schema (#1252)](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61)** (@latticexyz/store, @latticexyz/world)
+
+Optimize Schema methods.
+Return `uint256` instead of `uint8` in SchemaInstance numFields methods
+
+---
+
+# Version 2.0.0-next.2
+
+## Major changes
+
+**[feat(store-indexer): use fastify, move trpc to /trpc (#1232)](https://github.com/latticexyz/mud/commit/b621fb97731a0ceed9b67d741f40648a8aa64817)** (@latticexyz/store-indexer)
+
+Adds a [Fastify](https://fastify.dev/) server in front of tRPC and puts tRPC endpoints under `/trpc` to make way for other top-level endpoints (e.g. [tRPC panel](https://github.com/iway1/trpc-panel) or other API frontends like REST or gRPC).
+
+If you're using `@latticexyz/store-sync` packages with an indexer (either `createIndexerClient` or `indexerUrl` argument of `syncToRecs`), then you'll want to update your indexer URL:
+
+```diff
+ createIndexerClient({
+-  url: "https://indexer.dev.linfra.xyz",
++  url: "https://indexer.dev.linfra.xyz/trpc",
+ });
+```
+
+```diff
+ syncToRecs({
+   ...
+-  indexerUrl: "https://indexer.dev.linfra.xyz",
++  indexerUrl: "https://indexer.dev.linfra.xyz/trpc",
+ });
+```
+
+**[refactor(store): remove TableId library (#1279)](https://github.com/latticexyz/mud/commit/a25881160cb3283e11d218be7b8a9fe38ee83062)** (@latticexyz/store)
+
+Remove `TableId` library to simplify `store` package
+
+**[feat(create-mud): infer recs components from config (#1278)](https://github.com/latticexyz/mud/commit/48c51b52acab147a2ed97903c43bafa9b6769473)** (@latticexyz/cli, @latticexyz/std-client, @latticexyz/store-sync, @latticexyz/store, @latticexyz/world, create-mud)
+
+RECS components are now dynamically created and inferred from your MUD config when using `syncToRecs`.
+
+To migrate existing projects after upgrading to this MUD version:
+
+1. Remove `contractComponents.ts` from `client/src/mud`
+2. Remove `components` argument from `syncToRecs`
+3. Update `build:mud` and `dev` scripts in `contracts/package.json` to remove tsgen
+
+   ```diff
+   - "build:mud": "mud tablegen && mud worldgen && mud tsgen --configPath mud.config.ts --out ../client/src/mud",
+   + "build:mud": "mud tablegen && mud worldgen",
+   ```
+
+   ```diff
+   - "dev": "pnpm mud dev-contracts --tsgenOutput ../client/src/mud",
+   + "dev": "pnpm mud dev-contracts",
+   ```
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/block-logs-stream)
+
+- removes our own `getLogs` function now that viem's `getLogs` supports using multiple `events` per RPC call.
+- removes `isNonPendingBlock` and `isNonPendingLog` helpers now that viem narrows `Block` and `Log` types based on inputs
+- simplifies `groupLogsByBlockNumber` types and tests
+
+**[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/dev-tools, create-mud)
+
+MUD dev tools is updated to latest sync stack. You must now pass in all of its data requirements rather than relying on magic globals.
+
+```diff
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
+
+- mountDevTools();
++ mountDevTools({
++   config,
++   publicClient,
++   walletClient,
++   latestBlock$,
++   blockStorageOperations$,
++   worldAddress,
++   worldAbi,
++   write$,
++   // if you're using recs
++   recsWorld,
++ });
+```
+
+It's also advised to wrap dev tools so that it is only mounted during development mode. Here's how you do this with Vite:
+
+```ts
+// https://vitejs.dev/guide/env-and-mode.html
+if (import.meta.env.DEV) {
+  mountDevTools({ ... });
+}
+```
+
+## Minor changes
+
+**[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/common)
+
+`createContract` now has an `onWrite` callback so you can observe writes. This is useful for wiring up the transanction log in MUD dev tools.
+
+```ts
+import { createContract, ContractWrite } from "@latticexyz/common";
+import { Subject } from "rxjs";
+
+const write$ = new Subject<ContractWrite>();
+creactContract({
+  ...
+  onWrite: (write) => write$.next(write),
+});
+```
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/common)
+
+- adds `defaultPriorityFee` to `mudFoundry` for better support with MUD's default anvil config and removes workaround in `createContract`
+- improves nonce error detection using viem's custom errors
+
+**[feat(store-sync,store-indexer): consolidate sync logic, add syncToSqlite (#1240)](https://github.com/latticexyz/mud/commit/753bdce41597200641daba60727ff1b53d2b512e)** (@latticexyz/dev-tools, @latticexyz/store-indexer, @latticexyz/store-sync)
+
+Store sync logic is now consolidated into a `createStoreSync` function exported from `@latticexyz/store-sync`. This simplifies each storage sync strategy to just a simple wrapper around the storage adapter. You can now sync to RECS with `syncToRecs` or SQLite with `syncToSqlite` and PostgreSQL support coming soon.
+
+There are no breaking changes if you were just using `syncToRecs` from `@latticexyz/store-sync` or running the `sqlite-indexer` binary from `@latticexyz/store-indexer`.
+
+**[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/react)
+
+Adds a `usePromise` hook that returns a [native `PromiseSettledResult` object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+
+```tsx
+const promise = fetch(url);
+const result = usePromise(promise);
+
+if (result.status === "idle" || result.status === "pending") {
+  return <>fetching</>;
+}
+
+if (result.status === "rejected") {
+  return <>error fetching: {String(result.reason)}</>;
+}
+
+if (result.status === "fulfilled") {
+  return <>fetch status: {result.value.status}</>;
+}
+```
+
+## Patch changes
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/dev-tools, @latticexyz/network, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/std-client, @latticexyz/store-indexer, @latticexyz/store-sync, create-mud)
+
+bump viem to 1.6.0
+
+**[feat(dev-tools): improve support for non-store recs components (#1302)](https://github.com/latticexyz/mud/commit/5294a7d5983c52cb336373566afd6a8ec7fc4bfb)** (@latticexyz/dev-tools, @latticexyz/store-sync)
+
+Improves support for internal/client-only RECS components
+
+**[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/store-sync)
+
+remove usages of `isNonPendingBlock` and `isNonPendingLog` (fixed with more specific viem types)
+
+---
+
 # Version 2.0.0-next.1
 
 ## Major changes

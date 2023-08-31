@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.0-next.1",
+  "version": "2.0.0-next.4",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -13,10 +13,9 @@
     ".": "./dist/ts/library/index.js",
     "./register": "./dist/ts/register/index.js",
     "./node": "./dist/ts/node/index.js",
-    "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*",
     "./types/*": "./types/*",
-    "./snapsync": "./dist/ts/plugins/snapsync/index.js"
+    "./*": "./dist/*"
   },
   "typesVersions": {
     "*": {
@@ -28,9 +27,6 @@
       ],
       "node": [
         "./ts/node/index.ts"
-      ],
-      "snapsync": [
-        "./ts/plugins/snapsync/index.ts"
       ]
     }
   },
@@ -62,7 +58,6 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@latticexyz/std-contracts": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",

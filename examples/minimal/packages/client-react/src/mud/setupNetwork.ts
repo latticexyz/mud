@@ -1,17 +1,16 @@
 import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
-import { createFaucetService } from "@latticexyz/network";
+import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
-import { defineContractComponents } from "./contractComponents";
 import { world } from "./world";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import storeConfig from "contracts/mud.config";
-import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+import { ContractWrite, createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
+import { Subject, share } from "rxjs";
+import mudConfig from "contracts/mud.config";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
-  const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
 
   const clientOptions = {
@@ -28,12 +27,20 @@ export async function setupNetwork() {
     account: burnerAccount,
   });
 
+  const write$ = new Subject<ContractWrite>();
+  const worldContract = createContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorld__factory.abi,
+    publicClient,
+    walletClient: burnerWalletClient,
+    onWrite: (write) => write$.next(write),
+  });
+
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
     world,
-    config: storeConfig,
+    config: mudConfig,
     address: networkConfig.worldAddress as Hex,
     publicClient,
-    components: contractComponents,
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });
 
@@ -70,11 +77,7 @@ export async function setupNetwork() {
     latestBlock$,
     blockStorageOperations$,
     waitForTransaction,
-    worldContract: createContract({
-      address: networkConfig.worldAddress as Hex,
-      abi: IWorld__factory.abi,
-      publicClient,
-      walletClient: burnerWalletClient,
-    }),
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
   };
 }

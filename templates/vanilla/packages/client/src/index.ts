@@ -1,9 +1,10 @@
-import { mount as mountDevTools } from "@latticexyz/dev-tools";
 import { setup } from "./mud/setup";
+import mudConfig from "contracts/mud.config";
 
 const {
   components,
   systemCalls: { increment },
+  network,
 } = await setup();
 
 // Components expose a stream that triggers when the component is updated.
@@ -19,4 +20,18 @@ components.Counter.update$.subscribe((update) => {
   console.log("new counter value:", await increment());
 };
 
-mountDevTools();
+// https://vitejs.dev/guide/env-and-mode.html
+if (import.meta.env.DEV) {
+  const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
+  mountDevTools({
+    config: mudConfig,
+    publicClient: network.publicClient,
+    walletClient: network.walletClient,
+    latestBlock$: network.latestBlock$,
+    blockStorageOperations$: network.blockStorageOperations$,
+    worldAddress: network.worldContract.address,
+    worldAbi: network.worldContract.abi,
+    write$: network.write$,
+    recsWorld: network.world,
+  });
+}

@@ -2,14 +2,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "address",
@@ -25,14 +20,9 @@
   {
     "inputs": [
       {
-        "internalType": "bytes16",
-        "name": "namespace",
-        "type": "bytes16"
-      },
-      {
-        "internalType": "bytes16",
-        "name": "name",
-        "type": "bytes16"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "address",

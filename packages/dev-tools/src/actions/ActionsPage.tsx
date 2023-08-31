@@ -1,9 +1,10 @@
 import { useRef, useEffect } from "react";
-import { useStore } from "../useStore";
-import { TransactionSummary } from "./TransactionSummary";
+import { WriteSummary } from "./WriteSummary";
+import { useDevToolsContext } from "../DevToolsContext";
 
 export function ActionsPage() {
-  const transactions = useStore((state) => state.transactions);
+  const { writes } = useDevToolsContext();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const scrollBehaviorRef = useRef<ScrollBehavior>("auto");
@@ -13,7 +14,7 @@ export function ActionsPage() {
       containerRef.current?.scrollIntoView({ behavior: scrollBehaviorRef.current, block: "end" });
     }
     scrollBehaviorRef.current = "smooth";
-  }, [transactions]);
+  }, [writes]);
 
   return (
     <div
@@ -26,8 +27,8 @@ export function ActionsPage() {
         hoveredRef.current = false;
       }}
     >
-      {transactions.length ? (
-        transactions.map((hash) => <TransactionSummary key={hash} hash={hash} />)
+      {writes.length ? (
+        writes.map((write) => <WriteSummary key={write.id} write={write} />)
       ) : (
         <>Waiting for transactions…</>
       )}
