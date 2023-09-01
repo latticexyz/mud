@@ -33,14 +33,15 @@ contract CallboundDelegationControl is DelegationControl {
     if (availableCalls > 0) {
       // Decrement the number of available calls
       unchecked {
-        CallboundDelegations.set({
-          delegator: delegator,
-          delegatee: _msgSender(),
-          resourceSelector: resourceSelector,
-          funcSelectorAndArgsHash: funcSelectorAndArgsHash,
-          availableCalls: availableCalls - 1
-        });
+        availableCalls--;
       }
+      CallboundDelegations.set({
+        delegator: delegator,
+        delegatee: _msgSender(),
+        resourceSelector: resourceSelector,
+        funcSelectorAndArgsHash: funcSelectorAndArgsHash,
+        availableCalls: availableCalls
+      });
       return true;
     }
 
