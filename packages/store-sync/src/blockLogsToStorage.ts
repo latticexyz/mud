@@ -16,8 +16,6 @@ import storeConfig from "@latticexyz/store/mud.config";
 const schemasTable = storeConfig.tables.Tables;
 const schemasTableId = tableIdToHex(storeConfig.namespace, schemasTable.name);
 
-export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = StorageAdapter<TConfig>;
-
 export type BlockStorageOperations<TConfig extends StoreConfig = StoreConfig> = {
   blockNumber: BlockLogs["blockNumber"];
   operations: StorageOperation<TConfig>[];
@@ -31,7 +29,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
   registerTables,
   getTables,
   storeOperations,
-}: BlockLogsToStorageOptions<TConfig>): BlockLogsToStorageResult<TConfig> {
+}: StorageAdapter<TConfig>): BlockLogsToStorageResult<TConfig> {
   return async (block) => {
     // Find table schema registration events
     const newTables = block.logs
