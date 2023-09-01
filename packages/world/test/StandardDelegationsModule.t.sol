@@ -65,8 +65,8 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     assertEq(returnedAddress, delegator);
 
     // Expect the delegation to have been used up
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
     vm.prank(delegatee);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
     world.callFrom(delegator, systemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
   }
 
@@ -107,8 +107,8 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
     // Set the timestamp to maxTimestamp+1 and expect the delegation to be expired
     vm.warp(maxTimestamp + 1);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
     vm.prank(delegatee);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
     world.callFrom(delegator, systemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
   }
 }
