@@ -16,7 +16,7 @@ import { KeysWithValue } from "./modules/keyswithvalue/tables/KeysWithValue.sol"
 import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
-import { DisposableDelegations, DisposableDelegationsTableId } from "./modules/std-delegations/tables/DisposableDelegations.sol";
+import { CallboundDelegations, CallboundDelegationsTableId } from "./modules/std-delegations/tables/CallboundDelegations.sol";
 import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std-delegations/tables/TimeboundDelegations.sol";
 import { Bool } from "./../test/tables/Bool.sol";
 import { AddressArray } from "./../test/tables/AddressArray.sol";

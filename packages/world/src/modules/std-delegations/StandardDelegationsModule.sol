@@ -7,18 +7,18 @@ import { IModule } from "../../interfaces/IModule.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { DisposableDelegationControl } from "./DisposableDelegationControl.sol";
+import { CallboundDelegationControl } from "./CallboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "./TimeboundDelegationControl.sol";
-import { MODULE_NAME, DISPOSABLE_DELEGATION, TIMEBOUND_DELEGATION } from "./constants.sol";
+import { MODULE_NAME, CALLBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "./constants.sol";
 
-import { DisposableDelegations } from "./tables/DisposableDelegations.sol";
+import { CallboundDelegations } from "./tables/CallboundDelegations.sol";
 import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
 
 /**
  * This module registers tables and delegation control systems required for standard delegations
  */
 contract StandardDelegationsModule is IModule, WorldContextConsumer {
-  DisposableDelegationControl private immutable disposableDelegationControl = new DisposableDelegationControl();
+  CallboundDelegationControl private immutable callboundDelegationControl = new CallboundDelegationControl();
   TimeboundDelegationControl private immutable timeboundDelegationControl = new TimeboundDelegationControl();
 
   function getName() public pure returns (bytes16) {
@@ -29,11 +29,11 @@ contract StandardDelegationsModule is IModule, WorldContextConsumer {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register tables
-    DisposableDelegations.register(world);
+    CallboundDelegations.register(world);
     TimeboundDelegations.register(world);
 
     // Register systems
-    world.registerSystem(DISPOSABLE_DELEGATION, disposableDelegationControl, true);
+    world.registerSystem(CALLBOUND_DELEGATION, callboundDelegationControl, true);
     world.registerSystem(TIMEBOUND_DELEGATION, timeboundDelegationControl, true);
   }
 }

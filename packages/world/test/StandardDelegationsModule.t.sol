@@ -11,9 +11,9 @@ import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
 import { StandardDelegationsModule } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
-import { DisposableDelegationControl } from "../src/modules/std-delegations/DisposableDelegationControl.sol";
+import { CallboundDelegationControl } from "../src/modules/std-delegations/CallboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "../src/modules/std-delegations/TimeboundDelegationControl.sol";
-import { DISPOSABLE_DELEGATION, TIMEBOUND_DELEGATION } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
+import { CALLBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
 
 import { WorldTestSystem } from "./World.t.sol";
 
@@ -33,15 +33,15 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     world.registerSystem(systemResourceSelector, system, true);
   }
 
-  function testCallFromDisposableDelegation() public {
-    // Register the disposable delegation for one call to the system's msgSender function
+  function testCallFromCallboundDelegation() public {
+    // Register the callbound delegation for one call to the system's msgSender function
     vm.prank(delegator);
-    startGasReport("register a disposable delegation");
+    startGasReport("register a callbound delegation");
     world.registerDelegation(
       delegatee,
-      DISPOSABLE_DELEGATION,
+      CALLBOUND_DELEGATION,
       abi.encodeWithSelector(
-        DisposableDelegationControl.initDelegation.selector,
+        CallboundDelegationControl.initDelegation.selector,
         delegatee,
         systemResourceSelector,
         abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
@@ -52,7 +52,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);
-    startGasReport("call a system via a disposable delegation");
+    startGasReport("call a system via a callbound delegation");
     bytes memory returnData = world.callFrom(
       delegator,
       systemResourceSelector,

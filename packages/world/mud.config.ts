@@ -140,7 +140,7 @@ export default mudConfig({
       tableIdArgument: true,
       storeArgument: true,
     },
-    DisposableDelegations: {
+    CallboundDelegations: {
       directory: "modules/std-delegations/tables",
       keySchema: {
         delegator: "address",

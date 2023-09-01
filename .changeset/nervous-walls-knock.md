@@ -46,5 +46,5 @@ If the call to `verify` is successful and returns `true`, the delegation is vali
 
 Note: if `UNLIMITED_DELEGATION` (from `@latticexyz/world/src/constants.sol`) is passed as `delegationControl`, the external call to the delegation control contract is skipped and the delegation is considered valid.
 
-For examples of `DelegationControl` systems, check out the `DisposableDelegationControl` or `TimeboundDelegationControl` systems in the `std-delegations` module.
+For examples of `DelegationControl` systems, check out the `CallboundDelegationControl` or `TimeboundDelegationControl` systems in the `std-delegations` module.
 See `StandardDelegations.t.sol` for usage examples.
