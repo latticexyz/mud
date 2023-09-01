@@ -48,7 +48,7 @@ export default mudConfig({
         delegatee: "address",
       },
       schema: {
-        delegationControl: "bytes32",
+        delegationControlId: "bytes32",
       },
     },
     /************************************************************************

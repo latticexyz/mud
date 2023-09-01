@@ -27,7 +27,7 @@ interface IWorldRegistrationSystem {
 
   function registerDelegation(
     address delegatee,
-    bytes32 delegationControl,
+    bytes32 delegationControlId,
     bytes memory initFuncSelectorAndArgs
   ) external;
 }

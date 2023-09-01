@@ -159,17 +159,17 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerDelegation(
     address delegatee,
-    bytes32 delegationControl,
+    bytes32 delegationControlId,
     bytes memory initFuncSelectorAndArgs
   ) public {
     // Store the delegation control contract address
-    Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControl: delegationControl });
+    Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
 
     // If the delegation is not unlimited, call the delegation control contract's init function
-    if (delegationControl != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
+    if (delegationControlId != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
       SystemCall.call({
         caller: _msgSender(),
-        resourceSelector: delegationControl,
+        resourceSelector: delegationControlId,
         funcSelectorAndArgs: initFuncSelectorAndArgs,
         value: 0
       });

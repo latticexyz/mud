@@ -48,7 +48,7 @@ library Delegations {
   /** Get the table's field names */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "delegationControl";
+    fieldNames[0] = "delegationControlId";
   }
 
   /** Register the table's key schema, value schema, key names and value names */
@@ -61,8 +61,8 @@ library Delegations {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get delegationControl */
-  function get(address delegator, address delegatee) internal view returns (bytes32 delegationControl) {
+  /** Get delegationControlId */
+  function get(address delegator, address delegatee) internal view returns (bytes32 delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
@@ -71,8 +71,12 @@ library Delegations {
     return (Bytes.slice32(_blob, 0));
   }
 
-  /** Get delegationControl (using the specified store) */
-  function get(IStore _store, address delegator, address delegatee) internal view returns (bytes32 delegationControl) {
+  /** Get delegationControlId (using the specified store) */
+  function get(
+    IStore _store,
+    address delegator,
+    address delegatee
+  ) internal view returns (bytes32 delegationControlId) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
@@ -81,27 +85,27 @@ library Delegations {
     return (Bytes.slice32(_blob, 0));
   }
 
-  /** Set delegationControl */
-  function set(address delegator, address delegatee, bytes32 delegationControl) internal {
+  /** Set delegationControlId */
+  function set(address delegator, address delegatee, bytes32 delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControl)), getValueSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), getValueSchema());
   }
 
-  /** Set delegationControl (using the specified store) */
-  function set(IStore _store, address delegator, address delegatee, bytes32 delegationControl) internal {
+  /** Set delegationControlId (using the specified store) */
+  function set(IStore _store, address delegator, address delegatee, bytes32 delegationControlId) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControl)), getValueSchema());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((delegationControlId)), getValueSchema());
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes32 delegationControl) internal pure returns (bytes memory) {
-    return abi.encodePacked(delegationControl);
+  function encode(bytes32 delegationControlId) internal pure returns (bytes memory) {
+    return abi.encodePacked(delegationControlId);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
