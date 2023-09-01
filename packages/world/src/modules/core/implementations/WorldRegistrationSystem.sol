@@ -70,6 +70,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require the name to not be the namespace's root name
     if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
+    // Require this system to not be registered at a different resource selector yet
+    bytes32 existingResourceSelector = SystemRegistry.get(address(system));
+    if (existingResourceSelector != 0 && existingResourceSelector != resourceSelector) {
+      revert SystemExists(address(system));
+    }
+
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     bytes16 namespace = resourceSelector.getNamespace();
@@ -91,7 +97,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       SystemRegistry.deleteRecord(existingSystem);
 
       // Remove the existing system's access to its namespace
-      ResourceAccess.deleteRecord(resourceSelector, existingSystem);
+      ResourceAccess.deleteRecord(namespace, existingSystem);
     } else {
       // Otherwise, this is a new system, so register its resource type
       ResourceType.set(resourceSelector, Resource.SYSTEM);
