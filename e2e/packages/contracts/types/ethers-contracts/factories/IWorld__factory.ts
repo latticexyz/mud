@@ -870,7 +870,7 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "contract System",
+        internalType: "contract WorldContextConsumer",
         name: "system",
         type: "address",
       },
@@ -1045,6 +1045,24 @@ const _abi = [
       },
     ],
     stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

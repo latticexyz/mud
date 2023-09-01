@@ -1,5 +1,24 @@
 # Change Log
 
+## 2.0.0-next.4
+
+### Patch Changes
+
+- [#1341](https://github.com/latticexyz/mud/pull/1341) [`c32c8e8f`](https://github.com/latticexyz/mud/commit/c32c8e8f2ccac02c4242f715f296bffd5465bd71) Thanks [@holic](https://github.com/holic)! - Removes `std-contracts` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+- [#1340](https://github.com/latticexyz/mud/pull/1340) [`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64) Thanks [@holic](https://github.com/holic)! - Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/config@2.0.0-next.4
+  - @latticexyz/gas-report@2.0.0-next.4
+  - @latticexyz/protocol-parser@2.0.0-next.4
+  - @latticexyz/schema-type@2.0.0-next.4
+  - @latticexyz/services@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+  - @latticexyz/utils@2.0.0-next.4
+  - @latticexyz/world@2.0.0-next.4
+
 ## 2.0.0-next.3
 
 ### Major Changes

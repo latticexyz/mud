@@ -117,5 +117,17 @@ export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
+  waitForTransaction: (tx: Hex) => Promise<void>;
+};
+
+export type StorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
+  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: Table[] }) => Promise<void>;
+  getTables: (opts: {
+    blockNumber: BlockLogs["blockNumber"];
+    tables: Pick<Table, "address" | "namespace" | "name">[];
+  }) => Promise<Table[]>;
+  storeOperations: (opts: {
+    blockNumber: BlockLogs["blockNumber"];
+    operations: StorageOperation<TConfig>[];
+  }) => Promise<void>;
 };

@@ -1,26 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { BlockLogsToStorageOptions, blockLogsToStorage } from "./blockLogsToStorage";
+import { blockLogsToStorage } from "./blockLogsToStorage";
 import storeConfig from "@latticexyz/store/mud.config";
 import { isDefined } from "@latticexyz/common/utils";
 import { tableIdToHex } from "@latticexyz/common";
+import { StorageAdapter } from "./common";
 
 const mockedCallbacks = {
-  registerTables: vi.fn<
-    Parameters<BlockLogsToStorageOptions["registerTables"]>,
-    ReturnType<BlockLogsToStorageOptions["registerTables"]>
-  >(),
-  getTables: vi.fn<
-    Parameters<BlockLogsToStorageOptions["getTables"]>,
-    ReturnType<BlockLogsToStorageOptions["getTables"]>
-  >(),
+  registerTables: vi.fn<Parameters<StorageAdapter["registerTables"]>, ReturnType<StorageAdapter["registerTables"]>>(),
+  getTables: vi.fn<Parameters<StorageAdapter["getTables"]>, ReturnType<StorageAdapter["getTables"]>>(),
   storeOperations: vi.fn<
-    Parameters<BlockLogsToStorageOptions["storeOperations"]>,
-    ReturnType<BlockLogsToStorageOptions["storeOperations"]>
+    Parameters<StorageAdapter["storeOperations"]>,
+    ReturnType<StorageAdapter["storeOperations"]>
   >(),
 };
 
 const mockedDecode = blockLogsToStorage<typeof storeConfig>(
-  mockedCallbacks as any as BlockLogsToStorageOptions<typeof storeConfig>
+  mockedCallbacks as any as StorageAdapter<typeof storeConfig>
 );
 
 describe("blockLogsToStorage", () => {

@@ -12,18 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: ghcr.io/latticexyz/postgres-wal-logical:latest
-        env:
-          POSTGRES_USER: runner
-          POSTGRES_DB: mode_ephemeral
-          POSTGRES_HOST_AUTH_METHOD: trust
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        image: postgres:12.1-alpine
         ports:
           - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -56,5 +49,7 @@ jobs:
         uses: ./.github/actions/require-empty-diff
 
       - name: Run sync tests
+        env:
+          DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
         working-directory: ./e2e/packages/sync-test
         run: pnpm test

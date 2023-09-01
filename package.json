@@ -19,7 +19,7 @@
     "prettier:check": "prettier --check '**/*.{ts,tsx,css,md,mdx,sol}'",
     "release:check": "changeset status --verbose --since=origin/main",
     "release:publish": "pnpm install && pnpm build && changeset publish",
-    "release:version": "changeset version && pnpm install --lockfile-only && pnpx bun scripts/changelog.ts",
+    "release:version": "changeset version && pnpm install --lockfile-only && pnpx bun@0.7.3 scripts/changelog.ts",
     "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json' 'e2e/*/package.json' 'e2e/*/packages/*/package.json' 'docs/package.json'",
     "test": "pnpm recursive run test"
   },
