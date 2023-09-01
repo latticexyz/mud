@@ -231,7 +231,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 722077
+    "gasUsed": 722121
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -243,7 +243,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 700972
+    "gasUsed": 701016
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -273,7 +273,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFallbackSystem",
     "name": "Register a fallback system",
-    "gasUsed": 70183
+    "gasUsed": 70205
   },
   {
     "file": "test/World.t.sol",
@@ -285,7 +285,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 90777
+    "gasUsed": 90799
   },
   {
     "file": "test/World.t.sol",
