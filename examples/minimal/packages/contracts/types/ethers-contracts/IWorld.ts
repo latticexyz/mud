@@ -688,7 +688,7 @@ export interface IWorld extends BaseContract {
 
     registerDelegation(
       delegatee: PromiseOrValue<string>,
-      delegationControl: PromiseOrValue<BytesLike>,
+      delegationControlId: PromiseOrValue<BytesLike>,
       initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -928,7 +928,7 @@ export interface IWorld extends BaseContract {
 
   registerDelegation(
     delegatee: PromiseOrValue<string>,
-    delegationControl: PromiseOrValue<BytesLike>,
+    delegationControlId: PromiseOrValue<BytesLike>,
     initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1166,7 +1166,7 @@ export interface IWorld extends BaseContract {
 
     registerDelegation(
       delegatee: PromiseOrValue<string>,
-      delegationControl: PromiseOrValue<BytesLike>,
+      delegationControlId: PromiseOrValue<BytesLike>,
       initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1451,7 +1451,7 @@ export interface IWorld extends BaseContract {
 
     registerDelegation(
       delegatee: PromiseOrValue<string>,
-      delegationControl: PromiseOrValue<BytesLike>,
+      delegationControlId: PromiseOrValue<BytesLike>,
       initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1692,7 +1692,7 @@ export interface IWorld extends BaseContract {
 
     registerDelegation(
       delegatee: PromiseOrValue<string>,
-      delegationControl: PromiseOrValue<BytesLike>,
+      delegationControlId: PromiseOrValue<BytesLike>,
       initFuncSelectorAndArgs: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

@@ -821,7 +821,7 @@ const _abi = [
       },
       {
         internalType: "bytes32",
-        name: "delegationControl",
+        name: "delegationControlId",
         type: "bytes32",
       },
       {
