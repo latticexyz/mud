@@ -6,9 +6,6 @@
   "scripts": {
     "test": "vitest --run"
   },
-  "dependencies": {
-    "zod": "^3.22.2"
-  },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
     "@latticexyz/common": "link:../../../packages/common",
@@ -28,6 +25,7 @@
     "typescript": "5.1.6",
     "viem": "1.6.0",
     "vite": "^4.2.1",
-    "vitest": "^0.31.0"
+    "vitest": "^0.31.0",
+    "zod": "^3.22.2"
   }
 }
