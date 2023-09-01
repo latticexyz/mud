@@ -25,6 +25,7 @@ const env = z
     RPC_WS_URL: z.string().optional(),
     START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
+    HOST: z.string().default("0.0.0.0"),
     PORT: z.coerce.number().positive().default(3001),
     DATABASE_URL: z.string(),
   })
@@ -133,5 +134,5 @@ server.register(fastifyTRPCPlugin<AppRouter>, {
   },
 });
 
-await server.listen({ port: env.PORT });
-console.log(`indexer server listening on http://127.0.0.1:${env.PORT}`);
+await server.listen({ host: env.HOST, port: env.PORT });
+console.log(`indexer server listening on http://${env.HOST}:${env.PORT}`);
