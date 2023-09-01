@@ -231,13 +231,13 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 122174
+    "gasUsed": 122345
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "call a system via a callbound delegation",
-    "gasUsed": 45592
+    "gasUsed": 44047
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",

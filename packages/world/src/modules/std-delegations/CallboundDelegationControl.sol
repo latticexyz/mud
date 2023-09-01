@@ -19,6 +19,17 @@ contract CallboundDelegationControl is DelegationControl {
       funcSelectorAndArgsHash: funcSelectorAndArgsHash
     });
 
+    if (availableCalls == 1) {
+      // Remove the delegation from the CallboundDelegations table
+      CallboundDelegations.deleteRecord({
+        delegator: delegator,
+        delegatee: _msgSender(),
+        resourceSelector: resourceSelector,
+        funcSelectorAndArgsHash: funcSelectorAndArgsHash
+      });
+      return true;
+    }
+
     if (availableCalls > 0) {
       // Decrement the number of available calls
       unchecked {
