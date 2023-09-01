@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { readFileSync } from "fs";
 import path from "path";
-import { BigNumber, Contract, ContractInterface, ethers } from "ethers";
+import { BigNumber, ContractInterface, ethers } from "ethers";
 import { MUDError } from "@latticexyz/common/errors";
 import { Fragment } from "ethers/lib/utils.js";
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
