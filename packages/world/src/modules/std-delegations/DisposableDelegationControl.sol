@@ -21,14 +21,15 @@ contract DisposableDelegationControl is DelegationControl {
 
     if (availableCalls > 0) {
       // Decrement the number of available calls
-      DisposableDelegations.set({
-        delegator: delegator,
-        delegatee: _msgSender(),
-        resourceSelector: resourceSelector,
-        funcSelectorAndArgsHash: funcSelectorAndArgsHash,
-        availableCalls: availableCalls - 1
-      });
-
+      unchecked {
+        DisposableDelegations.set({
+          delegator: delegator,
+          delegatee: _msgSender(),
+          resourceSelector: resourceSelector,
+          funcSelectorAndArgsHash: funcSelectorAndArgsHash,
+          availableCalls: availableCalls - 1
+        });
+      }
       return true;
     }
 
