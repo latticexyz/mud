@@ -1,14 +1,13 @@
 import chalk from "chalk";
 import { readFileSync } from "fs";
 import path from "path";
-import { BigNumber, ContractInterface, ethers } from "ethers";
+import { BigNumber, Contract, ContractInterface, ethers } from "ethers";
 import { MUDError } from "@latticexyz/common/errors";
 import { Fragment } from "ethers/lib/utils.js";
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 
 type TxHelperConfig = {
   signer: ethers.Wallet;
-  initialNonce: number;
   priorityFeeMultiplier: number;
   forgeOutDirectory: string;
   debug?: boolean;
@@ -22,14 +21,23 @@ export class TxHelper {
   private priorityFeeMultiplier: number;
   private forgeOutDirectory: string;
   private debug: boolean;
-  public nonce: number;
+  public nonce = 0;
 
   constructor(config: TxHelperConfig) {
     this.signer = config.signer;
     this.priorityFeeMultiplier = config.priorityFeeMultiplier;
     this.forgeOutDirectory = config.forgeOutDirectory;
     this.debug = !!config.debug;
-    this.nonce = config.initialNonce;
+  }
+
+  /**
+   * Setup initial nonce and InternalFeePerGas
+   */
+  async initialise(): Promise<void> {
+    const initialNonce = await this.signer.getTransactionCount();
+    console.log("Initial nonce", initialNonce);
+    this.nonce = initialNonce;
+    await this.setInternalFeePerGas(this.priorityFeeMultiplier);
   }
 
   async deployContract(
@@ -50,8 +58,6 @@ export class TxHelper {
           gasPrice: this.gasPrice,
         })
         .then((c) => (disableTxWait ? c : c.deployed()));
-
-      console.log(`~~~~~~~~~~~~~~~~~~~~~ waiting for contract deployment ${contractName}`);
       const { address } = await deployPromise;
       console.log(chalk.green("Deployed", contractName, "to", address));
       return address;
@@ -69,6 +75,79 @@ export class TxHelper {
       } else if (error?.message.includes("CreateContractLimit")) {
         throw new MUDError(`Error deploying ${contractName}: CreateContractLimit exceeded.`);
       } else throw error;
+    }
+  }
+
+  /**
+   * Deploy a contract and return the address
+   * @param contractName Name of the contract to deploy (must exist in the file system)
+   * @param disableTxWait Disable waiting for contract deployment
+   * @returns Address of the deployed contract
+   */
+  async deployContractByName(contractName: string, disableTxWait: boolean): Promise<string> {
+    const { abi, bytecode } = await this.getContractData(contractName);
+    return this.deployContract(abi, bytecode, disableTxWait, contractName);
+  }
+
+  /**
+   * Load the contract's abi and bytecode from the file system
+   * @param contractName: Name of the contract to load
+   */
+  async getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
+    let data: any;
+    const contractDataPath = path.join(this.forgeOutDirectory, contractName + ".sol", contractName + ".json");
+    try {
+      data = JSON.parse(readFileSync(contractDataPath, "utf8"));
+    } catch (error: any) {
+      throw new MUDError(`Error reading file at ${contractDataPath}`);
+    }
+
+    const bytecode = data?.bytecode?.object;
+    if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
+
+    const abi = data?.abi;
+    if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
+
+    return { abi, bytecode };
+  }
+
+  /**
+   * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
+   */
+  async fastTxExecute<C extends { connect: any; estimateGas: any; [key: string]: any }, F extends keyof C>(
+    contract: C,
+    func: F,
+    args: Parameters<C[F]>,
+    confirmations = 1,
+    retryCount = 0
+  ): Promise<TransactionResponse | TransactionReceipt> {
+    const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
+    try {
+      const contractWithSigner = contract.connect(this.signer);
+      const gasLimit = await contractWithSigner.estimateGas[func].apply(null, args);
+      console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${this.nonce}`));
+      return contractWithSigner[func]
+        .apply(null, [
+          ...args,
+          {
+            gasLimit,
+            nonce: this.nonce++,
+            maxPriorityFeePerGas: this.maxPriorityFeePerGas,
+            maxFeePerGas: this.maxFeePerGas,
+            gasPrice: this.gasPrice,
+          },
+        ])
+        .then((tx: TransactionResponse) => {
+          return confirmations === 0 ? tx : tx.wait(confirmations);
+        });
+    } catch (error: any) {
+      if (this.debug) console.error(error);
+      if (retryCount === 0 && error?.message.includes("transaction already imported")) {
+        // If the deployment failed because the transaction was already imported,
+        // retry with a higher priority fee
+        this.setInternalFeePerGas(this.priorityFeeMultiplier * 1.1);
+        return this.fastTxExecute(contract, func, args, confirmations, retryCount++);
+      } else throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
     }
   }
 
@@ -104,76 +183,24 @@ export class TxHelper {
     }
   }
 
-  /**
-   * Deploy a contract and return the address
-   * @param contractName Name of the contract to deploy (must exist in the file system)
-   * @param disableTxWait Disable waiting for contract deployment
-   * @returns Address of the deployed contract
-   */
-  async deployContractByName(contractName: string, disableTxWait: boolean): Promise<string> {
-    console.log(chalk.blue("Deploying", contractName));
-    const { abi, bytecode } = await this.getContractData(contractName);
-    return this.deployContract(abi, bytecode, disableTxWait, contractName);
-  }
-
-  /**
-   * Load the contract's abi and bytecode from the file system
-   * @param contractName: Name of the contract to load
-   */
-  async getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
-    let data: any;
-    const contractDataPath = path.join(this.forgeOutDirectory, contractName + ".sol", contractName + ".json");
-    try {
-      data = JSON.parse(readFileSync(contractDataPath, "utf8"));
-    } catch (error: any) {
-      throw new MUDError(`Error reading file at ${contractDataPath}`);
+  async confirmNonce(pollInterval: number): Promise<void> {
+    let remoteNonce = await this.signer.getTransactionCount();
+    let retryCount = 0;
+    const maxRetries = 100;
+    while (remoteNonce !== this.nonce && retryCount < maxRetries) {
+      console.log(
+        chalk.gray(
+          `Waiting for transactions to be included before executing postDeployScript (local nonce: ${this.nonce}, remote nonce: ${remoteNonce}, retry number ${retryCount}/${maxRetries})`
+        )
+      );
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+      retryCount++;
+      remoteNonce = await this.signer.getTransactionCount();
     }
-
-    const bytecode = data?.bytecode?.object;
-    if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
-
-    const abi = data?.abi;
-    if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
-
-    return { abi, bytecode };
-  }
-
-  /**
-   * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
-   */
-  async fastTxExecute<C extends { estimateGas: any; [key: string]: any }, F extends keyof C>(
-    contract: C,
-    func: F,
-    args: Parameters<C[F]>,
-    confirmations = 1,
-    retryCount = 0
-  ): Promise<TransactionResponse | TransactionReceipt> {
-    const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
-    try {
-      const gasLimit = await contract.estimateGas[func].apply(null, args);
-      console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${this.nonce}`));
-      return contract[func]
-        .apply(null, [
-          ...args,
-          {
-            gasLimit,
-            nonce: this.nonce++,
-            maxPriorityFeePerGas: this.maxPriorityFeePerGas,
-            maxFeePerGas: this.maxFeePerGas,
-            gasPrice: this.gasPrice,
-          },
-        ])
-        .then((tx: TransactionResponse) => {
-          return confirmations === 0 ? tx : tx.wait(confirmations);
-        });
-    } catch (error: any) {
-      if (this.debug) console.error(error);
-      if (retryCount === 0 && error?.message.includes("transaction already imported")) {
-        // If the deployment failed because the transaction was already imported,
-        // retry with a higher priority fee
-        this.setInternalFeePerGas(this.priorityFeeMultiplier * 1.1);
-        return this.fastTxExecute(contract, func, args, confirmations, retryCount++);
-      } else throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
+    if (remoteNonce !== this.nonce) {
+      throw new MUDError(
+        "Remote nonce doesn't match local nonce, indicating that not all deploy transactions were included."
+      );
     }
   }
 }
