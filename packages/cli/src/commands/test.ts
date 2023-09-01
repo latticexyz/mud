@@ -59,10 +59,11 @@ const commandModule: CommandModule<Options, Options> = {
       console.log(testResult);
     } catch (e) {
       console.error(e);
+      rmSync(WORLD_ADDRESS_FILE);
+      process.exit(1);
     }
 
     rmSync(WORLD_ADDRESS_FILE);
-
     process.exit(0);
   },
 };
