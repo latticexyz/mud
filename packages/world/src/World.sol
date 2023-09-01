@@ -14,13 +14,16 @@ import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
+import { Delegation } from "./Delegation.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
+import { Delegations } from "./tables/Delegations.sol";
 
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
+import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
@@ -177,6 +180,33 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes memory funcSelectorAndArgs
   ) external payable virtual returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, funcSelectorAndArgs, msg.value);
+  }
+
+  /**
+   * Call the system at the given resourceSelector on behalf of the given delegator.
+   * If the system is not public, the delegator must have access to the namespace or name (encoded in the resourceSelector).
+   */
+  function callFrom(
+    address delegator,
+    bytes32 resourceSelector,
+    bytes memory funcSelectorAndArgs
+  ) external payable virtual returns (bytes memory) {
+    // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
+    Delegation explicitDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: msg.sender }));
+
+    if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
+    }
+
+    // Check if the delegator has a fallback delegation control set
+    Delegation fallbackDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: address(0) }));
+    if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
+      // forward the call with `from` as `msgSender`
+      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
+    }
+
+    revert DelegationNotFound(delegator, msg.sender);
   }
 
   /************************************************************************
