@@ -3,6 +3,7 @@ import { Hex } from "viem";
 import { encodeField } from "./encodeField";
 import { Schema } from "./common";
 
+/** @deprecated use `encodeValue` instead */
 export function encodeRecord(schema: Schema, values: readonly (StaticPrimitiveType | DynamicPrimitiveType)[]): Hex {
   const staticValues = values.slice(0, schema.staticFields.length) as readonly StaticPrimitiveType[];
   const dynamicValues = values.slice(schema.staticFields.length) as readonly DynamicPrimitiveType[];

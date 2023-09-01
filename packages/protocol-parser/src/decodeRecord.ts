@@ -11,6 +11,7 @@ import { decodeStaticField } from "./decodeStaticField";
 import { hexToPackedCounter } from "./hexToPackedCounter";
 import { staticDataLength } from "./staticDataLength";
 
+/** @deprecated use `decodeValue` instead */
 export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimitiveType | DynamicPrimitiveType)[] {
   const values: (StaticPrimitiveType | DynamicPrimitiveType)[] = [];
 

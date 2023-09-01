@@ -1,24 +1,24 @@
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import {
-  ComponentValue,
   Component as RecsComponent,
   Schema as RecsSchema,
   getComponentValue,
+  hasComponent,
   removeComponent,
   setComponent,
 } from "@latticexyz/recs";
-import { isDefined } from "@latticexyz/common/utils";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
-import { tableIdToHex } from "@latticexyz/common";
-import { encodeEntity } from "./encodeEntity";
-import { abiTypesToSchema, decodeRecord, encodeRecord } from "@latticexyz/protocol-parser";
-import { DynamicPrimitiveType, StaticPrimitiveType } from "@latticexyz/schema-type";
+import { hexToTableId } from "@latticexyz/common";
+import { SchemaToPrimitives, ValueSchema, decodeValue, encodeValue } from "@latticexyz/protocol-parser";
 import { concat, size, slice } from "viem";
 import { StorageAdapter } from "../common";
+import { isTableRegistrationLog } from "../isTableRegistrationLog";
+import { logToTable } from "../logToTable";
+import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
@@ -26,77 +26,71 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components: ReturnType<typeof defineInternalComponents> &
     Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
   config?: TConfig;
-}): StorageAdapter<TConfig> {
+}): StorageAdapter {
   // TODO: do we need to store block number?
 
   const componentsByTableId = Object.fromEntries(
     Object.entries(components).map(([id, component]) => [component.id, component])
   );
 
-  return {
-    async registerTables({ tables }) {
-      for (const table of tables) {
-        // TODO: check if table exists already and skip/warn?
-        setComponent(components.RegisteredTables, getTableEntity(table), { table });
+  return async function storeLogs({ logs }) {
+    const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
+    for (const newTable of newTables) {
+      const tableEntity = getTableEntity(newTable);
+      if (hasComponent(components.RegisteredTables, tableEntity)) {
+        console.warn("table already registered, ignoring", {
+          newTable,
+          existingTable: getComponentValue(components.RegisteredTables, tableEntity)?.table,
+        });
+      } else {
+        setComponent(components.RegisteredTables, tableEntity, { table: newTable });
       }
-    },
-    async getTables({ tables }) {
-      // TODO: fetch schema from RPC if table not found?
-      return tables
-        .map((table) => getComponentValue(components.RegisteredTables, getTableEntity(table))?.table)
-        .filter(isDefined);
-    },
-    async storeOperations({ operations }) {
-      for (const operation of operations) {
-        const table = getComponentValue(
-          components.RegisteredTables,
-          getTableEntity({
-            address: operation.address,
-            namespace: operation.namespace,
-            name: operation.name,
-          })
-        )?.table;
-        if (!table) {
-          debug(`skipping update for unknown table: ${operation.namespace}:${operation.name} at ${operation.address}`);
-          continue;
-        }
+    }
 
-        const tableId = tableIdToHex(operation.namespace, operation.name);
-        const component = componentsByTableId[tableId];
-        if (!component) {
-          debug(`skipping update for unknown component: ${tableId}. Available components: ${Object.keys(components)}`);
-          continue;
-        }
-
-        const entity = encodeEntity(table.keySchema, operation.key);
-
-        if (operation.type === "SetRecord") {
-          debug("setting component", tableId, entity, operation.value);
-          setComponent(component, entity, operation.value as ComponentValue);
-        } else if (operation.type === "SpliceRecord") {
-          const schema = abiTypesToSchema(Object.values(table.valueSchema));
-          const oldValueTuple = Object.values(
-            getComponentValue(component, entity) ?? schemaToDefaults(table.valueSchema)
-          );
-          const oldRecord = encodeRecord(schema, oldValueTuple as (StaticPrimitiveType | DynamicPrimitiveType)[]);
-          const end = operation.start + operation.deleteCount;
-          const newRecord = concat([
-            slice(oldRecord, 0, operation.start),
-            operation.data,
-            end >= size(oldRecord) ? "0x" : slice(oldRecord, end),
-          ]);
-          const newValueTuple = decodeRecord(schema, newRecord);
-
-          const fieldNames = Object.keys(table.valueSchema);
-          const value = Object.fromEntries(fieldNames.map((name, i) => [name, newValueTuple[i]]));
-
-          debug("setting component (splice)", tableId, entity, newRecord);
-          setComponent(component, entity, value);
-        } else if (operation.type === "DeleteRecord") {
-          debug("deleting component", tableId, entity);
-          removeComponent(component, entity);
-        }
+    for (const log of logs) {
+      const { namespace, name } = hexToTableId(log.args.table);
+      const table = getComponentValue(
+        components.RegisteredTables,
+        getTableEntity({ address: log.address, namespace, name })
+      )?.table;
+      if (!table) {
+        debug(`skipping update for unknown table: ${namespace}:${name} at ${log.address}`);
+        continue;
       }
-    },
-  } as StorageAdapter<TConfig>;
+
+      const component = componentsByTableId[table.tableId];
+      if (!component) {
+        debug(
+          `skipping update for unknown component: ${table.tableId}. Available components: ${Object.keys(components)}`
+        );
+        continue;
+      }
+
+      const entity = hexKeyTupleToEntity(log.args.key);
+
+      if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        const value = decodeValue(table.valueSchema, log.args.data);
+        debug("setting component", table.tableId, entity, value);
+        setComponent(component, entity, value);
+      } else if (log.eventName === "StoreSpliceRecord") {
+        const previousValue = getComponentValue(component, entity);
+        const previousData = encodeValue(
+          table.valueSchema,
+          (previousValue as SchemaToPrimitives<ValueSchema>) ?? schemaToDefaults(table.valueSchema)
+        );
+        const end = log.args.start + log.args.deleteCount;
+        const newData = concat([
+          slice(previousData, 0, log.args.start),
+          log.args.data,
+          end >= size(previousData) ? "0x" : slice(previousData, end),
+        ]);
+        const newValue = decodeValue(table.valueSchema, newData);
+        debug("setting component via splice", table.tableId, entity, { newValue, previousValue });
+        setComponent(component, entity, newValue);
+      } else if (log.eventName === "StoreDeleteRecord") {
+        debug("deleting component", table.tableId, entity);
+        removeComponent(component, entity);
+      }
+    }
+  };
 }

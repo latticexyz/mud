@@ -17,7 +17,7 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<
   startSync?: boolean;
 };
 
-type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
+type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult & {
   components: ConfigToRecsComponents<TConfig> &
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
@@ -67,7 +67,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     },
   });
 
-  const sub = startSync ? storeSync.blockStorageOperations$.subscribe() : null;
+  const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
   const stopSync = (): void => {
     sub?.unsubscribe();
   };
