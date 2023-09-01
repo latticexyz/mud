@@ -1,4 +1,3 @@
-import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import {
@@ -17,6 +16,7 @@ import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { tableIdToHex } from "@latticexyz/common";
 import { encodeEntity } from "./encodeEntity";
+import { StorageAdapter } from "../common";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
@@ -24,7 +24,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components: ReturnType<typeof defineInternalComponents> &
     Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
   config?: TConfig;
-}): BlockLogsToStorageOptions<TConfig> {
+}): StorageAdapter<TConfig> {
   // TODO: do we need to store block number?
 
   const componentsByTableId = Object.fromEntries(
@@ -87,5 +87,5 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         }
       }
     },
-  } as BlockLogsToStorageOptions<TConfig>;
+  } as StorageAdapter<TConfig>;
 }

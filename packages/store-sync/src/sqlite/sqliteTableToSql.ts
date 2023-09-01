@@ -1,10 +1,14 @@
 import { AnySQLiteColumn, SQLiteTableWithColumns } from "drizzle-orm/sqlite-core";
-import { ColumnDataType, Kysely, SqliteDialect } from "kysely";
-import SqliteDatabase from "better-sqlite3";
+import { ColumnDataType, DummyDriver, Kysely, SqliteAdapter, SqliteIntrospector, SqliteQueryCompiler } from "kysely";
 import { getTableColumns, getTableName } from "drizzle-orm";
 
 const db = new Kysely<any>({
-  dialect: new SqliteDialect({ database: new SqliteDatabase(":memory:") }),
+  dialect: {
+    createAdapter: (): SqliteAdapter => new SqliteAdapter(),
+    createDriver: (): DummyDriver => new DummyDriver(),
+    createIntrospector: (db: Kysely<unknown>): SqliteIntrospector => new SqliteIntrospector(db),
+    createQueryCompiler: (): SqliteQueryCompiler => new SqliteQueryCompiler(),
+  },
 });
 
 export function sqliteTableToSql(table: SQLiteTableWithColumns<any>): string {

@@ -1,54 +1,63 @@
-import { PublicClient, concatHex, encodeAbiParameters, getAddress } from "viem";
-import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { and, eq, sql } from "drizzle-orm";
-import { sqliteTableToSql } from "./sqliteTableToSql";
-import { createSqliteTable } from "./createSqliteTable";
+import { PublicClient, concatHex, encodeAbiParameters } from "viem";
+import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
+import { eq, inArray } from "drizzle-orm";
+import { buildTable } from "./buildTable";
 import { schemaToDefaults } from "../schemaToDefaults";
-import { TableId } from "@latticexyz/common/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
-import { getTableName } from "./getTableName";
-import { chainState, mudStoreTables } from "./internalTables";
+import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
+import { tableIdToHex } from "@latticexyz/common";
+import { setupTables } from "./setupTables";
+import { getTableKey } from "./getTableKey";
 import { StorageAdapter } from "../common";
 
-export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
+// Currently assumes one DB per chain ID
+
+export type PostgresStorageAdapter<TConfig extends StoreConfig = StoreConfig> = StorageAdapter<TConfig> & {
+  internalTables: ReturnType<typeof buildInternalTables>;
+  cleanUp: () => Promise<void>;
+};
+
+export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
   publicClient,
 }: {
-  database: BaseSQLiteDatabase<"sync", void>;
+  database: PgDatabase<QueryResultHKT>;
   publicClient: PublicClient;
   config?: TConfig;
-}): Promise<StorageAdapter<TConfig>> {
+}): Promise<PostgresStorageAdapter<TConfig>> {
+  const cleanUp: (() => Promise<void>)[] = [];
+
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
-  // TODO: should these run lazily before first `registerTables`?
-  database.run(sql.raw(sqliteTableToSql(chainState)));
-  database.run(sql.raw(sqliteTableToSql(mudStoreTables)));
+  const internalTables = buildInternalTables();
+  cleanUp.push(await setupTables(database, Object.values(internalTables)));
 
-  return {
+  const storageAdapter = {
     async registerTables({ blockNumber, tables }) {
+      const sqlTables = tables.map((table) =>
+        buildTable({
+          address: table.address,
+          namespace: table.namespace,
+          name: table.name,
+          keySchema: table.keySchema,
+          valueSchema: table.valueSchema,
+        })
+      );
+
+      cleanUp.push(await setupTables(database, sqlTables));
+
       await database.transaction(async (tx) => {
         for (const table of tables) {
-          debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
-
-          const sqliteTable = createSqliteTable({
-            address: table.address,
-            namespace: table.namespace,
-            name: table.name,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
-          });
-
-          tx.run(sql.raw(sqliteTableToSql(sqliteTable)));
-
-          tx.insert(mudStoreTables)
+          await tx
+            .insert(internalTables.tables)
             .values({
               schemaVersion,
-              id: getTableName(table.address, table.namespace, table.name),
+              key: getTableKey(table),
               address: table.address,
-              tableId: new TableId(table.namespace, table.name).toHex(),
+              tableId: tableIdToHex(table.namespace, table.name),
               namespace: table.namespace,
               name: table.name,
               keySchema: table.keySchema,
@@ -56,62 +65,42 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               lastUpdatedBlockNumber: blockNumber,
             })
             .onConflictDoNothing()
-            .run();
+            .execute();
         }
       });
     },
     async getTables({ tables }) {
       // TODO: fetch any missing schemas from RPC
       // TODO: cache schemas in memory?
-      return getTables(database, tables);
+      return getTables(database, tables.map(getTableKey));
     },
     async storeOperations({ blockNumber, operations }) {
       // This is currently parallelized per world (each world has its own database).
       // This may need to change if we decide to put multiple worlds into one DB (e.g. a namespace per world, but all under one DB).
       // If so, we'll probably want to wrap the entire block worth of operations in a transaction.
 
-      const tables = getTables(
-        database,
-        Array.from(
-          new Set(
-            operations.map((operation) =>
-              JSON.stringify({
-                address: getAddress(operation.address),
-                namespace: operation.namespace,
-                name: operation.name,
-              })
-            )
-          )
-        ).map((json) => JSON.parse(json))
-      );
+      const tables = await getTables(database, operations.map(getTableKey));
 
       await database.transaction(async (tx) => {
-        for (const { address, namespace, name } of tables) {
-          tx.update(mudStoreTables)
+        const tablesWithOperations = tables.filter((table) =>
+          operations.some((op) => getTableKey(op) === getTableKey(table))
+        );
+        if (tablesWithOperations.length) {
+          await tx
+            .update(internalTables.tables)
             .set({ lastUpdatedBlockNumber: blockNumber })
-            .where(
-              and(
-                eq(mudStoreTables.address, address),
-                eq(mudStoreTables.namespace, namespace),
-                eq(mudStoreTables.name, name)
-              )
-            )
-            .run();
+            .where(inArray(internalTables.tables.key, [...new Set(tablesWithOperations.map(getTableKey))]))
+            .execute();
         }
 
         for (const operation of operations) {
-          const table = tables.find(
-            (table) =>
-              table.address === getAddress(operation.address) &&
-              table.namespace === operation.namespace &&
-              table.name === operation.name
-          );
+          const table = tables.find((table) => getTableKey(table) === getTableKey(operation));
           if (!table) {
             debug(`table ${operation.namespace}:${operation.name} not found, skipping operation`, operation);
             continue;
           }
 
-          const sqliteTable = createSqliteTable(table);
+          const sqlTable = buildTable(table);
           const key = concatHex(
             Object.entries(table.keySchema).map(([keyName, type]) =>
               encodeAbiParameters([{ type }], [operation.key[keyName]])
@@ -120,7 +109,8 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
 
           if (operation.type === "SetRecord") {
             debug("SetRecord", operation);
-            tx.insert(sqliteTable)
+            await tx
+              .insert(sqlTable)
               .values({
                 __key: key,
                 __lastUpdatedBlockNumber: blockNumber,
@@ -129,17 +119,18 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
                 ...operation.value,
               })
               .onConflictDoUpdate({
-                target: sqliteTable.__key,
+                target: sqlTable.__key,
                 set: {
                   __lastUpdatedBlockNumber: blockNumber,
                   __isDeleted: false,
                   ...operation.value,
                 },
               })
-              .run();
+              .execute();
           } else if (operation.type === "SetField") {
             debug("SetField", operation);
-            tx.insert(sqliteTable)
+            await tx
+              .insert(sqlTable)
               .values({
                 __key: key,
                 __lastUpdatedBlockNumber: blockNumber,
@@ -149,41 +140,53 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
                 [operation.fieldName]: operation.fieldValue,
               })
               .onConflictDoUpdate({
-                target: sqliteTable.__key,
+                target: sqlTable.__key,
                 set: {
                   __lastUpdatedBlockNumber: blockNumber,
                   __isDeleted: false,
                   [operation.fieldName]: operation.fieldValue,
                 },
               })
-              .run();
+              .execute();
           } else if (operation.type === "DeleteRecord") {
             // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
             debug("DeleteRecord", operation);
-            tx.update(sqliteTable)
+            await tx
+              .update(sqlTable)
               .set({
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: true,
               })
-              .where(eq(sqliteTable.__key, key))
-              .run();
+              .where(eq(sqlTable.__key, key))
+              .execute();
           }
         }
 
-        tx.insert(chainState)
+        await tx
+          .insert(internalTables.chain)
           .values({
             schemaVersion,
             chainId,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoUpdate({
-            target: [chainState.schemaVersion, chainState.chainId],
+            target: [internalTables.chain.schemaVersion, internalTables.chain.chainId],
             set: {
               lastUpdatedBlockNumber: blockNumber,
             },
           })
-          .run();
+          .execute();
       });
     },
   } as StorageAdapter<TConfig>;
+
+  return {
+    ...storageAdapter,
+    internalTables,
+    cleanUp: async (): Promise<void> => {
+      for (const fn of cleanUp) {
+        await fn();
+      }
+    },
+  };
 }
