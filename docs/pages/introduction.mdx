@@ -11,7 +11,7 @@ MUD comes with:
 2. **World**: An [entry-point kernel](world) that brings standardized access-control, upgrades, and modules.
 3. Blazing fast development tools based on [Foundry](https://github.com/foundry-rs/foundry)
 4. Client-side data-stores that magically reflect onchain state. No need to use view functions and events to get your contract data.
-5. **MODE**: [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1. Never write an indexer again.
+5. **MODE**: [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1. Never write an indexer again
 
 The projects built with MUD speak for themselves: some of the most complex applications on Ethereum have been built with the framework in record time. OPCraft, a fully onchain voxel world, was built by Lattice in 1.5 months. While it didn’t have the security and auditing requirement of financial applications, it handled more transaction throughput than most apps on Mainnet ever did in their lifetime: in 10 days, OPCraft players made 3.5 million transactions, filling the MUD onchain database with billions of gas worth of storage; with the client seamlessly handling synchronizing that state back. OPCraft used MUD without any additional tricks: large onchain applications with minimal client headaches can be yours too!
 
