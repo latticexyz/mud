@@ -8,7 +8,7 @@ Create a file `packages/contracts/src/systems/DecrementSystem.sol`.
 Note that we could have just added a function to the existing system, `IncrementSystem.sol`.
 The only reason we are adding a new system here is to see how to do it.
 
-```solidity
+```solidity filename="DecrementSystem.sol" copy
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
@@ -59,7 +59,7 @@ In this case, the vanilla getting started front end.
 1.  Edit `packages/client/src/mud/createSystemCalls.ts` to include `decrement`.
     This is the file after the changes:
 
-        ```typescript
+        ```typescript filename="createSystemCalls.ts" copy
         import { ClientComponents } from "./createClientComponents";
         import { SetupNetworkResult } from "./setupNetwork";
 
@@ -139,7 +139,7 @@ In this case, the vanilla getting started front end.
 1.  Update `packages/client/src/index.ts` to include `decrement`.
     This is the file after the changes:
 
-        ```typescript
+        ```typescript filename="index.ts" copy
         import { mount as mountDevTools } from "@latticexyz/dev-tools";
         import { setup } from "./mud/setup";
 
@@ -199,7 +199,7 @@ In this case, the vanilla getting started front end.
 1.  Modify `packages/client/index.html` to add a decrement button.
     This is the file after the changes:
 
-        ```html
+        ```html filename="index.html" copy
         <!DOCTYPE html>
         <html lang="en">
           <head>
