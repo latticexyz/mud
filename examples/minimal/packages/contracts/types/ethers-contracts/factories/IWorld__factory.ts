@@ -1128,6 +1128,24 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",

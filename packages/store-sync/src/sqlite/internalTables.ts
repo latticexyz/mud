@@ -4,7 +4,7 @@ import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 
 export const chainState = sqliteTable("__chainState", {
   schemaVersion: integer("schema_version").notNull().primaryKey(),
-  chainId: integer("chainId").notNull().primaryKey(),
+  chainId: integer("chain_id").notNull().primaryKey(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
   // TODO: last block hash?
   lastError: text("last_error"),

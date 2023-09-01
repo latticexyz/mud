@@ -11,8 +11,9 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./sqlite": "./dist/sqlite/index.js",
+    "./postgres": "./dist/postgres/index.js",
     "./recs": "./dist/recs/index.js",
+    "./sqlite": "./dist/sqlite/index.js",
     "./trpc-indexer": "./dist/trpc-indexer/index.js"
   },
   "typesVersions": {
@@ -20,11 +21,14 @@
       "index": [
         "./src/index.ts"
       ],
-      "sqlite": [
-        "./src/sqlite/index.ts"
+      "postgres": [
+        "./src/postgres/index.ts"
       ],
       "recs": [
         "./src/recs/index.ts"
+      ],
+      "sqlite": [
+        "./src/sqlite/index.ts"
       ],
       "trpc-indexer": [
         "./src/trpc-indexer/index.ts"
@@ -38,7 +42,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "test:local": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",
@@ -50,10 +55,10 @@
     "@latticexyz/world": "workspace:*",
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
-    "better-sqlite3": "^8.4.0",
     "debug": "^4.3.4",
     "drizzle-orm": "^0.27.0",
     "kysely": "^0.26.1",
+    "postgres": "^3.3.5",
     "rxjs": "7.5.5",
     "sql.js": "^1.8.0",
     "superjson": "^1.12.4",
@@ -61,7 +66,6 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.4",
     "@types/debug": "^4.1.7",
     "@types/sql.js": "^1.4.4",
     "tsup": "^6.7.0",

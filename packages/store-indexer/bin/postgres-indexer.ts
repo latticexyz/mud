@@ -1,19 +1,19 @@
-import fs from "node:fs";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import Database from "better-sqlite3";
+import { DefaultLogger, eq } from "drizzle-orm";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
-import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
-import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
+import { createQueryAdapter } from "../src/postgres/createQueryAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
 import { isNotNull } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+import { cleanDatabase, postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
+import { createStoreSync } from "@latticexyz/store-sync";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -27,7 +27,7 @@ const env = z
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     HOST: z.string().default("0.0.0.0"),
     PORT: z.coerce.number().positive().default(3001),
-    SQLITE_FILENAME: z.string().default("indexer.db"),
+    DATABASE_URL: z.string(),
   })
   .parse(process.env, {
     errorMap: (issue) => ({
@@ -61,13 +61,21 @@ const publicClient = createPublicClient({
 // We do this to match the downstream logic, which also attempts to find the chain ID.
 const chainId = chain?.id ?? (await publicClient.getChainId());
 
-const database = drizzle(new Database(env.SQLITE_FILENAME));
+const database = drizzle(postgres(env.DATABASE_URL), {
+  logger: new DefaultLogger(),
+});
 
 let startBlock = env.START_BLOCK;
 
+const storageAdapter = await postgresStorage({ database, publicClient });
+
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 try {
-  const currentChainStates = database.select().from(chainState).where(eq(chainState.chainId, chainId)).all();
+  const currentChainStates = await database
+    .select()
+    .from(storageAdapter.internalTables.chain)
+    .where(eq(storageAdapter.internalTables.chain.chainId, chainId))
+    .execute();
   // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
 
@@ -78,9 +86,9 @@ try {
         currentChainState.schemaVersion,
         "to",
         schemaVersion,
-        "recreating database"
+        "cleaning database"
       );
-      fs.truncateSync(env.SQLITE_FILENAME);
+      await cleanDatabase(database);
     } else if (currentChainState.lastUpdatedBlockNumber != null) {
       console.log("resuming from block number", currentChainState.lastUpdatedBlockNumber + 1n);
       startBlock = currentChainState.lastUpdatedBlockNumber + 1n;
@@ -90,8 +98,8 @@ try {
   // ignore errors, this is optional
 }
 
-const { latestBlockNumber$, blockStorageOperations$ } = await syncToSqlite({
-  database,
+const { latestBlockNumber$, blockStorageOperations$ } = await createStoreSync({
+  storageAdapter,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
