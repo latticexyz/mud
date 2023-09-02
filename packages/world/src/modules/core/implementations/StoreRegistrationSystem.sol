@@ -11,7 +11,7 @@ import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { Call } from "../../../Call.sol";
+import { WorldContextProvider } from "../../../WorldContext.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
@@ -54,12 +54,10 @@ contract StoreRegistrationSystem is System, IWorldErrors {
       // We can't call IBaseWorld(this).registerNamespace directly because it would be handled like
       // an external call, so msg.sender would be the address of the World contract
       (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
-      Call.withSender({
+      WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
         target: systemAddress,
-        funcSelectorAndArgs: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace),
-        delegate: true,
-        value: 0
+        funcSelectorAndArgs: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace)
       });
     } else {
       // otherwise require caller to own the namespace

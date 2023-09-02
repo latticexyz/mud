@@ -1,7 +1,7 @@
 import { Hex } from "viem";
 import { TableWithRecords } from "../common";
 
-export type StorageAdapter = {
+export type QueryAdapter = {
   findAll: (
     chainId: number,
     address?: Hex

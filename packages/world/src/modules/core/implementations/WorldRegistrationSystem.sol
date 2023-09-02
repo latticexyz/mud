@@ -2,12 +2,15 @@
 pragma solidity >=0.8.0;
 
 import { System } from "../../../System.sol";
+import { WorldContextConsumer } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { SystemCall } from "../../../SystemCall.sol";
+import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
+import { Delegations } from "../../../tables/Delegations.sol";
 import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
@@ -60,7 +63,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * The system is granted access to its namespace, so it can write to any table in the same namespace.
    * If publicAccess is true, no access control check is performed for calling the system.
    */
-  function registerSystem(bytes32 resourceSelector, System system, bool publicAccess) public virtual {
+  function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) public virtual {
     // Require the name to not be the namespace's root name
     if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
@@ -149,5 +152,27 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
 
     return worldFunctionSelector;
+  }
+
+  /**
+   * Register a delegation from the caller to the given delegatee.
+   */
+  function registerDelegation(
+    address delegatee,
+    bytes32 delegationControlId,
+    bytes memory initFuncSelectorAndArgs
+  ) public {
+    // Store the delegation control contract address
+    Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
+
+    // If the delegation is not unlimited, call the delegation control contract's init function
+    if (delegationControlId != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
+      SystemCall.call({
+        caller: _msgSender(),
+        resourceSelector: delegationControlId,
+        funcSelectorAndArgs: initFuncSelectorAndArgs,
+        value: 0
+      });
+    }
   }
 }

@@ -18,6 +18,22 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      }
+    ],
+    "name": "DelegationNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "functionSelector",
         "type": "bytes4"
@@ -142,7 +158,39 @@
         "type": "uint256"
       }
     ],
+    "name": "StoreCore_InvalidKeySchemaLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
     "name": "StoreCore_InvalidValueNamesLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidValueSchemaLength",
     "type": "error"
   },
   {
@@ -318,6 +366,35 @@
       }
     ],
     "name": "call",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "funcSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "callFrom",
     "outputs": [
       {
         "internalType": "bytes",
@@ -681,6 +758,29 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "delegationControlId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "initFuncSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "registerDelegation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "resourceSelector",
         "type": "bytes32"
@@ -775,7 +875,7 @@
         "type": "bytes32"
       },
       {
-        "internalType": "contract System",
+        "internalType": "contract WorldContextConsumer",
         "name": "system",
         "type": "address"
       },
@@ -823,6 +923,16 @@
       {
         "internalType": "FieldLayout",
         "name": "valueFieldLayout",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
+        "name": "keySchema",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "Schema",
+        "name": "valueSchema",
         "type": "bytes32"
       },
       {
@@ -916,6 +1026,24 @@
       }
     ],
     "name": "setRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

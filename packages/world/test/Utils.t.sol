@@ -21,6 +21,8 @@ contract UtilsTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld internal world;
 
+  error SomeError(uint256 someValue, string someString);
+
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
