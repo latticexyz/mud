@@ -6,6 +6,9 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -30,6 +33,8 @@ contract QueryTest is Test, GasReporter {
 
   FieldLayout tableValueFieldLayout;
   FieldLayout tableKeyFieldLayout;
+  Schema tableValueSchema;
+  Schema tableKeySchema;
   bytes32 table1 = ResourceSelector.from(namespace, name1);
   bytes32 table2 = ResourceSelector.from(namespace, name2);
   bytes32 table3 = ResourceSelector.from(namespace, name3);
@@ -45,6 +50,8 @@ contract QueryTest is Test, GasReporter {
   function setUp() public {
     tableValueFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     tableKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
+    tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
 
@@ -61,9 +68,33 @@ contract QueryTest is Test, GasReporter {
 
   function _installKeysInTableModule() internal {
     // Register source table
-    world.registerTable(table1, tableKeyFieldLayout, tableValueFieldLayout, new string[](1), new string[](1));
-    world.registerTable(table2, tableKeyFieldLayout, tableValueFieldLayout, new string[](1), new string[](1));
-    world.registerTable(table3, tableKeyFieldLayout, tableValueFieldLayout, new string[](1), new string[](1));
+    world.registerTable(
+      table1,
+      tableKeyFieldLayout,
+      tableValueFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      new string[](1),
+      new string[](1)
+    );
+    world.registerTable(
+      table2,
+      tableKeyFieldLayout,
+      tableValueFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      new string[](1),
+      new string[](1)
+    );
+    world.registerTable(
+      table3,
+      tableKeyFieldLayout,
+      tableValueFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      new string[](1),
+      new string[](1)
+    );
 
     // Install the index module
     // TODO: add support for installing this via installModule

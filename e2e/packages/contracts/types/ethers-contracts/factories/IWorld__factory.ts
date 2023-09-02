@@ -134,7 +134,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidFieldNamesLength",
+    name: "StoreCore_InvalidKeyNamesLength",
     type: "error",
   },
   {
@@ -150,7 +150,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidKeyNamesLength",
+    name: "StoreCore_InvalidValueNamesLength",
     type: "error",
   },
   {
@@ -392,8 +392,8 @@ const _abi = [
         type: "bytes32[]",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -420,8 +420,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -448,8 +448,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -482,8 +482,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -516,8 +516,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
       {
@@ -550,11 +550,11 @@ const _abi = [
         type: "bytes32",
       },
     ],
-    name: "getKeySchema",
+    name: "getKeyFieldLayout",
     outputs: [
       {
-        internalType: "Schema",
-        name: "schema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -574,8 +574,8 @@ const _abi = [
         type: "bytes32[]",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -598,11 +598,11 @@ const _abi = [
         type: "bytes32",
       },
     ],
-    name: "getValueSchema",
+    name: "getValueFieldLayout",
     outputs: [
       {
-        internalType: "Schema",
-        name: "schema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -693,8 +693,8 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -757,8 +757,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -905,13 +905,13 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "Schema",
-        name: "keySchema",
+        internalType: "FieldLayout",
+        name: "keyFieldLayout",
         type: "bytes32",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
       {
@@ -984,8 +984,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -1012,8 +1012,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],
@@ -1069,8 +1069,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "valueFieldLayout",
         type: "bytes32",
       },
     ],

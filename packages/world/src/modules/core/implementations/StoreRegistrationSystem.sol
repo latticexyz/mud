@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
@@ -39,6 +40,8 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     bytes32 resourceSelector,
     FieldLayout keyFieldLayout,
     FieldLayout valueFieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) public virtual {
@@ -72,7 +75,15 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerTable(resourceSelector, keyFieldLayout, valueFieldLayout, keyNames, fieldNames);
+    StoreCore.registerTable(
+      resourceSelector,
+      keyFieldLayout,
+      valueFieldLayout,
+      keySchema,
+      valueSchema,
+      keyNames,
+      fieldNames
+    );
   }
 
   /**

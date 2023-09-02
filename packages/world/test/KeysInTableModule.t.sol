@@ -6,6 +6,9 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
@@ -37,6 +40,10 @@ contract KeysInTableModuleTest is Test, GasReporter {
   FieldLayout tableKeyFieldLayout;
   FieldLayout singletonKeyFieldLayout;
   FieldLayout compositeKeyFieldLayout;
+  Schema tableValueSchema;
+  Schema tableKeySchema;
+  Schema singletonKeySchema;
+  Schema compositeKeySchema;
   bytes32 tableId = ResourceSelector.from(namespace, name);
   bytes32 singletonTableId = ResourceSelector.from(namespace, singletonName);
   bytes32 compositeTableId = ResourceSelector.from(namespace, compositeName);
@@ -48,9 +55,12 @@ contract KeysInTableModuleTest is Test, GasReporter {
     tableValueFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     tableKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     compositeKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 32, 32, 0);
+    singletonKeyFieldLayout = FieldLayoutLib.encode(new uint256[](0), 0);
 
-    uint256[] memory _schema = new uint256[](0);
-    singletonKeyFieldLayout = FieldLayoutLib.encode(_schema, 0);
+    tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+    compositeKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
+    singletonKeySchema = SchemaLib.encode(new SchemaType[](0));
 
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
@@ -64,11 +74,21 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
   function _installKeysInTableModule() internal {
     // Register source table
-    world.registerTable(tableId, tableKeyFieldLayout, tableValueFieldLayout, new string[](1), new string[](1));
+    world.registerTable(
+      tableId,
+      tableKeyFieldLayout,
+      tableValueFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      new string[](1),
+      new string[](1)
+    );
     world.registerTable(
       singletonTableId,
       singletonKeyFieldLayout,
       tableValueFieldLayout,
+      singletonKeySchema,
+      tableValueSchema,
       new string[](0),
       new string[](1)
     );
@@ -76,6 +96,8 @@ contract KeysInTableModuleTest is Test, GasReporter {
       compositeTableId,
       compositeKeyFieldLayout,
       tableValueFieldLayout,
+      compositeKeySchema,
+      tableValueSchema,
       new string[](3),
       new string[](1)
     );
@@ -171,7 +193,15 @@ contract KeysInTableModuleTest is Test, GasReporter {
     // Install the hook on the second table
     bytes16 sourceFile2 = bytes16("source2");
     bytes32 sourceTableId2 = ResourceSelector.from(namespace, sourceFile2);
-    world.registerTable(sourceTableId2, tableValueFieldLayout, tableKeyFieldLayout, new string[](1), new string[](1));
+    world.registerTable(
+      sourceTableId2,
+      tableValueFieldLayout,
+      tableKeyFieldLayout,
+      tableValueSchema,
+      tableKeySchema,
+      new string[](1),
+      new string[](1)
+    );
     world.installRootModule(keysInTableModule, abi.encode(sourceTableId2));
 
     keyTuple = new bytes32[](1);

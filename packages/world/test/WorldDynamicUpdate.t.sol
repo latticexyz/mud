@@ -4,11 +4,15 @@ pragma solidity >=0.8.0;
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
+
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
@@ -30,6 +34,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   event WorldTestSystemLog(string log);
 
   FieldLayout internal defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
+  Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   IBaseWorld internal world;
 
   bytes32 internal key;
@@ -51,6 +56,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     keyTuple[0] = key;
     singletonKey = new bytes32[](0);
     FieldLayout valueFieldLayout = AddressArray.getValueFieldLayout();
+    Schema valueSchema = AddressArray.getValueSchema();
 
     // Initialize the data in setUp so that slots aren't warm in tests (to test cold update)
 
@@ -59,7 +65,15 @@ contract UpdateInFieldTest is Test, GasReporter {
     tableId = ResourceSelector.from(namespace, name);
 
     // Register a new table
-    world.registerTable(tableId, defaultKeyFieldLayout, valueFieldLayout, new string[](1), new string[](1));
+    world.registerTable(
+      tableId,
+      defaultKeyFieldLayout,
+      valueFieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](1)
+    );
 
     // Create data
     initData = new address[](3);

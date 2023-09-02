@@ -4,6 +4,10 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
+
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 
@@ -33,12 +37,16 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
   FieldLayout sourceTableFieldLayout;
   FieldLayout sourceTableKeyFieldLayout;
+  Schema sourceTableSchema;
+  Schema sourceTableKeySchema;
   bytes32 sourceTableId;
   bytes32 targetTableId;
 
   function setUp() public {
     sourceTableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     sourceTableKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
+    sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);
@@ -55,6 +63,8 @@ contract KeysWithValueModuleTest is Test, GasReporter {
       sourceTableId,
       sourceTableFieldLayout,
       sourceTableKeyFieldLayout,
+      sourceTableSchema,
+      sourceTableKeySchema,
       new string[](1),
       new string[](1)
     );
