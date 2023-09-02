@@ -24,6 +24,7 @@ export class WorldDeployer {
   private _worldAddress: string | undefined;
   private _worldContract: Contract | undefined;
   coreModule: CoreModule;
+  isCoreModuleInstalled = false;
   systems: Systems;
   modules: Modules;
   confirmations: number;
@@ -46,6 +47,8 @@ export class WorldDeployer {
     this.coreModule = new CoreModule(this.config);
     this.systems = new Systems({ ...this.config, namespace: this.config.mudConfig.namespace });
     this.modules = new Modules(this.config);
+    // If an existing World is passed assume its coreModule is already installed
+    if (config.worldAddress) this.isCoreModuleInstalled = true;
   }
 
   get worldContract(): Contract {
@@ -87,10 +90,17 @@ export class WorldDeployer {
     this._worldAddress = await this.worldPromise;
     // Create World contract instance from deployed address
     this._worldContract = new ethers.Contract(this.worldAddress, IBaseWorldData.abi) as IBaseWorld;
-    // Install CoreModule. Blocking to ensure installed.
-    await this.coreModule.install(this.worldContract);
+    await this.installCoreModule();
     await this.registerNamesSpace();
     await this.registerTables(this.config.mudConfig, this.config.mudConfig.namespace);
+  }
+
+  async installCoreModule() {
+    // Only install if not already installed
+    if (this.isCoreModuleInstalled) return;
+    // Install CoreModule. Blocking to ensure installed.
+    await this.coreModule.install(this.worldContract);
+    this.isCoreModuleInstalled = true;
   }
 
   async registerNamesSpace() {
