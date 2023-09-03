@@ -1,3 +1,4 @@
+import pRetry from "p-retry";
 import {
   Abi,
   Account,
@@ -13,7 +14,6 @@ import {
   WriteContractParameters,
   getContract,
 } from "viem";
-import pRetry from "p-retry";
 import { createNonceManager } from "./createNonceManager";
 import { debug as parentDebug } from "./debug";
 import { UnionOmit } from "./type-utils/common";
@@ -86,6 +86,7 @@ export function createContract<
       publicClient: publicClient as PublicClient,
       address: walletClient.account.address,
     });
+    contract.nonceManager = nonceManager;
 
     // Replace write calls with our own proxy. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
     contract.write = new Proxy(
