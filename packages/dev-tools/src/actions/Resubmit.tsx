@@ -28,11 +28,8 @@ export function Resubmit({ requestData }: ResubmitProps) {
   };
 
   const handleSubmit = async () => {
-    if (requestData.functionName) {
       await worldWrite[requestData.functionName](args);
-    } else {
-      await worldWrite[requestData.functionName](args);
-    }
+   
   };
 
   const handleRestore = () => {
@@ -45,7 +42,6 @@ export function Resubmit({ requestData }: ResubmitProps) {
       item.inputs?.length == args?.length
   )?.inputs;
 
-  console.log(argsTypes, "argsTypes");
 
   return (
     <div className="py-2 space-y-1">
