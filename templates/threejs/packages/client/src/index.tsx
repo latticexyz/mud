@@ -27,6 +27,7 @@ setup().then(async (result) => {
       blockStorageOperations$: result.network.blockStorageOperations$,
       worldAddress: result.network.worldContract.address,
       worldAbi: result.network.worldContract.abi,
+      worldWrite:result.network.worldContract.write,
       write$: result.network.write$,
       recsWorld: result.network.world,
     });

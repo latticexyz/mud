@@ -24,6 +24,7 @@ export const App = () => {
           blockStorageOperations$: networkLayer.network.blockStorageOperations$,
           worldAddress: networkLayer.network.worldContract.address,
           worldAbi: networkLayer.network.worldContract.abi,
+          worldWrite:networkLayer.network.worldContract.write,
           write$: networkLayer.network.write$,
           recsWorld: networkLayer.world,
         })

@@ -31,6 +31,7 @@ if (import.meta.env.DEV) {
     blockStorageOperations$: network.blockStorageOperations$,
     worldAddress: network.worldContract.address,
     worldAbi: network.worldContract.abi,
+    worldWrite:network.worldContract.write,
     write$: network.write$,
     recsWorld: network.world,
   });

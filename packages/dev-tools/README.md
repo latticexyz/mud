@@ -24,6 +24,7 @@ if (import.meta.env.DEV) {
     blockStorageOperations$,
     worldAddress,
     worldAbi,
+    worldWrite,
     write$,
     // if you're using recs
     recsWorld,

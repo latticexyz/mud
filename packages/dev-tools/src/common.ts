@@ -13,6 +13,7 @@ export type DevToolsOptions<TConfig extends StoreConfig = StoreConfig> = {
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
   worldAddress: string | null;
   worldAbi: Abi;
+  worldWrite:any,
   write$: Observable<ContractWrite>;
   recsWorld?: RecsWorld;
 };

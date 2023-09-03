@@ -8,6 +8,7 @@ import { serialize } from "../serialize";
 import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { getTransactionResult } from "./getTransactionResult";
+import { Resubmit } from "./Resubmit";
 import { ErrorTrace } from "../ErrorTrace";
 import { ContractWrite, hexToTableId } from "@latticexyz/common";
 import { useDevToolsContext } from "../DevToolsContext";
@@ -36,6 +37,8 @@ export function WriteSummary({ write }: Props) {
     hash.status === "rejected" ||
     (transactionReceipt.status === "fulfilled" && transactionReceipt.value.status === "reverted");
 
+  const requestData = transactionResult.status === "fulfilled" ? transactionResult.value.request : write.request;
+  
   // TODO: move all this into their getTransaction functions
   const returnData = transactionResult.status === "fulfilled" ? transactionResult.value.result : null;
   const events =
@@ -108,6 +111,7 @@ export function WriteSummary({ write }: Props) {
         </div>
       </summary>
       <div className="p-2 space-y-1">
+         {!isPending&&<Resubmit requestData={requestData as any}/>}
         <div className="font-bold text-white/40 uppercase text-xs">Result</div>
         {transactionResult.status === "fulfilled" ? (
           <div className="font-mono">{serialize(returnData)}</div>
