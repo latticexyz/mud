@@ -42,9 +42,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint .",
-    "test": "vitest --run",
-    "test:local": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
-    "test:ci": "pnpm run test"
+    "test": "DATABASE_URL=http://127.0.0.1:5432/postgres vitest",
+    "test:ci": "vitest --run"
   },
   "dependencies": {
     "@latticexyz/block-logs-stream": "workspace:*",
