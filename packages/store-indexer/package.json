@@ -28,7 +28,8 @@
     "start:sqlite:local": "SQLITE_FILENAME=anvil.db CHAIN_ID=31337 pnpm start:sqlite",
     "start:sqlite:testnet": "SQLITE_FILENAME=testnet.db CHAIN_ID=4242 START_BLOCK=19037160 pnpm start:sqlite",
     "start:sqlite:testnet2": "SQLITE_FILENAME=testnet2.db CHAIN_ID=4243 pnpm start:sqlite",
-    "test": "tsc --noEmit --skipLibCheck"
+    "test": "tsc --noEmit --skipLibCheck",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@fastify/cors": "^8.3.0",
