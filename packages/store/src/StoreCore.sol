@@ -39,27 +39,37 @@ library StoreCore {
 
   /************************************************************************
    *
-   *    FIELD LAYOUT
+   *    SCHEMA
    *
    ************************************************************************/
 
   /**
    * Get the field layout for the given tableId
    */
-  function getValueFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
-    fieldLayout = FieldLayout.wrap(Tables.getValueFieldLayout(tableId));
+  function getFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
+    fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(tableId));
     if (fieldLayout.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
   /**
-   * Get the key field layout for the given tableId
+   * Get the key schema for the given tableId
    */
-  function getKeyFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
-    fieldLayout = FieldLayout.wrap(Tables.getKeyFieldLayout(tableId));
-    // key field layout can be empty for singleton tables, so we can't depend on it for table check
+  function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
+    keySchema = Schema.wrap(Tables.getKeySchema(tableId));
+    // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
     if (!hasTable(tableId)) {
+      revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
+    }
+  }
+
+  /**
+   * Get the schema for the given tableId
+   */
+  function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
+    valueSchema = Schema.wrap(Tables.getValueSchema(tableId));
+    if (valueSchema.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
@@ -68,7 +78,7 @@ library StoreCore {
    * Check if a table with the given tableId exists
    */
   function hasTable(bytes32 tableId) internal view returns (bool) {
-    return Tables.getValueFieldLayout(tableId) != bytes32(0);
+    return Tables.getFieldLayout(tableId) != bytes32(0);
   }
 
   /**
@@ -76,36 +86,30 @@ library StoreCore {
    */
   function registerTable(
     bytes32 tableId,
-    FieldLayout keyFieldLayout,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
     string[] memory valueNames
   ) internal {
     // Verify the field layout is valid
-    keyFieldLayout.validate({ allowEmpty: true });
-    valueFieldLayout.validate({ allowEmpty: false });
+    fieldLayout.validate({ allowEmpty: false });
     // Verify the schema is valid
     keySchema.validate({ allowEmpty: true });
     valueSchema.validate({ allowEmpty: false });
 
-    // Verify the number of key names
-    if (keyNames.length != keyFieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidKeyNamesLength(keyFieldLayout.numFields(), keyNames.length);
-    }
-    // Verify the number of key schema types
-    if (keySchema.numFields() != keyFieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidKeySchemaLength(keyFieldLayout.numFields(), keySchema.numFields());
+    // Verify the number of key names matches the number of key schema types
+    if (keyNames.length != keySchema.numFields()) {
+      revert IStoreErrors.StoreCore_InvalidKeyNamesLength(keySchema.numFields(), keyNames.length);
     }
 
     // Verify the number of value names
-    if (valueNames.length != valueFieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidValueNamesLength(valueFieldLayout.numFields(), valueNames.length);
+    if (valueNames.length != fieldLayout.numFields()) {
+      revert IStoreErrors.StoreCore_InvalidValueNamesLength(fieldLayout.numFields(), valueNames.length);
     }
     // Verify the number of value schema types
-    if (valueSchema.numFields() != valueFieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidValueSchemaLength(valueFieldLayout.numFields(), valueSchema.numFields());
+    if (valueSchema.numFields() != fieldLayout.numFields()) {
+      revert IStoreErrors.StoreCore_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
 
     // Verify the field layout doesn't exist yet
@@ -116,8 +120,7 @@ library StoreCore {
     // Register the table metadata
     Tables.set(
       tableId,
-      FieldLayout.unwrap(keyFieldLayout),
-      FieldLayout.unwrap(valueFieldLayout),
+      FieldLayout.unwrap(fieldLayout),
       Schema.unwrap(keySchema),
       Schema.unwrap(valueSchema),
       abi.encode(keyNames),
@@ -147,12 +150,12 @@ library StoreCore {
   /**
    * Set full data record for the given tableId and key tuple and field layout
    */
-  function setRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, FieldLayout valueFieldLayout) internal {
+  function setRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) internal {
     // verify the value has the correct length for the tableId (based on the tableId's field layout)
     // to prevent invalid data from being stored
 
     // Verify static data length + dynamic data length matches the given data
-    (uint256 staticLength, PackedCounter dynamicLength) = StoreCoreInternal._validateDataLength(valueFieldLayout, data);
+    (uint256 staticLength, PackedCounter dynamicLength) = StoreCoreInternal._validateDataLength(fieldLayout, data);
 
     // Emit event to notify indexers
     emit StoreSetRecord(tableId, key, data);
@@ -161,7 +164,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueFieldLayout);
+      hook.onSetRecord(tableId, key, data, fieldLayout);
     }
 
     // Store the static data at the static data location
@@ -176,7 +179,7 @@ library StoreCore {
     memoryPointer += staticLength + 32; // move the memory pointer to the start of the dynamic data (skip the encoded dynamic length)
 
     // If there is no dynamic data, we're done
-    if (valueFieldLayout.numDynamicFields() == 0) return;
+    if (fieldLayout.numDynamicFields() == 0) return;
 
     // Store the dynamic data length at the dynamic data length location
     uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
@@ -185,7 +188,7 @@ library StoreCore {
     // For every dynamic element, slice off the dynamic data and store it at the dynamic location
     uint256 dynamicDataLocation;
     uint256 dynamicDataLength;
-    for (uint8 i; i < valueFieldLayout.numDynamicFields(); ) {
+    for (uint8 i; i < fieldLayout.numDynamicFields(); ) {
       dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, key, i);
       dynamicDataLength = dynamicLength.atIndex(i);
       Storage.store({
@@ -209,7 +212,7 @@ library StoreCore {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     // Emit event to notify indexers
     emit StoreSetField(tableId, key, schemaIndex, data);
@@ -219,26 +222,26 @@ library StoreCore {
 
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, data, valueFieldLayout);
+      hook.onBeforeSetField(tableId, key, schemaIndex, data, fieldLayout);
     }
 
-    if (schemaIndex < valueFieldLayout.numStaticFields()) {
-      StoreCoreInternal._setStaticField(tableId, key, valueFieldLayout, schemaIndex, data);
+    if (schemaIndex < fieldLayout.numStaticFields()) {
+      StoreCoreInternal._setStaticField(tableId, key, fieldLayout, schemaIndex, data);
     } else {
-      StoreCoreInternal._setDynamicField(tableId, key, valueFieldLayout, schemaIndex, data);
+      StoreCoreInternal._setDynamicField(tableId, key, fieldLayout, schemaIndex, data);
     }
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, data, valueFieldLayout);
+      hook.onAfterSetField(tableId, key, schemaIndex, data, fieldLayout);
     }
   }
 
   /**
    * Delete a record for the given tableId, key tuple and value field layout
    */
-  function deleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout valueFieldLayout) internal {
+  function deleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
     emit StoreDeleteRecord(tableId, key);
 
@@ -246,19 +249,15 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onDeleteRecord(tableId, key, valueFieldLayout);
+      hook.onDeleteRecord(tableId, key, fieldLayout);
     }
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, key);
-    Storage.store({
-      storagePointer: staticDataLocation,
-      offset: 0,
-      data: new bytes(valueFieldLayout.staticDataLength())
-    });
+    Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(fieldLayout.staticDataLength()) });
 
     // If there are no dynamic fields, we're done
-    if (valueFieldLayout.numDynamicFields() == 0) return;
+    if (fieldLayout.numDynamicFields() == 0) return;
 
     // Delete dynamic data length
     uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
@@ -273,15 +272,15 @@ library StoreCore {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory dataToPush,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
-    if (schemaIndex < valueFieldLayout.numStaticFields()) {
+    if (schemaIndex < fieldLayout.numStaticFields()) {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
     // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData = abi.encodePacked(
-      StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueFieldLayout),
+      StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, fieldLayout),
       dataToPush
     );
 
@@ -292,15 +291,15 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueFieldLayout);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, fieldLayout);
     }
 
-    StoreCoreInternal._pushToDynamicField(tableId, key, valueFieldLayout, schemaIndex, dataToPush);
+    StoreCoreInternal._pushToDynamicField(tableId, key, fieldLayout, schemaIndex, dataToPush);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueFieldLayout);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData, fieldLayout);
     }
   }
 
@@ -312,16 +311,16 @@ library StoreCore {
     bytes32[] memory key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
-    if (schemaIndex < valueFieldLayout.numStaticFields()) {
+    if (schemaIndex < fieldLayout.numStaticFields()) {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
     // TODO add pop-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData;
     {
-      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueFieldLayout);
+      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, fieldLayout);
       fullData = SliceLib.getSubslice(oldData, 0, oldData.length - byteLengthToPop).toBytes();
     }
 
@@ -332,15 +331,15 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueFieldLayout);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, fieldLayout);
     }
 
-    StoreCoreInternal._popFromDynamicField(tableId, key, valueFieldLayout, schemaIndex, byteLengthToPop);
+    StoreCoreInternal._popFromDynamicField(tableId, key, fieldLayout, schemaIndex, byteLengthToPop);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueFieldLayout);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData, fieldLayout);
     }
   }
 
@@ -353,9 +352,9 @@ library StoreCore {
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes memory dataToSet,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
-    if (schemaIndex < valueFieldLayout.numStaticFields()) {
+    if (schemaIndex < fieldLayout.numStaticFields()) {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
     // index must be checked because it could be arbitrarily large
@@ -367,7 +366,7 @@ library StoreCore {
     // TODO add setItem-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData;
     {
-      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueFieldLayout);
+      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, fieldLayout);
       fullData = abi.encodePacked(
         SliceLib.getSubslice(oldData, 0, startByteIndex).toBytes(),
         dataToSet,
@@ -382,15 +381,15 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueFieldLayout);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, fieldLayout);
     }
 
-    StoreCoreInternal._setDynamicFieldItem(tableId, key, valueFieldLayout, schemaIndex, startByteIndex, dataToSet);
+    StoreCoreInternal._setDynamicFieldItem(tableId, key, fieldLayout, schemaIndex, startByteIndex, dataToSet);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueFieldLayout);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData, fieldLayout);
     }
   }
 
@@ -407,10 +406,10 @@ library StoreCore {
     bytes32 tableId,
     bytes32[] memory key,
     bytes memory data,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(valueFieldLayout, data);
+    StoreCoreInternal._validateDataLength(fieldLayout, data);
 
     // Emit event to notify indexers
     emit StoreEphemeralRecord(tableId, key, data);
@@ -419,7 +418,7 @@ library StoreCore {
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueFieldLayout);
+      hook.onSetRecord(tableId, key, data, fieldLayout);
     }
   }
 
@@ -435,15 +434,15 @@ library StoreCore {
   function getRecord(
     bytes32 tableId,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     // Get the static data length
-    uint256 staticLength = valueFieldLayout.staticDataLength();
+    uint256 staticLength = fieldLayout.staticDataLength();
     uint256 outputLength = staticLength;
 
     // Load the dynamic data length if there are dynamic fields
     PackedCounter dynamicDataLength;
-    uint256 numDynamicFields = valueFieldLayout.numDynamicFields();
+    uint256 numDynamicFields = fieldLayout.numDynamicFields();
     if (numDynamicFields > 0) {
       dynamicDataLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, key);
       // TODO should total output include dynamic data length even if it's 0?
@@ -491,12 +490,12 @@ library StoreCore {
     bytes32 tableId,
     bytes32[] memory key,
     uint8 schemaIndex,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
-    if (schemaIndex < valueFieldLayout.numStaticFields()) {
-      return StoreCoreInternal._getStaticField(tableId, key, schemaIndex, valueFieldLayout);
+    if (schemaIndex < fieldLayout.numStaticFields()) {
+      return StoreCoreInternal._getStaticField(tableId, key, schemaIndex, fieldLayout);
     } else {
-      return StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, valueFieldLayout);
+      return StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, fieldLayout);
     }
   }
 
@@ -507,11 +506,11 @@ library StoreCore {
     bytes32 tableId,
     bytes32[] memory key,
     uint8 schemaIndex,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (uint256) {
-    uint8 numStaticFields = uint8(valueFieldLayout.numStaticFields());
+    uint8 numStaticFields = uint8(fieldLayout.numStaticFields());
     if (schemaIndex < numStaticFields) {
-      return valueFieldLayout.atIndex(schemaIndex);
+      return fieldLayout.atIndex(schemaIndex);
     } else {
       // Get the length and storage location of the dynamic field
       uint8 dynamicFieldLayoutIndex = schemaIndex - numStaticFields;
@@ -527,12 +526,12 @@ library StoreCore {
     bytes32 tableId,
     bytes32[] memory key,
     uint8 schemaIndex,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
-    uint8 numStaticFields = uint8(valueFieldLayout.numStaticFields());
-    if (schemaIndex < valueFieldLayout.numStaticFields()) {
+    uint8 numStaticFields = uint8(fieldLayout.numStaticFields());
+    if (schemaIndex < fieldLayout.numStaticFields()) {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
@@ -556,30 +555,30 @@ library StoreCoreInternal {
   function _setStaticField(
     bytes32 tableId,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     uint8 schemaIndex,
     bytes memory data
   ) internal {
     // verify the value has the correct length for the field
-    uint256 staticByteLength = valueFieldLayout.atIndex(schemaIndex);
+    uint256 staticByteLength = fieldLayout.atIndex(schemaIndex);
     if (staticByteLength != data.length) {
       revert IStoreErrors.StoreCore_InvalidDataLength(staticByteLength, data.length);
     }
 
     // Store the provided value in storage
     uint256 location = _getStaticDataLocation(tableId, key);
-    uint256 offset = _getStaticDataOffset(valueFieldLayout, schemaIndex);
+    uint256 offset = _getStaticDataOffset(fieldLayout, schemaIndex);
     Storage.store({ storagePointer: location, offset: offset, data: data });
   }
 
   function _setDynamicField(
     bytes32 tableId,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - uint8(valueFieldLayout.numStaticFields());
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(fieldLayout.numStaticFields());
 
     // Update the dynamic data length
     _setDynamicDataLengthAtIndex(tableId, key, dynamicSchemaIndex, data.length);
@@ -592,11 +591,11 @@ library StoreCoreInternal {
   function _pushToDynamicField(
     bytes32 tableId,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     uint8 schemaIndex,
     bytes memory dataToPush
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - uint8(valueFieldLayout.numStaticFields());
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(fieldLayout.numStaticFields());
 
     // Load dynamic data length from storage
     uint256 dynamicDataLengthSlot = _getDynamicDataLengthLocation(tableId, key);
@@ -616,11 +615,11 @@ library StoreCoreInternal {
   function _popFromDynamicField(
     bytes32 tableId,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     uint8 schemaIndex,
     uint256 byteLengthToPop
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - uint8(valueFieldLayout.numStaticFields());
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(fieldLayout.numStaticFields());
 
     // Load dynamic data length from storage
     uint256 dynamicDataLengthSlot = _getDynamicDataLengthLocation(tableId, key);
@@ -640,12 +639,12 @@ library StoreCoreInternal {
   function _setDynamicFieldItem(
     bytes32 tableId,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes memory dataToSet
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - uint8(valueFieldLayout.numStaticFields());
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(fieldLayout.numStaticFields());
 
     // Set `dataToSet` at the given index
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startByteIndex, dataToSet);
@@ -675,12 +674,12 @@ library StoreCoreInternal {
     bytes32 tableId,
     bytes32[] memory key,
     uint8 schemaIndex,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     // Get the length, storage location and offset of the static field
-    uint256 staticByteLength = valueFieldLayout.atIndex(schemaIndex);
+    uint256 staticByteLength = fieldLayout.atIndex(schemaIndex);
     uint256 location = _getStaticDataLocation(tableId, key);
-    uint256 offset = _getStaticDataOffset(valueFieldLayout, schemaIndex);
+    uint256 offset = _getStaticDataOffset(fieldLayout, schemaIndex);
 
     // Load the data from storage
 
@@ -694,10 +693,10 @@ library StoreCoreInternal {
     bytes32 tableId,
     bytes32[] memory key,
     uint8 schemaIndex,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     // Get the length and storage location of the dynamic field
-    uint8 dynamicSchemaIndex = schemaIndex - uint8(valueFieldLayout.numStaticFields());
+    uint8 dynamicSchemaIndex = schemaIndex - uint8(fieldLayout.numStaticFields());
     uint256 location = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
     uint256 dataLength = _loadEncodedDynamicDataLength(tableId, key).atIndex(dynamicSchemaIndex);
 
@@ -715,13 +714,13 @@ library StoreCoreInternal {
    * Returns the static and dynamic lengths
    */
   function _validateDataLength(
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     bytes memory data
   ) internal pure returns (uint256 staticLength, PackedCounter dynamicLength) {
-    staticLength = valueFieldLayout.staticDataLength();
+    staticLength = fieldLayout.staticDataLength();
     uint256 expectedLength = staticLength;
     dynamicLength;
-    if (valueFieldLayout.numDynamicFields() > 0) {
+    if (fieldLayout.numDynamicFields() > 0) {
       // Dynamic length is encoded at the start of the dynamic length blob
       dynamicLength = PackedCounter.wrap(Bytes.slice32(data, staticLength));
       expectedLength += 32 + dynamicLength.total(); // encoded length + data
@@ -746,10 +745,10 @@ library StoreCoreInternal {
   /**
    * Get storage offset for the given value field layout and (static length) index
    */
-  function _getStaticDataOffset(FieldLayout valueFieldLayout, uint8 schemaIndex) internal pure returns (uint256) {
+  function _getStaticDataOffset(FieldLayout fieldLayout, uint8 schemaIndex) internal pure returns (uint256) {
     uint256 offset = 0;
     for (uint256 i; i < schemaIndex; i++) {
-      offset += valueFieldLayout.atIndex(i);
+      offset += fieldLayout.atIndex(i);
     }
     return offset;
   }

@@ -15,8 +15,8 @@ contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
     KeyEncoding.register();
     endGasReport();
 
-    FieldLayout registeredFieldLayout = StoreCore.getValueFieldLayout(KeyEncodingTableId);
-    FieldLayout declaredFieldLayout = KeyEncoding.getValueFieldLayout();
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(KeyEncodingTableId);
+    FieldLayout declaredFieldLayout = KeyEncoding.getFieldLayout();
 
     assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
   }

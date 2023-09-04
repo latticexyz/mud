@@ -73,16 +73,8 @@ ${
 }
 
 library ${libraryName} {
-  /** Get the table keys' field layout */
-  function getKeyFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](${keyTuple.length});
-    ${renderList(keyTuple, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
-  }
-
   /** Get the table values' field layout */
-  function getValueFieldLayout() internal pure returns (FieldLayout) {
+  function getFieldLayout() internal pure returns (FieldLayout) {
     uint256[] memory _fieldLayout = new uint256[](${staticFields.length});
     ${renderList(staticFields, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
 
@@ -122,7 +114,7 @@ library ${libraryName} {
     (_typedStore, _store, _commentSuffix) => `
     /** Register the table keys' and values' field layout, key names and value names${_commentSuffix} */
     function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerTable(_tableId, getKeyFieldLayout(), getValueFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+      ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
   `
   )}
@@ -160,7 +152,7 @@ library ${libraryName} {
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_keyTupleDefinition}
-      ${_store}.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+      ${_store}.deleteRecord(_tableId, _keyTuple, getFieldLayout());
     }
   `
         )

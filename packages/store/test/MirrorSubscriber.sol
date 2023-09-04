@@ -13,28 +13,19 @@ contract MirrorSubscriber is IStoreHook {
 
   constructor(
     bytes32 table,
-    FieldLayout keyFieldLayout,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
     string[] memory fieldNames
   ) {
-    IStore(msg.sender).registerTable(
-      indexerTableId,
-      keyFieldLayout,
-      valueFieldLayout,
-      keySchema,
-      valueSchema,
-      keyNames,
-      fieldNames
-    );
+    IStore(msg.sender).registerTable(indexerTableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     _table = table;
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout valueFieldLayout) public {
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, key, data, valueFieldLayout);
+    StoreSwitch.setRecord(indexerTableId, key, data, fieldLayout);
   }
 
   function onBeforeSetField(
@@ -42,16 +33,16 @@ contract MirrorSubscriber is IStoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.setField(indexerTableId, key, schemaIndex, data, valueFieldLayout);
+    StoreSwitch.setField(indexerTableId, key, schemaIndex, data, fieldLayout);
   }
 
   function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {}
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout valueFieldLayout) public {
+  function onDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.deleteRecord(indexerTableId, key, valueFieldLayout);
+    StoreSwitch.deleteRecord(indexerTableId, key, fieldLayout);
   }
 }

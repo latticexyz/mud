@@ -22,7 +22,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
     ])}) internal view returns (${renderDecodedRecord(options)}) {
       ${_keyTupleDefinition}
-      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getValueFieldLayout());
+      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getFieldLayout());
       return decode(_blob);
     }
   `
@@ -42,7 +42,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
       ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+      ${_store}.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
     }
   `
   );

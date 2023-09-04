@@ -16,8 +16,8 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
     Mixed.register();
     endGasReport();
 
-    FieldLayout registeredFieldLayout = StoreCore.getValueFieldLayout(MixedTableId);
-    FieldLayout declaredFieldLayout = Mixed.getValueFieldLayout();
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(MixedTableId);
+    FieldLayout declaredFieldLayout = Mixed.getFieldLayout();
 
     assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
   }

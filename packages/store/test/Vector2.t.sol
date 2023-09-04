@@ -14,8 +14,8 @@ contract Vector2Test is Test, GasReporter, StoreReadWithStubs {
     Vector2.register();
     endGasReport();
 
-    FieldLayout registeredFieldLayout = StoreCore.getValueFieldLayout(Vector2TableId);
-    FieldLayout declaredFieldLayout = Vector2.getValueFieldLayout();
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(Vector2TableId);
+    FieldLayout declaredFieldLayout = Vector2.getFieldLayout();
 
     assertEq(FieldLayout.unwrap(registeredFieldLayout), FieldLayout.unwrap(declaredFieldLayout));
   }

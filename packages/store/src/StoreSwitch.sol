@@ -54,28 +54,36 @@ library StoreSwitch {
     }
   }
 
-  function getValueFieldLayout(bytes32 table) internal view returns (FieldLayout valueFieldLayout) {
+  function getFieldLayout(bytes32 table) internal view returns (FieldLayout fieldLayout) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      valueFieldLayout = StoreCore.getValueFieldLayout(table);
+      fieldLayout = StoreCore.getFieldLayout(table);
     } else {
-      valueFieldLayout = IStore(_storeAddress).getValueFieldLayout(table);
+      fieldLayout = IStore(_storeAddress).getFieldLayout(table);
     }
   }
 
-  function getKeyFieldLayout(bytes32 table) internal view returns (FieldLayout keyFieldLayout) {
+  function getValueSchema(bytes32 table) internal view returns (Schema valueSchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      keyFieldLayout = StoreCore.getKeyFieldLayout(table);
+      valueSchema = StoreCore.getValueSchema(table);
     } else {
-      keyFieldLayout = IStore(_storeAddress).getKeyFieldLayout(table);
+      valueSchema = IStore(_storeAddress).getValueSchema(table);
+    }
+  }
+
+  function getKeySchema(bytes32 table) internal view returns (Schema keySchema) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      keySchema = StoreCore.getKeySchema(table);
+    } else {
+      keySchema = IStore(_storeAddress).getKeySchema(table);
     }
   }
 
   function registerTable(
     bytes32 table,
-    FieldLayout keyFieldLayout,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
@@ -83,26 +91,18 @@ library StoreSwitch {
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerTable(table, keyFieldLayout, valueFieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+      StoreCore.registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     } else {
-      IStore(_storeAddress).registerTable(
-        table,
-        keyFieldLayout,
-        valueFieldLayout,
-        keySchema,
-        valueSchema,
-        keyNames,
-        fieldNames
-      );
+      IStore(_storeAddress).registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     }
   }
 
-  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout valueFieldLayout) internal {
+  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(table, key, data, valueFieldLayout);
+      StoreCore.setRecord(table, key, data, fieldLayout);
     } else {
-      IStore(_storeAddress).setRecord(table, key, data, valueFieldLayout);
+      IStore(_storeAddress).setRecord(table, key, data, fieldLayout);
     }
   }
 
@@ -111,13 +111,13 @@ library StoreSwitch {
     bytes32[] memory key,
     uint8 fieldIndex,
     bytes memory data,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setField(table, key, fieldIndex, data, valueFieldLayout);
+      StoreCore.setField(table, key, fieldIndex, data, fieldLayout);
     } else {
-      IStore(_storeAddress).setField(table, key, fieldIndex, data, valueFieldLayout);
+      IStore(_storeAddress).setField(table, key, fieldIndex, data, fieldLayout);
     }
   }
 
@@ -126,13 +126,13 @@ library StoreSwitch {
     bytes32[] memory key,
     uint8 fieldIndex,
     bytes memory dataToPush,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.pushToField(table, key, fieldIndex, dataToPush, valueFieldLayout);
+      StoreCore.pushToField(table, key, fieldIndex, dataToPush, fieldLayout);
     } else {
-      IStore(_storeAddress).pushToField(table, key, fieldIndex, dataToPush, valueFieldLayout);
+      IStore(_storeAddress).pushToField(table, key, fieldIndex, dataToPush, fieldLayout);
     }
   }
 
@@ -141,13 +141,13 @@ library StoreSwitch {
     bytes32[] memory key,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop, valueFieldLayout);
+      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop, fieldLayout);
     } else {
-      IStore(_storeAddress).popFromField(table, key, fieldIndex, byteLengthToPop, valueFieldLayout);
+      IStore(_storeAddress).popFromField(table, key, fieldIndex, byteLengthToPop, fieldLayout);
     }
   }
 
@@ -157,22 +157,22 @@ library StoreSwitch {
     uint8 fieldIndex,
     uint256 startByteIndex,
     bytes memory dataToSet,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueFieldLayout);
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet, fieldLayout);
     } else {
-      IStore(_storeAddress).updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueFieldLayout);
+      IStore(_storeAddress).updateInField(table, key, fieldIndex, startByteIndex, dataToSet, fieldLayout);
     }
   }
 
-  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout valueFieldLayout) internal {
+  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.deleteRecord(table, key, valueFieldLayout);
+      StoreCore.deleteRecord(table, key, fieldLayout);
     } else {
-      IStore(_storeAddress).deleteRecord(table, key, valueFieldLayout);
+      IStore(_storeAddress).deleteRecord(table, key, fieldLayout);
     }
   }
 
@@ -180,26 +180,26 @@ library StoreSwitch {
     bytes32 table,
     bytes32[] memory key,
     bytes memory data,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(table, key, data, valueFieldLayout);
+      StoreCore.emitEphemeralRecord(table, key, data, fieldLayout);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(table, key, data, valueFieldLayout);
+      IStore(_storeAddress).emitEphemeralRecord(table, key, data, fieldLayout);
     }
   }
 
   function getRecord(
     bytes32 table,
     bytes32[] memory key,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getRecord(table, key, valueFieldLayout);
+      return StoreCore.getRecord(table, key, fieldLayout);
     } else {
-      return IStore(_storeAddress).getRecord(table, key, valueFieldLayout);
+      return IStore(_storeAddress).getRecord(table, key, fieldLayout);
     }
   }
 
@@ -207,13 +207,13 @@ library StoreSwitch {
     bytes32 table,
     bytes32[] memory key,
     uint8 fieldIndex,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getField(table, key, fieldIndex, valueFieldLayout);
+      return StoreCore.getField(table, key, fieldIndex, fieldLayout);
     } else {
-      return IStore(_storeAddress).getField(table, key, fieldIndex, valueFieldLayout);
+      return IStore(_storeAddress).getField(table, key, fieldIndex, fieldLayout);
     }
   }
 

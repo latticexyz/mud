@@ -8,12 +8,7 @@
       },
       {
         "internalType": "FieldLayout",
-        "name": "keyFieldLayout",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "FieldLayout",
-        "name": "valueFieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       },
       {
@@ -166,7 +161,7 @@
       },
       {
         "internalType": "FieldLayout",
-        "name": "valueFieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -189,7 +184,7 @@
       },
       {
         "internalType": "FieldLayout",
-        "name": "valueFieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -217,7 +212,7 @@
       },
       {
         "internalType": "FieldLayout",
-        "name": "valueFieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
