@@ -22,16 +22,8 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Syste
 bytes32 constant SystemHooksTableId = _tableId;
 
 library SystemHooks {
-  /** Get the table keys' field layout */
-  function getKeyFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
-  }
-
   /** Get the table values' field layout */
-  function getValueFieldLayout() internal pure returns (FieldLayout) {
+  function getFieldLayout() internal pure returns (FieldLayout) {
     uint256[] memory _fieldLayout = new uint256[](0);
 
     return FieldLayoutLib.encode(_fieldLayout, 1);
@@ -69,8 +61,7 @@ library SystemHooks {
   function register() internal {
     StoreSwitch.registerTable(
       _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
+      getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
       getKeyNames(),
@@ -80,15 +71,7 @@ library SystemHooks {
 
   /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(
-      _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get value */
@@ -96,7 +79,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
@@ -105,7 +88,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
@@ -114,7 +97,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getValueFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getFieldLayout());
   }
 
   /** Set value (using the specified store) */
@@ -122,7 +105,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getValueFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getFieldLayout());
   }
 
   /** Get the length of value */
@@ -130,7 +113,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getValueFieldLayout());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
     unchecked {
       return _byteLength / 20;
     }
@@ -141,7 +124,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getValueFieldLayout());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
     unchecked {
       return _byteLength / 20;
     }
@@ -160,7 +143,7 @@ library SystemHooks {
         _tableId,
         _keyTuple,
         0,
-        getValueFieldLayout(),
+        getFieldLayout(),
         _index * 20,
         (_index + 1) * 20
       );
@@ -181,7 +164,7 @@ library SystemHooks {
         _tableId,
         _keyTuple,
         0,
-        getValueFieldLayout(),
+        getFieldLayout(),
         _index * 20,
         (_index + 1) * 20
       );
@@ -194,7 +177,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueFieldLayout());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
   }
 
   /** Push an element to value (using the specified store) */
@@ -202,7 +185,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getValueFieldLayout());
+    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
   }
 
   /** Pop an element from value */
@@ -210,7 +193,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 20, getValueFieldLayout());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 20, getFieldLayout());
   }
 
   /** Pop an element from value (using the specified store) */
@@ -218,7 +201,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.popFromField(_tableId, _keyTuple, 0, 20, getValueFieldLayout());
+    _store.popFromField(_tableId, _keyTuple, 0, 20, getFieldLayout());
   }
 
   /**
@@ -230,14 +213,7 @@ library SystemHooks {
     _keyTuple[0] = resourceSelector;
 
     unchecked {
-      StoreSwitch.updateInField(
-        _tableId,
-        _keyTuple,
-        0,
-        _index * 20,
-        abi.encodePacked((_element)),
-        getValueFieldLayout()
-      );
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -250,7 +226,7 @@ library SystemHooks {
     _keyTuple[0] = resourceSelector;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)), getValueFieldLayout());
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 20, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -278,7 +254,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -286,6 +262,6 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 }

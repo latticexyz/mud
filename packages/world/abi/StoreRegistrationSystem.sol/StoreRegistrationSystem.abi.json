@@ -211,22 +211,6 @@
         "type": "uint256"
       }
     ],
-    "name": "StoreCore_InvalidKeySchemaLength",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "expected",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "received",
-        "type": "uint256"
-      }
-    ],
     "name": "StoreCore_InvalidValueNamesLength",
     "type": "error"
   },
@@ -305,12 +289,7 @@
       },
       {
         "internalType": "FieldLayout",
-        "name": "keyFieldLayout",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "FieldLayout",
-        "name": "valueFieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       },
       {

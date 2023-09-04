@@ -22,17 +22,8 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("UsedK
 bytes32 constant UsedKeysIndexTableId = _tableId;
 
 library UsedKeysIndex {
-  /** Get the table keys' field layout */
-  function getKeyFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](2);
-    _fieldLayout[0] = 32;
-    _fieldLayout[1] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
-  }
-
   /** Get the table values' field layout */
-  function getValueFieldLayout() internal pure returns (FieldLayout) {
+  function getFieldLayout() internal pure returns (FieldLayout) {
     uint256[] memory _fieldLayout = new uint256[](2);
     _fieldLayout[0] = 1;
     _fieldLayout[1] = 5;
@@ -76,8 +67,7 @@ library UsedKeysIndex {
   function register() internal {
     StoreSwitch.registerTable(
       _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
+      getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
       getKeyNames(),
@@ -87,15 +77,7 @@ library UsedKeysIndex {
 
   /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(
-      _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get has */
@@ -104,7 +86,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -114,7 +96,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -124,7 +106,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getValueFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getFieldLayout());
   }
 
   /** Set has (using the specified store) */
@@ -133,7 +115,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getValueFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((has)), getFieldLayout());
   }
 
   /** Get index */
@@ -142,7 +124,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getValueFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getFieldLayout());
     return (uint40(Bytes.slice5(_blob, 0)));
   }
 
@@ -152,7 +134,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getValueFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getFieldLayout());
     return (uint40(Bytes.slice5(_blob, 0)));
   }
 
@@ -162,7 +144,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getValueFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getFieldLayout());
   }
 
   /** Set index (using the specified store) */
@@ -171,7 +153,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getValueFieldLayout());
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((index)), getFieldLayout());
   }
 
   /** Get the full data */
@@ -180,7 +162,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getValueFieldLayout());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getFieldLayout());
     return decode(_blob);
   }
 
@@ -190,7 +172,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getValueFieldLayout());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getFieldLayout());
     return decode(_blob);
   }
 
@@ -202,7 +184,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -213,7 +195,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Decode the tightly packed blob using this table's field layout */
@@ -243,7 +225,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -252,7 +234,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 }
 

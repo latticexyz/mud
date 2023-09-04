@@ -38,8 +38,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    */
   function registerTable(
     bytes32 resourceSelector,
-    FieldLayout keyFieldLayout,
-    FieldLayout valueFieldLayout,
+    FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] calldata keyNames,
@@ -73,15 +72,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerTable(
-      resourceSelector,
-      keyFieldLayout,
-      valueFieldLayout,
-      keySchema,
-      valueSchema,
-      keyNames,
-      fieldNames
-    );
+    StoreCore.registerTable(resourceSelector, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   /**

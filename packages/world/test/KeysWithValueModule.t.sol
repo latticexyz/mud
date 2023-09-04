@@ -62,9 +62,8 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     world.registerTable(
       sourceTableId,
       sourceTableFieldLayout,
-      sourceTableKeyFieldLayout,
-      sourceTableSchema,
       sourceTableKeySchema,
+      sourceTableSchema,
       new string[](1),
       new string[](1)
     );

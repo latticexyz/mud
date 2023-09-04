@@ -26,17 +26,8 @@ struct InstalledModulesData {
 }
 
 library InstalledModules {
-  /** Get the table keys' field layout */
-  function getKeyFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](2);
-    _fieldLayout[0] = 16;
-    _fieldLayout[1] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
-  }
-
   /** Get the table values' field layout */
-  function getValueFieldLayout() internal pure returns (FieldLayout) {
+  function getFieldLayout() internal pure returns (FieldLayout) {
     uint256[] memory _fieldLayout = new uint256[](1);
     _fieldLayout[0] = 20;
 
@@ -77,8 +68,7 @@ library InstalledModules {
   function register() internal {
     StoreSwitch.registerTable(
       _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
+      getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
       getKeyNames(),
@@ -88,15 +78,7 @@ library InstalledModules {
 
   /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(
-      _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get moduleAddress */
@@ -105,7 +87,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -119,7 +101,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -129,7 +111,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getValueFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
   }
 
   /** Set moduleAddress (using the specified store) */
@@ -138,7 +120,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getValueFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
   }
 
   /** Get the full data */
@@ -147,7 +129,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getValueFieldLayout());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getFieldLayout());
     return decode(_blob);
   }
 
@@ -161,7 +143,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getValueFieldLayout());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getFieldLayout());
     return decode(_blob);
   }
 
@@ -173,7 +155,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -184,7 +166,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Set the full data using the data struct */
@@ -222,7 +204,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -231,6 +213,6 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, getValueFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 }
