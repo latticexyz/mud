@@ -8,7 +8,6 @@ import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
 import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
-import { blockLogsToStorage } from "../blockLogsToStorage";
 
 describe("sqliteStorage", async () => {
   const SqlJs = await initSqlJs();
@@ -38,7 +37,7 @@ describe("sqliteStorage", async () => {
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot("[]");
     expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot("[]");
 
-    await blockLogsToStorage(storageAdapter)({
+    await storageAdapter({
       blockNumber: 5448n,
       logs: [
         {
@@ -54,10 +53,11 @@ describe("sqliteStorage", async () => {
           args: {
             table: "0x000000000000000000000000000000005265736f757263655479706500000000",
             key: ["0x00000000000000000000000000000000496e76656e746f727900000000000000"],
-            schemaIndex: 0,
             data: "0x02",
+            start: 0,
+            deleteCount: 0,
           },
-          eventName: "StoreSetField",
+          eventName: "StoreSpliceRecord",
         },
         {
           address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",

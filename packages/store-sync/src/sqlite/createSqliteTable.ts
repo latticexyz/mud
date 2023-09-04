@@ -6,6 +6,7 @@ import { getTableName } from "./getTableName";
 
 export const metaColumns = {
   __key: buildSqliteColumn("__key", "bytes").notNull().primaryKey(),
+  __data: buildSqliteColumn("__data", "bytes").notNull().notNull(),
   __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
   // TODO: last updated block hash?
   __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),

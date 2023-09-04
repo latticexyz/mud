@@ -1,8 +1,7 @@
 import { Entity } from "@latticexyz/recs";
 import { encodeAbiParameters } from "viem";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
-import { SchemaToPrimitives } from "@latticexyz/store";
-import { KeySchema } from "@latticexyz/protocol-parser";
+import { KeySchema, SchemaToPrimitives } from "@latticexyz/protocol-parser";
 
 export function encodeEntity<TKeySchema extends KeySchema>(
   keySchema: TKeySchema,

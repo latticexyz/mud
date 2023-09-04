@@ -13,6 +13,24 @@ describe("createSqliteTable", () => {
 
     expect(table).toMatchInlineSnapshot(`
       SQLiteTable {
+        "__data": SQLiteText {
+          "config": {
+            "default": undefined,
+            "enumValues": [],
+            "length": undefined,
+            "name": "__data",
+            "notNull": true,
+            "primaryKey": false,
+          },
+          "default": undefined,
+          "enumValues": [],
+          "hasDefault": undefined,
+          "length": undefined,
+          "name": "__data",
+          "notNull": true,
+          "primary": false,
+          "table": [Circular],
+        },
         "__isDeleted": SQLiteBoolean {
           "autoIncrement": false,
           "config": {
@@ -140,6 +158,24 @@ describe("createSqliteTable", () => {
         Symbol(drizzle:OriginalName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
         Symbol(drizzle:Schema): undefined,
         Symbol(drizzle:Columns): {
+          "__data": SQLiteText {
+            "config": {
+              "default": undefined,
+              "enumValues": [],
+              "length": undefined,
+              "name": "__data",
+              "notNull": true,
+              "primaryKey": false,
+            },
+            "default": undefined,
+            "enumValues": [],
+            "hasDefault": undefined,
+            "length": undefined,
+            "name": "__data",
+            "notNull": true,
+            "primary": false,
+            "table": [Circular],
+          },
           "__isDeleted": SQLiteBoolean {
             "autoIncrement": false,
             "config": {
@@ -284,6 +320,24 @@ describe("createSqliteTable", () => {
 
     expect(table).toMatchInlineSnapshot(`
       SQLiteTable {
+        "__data": SQLiteText {
+          "config": {
+            "default": undefined,
+            "enumValues": [],
+            "length": undefined,
+            "name": "__data",
+            "notNull": true,
+            "primaryKey": false,
+          },
+          "default": undefined,
+          "enumValues": [],
+          "hasDefault": undefined,
+          "length": undefined,
+          "name": "__data",
+          "notNull": true,
+          "primary": false,
+          "table": [Circular],
+        },
         "__isDeleted": SQLiteBoolean {
           "autoIncrement": false,
           "config": {
@@ -361,6 +415,24 @@ describe("createSqliteTable", () => {
         Symbol(drizzle:OriginalName): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test__users",
         Symbol(drizzle:Schema): undefined,
         Symbol(drizzle:Columns): {
+          "__data": SQLiteText {
+            "config": {
+              "default": undefined,
+              "enumValues": [],
+              "length": undefined,
+              "name": "__data",
+              "notNull": true,
+              "primaryKey": false,
+            },
+            "default": undefined,
+            "enumValues": [],
+            "hasDefault": undefined,
+            "length": undefined,
+            "name": "__data",
+            "notNull": true,
+            "primary": false,
+            "table": [Circular],
+          },
           "__isDeleted": SQLiteBoolean {
             "autoIncrement": false,
             "config": {

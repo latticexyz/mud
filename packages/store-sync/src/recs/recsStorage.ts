@@ -14,7 +14,7 @@ import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { hexToTableId } from "@latticexyz/common";
 import { SchemaToPrimitives, ValueSchema, decodeValue, encodeValue } from "@latticexyz/protocol-parser";
-import { concat, size, slice } from "viem";
+import { concatHex, size, sliceHex } from "viem";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
@@ -79,10 +79,10 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           (previousValue as SchemaToPrimitives<ValueSchema>) ?? schemaToDefaults(table.valueSchema)
         );
         const end = log.args.start + log.args.deleteCount;
-        const newData = concat([
-          slice(previousData, 0, log.args.start),
+        const newData = concatHex([
+          sliceHex(previousData, 0, log.args.start),
           log.args.data,
-          end >= size(previousData) ? "0x" : slice(previousData, end),
+          end >= size(previousData) ? "0x" : sliceHex(previousData, end),
         ]);
         const newValue = decodeValue(table.valueSchema, newData);
         debug("setting component via splice", table.tableId, entity, { newValue, previousValue });
