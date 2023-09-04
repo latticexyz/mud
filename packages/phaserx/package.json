@@ -19,7 +19,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit"
+    "test": "tsc --noEmit",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/utils": "workspace:*",

@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: "postgres://postgres@localhost:5432/postgres"
-        run: pnpm test
+        run: pnpm test:ci
 
       - name: Generate gas reports
         run: pnpm gas-report
