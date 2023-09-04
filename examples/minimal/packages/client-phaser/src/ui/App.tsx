@@ -21,7 +21,7 @@ export const App = () => {
           publicClient: networkLayer.network.publicClient,
           walletClient: networkLayer.network.walletClient,
           latestBlock$: networkLayer.network.latestBlock$,
-          blockStorageOperations$: networkLayer.network.blockStorageOperations$,
+          storedBlockLogs$: networkLayer.network.storedBlockLogs$,
           worldAddress: networkLayer.network.worldContract.address,
           worldAbi: networkLayer.network.worldContract.abi,
           write$: networkLayer.network.write$,
