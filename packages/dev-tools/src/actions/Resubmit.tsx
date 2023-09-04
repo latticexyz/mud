@@ -89,7 +89,7 @@ export function Resubmit({ requestData }: ResubmitProps) {
       </button>
       <button
         type="button"
-        onClick={handleSubmit}
+        onClick={handleRestore}
         className="ml-[50px] inline-block px-1 py-1 text-sm font-medium leading-none text-white bg-gray-700 rounded hover:bg-slate-500"
       >
         Recover
