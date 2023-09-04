@@ -7,3 +7,4 @@ export * from "./isStoreComponent";
 export * from "./recsStorage";
 export * from "./singletonEntity";
 export * from "./syncToRecs";
+export * from "./getTableEntity";
