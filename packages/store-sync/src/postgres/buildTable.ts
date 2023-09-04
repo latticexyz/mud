@@ -7,6 +7,7 @@ import { transformSchemaName } from "./transformSchemaName";
 // TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
   __key: buildColumn("__key", "bytes").notNull().primaryKey(),
+  __data: buildColumn("__data", "bytes").notNull(),
   __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
   // TODO: last updated block hash?
   __isDeleted: buildColumn("__isDeleted", "bool").notNull(),

@@ -4,7 +4,6 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { createPublicClient, http } from "viem";
 import { foundry } from "viem/chains";
-import { blockLogsToStorage } from "../blockLogsToStorage";
 import * as transformSchemaNameExports from "./transformSchemaName";
 import { getTables } from "./getTables";
 import { PostgresStorageAdapter, postgresStorage } from "./postgresStorage";
@@ -32,7 +31,7 @@ describe("postgresStorage", async () => {
   });
 
   it("should create tables and data from block log", async () => {
-    await blockLogsToStorage(storageAdapter)({
+    await storageAdapter.storageAdapter({
       blockNumber: 5448n,
       logs: [
         {
@@ -48,10 +47,11 @@ describe("postgresStorage", async () => {
           args: {
             table: "0x000000000000000000000000000000005265736f757263655479706500000000",
             key: ["0x00000000000000000000000000000000496e76656e746f727900000000000000"],
-            schemaIndex: 0,
             data: "0x02",
+            start: 0,
+            deleteCount: 0,
           },
-          eventName: "StoreSetField",
+          eventName: "StoreSpliceRecord",
         },
         {
           address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",

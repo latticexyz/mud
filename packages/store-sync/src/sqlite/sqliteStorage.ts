@@ -31,7 +31,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
   database.run(sql.raw(sqliteTableToSql(chainState)));
   database.run(sql.raw(sqliteTableToSql(mudStoreTables)));
 
-  return async function storeLogs({ blockNumber, logs }) {
+  return async function sqliteStorageAdapter({ blockNumber, logs }) {
     // Find table registration logs and create new tables
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
     await database.transaction(async (tx) => {
@@ -110,7 +110,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
           // TODO: figure out if we need to pad anything or set defaults
           const value = decodeValue(table.valueSchema, log.args.data);
-          debug("SetRecord", key, value, log);
+          debug("upserting record", { key, value, log });
           tx.insert(sqliteTable)
             .values({
               __key: uniqueKey,
@@ -144,7 +144,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           ]);
           const newValue = decodeValue(table.valueSchema, newData);
 
-          debug("SpliceRecord", { previousData, newData, newValue, log });
+          debug("upserting record via splice", { key, previousData, newData, newValue, log });
           tx.insert(sqliteTable)
             .values({
               __key: key,
@@ -166,7 +166,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             .run();
         } else if (log.eventName === "StoreDeleteRecord") {
           // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
-          debug("DeleteRecord", log);
+          debug("deleting record", { key, log });
           tx.update(sqliteTable)
             .set({
               __lastUpdatedBlockNumber: blockNumber,

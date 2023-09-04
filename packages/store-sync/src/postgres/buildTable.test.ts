@@ -13,6 +13,29 @@ describe("buildTable", () => {
 
     expect(table).toMatchInlineSnapshot(`
       PgTable {
+        "__data": PgCustomColumn {
+          "config": {
+            "customTypeParams": {
+              "dataType": [Function],
+              "fromDriver": [Function],
+              "toDriver": [Function],
+            },
+            "default": undefined,
+            "fieldConfig": undefined,
+            "name": "__data",
+            "notNull": true,
+            "primaryKey": false,
+          },
+          "default": undefined,
+          "hasDefault": undefined,
+          "mapFrom": [Function],
+          "mapTo": [Function],
+          "name": "__data",
+          "notNull": true,
+          "primary": false,
+          "sqlName": "bytea",
+          "table": [Circular],
+        },
         "__isDeleted": PgBoolean {
           "config": {
             "default": undefined,
@@ -162,6 +185,29 @@ describe("buildTable", () => {
         Symbol(drizzle:OriginalName): "users",
         Symbol(drizzle:Schema): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test",
         Symbol(drizzle:Columns): {
+          "__data": PgCustomColumn {
+            "config": {
+              "customTypeParams": {
+                "dataType": [Function],
+                "fromDriver": [Function],
+                "toDriver": [Function],
+              },
+              "default": undefined,
+              "fieldConfig": undefined,
+              "name": "__data",
+              "notNull": true,
+              "primaryKey": false,
+            },
+            "default": undefined,
+            "hasDefault": undefined,
+            "mapFrom": [Function],
+            "mapTo": [Function],
+            "name": "__data",
+            "notNull": true,
+            "primary": false,
+            "sqlName": "bytea",
+            "table": [Circular],
+          },
           "__isDeleted": PgBoolean {
             "config": {
               "default": undefined,
@@ -328,6 +374,29 @@ describe("buildTable", () => {
 
     expect(table).toMatchInlineSnapshot(`
       PgTable {
+        "__data": PgCustomColumn {
+          "config": {
+            "customTypeParams": {
+              "dataType": [Function],
+              "fromDriver": [Function],
+              "toDriver": [Function],
+            },
+            "default": undefined,
+            "fieldConfig": undefined,
+            "name": "__data",
+            "notNull": true,
+            "primaryKey": false,
+          },
+          "default": undefined,
+          "hasDefault": undefined,
+          "mapFrom": [Function],
+          "mapTo": [Function],
+          "name": "__data",
+          "notNull": true,
+          "primary": false,
+          "sqlName": "bytea",
+          "table": [Circular],
+        },
         "__isDeleted": PgBoolean {
           "config": {
             "default": undefined,
@@ -415,6 +484,29 @@ describe("buildTable", () => {
         Symbol(drizzle:OriginalName): "users",
         Symbol(drizzle:Schema): "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF__test",
         Symbol(drizzle:Columns): {
+          "__data": PgCustomColumn {
+            "config": {
+              "customTypeParams": {
+                "dataType": [Function],
+                "fromDriver": [Function],
+                "toDriver": [Function],
+              },
+              "default": undefined,
+              "fieldConfig": undefined,
+              "name": "__data",
+              "notNull": true,
+              "primaryKey": false,
+            },
+            "default": undefined,
+            "hasDefault": undefined,
+            "mapFrom": [Function],
+            "mapTo": [Function],
+            "name": "__data",
+            "notNull": true,
+            "primary": false,
+            "sqlName": "bytea",
+            "table": [Circular],
+          },
           "__isDeleted": PgBoolean {
             "config": {
               "default": undefined,

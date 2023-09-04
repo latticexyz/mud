@@ -33,7 +33,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     Object.entries(components).map(([id, component]) => [component.id, component])
   );
 
-  return async function storeLogs({ logs }) {
+  return async function recsStorageAdapter({ logs }) {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
     for (const newTable of newTables) {
       const tableEntity = getTableEntity(newTable);
