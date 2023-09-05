@@ -20,12 +20,14 @@ RUN mkdir -p /etc/apt/keyrings && \
     npm --version
 
 # go
+ENV PATH="${PATH}:/usr/local/go/bin"
 RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
     # -C to move to given directory
     tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz && \
     go version
 
 # foundry
+ENV PATH="${PATH}:/root/.foundry/bin"
 RUN curl -L https://foundry.paradigm.xyz/ | bash && \
     ${HOME}/.foundry/bin/foundryup && \
     forge --version && \
@@ -40,8 +42,6 @@ FROM base AS builder
 COPY . /app
 WORKDIR /app
 
-ENV PATH="${PATH}:/usr/local/go/bin"
-ENV PATH="${PATH}:/root/.foundry/bin"
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
 
