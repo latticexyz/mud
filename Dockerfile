@@ -24,11 +24,11 @@ RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
 
 # foundry
 RUN curl -L https://foundry.paradigm.xyz/ | bash && \
-    ${HOME}/.foundry/bin/foundryup \
-    && forge --version \
-    && cast --version \
-    && anvil --version \
-    && chisel --version
+    ${HOME}/.foundry/bin/foundryup && \
+    forge --version && \
+    cast --version && \
+    anvil --version && \
+    chisel --version
 
 # pnpm
 RUN npm install pnpm --global && pnpm --version
