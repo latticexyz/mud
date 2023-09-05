@@ -36,6 +36,8 @@ RUN curl -L https://foundry.paradigm.xyz/ | bash && \
     chisel --version
 
 # pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="${PATH}:${PNPM_HOME}"
 RUN npm install pnpm --global && pnpm --version
 
 FROM base AS builder
