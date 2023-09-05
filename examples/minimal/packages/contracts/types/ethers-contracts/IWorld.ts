@@ -467,7 +467,7 @@ export interface IWorldInterface extends utils.Interface {
     "StoreDeleteRecord(bytes32,bytes32[])": EventFragment;
     "StoreEphemeralRecord(bytes32,bytes32[],bytes)": EventFragment;
     "StoreSetRecord(bytes32,bytes32[],bytes)": EventFragment;
-    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes)": EventFragment;
+    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes,bytes32,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "HelloWorld"): EventFragment;
@@ -525,9 +525,11 @@ export interface StoreSpliceRecordEventObject {
   start: number;
   deleteCount: number;
   data: string;
+  newDynamicLengths: string;
+  dynamicLengthsStart: BigNumber;
 }
 export type StoreSpliceRecordEvent = TypedEvent<
-  [string, string[], number, number, string],
+  [string, string[], number, number, string, string, BigNumber],
   StoreSpliceRecordEventObject
 >;
 
@@ -1309,19 +1311,23 @@ export interface IWorld extends BaseContract {
       data?: null
     ): StoreSetRecordEventFilter;
 
-    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes)"(
+    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes,bytes32,uint256)"(
       table?: null,
       key?: null,
       start?: null,
       deleteCount?: null,
-      data?: null
+      data?: null,
+      newDynamicLengths?: null,
+      dynamicLengthsStart?: null
     ): StoreSpliceRecordEventFilter;
     StoreSpliceRecord(
       table?: null,
       key?: null,
       start?: null,
       deleteCount?: null,
-      data?: null
+      data?: null,
+      newDynamicLengths?: null,
+      dynamicLengthsStart?: null
     ): StoreSpliceRecordEventFilter;
   };
 

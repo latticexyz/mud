@@ -373,6 +373,18 @@ const _abi = [
         name: "data",
         type: "bytes",
       },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "newDynamicLengths",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "dynamicLengthsStart",
+        type: "uint256",
+      },
     ],
     name: "StoreSpliceRecord",
     type: "event",
