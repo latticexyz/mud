@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/store",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.5",
   "description": "Store",
   "repository": {
     "type": "git",
@@ -48,7 +48,8 @@
     "dev": "tsup --watch",
     "gas-report": "mud-gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test"
+    "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
