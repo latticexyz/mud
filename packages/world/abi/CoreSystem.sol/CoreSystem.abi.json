@@ -306,7 +306,7 @@
       },
       {
         "internalType": "FieldLayout",
-        "name": "valueFieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],

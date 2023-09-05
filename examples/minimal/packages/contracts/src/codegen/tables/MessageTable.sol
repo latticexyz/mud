@@ -14,6 +14,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
@@ -21,6 +22,13 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Messa
 bytes32 constant MessageTableTableId = _tableId;
 
 library MessageTable {
+  /** Get the table values' field layout */
+  function getFieldLayout() internal pure returns (FieldLayout) {
+    uint256[] memory _fieldLayout = new uint256[](0);
+
+    return FieldLayoutLib.encode(_fieldLayout, 1);
+  }
+
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](0);
@@ -47,14 +55,21 @@ library MessageTable {
     fieldNames[0] = "value";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /** Register the table keys' and values' field layout, key names and value names */
   function register() internal {
-    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    StoreSwitch.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Emit the ephemeral event using individual values */
@@ -63,7 +78,7 @@ library MessageTable {
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
@@ -72,10 +87,10 @@ library MessageTable {
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
-  /** Tightly pack full data using this table's schema */
+  /** Tightly pack full data using this table's field layout */
   function encode(string memory value) internal pure returns (bytes memory) {
     PackedCounter _encodedLengths;
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
@@ -86,7 +101,7 @@ library MessageTable {
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple() internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 

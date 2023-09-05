@@ -22,16 +22,8 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Ephem
 bytes32 constant EphemeralTableId = _tableId;
 
 library Ephemeral {
-  /** Get the table keys' field layout */
-  function getKeyFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
-  }
-
   /** Get the table values' field layout */
-  function getValueFieldLayout() internal pure returns (FieldLayout) {
+  function getFieldLayout() internal pure returns (FieldLayout) {
     uint256[] memory _fieldLayout = new uint256[](1);
     _fieldLayout[0] = 32;
 
@@ -70,8 +62,7 @@ library Ephemeral {
   function register() internal {
     StoreSwitch.registerTable(
       _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
+      getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
       getKeyNames(),
@@ -81,15 +72,7 @@ library Ephemeral {
 
   /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(
-      _tableId,
-      getKeyFieldLayout(),
-      getValueFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Emit the ephemeral event using individual values */
@@ -99,7 +82,7 @@ library Ephemeral {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
@@ -109,7 +92,7 @@ library Ephemeral {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueFieldLayout());
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Tightly pack full data using this table's field layout */

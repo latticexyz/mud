@@ -159,7 +159,6 @@ contract WorldTest is Test, GasReporter {
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  FieldLayout defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   IBaseWorld world;
 

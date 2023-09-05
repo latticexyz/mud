@@ -21,12 +21,12 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
     bytes32 resourceSelector,
     bytes32[] calldata key,
     bytes calldata data,
-    FieldLayout valueFieldLayout
+    FieldLayout fieldLayout
   ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(resourceSelector, msg.sender);
 
     // Set the record
-    StoreCore.emitEphemeralRecord(resourceSelector, key, data, valueFieldLayout);
+    StoreCore.emitEphemeralRecord(resourceSelector, key, data, fieldLayout);
   }
 }

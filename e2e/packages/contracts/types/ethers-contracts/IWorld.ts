@@ -35,11 +35,12 @@ export interface IWorldInterface extends utils.Interface {
     "deleteRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
     "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
     "getField(bytes32,bytes32[],uint8,bytes32)": FunctionFragment;
+    "getFieldLayout(bytes32)": FunctionFragment;
     "getFieldLength(bytes32,bytes32[],uint8,bytes32)": FunctionFragment;
     "getFieldSlice(bytes32,bytes32[],uint8,bytes32,uint256,uint256)": FunctionFragment;
-    "getKeyFieldLayout(bytes32)": FunctionFragment;
+    "getKeySchema(bytes32)": FunctionFragment;
     "getRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
-    "getValueFieldLayout(bytes32)": FunctionFragment;
+    "getValueSchema(bytes32)": FunctionFragment;
     "grantAccess(bytes32,address)": FunctionFragment;
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
@@ -55,7 +56,7 @@ export interface IWorldInterface extends utils.Interface {
     "registerStoreHook(bytes32,address)": FunctionFragment;
     "registerSystem(bytes32,address,bool)": FunctionFragment;
     "registerSystemHook(bytes32,address)": FunctionFragment;
-    "registerTable(bytes32,bytes32,bytes32,string[],string[])": FunctionFragment;
+    "registerTable(bytes32,bytes32,bytes32,bytes32,string[],string[])": FunctionFragment;
     "revokeAccess(bytes32,address)": FunctionFragment;
     "set(uint32[])": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
@@ -72,11 +73,12 @@ export interface IWorldInterface extends utils.Interface {
       | "deleteRecord"
       | "emitEphemeralRecord"
       | "getField"
+      | "getFieldLayout"
       | "getFieldLength"
       | "getFieldSlice"
-      | "getKeyFieldLayout"
+      | "getKeySchema"
       | "getRecord"
-      | "getValueFieldLayout"
+      | "getValueSchema"
       | "grantAccess"
       | "installModule"
       | "installRootModule"
@@ -141,6 +143,10 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "getFieldLayout",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getFieldLength",
     values: [
       PromiseOrValue<BytesLike>,
@@ -161,7 +167,7 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "getKeyFieldLayout",
+    functionFragment: "getKeySchema",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -173,7 +179,7 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "getValueFieldLayout",
+    functionFragment: "getValueSchema",
     values: [PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
@@ -267,6 +273,7 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
       PromiseOrValue<string>[],
       PromiseOrValue<string>[]
     ]
@@ -330,6 +337,10 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "getField", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getFieldLayout",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getFieldLength",
     data: BytesLike
   ): Result;
@@ -338,12 +349,12 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getKeyFieldLayout",
+    functionFragment: "getKeySchema",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getRecord", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "getValueFieldLayout",
+    functionFragment: "getValueSchema",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -531,7 +542,7 @@ export interface IWorld extends BaseContract {
     deleteRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -539,7 +550,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -547,15 +558,20 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string] & { data: string }>;
+
+    getFieldLayout(
+      table: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string] & { fieldLayout: string }>;
 
     getFieldLength(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
@@ -563,28 +579,28 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       start: PromiseOrValue<BigNumberish>,
       end: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string] & { data: string }>;
 
-    getKeyFieldLayout(
+    getKeySchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<[string] & { fieldLayout: string }>;
+    ): Promise<[string] & { schema: string }>;
 
     getRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string] & { data: string }>;
 
-    getValueFieldLayout(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<[string] & { fieldLayout: string }>;
+    ): Promise<[string] & { schema: string }>;
 
     grantAccess(
       resourceSelector: PromiseOrValue<BytesLike>,
@@ -613,7 +629,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -633,7 +649,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -684,8 +700,9 @@ export interface IWorld extends BaseContract {
 
     registerTable(
       table: PromiseOrValue<BytesLike>,
-      keyFieldLayout: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -707,7 +724,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -715,7 +732,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -736,7 +753,7 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
       dataToSet: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
@@ -757,7 +774,7 @@ export interface IWorld extends BaseContract {
   deleteRecord(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -765,7 +782,7 @@ export interface IWorld extends BaseContract {
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     data: PromiseOrValue<BytesLike>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -773,7 +790,12 @@ export interface IWorld extends BaseContract {
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  getFieldLayout(
+    table: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -781,7 +803,7 @@ export interface IWorld extends BaseContract {
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
@@ -789,13 +811,13 @@ export interface IWorld extends BaseContract {
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     start: PromiseOrValue<BigNumberish>,
     end: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getKeyFieldLayout(
+  getKeySchema(
     table: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -803,11 +825,11 @@ export interface IWorld extends BaseContract {
   getRecord(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
 
-  getValueFieldLayout(
+  getValueSchema(
     table: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -839,7 +861,7 @@ export interface IWorld extends BaseContract {
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
     byteLengthToPop: PromiseOrValue<BigNumberish>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -859,7 +881,7 @@ export interface IWorld extends BaseContract {
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
     dataToPush: PromiseOrValue<BytesLike>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -910,8 +932,9 @@ export interface IWorld extends BaseContract {
 
   registerTable(
     table: PromiseOrValue<BytesLike>,
-    keyFieldLayout: PromiseOrValue<BytesLike>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
+    keySchema: PromiseOrValue<BytesLike>,
+    valueSchema: PromiseOrValue<BytesLike>,
     keyNames: PromiseOrValue<string>[],
     fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -933,7 +956,7 @@ export interface IWorld extends BaseContract {
     key: PromiseOrValue<BytesLike>[],
     schemaIndex: PromiseOrValue<BigNumberish>,
     data: PromiseOrValue<BytesLike>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -941,7 +964,7 @@ export interface IWorld extends BaseContract {
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
     data: PromiseOrValue<BytesLike>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -962,7 +985,7 @@ export interface IWorld extends BaseContract {
     schemaIndex: PromiseOrValue<BigNumberish>,
     startByteIndex: PromiseOrValue<BigNumberish>,
     dataToSet: PromiseOrValue<BytesLike>,
-    valueFieldLayout: PromiseOrValue<BytesLike>,
+    fieldLayout: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -983,7 +1006,7 @@ export interface IWorld extends BaseContract {
     deleteRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -991,7 +1014,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -999,7 +1022,12 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    getFieldLayout(
+      table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -1007,7 +1035,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1015,13 +1043,13 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       start: PromiseOrValue<BigNumberish>,
       end: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getKeyFieldLayout(
+    getKeySchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -1029,11 +1057,11 @@ export interface IWorld extends BaseContract {
     getRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
 
-    getValueFieldLayout(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -1063,7 +1091,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1083,7 +1111,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1134,8 +1162,9 @@ export interface IWorld extends BaseContract {
 
     registerTable(
       table: PromiseOrValue<BytesLike>,
-      keyFieldLayout: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
@@ -1157,7 +1186,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1165,7 +1194,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1186,7 +1215,7 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
       dataToSet: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -1254,7 +1283,7 @@ export interface IWorld extends BaseContract {
     deleteRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1262,7 +1291,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1270,7 +1299,12 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getFieldLayout(
+      table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1278,7 +1312,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1286,13 +1320,13 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       start: PromiseOrValue<BigNumberish>,
       end: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getKeyFieldLayout(
+    getKeySchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1300,11 +1334,11 @@ export interface IWorld extends BaseContract {
     getRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getValueFieldLayout(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -1336,7 +1370,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1356,7 +1390,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1407,8 +1441,9 @@ export interface IWorld extends BaseContract {
 
     registerTable(
       table: PromiseOrValue<BytesLike>,
-      keyFieldLayout: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1430,7 +1465,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1438,7 +1473,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1459,7 +1494,7 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
       dataToSet: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
@@ -1481,7 +1516,7 @@ export interface IWorld extends BaseContract {
     deleteRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1489,7 +1524,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1497,7 +1532,12 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getFieldLayout(
+      table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1505,7 +1545,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -1513,13 +1553,13 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       start: PromiseOrValue<BigNumberish>,
       end: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getKeyFieldLayout(
+    getKeySchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1527,11 +1567,11 @@ export interface IWorld extends BaseContract {
     getRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getValueFieldLayout(
+    getValueSchema(
       table: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1563,7 +1603,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       byteLengthToPop: PromiseOrValue<BigNumberish>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1583,7 +1623,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       dataToPush: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1634,8 +1674,9 @@ export interface IWorld extends BaseContract {
 
     registerTable(
       table: PromiseOrValue<BytesLike>,
-      keyFieldLayout: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
+      keySchema: PromiseOrValue<BytesLike>,
+      valueSchema: PromiseOrValue<BytesLike>,
       keyNames: PromiseOrValue<string>[],
       fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -1657,7 +1698,7 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       schemaIndex: PromiseOrValue<BigNumberish>,
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1665,7 +1706,7 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1686,7 +1727,7 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
       dataToSet: PromiseOrValue<BytesLike>,
-      valueFieldLayout: PromiseOrValue<BytesLike>,
+      fieldLayout: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

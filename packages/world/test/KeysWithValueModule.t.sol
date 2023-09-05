@@ -36,7 +36,6 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   bytes32[] keyTuple2;
 
   FieldLayout sourceTableFieldLayout;
-  FieldLayout sourceTableKeyFieldLayout;
   Schema sourceTableSchema;
   Schema sourceTableKeySchema;
   bytes32 sourceTableId;
@@ -44,7 +43,6 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
   function setUp() public {
     sourceTableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
-    sourceTableKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));

@@ -155,7 +155,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidFieldNamesLength",
+    name: "StoreCore_InvalidKeyNamesLength",
     type: "error",
   },
   {
@@ -171,7 +171,23 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidKeyNamesLength",
+    name: "StoreCore_InvalidValueNamesLength",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidValueSchemaLength",
     type: "error",
   },
   {
@@ -399,8 +415,8 @@ const _abi = [
         type: "bytes32[]",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -467,8 +483,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -495,8 +511,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -506,6 +522,25 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+    ],
+    name: "getFieldLayout",
+    outputs: [
+      {
+        internalType: "FieldLayout",
+        name: "fieldLayout",
+        type: "bytes32",
       },
     ],
     stateMutability: "view",
@@ -529,8 +564,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -563,8 +598,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
       {
@@ -621,8 +656,8 @@ const _abi = [
         type: "bytes32[]",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -764,8 +799,8 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -797,8 +832,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -968,6 +1003,11 @@ const _abi = [
         type: "bytes32",
       },
       {
+        internalType: "FieldLayout",
+        name: "fieldLayout",
+        type: "bytes32",
+      },
+      {
         internalType: "Schema",
         name: "keySchema",
         type: "bytes32",
@@ -1047,8 +1087,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -1075,8 +1115,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -1171,8 +1211,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],

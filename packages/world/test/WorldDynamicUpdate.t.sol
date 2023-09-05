@@ -33,7 +33,6 @@ contract UpdateInFieldTest is Test, GasReporter {
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
-  FieldLayout internal defaultKeyFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   IBaseWorld internal world;
 

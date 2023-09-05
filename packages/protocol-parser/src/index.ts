@@ -9,6 +9,7 @@ export * from "./encodeField";
 export * from "./encodeKeyTuple";
 export * from "./encodeRecord";
 export * from "./errors";
+export * from "./fieldLayoutToHex";
 export * from "./hexToPackedCounter";
 export * from "./hexToSchema";
 export * from "./hexToTableSchema";
