@@ -40,13 +40,13 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="${PATH}:${PNPM_HOME}"
 RUN npm install pnpm --global && pnpm --version
 
-FROM base AS builder
+FROM base AS mud
 COPY . /app
 WORKDIR /app
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
 
-FROM builder AS store-indexer
+FROM mud AS store-indexer
 WORKDIR /app/packages/store-indexer
 EXPOSE 3001

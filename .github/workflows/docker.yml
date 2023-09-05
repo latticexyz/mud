@@ -10,12 +10,19 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-and-push-image:
+  docker:
     name: Build and push image
     runs-on: ubuntu-latest-16-cores
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        include:
+          - image: ghcr.io/latticexyz/mud
+            target: mud
+          - image: ghcr.io/latticexyz/store-indexer
+            target: store-indexer
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,7 +36,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ matrix.image }}
           types: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
@@ -39,6 +46,6 @@ jobs:
         with:
           context: .
           push: true
-          target: builder
+          target: ${{ matrix.target }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
