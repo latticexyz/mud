@@ -14,13 +14,17 @@ RUN apt-get -y update --fix-missing && \
 
 # foundry
 RUN curl -L https://foundry.paradigm.xyz/ | bash && \
-    ${HOME}/.foundry/bin/foundryup
+    ${HOME}/.foundry/bin/foundryup \
+    && forge --version \
+    && cast --version \
+    && anvil --version \
+    && chisel --version
 # go
 RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
     # -C to move to given directory
     tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz
 # pnpm
-RUN npm install pnpm --global
+RUN npm install pnpm --global && pnpm --version
 
 FROM base AS builder
 COPY . /app
