@@ -7,7 +7,7 @@ import { Resource } from "../../Types.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
-import { WorldContext } from "../../WorldContext.sol";
+import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
@@ -24,7 +24,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
-contract KeysInTableModule is IModule, WorldContext {
+contract KeysInTableModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
   // The KeysInTableHook is deployed once and infers the target table id

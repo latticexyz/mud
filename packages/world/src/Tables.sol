@@ -6,6 +6,7 @@ pragma solidity >=0.8.0;
 import { NamespaceOwner, NamespaceOwnerTableId } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess, ResourceAccessTableId } from "./tables/ResourceAccess.sol";
 import { InstalledModules, InstalledModulesData, InstalledModulesTableId } from "./tables/InstalledModules.sol";
+import { Delegations, DelegationsTableId } from "./tables/Delegations.sol";
 import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
 import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
 import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHooks.sol";
@@ -15,5 +16,7 @@ import { KeysWithValue } from "./modules/keyswithvalue/tables/KeysWithValue.sol"
 import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
+import { CallboundDelegations, CallboundDelegationsTableId } from "./modules/std-delegations/tables/CallboundDelegations.sol";
+import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std-delegations/tables/TimeboundDelegations.sol";
 import { Bool } from "./../test/tables/Bool.sol";
 import { AddressArray } from "./../test/tables/AddressArray.sol";

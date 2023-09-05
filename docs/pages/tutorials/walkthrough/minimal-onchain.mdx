@@ -22,7 +22,7 @@ The data schema is declared in `packages/contracts/mud.config.ts`.
 The data schema provided in the example is extremely simple (one singleton).
 To see more of how it works, lets add a second table:
 
-```ts
+```ts filename="mud.config.ts" copy
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
@@ -62,7 +62,7 @@ contract Example {
 If you are running `pnpm dev` the data schema is updated automatically.
 Otherwise, the command to apply changes to the data schema is
 
-```sh
+```sh copy
 pnpm mud tablegen
 ```
 
@@ -79,7 +79,7 @@ Click below for an explanation of these files.
   
 #### `Tables.sol`
 
-```solidity
+```solidity filename="Tables.sol"
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 

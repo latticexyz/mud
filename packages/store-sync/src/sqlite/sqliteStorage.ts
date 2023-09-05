@@ -5,13 +5,13 @@ import { sqliteTableToSql } from "./sqliteTableToSql";
 import { createSqliteTable } from "./createSqliteTable";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { TableId } from "@latticexyz/common/deprecated";
-import { BlockLogsToStorageOptions } from "../blockLogsToStorage";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
 import { chainState, mudStoreTables } from "./internalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
+import { StorageAdapter } from "../common";
 
 export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
   database,
@@ -20,7 +20,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
   database: BaseSQLiteDatabase<"sync", void>;
   publicClient: PublicClient;
   config?: TConfig;
-}): Promise<BlockLogsToStorageOptions<TConfig>> {
+}): Promise<StorageAdapter<TConfig>> {
   const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
 
   // TODO: should these run lazily before first `registerTables`?
@@ -185,5 +185,5 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           .run();
       });
     },
-  } as BlockLogsToStorageOptions<TConfig>;
+  } as StorageAdapter<TConfig>;
 }

@@ -18,7 +18,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -141,12 +141,12 @@ contract WorldTestTableHook is IStoreHook {
 contract WorldTestSystemHook is ISystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("before", msgSender, systemAddress, funcSelectorAndArgs));
+  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, funcSelectorAndArgs));
   }
 
-  function onAfterCallSystem(address msgSender, address systemAddress, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("after", msgSender, systemAddress, funcSelectorAndArgs));
+  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, funcSelectorAndArgs));
   }
 }
 
@@ -244,6 +244,38 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, ResourceSelector.toString(bytes16("test")))
     );
     world.registerNamespace("test");
+  }
+
+  function testTransferNamespace() public {
+    world.registerNamespace("testTransfer");
+
+    // Expect the new owner to not be namespace owner before transfer
+    assertFalse(
+      (NamespaceOwner.get(world, "testTransfer") == address(1)),
+      "new owner should not be namespace owner before transfer"
+    );
+    // Expect the new owner to not have access before transfer
+    assertEq(
+      ResourceAccess.get(world, "testTransfer", address(1)),
+      false,
+      "new owner should not have access before transfer"
+    );
+
+    world.transferOwnership("testTransfer", address(1));
+    // Expect the new owner to be namespace owner
+    assertEq(NamespaceOwner.get(world, "testTransfer"), address(1), "new owner should be namespace owner");
+    // Expect the new owner to have access
+    assertEq(ResourceAccess.get(world, "testTransfer", address(1)), true, "new owner should have access");
+    // Expect previous owner to no longer be owner
+    assertFalse(
+      (NamespaceOwner.get(world, "testTransfer") == address(this)),
+      "caller should no longer be namespace owner"
+    );
+    // Expect previous owner to no longer have access
+    assertEq(ResourceAccess.get(world, "testTransfer", address(this)), false, "caller should no longer have access");
+    // Expect revert if caller is not the owner
+    _expectAccessDenied(address(this), "testTransfer", 0);
+    world.transferOwnership("testTransfer", address(1));
   }
 
   function testRegisterTable() public {
@@ -518,7 +550,9 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(resourceSelector, system, false);
 
     // Call a system function without arguments via the World
+    startGasReport("call a system via the World");
     bytes memory result = world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    endGasReport();
 
     // Expect the system to have received the caller's address
     assertEq(address(uint160(uint256(bytes32(result)))), address(this));
@@ -578,6 +612,66 @@ contract WorldTest is Test, GasReporter {
     assertEq(returnedAddress, address(this), "subsystem returned wrong address");
   }
 
+  function testCallFromUnlimitedDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    // Register an unlimited delegation
+    address delegator = address(1);
+    address delegatee = address(2);
+    vm.prank(delegator);
+    startGasReport("register an unlimited delegation");
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+    endGasReport();
+
+    // Call a system from the delegatee on behalf of the delegator
+    vm.prank(delegatee);
+    startGasReport("call a system via an unlimited delegation");
+    bytes memory returnData = world.callFrom(
+      delegator,
+      resourceSelector,
+      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+    );
+    endGasReport();
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, delegator);
+  }
+
+  function testCallFromFailDelegationNotFound() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.DelegationNotFound.selector,
+        address(2), // Delegator
+        address(1) // Delegatee
+      )
+    );
+    vm.prank(address(1));
+    world.callFrom(address(2), resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+  }
+
+  function testCallFromLimitedDelegation() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    // Register a limited delegation
+    address delegator = address(1);
+    address delegatee = address(2);
+    vm.prank(delegator);
+    world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
+  }
+
   function testRegisterTableHook() public {
     Schema valueSchema = Bool.getValueSchema();
     bytes32 tableId = ResourceSelector.from("", "testTable");
@@ -602,30 +696,30 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterSystemHook() public {
-    bytes32 tableId = ResourceSelector.from("namespace", "testTable");
+    bytes32 systemId = ResourceSelector.from("namespace", "testTable");
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(tableId, system, false);
+    world.registerSystem(systemId, system, false);
 
     // Register a new hook
     ISystemHook systemHook = new WorldTestSystemHook();
-    world.registerSystemHook(tableId, systemHook);
+    world.registerSystemHook(systemId, systemHook);
 
     bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect the hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("before", address(this), address(system), funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
 
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("fallback");
 
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("after", address(this), address(system), funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
 
     // Call a system fallback function without arguments via the World
-    world.call(tableId, funcSelectorAndArgs);
+    world.call(systemId, funcSelectorAndArgs);
   }
 
   function testWriteRootSystem() public {

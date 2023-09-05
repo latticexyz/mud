@@ -19,7 +19,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit && jest"
+    "test": "tsc --noEmit && jest",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "ethers": "^5.7.2",

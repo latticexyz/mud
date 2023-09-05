@@ -79,7 +79,7 @@ importers:
         version: 1.7.0
       viem:
         specifier: 1.6.0
-        version: 1.6.0(typescript@5.1.6)
+        version: 1.6.0(typescript@5.1.6)(zod@3.22.2)
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -170,7 +170,7 @@ importers:
         version: 0.0.6
       abitype:
         specifier: 0.9.3
-        version: 0.9.3(typescript@5.1.6)
+        version: 0.9.3(typescript@5.1.6)(zod@3.22.2)
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
@@ -191,13 +191,16 @@ importers:
         version: 5.1.6
       viem:
         specifier: 1.6.0
-        version: 1.6.0(typescript@5.1.6)
+        version: 1.6.0(typescript@5.1.6)(zod@3.22.2)
       vite:
         specifier: ^4.2.1
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: ^0.31.0
         version: 0.31.4(jsdom@22.0.0)
+      zod:
+        specifier: ^3.22.2
+        version: 3.22.2
 
 packages:
 
@@ -941,7 +944,7 @@ packages:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
     dev: true
 
-  /abitype@0.9.3(typescript@5.1.6):
+  /abitype@0.9.3(typescript@5.1.6)(zod@3.22.2):
     resolution: {integrity: sha512-dz4qCQLurx97FQhnb/EIYTk/ldQ+oafEDUqC0VVIeQS1Q48/YWt/9YNfMmp9SLFqN41ktxny3c8aYxHjmFIB/w==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -953,6 +956,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.1.6
+      zod: 3.22.2
 
   /abort-controller-x@0.4.1:
     resolution: {integrity: sha512-lJ2ssrl3FoTK3cX/g15lRCkXFWKiwRTRtBjfwounO2EM/Q65rI/MEZsfsch1juWU2pH2aLSaq0HGowlDP/imrw==}
@@ -2264,7 +2268,7 @@ packages:
     hasBin: true
     dev: true
 
-  /viem@1.6.0(typescript@5.1.6):
+  /viem@1.6.0(typescript@5.1.6)(zod@3.22.2):
     resolution: {integrity: sha512-ae9Twkd0q2Qlj4yYpWjb4DzYAhKY0ibEpRH8FJaTywZXNpTjFidSdBaT0CVn1BaH7O7cnX4/O47zvDUMGJD1AA==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -2279,7 +2283,7 @@ packages:
       '@scure/bip39': 1.2.0
       '@types/ws': 8.5.5
       '@wagmi/chains': 1.6.0(typescript@5.1.6)
-      abitype: 0.9.3(typescript@5.1.6)
+      abitype: 0.9.3(typescript@5.1.6)(zod@3.22.2)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       typescript: 5.1.6
       ws: 8.12.0
@@ -2560,6 +2564,9 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
     dev: true
+
+  /zod@3.22.2:
+    resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
 
   github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0:
     resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0}
