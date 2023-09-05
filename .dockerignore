@@ -1,4 +1,13 @@
 node_modules
+**/node_modules
 .gitignore
 *.md
 dist
+**/dist
+**/out/
+**/cache/
+**/bindings/
+**/artifacts/
+**/abi/
+**/broadcast/
+**/deploys/
