@@ -5,9 +5,6 @@ on:
     branches: ["main", "holic/dockerfile-ci"]
   workflow_dispatch:
 
-env:
-  REGISTRY: ghcr.io
-
 jobs:
   docker:
     name: Build and push image
@@ -18,9 +15,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: ${{ env.REGISTRY }}/latticexyz/mud
+          - image: ghcr.io/latticexyz/mud
             target: mud
-          - image: ${{ env.REGISTRY }}/latticexyz/store-indexer
+          - image: ghcr.io/latticexyz/store-indexer
             target: store-indexer
     steps:
       - name: Checkout repository
@@ -28,7 +25,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract metadata (tags, labels) for Docker
