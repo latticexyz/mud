@@ -281,7 +281,7 @@ contract StoreHookTest is Test, GasReporter {
     assertEq(storeHook.getBitmap(), StoreHookLib.encodeBitmap(enabledHooks));
   }
 
-  function testOnBeforeSetRecord() public {
+  function testCallHook() public {
     StoreHook storeHook = StoreHookLib.encode(
       echoSubscriber,
       EnabledHooks({
@@ -297,7 +297,9 @@ contract StoreHookTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encode(tableId, key, data, valueSchema));
     startGasReport("call an enabled hook");
-    storeHook.onBeforeSetRecord(tableId, key, data, valueSchema);
+    if (storeHook.isEnabled(HookType.BEFORE_SET_RECORD)) {
+      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
+    }
     endGasReport();
 
     StoreHook revertHook = StoreHookLib.encode(
@@ -314,172 +316,9 @@ contract StoreHookTest is Test, GasReporter {
 
     // Expect the to not be called - otherwise the test will fail with a revert
     startGasReport("call a disabled hook");
-    revertHook.onBeforeSetRecord(tableId, key, data, valueSchema);
+    if (revertHook.isEnabled(HookType.BEFORE_SET_RECORD)) {
+      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
+    }
     endGasReport();
-  }
-
-  function testOnAfterSetRecord() public {
-    StoreHook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: true,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, data, valueSchema));
-    storeHook.onAfterSetRecord(tableId, key, data, valueSchema);
-
-    StoreHook revertHook = StoreHookLib.encode(
-      revertSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    // Expect the to not be called - otherwise the test will fail with a revert
-    revertHook.onAfterSetRecord(tableId, key, data, valueSchema);
-  }
-
-  function testOnBeforeSetField() public {
-    StoreHook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, schemaIndex, data, valueSchema));
-    storeHook.onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
-
-    StoreHook revertHook = StoreHookLib.encode(
-      revertSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    // Expect the to not be called - otherwise the test will fail with a revert
-    revertHook.onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
-  }
-
-  function testOnAfterSetField() public {
-    StoreHook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: true,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, schemaIndex, data, valueSchema));
-    storeHook.onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
-
-    StoreHook revertHook = StoreHookLib.encode(
-      revertSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    // Expect the to not be called - otherwise the test will fail with a revert
-    revertHook.onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
-  }
-
-  function testOnBeforeDeleteRecord() public {
-    StoreHook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
-      })
-    );
-
-    vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, valueSchema));
-    storeHook.onBeforeDeleteRecord(tableId, key, valueSchema);
-
-    StoreHook revertHook = StoreHookLib.encode(
-      revertSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    // Expect the to not be called - otherwise the test will fail with a revert
-    revertHook.onBeforeDeleteRecord(tableId, key, valueSchema);
-  }
-
-  function testOnAfterDeleteRecord() public {
-    StoreHook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: true
-      })
-    );
-
-    vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, valueSchema));
-    storeHook.onAfterDeleteRecord(tableId, key, valueSchema);
-
-    StoreHook revertHook = StoreHookLib.encode(
-      revertSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
-      })
-    );
-
-    // Expect the to not be called - otherwise the test will fail with a revert
-    revertHook.onAfterDeleteRecord(tableId, key, valueSchema);
   }
 }
