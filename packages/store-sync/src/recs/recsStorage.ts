@@ -12,20 +12,13 @@ import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { hexToTableId } from "@latticexyz/common";
-import {
-  SchemaToPrimitives,
-  UNCHANGED_PACKED_COUNTER,
-  ValueSchema,
-  decodeValue,
-  encodeValue,
-  staticDataLength,
-} from "@latticexyz/protocol-parser";
-import { Hex, concatHex, padHex, size, sliceHex } from "viem";
+import { decodeValue } from "@latticexyz/protocol-parser";
+import { Hex } from "viem";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
-import { schemaToDefaults } from "../schemaToDefaults";
+import { spliceValueHex } from "../spliceValueHex";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
@@ -81,25 +74,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         setComponent(component, entity, { ...value, __data: log.args.data });
       } else if (log.eventName === "StoreSpliceRecord") {
         const previousData = (getComponentValue(component, entity)?.__data as Hex) ?? "0x";
-
-        let newData = previousData;
-        if (log.args.newDynamicLengths !== UNCHANGED_PACKED_COUNTER) {
-          const start = Number(log.args.dynamicLengthsStart);
-          const end = start + size(log.args.newDynamicLengths);
-          newData = concatHex([
-            padHex(sliceHex(newData, 0, start), { size: start, dir: "right" }),
-            log.args.newDynamicLengths,
-            size(newData) > end ? sliceHex(newData, end) : "0x",
-          ]);
-        }
-        const start = log.args.start;
-        const end = start + log.args.deleteCount;
-        newData = concatHex([
-          padHex(sliceHex(newData, 0, start), { size: start, dir: "right" }),
-          log.args.data,
-          end >= size(newData) ? "0x" : sliceHex(newData, end),
-        ]);
-
+        const newData = spliceValueHex(previousData, log);
         const newValue = decodeValue(table.valueSchema, newData);
         debug("setting component via splice", table.tableId, entity, { newValue, newData, previousData });
         setComponent(component, entity, { ...newValue, __data: newData });

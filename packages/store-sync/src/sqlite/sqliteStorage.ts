@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress, padHex, size, sliceHex } from "viem";
+import { Hex, PublicClient, concatHex, getAddress } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -13,7 +13,8 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToTableId, tableIdToHex } from "@latticexyz/common";
-import { UNCHANGED_PACKED_COUNTER, decodeKey, decodeValue, padSliceHex } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValue } from "@latticexyz/protocol-parser";
+import { spliceValueHex } from "../spliceValueHex";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
@@ -134,21 +135,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousData =
             tx.select().from(sqliteTable).where(eq(sqliteTable.__key, uniqueKey)).all()[0]?.__data ?? "0x";
-
-          let newData = previousData;
-          if (log.args.newDynamicLengths !== UNCHANGED_PACKED_COUNTER) {
-            const start = Number(log.args.dynamicLengthsStart);
-            const end = start + size(log.args.newDynamicLengths);
-            newData = concatHex([
-              padSliceHex(newData, 0, start),
-              log.args.newDynamicLengths,
-              padSliceHex(newData, end),
-            ]);
-          }
-          const start = log.args.start;
-          const end = start + log.args.deleteCount;
-          newData = concatHex([padSliceHex(newData, 0, start), log.args.data, padSliceHex(newData, end)]);
-
+          const newData = spliceValueHex(previousData, log);
           const newValue = decodeValue(table.valueSchema, newData);
           debug("upserting record via splice", { key, previousData, newData, newValue, log });
           tx.insert(sqliteTable)

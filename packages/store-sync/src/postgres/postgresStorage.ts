@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, padHex, size, sliceHex } from "viem";
+import { Hex, PublicClient, concatHex } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { eq, inArray } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -13,7 +13,8 @@ import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { UNCHANGED_PACKED_COUNTER, decodeKey, decodeValue, padSliceHex } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValue } from "@latticexyz/protocol-parser";
+import { spliceValueHex } from "../spliceValueHex";
 
 // Currently assumes one DB per chain ID
 
@@ -136,23 +137,8 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousData =
             (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0]?.__data ?? "0x";
-
-          let newData = previousData;
-          if (log.args.newDynamicLengths !== UNCHANGED_PACKED_COUNTER) {
-            const start = Number(log.args.dynamicLengthsStart);
-            const end = start + size(log.args.newDynamicLengths);
-            newData = concatHex([
-              padSliceHex(newData, 0, start),
-              log.args.newDynamicLengths,
-              padSliceHex(newData, end),
-            ]);
-          }
-          const start = log.args.start;
-          const end = start + log.args.deleteCount;
-          newData = concatHex([padSliceHex(newData, 0, start), log.args.data, padSliceHex(newData, end)]);
-
+          const newData = spliceValueHex(previousData, log);
           const newValue = decodeValue(table.valueSchema, newData);
-
           debug("upserting record via splice", { key, previousData, newData, newValue, log });
           await tx
             .insert(sqlTable)
