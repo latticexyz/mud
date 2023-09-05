@@ -94,7 +94,9 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
       _key,
       uint48(32 + 32 + secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
-      new bytes(0)
+      new bytes(0),
+      bytes32(0),
+      0
     );
 
     // Pop from second field
@@ -139,7 +141,9 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
       _key,
       uint48(32 + 32 + secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
-      new bytes(0)
+      new bytes(0),
+      bytes32(0),
+      0
     );
 
     // Pop from the field

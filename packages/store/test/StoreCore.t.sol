@@ -354,7 +354,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
+    emit StoreSpliceRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked, bytes32(0), 0);
 
     // Set first field
     IStore(this).setField(table, key, 0, firstDataPacked, valueSchema);
@@ -385,7 +385,9 @@ contract StoreCoreTest is Test, StoreMock {
       key,
       uint48(firstDataPacked.length),
       uint40(secondDataPacked.length),
-      secondDataPacked
+      secondDataPacked,
+      bytes32(0),
+      0
     );
 
     IStore(this).setField(table, key, 1, secondDataPacked, valueSchema);
@@ -437,7 +439,9 @@ contract StoreCoreTest is Test, StoreMock {
       key,
       uint48(firstDataPacked.length + secondDataPacked.length + 32),
       0,
-      thirdDataBytes
+      thirdDataBytes,
+      bytes32(0),
+      0
     );
 
     // Set third field
@@ -465,7 +469,9 @@ contract StoreCoreTest is Test, StoreMock {
       key,
       uint48(firstDataPacked.length + secondDataPacked.length + 32 + thirdDataBytes.length),
       0,
-      fourthDataBytes
+      fourthDataBytes,
+      bytes32(0),
+      0
     );
 
     // Set fourth field
@@ -497,7 +503,9 @@ contract StoreCoreTest is Test, StoreMock {
       key,
       uint48(firstDataPacked.length + secondDataPacked.length + 32 + thirdDataBytes.length),
       uint40(fourthDataBytes.length),
-      thirdDataBytes
+      thirdDataBytes,
+      bytes32(0),
+      0
     );
 
     // Set fourth field
@@ -647,7 +655,9 @@ contract StoreCoreTest is Test, StoreMock {
       data.key,
       uint48(data.firstDataBytes.length + 32 + data.secondDataBytes.length),
       0,
-      data.secondDataToPush
+      data.secondDataToPush,
+      bytes32(0),
+      0
     );
 
     // Push to second field
@@ -689,7 +699,9 @@ contract StoreCoreTest is Test, StoreMock {
       data.key,
       uint48(data.firstDataBytes.length + 32 + data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
-      data.thirdDataToPush
+      data.thirdDataToPush,
+      bytes32(0),
+      0
     );
 
     // Push to third field
@@ -790,7 +802,9 @@ contract StoreCoreTest is Test, StoreMock {
       data.key,
       uint48(data.firstDataBytes.length + 32 + 4 * 1),
       4 * 1,
-      data.secondDataForUpdate
+      data.secondDataForUpdate,
+      bytes32(0),
+      0
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
@@ -834,7 +848,9 @@ contract StoreCoreTest is Test, StoreMock {
       data.key,
       uint48(data.firstDataBytes.length + 32 + data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
-      data.thirdDataForUpdate
+      data.thirdDataForUpdate,
+      bytes32(0),
+      0
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
