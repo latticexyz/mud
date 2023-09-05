@@ -14,7 +14,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
-import { EnabledHooks } from "../src/StoreHook.sol";
+import { EnabledStoreHooks } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
@@ -842,13 +842,13 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerStoreHook(
       table,
       subscriber,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
       })
     );
 
@@ -896,13 +896,13 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerStoreHook(
       table,
       subscriber,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
       })
     );
 

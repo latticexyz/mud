@@ -7,7 +7,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 
-import { StoreHook, EnabledHooks, HookType } from "../src/StoreHook.sol";
+import { StoreHook, EnabledStoreHooks, HookType } from "../src/StoreHook.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { IStoreHook } from "../src/IStore.sol";
 import { Schema } from "../src/Schema.sol";
@@ -27,13 +27,13 @@ contract StoreHookTest is Test, GasReporter {
   function testEncodeBitmap() public {
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: false,
-          afterSetRecord: false,
-          beforeSetField: false,
-          afterSetField: false,
-          beforeDeleteRecord: false,
-          afterDeleteRecord: false
+        EnabledStoreHooks({
+          onBeforeSetRecord: false,
+          onAfterSetRecord: false,
+          onBeforeSetField: false,
+          onAfterSetField: false,
+          onBeforeDeleteRecord: false,
+          onAfterDeleteRecord: false
         })
       ),
       uint8(0x00),
@@ -42,13 +42,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: true,
-          afterSetRecord: false,
-          beforeSetField: false,
-          afterSetField: false,
-          beforeDeleteRecord: false,
-          afterDeleteRecord: false
+        EnabledStoreHooks({
+          onBeforeSetRecord: true,
+          onAfterSetRecord: false,
+          onBeforeSetField: false,
+          onAfterSetField: false,
+          onBeforeDeleteRecord: false,
+          onAfterDeleteRecord: false
         })
       ),
       uint8(0x01),
@@ -57,13 +57,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: false,
-          afterSetRecord: true,
-          beforeSetField: false,
-          afterSetField: false,
-          beforeDeleteRecord: false,
-          afterDeleteRecord: false
+        EnabledStoreHooks({
+          onBeforeSetRecord: false,
+          onAfterSetRecord: true,
+          onBeforeSetField: false,
+          onAfterSetField: false,
+          onBeforeDeleteRecord: false,
+          onAfterDeleteRecord: false
         })
       ),
       uint8(0x02),
@@ -72,13 +72,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: false,
-          afterSetRecord: false,
-          beforeSetField: true,
-          afterSetField: false,
-          beforeDeleteRecord: false,
-          afterDeleteRecord: false
+        EnabledStoreHooks({
+          onBeforeSetRecord: false,
+          onAfterSetRecord: false,
+          onBeforeSetField: true,
+          onAfterSetField: false,
+          onBeforeDeleteRecord: false,
+          onAfterDeleteRecord: false
         })
       ),
       uint8(0x04),
@@ -87,13 +87,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: false,
-          afterSetRecord: false,
-          beforeSetField: false,
-          afterSetField: true,
-          beforeDeleteRecord: false,
-          afterDeleteRecord: false
+        EnabledStoreHooks({
+          onBeforeSetRecord: false,
+          onAfterSetRecord: false,
+          onBeforeSetField: false,
+          onAfterSetField: true,
+          onBeforeDeleteRecord: false,
+          onAfterDeleteRecord: false
         })
       ),
       uint8(0x08),
@@ -102,13 +102,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: false,
-          afterSetRecord: false,
-          beforeSetField: false,
-          afterSetField: false,
-          beforeDeleteRecord: true,
-          afterDeleteRecord: false
+        EnabledStoreHooks({
+          onBeforeSetRecord: false,
+          onAfterSetRecord: false,
+          onBeforeSetField: false,
+          onAfterSetField: false,
+          onBeforeDeleteRecord: true,
+          onAfterDeleteRecord: false
         })
       ),
       uint8(0x10),
@@ -117,13 +117,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: false,
-          afterSetRecord: false,
-          beforeSetField: false,
-          afterSetField: false,
-          beforeDeleteRecord: false,
-          afterDeleteRecord: true
+        EnabledStoreHooks({
+          onBeforeSetRecord: false,
+          onAfterSetRecord: false,
+          onBeforeSetField: false,
+          onAfterSetField: false,
+          onBeforeDeleteRecord: false,
+          onAfterDeleteRecord: true
         })
       ),
       uint8(0x20),
@@ -132,13 +132,13 @@ contract StoreHookTest is Test, GasReporter {
 
     assertEq(
       StoreHookLib.encodeBitmap(
-        EnabledHooks({
-          beforeSetRecord: true,
-          afterSetRecord: true,
-          beforeSetField: true,
-          afterSetField: true,
-          beforeDeleteRecord: true,
-          afterDeleteRecord: true
+        EnabledStoreHooks({
+          onBeforeSetRecord: true,
+          onAfterSetRecord: true,
+          onBeforeSetField: true,
+          onAfterSetField: true,
+          onBeforeDeleteRecord: true,
+          onAfterDeleteRecord: true
         })
       ),
       uint8(0x3f),
@@ -151,13 +151,13 @@ contract StoreHookTest is Test, GasReporter {
       StoreHook.unwrap(
         StoreHookLib.encode(
           echoSubscriber,
-          EnabledHooks({
-            beforeSetRecord: true,
-            afterSetRecord: true,
-            beforeSetField: true,
-            afterSetField: true,
-            beforeDeleteRecord: true,
-            afterDeleteRecord: true
+          EnabledStoreHooks({
+            onBeforeSetRecord: true,
+            onAfterSetRecord: true,
+            onBeforeSetField: true,
+            onAfterSetField: true,
+            onBeforeDeleteRecord: true,
+            onAfterDeleteRecord: true
           })
         )
       ),
@@ -174,13 +174,13 @@ contract StoreHookTest is Test, GasReporter {
     bool enableBeforeDeleteRecord,
     bool enableAfterDeleteRecord
   ) public {
-    EnabledHooks memory enabledHooks = EnabledHooks({
-      beforeSetRecord: enableBeforeSetRecord,
-      afterSetRecord: enableAfterSetRecord,
-      beforeSetField: enableBeforeSetField,
-      afterSetField: enableAfterSetField,
-      beforeDeleteRecord: enableBeforeDeleteRecord,
-      afterDeleteRecord: enableAfterDeleteRecord
+    EnabledStoreHooks memory enabledHooks = EnabledStoreHooks({
+      onBeforeSetRecord: enableBeforeSetRecord,
+      onAfterSetRecord: enableAfterSetRecord,
+      onBeforeSetField: enableBeforeSetField,
+      onAfterSetField: enableAfterSetField,
+      onBeforeDeleteRecord: enableBeforeDeleteRecord,
+      onAfterDeleteRecord: enableAfterDeleteRecord
     });
 
     assertEq(
@@ -192,13 +192,13 @@ contract StoreHookTest is Test, GasReporter {
   function testIsEnabled() public {
     StoreHook storeHook = StoreHookLib.encode(
       echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
       })
     );
 
@@ -223,13 +223,13 @@ contract StoreHookTest is Test, GasReporter {
     bool enableBeforeDeleteRecord,
     bool enableAfterDeleteRecord
   ) public {
-    EnabledHooks memory enabledHooks = EnabledHooks({
-      beforeSetRecord: enableBeforeSetRecord,
-      afterSetRecord: enableAfterSetRecord,
-      beforeSetField: enableBeforeSetField,
-      afterSetField: enableAfterSetField,
-      beforeDeleteRecord: enableBeforeDeleteRecord,
-      afterDeleteRecord: enableAfterDeleteRecord
+    EnabledStoreHooks memory enabledHooks = EnabledStoreHooks({
+      onBeforeSetRecord: enableBeforeSetRecord,
+      onAfterSetRecord: enableAfterSetRecord,
+      onBeforeSetField: enableBeforeSetField,
+      onAfterSetField: enableAfterSetField,
+      onBeforeDeleteRecord: enableBeforeDeleteRecord,
+      onAfterDeleteRecord: enableAfterDeleteRecord
     });
 
     StoreHook storeHook = StoreHookLib.encode(IStoreHook(hookAddress), enabledHooks);
@@ -245,13 +245,13 @@ contract StoreHookTest is Test, GasReporter {
   function testGetAddress() public {
     StoreHook storeHook = StoreHookLib.encode(
       echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
       })
     );
 
@@ -263,13 +263,13 @@ contract StoreHookTest is Test, GasReporter {
   }
 
   function testGetBitmap() public {
-    EnabledHooks memory enabledHooks = EnabledHooks({
-      beforeSetRecord: false,
-      afterSetRecord: false,
-      beforeSetField: true,
-      afterSetField: false,
-      beforeDeleteRecord: false,
-      afterDeleteRecord: false
+    EnabledStoreHooks memory enabledHooks = EnabledStoreHooks({
+      onBeforeSetRecord: false,
+      onAfterSetRecord: false,
+      onBeforeSetField: true,
+      onAfterSetField: false,
+      onBeforeDeleteRecord: false,
+      onAfterDeleteRecord: false
     });
 
     StoreHook storeHook = StoreHookLib.encode(echoSubscriber, enabledHooks);
@@ -284,13 +284,13 @@ contract StoreHookTest is Test, GasReporter {
   function testCallHook() public {
     StoreHook storeHook = StoreHookLib.encode(
       echoSubscriber,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
       })
     );
 
@@ -304,13 +304,13 @@ contract StoreHookTest is Test, GasReporter {
 
     StoreHook revertHook = StoreHookLib.encode(
       revertSubscriber,
-      EnabledHooks({
-        beforeSetRecord: false,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: false,
-        beforeDeleteRecord: false,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
       })
     );
 

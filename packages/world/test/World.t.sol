@@ -14,7 +14,7 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
-import { EnabledHooks } from "@latticexyz/store/src/StoreHook.sol";
+import { EnabledStoreHooks } from "@latticexyz/store/src/StoreHook.sol";
 
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
@@ -735,13 +735,13 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(
       tableId,
       tableHook,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: true,
-        beforeSetField: true,
-        afterSetField: true,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: true
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
       })
     );
 

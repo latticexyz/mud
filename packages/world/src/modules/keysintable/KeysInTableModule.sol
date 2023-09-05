@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { EnabledHooks } from "@latticexyz/store/src/StoreHook.sol";
+import { EnabledStoreHooks } from "@latticexyz/store/src/StoreHook.sol";
 
 import { ResourceType } from "../core/tables/ResourceType.sol";
 import { Resource } from "../../Types.sol";
@@ -57,13 +57,13 @@ contract KeysInTableModule is IModule, WorldContextConsumer {
     world.registerStoreHook(
       sourceTableId,
       hook,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: false,
-        afterSetField: true,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
       })
     );
   }

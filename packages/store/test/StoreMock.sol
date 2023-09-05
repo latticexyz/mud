@@ -5,7 +5,7 @@ import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
 import { StoreRead } from "../src/StoreRead.sol";
-import { EnabledHooks } from "../src/StoreHook.sol";
+import { EnabledStoreHooks } from "../src/StoreHook.sol";
 
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
@@ -82,7 +82,7 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hookAddress, EnabledHooks memory enabledHooks) public {
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, EnabledStoreHooks memory enabledHooks) public {
     StoreCore.registerStoreHook(table, hookAddress, enabledHooks);
   }
 }

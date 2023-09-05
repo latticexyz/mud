@@ -12,7 +12,7 @@ import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
-import { StoreHook, StoreHookLib, EnabledHooks, HookType } from "./StoreHook.sol";
+import { StoreHook, StoreHookLib, EnabledStoreHooks, HookType } from "./StoreHook.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -120,7 +120,7 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, EnabledHooks memory enabledHooks) internal {
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, EnabledStoreHooks memory enabledHooks) internal {
     Hooks.push(tableId, StoreHook.unwrap(StoreHookLib.encode(hookAddress, enabledHooks)));
   }
 

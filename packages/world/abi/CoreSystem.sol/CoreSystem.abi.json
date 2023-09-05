@@ -417,8 +417,45 @@
       },
       {
         "internalType": "contract IStoreHook",
-        "name": "hook",
+        "name": "hookAddress",
         "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "onBeforeSetRecord",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "onAfterSetRecord",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "onBeforeSetField",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "onAfterSetField",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "onBeforeDeleteRecord",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "onAfterDeleteRecord",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct EnabledStoreHooks",
+        "name": "enabledHooks",
+        "type": "tuple"
       }
     ],
     "name": "registerStoreHook",

@@ -13,7 +13,7 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
-import { EnabledHooks } from "../src/StoreHook.sol";
+import { EnabledStoreHooks } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
@@ -601,13 +601,13 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerStoreHook(
       table,
       subscriber,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
       })
     );
     endGasReport();
@@ -651,13 +651,13 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerStoreHook(
       table,
       subscriber,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: false,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
       })
     );
     endGasReport();

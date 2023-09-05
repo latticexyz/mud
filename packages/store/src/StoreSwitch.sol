@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
-import { EnabledHooks } from "./StoreHook.sol";
+import { EnabledStoreHooks } from "./StoreHook.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -45,7 +45,7 @@ library StoreSwitch {
     _layout().storeAddress = _storeAddress;
   }
 
-  function registerStoreHook(bytes32 table, IStoreHook hookAddress, EnabledHooks memory enabledHooks) internal {
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, EnabledStoreHooks memory enabledHooks) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.registerStoreHook(table, hookAddress, enabledHooks);

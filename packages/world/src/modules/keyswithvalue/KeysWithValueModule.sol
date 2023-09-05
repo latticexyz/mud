@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { EnabledHooks } from "@latticexyz/store/src/StoreHook.sol";
+import { EnabledStoreHooks } from "@latticexyz/store/src/StoreHook.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
@@ -52,13 +52,13 @@ contract KeysWithValueModule is IModule, WorldContextConsumer {
     StoreSwitch.registerStoreHook(
       sourceTableId,
       hook,
-      EnabledHooks({
-        beforeSetRecord: true,
-        afterSetRecord: false,
-        beforeSetField: true,
-        afterSetField: true,
-        beforeDeleteRecord: true,
-        afterDeleteRecord: false
+      EnabledStoreHooks({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
       })
     );
   }
