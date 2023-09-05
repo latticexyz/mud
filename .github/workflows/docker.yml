@@ -7,7 +7,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   docker:
@@ -19,9 +18,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: ghcr.io/latticexyz/mud
+          - image: ${{ env.REGISTRY }}/latticexyz/mud
             target: mud
-          - image: ghcr.io/latticexyz/store-indexer
+          - image: ${{ env.REGISTRY }}/latticexyz/store-indexer
             target: store-indexer
     steps:
       - name: Checkout repository
