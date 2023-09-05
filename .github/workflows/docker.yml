@@ -2,7 +2,8 @@ name: Docker
 
 on:
   push:
-    branches: ["main", "holic/dockerfile-ci"]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
