@@ -774,6 +774,36 @@
     "gasUsed": 14653
   },
   {
+    "file": "test/StoreHook.t.sol",
+    "test": "testGetAddress",
+    "name": "get store hook address",
+    "gasUsed": 1
+  },
+  {
+    "file": "test/StoreHook.t.sol",
+    "test": "testGetBitmap",
+    "name": "get store hook bitmap",
+    "gasUsed": 1
+  },
+  {
+    "file": "test/StoreHook.t.sol",
+    "test": "testIsEnabled",
+    "name": "check if store hook is enabled",
+    "gasUsed": 143
+  },
+  {
+    "file": "test/StoreHook.t.sol",
+    "test": "testOnBeforeSetRecord",
+    "name": "call an enabled hook",
+    "gasUsed": 11271
+  },
+  {
+    "file": "test/StoreHook.t.sol",
+    "test": "testOnBeforeSetRecord",
+    "name": "call a disabled hook",
+    "gasUsed": 1682
+  },
+  {
     "file": "test/StoreSwitch.t.sol",
     "test": "testDelegatecall",
     "name": "get Store address",
