@@ -142,11 +142,11 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreSetRecord(tableId, key, data);
 
-    // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueSchema);
+      hook.onBeforeSetRecord(tableId, key, data, valueSchema);
     }
 
     // Store the static data at the static data location
@@ -160,29 +160,35 @@ library StoreCore {
     });
     memoryPointer += staticLength + 32; // move the memory pointer to the start of the dynamic data (skip the encoded dynamic length)
 
-    // If there is no dynamic data, we're done
-    if (valueSchema.numDynamicFields() == 0) return;
+    // Set the dynamic data if there are dynamic fields
+    if (valueSchema.numDynamicFields() > 0) {
+      // Store the dynamic data length at the dynamic data length location
+      uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
+      Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicLength.unwrap() });
 
-    // Store the dynamic data length at the dynamic data length location
-    uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
-    Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicLength.unwrap() });
-
-    // For every dynamic element, slice off the dynamic data and store it at the dynamic location
-    uint256 dynamicDataLocation;
-    uint256 dynamicDataLength;
-    for (uint8 i; i < valueSchema.numDynamicFields(); ) {
-      dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, key, i);
-      dynamicDataLength = dynamicLength.atIndex(i);
-      Storage.store({
-        storagePointer: dynamicDataLocation,
-        offset: 0,
-        memoryPointer: memoryPointer,
-        length: dynamicDataLength
-      });
-      memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
-      unchecked {
-        i++;
+      // For every dynamic element, slice off the dynamic data and store it at the dynamic location
+      uint256 dynamicDataLocation;
+      uint256 dynamicDataLength;
+      for (uint8 i; i < valueSchema.numDynamicFields(); ) {
+        dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, key, i);
+        dynamicDataLength = dynamicLength.atIndex(i);
+        Storage.store({
+          storagePointer: dynamicDataLocation,
+          offset: 0,
+          memoryPointer: memoryPointer,
+          length: dynamicDataLength
+        });
+        memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
+        unchecked {
+          i++;
+        }
       }
+    }
+
+    // Call onAfterSetRecord hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onAfterSetRecord(tableId, key, data, valueSchema);
     }
   }
 
@@ -227,23 +233,28 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreDeleteRecord(tableId, key);
 
-    // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onDeleteRecord(tableId, key, valueSchema);
+      hook.onBeforeDeleteRecord(tableId, key, valueSchema);
     }
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, key);
     Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(valueSchema.staticDataLength()) });
 
-    // If there are no dynamic fields, we're done
-    if (valueSchema.numDynamicFields() == 0) return;
+    // If there are dynamic fields, delete the dynamic data length
+    if (valueSchema.numDynamicFields() > 0) {
+      uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
+      Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
+    }
 
-    // Delete dynamic data length
-    uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
-    Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
+    // Call onAfterDeleteRecord hooks
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onAfterDeleteRecord(tableId, key, valueSchema);
+    }
   }
 
   /**
@@ -390,13 +401,6 @@ library StoreCore {
 
     // Emit event to notify indexers
     emit StoreEphemeralRecord(tableId, key, data);
-
-    // Call onSetRecord hooks
-    address[] memory hooks = Hooks.get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueSchema);
-    }
   }
 
   /************************************************************************

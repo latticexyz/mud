@@ -40,17 +40,23 @@ contract KeysInTableHook is IStoreHook {
     }
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
     handleSet(table, key);
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {}
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
+    // NOOP
+  }
+
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {
+    // NOOP
+  }
 
   function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {
     handleSet(table, key);
   }
 
-  function onDeleteRecord(bytes32 tableId, bytes32[] memory key, Schema) public {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory key, Schema) public {
     bytes32 keysHash = keccak256(abi.encode(key));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
@@ -117,5 +123,9 @@ contract KeysInTableHook is IStoreHook {
         }
       }
     }
+  }
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+    // NOOP
   }
 }

@@ -112,7 +112,11 @@ contract PayableFallbackSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+    emit HookCalled(abi.encode(table, key, data, valueSchema));
+  }
+
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
     emit HookCalled(abi.encode(table, key, data, valueSchema));
   }
 
@@ -136,7 +140,11 @@ contract WorldTestTableHook is IStoreHook {
     emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
   }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+    emit HookCalled(abi.encode(table, key, valueSchema));
+  }
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
     emit HookCalled(abi.encode(table, key, valueSchema));
   }
 }
@@ -728,13 +736,32 @@ contract WorldTest is Test, GasReporter {
     // Prepare data to write to the table
     bytes memory value = abi.encodePacked(true);
 
-    // Expect the hook to be notified when a record is written
+    // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encode(tableId, singletonKey, value, valueSchema));
+
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, value, valueSchema));
+
     world.setRecord(tableId, singletonKey, value, valueSchema);
 
-    // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
-    // (See https://github.com/latticexyz/mud/issues/444)
+    // Expect the hook to be notified when a field is written (once before and once after the field is written)
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, valueSchema));
+
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, valueSchema));
+
+    world.setField(tableId, singletonKey, 0, value, valueSchema);
+
+    // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, valueSchema));
+
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, valueSchema));
+
+    world.deleteRecord(tableId, singletonKey, valueSchema);
   }
 
   function testRegisterSystemHook() public {
