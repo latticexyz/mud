@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Hook } from "@latticexyz/store/src/Hook.sol";
+
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { AccessControl } from "./AccessControl.sol";
@@ -8,6 +10,7 @@ import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
+import { SystemHookType } from "./SystemHook.sol";
 
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
@@ -64,12 +67,14 @@ library SystemCall {
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    address[] memory hooks = SystemHooks.get(resourceSelector);
+    bytes21[] memory hooks = SystemHooks.get(resourceSelector);
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {
-      ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onBeforeCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(SystemHookType.BEFORE_CALL_SYSTEM))) {
+        ISystemHook(hook.getAddress()).onBeforeCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+      }
     }
 
     // Call the system and forward any return data
@@ -77,8 +82,10 @@ library SystemCall {
 
     // Call onAfterCallSystem hooks (after calling the system)
     for (uint256 i; i < hooks.length; i++) {
-      ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onAfterCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(SystemHookType.AFTER_CALL_SYSTEM))) {
+        ISystemHook(hook.getAddress()).onAfterCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+      }
     }
   }
 

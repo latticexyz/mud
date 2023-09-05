@@ -125,8 +125,25 @@
       },
       {
         "internalType": "contract ISystemHook",
-        "name": "hook",
+        "name": "hookAddress",
         "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "bool",
+            "name": "onBeforeCallSystem",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "onAfterCallSystem",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct EnabledSystemHooks",
+        "name": "enabledHooks",
+        "type": "tuple"
       }
     ],
     "name": "registerSystemHook",

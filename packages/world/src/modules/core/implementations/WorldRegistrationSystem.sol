@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Hook } from "@latticexyz/store/src/Hook.sol";
+
 import { System } from "../../../System.sol";
 import { WorldContextConsumer } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { SystemCall } from "../../../SystemCall.sol";
+import { EnabledSystemHooks, SystemHookLib } from "../../../SystemHook.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
@@ -49,12 +52,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   /**
    * Register a hook for the system at the given namespace and name
    */
-  function registerSystemHook(bytes32 resourceSelector, ISystemHook hook) public virtual {
+  function registerSystemHook(
+    bytes32 resourceSelector,
+    ISystemHook hookAddress,
+    EnabledSystemHooks memory enabledHooks
+  ) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
 
     // Register the hook
-    SystemHooks.push(resourceSelector, address(hook));
+    SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooks)));
   }
 
   /**

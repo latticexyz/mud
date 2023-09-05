@@ -7,7 +7,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 
-import { StoreHook, EnabledStoreHooks, HookType } from "../src/StoreHook.sol";
+import { StoreHook, EnabledStoreHooks, StoreHookType } from "../src/StoreHook.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { IStoreHook } from "../src/IStore.sol";
 import { Schema } from "../src/Schema.sol";
@@ -203,15 +203,15 @@ contract StoreHookTest is Test, GasReporter {
     );
 
     startGasReport("check if store hook is enabled");
-    storeHook.isEnabled(HookType.BEFORE_SET_RECORD);
+    storeHook.isEnabled(StoreHookType.BEFORE_SET_RECORD);
     endGasReport();
 
-    assertEq(storeHook.isEnabled(HookType.BEFORE_SET_RECORD), false);
-    assertEq(storeHook.isEnabled(HookType.AFTER_SET_RECORD), false);
-    assertEq(storeHook.isEnabled(HookType.BEFORE_SET_FIELD), true);
-    assertEq(storeHook.isEnabled(HookType.AFTER_SET_FIELD), false);
-    assertEq(storeHook.isEnabled(HookType.BEFORE_DELETE_RECORD), false);
-    assertEq(storeHook.isEnabled(HookType.AFTER_DELETE_RECORD), false);
+    assertEq(storeHook.isEnabled(StoreHookType.BEFORE_SET_RECORD), false);
+    assertEq(storeHook.isEnabled(StoreHookType.AFTER_SET_RECORD), false);
+    assertEq(storeHook.isEnabled(StoreHookType.BEFORE_SET_FIELD), true);
+    assertEq(storeHook.isEnabled(StoreHookType.AFTER_SET_FIELD), false);
+    assertEq(storeHook.isEnabled(StoreHookType.BEFORE_DELETE_RECORD), false);
+    assertEq(storeHook.isEnabled(StoreHookType.AFTER_DELETE_RECORD), false);
   }
 
   function testFuzzIsEnabled(
@@ -234,12 +234,12 @@ contract StoreHookTest is Test, GasReporter {
 
     StoreHook storeHook = StoreHookLib.encode(IStoreHook(hookAddress), enabledHooks);
 
-    assertEq(storeHook.isEnabled(HookType.BEFORE_SET_RECORD), enableBeforeSetRecord);
-    assertEq(storeHook.isEnabled(HookType.AFTER_SET_RECORD), enableAfterSetRecord);
-    assertEq(storeHook.isEnabled(HookType.BEFORE_SET_FIELD), enableBeforeSetField);
-    assertEq(storeHook.isEnabled(HookType.AFTER_SET_FIELD), enableAfterSetField);
-    assertEq(storeHook.isEnabled(HookType.BEFORE_DELETE_RECORD), enableBeforeDeleteRecord);
-    assertEq(storeHook.isEnabled(HookType.AFTER_DELETE_RECORD), enableAfterDeleteRecord);
+    assertEq(storeHook.isEnabled(StoreHookType.BEFORE_SET_RECORD), enableBeforeSetRecord);
+    assertEq(storeHook.isEnabled(StoreHookType.AFTER_SET_RECORD), enableAfterSetRecord);
+    assertEq(storeHook.isEnabled(StoreHookType.BEFORE_SET_FIELD), enableBeforeSetField);
+    assertEq(storeHook.isEnabled(StoreHookType.AFTER_SET_FIELD), enableAfterSetField);
+    assertEq(storeHook.isEnabled(StoreHookType.BEFORE_DELETE_RECORD), enableBeforeDeleteRecord);
+    assertEq(storeHook.isEnabled(StoreHookType.AFTER_DELETE_RECORD), enableAfterDeleteRecord);
   }
 
   function testGetAddress() public {
@@ -297,7 +297,7 @@ contract StoreHookTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encode(tableId, key, data, valueSchema));
     startGasReport("call an enabled hook");
-    if (storeHook.isEnabled(HookType.BEFORE_SET_RECORD)) {
+    if (storeHook.isEnabled(StoreHookType.BEFORE_SET_RECORD)) {
       IStoreHook(storeHook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
     }
     endGasReport();
@@ -316,7 +316,7 @@ contract StoreHookTest is Test, GasReporter {
 
     // Expect the to not be called - otherwise the test will fail with a revert
     startGasReport("call a disabled hook");
-    if (revertHook.isEnabled(HookType.BEFORE_SET_RECORD)) {
+    if (revertHook.isEnabled(StoreHookType.BEFORE_SET_RECORD)) {
       IStoreHook(revertHook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
     }
     endGasReport();
