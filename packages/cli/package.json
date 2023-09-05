@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.5",
   "description": "Command line interface for mud",
   "repository": {
     "type": "git",
@@ -24,7 +24,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit && forge test"
+    "test": "tsc --noEmit && forge test",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

@@ -19,12 +19,15 @@ import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
+import { Resource } from "../src/Types.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
+import { SystemRegistry } from "../src/modules/core/tables/SystemRegistry.sol";
+import { ResourceType } from "../src/modules/core/tables/ResourceType.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
@@ -355,16 +358,19 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(ResourceSelector.from("newNamespace", "testSystem"), new System(), false);
     assertEq(NamespaceOwner.get(world, "newNamespace"), address(this));
 
-    // Expect an error when registering an existing system
+    // Expect an error when registering an existing system at a new resource selector
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));
     world.registerSystem(ResourceSelector.from("", "newSystem"), system, true);
 
-    // Expect an error when registering a system at an existing resource selector
-    System newSystem = new System();
+    // Don't expect an error when updating the public access of an existing system
+    world.registerSystem(resourceSelector, system, true);
 
-    // Expect an error when registering a system at an existing resource selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
-    world.registerSystem(ResourceSelector.from("", "testSystem"), newSystem, true);
+    // Expect an error when registering a system at an existing resource selector of a different type
+    System newSystem = new System();
+    bytes32 tableId = ResourceSelector.from("", "testTable");
+    world.registerTable(tableId, defaultKeySchema, Bool.getValueSchema(), new string[](1), new string[](1));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
+    world.registerSystem(tableId, newSystem, true);
 
     // Expect an error when registering a system in a namespace is not owned by the caller
     System yetAnotherSystem = new System();
@@ -374,6 +380,42 @@ contract WorldTest is Test, GasReporter {
     // Expect the registration to succeed when coming from the World
     vm.prank(address(world));
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
+  }
+
+  function testUpgradeSystem() public {
+    bytes16 namespace = "testNamespace";
+    bytes16 systemName = "testSystem";
+    bytes32 systemId = ResourceSelector.from(namespace, systemName);
+
+    // Register a system
+    System oldSystem = new System();
+    world.registerSystem(systemId, oldSystem, true);
+
+    // Upgrade the system and set public access to false
+    System newSystem = new System();
+    world.registerSystem(systemId, newSystem, false);
+
+    // Expect the system address and public access to be updated in the System table
+    (address registeredAddress, bool publicAccess) = Systems.get(world, systemId);
+    assertEq(registeredAddress, address(newSystem));
+    assertEq(publicAccess, false);
+
+    // Expect the SystemRegistry table to not have a reference to the old system anymore
+    bytes32 registeredSystemId = SystemRegistry.get(world, address(oldSystem));
+    assertEq(registeredSystemId, bytes32(0));
+
+    // Expect the SystemRegistry table to have a reference to the new system
+    registeredSystemId = SystemRegistry.get(world, address(newSystem));
+    assertEq(registeredSystemId, systemId);
+
+    // Expect the old system to not have access to the namespace anymore
+    assertFalse(ResourceAccess.get(world, namespace, address(oldSystem)));
+
+    // Expect the new system to have access to the namespace
+    assertTrue(ResourceAccess.get(world, namespace, address(newSystem)));
+
+    // Expect the resource type to still be SYSTEM
+    assertEq(uint8(ResourceType.get(world, systemId)), uint8(Resource.SYSTEM));
   }
 
   function testDuplicateSelectors() public {

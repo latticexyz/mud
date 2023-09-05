@@ -1,5 +1,13 @@
 # Change Log
 
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/recs@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Major Changes

@@ -13,7 +13,8 @@
     "clean:mud": "rimraf src/codegen",
     "clean:typechain": "rimraf types",
     "deploy:local": "mud deploy",
-    "test": "mud test"
+    "test": "mud test",
+    "test:ci": "pnpm run test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
