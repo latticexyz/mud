@@ -6,7 +6,7 @@ import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
-import { PackedCounter } from "./PackedCounter.sol";
+import { PackedCounter, UNCHANGED_PACKED_COUNTER } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
@@ -16,7 +16,16 @@ import { StoreSwitch } from "./StoreSwitch.sol";
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSpliceRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
+  // TODO: finalize dynamic lengths args (these names/positions are placeholders while I figure out of this is enough data for schemaless indexing)
+  event StoreSpliceRecord(
+    bytes32 table,
+    bytes32[] key,
+    uint48 start,
+    uint40 deleteCount,
+    bytes data,
+    bytes32 newDynamicLengths,
+    uint256 dynamicLengthsStart
+  );
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
@@ -529,8 +538,17 @@ library StoreCoreInternal {
     // Prepare data for the splice event
     uint256 start = offset;
     uint256 deleteCount = valueSchema.atIndex(schemaIndex).getStaticByteLength();
+    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), data);
+    emit StoreCore.StoreSpliceRecord(
+      tableId,
+      key,
+      uint48(start),
+      uint40(deleteCount),
+      data,
+      UNCHANGED_PACKED_COUNTER,
+      encodedLengthsStart
+    );
   }
 
   function _setDynamicField(
@@ -566,8 +584,17 @@ library StoreCoreInternal {
       }
     }
     uint256 deleteCount = oldFieldLength;
+    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), data);
+    emit StoreCore.StoreSpliceRecord(
+      tableId,
+      key,
+      uint48(start),
+      uint40(deleteCount),
+      data,
+      encodedLengths.unwrap(),
+      encodedLengthsStart
+    );
   }
 
   function _pushToDynamicField(
@@ -602,8 +629,17 @@ library StoreCoreInternal {
       }
     }
     uint256 deleteCount = 0;
+    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), dataToPush);
+    emit StoreCore.StoreSpliceRecord(
+      tableId,
+      key,
+      uint48(start),
+      uint40(deleteCount),
+      dataToPush,
+      encodedLengths.unwrap(),
+      encodedLengthsStart
+    );
   }
 
   function _popFromDynamicField(
@@ -637,8 +673,17 @@ library StoreCoreInternal {
       }
     }
     uint256 deleteCount = byteLengthToPop;
+    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), new bytes(0));
+    emit StoreCore.StoreSpliceRecord(
+      tableId,
+      key,
+      uint48(start),
+      uint40(deleteCount),
+      new bytes(0),
+      encodedLengths.unwrap(),
+      encodedLengthsStart
+    );
   }
 
   // startOffset is measured in bytes
@@ -669,8 +714,17 @@ library StoreCoreInternal {
       }
     }
     uint256 deleteCount = dataToSet.length;
+    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(tableId, key, uint48(start), uint40(deleteCount), dataToSet);
+    emit StoreCore.StoreSpliceRecord(
+      tableId,
+      key,
+      uint48(start),
+      uint40(deleteCount),
+      dataToSet,
+      encodedLengths.unwrap(),
+      encodedLengthsStart
+    );
   }
 
   /************************************************************************

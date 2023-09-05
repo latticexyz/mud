@@ -1,7 +1,7 @@
 import { StoreConfig } from "@latticexyz/store";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { tableIdToHex } from "@latticexyz/common";
-import { World, defineComponent } from "@latticexyz/recs";
+import { World, defineComponent, Type } from "@latticexyz/recs";
 import { ConfigToRecsComponents } from "./common";
 import { schemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 
@@ -14,12 +14,15 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
       tableName,
       defineComponent(
         world,
-        Object.fromEntries(
-          Object.entries(table.schema).map(([fieldName, schemaAbiType]) => [
-            fieldName,
-            schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
-          ])
-        ),
+        {
+          ...Object.fromEntries(
+            Object.entries(table.schema).map(([fieldName, schemaAbiType]) => [
+              fieldName,
+              schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
+            ])
+          ),
+          __data: Type.String,
+        },
         {
           id: tableIdToHex(config.namespace, tableName),
           metadata: {

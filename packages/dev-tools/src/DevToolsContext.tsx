@@ -1,8 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { DevToolsOptions } from "./common";
 import { ContractWrite } from "@latticexyz/common";
-import { StorageAdapterLog, StorageOperation } from "@latticexyz/store-sync";
-import { StoreConfig } from "@latticexyz/store";
+import { StorageAdapterLog } from "@latticexyz/store-sync";
 
 type DevToolsContextValue = DevToolsOptions & {
   writes: ContractWrite[];

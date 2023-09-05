@@ -1,21 +1,22 @@
-import { AnySQLiteColumnBuilder, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
+import { SQLiteColumnBuilderBase, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildSqliteColumn } from "./buildSqliteColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
 
 export const metaColumns = {
-  __key: buildSqliteColumn("__key", "bytes").notNull().primaryKey(),
+  __key: buildSqliteColumn("__key", "bytes").primaryKey(),
   __data: buildSqliteColumn("__data", "bytes").notNull(),
   __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
   // TODO: last updated block hash?
   __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
-} as const satisfies Record<string, AnySQLiteColumnBuilder>;
+} as const satisfies Record<string, SQLiteColumnBuilderBase>;
 
 type SQLiteTableFromSchema<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = SQLiteTableWithColumns<{
+  dialect: "sqlite";
   name: string;
   schema: string | undefined;
   columns: {

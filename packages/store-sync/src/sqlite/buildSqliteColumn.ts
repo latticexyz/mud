@@ -1,9 +1,10 @@
-import { AnySQLiteColumnBuilder, blob, integer, text } from "drizzle-orm/sqlite-core";
+import { blob, integer, text } from "drizzle-orm/sqlite-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import { address, json } from "./columnTypes";
 
-export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType): AnySQLiteColumnBuilder {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType) {
   switch (schemaAbiType) {
     case "bool":
       return integer(name, { mode: "boolean" });

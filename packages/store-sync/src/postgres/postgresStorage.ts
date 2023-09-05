@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, size, sliceHex } from "viem";
+import { Hex, PublicClient, concatHex, padHex, size, sliceHex } from "viem";
 import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { eq, inArray } from "drizzle-orm";
 import { buildTable } from "./buildTable";
@@ -13,7 +13,7 @@ import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValue } from "@latticexyz/protocol-parser";
+import { UNCHANGED_PACKED_COUNTER, decodeKey, decodeValue, padSliceHex } from "@latticexyz/protocol-parser";
 
 // Currently assumes one DB per chain ID
 
@@ -137,20 +137,27 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           const previousData =
             (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0]?.__data ?? "0x";
 
-          // TODO: figure out if we need to pad anything or set defaults
-          const end = log.args.start + log.args.deleteCount;
-          const newData = concatHex([
-            sliceHex(previousData, 0, log.args.start),
-            log.args.data,
-            end >= size(previousData) ? "0x" : sliceHex(previousData, end),
-          ]);
+          let newData = previousData;
+          if (log.args.newDynamicLengths !== UNCHANGED_PACKED_COUNTER) {
+            const start = Number(log.args.dynamicLengthsStart);
+            const end = start + size(log.args.newDynamicLengths);
+            newData = concatHex([
+              padSliceHex(newData, 0, start),
+              log.args.newDynamicLengths,
+              padSliceHex(newData, end),
+            ]);
+          }
+          const start = log.args.start;
+          const end = start + log.args.deleteCount;
+          newData = concatHex([padSliceHex(newData, 0, start), log.args.data, padSliceHex(newData, end)]);
+
           const newValue = decodeValue(table.valueSchema, newData);
 
           debug("upserting record via splice", { key, previousData, newData, newValue, log });
           await tx
             .insert(sqlTable)
             .values({
-              __key: key,
+              __key: uniqueKey,
               __data: newData,
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: false,
@@ -176,7 +183,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: true,
             })
-            .where(eq(sqlTable.__key, key))
+            .where(eq(sqlTable.__key, uniqueKey))
             .execute();
         }
       }

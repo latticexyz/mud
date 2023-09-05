@@ -13,6 +13,8 @@ uint256 constant ACC_BITS = 7 * 8;
 uint256 constant VAL_BITS = 5 * 8;
 // Maximum value of a 5-byte section
 uint256 constant MAX_VAL = type(uint40).max;
+// Used in splice events to indicate when a counter is unchanged (e.g. replacing the entire field)
+bytes32 constant UNCHANGED_PACKED_COUNTER = bytes32(type(uint256).max);
 
 /**
  * Static functions for PackedCounter

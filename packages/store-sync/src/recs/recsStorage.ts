@@ -8,17 +8,24 @@ import {
   removeComponent,
   setComponent,
 } from "@latticexyz/recs";
-import { schemaToDefaults } from "../schemaToDefaults";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { hexToTableId } from "@latticexyz/common";
-import { SchemaToPrimitives, ValueSchema, decodeValue, encodeValue } from "@latticexyz/protocol-parser";
-import { concatHex, size, sliceHex } from "viem";
+import {
+  SchemaToPrimitives,
+  UNCHANGED_PACKED_COUNTER,
+  ValueSchema,
+  decodeValue,
+  encodeValue,
+  staticDataLength,
+} from "@latticexyz/protocol-parser";
+import { Hex, concatHex, padHex, size, sliceHex } from "viem";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
+import { schemaToDefaults } from "../schemaToDefaults";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
@@ -71,22 +78,31 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
       if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
         const value = decodeValue(table.valueSchema, log.args.data);
         debug("setting component", table.tableId, entity, value);
-        setComponent(component, entity, value);
+        setComponent(component, entity, { ...value, __data: log.args.data });
       } else if (log.eventName === "StoreSpliceRecord") {
-        const previousValue = getComponentValue(component, entity);
-        const previousData = encodeValue(
-          table.valueSchema,
-          (previousValue as SchemaToPrimitives<ValueSchema>) ?? schemaToDefaults(table.valueSchema)
-        );
-        const end = log.args.start + log.args.deleteCount;
-        const newData = concatHex([
-          sliceHex(previousData, 0, log.args.start),
+        const previousData = (getComponentValue(component, entity)?.__data as Hex) ?? "0x";
+
+        let newData = previousData;
+        if (log.args.newDynamicLengths !== UNCHANGED_PACKED_COUNTER) {
+          const start = Number(log.args.dynamicLengthsStart);
+          const end = start + size(log.args.newDynamicLengths);
+          newData = concatHex([
+            padHex(sliceHex(newData, 0, start), { size: start, dir: "right" }),
+            log.args.newDynamicLengths,
+            size(newData) > end ? sliceHex(newData, end) : "0x",
+          ]);
+        }
+        const start = log.args.start;
+        const end = start + log.args.deleteCount;
+        newData = concatHex([
+          padHex(sliceHex(newData, 0, start), { size: start, dir: "right" }),
           log.args.data,
-          end >= size(previousData) ? "0x" : sliceHex(previousData, end),
+          end >= size(newData) ? "0x" : sliceHex(newData, end),
         ]);
+
         const newValue = decodeValue(table.valueSchema, newData);
-        debug("setting component via splice", table.tableId, entity, { newValue, previousValue });
-        setComponent(component, entity, newValue);
+        debug("setting component via splice", table.tableId, entity, { newValue, newData, previousData });
+        setComponent(component, entity, { ...newValue, __data: newData });
       } else if (log.eventName === "StoreDeleteRecord") {
         debug("deleting component", table.tableId, entity);
         removeComponent(component, entity);

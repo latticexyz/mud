@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError } from "viem";
+import { Hex, TransactionReceiptNotFoundError, encodeAbiParameters } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -7,6 +7,7 @@ import {
   SyncOptions,
   SyncResult,
   TableWithRecords,
+  schemasTable,
   schemasTableId,
 } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
@@ -32,6 +33,7 @@ import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
+import { encodeKey, encodeValue, keySchemaToHex, schemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -130,33 +132,19 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         message: "Hydrating from snapshot",
       });
 
-      const logs: StorageAdapterLog[] = tables.flatMap((table) => [
-        {
-          eventName: "StoreSetRecord",
-          address: table.address,
-          args: {
-            table: schemasTableId,
-            key: [table.tableId],
-            data: "0x", // TODO: encode key/value schemas
-          },
-        },
-        ...table.records.map(
+      const logs: StorageAdapterLog[] = tables.flatMap((table) =>
+        table.records.map(
           (record): StorageAdapterLog => ({
             eventName: "StoreSetRecord",
             address: table.address,
             args: {
               table: table.tableId,
-              key: [], // TODO: encode key
-              data: "0x", // TODO: encode data
+              key: encodeKey(table.keySchema, record.key),
+              data: encodeValue(table.valueSchema, record.value),
             },
-            // address: table.address,
-            // namespace: table.namespace,
-            // name: table.name,
-            // key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
-            // value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
           })
-        ),
-      ]);
+        )
+      );
 
       // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
       // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.

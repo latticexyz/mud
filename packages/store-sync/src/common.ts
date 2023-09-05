@@ -26,35 +26,6 @@ export type TableWithRecords = Table & { records: TableRecord[] };
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
 export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
 
-export type BaseStorageOperation<TConfig extends StoreConfig> = {
-  log?: StoreEventsLog;
-  address: Hex;
-  namespace: TableNamespace;
-  name: keyof TConfig["tables"] & TableName;
-  key: readonly Hex[];
-};
-
-export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation<TConfig> & {
-  type: "SetRecord";
-  data: Hex;
-};
-
-export type SpliceRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation<TConfig> & {
-  type: "SpliceRecord";
-  data: Hex;
-  start: number;
-  deleteCount: number;
-};
-
-export type DeleteRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation<TConfig> & {
-  type: "DeleteRecord";
-};
-
-export type StorageOperation<TConfig extends StoreConfig> =
-  | SetRecordOperation<TConfig>
-  | SpliceRecordOperation<TConfig>
-  | DeleteRecordOperation<TConfig>;
-
 export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
    * MUD config

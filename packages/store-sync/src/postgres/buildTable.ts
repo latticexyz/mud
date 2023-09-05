@@ -1,4 +1,4 @@
-import { AnyPgColumnBuilder, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
+import { PgColumnBuilderBase, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
 import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildColumn } from "./buildColumn";
 import { Address, getAddress } from "viem";
@@ -6,17 +6,18 @@ import { transformSchemaName } from "./transformSchemaName";
 
 // TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
-  __key: buildColumn("__key", "bytes").notNull().primaryKey(),
+  __key: buildColumn("__key", "bytes").primaryKey(),
   __data: buildColumn("__data", "bytes").notNull(),
   __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
   // TODO: last updated block hash?
   __isDeleted: buildColumn("__isDeleted", "bool").notNull(),
-} as const satisfies Record<string, AnyPgColumnBuilder>;
+} as const satisfies Record<string, PgColumnBuilderBase>;
 
 type PgTableFromSchema<
   TKeySchema extends Record<string, StaticAbiType>,
   TValueSchema extends Record<string, SchemaAbiType>
 > = PgTableWithColumns<{
+  dialect: "pg";
   name: string;
   schema: string;
   columns: {

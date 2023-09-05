@@ -1,4 +1,4 @@
-import { Hex, PublicClient, concatHex, getAddress, size, sliceHex } from "viem";
+import { Hex, PublicClient, concatHex, getAddress, padHex, size, sliceHex } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
@@ -13,7 +13,7 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToTableId, tableIdToHex } from "@latticexyz/common";
-import { decodeKey, decodeValue } from "@latticexyz/protocol-parser";
+import { UNCHANGED_PACKED_COUNTER, decodeKey, decodeValue, padSliceHex } from "@latticexyz/protocol-parser";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
@@ -133,21 +133,27 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         } else if (log.eventName === "StoreSpliceRecord") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousData =
-            tx.select().from(sqliteTable).where(eq(sqliteTable.__key, uniqueKey)).get().__data ?? "0x";
+            tx.select().from(sqliteTable).where(eq(sqliteTable.__key, uniqueKey)).all()[0]?.__data ?? "0x";
 
-          // TODO: figure out if we need to pad anything or set defaults
-          const end = log.args.start + log.args.deleteCount;
-          const newData = concatHex([
-            sliceHex(previousData, 0, log.args.start),
-            log.args.data,
-            end >= size(previousData) ? "0x" : sliceHex(previousData, end),
-          ]);
+          let newData = previousData;
+          if (log.args.newDynamicLengths !== UNCHANGED_PACKED_COUNTER) {
+            const start = Number(log.args.dynamicLengthsStart);
+            const end = start + size(log.args.newDynamicLengths);
+            newData = concatHex([
+              padSliceHex(newData, 0, start),
+              log.args.newDynamicLengths,
+              padSliceHex(newData, end),
+            ]);
+          }
+          const start = log.args.start;
+          const end = start + log.args.deleteCount;
+          newData = concatHex([padSliceHex(newData, 0, start), log.args.data, padSliceHex(newData, end)]);
+
           const newValue = decodeValue(table.valueSchema, newData);
-
           debug("upserting record via splice", { key, previousData, newData, newValue, log });
           tx.insert(sqliteTable)
             .values({
-              __key: key,
+              __key: uniqueKey,
               __data: newData,
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: false,
@@ -172,7 +178,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: true,
             })
-            .where(eq(sqliteTable.__key, key))
+            .where(eq(sqliteTable.__key, uniqueKey))
             .run();
         }
       }

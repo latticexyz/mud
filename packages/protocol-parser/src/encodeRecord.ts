@@ -18,14 +18,14 @@ export function encodeRecord(schema: Schema, values: readonly (StaticPrimitiveTy
     encodeField(schema.dynamicFields[i], value).replace(/^0x/, "")
   );
 
-  const dynamicFieldByteLengths = dynamicDataItems.map((value) => value.length / 2);
+  const dynamicFieldByteLengths = dynamicDataItems.map((value) => value.length / 2).reverse();
   const dynamicTotalByteLength = dynamicFieldByteLengths.reduce((total, length) => total + BigInt(length), 0n);
 
   const dynamicData = dynamicDataItems.join("");
 
-  const packedCounter = `${encodeField("uint56", dynamicTotalByteLength).replace(/^0x/, "")}${dynamicFieldByteLengths
+  const packedCounter = `${dynamicFieldByteLengths
     .map((length) => encodeField("uint40", length).replace(/^0x/, ""))
-    .join("")}`.padEnd(64, "0");
+    .join("")}${encodeField("uint56", dynamicTotalByteLength).replace(/^0x/, "")}`.padStart(64, "0");
 
   return `0x${staticData}${packedCounter}${dynamicData}`;
 }
