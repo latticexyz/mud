@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/config",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.5",
   "description": "Config for Store and World",
   "repository": {
     "type": "git",
@@ -33,7 +33,8 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "tsc --noEmit"
+    "test": "tsc --noEmit",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",

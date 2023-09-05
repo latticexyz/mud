@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/world",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.5",
   "description": "World framework",
   "repository": {
     "type": "git",
@@ -44,7 +44,8 @@
     "dev": "tsup --watch",
     "gas-report": "mud-gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "tsc --noEmit && vitest --run && forge test"
+    "test": "tsc --noEmit && vitest --run && forge test",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
