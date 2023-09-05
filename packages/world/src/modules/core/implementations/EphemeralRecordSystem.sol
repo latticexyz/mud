@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";

@@ -70,8 +70,9 @@ contract StoreCoreTest is Test, StoreMock {
     );
     IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
 
-    FieldLayout loadedFieldLayout = IStore(this).getFieldLayout(table);
-    assertEq(loadedFieldLayout.unwrap(), fieldLayout.unwrap());
+    assertEq(IStore(this).getFieldLayout(table).unwrap(), fieldLayout.unwrap());
+    assertEq(IStore(this).getValueSchema(table).unwrap(), valueSchema.unwrap());
+    assertEq(IStore(this).getKeySchema(table).unwrap(), keySchema.unwrap());
 
     bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), table);
     assertEq(loadedKeyNames, abi.encode(keyNames));
@@ -93,7 +94,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
   }
 
-  function testHasFieldLayout() public {
+  function testHasFieldLayoutAndSchema() public {
     string[] memory keyNames = new string[](1);
     string[] memory fieldNames = new string[](4);
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
@@ -111,11 +112,23 @@ contract StoreCoreTest is Test, StoreMock {
     assertFalse(StoreCore.hasTable(table2));
 
     IStore(this).getFieldLayout(table);
+    IStore(this).getValueSchema(table);
+    IStore(this).getKeySchema(table);
 
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
     );
     IStore(this).getFieldLayout(table2);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
+    );
+    IStore(this).getValueSchema(table2);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
+    );
+    IStore(this).getKeySchema(table2);
   }
 
   function testRegisterTableRevertNames() public {
@@ -405,6 +418,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Verify the full static data is correct
     assertEq(IStore(this).getFieldLayout(table).staticDataLength(), 48);
+    assertEq(IStore(this).getValueSchema(table).staticDataLength(), 48);
     assertEq(Bytes.slice16(IStore(this).getRecord(table, key, fieldLayout), 0), firstDataBytes);
     assertEq(Bytes.slice32(IStore(this).getRecord(table, key, fieldLayout), 16), secondDataBytes);
     assertEq(

@@ -7,6 +7,7 @@ import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { Schema } from "../src/Schema.sol";
 
 contract MixedTest is Test, GasReporter, StoreReadWithStubs {
   MixedData private testMixed;
@@ -20,6 +21,15 @@ contract MixedTest is Test, GasReporter, StoreReadWithStubs {
     FieldLayout declaredFieldLayout = Mixed.getFieldLayout();
 
     assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
+  }
+
+  function testRegisterAndGetSchema() public {
+    Mixed.register();
+
+    Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
+    Schema declaredSchema = Mixed.getValueSchema();
+
+    assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
 
   function testSetAndGet() public {

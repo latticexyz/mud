@@ -7,10 +7,11 @@ import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/Tables.sol"
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { Schema } from "../src/Schema.sol";
 
 contract Vector2Test is Test, GasReporter, StoreReadWithStubs {
   function testRegisterAndGetFieldLayout() public {
-    startGasReport("register Vector2 schema");
+    startGasReport("register Vector2 field layout");
     Vector2.register();
     endGasReport();
 
@@ -18,6 +19,15 @@ contract Vector2Test is Test, GasReporter, StoreReadWithStubs {
     FieldLayout declaredFieldLayout = Vector2.getFieldLayout();
 
     assertEq(FieldLayout.unwrap(registeredFieldLayout), FieldLayout.unwrap(declaredFieldLayout));
+  }
+
+  function testRegisterAndGetSchema() public {
+    Vector2.register();
+
+    Schema registeredSchema = StoreCore.getValueSchema(Vector2TableId);
+    Schema declaredSchema = Vector2.getValueSchema();
+
+    assertEq(Schema.unwrap(registeredSchema), Schema.unwrap(declaredSchema));
   }
 
   function testSetAndGet() public {

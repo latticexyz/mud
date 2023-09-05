@@ -72,13 +72,13 @@ const commandModule: CommandModule<Options, Options> = {
     const namespace = mudConfig.namespace;
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
-    // Fetch system table schema from chain
-    const systemTableSchema = await WorldContract.getFieldLayout(systemsTableId);
+    // Fetch system table field layout from chain
+    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
       const systemSelector = tableIdToHex(namespace, name);
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableSchema);
+      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
       labels.push({ name, address });
     }
 
