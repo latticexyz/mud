@@ -33,7 +33,7 @@ jobs:
           types: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
-            type=sha
+            type=sha,enable=true
       - run: |
           echo pushing tags: ${{ steps.meta.outputs.tags }}
       - name: Build and push Docker image
