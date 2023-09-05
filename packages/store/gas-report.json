@@ -573,49 +573,49 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 60289
+    "gasUsed": 60733
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 72868
+    "gasUsed": 71134
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 26323
+    "gasUsed": 24478
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 20557
+    "gasUsed": 19530
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 60289
+    "gasUsed": 60733
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 165809
+    "gasUsed": 164002
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 28259
+    "gasUsed": 26414
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 22127
+    "gasUsed": 21036
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -633,7 +633,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "StoreCore: register schema",
-    "gasUsed": 594609
+    "gasUsed": 594625
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -835,6 +835,12 @@
   },
   {
     "file": "test/tables/Hooks.t.sol",
+    "test": "testOneSlot",
+    "name": "Hooks: set field with one elements (cold)",
+    "gasUsed": 60196
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
     "test": "testTable",
     "name": "Hooks: set field (cold)",
     "gasUsed": 60192
@@ -849,7 +855,7 @@
     "file": "test/tables/Hooks.t.sol",
     "test": "testTable",
     "name": "Hooks: push 1 element (cold)",
-    "gasUsed": 37641
+    "gasUsed": 17735
   },
   {
     "file": "test/tables/Hooks.t.sol",
@@ -861,13 +867,13 @@
     "file": "test/tables/Hooks.t.sol",
     "test": "testTable",
     "name": "Hooks: push 1 element (warm)",
-    "gasUsed": 15799
+    "gasUsed": 15793
   },
   {
     "file": "test/tables/Hooks.t.sol",
     "test": "testTable",
     "name": "Hooks: update 1 element (warm)",
-    "gasUsed": 16248
+    "gasUsed": 36142
   },
   {
     "file": "test/tables/Hooks.t.sol",
@@ -880,6 +886,18 @@
     "test": "testTable",
     "name": "Hooks: set field (warm)",
     "gasUsed": 32418
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testThreeSlots",
+    "name": "Hooks: set field with three elements (cold)",
+    "gasUsed": 82887
+  },
+  {
+    "file": "test/tables/Hooks.t.sol",
+    "test": "testTwoSlots",
+    "name": "Hooks: set field with two elements (cold)",
+    "gasUsed": 82795
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",
@@ -897,7 +915,7 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testGetItem",
     "name": "Hooks: get 1 element (cold)",
-    "gasUsed": 7063
+    "gasUsed": 7080
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",
@@ -909,13 +927,13 @@
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testPop",
     "name": "Hooks: pop 1 element (cold)",
-    "gasUsed": 24231
+    "gasUsed": 24235
   },
   {
     "file": "test/tables/HooksColdLoad.t.sol",
     "test": "testUpdate",
     "name": "Hooks: update 1 element (cold)",
-    "gasUsed": 25817
+    "gasUsed": 25811
   },
   {
     "file": "test/tightcoder/DecodeSlice.t.sol",
@@ -969,7 +987,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Vector2 schema",
-    "gasUsed": 392691
+    "gasUsed": 392714
   },
   {
     "file": "test/Vector2.t.sol",

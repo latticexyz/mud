@@ -69,6 +69,13 @@ library StoreHookInstance {
   }
 
   /**
+   * Get the store hook's address casted to the StoreHook type
+   */
+  function getContract(StoreHook self) internal pure returns (IStoreHook) {
+    return IStoreHook(getAddress(self));
+  }
+
+  /**
    * Get the store hook's bitmap
    */
   function getBitmap(StoreHook self) internal pure returns (uint8) {

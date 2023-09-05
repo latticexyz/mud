@@ -5,6 +5,7 @@ import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { StoreRead } from "./StoreRead.sol";
+import { EnabledHooks } from "./StoreHook.sol";
 
 /**
  * StoreReadWithStubs is not abstract and has signatures for all IStore methods,
@@ -59,7 +60,7 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function registerStoreHook(bytes32, IStoreHook) public virtual {
+  function registerStoreHook(bytes32, IStoreHook, EnabledHooks calldata) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 

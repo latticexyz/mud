@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { EnabledHooks } from "@latticexyz/store/src/StoreHook.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
@@ -77,11 +78,15 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * Register a hook for the table at the given namepace and name.
    * Requires the caller to own the namespace.
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
+  function registerStoreHook(
+    bytes32 tableId,
+    IStoreHook hookAddress,
+    EnabledHooks calldata enabledHooks
+  ) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwnerOrSelf(tableId, _msgSender());
 
     // Register the hook
-    StoreCore.registerStoreHook(tableId, hook);
+    StoreCore.registerStoreHook(tableId, hookAddress, enabledHooks);
   }
 }

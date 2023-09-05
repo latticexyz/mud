@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
+import { EnabledHooks } from "./StoreHook.sol";
 
 interface IStoreRead {
   function getValueSchema(bytes32 table) external view returns (Schema schema);
@@ -123,7 +124,7 @@ interface IStoreRegistration {
   ) external;
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hook) external;
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, EnabledHooks memory enabledHooks) external;
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}

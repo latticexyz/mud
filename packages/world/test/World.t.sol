@@ -14,6 +14,7 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { EnabledHooks } from "@latticexyz/store/src/StoreHook.sol";
 
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
@@ -722,7 +723,7 @@ contract WorldTest is Test, GasReporter {
     world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
   }
 
-  function testRegisterTableHook() public {
+  function testRegisterStoreHook() public {
     Schema valueSchema = Bool.getValueSchema();
     bytes32 tableId = ResourceSelector.from("", "testTable");
 
@@ -731,7 +732,18 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new hook
     IStoreHook tableHook = new WorldTestTableHook();
-    world.registerStoreHook(tableId, tableHook);
+    world.registerStoreHook(
+      tableId,
+      tableHook,
+      EnabledHooks({
+        beforeSetRecord: true,
+        afterSetRecord: true,
+        beforeSetField: true,
+        afterSetField: true,
+        beforeDeleteRecord: true,
+        afterDeleteRecord: true
+      })
+    );
 
     // Prepare data to write to the table
     bytes memory value = abi.encodePacked(true);

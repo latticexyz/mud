@@ -12,6 +12,7 @@ import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
+import { StoreHook, StoreHookLib, EnabledHooks, HookType } from "./StoreHook.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -119,8 +120,8 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) internal {
-    Hooks.push(tableId, address(hook));
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, EnabledHooks memory enabledHooks) internal {
+    Hooks.push(tableId, StoreHook.unwrap(StoreHookLib.encode(hookAddress, enabledHooks)));
   }
 
   /************************************************************************
@@ -143,10 +144,12 @@ library StoreCore {
     emit StoreSetRecord(tableId, key, data);
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetRecord(tableId, key, data, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.BEFORE_SET_RECORD)) {
+        hook.getContract().onBeforeSetRecord(tableId, key, data, valueSchema);
+      }
     }
 
     // Store the static data at the static data location
@@ -187,8 +190,10 @@ library StoreCore {
 
     // Call onAfterSetRecord hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetRecord(tableId, key, data, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.AFTER_SET_RECORD)) {
+        hook.getContract().onAfterSetRecord(tableId, key, data, valueSchema);
+      }
     }
   }
 
@@ -206,11 +211,12 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, data);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
-
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.BEFORE_SET_FIELD)) {
+        hook.getContract().onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
+      }
     }
 
     if (schemaIndex < valueSchema.numStaticFields()) {
@@ -221,8 +227,10 @@ library StoreCore {
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.AFTER_SET_FIELD)) {
+        hook.getContract().onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
+      }
     }
   }
 
@@ -234,10 +242,12 @@ library StoreCore {
     emit StoreDeleteRecord(tableId, key);
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeDeleteRecord(tableId, key, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.BEFORE_DELETE_RECORD)) {
+        hook.getContract().onBeforeDeleteRecord(tableId, key, valueSchema);
+      }
     }
 
     // Delete static data
@@ -252,8 +262,10 @@ library StoreCore {
 
     // Call onAfterDeleteRecord hooks
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterDeleteRecord(tableId, key, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.AFTER_DELETE_RECORD)) {
+        hook.getContract().onAfterDeleteRecord(tableId, key, valueSchema);
+      }
     }
   }
 
@@ -281,18 +293,22 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.BEFORE_SET_FIELD)) {
+        hook.getContract().onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, valueSchema, schemaIndex, dataToPush);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.AFTER_SET_FIELD)) {
+        hook.getContract().onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
   }
 
@@ -321,18 +337,22 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.BEFORE_SET_FIELD)) {
+        hook.getContract().onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
 
     StoreCoreInternal._popFromDynamicField(tableId, key, valueSchema, schemaIndex, byteLengthToPop);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.AFTER_SET_FIELD)) {
+        hook.getContract().onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
   }
 
@@ -371,18 +391,22 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.BEFORE_SET_FIELD)) {
+        hook.getContract().onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
 
     StoreCoreInternal._setDynamicFieldItem(tableId, key, valueSchema, schemaIndex, startByteIndex, dataToSet);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      StoreHook hook = StoreHook.wrap(hooks[i]);
+      if (hook.isEnabled(HookType.AFTER_SET_FIELD)) {
+        hook.getContract().onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
   }
 

@@ -14,6 +14,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
+import { EnabledHooks } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
@@ -838,7 +839,18 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](1)
     );
 
-    IStore(this).registerStoreHook(table, subscriber);
+    IStore(this).registerStoreHook(
+      table,
+      subscriber,
+      EnabledHooks({
+        beforeSetRecord: true,
+        afterSetRecord: false,
+        beforeSetField: true,
+        afterSetField: false,
+        beforeDeleteRecord: true,
+        afterDeleteRecord: false
+      })
+    );
 
     bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -881,7 +893,18 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](2)
     );
 
-    IStore(this).registerStoreHook(table, subscriber);
+    IStore(this).registerStoreHook(
+      table,
+      subscriber,
+      EnabledHooks({
+        beforeSetRecord: true,
+        afterSetRecord: false,
+        beforeSetField: true,
+        afterSetField: false,
+        beforeDeleteRecord: true,
+        afterDeleteRecord: false
+      })
+    );
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;

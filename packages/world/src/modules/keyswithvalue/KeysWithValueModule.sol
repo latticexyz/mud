@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { EnabledHooks } from "@latticexyz/store/src/StoreHook.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
@@ -48,6 +49,17 @@ contract KeysWithValueModule is IModule, WorldContextConsumer {
     IBaseWorld(_world()).grantAccess(targetTableSelector, address(hook));
 
     // Register a hook that is called when a value is set in the source table
-    StoreSwitch.registerStoreHook(sourceTableId, hook);
+    StoreSwitch.registerStoreHook(
+      sourceTableId,
+      hook,
+      EnabledHooks({
+        beforeSetRecord: true,
+        afterSetRecord: false,
+        beforeSetField: true,
+        afterSetField: true,
+        beforeDeleteRecord: true,
+        afterDeleteRecord: false
+      })
+    );
   }
 }
