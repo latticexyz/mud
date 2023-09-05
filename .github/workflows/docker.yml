@@ -1,8 +1,8 @@
-name: Publish Docker image
+name: Docker
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "holic/dockerfile-ci"]
   workflow_dispatch:
 
 env:
@@ -11,6 +11,7 @@ env:
 
 jobs:
   build-and-push-image:
+    name: Build and push image
     runs-on: ubuntu-latest-16-cores
     permissions:
       contents: read
@@ -36,6 +37,6 @@ jobs:
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: .
-          push: true
+          push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
