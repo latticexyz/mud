@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/config@2.0.0-next.5
+  - @latticexyz/gas-report@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes
