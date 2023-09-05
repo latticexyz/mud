@@ -8,9 +8,19 @@ RUN apt-get -y update --fix-missing && \
     libssl-dev make cmake graphviz \
     git pkg-config curl time rhash ca-certificates jq \
     python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler \
-    wget net-tools iptables iproute2 iputils-ping ed zlib1g-dev wabt && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    wget net-tools iptables iproute2 iputils-ping ed zlib1g-dev wabt
+
+# node.js
+RUN mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
     apt-get install -y nodejs
+
+# go
+RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
+    # -C to move to given directory
+    tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz
 
 # foundry
 RUN curl -L https://foundry.paradigm.xyz/ | bash && \
@@ -19,10 +29,7 @@ RUN curl -L https://foundry.paradigm.xyz/ | bash && \
     && cast --version \
     && anvil --version \
     && chisel --version
-# go
-RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
-    # -C to move to given directory
-    tar -C /usr/local/ -xzf go1.20.4.linux-amd64.tar.gz
+
 # pnpm
 RUN npm install pnpm --global && pnpm --version
 
