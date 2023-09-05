@@ -27,7 +27,6 @@ const env = z
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
     HOST: z.string().default("0.0.0.0"),
     PORT: z.coerce.number().positive().default(3001),
-    HOST: z.string().default("0.0.0.0"),
     SQLITE_FILENAME: z.string().default("indexer.db"),
   })
   .parse(process.env, {
