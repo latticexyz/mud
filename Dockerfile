@@ -15,7 +15,9 @@ RUN mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
     echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
-    apt-get install -y nodejs
+    apt-get install -y nodejs && \
+    node --version && \
+    npm --version
 
 # go
 RUN wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz && \
