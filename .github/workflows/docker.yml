@@ -35,15 +35,11 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: ${{ matrix.image }}
-          types: |
+          tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=match,pattern=@(.*),group=1
             type=ref,event=branch
             type=sha
-      - name: echo tags/labels
-        run: |
-          echo tags: ${{ steps.meta.outputs.tags }}
-          echo labels: ${{ steps.meta.outputs.labels }}
       - name: Build and push Docker image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
