@@ -29,27 +29,32 @@ protoc-ts:
 	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
 	--ts_proto_out ./protobuf/ts/ecs-stream \
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true,importSuffix=.js \
-	--proto_path proto proto/ecs-stream.proto 
+	--proto_path proto proto/ecs-stream.proto \
+	--experimental_allow_proto3_optional
 	protoc \
 	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
 	--ts_proto_out ./protobuf/ts/ecs-snapshot \
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true,importSuffix=.js \
-	--proto_path proto proto/ecs-snapshot.proto 
+	--proto_path proto proto/ecs-snapshot.proto \
+	--experimental_allow_proto3_optional 
 	protoc \
 	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
 	--ts_proto_out ./protobuf/ts/ecs-relay \
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true,importSuffix=.js \
-	--proto_path proto proto/ecs-relay.proto 
+	--proto_path proto proto/ecs-relay.proto \
+	--experimental_allow_proto3_optional 
 	protoc \
 	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
 	--ts_proto_out ./protobuf/ts/faucet \
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true,importSuffix=.js \
-	--proto_path proto proto/faucet.proto 
+	--proto_path proto proto/faucet.proto \
+	--experimental_allow_proto3_optional 
 	protoc \
 	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
 	--ts_proto_out ./protobuf/ts/mode \
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true,importSuffix=.js \
-	--proto_path proto proto/mode.proto 
+	--proto_path proto proto/mode.proto \
+	--experimental_allow_proto3_optional 
 .PHONY: protoc-ts
 
 protoc-clean:
