@@ -191,6 +191,11 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32 resourceSelector,
     bytes memory funcSelectorAndArgs
   ) external payable virtual returns (bytes memory) {
+    // If the delegator is the caller, call the system directly
+    if (delegator == msg.sender) {
+      return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, funcSelectorAndArgs, msg.value);
+    }
+
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
     Delegation explicitDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: msg.sender }));
 

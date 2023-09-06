@@ -664,6 +664,27 @@ contract WorldTest is Test, GasReporter {
     assertEq(returnedAddress, address(this), "subsystem returned wrong address");
   }
 
+  function testCallFromSelf() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
+
+    address caller = address(1);
+
+    // Call a system via callFrom with the own address
+    vm.prank(caller);
+    bytes memory returnData = world.callFrom(
+      caller,
+      resourceSelector,
+      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+    );
+    address returnedAddress = abi.decode(returnData, (address));
+
+    // Expect the system to have received the delegator's address
+    assertEq(returnedAddress, caller);
+  }
+
   function testCallFromUnlimitedDelegation() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
