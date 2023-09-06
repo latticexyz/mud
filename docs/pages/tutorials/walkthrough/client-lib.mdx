@@ -57,14 +57,14 @@ This structure's syntax is shorthand for:
 }
 ```
 
-### `getNetworkConfig.ts`
+## `getNetworkConfig.ts`
 
 [This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/getNetworkConfig.ts) contains the network specific configuration for the client.
 The one you see here is to get on the `anvil` test network by default
 
-{/_
-** GOON link to how to change it when https://github.com/latticexyz/mud/pull/1369 is merged **
-_/}
+{
+// ** GOON link to how to change it when https://github.com/latticexyz/mud/pull/1369 is merged **
+}
 
 ```ts
 import { getBurnerPrivateKey } from "@latticexyz/common";
@@ -89,9 +89,9 @@ By default, there are only two chains here:
 - `mudFoundry`, the chain running on `anvil` that `pnpm dev` starts by default.
 - `latticeTestnet`, our public test network.
 
-{/_
-** GOON ** - link to deploy to other blockchain tutorial when it is published.
-_/}
+{
+// ** GOON ** - link to deploy to other blockchain tutorial when it is published.
+}
 
 ```ts
 const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
@@ -163,7 +163,7 @@ If neither has it, it starts at the first block, zero.
 }
 ```
 
-### `setupNetwork.ts`
+## `setupNetwork.ts`
 
 [This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts) contains the definitions required to connect to a blockchain.
 
@@ -322,13 +322,13 @@ If there is a faucet, request (test) ETH if you have less than 1 ETH.
 
 Return the network configuration.
 
-### `createClientComponents.ts`
+## `createClientComponents.ts`
 
 [This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/createClientComponents.ts) creates components for use by the client.
 
 By default it only returns the components from [`setupNetwork.ts`](#setupnetworkts), but you can change that if you need more components.
 
-### `createSystemCalls.ts`
+## `createSystemCalls.ts`
 
 [This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/createSystemCalls.ts) creates the system calls that the client can use to ask for changes in the `World` state (using the `System` contracts).
 
