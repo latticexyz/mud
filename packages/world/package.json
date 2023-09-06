@@ -14,7 +14,6 @@
     "./register": "./dist/ts/register/index.js",
     "./node": "./dist/ts/node/index.js",
     "./abi/*": "./abi/*",
-    "./abi-ts/*": "./abi-ts/*",
     "./*": "./dist/*"
   },
   "typesVersions": {
@@ -27,6 +26,9 @@
       ],
       "node": [
         "./ts/node/index.ts"
+      ],
+      "abi-ts/*": [
+        "./abi-ts/*"
       ]
     }
   },
@@ -58,6 +60,7 @@
     "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
+    "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",

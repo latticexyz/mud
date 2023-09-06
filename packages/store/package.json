@@ -30,6 +30,9 @@
       ],
       "register": [
         "./ts/register/index.ts"
+      ],
+      "abi-ts/*": [
+        "./abi-ts/*"
       ]
     }
   },

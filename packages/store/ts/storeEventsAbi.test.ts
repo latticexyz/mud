@@ -8,7 +8,7 @@ describe("storeEventsAbi", () => {
   it("should match the store ABI", () => {
     const expectedAbi = IStoreAbi.filter((item) => item.type === "event")
       .map((item) => ({
-        // transform because typechain adds a bunch of data that abitype doesn't care about
+        // just return data that abitype cares about
         type: item.type,
         name: item.name,
         inputs: [

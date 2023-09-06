@@ -9,9 +9,10 @@ import path from "path";
 import { debounce } from "throttle-debounce";
 import { worldgenHandler } from "./worldgen";
 import { WorldConfig } from "@latticexyz/world";
-import { deployHandler, logError, printMUD, worldtypes } from "../utils";
+import { deployHandler, logError, printMUD } from "../utils";
 import { homedir } from "os";
 import { rmSync } from "fs";
+import { execa } from "execa";
 
 type Options = {
   rpc?: string;
@@ -142,8 +143,10 @@ const commandModule: CommandModule<Options, Options> = {
       // Build the contracts
       await forge(["build"]);
 
-      // Run typechain to rebuild typescript types for the contracts
-      await worldtypes();
+      // Generate TS-friendly ABI files
+      // We rebuild into a separate dir to have a clean set of ABIs without test/script contracts
+      await forge(["build", "--extra-output-files", "abi", "--out", "abi", "--skip", "test", "script", "MudTest.sol"]);
+      await execa("mud", ["abi-ts", "--input", "abi", "--output", "abi-ts"]);
     }
 
     /** Run after codegen if either mud config or contracts changed */
