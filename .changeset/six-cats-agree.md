@@ -6,7 +6,7 @@
 "create-mud": minor
 ---
 
-Added a new `@latticexyz/abi-type` package to generate TS-friendly (`as const`) ABI files from forge ABI output. This replaces our usage TypeChain everywhere. It's also bundled into `@latticexyz/cli` under the `mud abi-ts` command.
+Added a new `@latticexyz/abi-ts` package to generate TS-friendly (`as const`) ABI files from forge ABI output. This replaces our usage TypeChain everywhere. It's also bundled into `@latticexyz/cli` under the `mud abi-ts` command.
 
 If you have a MUD project created from an older template, you can replace TypeChain with `abi-ts` by first updating your contracts' `package.json`:
 
