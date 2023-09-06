@@ -573,49 +573,49 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 60733
+    "gasUsed": 60748
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 71134
+    "gasUsed": 70977
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 24478
+    "gasUsed": 24327
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 19530
+    "gasUsed": 19373
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 60733
+    "gasUsed": 60748
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 164002
+    "gasUsed": 163845
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 26414
+    "gasUsed": 26263
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 21036
+    "gasUsed": 20874
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -777,13 +777,13 @@
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call an enabled hook",
-    "gasUsed": 10161
+    "gasUsed": 10136
   },
   {
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call a disabled hook",
-    "gasUsed": 158
+    "gasUsed": 144
   },
   {
     "file": "test/StoreHook.t.sol",
@@ -801,7 +801,7 @@
     "file": "test/StoreHook.t.sol",
     "test": "testIsEnabled",
     "name": "check if store hook is enabled",
-    "gasUsed": 143
+    "gasUsed": 129
   },
   {
     "file": "test/StoreSwitch.t.sol",
