@@ -8,7 +8,7 @@
     "build:abi": "forge clean && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:mud": "mud tablegen && mud worldgen",
     "build:ts": "mud abi-ts --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
-    "clean": "pnpm run clean:abi && pnpm run clean:mud && pnpm run clean:typechain",
+    "clean": "pnpm run clean:abi && pnpm run clean:mud && pnpm run clean:ts",
     "clean:abi": "rimraf abi",
     "clean:mud": "rimraf src/codegen",
     "clean:ts": "rimraf abi-ts",
