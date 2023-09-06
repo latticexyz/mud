@@ -1,6 +1,7 @@
 import { CommandModule } from "yargs";
 
 import gasReport from "@latticexyz/gas-report";
+import abiTs from "@latticexyz/abi-ts";
 
 import devnode from "./devnode";
 import faucet from "./faucet";
@@ -12,7 +13,6 @@ import setVersion from "./set-version";
 import test from "./test";
 import trace from "./trace";
 import devContracts from "./dev-contracts";
-import abiTs from "./abi-ts";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
