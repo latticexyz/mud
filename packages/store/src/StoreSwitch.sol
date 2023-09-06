@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "./IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -86,12 +87,19 @@ library StoreSwitch {
     }
   }
 
-  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+  function setRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory staticData,
+    PackedCounter dynamicDataLengths,
+    bytes memory dynamicData,
+    Schema valueSchema
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(table, key, data, valueSchema);
+      StoreCore.setRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
     } else {
-      IStore(_storeAddress).setRecord(table, key, data, valueSchema);
+      IStore(_storeAddress).setRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
     }
   }
 
@@ -165,12 +173,19 @@ library StoreSwitch {
     }
   }
 
-  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+  function emitEphemeralRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory staticData,
+    PackedCounter dynamicDataLengths,
+    bytes memory dynamicData,
+    Schema valueSchema
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
+      StoreCore.emitEphemeralRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(table, key, data, valueSchema);
+      IStore(_storeAddress).emitEphemeralRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
     }
   }
 

@@ -36,7 +36,19 @@
       {
         "indexed": false,
         "internalType": "bytes",
-        "name": "data",
+        "name": "staticData",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "internalType": "PackedCounter",
+        "name": "dynamicDataLengths",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "dynamicData",
         "type": "bytes"
       }
     ],
@@ -79,17 +91,48 @@
       {
         "indexed": false,
         "internalType": "bytes32",
-        "name": "newDynamicLengths",
+        "name": "dynamicDataLengths",
+        "type": "bytes32"
+      }
+    ],
+    "name": "StoreSpliceDynamicRecord",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "table",
         "type": "bytes32"
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "dynamicLengthsStart",
-        "type": "uint256"
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "start",
+        "type": "uint48"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint40",
+        "name": "deleteCount",
+        "type": "uint40"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
       }
     ],
-    "name": "StoreSpliceRecord",
+    "name": "StoreSpliceStaticRecord",
     "type": "event"
   },
   {
@@ -228,7 +271,17 @@
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "staticData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "PackedCounter",
+        "name": "dynamicDataLengths",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "dynamicData",
         "type": "bytes"
       },
       {

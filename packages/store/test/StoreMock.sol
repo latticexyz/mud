@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "../src/IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
 import { StoreRead } from "../src/StoreRead.sol";
@@ -11,8 +12,15 @@ import { StoreRead } from "../src/StoreRead.sol";
  */
 contract StoreMock is IStore, StoreRead {
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
-    StoreCore.setRecord(table, key, data, valueSchema);
+  function setRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata staticData,
+    PackedCounter dynamicDataLengths,
+    bytes calldata dynamicData,
+    Schema valueSchema
+  ) public {
+    StoreCore.setRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
   }
 
   // Set partial data at schema index
@@ -66,8 +74,15 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
-    StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
+  function emitEphemeralRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata staticData,
+    PackedCounter dynamicDataLengths,
+    bytes calldata dynamicData,
+    Schema valueSchema
+  ) public {
+    StoreCore.emitEphemeralRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
   }
 
   function registerTable(

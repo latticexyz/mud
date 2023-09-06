@@ -38,11 +38,11 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
       renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
     ])}) internal {
-      bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
+      ${renderRecordData(options)}
 
       ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+      ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
     }
   `
   );
@@ -179,4 +179,29 @@ function renderDecodeDynamicFieldPartial(field: RenderDynamicField) {
       )
     )`;
   }
+}
+
+function renderRecordData(options: RenderTableOptions) {
+  let result = "";
+  if (options.staticFields.length > 0) {
+    result += `
+    bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+    `;
+  } else {
+    result += `bytes memory _staticData;`;
+  }
+
+  if (options.dynamicFields.length > 0) {
+    result += `
+    PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+    bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+    `;
+  } else {
+    result += `
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+    `;
+  }
+
+  return result;
 }

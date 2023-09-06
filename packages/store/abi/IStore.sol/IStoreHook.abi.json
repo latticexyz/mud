@@ -102,7 +102,17 @@
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "staticData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "PackedCounter",
+        "name": "dynamicDataLengths",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "dynamicData",
         "type": "bytes"
       },
       {

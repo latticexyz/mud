@@ -478,12 +478,15 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _staticData = encodeStatic(keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -495,12 +498,15 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _staticData = encodeStatic(keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using the data struct */
@@ -543,27 +549,28 @@ library Tables {
     }
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(
-    bytes32 keySchema,
-    bytes32 valueSchema,
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bytes32 keySchema, bytes32 valueSchema) internal pure returns (bytes memory) {
+    return abi.encodePacked(keySchema, valueSchema);
+  }
+
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
-  ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(bytes(abiEncodedKeyNames).length, bytes(abiEncodedFieldNames).length);
     }
+  }
 
-    return
-      abi.encodePacked(
-        keySchema,
-        valueSchema,
-        _encodedLengths.unwrap(),
-        bytes((abiEncodedKeyNames)),
-        bytes((abiEncodedFieldNames))
-      );
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(
+    bytes memory abiEncodedKeyNames,
+    bytes memory abiEncodedFieldNames
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((abiEncodedKeyNames)), bytes((abiEncodedFieldNames)));
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

@@ -215,15 +215,17 @@ library Hooks {
     }
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(address[] memory value) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(address[] memory value) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(value.length * 20);
     }
+  }
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(address[] memory value) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((value)));
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

@@ -150,8 +150,8 @@ library KeyEncoding {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getValueSchema());
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(bool value) internal pure returns (bytes memory) {
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bool value) internal pure returns (bytes memory) {
     return abi.encodePacked(value);
   }
 

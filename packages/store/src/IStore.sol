@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStoreErrors } from "./IStoreErrors.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStoreRead {
@@ -44,21 +45,34 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  // TODO: finalize dynamic lengths args (these names/positions are placeholders while I figure out of this is enough data for schemaless indexing)
-  event StoreSpliceRecord(
+  event StoreSetRecord(
+    bytes32 table,
+    bytes32[] key,
+    bytes staticData,
+    PackedCounter dynamicDataLengths,
+    bytes dynamicData
+  );
+
+  event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceDynamicRecord(
     bytes32 table,
     bytes32[] key,
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    bytes32 newDynamicLengths,
-    uint256 dynamicLengthsStart
+    bytes32 dynamicDataLengths
   );
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) external;
+  function setRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata staticData,
+    PackedCounter dynamicDataLengths,
+    bytes calldata dynamicData,
+    Schema valueSchema
+  ) external;
 
   // Set partial data at schema index
   function setField(
@@ -105,7 +119,14 @@ interface IStoreEphemeral {
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) external;
+  function emitEphemeralRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata staticData,
+    PackedCounter dynamicDataLengths,
+    bytes calldata dynamicData,
+    Schema valueSchema
+  ) external;
 }
 
 /**
@@ -138,7 +159,14 @@ interface IStoreRegistration {
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
 interface IStoreHook {
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
+  function onSetRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes calldata staticData,
+    PackedCounter dynamicDataLengths,
+    bytes calldata dynamicData,
+    Schema valueSchema
+  ) external;
 
   // Split onSetField into pre and post to simplify the implementation of hooks
   function onBeforeSetField(

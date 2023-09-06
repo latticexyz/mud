@@ -5,10 +5,10 @@ import {
   renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
-  renderValueTypeToBytes32,
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
+  RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
@@ -117,18 +117,11 @@ library ${libraryName} {
 
   ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
-  /** Tightly pack full data using this table's schema */
-  function encode(${renderArguments(
-    options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-  )}) internal pure returns (bytes memory) {
-    ${renderEncodedLengths(dynamicFields)}
-    return abi.encodePacked(${renderArguments([
-      renderArguments(staticFields.map(({ name }) => name)),
-      ...(dynamicFields.length === 0
-        ? []
-        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))]),
-    ])});
-  }
+  ${renderEncodeStatic(staticFields)}
+
+  ${renderEncodedLengths(dynamicFields)}
+
+  ${renderEncodeDynamic(dynamicFields)}
   
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
@@ -157,10 +150,27 @@ ${renderTypeHelpers(options)}
 `;
 }
 
+function renderEncodeStatic(staticFields: RenderStaticField[]) {
+  if (staticFields.length === 0) return "";
+
+  return `
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(${renderArguments(
+    staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+  )}) internal pure returns (bytes memory) {
+    return abi.encodePacked(${renderArguments(staticFields.map(({ name }) => name))});
+  }
+  `;
+}
+
 function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
-  if (dynamicFields.length > 0) {
-    return `
-    PackedCounter _encodedLengths;
+  if (dynamicFields.length === 0) return "";
+
+  return `
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(${renderArguments(
+    dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+  )}) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(
@@ -175,8 +185,19 @@ function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
         )}
       );
     }
-    `;
-  } else {
-    return "";
   }
+  `;
+}
+
+function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
+  if (dynamicFields.length === 0) return "";
+
+  return `
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(${renderArguments(
+    dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+  )}) internal pure returns (bytes memory) {
+    return abi.encodePacked(${renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))});
+  }
+  `;
 }

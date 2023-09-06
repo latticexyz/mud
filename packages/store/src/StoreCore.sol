@@ -6,7 +6,7 @@ import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
-import { PackedCounter, UNCHANGED_PACKED_COUNTER } from "./PackedCounter.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
@@ -15,19 +15,31 @@ import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetRecord(
+    bytes32 table,
+    bytes32[] key,
+    bytes staticData,
+    PackedCounter dynamicDataLengths,
+    bytes dynamicData
+  );
   // TODO: finalize dynamic lengths args (these names/positions are placeholders while I figure out of this is enough data for schemaless indexing)
-  event StoreSpliceRecord(
+  event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceDynamicRecord(
     bytes32 table,
     bytes32[] key,
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    bytes32 newDynamicLengths,
-    uint256 dynamicLengthsStart
+    PackedCounter dynamicDataLengths
   );
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
-  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreEphemeralRecord(
+    bytes32 table,
+    bytes32[] key,
+    bytes staticData,
+    PackedCounter dynamicDataLengths,
+    bytes dynamicData
+  );
 
   /**
    * Initialize internal tables.
@@ -141,47 +153,56 @@ library StoreCore {
   /**
    * Set full data record for the given tableId and key tuple and schema
    */
-  function setRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] memory key,
+    bytes memory staticData,
+    PackedCounter dynamicDataLengths,
+    bytes memory dynamicData,
+    Schema valueSchema
+  ) internal {
     // verify the value has the correct length for the tableId (based on the tableId's schema)
     // to prevent invalid data from being stored
 
     // Verify static data length + dynamic data length matches the given data
-    (uint256 staticLength, PackedCounter dynamicLength) = StoreCoreInternal._validateDataLength(valueSchema, data);
+    StoreCoreInternal._validateDataLength(valueSchema, staticData, dynamicDataLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreSetRecord(tableId, key, data);
+    emit StoreSetRecord(tableId, key, staticData, dynamicDataLengths, dynamicData);
 
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueSchema);
+      hook.onSetRecord(tableId, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
     }
 
     // Store the static data at the static data location
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, key);
-    uint256 memoryPointer = Memory.dataPointer(data);
+    uint256 memoryPointer = Memory.dataPointer(staticData);
     Storage.store({
       storagePointer: staticDataLocation,
       offset: 0,
       memoryPointer: memoryPointer,
-      length: staticLength
+      length: staticData.length
     });
-    memoryPointer += staticLength + 32; // move the memory pointer to the start of the dynamic data (skip the encoded dynamic length)
 
     // If there is no dynamic data, we're done
     if (valueSchema.numDynamicFields() == 0) return;
 
     // Store the dynamic data length at the dynamic data length location
     uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
-    Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicLength.unwrap() });
+    Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicDataLengths.unwrap() });
+
+    // Move the memory pointer to the start of the dynamic data
+    memoryPointer = Memory.dataPointer(dynamicData);
 
     // For every dynamic element, slice off the dynamic data and store it at the dynamic location
     uint256 dynamicDataLocation;
     uint256 dynamicDataLength;
     for (uint8 i; i < valueSchema.numDynamicFields(); ) {
       dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, key, i);
-      dynamicDataLength = dynamicLength.atIndex(i);
+      dynamicDataLength = dynamicDataLengths.atIndex(i);
       Storage.store({
         storagePointer: dynamicDataLocation,
         offset: 0,
@@ -381,18 +402,25 @@ library StoreCore {
   /**
    * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
    */
-  function emitEphemeralRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+  function emitEphemeralRecord(
+    bytes32 tableId,
+    bytes32[] memory key,
+    bytes memory staticData,
+    PackedCounter dynamicDataLengths,
+    bytes memory dynamicData,
+    Schema valueSchema
+  ) internal {
     // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(valueSchema, data);
+    StoreCoreInternal._validateDataLength(valueSchema, staticData, dynamicDataLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreEphemeralRecord(tableId, key, data);
+    emit StoreEphemeralRecord(tableId, key, staticData, dynamicDataLengths, dynamicData);
 
     // Call onSetRecord hooks
     address[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueSchema);
+      hook.onSetRecord(tableId, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
     }
   }
 
@@ -538,17 +566,8 @@ library StoreCoreInternal {
     // Prepare data for the splice event
     uint256 start = offset;
     uint256 deleteCount = valueSchema.atIndex(schemaIndex).getStaticByteLength();
-    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(
-      tableId,
-      key,
-      uint48(start),
-      uint40(deleteCount),
-      data,
-      UNCHANGED_PACKED_COUNTER,
-      encodedLengthsStart
-    );
+    emit StoreCore.StoreSpliceStaticRecord(tableId, key, uint48(start), uint40(deleteCount), data);
   }
 
   function _setDynamicField(
@@ -578,23 +597,13 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
     }
     uint256 deleteCount = oldFieldLength;
-    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(
-      tableId,
-      key,
-      uint48(start),
-      uint40(deleteCount),
-      data,
-      encodedLengths.unwrap(),
-      encodedLengthsStart
-    );
+    emit StoreCore.StoreSpliceDynamicRecord(tableId, key, uint48(start), uint40(deleteCount), data, encodedLengths);
   }
 
   function _pushToDynamicField(
@@ -623,22 +632,19 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32 + oldFieldLength;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
     }
     uint256 deleteCount = 0;
-    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(
+    emit StoreCore.StoreSpliceDynamicRecord(
       tableId,
       key,
       uint48(start),
       uint40(deleteCount),
       dataToPush,
-      encodedLengths.unwrap(),
-      encodedLengthsStart
+      encodedLengths
     );
   }
 
@@ -667,22 +673,21 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32 + oldFieldLength - byteLengthToPop;
+      start = oldFieldLength;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
+      start -= byteLengthToPop;
     }
     uint256 deleteCount = byteLengthToPop;
-    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(
+    emit StoreCore.StoreSpliceDynamicRecord(
       tableId,
       key,
       uint48(start),
       uint40(deleteCount),
       new bytes(0),
-      encodedLengths.unwrap(),
-      encodedLengthsStart
+      encodedLengths
     );
   }
 
@@ -708,22 +713,20 @@ library StoreCoreInternal {
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
-      start = valueSchema.staticDataLength() + 32 + startByteIndex;
+      start = startByteIndex;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
       }
     }
     uint256 deleteCount = dataToSet.length;
-    uint256 encodedLengthsStart = valueSchema.staticDataLength();
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceRecord(
+    emit StoreCore.StoreSpliceDynamicRecord(
       tableId,
       key,
       uint48(start),
       uint40(deleteCount),
       dataToSet,
-      encodedLengths.unwrap(),
-      encodedLengthsStart
+      encodedLengths
     );
   }
 
@@ -793,19 +796,15 @@ library StoreCoreInternal {
    */
   function _validateDataLength(
     Schema valueSchema,
-    bytes memory data
-  ) internal pure returns (uint256 staticLength, PackedCounter dynamicLength) {
-    staticLength = valueSchema.staticDataLength();
-    uint256 expectedLength = staticLength;
-    dynamicLength;
-    if (valueSchema.numDynamicFields() > 0) {
-      // Dynamic length is encoded at the start of the dynamic length blob
-      dynamicLength = PackedCounter.wrap(Bytes.slice32(data, staticLength));
-      expectedLength += 32 + dynamicLength.total(); // encoded length + data
+    bytes memory staticData,
+    PackedCounter dynamicDataLengths,
+    bytes memory dynamicData
+  ) internal pure {
+    if (valueSchema.staticDataLength() != staticData.length) {
+      revert IStoreErrors.StoreCore_InvalidStaticDataLength(valueSchema.staticDataLength(), staticData.length);
     }
-
-    if (expectedLength != data.length) {
-      revert IStoreErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
+    if (dynamicDataLengths.total() != dynamicData.length) {
+      revert IStoreErrors.StoreCore_InvalidDynamicDataLength(dynamicDataLengths.total(), dynamicData.length);
     }
   }
 

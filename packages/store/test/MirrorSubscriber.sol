@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "../src/IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Schema } from "../src/Schema.sol";
 
@@ -21,9 +22,16 @@ contract MirrorSubscriber is IStoreHook {
     _table = table;
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+  function onSetRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes calldata staticData,
+    PackedCounter dynamicDataLengths,
+    bytes calldata dynamicData,
+    Schema valueSchema
+  ) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, key, data, valueSchema);
+    StoreSwitch.setRecord(indexerTableId, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
   }
 
   function onBeforeSetField(

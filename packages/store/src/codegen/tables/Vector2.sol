@@ -154,22 +154,28 @@ library Vector2 {
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = encode(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = encode(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using the data struct */
@@ -189,8 +195,8 @@ library Vector2 {
     _table.y = (uint32(Bytes.slice4(_blob, 4)));
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(uint32 x, uint32 y) internal pure returns (bytes memory) {
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 x, uint32 y) internal pure returns (bytes memory) {
     return abi.encodePacked(x, y);
   }
 

@@ -91,7 +91,23 @@
         "type": "uint256"
       }
     ],
-    "name": "StoreCore_InvalidDataLength",
+    "name": "StoreCore_InvalidDynamicDataLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidStaticDataLength",
     "type": "error"
   },
   {
@@ -197,7 +213,17 @@
       },
       {
         "internalType": "bytes",
-        "name": "data",
+        "name": "staticData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "PackedCounter",
+        "name": "dynamicDataLengths",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "dynamicData",
         "type": "bytes"
       },
       {
