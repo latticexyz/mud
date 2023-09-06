@@ -6,7 +6,7 @@ import abiTsCommand from ".";
 import chalk from "chalk";
 
 // $0 makes this a default command (as opposed to a sub-command),
-// which replaces `abi-ts gas-report` with just `abi-ts`
+// which replaces `abi-ts abi-ts` with just `abi-ts`
 abiTsCommand.command = "$0";
 
 yargs(hideBin(process.argv))
