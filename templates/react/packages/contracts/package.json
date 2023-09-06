@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
-    "build:abi": "forge clean && forge build",
+    "build:abi": "forge clean && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:mud": "mud tablegen && mud worldgen",
-    "build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
+    "build:ts": "rimraf abi-ts && mud abi-ts --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts",
@@ -17,17 +17,12 @@
     "test": "tsc --noEmit && mud test"
   },
   "dependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/bytes": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
     "@latticexyz/cli": "link:../../../../packages/cli",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/store": "link:../../../../packages/store",
-    "@latticexyz/world": "link:../../../../packages/world",
-    "ethers": "^5.7.2"
+    "@latticexyz/world": "link:../../../../packages/world"
   },
   "devDependencies": {
-    "@typechain/ethers-v5": "^10.2.0",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
@@ -35,7 +30,6 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "solhint": "^3.3.7",
     "solhint-config-mud": "file:../../../../packages/solhint-config-mud",
-    "solhint-plugin-mud": "file:../../../../packages/solhint-plugin-mud",
-    "typechain": "^8.1.1"
+    "solhint-plugin-mud": "file:../../../../packages/solhint-plugin-mud"
   }
 }
