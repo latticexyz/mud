@@ -10,6 +10,7 @@ import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
+import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
 
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
@@ -18,6 +19,8 @@ import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 
 library SystemCall {
   using ResourceSelector for bytes32;
+  event SystemCallStart(bytes32 resourceSelector, bytes funcSelectorAndArgs);
+  event SystemCallEnd(bytes32 resourceSelector, bytes funcSelectorAndArgs);
 
   /**
    * Calls a system via its resource selector and perform access control checks.
@@ -63,6 +66,8 @@ library SystemCall {
     bytes memory funcSelectorAndArgs,
     uint256 value
   ) internal returns (bool success, bytes memory data) {
+    emit SystemCallStart(resourceSelector, funcSelectorAndArgs);
+
     // Get system hooks
     address[] memory hooks = SystemHooks.get(resourceSelector);
 
@@ -80,6 +85,8 @@ library SystemCall {
       ISystemHook hook = ISystemHook(hooks[i]);
       hook.onAfterCallSystem(caller, resourceSelector, funcSelectorAndArgs);
     }
+
+    // emit SystemCallEnd(resourceSelector, funcSelectorAndArgs);
   }
 
   /**

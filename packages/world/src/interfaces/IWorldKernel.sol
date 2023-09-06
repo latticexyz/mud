@@ -16,6 +16,16 @@ interface IWorldModuleInstallation {
 
 interface IWorldCall {
   /**
+   * The SystemCallStart event is emitted at the start of a system call
+   */
+  event SystemCallStart(bytes32 resourceSelector, bytes funcSelectorAndArgs);
+
+  /**
+   * The SystemCallEnd event is emitted at the end of a system call
+   */
+  event SystemCallEnd(bytes32 resourceSelector, bytes funcSelectorAndArgs);
+
+  /**
    * Call the system at the given resourceSelector.
    * If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector).
    */

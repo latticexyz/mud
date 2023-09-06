@@ -344,6 +344,44 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "funcSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "SystemCallEnd",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "funcSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "SystemCallStart",
+    "type": "event"
+  },
+  {
     "stateMutability": "payable",
     "type": "fallback"
   },
