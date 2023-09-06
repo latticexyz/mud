@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:ts",
     "build:abi": "forge clean && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:mud": "mud tablegen && mud worldgen",
     "build:ts": "rimraf abi-ts && mud abi-ts --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
