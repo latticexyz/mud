@@ -24,6 +24,7 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
+    "prepare": "mkdir -p ./dist && touch ./dist/mud.js",
     "test": "tsc --noEmit && forge test",
     "test:ci": "pnpm run test"
   },
