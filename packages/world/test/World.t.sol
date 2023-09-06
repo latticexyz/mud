@@ -21,7 +21,7 @@ import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
-import { EnabledSystemHooks } from "../src/SystemHook.sol";
+import { SystemHookLib } from "../src/SystemHook.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -789,7 +789,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystemHook(
       systemId,
       systemHook,
-      EnabledSystemHooks({ onBeforeCallSystem: true, onAfterCallSystem: true })
+      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
     );
 
     bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
