@@ -95,11 +95,11 @@ The actual value: 2
 ```ts
 import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
 const indexer = createIndexerClient({
-  url: "http://localhost:3001/trpc",
+  url: "http://127.0.0.1:3001/trpc",
 });
 ```
 
-Create an indexer client. The URL, `http://localhost/3001/trpc`, is the one for the indexer you run on the local computer.
+Create an indexer client. The URL, `http://127.0.0.1/3001/trpc`, is the one for the indexer you run on the local computer.
 If the indexer is elsewhere, modify the URL as appropriate.
 
 ```ts
@@ -281,7 +281,7 @@ To index a different blockchain, you specify these environment variables:
 | RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              |
 | RPC_WS_URL      | The URL to access the blockchain using WebSocket (for notifications)                                     |
 | START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
-| SQLITE_FILENAME | <blockchain name>.db                                                                                     |
+| SQLITE_FILENAME | `<blockchain name>.db`                                                                                   |
 
 After you do that, start the indexer with this command:
 
