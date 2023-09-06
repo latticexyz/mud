@@ -8,15 +8,12 @@ import { WorldConfig } from "@latticexyz/world";
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import { tableIdToHex } from "@latticexyz/common";
-import { TxHelper } from "./txHelper";
+import { TxConfig, TxHelper, deployContract, deployContractByName } from "./txHelper";
 
 export type TableIds = { [tableName: string]: Uint8Array };
 
 export async function deployWorldContract(
-  worldAddress: string | undefined,
-  worldContractName: string | undefined,
-  txHelper: TxHelper,
-  disableTxWait: boolean
+  ip: TxConfig & { worldAddress: string | undefined; worldContractName: string | undefined; forgeOutDirectory: string }
 ): Promise<string> {
   console.log(chalk.blue(`Deploying World`));
   /* 
@@ -26,11 +23,14 @@ export async function deployWorldContract(
     Or deploy from base contract by default
     (Will also check create2 deployment here in future)
     */
-  return worldAddress
-    ? Promise.resolve(worldAddress)
-    : worldContractName
-    ? txHelper.deployContractByName(worldContractName, disableTxWait)
-    : txHelper.deployContract(IBaseWorldData.abi, WorldData.bytecode, disableTxWait, "World");
+  return ip.worldAddress
+    ? Promise.resolve(ip.worldAddress)
+    : ip.worldContractName
+    ? deployContractByName({ ...ip, contractName: ip.worldContractName })
+    : deployContract({
+        ...ip,
+        contract: { abi: IBaseWorldData.abi, bytecode: WorldData.bytecode, name: "World" },
+      });
 }
 
 export async function registerNamesSpace(

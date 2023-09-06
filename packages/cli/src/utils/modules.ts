@@ -5,9 +5,6 @@ import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 import { resolveWithContext } from "@latticexyz/config";
 import { TableIds } from "./world";
 import { TxHelper } from "./txHelper";
-import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
-import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
-import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 
 type ModuleConfig = {
   name: string;
@@ -24,41 +21,8 @@ type ModuleConfig = {
   )[];
 }[];
 
-export function deployModuleContracts(
-  txHelper: TxHelper,
-  disableTxWait: boolean,
-  modules: ModuleConfig
-): Record<string, Promise<string>> {
-  // Deploy Systems - can check via Create2 in future
-
-  // Deploy default World modules
-  const defaultModules: Record<string, Promise<string>> = {
-    KeysWithValueModule: txHelper.deployContract(
-      KeysWithValueModuleData.abi,
-      KeysWithValueModuleData.bytecode,
-      disableTxWait,
-      "KeysWithValueModule"
-    ),
-    KeysInTableModule: txHelper.deployContract(
-      KeysInTableModuleData.abi,
-      KeysInTableModuleData.bytecode,
-      disableTxWait,
-      "KeysInTableModule"
-    ),
-    UniqueEntityModule: txHelper.deployContract(
-      UniqueEntityModuleData.abi,
-      UniqueEntityModuleData.bytecode,
-      disableTxWait,
-      "UniqueEntityModule"
-    ),
-  };
-  // Only deploy user modules here, not default modules
-  return modules
-    .filter((module) => !defaultModules[module.name])
-    .reduce<Record<string, Promise<string>>>((acc, module) => {
-      acc[module.name] = txHelper.deployContractByName(module.name, disableTxWait);
-      return acc;
-    }, defaultModules);
+export function getUserModules(defaultModules: { name: string }[], configModules: ModuleConfig): ModuleConfig {
+  return configModules.filter((module) => !defaultModules.some((m) => m.name === module.name));
 }
 
 export async function installModules(

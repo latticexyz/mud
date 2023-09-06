@@ -1,13 +1,9 @@
-import { readFileSync } from "fs";
-import path from "path";
 import chalk from "chalk";
 import { Contract, ethers } from "ethers";
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
-import { Fragment, ParamType } from "ethers/lib/utils.js";
-
-import { MUDError } from "@latticexyz/common/errors";
+import { ParamType } from "ethers/lib/utils.js";
 import { tableIdToHex } from "@latticexyz/common";
-import { TxHelper } from "./txHelper";
+import { TxHelper, getContractData } from "./txHelper";
 
 type SystemsConfig = Record<
   string,
@@ -23,19 +19,6 @@ type SystemsConfig = Record<
 interface FunctionSignature {
   functionName: string;
   functionArgs: string;
-}
-
-export function deploySystemContracts(
-  txHelper: TxHelper,
-  disableTxWait: boolean,
-  systems: SystemsConfig
-): Record<string, Promise<string>> {
-  // Deploy Systems - can include check via Create2 in future
-  return Object.keys(systems).reduce<Record<string, Promise<string>>>((acc, systemName) => {
-    console.log(chalk.blue(`Deploying ${systemName}`));
-    acc[systemName] = txHelper.deployContractByName(systemName, disableTxWait);
-    return acc;
-  }, {});
 }
 
 export async function registerSystems(
@@ -159,28 +142,6 @@ function loadFunctionSignatures(contractName: string, forgeOutDirectory: string)
         functionArgs: parseComponents(item.inputs),
       };
     });
-}
-
-/**
- * Load the contract's abi and bytecode from the file system
- * @param contractName: Name of the contract to load
- */
-function getContractData(contractName: string, forgeOutDirectory: string): { bytecode: string; abi: Fragment[] } {
-  let data: any;
-  const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
-  try {
-    data = JSON.parse(readFileSync(contractDataPath, "utf8"));
-  } catch (error: any) {
-    throw new MUDError(`Error reading file at ${contractDataPath}`);
-  }
-
-  const bytecode = data?.bytecode?.object;
-  if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
-
-  const abi = data?.abi;
-  if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
-
-  return { abi, bytecode };
 }
 
 // TODO: move this to utils as soon as utils are usable inside cli

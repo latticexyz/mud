@@ -1,17 +1,21 @@
 import { existsSync } from "fs";
 import path from "path";
 import chalk from "chalk";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { getOutDirectory, cast, getScriptDirectory, forge } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
-import { TxHelper } from "./txHelper";
-import { deployWorldContract, registerNamesSpace, registerTables } from "./world";
-import { deployCoreModuleContracts, installCoreModule } from "./coreModules";
+import { deployContractsByName, TxHelper, ContractCode, deployContractsByCode, deployContract } from "./txHelper";
+import { deployWorldContract as deployWorld, registerNamesSpace, registerTables } from "./world";
+import { installCoreModule } from "./coreModules";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-import { deploySystemContracts, grantAccess, registerSystems } from "./systems";
-import { deployModuleContracts, installModules } from "./modules";
+import { grantAccess, registerSystems } from "./systems";
+import { installModules, getUserModules } from "./modules";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
+import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
+import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -34,6 +38,27 @@ export async function deploy(
   existingContractNames: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
+  // These modules are always deployed
+  const defaultModules: ContractCode[] = [
+    {
+      name: "KeysWithValueModule",
+      abi: KeysWithValueModuleData.abi,
+      bytecode: KeysWithValueModuleData.bytecode,
+    },
+    {
+      name: "KeysInTableModule",
+      abi: KeysInTableModuleData.abi,
+      bytecode: KeysInTableModuleData.bytecode,
+    },
+    {
+      name: "UniqueEntityModule",
+      abi: UniqueEntityModuleData.abi,
+      bytecode: UniqueEntityModuleData.bytecode,
+    },
+  ];
+
+  // Filters any default modules from config
+  const userModules = getUserModules(defaultModules, mudConfig.modules);
   const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
 
   const startTime = Date.now();
@@ -55,6 +80,15 @@ export async function deploy(
   });
 
   await txHelper.initialise();
+  const txConfig = {
+    signer,
+    nonce: txHelper.nonce,
+    maxPriorityFeePerGas: txHelper.maxPriorityFeePerGas as number,
+    maxFeePerGas: txHelper.maxFeePerGas as BigNumber,
+    gasPrice: txHelper.gasPrice as BigNumber,
+    debug: !!debug,
+    disableTxWait,
+  };
 
   const confirmations = disableTxWait ? 0 : 1;
 
@@ -63,27 +97,50 @@ export async function deploy(
   console.log("Start deployment at block", blockNumber);
 
   // Deploy all contracts - World, Core, Systems, Module. Non-blocking.
-
-  const worldPromise: Promise<string> = deployWorldContract(
+  const worldPromise: Promise<string> = deployWorld({
+    ...txConfig,
     worldAddress,
-    mudConfig.worldContractName,
-    txHelper,
-    disableTxWait
-  );
+    worldContractName: mudConfig.worldContractName,
+    forgeOutDirectory,
+  });
+  txConfig.nonce++;
 
-  const coreModulePromise: Promise<string> = deployCoreModuleContracts(txHelper, disableTxWait);
+  console.log(chalk.blue(`Deploying CoreModule`));
 
-  const systemContracts: Record<string, Promise<string>> = deploySystemContracts(
-    txHelper,
-    disableTxWait,
-    resolvedConfig.systems
-  );
+  // TODO: This only needs to be deployed once per chain, add a check if they exist already (use create2)
+  const coreModulePromise = deployContract({
+    ...txConfig,
+    contract: {
+      name: "CoreModule",
+      abi: CoreModuleData.abi,
+      bytecode: CoreModuleData.bytecode,
+    },
+  });
+  txConfig.nonce++;
 
-  const moduleContracts: Record<string, Promise<string>> = deployModuleContracts(
-    txHelper,
-    disableTxWait,
-    mudConfig.modules
-  );
+  const defaultModuleContracts = deployContractsByCode({
+    ...txConfig,
+    contracts: defaultModules,
+  });
+  txConfig.nonce = txConfig.nonce + Object.keys(defaultModules).length;
+
+  const userModuleContracts = deployContractsByName({
+    ...txConfig,
+    contracts: Object.keys(userModules),
+    forgeOutDirectory,
+  });
+  txConfig.nonce = txConfig.nonce + Object.keys(userModules).length;
+
+  const moduleContracts = { ...defaultModuleContracts, ...userModuleContracts };
+
+  const systemContracts = deployContractsByName({
+    ...txConfig,
+    contracts: Object.keys(resolvedConfig.systems),
+    forgeOutDirectory,
+  });
+  txConfig.nonce = txConfig.nonce + Object.keys(resolvedConfig.systems).length;
+
+  txHelper.nonce = txConfig.nonce;
 
   // Wait for world to be deployed
   const deployedWorldAddress = await worldPromise;

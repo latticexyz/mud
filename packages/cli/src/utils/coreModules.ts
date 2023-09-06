@@ -1,13 +1,6 @@
 import chalk from "chalk";
 import { Contract } from "ethers";
 import { TxHelper } from "./txHelper";
-import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
-
-export async function deployCoreModuleContracts(txHelper: TxHelper, disableTxWait: boolean): Promise<string> {
-  console.log(chalk.blue(`Deploying CoreModule`));
-  // TODO: these only need to be deployed once per chain, add a check if they exist already (use create2)
-  return txHelper.deployContract(CoreModuleData.abi, CoreModuleData.bytecode, disableTxWait, "CoreModule");
-}
 
 export async function installCoreModule(
   worldContract: Contract,

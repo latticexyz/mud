@@ -13,20 +13,141 @@ type TxHelperConfig = {
   debug?: boolean;
 };
 
+type ContractNames = string[];
+
+export type ContractCode = {
+  name: string;
+  abi: ContractInterface;
+  bytecode: string | { object: string };
+};
+
+export type TxConfig = {
+  signer: ethers.Wallet;
+  nonce: number;
+  maxPriorityFeePerGas: number;
+  maxFeePerGas: BigNumber;
+  gasPrice: BigNumber;
+  debug: boolean;
+  disableTxWait: boolean;
+};
+
+export function deployContractsByCode(
+  input: TxConfig & { contracts: ContractCode[] }
+): Record<string, Promise<string>> {
+  // TODO - can check via Create2 in future
+  return input.contracts.reduce<Record<string, Promise<string>>>((acc, contract) => {
+    acc[contract.name] = deployContract({
+      ...input,
+      nonce: input.nonce++,
+      contract,
+    });
+    return acc;
+  }, {});
+}
+
+export function deployContractsByName(
+  input: TxConfig & { contracts: ContractNames; forgeOutDirectory: string }
+): Record<string, Promise<string>> {
+  // TODO - can check via Create2 in future
+  return input.contracts.reduce<Record<string, Promise<string>>>((acc, contractName) => {
+    console.log(chalk.blue(`Deploying ${contractName}`));
+    acc[contractName] = deployContractByName({
+      ...input,
+      nonce: input.nonce++,
+      contractName,
+    });
+    return acc;
+  }, {});
+}
+
+export async function deployContract({
+  signer,
+  nonce,
+  maxPriorityFeePerGas,
+  maxFeePerGas,
+  debug,
+  gasPrice,
+  disableTxWait,
+  contract,
+}: TxConfig & { contract: ContractCode }): Promise<string> {
+  try {
+    const factory = new ethers.ContractFactory(contract.abi, contract.bytecode, signer);
+    console.log(chalk.gray(`executing deployment of ${contract.name} with nonce ${nonce}`));
+    const deployPromise = factory
+      .deploy({
+        nonce,
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+        gasPrice,
+      })
+      .then((c) => (disableTxWait ? c : c.deployed()));
+    const { address } = await deployPromise;
+    console.log(chalk.green("Deployed", contract.name, "to", address));
+    return address;
+  } catch (error: any) {
+    if (debug) console.error(error);
+    if (error?.message.includes("invalid bytecode")) {
+      throw new MUDError(
+        `Error deploying ${contract.name}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
+      );
+    } else if (error?.message.includes("CreateContractLimit")) {
+      throw new MUDError(`Error deploying ${contract.name}: CreateContractLimit exceeded.`);
+    } else throw error;
+  }
+}
+
+export async function deployContractByName(
+  input: TxConfig & { contractName: string; forgeOutDirectory: string }
+): Promise<string> {
+  console.log(input.contractName);
+  const { abi, bytecode } = getContractData(input.contractName, input.forgeOutDirectory);
+  return deployContract({
+    ...input,
+    contract: {
+      name: input.contractName,
+      abi,
+      bytecode,
+    },
+  });
+}
+
+/**
+ * Load the contract's abi and bytecode from the file system
+ * @param contractName: Name of the contract to load
+ */
+export function getContractData(
+  contractName: string,
+  forgeOutDirectory: string
+): { bytecode: string; abi: Fragment[] } {
+  let data: any;
+  const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
+  try {
+    data = JSON.parse(readFileSync(contractDataPath, "utf8"));
+  } catch (error: any) {
+    throw new MUDError(`Error reading file at ${contractDataPath}`);
+  }
+
+  const bytecode = data?.bytecode?.object;
+  if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
+
+  const abi = data?.abi;
+  if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
+
+  return { abi, bytecode };
+}
+
 export class TxHelper {
   private signer: ethers.Wallet;
-  private maxPriorityFeePerGas: number | undefined;
-  private maxFeePerGas: BigNumber | undefined;
-  private gasPrice: BigNumber | undefined;
-  private priorityFeeMultiplier: number;
-  private forgeOutDirectory: string;
+  maxPriorityFeePerGas: number | undefined;
+  maxFeePerGas: BigNumber | undefined;
+  gasPrice: BigNumber | undefined;
+  priorityFeeMultiplier: number;
   private debug: boolean;
   public nonce = 0;
 
   constructor(config: TxHelperConfig) {
     this.signer = config.signer;
     this.priorityFeeMultiplier = config.priorityFeeMultiplier;
-    this.forgeOutDirectory = config.forgeOutDirectory;
     this.debug = !!config.debug;
   }
 
@@ -38,77 +159,6 @@ export class TxHelper {
     console.log("Initial nonce", initialNonce);
     this.nonce = initialNonce;
     await this.setInternalFeePerGas(this.priorityFeeMultiplier);
-  }
-
-  async deployContract(
-    abi: ContractInterface,
-    bytecode: string | { object: string },
-    disableTxWait: boolean,
-    contractName?: string,
-    retryCount = 0
-  ): Promise<string> {
-    try {
-      const factory = new ethers.ContractFactory(abi, bytecode, this.signer);
-      console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${this.nonce}`));
-      const deployPromise = factory
-        .deploy({
-          nonce: this.nonce++,
-          maxPriorityFeePerGas: this.maxPriorityFeePerGas,
-          maxFeePerGas: this.maxFeePerGas,
-          gasPrice: this.gasPrice,
-        })
-        .then((c) => (disableTxWait ? c : c.deployed()));
-      const { address } = await deployPromise;
-      console.log(chalk.green("Deployed", contractName, "to", address));
-      return address;
-    } catch (error: any) {
-      if (this.debug) console.error(error);
-      if (retryCount === 0 && error?.message.includes("transaction already imported")) {
-        // If the deployment failed because the transaction was already imported,
-        // retry with a higher priority fee
-        this.setInternalFeePerGas(this.priorityFeeMultiplier * 1.1);
-        return this.deployContract(abi, bytecode, disableTxWait, contractName, retryCount++);
-      } else if (error?.message.includes("invalid bytecode")) {
-        throw new MUDError(
-          `Error deploying ${contractName}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
-        );
-      } else if (error?.message.includes("CreateContractLimit")) {
-        throw new MUDError(`Error deploying ${contractName}: CreateContractLimit exceeded.`);
-      } else throw error;
-    }
-  }
-
-  /**
-   * Deploy a contract and return the address
-   * @param contractName Name of the contract to deploy (must exist in the file system)
-   * @param disableTxWait Disable waiting for contract deployment
-   * @returns Address of the deployed contract
-   */
-  async deployContractByName(contractName: string, disableTxWait: boolean): Promise<string> {
-    const { abi, bytecode } = await this.getContractData(contractName);
-    return this.deployContract(abi, bytecode, disableTxWait, contractName);
-  }
-
-  /**
-   * Load the contract's abi and bytecode from the file system
-   * @param contractName: Name of the contract to load
-   */
-  async getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
-    let data: any;
-    const contractDataPath = path.join(this.forgeOutDirectory, contractName + ".sol", contractName + ".json");
-    try {
-      data = JSON.parse(readFileSync(contractDataPath, "utf8"));
-    } catch (error: any) {
-      throw new MUDError(`Error reading file at ${contractDataPath}`);
-    }
-
-    const bytecode = data?.bytecode?.object;
-    if (!bytecode) throw new MUDError(`No bytecode found in ${contractDataPath}`);
-
-    const abi = data?.abi;
-    if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
-
-    return { abi, bytecode };
   }
 
   /**
@@ -141,6 +191,7 @@ export class TxHelper {
           return confirmations === 0 ? tx : tx.wait(confirmations);
         });
     } catch (error: any) {
+      console.log(error);
       if (this.debug) console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
