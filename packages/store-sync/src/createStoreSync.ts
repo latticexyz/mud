@@ -1,6 +1,6 @@
 import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
-import { SetRecordOperation, SyncOptions, SyncResult, TableWithRecords } from "./common";
+import { SetRecordOperation, StorageAdapter, SyncOptions, SyncResult, TableWithRecords } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
@@ -23,14 +23,13 @@ import {
 import { BlockStorageOperations, blockLogsToStorage } from "./blockLogsToStorage";
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
-import { BlockLogsToStorageOptions } from "./blockLogsToStorage";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
 
 const debug = parentDebug.extend("createStoreSync");
 
 type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
-  storageAdapter: BlockLogsToStorageOptions<TConfig>;
+  storageAdapter: StorageAdapter<TConfig>;
   onProgress?: (opts: {
     step: SyncStep;
     percentage: number;

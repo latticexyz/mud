@@ -1,5 +1,4 @@
-import { createStore } from "zustand/vanilla";
-import createReactStore from "zustand";
+import { create } from "zustand";
 import { NetworkLayer } from "./layers/network/createNetworkLayer";
 import { PhaserLayer } from "./layers/phaser/createPhaserLayer";
 
@@ -15,13 +14,11 @@ export type UIStore = {
   devMode: boolean;
 };
 
-export const store = createStore<Store>(() => ({
+export const useStore = create<Store>(() => ({
   networkLayer: null,
   phaserLayer: null,
   devMode: false,
 }));
-
-export const useStore = createReactStore(store);
 
 export const useMUD = () => {
   const { networkLayer, phaserLayer, devMode } = useStore();
