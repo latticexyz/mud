@@ -1,0 +1,381 @@
+# The MUD client libraries
+
+In this code walkthrough you learn how the MUD client libraries function.
+On all client templates, these files are located in [`packages/client/src/mud`](https://github.com/latticexyz/mud/tree/main/templates/react/packages/client/src/mud).
+
+## `setup.ts`
+
+[This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setup.ts) sets up all the definitions required for a MUD client.
+
+```ts
+import { createClientComponents } from "./createClientComponents";
+import { createSystemCalls } from "./createSystemCalls";
+import { setupNetwork } from "./setupNetwork";
+```
+
+Import the code that does various types of setup.
+
+```ts
+export type SetupResult = Awaited<ReturnType<typeof setup>>;
+```
+
+The type definition for the return type of `setup`.
+The result is an [`Awaited`](https://www.typescriptlang.org/docs/handbook/utility-types.html#awaitedtype), which means it may be the result of an input/output operation that is not immediately available.
+The `Awaited` result uis of type `ReturnType<typeof setup>`, which means that TypeScript will see the type that the `setup` function returns and use that.
+
+```ts
+export async function setup() {
+```
+
+This is the `setup` function that is called from the client code.
+
+```ts
+const network = await setupNetwork();
+const components = createClientComponents(network);
+const systemCalls = createSystemCalls(network, components);
+```
+
+Get the network information, the components, and the system calls from the imported code.
+
+```ts
+  return {
+    network,
+    components,
+    systemCalls,
+  };
+}
+```
+
+Return all of this information.
+This structure's syntax is shorthand for:
+
+```ts
+{
+  "network": network,
+  "components": components,
+  "systemCalls": systemCalls
+}
+```
+
+### `getNetworkConfig.ts`
+
+[This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/getNetworkConfig.ts) contains the network specific configuration for the client.
+The one you see here is to get on the `anvil` test network by default
+
+{/_
+** GOON link to how to change it when https://github.com/latticexyz/mud/pull/1369 is merged **
+_/}
+
+```ts
+import { getBurnerPrivateKey } from "@latticexyz/common";
+```
+
+Normally the template application just creates a temporary wallet (called _a burner wallet_) and uses [a faucet](https://www.alchemy.com/faucets) to get ETH for it.
+
+```ts
+import worldsJson from "contracts/worlds.json";
+```
+
+Import the addresses of the `World`, possibly on multiple chains, from [`packages/contracts/worlds.json`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/contracts/worlds.json).
+When the contracts package deploys a new `World`, it updates this data.
+
+```ts
+import { supportedChains } from "./supportedChains";
+```
+
+[The supported chains](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/supportedChains.ts).
+By default, there are only two chains here:
+
+- `mudFoundry`, the chain running on `anvil` that `pnpm dev` starts by default.
+- `latticeTestnet`, our public test network.
+
+{/_
+** GOON ** - link to deploy to other blockchain tutorial when it is published.
+_/}
+
+```ts
+const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
+```
+
+Process the list of deployed worlds.
+
+```ts
+export async function getNetworkConfig() {
+```
+
+This is the function that does the actual work.
+
+```ts
+const params = new URLSearchParams(window.location.search);
+```
+
+Read the [query sting parameters](https://en.wikipedia.org/wiki/Query_string).
+
+```ts
+const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
+```
+
+Get the chain ID.
+If there is a `chainId` (or `chainid`) parameter in the URL, use that.
+If not, check if when you the UI was started there was a `VITE_CHAIN_ID` environment variable.
+If not even that, default to 31337.
+
+```ts
+const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
+const chain = supportedChains[chainIndex];
+if (!chain) {
+  throw new Error(`Chain ${chainId} not found`);
+}
+```
+
+Find the chain (unless it isn't in the list of supported chains).
+
+```ts
+const world = worlds[chain.id.toString()];
+const worldAddress = params.get("worldAddress") || world?.address;
+if (!worldAddress) {
+  throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
+}
+```
+
+Get the address of the `World`.
+If you want to use a different address than the one in `worlds.json`, provide it as `worldAddress` in the query string.
+
+```ts
+const initialBlockNumber = params.has("initialBlockNumber")
+  ? Number(params.get("initialBlockNumber"))
+  : world?.blockNumber ?? 0n;
+```
+
+MUD clients use events to synchronize the database, meaning they need to look as far back as when the `World` was started.
+The block number for the `World` start can be specified either on the URL (as `initialBlockNumber`) or in the `worlds.json` file.
+If neither has it, it starts at the first block, zero.
+
+```ts
+  return {
+    privateKey: getBurnerPrivateKey(),
+    chainId,
+    chain,
+    faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
+    worldAddress,
+    initialBlockNumber,
+  };
+}
+```
+
+### `setupNetwork.ts`
+
+[This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts) contains the definitions required to connect to a blockchain.
+
+```ts
+import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
+```
+
+The MUD client code is built on top of [Viem](https://viem.sh/docs/getting-started.html).
+This line imports the functions we need from Viem.
+
+```ts
+import { createFaucetService } from "@latticexyz/services/faucet";
+import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+```
+
+Import some functions from the Lattice libraries.
+
+```ts
+import { getNetworkConfig } from "./getNetworkConfig";
+```
+
+Get the network configuration.
+
+```ts
+import { world } from "./world";
+import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import { createBurnerAccount, createContract, transportObserver, ContractWrite } from "@latticexyz/common";
+```
+
+Import various necessary definitions for MUD.
+
+```ts
+import { Subject, share } from "rxjs";
+```
+
+Use [the RxJS library](https://rxjs.dev/) to create event handlers.
+
+```typescript
+import mudConfig from "contracts/mud.config";
+```
+
+Import [`packages/contracts/mud.config.ts`](minimal-onchain#mudconfigts) with the `World` information.
+
+```ts
+export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
+```
+
+The type definition for the return type of `setup`.
+The result is an [`Awaited`](https://www.typescriptlang.org/docs/handbook/utility-types.html#awaitedtype), which means it may be the result of an input/output operation that is not immediately available.
+The `Awaited` result uis of type `ReturnType<typeof setup>`, which means that TypeScript will see the type that the `setup` function returns and use that.
+
+```ts
+export async function setupNetwork() {
+  const networkConfig = await getNetworkConfig();
+```
+
+[Get the network configuration](#getnetworkconfigts).
+
+```ts
+const clientOptions = {
+  chain: networkConfig.chain,
+  transport: transportObserver(fallback([webSocket(), http()])),
+  pollingInterval: 1000,
+} as const satisfies ClientConfig;
+
+const publicClient = createPublicClient(clientOptions);
+```
+
+The configuration for the client (URL, etc).
+This creates a [Viem public client](https://viem.sh/docs/clients/public.html).
+
+```ts
+const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
+const burnerWalletClient = createWalletClient({
+  ...clientOptions,
+  account: burnerAccount,
+});
+```
+
+Create A temporary wallet and [a client](https://viem.sh/docs/clients/wallet.html) for it.
+
+```ts
+const write$ = new Subject<ContractWrite>();
+```
+
+A [`Subject`](https://rxjs.dev/guide/subject) is a way to multicast events into multiple listeners.
+
+```ts
+const worldContract = createContract({
+  address: networkConfig.worldAddress as Hex,
+  abi: IWorld__factory.abi,
+  publicClient,
+  walletClient: burnerWalletClient,
+  onWrite: (write) => write$.next(write),
+});
+```
+
+Create an object for communicating with the deployed `World`.
+
+```ts
+const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+  world,
+  config: mudConfig,
+  address: networkConfig.worldAddress as Hex,
+  publicClient,
+  startBlock: BigInt(networkConfig.initialBlockNumber),
+});
+```
+
+Download the `World` state to have a local copy.
+
+```ts
+// Request drip from faucet
+if (networkConfig.faucetServiceUrl) {
+  const address = burnerAccount.address;
+  console.info("[Dev Faucet]: Player address -> ", address);
+
+  const faucet = createFaucetService(networkConfig.faucetServiceUrl);
+
+  const requestDrip = async () => {
+    const balance = await publicClient.getBalance({ address });
+    console.info(`[Dev Faucet]: Player balance -> ${balance}`);
+    const lowBalance = balance < parseEther("1");
+    if (lowBalance) {
+      console.info("[Dev Faucet]: Balance is low, dripping funds to player");
+      // Double drip
+      await faucet.dripDev({ address });
+      await faucet.dripDev({ address });
+    }
+  };
+
+  requestDrip();
+  // Request a drip every 20 seconds
+  setInterval(requestDrip, 20000);
+}
+```
+
+If there is a faucet, request (test) ETH if you have less than 1 ETH.
+
+```ts
+
+  return {
+    world,
+    components,
+    playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
+    publicClient,
+    walletClient: burnerWalletClient,
+    latestBlock$,
+    blockStorageOperations$,
+    waitForTransaction,
+    worldContract,
+    write$: write$.asObservable().pipe(share()),
+  };
+}
+```
+
+Return the network configuration.
+
+### `createClientComponents.ts`
+
+[This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/createClientComponents.ts) creates components for use by the client.
+
+By default it only returns the components from [`setupNetwork.ts`](#setupnetworkts), but you can change that if you need more components.
+
+### `createSystemCalls.ts`
+
+[This file](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/createSystemCalls.ts) creates the system calls that the client can use to ask for changes in the `World` state (using the `System` contracts).
+
+```ts
+import { getComponentValue } from "@latticexyz/recs";
+import { ClientComponents } from "./createClientComponents";
+import { SetupNetworkResult } from "./setupNetwork";
+import { singletonEntity } from "@latticexyz/store-sync/recs";
+
+export type SystemCalls = ReturnType<typeof createSystemCalls>;
+
+export function createSystemCalls(
+```
+
+This is the function that does the actual work.
+
+```ts
+  { worldContract, waitForTransaction }: SetupNetworkResult,
+```
+
+This syntax informs TypeScript that:
+
+- The first parameter is expected to be a `SetupNetworkResult`, as defined in [`setupNetwork.ts`](#setupnetworkts).
+- Out of this parameter, we only care about two fields:
+  - `worldContract` (which comes from [`createContract`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L31))
+  - `waitForTransaction` (which comes from [`syncToRecs`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L39)).
+
+```ts
+  { Counter }: ClientComponents
+```
+
+From the second parameter we only care about `Counter`.
+This component comes to us through [`createClientComponent.ts`](#createclientcomponentsts), but before that it originates in [`syncToRecs`](https://github.com/latticexyz/mud/blob/main/templates/react/packages/client/src/mud/setupNetwork.ts#L39).
+
+```ts
+) {
+  const increment = async () => {
+    const tx = await worldContract.write.increment();
+    await waitForTransaction(tx);
+    return getComponentValue(Counter, singletonEntity);
+  };
+
+  return {
+    increment,
+  };
+}
+```
+
+The sole `System` call here is `increment`.
+Because [`IncrementSystem`](minimal-onchain#incrementsystemsol) is in the root namespace, `.increment` can be called directly on the contract.
