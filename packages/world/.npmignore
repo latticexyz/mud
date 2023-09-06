@@ -1,9 +1,9 @@
 *
 
 !abi/**
+!abi-ts/**
 !src/**
 !ts/**
-!types/**
 !package.json
 !README.md
 !dist/**

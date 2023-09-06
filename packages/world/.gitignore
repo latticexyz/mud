@@ -8,6 +8,7 @@ yarn-error.log
 API
 dist
 types/ethers-contracts
+abi-ts
 
 # only check in ABIs
 abi/**/*.json
