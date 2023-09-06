@@ -3,7 +3,7 @@
 !abi/**
 !src/**
 !ts/**
-!types/**
+!abi-ts/**
 !package.json
 !README.md
 !dist/**

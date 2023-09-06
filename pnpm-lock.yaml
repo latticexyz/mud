@@ -675,12 +675,6 @@ importers:
 
   packages/store:
     dependencies:
-      '@ethersproject/abi':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@ethersproject/providers':
-        specifier: ^5.7.2
-        version: 5.7.2
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -696,16 +690,13 @@ importers:
       abitype:
         specifier: 0.9.3
         version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       zod:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@typechain/ethers-v5':
-        specifier: ^10.2.0
-        version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6)
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
@@ -736,9 +727,6 @@ importers:
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
-      typechain:
-        specifier: ^8.1.1
-        version: 8.1.1(typescript@5.1.6)
       vitest:
         specifier: 0.31.4
         version: 0.31.4(jsdom@22.1.0)
@@ -3047,10 +3035,10 @@ packages:
   /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@5.1.6):
     resolution: {integrity: sha512-ikaq0N/w9fABM+G01OFmU3U3dNnyRwEahkdvi9mqy1a3XwKiPZaF/lu54OcNaEWnpvEYyhhS0N7buCtLQqC92w==}
     peerDependencies:
-      '@ethersproject/abi': ^5.7.0
+      '@ethersproject/abi': ^5.0.0
       '@ethersproject/bytes': ^5.0.0
-      '@ethersproject/providers': ^5.7.2
-      ethers: ^5.7.2
+      '@ethersproject/providers': ^5.0.0
+      ethers: ^5.1.3
       typechain: ^8.1.1
       typescript: '>=4.3.0'
     dependencies:
