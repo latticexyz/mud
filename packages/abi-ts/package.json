@@ -26,6 +26,7 @@
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
+    "prepare": "mkdir -p ./dist && touch ./dist/abi-ts.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests",
     "test:ci": "pnpm run test"
   },
