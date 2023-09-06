@@ -2,6 +2,29 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "delegationControlId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "initFuncSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "registerDelegation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "resourceSelector",
         "type": "bytes32"
@@ -78,7 +101,7 @@
         "type": "bytes32"
       },
       {
-        "internalType": "contract System",
+        "internalType": "contract WorldContextConsumer",
         "name": "system",
         "type": "address"
       },

@@ -6,15 +6,14 @@ import Database from "better-sqlite3";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
+import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
-import { createStorageAdapter } from "../src/sqlite/createStorageAdapter";
+import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
 import type { Chain } from "viem/chains";
 import * as mudChains from "@latticexyz/common/chains";
 import * as chains from "viem/chains";
 import { isNotNull } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
-import { debug } from "../src/debug";
 
 const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
 
@@ -26,6 +25,7 @@ const env = z
     RPC_WS_URL: z.string().optional(),
     START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
     MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
+    HOST: z.string().default("0.0.0.0"),
     PORT: z.coerce.number().positive().default(3001),
     SQLITE_FILENAME: z.string().default("indexer.db"),
   })
@@ -116,15 +116,15 @@ const server = fastify({
 await server.register(import("@fastify/cors"));
 
 // @see https://trpc.io/docs/server/adapters/fastify
-server.register(fastifyTRPCPlugin, {
+server.register(fastifyTRPCPlugin<AppRouter>, {
   prefix: "/trpc",
   trpcOptions: {
     router: createAppRouter(),
     createContext: async () => ({
-      storageAdapter: await createStorageAdapter(database),
+      queryAdapter: await createQueryAdapter(database),
     }),
   },
 });
 
-await server.listen({ port: env.PORT });
-console.log(`indexer server listening on http://127.0.0.1:${env.PORT}`);
+await server.listen({ host: env.HOST, port: env.PORT });
+console.log(`indexer server listening on http://${env.HOST}:${env.PORT}`);

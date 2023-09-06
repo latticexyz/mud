@@ -4,7 +4,8 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "test": "vitest --run"
+    "test": "vitest --run",
+    "test:ci": "pnpm run test"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
@@ -25,6 +26,7 @@
     "typescript": "5.1.6",
     "viem": "1.6.0",
     "vite": "^4.2.1",
-    "vitest": "^0.31.0"
+    "vitest": "^0.31.0",
+    "zod": "^3.22.2"
   }
 }

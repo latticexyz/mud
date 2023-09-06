@@ -16,10 +16,20 @@ interface IWorldModuleInstallation {
 
 interface IWorldCall {
   /**
-   * Call the system at the given resource selector (namespace + name)
-   * If the system is not public, the caller must have access to the namespace or name.
+   * Call the system at the given resourceSelector.
+   * If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector).
    */
   function call(bytes32 resourceSelector, bytes memory funcSelectorAndArgs) external payable returns (bytes memory);
+
+  /**
+   * Call the system at the given resourceSelector on behalf of the given delegator.
+   * If the system is not public, the delegator must have access to the namespace or name (encoded in the resourceSelector).
+   */
+  function callFrom(
+    address delegator,
+    bytes32 resourceSelector,
+    bytes memory funcSelectorAndArgs
+  ) external payable returns (bytes memory);
 }
 
 /**

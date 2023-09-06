@@ -1,5 +1,22 @@
 # Change Log
 
+## 2.0.0-next.5
+
+### Patch Changes
+
+- [#1371](https://github.com/latticexyz/mud/pull/1371) [`dc258e68`](https://github.com/latticexyz/mud/commit/dc258e6860196ad34bf1d4ac7fce382f70e2c0c8) Thanks [@alvrs](https://github.com/alvrs)! - The `mud test` cli now exits with code 1 on test failure. It used to exit with code 0, which meant that CIs didn't notice test failures.
+
+- Updated dependencies [[`ce97426c`](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b), [`33f50f8a`](https://github.com/latticexyz/mud/commit/33f50f8a473398dcc19b17d10a17a552a82678c7), [`80a26419`](https://github.com/latticexyz/mud/commit/80a26419f15177333b523bac5d09767487b4ffef), [`1ca35e9a`](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed), [`9d0f492a`](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe), [`c583f3cd`](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b)]:
+  - @latticexyz/world@2.0.0-next.5
+  - @latticexyz/services@2.0.0-next.5
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/config@2.0.0-next.5
+  - @latticexyz/gas-report@2.0.0-next.5
+  - @latticexyz/protocol-parser@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+  - @latticexyz/utils@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes

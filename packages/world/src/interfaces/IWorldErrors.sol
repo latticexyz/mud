@@ -10,4 +10,5 @@ interface IWorldErrors {
   error FunctionSelectorExists(bytes4 functionSelector);
   error FunctionSelectorNotFound(bytes4 functionSelector);
   error ModuleAlreadyInstalled(string module);
+  error DelegationNotFound(address delegator, address delegatee);
 }

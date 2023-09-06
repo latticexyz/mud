@@ -32,11 +32,13 @@
   },
   "changesets": [
     "afraid-hotels-bathe",
+    "beige-radios-drop",
     "big-goats-prove",
     "brave-needles-love",
     "brave-rings-tickle",
     "brown-icons-burn",
     "chilled-chicken-repair",
+    "clever-rats-sip",
     "cool-snakes-reply",
     "dirty-items-retire",
     "eighty-tigers-argue",
@@ -48,6 +50,7 @@
     "flat-trainers-marry",
     "fluffy-moles-march",
     "four-coats-pull",
+    "funny-paws-admire",
     "giant-masks-carry",
     "great-cooks-dream",
     "grumpy-geckos-raise",
@@ -67,6 +70,7 @@
     "modern-bikes-build",
     "modern-hornets-jam",
     "nasty-waves-divide",
+    "nervous-walls-knock",
     "nice-moose-love",
     "nice-pandas-knock",
     "olive-parrots-move",
@@ -75,7 +79,9 @@
     "pink-horses-deny",
     "pretty-hotels-drop",
     "quick-numbers-flash",
+    "quiet-squids-share",
     "rare-planes-draw",
+    "rare-trainers-fry",
     "red-turkeys-develop",
     "selfish-cycles-retire",
     "seven-flies-chew",
@@ -100,6 +106,7 @@
     "twenty-birds-scream",
     "weak-mails-cross",
     "wild-gorillas-care",
-    "witty-jokes-serve"
+    "witty-jokes-serve",
+    "witty-tigers-rest"
   ]
 }
