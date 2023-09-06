@@ -715,9 +715,6 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
-      '@latticexyz/gas-report':
-        specifier: workspace:*
-        version: link:../gas-report
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -731,6 +728,9 @@ importers:
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
@@ -946,9 +946,6 @@ importers:
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
-      '@latticexyz/gas-report':
-        specifier: workspace:*
-        version: link:../gas-report
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -962,12 +959,12 @@ importers:
       '@latticexyz/abi-ts':
         specifier: workspace:*
         version: link:../abi-ts
+      '@latticexyz/gas-report':
+        specifier: workspace:*
+        version: link:../gas-report
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
-      '@types/glob':
-        specifier: ^7.2.0
-        version: 7.2.0
       '@types/mocha':
         specifier: ^9.1.1
         version: 9.1.1

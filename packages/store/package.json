@@ -54,13 +54,13 @@
   "dependencies": {
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
-    "@latticexyz/gas-report": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "abitype": "0.9.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {
     "@latticexyz/abi-ts": "workspace:*",
+    "@latticexyz/gas-report": "workspace:*",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
