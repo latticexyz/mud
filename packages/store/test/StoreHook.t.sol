@@ -8,7 +8,7 @@ import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 
 import { Hook } from "../src/Hook.sol";
-import { EnabledStoreHooks, StoreHookType } from "../src/StoreHook.sol";
+import { StoreHookType } from "../src/StoreHook.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { IStoreHook } from "../src/IStore.sol";
 import { Schema } from "../src/Schema.sol";
@@ -27,121 +27,105 @@ contract StoreHookTest is Test, GasReporter {
 
   function testEncodeBitmap() public {
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: false,
-          onAfterSetRecord: false,
-          onBeforeSetField: false,
-          onAfterSetField: false,
-          onBeforeDeleteRecord: false,
-          onAfterDeleteRecord: false
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
+      }),
       uint8(0x00),
       "0b00000000"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: true,
-          onAfterSetRecord: false,
-          onBeforeSetField: false,
-          onAfterSetField: false,
-          onBeforeDeleteRecord: false,
-          onAfterDeleteRecord: false
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
+      }),
       uint8(0x01),
       "0b00000001"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: false,
-          onAfterSetRecord: true,
-          onBeforeSetField: false,
-          onAfterSetField: false,
-          onBeforeDeleteRecord: false,
-          onAfterDeleteRecord: false
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: true,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
+      }),
       uint8(0x02),
       "0b00000010"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: false,
-          onAfterSetRecord: false,
-          onBeforeSetField: true,
-          onAfterSetField: false,
-          onBeforeDeleteRecord: false,
-          onAfterDeleteRecord: false
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
+      }),
       uint8(0x04),
       "0b00000100"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: false,
-          onAfterSetRecord: false,
-          onBeforeSetField: false,
-          onAfterSetField: true,
-          onBeforeDeleteRecord: false,
-          onAfterDeleteRecord: false
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: false
+      }),
       uint8(0x08),
       "0b00001000"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: false,
-          onAfterSetRecord: false,
-          onBeforeSetField: false,
-          onAfterSetField: false,
-          onBeforeDeleteRecord: true,
-          onAfterDeleteRecord: false
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      }),
       uint8(0x10),
       "0b00010000"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: false,
-          onAfterSetRecord: false,
-          onBeforeSetField: false,
-          onAfterSetField: false,
-          onBeforeDeleteRecord: false,
-          onAfterDeleteRecord: true
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: false,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: false,
+        onAfterDeleteRecord: true
+      }),
       uint8(0x20),
       "0b00100000"
     );
 
     assertEq(
-      StoreHookLib.encodeBitmap(
-        EnabledStoreHooks({
-          onBeforeSetRecord: true,
-          onAfterSetRecord: true,
-          onBeforeSetField: true,
-          onAfterSetField: true,
-          onBeforeDeleteRecord: true,
-          onAfterDeleteRecord: true
-        })
-      ),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      }),
       uint8(0x3f),
       "0b00111111"
     );
@@ -152,7 +136,7 @@ contract StoreHookTest is Test, GasReporter {
       Hook.unwrap(
         StoreHookLib.encode(
           echoSubscriber,
-          EnabledStoreHooks({
+          StoreHookLib.encodeBitmap({
             onBeforeSetRecord: true,
             onAfterSetRecord: true,
             onBeforeSetField: true,
@@ -175,7 +159,7 @@ contract StoreHookTest is Test, GasReporter {
     bool enableBeforeDeleteRecord,
     bool enableAfterDeleteRecord
   ) public {
-    EnabledStoreHooks memory enabledHooks = EnabledStoreHooks({
+    uint8 encodedBitmap = StoreHookLib.encodeBitmap({
       onBeforeSetRecord: enableBeforeSetRecord,
       onAfterSetRecord: enableAfterSetRecord,
       onBeforeSetField: enableBeforeSetField,
@@ -183,17 +167,16 @@ contract StoreHookTest is Test, GasReporter {
       onBeforeDeleteRecord: enableBeforeDeleteRecord,
       onAfterDeleteRecord: enableAfterDeleteRecord
     });
-
     assertEq(
-      Hook.unwrap(StoreHookLib.encode(IStoreHook(hookAddress), enabledHooks)),
-      bytes21(abi.encodePacked(hookAddress, uint8(StoreHookLib.encodeBitmap(enabledHooks))))
+      Hook.unwrap(StoreHookLib.encode(IStoreHook(hookAddress), encodedBitmap)),
+      bytes21(abi.encodePacked(hookAddress, encodedBitmap))
     );
   }
 
   function testIsEnabled() public {
     Hook storeHook = StoreHookLib.encode(
       echoSubscriber,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: false,
         onAfterSetRecord: false,
         onBeforeSetField: true,
@@ -224,16 +207,17 @@ contract StoreHookTest is Test, GasReporter {
     bool enableBeforeDeleteRecord,
     bool enableAfterDeleteRecord
   ) public {
-    EnabledStoreHooks memory enabledHooks = EnabledStoreHooks({
-      onBeforeSetRecord: enableBeforeSetRecord,
-      onAfterSetRecord: enableAfterSetRecord,
-      onBeforeSetField: enableBeforeSetField,
-      onAfterSetField: enableAfterSetField,
-      onBeforeDeleteRecord: enableBeforeDeleteRecord,
-      onAfterDeleteRecord: enableAfterDeleteRecord
-    });
-
-    Hook storeHook = StoreHookLib.encode(IStoreHook(hookAddress), enabledHooks);
+    Hook storeHook = StoreHookLib.encode(
+      IStoreHook(hookAddress),
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: enableBeforeSetRecord,
+        onAfterSetRecord: enableAfterSetRecord,
+        onBeforeSetField: enableBeforeSetField,
+        onAfterSetField: enableAfterSetField,
+        onBeforeDeleteRecord: enableBeforeDeleteRecord,
+        onAfterDeleteRecord: enableAfterDeleteRecord
+      })
+    );
 
     assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD)), enableBeforeSetRecord);
     assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_SET_RECORD)), enableAfterSetRecord);
@@ -246,7 +230,7 @@ contract StoreHookTest is Test, GasReporter {
   function testGetAddress() public {
     Hook storeHook = StoreHookLib.encode(
       echoSubscriber,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: false,
         onAfterSetRecord: false,
         onBeforeSetField: true,
@@ -264,7 +248,7 @@ contract StoreHookTest is Test, GasReporter {
   }
 
   function testGetBitmap() public {
-    EnabledStoreHooks memory enabledHooks = EnabledStoreHooks({
+    uint8 encodedBitmap = StoreHookLib.encodeBitmap({
       onBeforeSetRecord: false,
       onAfterSetRecord: false,
       onBeforeSetField: true,
@@ -273,19 +257,19 @@ contract StoreHookTest is Test, GasReporter {
       onAfterDeleteRecord: false
     });
 
-    Hook storeHook = StoreHookLib.encode(echoSubscriber, enabledHooks);
+    Hook storeHook = StoreHookLib.encode(echoSubscriber, encodedBitmap);
 
     startGasReport("get store hook bitmap");
     storeHook.getBitmap();
     endGasReport();
 
-    assertEq(storeHook.getBitmap(), StoreHookLib.encodeBitmap(enabledHooks));
+    assertEq(storeHook.getBitmap(), encodedBitmap);
   }
 
   function testCallHook() public {
     Hook storeHook = StoreHookLib.encode(
       echoSubscriber,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: true,
         onAfterSetRecord: false,
         onBeforeSetField: false,
@@ -305,7 +289,7 @@ contract StoreHookTest is Test, GasReporter {
 
     Hook revertHook = StoreHookLib.encode(
       revertSubscriber,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: false,
         onAfterSetRecord: false,
         onBeforeSetField: false,

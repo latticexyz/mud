@@ -13,7 +13,7 @@ import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook } from "./Hook.sol";
-import { StoreHookLib, EnabledStoreHooks, StoreHookType } from "./StoreHook.sol";
+import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -121,8 +121,8 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, EnabledStoreHooks memory enabledHooks) internal {
-    Hooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooks)));
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+    Hooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooksBitmap)));
   }
 
   /************************************************************************

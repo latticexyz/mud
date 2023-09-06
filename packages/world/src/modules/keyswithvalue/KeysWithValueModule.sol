@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { EnabledStoreHooks } from "@latticexyz/store/src/StoreHook.sol";
+import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
@@ -52,7 +52,7 @@ contract KeysWithValueModule is IModule, WorldContextConsumer {
     StoreSwitch.registerStoreHook(
       sourceTableId,
       hook,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: true,
         onAfterSetRecord: false,
         onBeforeSetField: true,

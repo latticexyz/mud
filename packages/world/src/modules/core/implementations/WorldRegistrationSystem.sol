@@ -8,7 +8,7 @@ import { WorldContextConsumer } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { SystemCall } from "../../../SystemCall.sol";
-import { EnabledSystemHooks, SystemHookLib } from "../../../SystemHook.sol";
+import { SystemHookLib } from "../../../SystemHook.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
@@ -55,13 +55,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerSystemHook(
     bytes32 resourceSelector,
     ISystemHook hookAddress,
-    EnabledSystemHooks memory enabledHooks
+    uint8 enabledHooksBitmap
   ) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
 
     // Register the hook
-    SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooks)));
+    SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooksBitmap)));
   }
 
   /**

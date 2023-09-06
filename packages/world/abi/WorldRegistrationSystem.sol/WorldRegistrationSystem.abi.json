@@ -307,21 +307,9 @@
         "type": "address"
       },
       {
-        "components": [
-          {
-            "internalType": "bool",
-            "name": "onBeforeCallSystem",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "onAfterCallSystem",
-            "type": "bool"
-          }
-        ],
-        "internalType": "struct EnabledSystemHooks",
-        "name": "enabledHooks",
-        "type": "tuple"
+        "internalType": "uint8",
+        "name": "enabledHooksBitmap",
+        "type": "uint8"
       }
     ],
     "name": "registerSystemHook",

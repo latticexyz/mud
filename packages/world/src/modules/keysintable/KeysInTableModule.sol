@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { EnabledStoreHooks } from "@latticexyz/store/src/StoreHook.sol";
+import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
 import { ResourceType } from "../core/tables/ResourceType.sol";
 import { Resource } from "../../Types.sol";
@@ -57,7 +57,7 @@ contract KeysInTableModule is IModule, WorldContextConsumer {
     world.registerStoreHook(
       sourceTableId,
       hook,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: true,
         onAfterSetRecord: false,
         onBeforeSetField: false,

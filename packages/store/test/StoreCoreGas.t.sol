@@ -13,7 +13,7 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
-import { EnabledStoreHooks } from "../src/StoreHook.sol";
+import { StoreHookLib } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
@@ -601,7 +601,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerStoreHook(
       table,
       subscriber,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: true,
         onAfterSetRecord: false,
         onBeforeSetField: true,
@@ -651,7 +651,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerStoreHook(
       table,
       subscriber,
-      EnabledStoreHooks({
+      StoreHookLib.encodeBitmap({
         onBeforeSetRecord: true,
         onAfterSetRecord: false,
         onBeforeSetField: true,

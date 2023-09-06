@@ -9,26 +9,21 @@ enum SystemHookType {
   AFTER_CALL_SYSTEM
 }
 
-struct EnabledSystemHooks {
-  bool onBeforeCallSystem;
-  bool onAfterCallSystem;
-}
-
 library SystemHookLib {
   /**
    * Encode the bitmap into a single byte
    */
-  function encodeBitmap(EnabledSystemHooks memory enabledHooks) internal pure returns (uint8) {
+  function encodeBitmap(bool onBeforeCallSystem, bool onAfterCallSystem) internal pure returns (uint8) {
     uint256 bitmap = 0;
-    if (enabledHooks.onBeforeCallSystem) bitmap |= 1 << uint8(SystemHookType.BEFORE_CALL_SYSTEM);
-    if (enabledHooks.onAfterCallSystem) bitmap |= 1 << uint8(SystemHookType.AFTER_CALL_SYSTEM);
+    if (onBeforeCallSystem) bitmap |= 1 << uint8(SystemHookType.BEFORE_CALL_SYSTEM);
+    if (onAfterCallSystem) bitmap |= 1 << uint8(SystemHookType.AFTER_CALL_SYSTEM);
     return uint8(bitmap);
   }
 
   /**
    * Encode enabled hooks into a bitmap with 1 bit per hook, and pack the bitmap with the system hook address into a bytes21 value
    */
-  function encode(ISystemHook systemHook, EnabledSystemHooks memory enabledHooks) internal pure returns (Hook) {
-    return HookLib.encode(address(systemHook), encodeBitmap(enabledHooks));
+  function encode(ISystemHook systemHook, uint8 enabledHooksBitmap) internal pure returns (Hook) {
+    return HookLib.encode(address(systemHook), enabledHooksBitmap);
   }
 }

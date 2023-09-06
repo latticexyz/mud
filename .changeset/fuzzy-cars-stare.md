@@ -26,7 +26,7 @@
   ```
 
 - It is now possible to specify which methods of a hook contract should be called when registering a hook. The purpose of this change is to save gas by avoiding to call no-op hook methods.
-  
+
   ```diff
   struct EnabledStoreHooks {
     bool onBeforeSetRecord;
@@ -36,7 +36,7 @@
     bool onBeforeDeleteRecord;
     bool onAfterDeleteRecord;
   }
-  
+
   function registerStoreHook(
     bytes32 tableId,
   - IStoreHook hookAddress
@@ -48,7 +48,7 @@
     bool onBeforeCallSystem;
     bool onAfterCallSystem;
   }
-  
+
   function registerSystemHook(
     bytes32 systemId,
   - ISystemHook hookAddress
@@ -56,6 +56,5 @@
   + EnabledSystemHooks calldata enabledHooks
   ) public;
   ```
-  
 
 - The `onSetRecord` hook call for `emitEphemeralRecord` has been removed to save gas and to more clearly distinguish ephemeral tables as offchain tables.
