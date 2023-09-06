@@ -39,7 +39,7 @@
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
-    "build:ts": "abi-ts --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
+    "build:ts": "../abi-ts/dist/abi-ts.js --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud && pnpm run clean:ts",
     "clean:abi": "rimraf abi",
     "clean:js": "rimraf dist",
