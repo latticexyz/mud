@@ -44,7 +44,7 @@
   ```
 
   There are `StoreHookLib` and `SystemHookLib` with helper functions to encode the bitmap of enabled hooks.
-  
+
   ```solidity
   import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
