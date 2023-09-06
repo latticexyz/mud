@@ -54,6 +54,37 @@ importers:
         specifier: 5.1.6
         version: 5.1.6
 
+  packages/abi-ts:
+    dependencies:
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
+      execa:
+        specifier: ^7.0.0
+        version: 7.0.0
+      glob:
+        specifier: ^8.0.3
+        version: 8.0.3
+      yargs:
+        specifier: ^17.7.1
+        version: 17.7.1
+    devDependencies:
+      '@types/glob':
+        specifier: ^7.2.0
+        version: 7.2.0
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
+      '@types/yargs':
+        specifier: ^17.0.10
+        version: 17.0.23
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
+      vitest:
+        specifier: 0.31.4
+        version: 0.31.4(jsdom@22.1.0)
+
   packages/block-logs-stream:
     dependencies:
       '@latticexyz/common':
@@ -102,6 +133,9 @@ importers:
       '@improbable-eng/grpc-web-node-http-transport':
         specifier: ^0.15.0
         version: 0.15.0(@improbable-eng/grpc-web@0.15.0)
+      '@latticexyz/abi-ts':
+        specifier: workspace:*
+        version: link:../abi-ts
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -694,9 +728,9 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@latticexyz/cli':
+      '@latticexyz/abi-ts':
         specifier: workspace:*
-        version: link:../cli
+        version: link:../abi-ts
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
@@ -925,9 +959,9 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
-      '@latticexyz/cli':
+      '@latticexyz/abi-ts':
         specifier: workspace:*
-        version: link:../cli
+        version: link:../abi-ts
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1

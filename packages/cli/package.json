@@ -32,6 +32,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
+    "@latticexyz/abi-ts": "workspace:*",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/gas-report": "workspace:*",
