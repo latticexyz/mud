@@ -261,7 +261,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Mixed schema",
-    "gasUsed": 531268
+    "gasUsed": 531309
   },
   {
     "file": "test/Mixed.t.sol",
@@ -579,7 +579,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 60748
+    "gasUsed": 60581
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -603,7 +603,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 60748
+    "gasUsed": 60581
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -621,7 +621,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 20874
+    "gasUsed": 20846
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -783,7 +783,7 @@
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call an enabled hook",
-    "gasUsed": 10136
+    "gasUsed": 10135
   },
   {
     "file": "test/StoreHook.t.sol",
@@ -993,7 +993,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Vector2 schema",
-    "gasUsed": 392714
+    "gasUsed": 392691
   },
   {
     "file": "test/Vector2.t.sol",
