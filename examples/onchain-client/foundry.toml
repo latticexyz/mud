@@ -8,6 +8,7 @@ verbosity = 2
 src = "src"
 test = "test"
 out = "out"
+script = "script"
 allow_paths = [
   # pnpm symlinks to the project root's node_modules
   "../../node_modules",
