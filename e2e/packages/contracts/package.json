@@ -4,10 +4,10 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:ts",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
+    "build:abi-ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
     "build:mud": "mud tablegen && mud worldgen",
-    "build:ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
     "clean": "pnpm run clean:abi && pnpm run clean:mud",
     "clean:abi": "rimraf abi",
     "clean:mud": "rimraf src/codegen",

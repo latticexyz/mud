@@ -12,12 +12,12 @@ If you have a MUD project created from an older template, you can replace TypeCh
 
 ```diff
 -"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
-+"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:ts",
++"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
 -"build:abi": "forge clean && forge build",
 +"build:abi": "rimraf abi && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
++"build:abi-ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
  "build:mud": "mud tablegen && mud worldgen",
 -"build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
-+"build:ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
 ```
 
 And update your client's `setupNetwork.ts` with:
