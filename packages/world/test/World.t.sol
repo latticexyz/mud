@@ -14,12 +14,14 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
+import { SystemHookLib } from "../src/SystemHook.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -112,7 +114,11 @@ contract PayableFallbackSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+    emit HookCalled(abi.encode(table, key, data, valueSchema));
+  }
+
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
     emit HookCalled(abi.encode(table, key, data, valueSchema));
   }
 
@@ -136,7 +142,11 @@ contract WorldTestTableHook is IStoreHook {
     emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
   }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+    emit HookCalled(abi.encode(table, key, valueSchema));
+  }
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
     emit HookCalled(abi.encode(table, key, valueSchema));
   }
 }
@@ -714,7 +724,7 @@ contract WorldTest is Test, GasReporter {
     world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
   }
 
-  function testRegisterTableHook() public {
+  function testRegisterStoreHook() public {
     Schema valueSchema = Bool.getValueSchema();
     bytes32 tableId = ResourceSelector.from("", "testTable");
 
@@ -723,18 +733,48 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new hook
     IStoreHook tableHook = new WorldTestTableHook();
-    world.registerStoreHook(tableId, tableHook);
+    world.registerStoreHook(
+      tableId,
+      tableHook,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
 
     // Prepare data to write to the table
     bytes memory value = abi.encodePacked(true);
 
-    // Expect the hook to be notified when a record is written
+    // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encode(tableId, singletonKey, value, valueSchema));
+
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, value, valueSchema));
+
     world.setRecord(tableId, singletonKey, value, valueSchema);
 
-    // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
-    // (See https://github.com/latticexyz/mud/issues/444)
+    // Expect the hook to be notified when a field is written (once before and once after the field is written)
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, valueSchema));
+
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, valueSchema));
+
+    world.setField(tableId, singletonKey, 0, value, valueSchema);
+
+    // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, valueSchema));
+
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, singletonKey, valueSchema));
+
+    world.deleteRecord(tableId, singletonKey, valueSchema);
   }
 
   function testRegisterSystemHook() public {
@@ -746,7 +786,11 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new hook
     ISystemHook systemHook = new WorldTestSystemHook();
-    world.registerSystemHook(systemId, systemHook);
+    world.registerSystemHook(
+      systemId,
+      systemHook,
+      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+    );
 
     bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 

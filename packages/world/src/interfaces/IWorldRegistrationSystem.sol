@@ -9,7 +9,7 @@ import { WorldContextConsumer } from "./../WorldContext.sol";
 interface IWorldRegistrationSystem {
   function registerNamespace(bytes16 namespace) external;
 
-  function registerSystemHook(bytes32 resourceSelector, ISystemHook hook) external;
+  function registerSystemHook(bytes32 resourceSelector, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
 
   function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) external;
 

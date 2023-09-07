@@ -554,6 +554,11 @@ declare const abi: [
         internalType: "contract IStoreHook";
         name: "";
         type: "address";
+      },
+      {
+        internalType: "uint8";
+        name: "";
+        type: "uint8";
       }
     ];
     name: "registerStoreHook";

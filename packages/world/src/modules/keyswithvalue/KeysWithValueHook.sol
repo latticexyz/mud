@@ -29,7 +29,12 @@ contract KeysWithValueHook is IStoreHook {
     return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
-  function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+  function onBeforeSetRecord(
+    bytes32 sourceTableId,
+    bytes32[] memory key,
+    bytes memory data,
+    Schema valueSchema
+  ) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
@@ -40,6 +45,10 @@ contract KeysWithValueHook is IStoreHook {
 
     // Push the key to the list of keys with the new value
     KeysWithValue.push(targetTableId, keccak256(data), key[0]);
+  }
+
+  function onAfterSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+    // NOOP
   }
 
   function onBeforeSetField(
@@ -68,11 +77,15 @@ contract KeysWithValueHook is IStoreHook {
     KeysWithValue.push(targetTableId, newValue, key[0]);
   }
 
-  function onDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, Schema valueSchema) public {
+  function onBeforeDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, Schema valueSchema) public {
     // Remove the key from the list of keys with the previous value
     bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, valueSchema));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, key[0], previousValue);
+  }
+
+  function onAfterDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, Schema valueSchema) public {
+    // NOOP
   }
 
   function _removeKeyFromList(bytes32 targetTableId, bytes32 key, bytes32 valueHash) internal {

@@ -12,6 +12,8 @@ import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
+import { Hook } from "./Hook.sol";
+import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -119,8 +121,8 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) internal {
-    Hooks.push(tableId, address(hook));
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+    Hooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooksBitmap)));
   }
 
   /************************************************************************
@@ -142,11 +144,13 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreSetRecord(tableId, key, data);
 
-    // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = Hooks.get(tableId);
+    // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
+        IStoreHook(hook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
+      }
     }
 
     // Store the static data at the static data location
@@ -160,28 +164,36 @@ library StoreCore {
     });
     memoryPointer += staticLength + 32; // move the memory pointer to the start of the dynamic data (skip the encoded dynamic length)
 
-    // If there is no dynamic data, we're done
-    if (valueSchema.numDynamicFields() == 0) return;
+    // Set the dynamic data if there are dynamic fields
+    if (valueSchema.numDynamicFields() > 0) {
+      // Store the dynamic data length at the dynamic data length location
+      uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
+      Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicLength.unwrap() });
 
-    // Store the dynamic data length at the dynamic data length location
-    uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
-    Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicLength.unwrap() });
+      // For every dynamic element, slice off the dynamic data and store it at the dynamic location
+      uint256 dynamicDataLocation;
+      uint256 dynamicDataLength;
+      for (uint8 i; i < valueSchema.numDynamicFields(); ) {
+        dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, key, i);
+        dynamicDataLength = dynamicLength.atIndex(i);
+        Storage.store({
+          storagePointer: dynamicDataLocation,
+          offset: 0,
+          memoryPointer: memoryPointer,
+          length: dynamicDataLength
+        });
+        memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
+        unchecked {
+          i++;
+        }
+      }
+    }
 
-    // For every dynamic element, slice off the dynamic data and store it at the dynamic location
-    uint256 dynamicDataLocation;
-    uint256 dynamicDataLength;
-    for (uint8 i; i < valueSchema.numDynamicFields(); ) {
-      dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, key, i);
-      dynamicDataLength = dynamicLength.atIndex(i);
-      Storage.store({
-        storagePointer: dynamicDataLocation,
-        offset: 0,
-        memoryPointer: memoryPointer,
-        length: dynamicDataLength
-      });
-      memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
-      unchecked {
-        i++;
+    // Call onAfterSetRecord hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_RECORD))) {
+        IStoreHook(hook.getAddress()).onAfterSetRecord(tableId, key, data, valueSchema);
       }
     }
   }
@@ -200,11 +212,12 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, data);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
-
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, key, schemaIndex, data, valueSchema);
+      }
     }
 
     if (schemaIndex < valueSchema.numStaticFields()) {
@@ -215,8 +228,10 @@ library StoreCore {
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onAfterSetField(tableId, key, schemaIndex, data, valueSchema);
+      }
     }
   }
 
@@ -227,23 +242,32 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreDeleteRecord(tableId, key);
 
-    // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = Hooks.get(tableId);
+    // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onDeleteRecord(tableId, key, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_DELETE_RECORD))) {
+        IStoreHook(hook.getAddress()).onBeforeDeleteRecord(tableId, key, valueSchema);
+      }
     }
 
     // Delete static data
     uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(tableId, key);
     Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(valueSchema.staticDataLength()) });
 
-    // If there are no dynamic fields, we're done
-    if (valueSchema.numDynamicFields() == 0) return;
+    // If there are dynamic fields, delete the dynamic data length
+    if (valueSchema.numDynamicFields() > 0) {
+      uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
+      Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
+    }
 
-    // Delete dynamic data length
-    uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, key);
-    Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
+    // Call onAfterDeleteRecord hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_DELETE_RECORD))) {
+        IStoreHook(hook.getAddress()).onAfterDeleteRecord(tableId, key, valueSchema);
+      }
+    }
   }
 
   /**
@@ -270,18 +294,22 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, valueSchema, schemaIndex, dataToPush);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
   }
 
@@ -310,18 +338,22 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
 
     StoreCoreInternal._popFromDynamicField(tableId, key, valueSchema, schemaIndex, byteLengthToPop);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
   }
 
@@ -360,18 +392,22 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    address[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = Hooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
 
     StoreCoreInternal._setDynamicFieldItem(tableId, key, valueSchema, schemaIndex, startByteIndex, dataToSet);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onAfterSetField(tableId, key, schemaIndex, fullData, valueSchema);
+      }
     }
   }
 
@@ -390,13 +426,6 @@ library StoreCore {
 
     // Emit event to notify indexers
     emit StoreEphemeralRecord(tableId, key, data);
-
-    // Call onSetRecord hooks
-    address[] memory hooks = Hooks.get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetRecord(tableId, key, data, valueSchema);
-    }
   }
 
   /************************************************************************

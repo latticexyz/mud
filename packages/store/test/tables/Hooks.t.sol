@@ -11,66 +11,99 @@ contract HooksTest is Test, GasReporter, StoreReadWithStubs {
     // Hooks schema is already registered by StoreCore
     bytes32 key = keccak256("somekey");
 
-    address[] memory addresses = new address[](1);
-    addresses[0] = address(this);
+    bytes21[] memory hooks = new bytes21[](1);
+    hooks[0] = bytes21("some data");
 
     startGasReport("Hooks: set field (cold)");
-    Hooks.set(key, addresses);
+    Hooks.set(key, hooks);
     endGasReport();
 
     startGasReport("Hooks: get field (warm)");
-    address[] memory returnedAddresses = Hooks.get(key);
+    bytes21[] memory returnedHooks = Hooks.get(key);
     endGasReport();
 
-    assertEq(returnedAddresses.length, addresses.length);
-    assertEq(returnedAddresses[0], addresses[0]);
+    assertEq(returnedHooks.length, hooks.length);
+    assertEq(returnedHooks[0], hooks[0]);
 
     startGasReport("Hooks: push 1 element (cold)");
-    Hooks.push(key, addresses[0]);
+    Hooks.push(key, hooks[0]);
     endGasReport();
 
-    returnedAddresses = Hooks.get(key);
+    returnedHooks = Hooks.get(key);
 
-    assertEq(returnedAddresses.length, 2);
-    assertEq(returnedAddresses[1], addresses[0]);
+    assertEq(returnedHooks.length, 2);
+    assertEq(returnedHooks[1], hooks[0]);
 
     startGasReport("Hooks: pop 1 element (warm)");
     Hooks.pop(key);
     endGasReport();
 
-    returnedAddresses = Hooks.get(key);
+    returnedHooks = Hooks.get(key);
 
-    assertEq(returnedAddresses.length, 1);
-    assertEq(returnedAddresses[0], addresses[0]);
+    assertEq(returnedHooks.length, 1);
+    assertEq(returnedHooks[0], hooks[0]);
 
     startGasReport("Hooks: push 1 element (warm)");
-    Hooks.push(key, addresses[0]);
+    Hooks.push(key, hooks[0]);
     endGasReport();
 
-    returnedAddresses = Hooks.get(key);
+    returnedHooks = Hooks.get(key);
 
-    assertEq(returnedAddresses.length, 2);
-    assertEq(returnedAddresses[1], addresses[0]);
+    assertEq(returnedHooks.length, 2);
+    assertEq(returnedHooks[1], hooks[0]);
 
-    address newAddress = address(bytes20(keccak256("alice")));
+    bytes21 newHook = bytes21(keccak256("alice"));
     startGasReport("Hooks: update 1 element (warm)");
-    Hooks.update(key, 1, newAddress);
+    Hooks.update(key, 1, newHook);
     endGasReport();
 
-    returnedAddresses = Hooks.get(key);
-    assertEq(returnedAddresses.length, 2);
-    assertEq(returnedAddresses[0], addresses[0]);
-    assertEq(returnedAddresses[1], newAddress);
+    returnedHooks = Hooks.get(key);
+    assertEq(returnedHooks.length, 2);
+    assertEq(returnedHooks[0], hooks[0]);
+    assertEq(returnedHooks[1], newHook);
 
     startGasReport("Hooks: delete record (warm)");
     Hooks.deleteRecord(key);
     endGasReport();
 
-    returnedAddresses = Hooks.get(key);
-    assertEq(returnedAddresses.length, 0);
+    returnedHooks = Hooks.get(key);
+    assertEq(returnedHooks.length, 0);
 
     startGasReport("Hooks: set field (warm)");
-    Hooks.set(key, addresses);
+    Hooks.set(key, hooks);
+    endGasReport();
+  }
+
+  function testOneSlot() public {
+    bytes32 key1 = keccak256("somekey");
+    bytes21[] memory hooks = new bytes21[](1);
+    hooks[0] = bytes21("some data");
+
+    startGasReport("Hooks: set field with one elements (cold)");
+    Hooks.set(key1, hooks);
+    endGasReport();
+  }
+
+  function testTwoSlots() public {
+    bytes32 key2 = keccak256("somekey");
+    bytes21[] memory hooks = new bytes21[](2);
+    hooks[0] = bytes21("some data");
+    hooks[1] = bytes21("some other data");
+
+    startGasReport("Hooks: set field with two elements (cold)");
+    Hooks.set(key2, hooks);
+    endGasReport();
+  }
+
+  function testThreeSlots() public {
+    bytes32 key3 = keccak256("somekey");
+    bytes21[] memory hooks = new bytes21[](3);
+    hooks[0] = bytes21("some data");
+    hooks[1] = bytes21("some other data");
+    hooks[2] = bytes21("some other other data");
+
+    startGasReport("Hooks: set field with three elements (cold)");
+    Hooks.set(key3, hooks);
     endGasReport();
   }
 }
