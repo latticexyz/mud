@@ -48,6 +48,147 @@ The `World` definition in `src/codegen/world/IWorld.sol` simply tells other Soli
 
 </details>
 
+## Use the `World` from a forge script
+
+Before we actually use a contract, we'll use a [forge script](https://book.getfoundry.sh/reference/forge/forge-script).
+The advantage of scripts is that they allow you to run Solidity code from your command line without deploying a contract, making it easier to experiment.
+
+To run the script, use this command:
+
+```sh copy
+pnpm script
+```
+
+You can check `package.json` to see that the script is executed by this command:
+
+```sh
+forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:ScriptClient
+```
+
+- `--rpc-url` specifies the URL to an RPC node of the blockchain we want to interact with.
+  In this case, this is one that runs locally.
+  If your blockchain runs anywhere else, modify as needed.
+- `--broadcast` tells Foundry that we don't want to just simulate the transactions, but actually send them to the blockchain
+- `script/ScriptClient.s.sol:ScriptClient` is the contract to run as a script.
+  By convention, forge scripts are stored in `script` and have the extension `.s.sol`.
+
+<details>
+
+<summary>Content of `script/Script.s.sol`</summary>
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+```
+
+This is standard Solidity boilerplate.
+
+```solidity
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
+```
+
+These lines are the standard Foundry imports:
+
+- `forge-std/Script.sol` is the script definitions.
+- `forge-std/console.log` lets us emit console messages (you can see them in the output of the command above).
+
+In a normal Foundry project, these files are in a `lib/forge-std` directory.
+However, as this is a Node project that just happens to use Foundry, they are located under `node_modules/forge-std`.
+Their location is specified in `remappings.txt`.
+
+```solidity
+import { Counter } from "codegen/Tables.sol";
+import { IWorld } from "codegen/world/IWorld.sol";
+```
+
+These lines import from the generated MUD code the definitions we need:
+
+- `Counter`, the counter with which we wish to interact.
+- `IWorld`, an interface to the `World` with all the functions from the various systems.
+
+```solidity
+contract ScriptClient is Script {
+  IWorld world;
+
+  function run() external {
+```
+
+This is the function that runs the script.
+
+```solidity
+    // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
+    uint256 myPrivateKey = vm.envUint("PRIVATE_KEY");
+
+    // Start broadcasting transactions from that account
+    vm.startBroadcast(myPrivateKey);
+```
+
+Read the private key from the environment (which includes the content of the `.env` file) and use it to issue transactions.
+
+```solidity
+    // Connect to the world using `WORLD_ADDRESS` from .env
+    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDRESS"));
+    world = IWorld(vm.envAddress("WORLD_ADDRESS"));
+```
+
+Connect to the `World` at `WORLD_ADDRESS`.
+
+```solidity
+    console.log("The counter values is now ", Counter.get(world));
+
+    console.log("Incrementing the counter");
+    world.increment();
+
+    console.log("The counter values is now ", Counter.get(world));
+```
+
+This is the actual script.
+Note that it has access to `Counter.get(world)` to read the data, but to modify it you have to go through a `System`.
+Remember, _there are no secrets on the blockchain_ and therefore we can assume that anybody can read anything at any time after it is posted - so we might as well provide read access directly.
+
+```solidity
+    // Stop broadcasting transactions from the account
+    vm.stopBroadcast();
+  }
+}
+```
+
+Finally, stop broadcasting transactions using the private key.
+
+</details>
+
+### Try to bypass security
+
+There is another script `BypassSecurity`, which attempts to bypass the `System` logic and set `Counter` directly.
+You can run it with this command.
+
+```sh copy
+forge script --rpc-url http://localhost:8545 --broadcast script/Script.s.sol:BypassSecurity
+```
+
+It fails with this error, because we don't have the necessary access rights to write to the `Counter` table:
+
+```
+== Logs ==
+  Connecting to world at  0x5FbDB2315678afecb367f032d93F642f64180aa3
+  Just before trying to reset the counter
+Error:
+e64c0348:ROOT_NAMESPACE/Counter
+```
+
+This is the relevant portion of the code.
+The error is [`AccessDenied`](https://github.com/latticexyz/mud/blob/main/packages/world/src/interfaces/IWorldErrors.sol#L7).
+
+```solidity
+    // Try to set `Counter` directly. See that it fails.
+    console.log("Just before trying to reset the counter");
+    Counter.set(world, 0);
+    console.log("Just after trying to reset the counter");
+```
+
+We know the the failure happens in the `Counter.set(world, 0);` line because we see the log entry for the line before it, but not the one for the line immediately after it.
+
 ## Use the `World` from a contract
 
 You can use the contract [in the examples directory](https://github.com/latticexyz/mud/tree/main/examples/onchain-client).
