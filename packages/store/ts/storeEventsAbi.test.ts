@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { storeEventsAbi } from "./storeEventsAbi";
-import IStoreAbi from "../abi-ts/IStore.sol/IStore";
+import IStoreAbi from "../abi/IStore.sol/IStore.abi.json";
 
 // Make sure `storeEvents` stays in sync with Solidity definition/events
 

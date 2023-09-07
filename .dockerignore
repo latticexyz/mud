@@ -9,6 +9,5 @@ dist
 **/bindings/
 **/artifacts/
 **/abi/
-**/abi-ts/
 **/broadcast/
 **/deploys/

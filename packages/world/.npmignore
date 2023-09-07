@@ -1,7 +1,6 @@
 *
 
 !abi/**
-!abi-ts/**
 !src/**
 !ts/**
 !package.json

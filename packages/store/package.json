@@ -30,9 +30,6 @@
       ],
       "register": [
         "./ts/register/index.ts"
-      ],
-      "abi-ts/*": [
-        "./abi-ts/*"
       ]
     }
   },
@@ -42,12 +39,11 @@
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
-    "build:ts": "abi-ts --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
-    "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud && pnpm run clean:ts",
+    "build:ts": "abi-ts && prettier --write '**/*.abi.json.d.ts'",
+    "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
     "clean:abi": "rimraf abi",
     "clean:js": "rimraf dist",
     "clean:mud": "rimraf src/codegen",
-    "clean:ts": "rimraf abi-ts",
     "dev": "tsup --watch",
     "gas-report": "mud-gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
