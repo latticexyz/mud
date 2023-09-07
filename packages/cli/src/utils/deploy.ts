@@ -143,7 +143,7 @@ export async function deploy(
 
   // Wait for world to be deployed
   const deployedWorldAddress = await worldPromise;
-  const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldData.abi) as IBaseWorld;
+  const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldData.abi);
 
   // If an existing World is passed assume its coreModule is already installed - blocking to install if not
   if (!worldAddress)

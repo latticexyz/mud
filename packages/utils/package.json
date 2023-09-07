@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/utils",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.6",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -19,7 +19,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit && jest"
+    "test": "tsc --noEmit && jest",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "ethers": "^5.7.2",

@@ -11,14 +11,19 @@ import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
-import { Call } from "./Call.sol";
+import { SystemCall } from "./SystemCall.sol";
+import { WorldContextProvider } from "./WorldContext.sol";
+import { revertWithBytes } from "./revertWithBytes.sol";
+import { Delegation } from "./Delegation.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
+import { Delegations } from "./tables/Delegations.sol";
 
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
+import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
@@ -47,12 +52,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function installRootModule(IModule module, bytes memory args) public {
     AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, msg.sender);
 
-    Call.withSender({
+    WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: true, // The module is delegate called so it can edit any table
-      value: 0
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
     });
 
     // Register the module in the InstalledModules table
@@ -176,50 +179,34 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32 resourceSelector,
     bytes memory funcSelectorAndArgs
   ) external payable virtual returns (bytes memory) {
-    return _call(resourceSelector, funcSelectorAndArgs, msg.value);
+    return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, funcSelectorAndArgs, msg.value);
   }
 
   /**
-   * Call the system at the given namespace and name and pass the given value.
-   * If the system is not public, the caller must have access to the namespace or name.
+   * Call the system at the given resourceSelector on behalf of the given delegator.
+   * If the system is not public, the delegator must have access to the namespace or name (encoded in the resourceSelector).
    */
-  function _call(
+  function callFrom(
+    address delegator,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
-    uint256 value
-  ) internal virtual returns (bytes memory data) {
-    // Load the system data
-    (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
+    bytes memory funcSelectorAndArgs
+  ) external payable virtual returns (bytes memory) {
+    // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
+    Delegation explicitDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: msg.sender }));
 
-    // Check if the system exists
-    if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
-
-    // Allow access if the system is public or the caller has access to the namespace or name
-    if (!publicAccess) AccessControl.requireAccess(resourceSelector, msg.sender);
-
-    // Get system hooks
-    address[] memory hooks = SystemHooks.get(resourceSelector);
-
-    // Call onBeforeCallSystem hooks (before calling the system)
-    for (uint256 i; i < hooks.length; i++) {
-      ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onBeforeCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
+      // forward the call as `delegator`
+      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
     }
 
-    // Call the system and forward any return data
-    data = Call.withSender({
-      msgSender: msg.sender,
-      target: systemAddress,
-      funcSelectorAndArgs: funcSelectorAndArgs,
-      delegate: resourceSelector.getNamespace() == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
-      value: value
-    });
-
-    // Call onAfterCallSystem hooks (after calling the system)
-    for (uint256 i; i < hooks.length; i++) {
-      ISystemHook hook = ISystemHook(hooks[i]);
-      hook.onAfterCallSystem(msg.sender, systemAddress, funcSelectorAndArgs);
+    // Check if the delegator has a fallback delegation control set
+    Delegation fallbackDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: address(0) }));
+    if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
+      // forward the call with `from` as `msgSender`
+      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
     }
+
+    revert DelegationNotFound(delegator, msg.sender);
   }
 
   /************************************************************************
@@ -244,8 +231,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
-    // Call the function and forward the calldata and returndata
-    bytes memory returnData = _call(resourceSelector, callData, msg.value);
+    // Call the function and forward the call data
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
+
+    // If the call was successful, return the return data
     assembly {
       return(add(returnData, 0x20), mload(returnData))
     }

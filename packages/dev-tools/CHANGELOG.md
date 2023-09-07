@@ -1,5 +1,31 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/world@2.0.0-next.6
+  - @latticexyz/react@2.0.0-next.6
+  - @latticexyz/store-sync@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/recs@2.0.0-next.6
+  - @latticexyz/utils@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies [[`ce97426c`](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b), [`1ca35e9a`](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed), [`9d0f492a`](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe), [`c583f3cd`](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b)]:
+  - @latticexyz/world@2.0.0-next.5
+  - @latticexyz/store-sync@2.0.0-next.5
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/react@2.0.0-next.5
+  - @latticexyz/recs@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+  - @latticexyz/utils@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes

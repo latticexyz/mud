@@ -1,5 +1,231 @@
 # Change Log
 
+## 2.0.0-next.6
+
+### Minor Changes
+
+- [#1413](https://github.com/latticexyz/mud/pull/1413) [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561) Thanks [@holic](https://github.com/holic)! - We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+  If you previously relied on TypeChain types from `@latticexyz/store` or `@latticexyz/world`, you will either need to migrate to viem or abitype using ABI JSON imports or generate TypeChain types from our exported ABI JSON files.
+
+  ```ts
+  import { getContract } from "viem";
+  import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.abi.json";
+
+  const storeContract = getContract({
+    abi: IStoreAbi,
+    ...
+  });
+
+  await storeContract.write.setRecord(...);
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/schema-type@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/config@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Major Changes
+
+- [#1370](https://github.com/latticexyz/mud/pull/1370) [`9d0f492a`](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe) Thanks [@alvrs](https://github.com/alvrs)! - - The previous `Call.withSender` util is replaced with `WorldContextProvider`, since the usecase of appending the `msg.sender` to the calldata is tightly coupled with `WorldContextConsumer` (which extracts the appended context from the calldata).
+
+  The previous `Call.withSender` utility reverted if the call failed and only returned the returndata on success. This is replaced with `callWithContextOrRevert`/`delegatecallWithContextOrRevert`
+
+  ```diff
+  -import { Call } from "@latticexyz/world/src/Call.sol";
+  +import { WorldContextProvider } from "@latticexyz/world/src/WorldContext.sol";
+
+  -Call.withSender({
+  -  delegate: false,
+  -  value: 0,
+  -  ...
+  -});
+  +WorldContextProvider.callWithContextOrRevert({
+  +  value: 0,
+  +  ...
+  +});
+
+  -Call.withSender({
+  -  delegate: true,
+  -  value: 0,
+  -  ...
+  -});
+  +WorldContextProvider.delegatecallWithContextOrRevert({
+  +  ...
+  +});
+  ```
+
+  In addition there are utils that return a `bool success` flag instead of reverting on errors. This mirrors the behavior of Solidity's low level `call`/`delegatecall` functions and is useful in situations where additional logic should be executed in case of a reverting external call.
+
+  ```solidity
+  library WorldContextProvider {
+    function callWithContext(
+      address target, // Address to call
+      bytes memory funcSelectorAndArgs, // Abi encoded function selector and arguments to pass to pass to the contract
+      address msgSender, // Address to append to the calldata as context for msgSender
+      uint256 value // Value to pass with the call
+    ) internal returns (bool success, bytes memory data);
+
+    function delegatecallWithContext(
+      address target, // Address to call
+      bytes memory funcSelectorAndArgs, // Abi encoded function selector and arguments to pass to pass to the contract
+      address msgSender // Address to append to the calldata as context for msgSender
+    ) internal returns (bool success, bytes memory data);
+  }
+  ```
+
+  - `WorldContext` is renamed to `WorldContextConsumer` to clarify the relationship between `WorldContextProvider` (appending context to the calldata) and `WorldContextConsumer` (extracting context from the calldata)
+
+    ```diff
+    -import { WorldContext } from "@latticexyz/world/src/WorldContext.sol";
+    -import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
+    ```
+
+  - The `World` contract previously had a `_call` method to handle calling systems via their resource selector, performing accesss control checks and call hooks registered for the system.
+
+    ```solidity
+    library SystemCall {
+      /**
+       * Calls a system via its resource selector and perform access control checks.
+       * Does not revert if the call fails, but returns a `success` flag along with the returndata.
+       */
+      function call(
+        address caller,
+        bytes32 resourceSelector,
+        bytes memory funcSelectorAndArgs,
+        uint256 value
+      ) internal returns (bool success, bytes memory data);
+
+      /**
+       * Calls a system via its resource selector, perform access control checks and trigger hooks registered for the system.
+       * Does not revert if the call fails, but returns a `success` flag along with the returndata.
+       */
+      function callWithHooks(
+        address caller,
+        bytes32 resourceSelector,
+        bytes memory funcSelectorAndArgs,
+        uint256 value
+      ) internal returns (bool success, bytes memory data);
+
+      /**
+       * Calls a system via its resource selector, perform access control checks and trigger hooks registered for the system.
+       * Reverts if the call fails.
+       */
+      function callWithHooksOrRevert(
+        address caller,
+        bytes32 resourceSelector,
+        bytes memory funcSelectorAndArgs,
+        uint256 value
+      ) internal returns (bytes memory data);
+    }
+    ```
+
+  - System hooks now are called with the system's resource selector instead of its address. The system's address can still easily obtained within the hook via `Systems.get(resourceSelector)` if necessary.
+
+    ```diff
+    interface ISystemHook {
+      function onBeforeCallSystem(
+        address msgSender,
+    -   address systemAddress,
+    +   bytes32 resourceSelector,
+        bytes memory funcSelectorAndArgs
+      ) external;
+
+      function onAfterCallSystem(
+        address msgSender,
+    -   address systemAddress,
+    +   bytes32 resourceSelector,
+        bytes memory funcSelectorAndArgs
+      ) external;
+    }
+    ```
+
+### Minor Changes
+
+- [#1378](https://github.com/latticexyz/mud/pull/1378) [`ce97426c`](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b) Thanks [@alvrs](https://github.com/alvrs)! - It is now possible to upgrade systems by calling `registerSystem` again with an existing system id (resource selector).
+
+  ```solidity
+  // Register a system
+  world.registerSystem(systemId, systemAddress, publicAccess);
+
+  // Upgrade the system by calling `registerSystem` with the
+  // same system id but a new system address or publicAccess flag
+  world.registerSystem(systemId, newSystemAddress, newPublicAccess);
+  ```
+
+- [#1364](https://github.com/latticexyz/mud/pull/1364) [`1ca35e9a`](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed) Thanks [@alvrs](https://github.com/alvrs)! - The `World` has a new `callFrom` entry point which allows systems to be called on behalf of other addresses if those addresses have registered a delegation.
+  If there is a delegation, the call is forwarded to the system with `delegator` as `msgSender`.
+
+  ```solidity
+  interface IBaseWorld {
+    function callFrom(
+      address delegator,
+      bytes32 resourceSelector,
+      bytes memory funcSelectorAndArgs
+    ) external payable virtual returns (bytes memory);
+  }
+  ```
+
+  A delegation can be registered via the `World`'s `registerDelegation` function.
+  If `delegatee` is `address(0)`, the delegation is considered to be a "fallback" delegation and is used in `callFrom` if there is no delegation is found for the specific caller.
+  Otherwise the delegation is registered for the specific `delegatee`.
+
+  ```solidity
+  interface IBaseWorld {
+    function registerDelegation(
+      address delegatee,
+      bytes32 delegationControl,
+      bytes memory initFuncSelectorAndArgs
+    ) external;
+  }
+  ```
+
+  The `delegationControl` refers to the resource selector of a `DelegationControl` system that must have been registered beforehand.
+  As part of registering the delegation, the `DelegationControl` system is called with the provided `initFuncSelectorAndArgs`.
+  This can be used to initialize data in the given `DelegationControl` system.
+
+  The `DelegationControl` system must implement the `IDelegationControl` interface:
+
+  ```solidity
+  interface IDelegationControl {
+    function verify(address delegator, bytes32 systemId, bytes calldata funcSelectorAndArgs) external returns (bool);
+  }
+  ```
+
+  When `callFrom` is called, the `World` checks if a delegation is registered for the given caller, and if so calls the delegation control's `verify` function with the same same arguments as `callFrom`.
+  If the call to `verify` is successful and returns `true`, the delegation is valid and the call is forwarded to the system with `delegator` as `msgSender`.
+
+  Note: if `UNLIMITED_DELEGATION` (from `@latticexyz/world/src/constants.sol`) is passed as `delegationControl`, the external call to the delegation control contract is skipped and the delegation is considered valid.
+
+  For examples of `DelegationControl` systems, check out the `CallboundDelegationControl` or `TimeboundDelegationControl` systems in the `std-delegations` module.
+  See `StandardDelegations.t.sol` for usage examples.
+
+- [#1274](https://github.com/latticexyz/mud/pull/1274) [`c583f3cd`](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b) Thanks [@johngrantuk](https://github.com/johngrantuk)! - It is now possible to transfer ownership of namespaces!
+
+  ```solidity
+  // Register a new namespace
+  world.registerNamespace("namespace");
+  // It's owned by the caller of the function (address(this))
+
+  // Transfer ownership of the namespace to address(42)
+  world.transferOwnership("namespace", address(42));
+  // It's now owned by address(42)
+  ```
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/config@2.0.0-next.5
+  - @latticexyz/gas-report@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes

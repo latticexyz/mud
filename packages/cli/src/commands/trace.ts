@@ -7,7 +7,6 @@ import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config.js";
 import { tableIdToHex } from "@latticexyz/common";
@@ -66,7 +65,7 @@ const commandModule: CommandModule<Options, Options> = {
 
     // Create World contract instance from deployed address
     const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldData.abi, provider) as IBaseWorld;
+    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldData.abi, provider);
 
     // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
     const namespace = mudConfig.namespace;

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/react",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.6",
   "description": "React tools for MUD client.",
   "repository": {
     "type": "git",
@@ -19,7 +19,8 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "tsc --noEmit && vitest --run"
+    "test": "tsc --noEmit && vitest --run",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/recs": "workspace:*",

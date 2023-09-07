@@ -37,6 +37,13 @@ export default mudConfig({
       schema: { amount: "uint32" },
     },
   },
+  modules: [
+    {
+      name: "UniqueEntityModule",
+      root: true,
+      args: [],
+    },
+  ],
   // KeysWithValue doesn't seem to like singleton keys
   // modules: [
   //   {
