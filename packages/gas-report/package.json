@@ -26,6 +26,7 @@
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
+    "prepare": "mkdir -p ./dist && touch ./dist/mud-gas-report.js",
     "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
   },
