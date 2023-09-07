@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -3845,13 +3845,11 @@ packages:
   file:../../packages/solhint-config-mud:
     resolution: {directory: ../../packages/solhint-config-mud, type: directory}
     name: solhint-config-mud
-    version: 2.0.0-next.6
     dev: true
 
   file:../../packages/solhint-plugin-mud:
     resolution: {directory: ../../packages/solhint-plugin-mud, type: directory}
     name: solhint-plugin-mud
-    version: 2.0.0-next.6
     dependencies:
       '@solidity-parser/parser': 0.16.0
     dev: true
