@@ -1,5 +1,15 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/store-sync@2.0.0-next.7
+  - @latticexyz/block-logs-stream@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+
 ## 2.0.0-next.6
 
 ### Patch Changes
