@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15), [`2459e15f`](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc), [`18d3aea5`](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/world@2.0.0-next.7
+  - @latticexyz/abi-ts@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/gas-report@2.0.0-next.7
+  - @latticexyz/protocol-parser@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+  - @latticexyz/services@2.0.0-next.7
+  - @latticexyz/utils@2.0.0-next.7
+
 ## 2.0.0-next.6
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @latticexyz/abi-ts
 
+## 2.0.0-next.7
+
+### Patch Changes
+
+- [#1418](https://github.com/latticexyz/mud/pull/1418) [`2459e15f`](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc) Thanks [@holic](https://github.com/holic)! - Let `glob` handle resolving the glob against the current working directory.
+
 ## 2.0.0-next.6
 
 ### Minor Changes
