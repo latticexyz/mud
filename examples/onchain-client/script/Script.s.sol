@@ -43,9 +43,9 @@ contract BypassSecurity is Script {
     // Start broadcasting transactions from that account
     vm.startBroadcast(myPrivateKey);
 
-    // Connect to the world using `WORLD_ADDR` from .env
-    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDR"));
-    world = IWorld(vm.envAddress("WORLD_ADDR"));
+    // Connect to the world using `WORLD_ADDRESS` from .env
+    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDRESS"));
+    world = IWorld(vm.envAddress("WORLD_ADDRESS"));
 
     // Try to set `Counter` directly. See that it fails.
     console.log("Just before trying to reset the counter");
