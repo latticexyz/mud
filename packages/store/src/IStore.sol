@@ -45,13 +45,7 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(
-    bytes32 table,
-    bytes32[] key,
-    bytes staticData,
-    PackedCounter dynamicDataLengths,
-    bytes dynamicData
-  );
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, PackedCounter encodedLengths, bytes dynamicData);
 
   event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
   event StoreSpliceDynamicRecord(
@@ -60,7 +54,7 @@ interface IStoreWrite {
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    bytes32 dynamicDataLengths
+    bytes32 encodedLengths
   );
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
@@ -69,7 +63,7 @@ interface IStoreWrite {
     bytes32 table,
     bytes32[] calldata key,
     bytes calldata staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData,
     Schema valueSchema
   ) external;
@@ -123,7 +117,7 @@ interface IStoreEphemeral {
     bytes32 table,
     bytes32[] calldata key,
     bytes calldata staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData,
     Schema valueSchema
   ) external;
@@ -163,7 +157,7 @@ interface IStoreHook {
     bytes32 table,
     bytes32[] memory key,
     bytes calldata staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData,
     Schema valueSchema
   ) external;

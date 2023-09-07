@@ -26,12 +26,12 @@ contract MirrorSubscriber is IStoreHook {
     bytes32 table,
     bytes32[] memory key,
     bytes calldata staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData,
     Schema valueSchema
   ) public {
     if (table != table) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+    StoreSwitch.setRecord(indexerTableId, key, staticData, encodedLengths, dynamicData, valueSchema);
   }
 
   function onBeforeSetField(

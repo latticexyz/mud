@@ -16,11 +16,11 @@ contract StoreMock is IStore, StoreRead {
     bytes32 table,
     bytes32[] calldata key,
     bytes calldata staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData,
     Schema valueSchema
   ) public {
-    StoreCore.setRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+    StoreCore.setRecord(table, key, staticData, encodedLengths, dynamicData, valueSchema);
   }
 
   // Set partial data at schema index
@@ -78,11 +78,11 @@ contract StoreMock is IStore, StoreRead {
     bytes32 table,
     bytes32[] calldata key,
     bytes calldata staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes calldata dynamicData,
     Schema valueSchema
   ) public {
-    StoreCore.emitEphemeralRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+    StoreCore.emitEphemeralRecord(table, key, staticData, encodedLengths, dynamicData, valueSchema);
   }
 
   function registerTable(

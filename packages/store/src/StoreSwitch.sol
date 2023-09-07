@@ -91,15 +91,15 @@ library StoreSwitch {
     bytes32 table,
     bytes32[] memory key,
     bytes memory staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes memory dynamicData,
     Schema valueSchema
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+      StoreCore.setRecord(table, key, staticData, encodedLengths, dynamicData, valueSchema);
     } else {
-      IStore(_storeAddress).setRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+      IStore(_storeAddress).setRecord(table, key, staticData, encodedLengths, dynamicData, valueSchema);
     }
   }
 
@@ -177,15 +177,15 @@ library StoreSwitch {
     bytes32 table,
     bytes32[] memory key,
     bytes memory staticData,
-    PackedCounter dynamicDataLengths,
+    PackedCounter encodedLengths,
     bytes memory dynamicData,
     Schema valueSchema
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+      StoreCore.emitEphemeralRecord(table, key, staticData, encodedLengths, dynamicData, valueSchema);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(table, key, staticData, dynamicDataLengths, dynamicData, valueSchema);
+      IStore(_storeAddress).emitEphemeralRecord(table, key, staticData, encodedLengths, dynamicData, valueSchema);
     }
   }
 
