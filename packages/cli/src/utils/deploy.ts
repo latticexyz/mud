@@ -1,11 +1,18 @@
 import { existsSync } from "fs";
 import path from "path";
 import chalk from "chalk";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { getOutDirectory, cast, getScriptDirectory, forge } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
-import { deployContractsByName, TxHelper, ContractCode, deployContractsByCode, deployContract } from "./txHelper";
+import {
+  setInternalFeePerGas,
+  deployContractsByName,
+  ContractCode,
+  deployContractsByCode,
+  deployContract,
+  confirmNonce,
+} from "./txHelpers";
 import { deployWorldContract as deployWorld, registerNamesSpace, registerTables } from "./world";
 import { installCoreModule } from "./coreModules";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
@@ -72,25 +79,19 @@ export async function deploy(
   const signer = new ethers.Wallet(privateKey, provider);
   console.log("Deploying from", signer.address);
 
-  const txHelper = new TxHelper({
-    signer,
-    priorityFeeMultiplier,
-    forgeOutDirectory,
-    debug,
-  });
+  const initialNonce = await signer.getTransactionCount();
+  console.log("Initial nonce", initialNonce);
 
-  await txHelper.initialise();
+  const txParams = await setInternalFeePerGas(signer, priorityFeeMultiplier);
+
   const txConfig = {
+    ...txParams,
     signer,
-    nonce: txHelper.nonce,
-    maxPriorityFeePerGas: txHelper.maxPriorityFeePerGas as number,
-    maxFeePerGas: txHelper.maxFeePerGas as BigNumber,
-    gasPrice: txHelper.gasPrice as BigNumber,
+    nonce: initialNonce,
     debug: !!debug,
     disableTxWait,
+    confirmations: disableTxWait ? 0 : 1,
   };
-
-  const confirmations = disableTxWait ? 0 : 1;
 
   // Get block number before deploying
   const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
@@ -140,46 +141,64 @@ export async function deploy(
   });
   txConfig.nonce = txConfig.nonce + Object.keys(resolvedConfig.systems).length;
 
-  txHelper.nonce = txConfig.nonce;
-
   // Wait for world to be deployed
   const deployedWorldAddress = await worldPromise;
   const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldData.abi) as IBaseWorld;
 
   // If an existing World is passed assume its coreModule is already installed - blocking to install if not
-  if (!worldAddress) await installCoreModule(worldContract, await coreModulePromise, disableTxWait, txHelper);
+  if (!worldAddress)
+    txConfig.nonce = await installCoreModule({
+      ...txConfig,
+      worldContract,
+      coreModuleAddress: await coreModulePromise,
+    });
 
-  await registerNamesSpace(txHelper, worldContract, mudConfig.namespace, confirmations);
+  txConfig.nonce = await registerNamesSpace({
+    ...txConfig,
+    worldContract,
+    namespace: mudConfig.namespace,
+  });
 
   // Blocking - Wait for tables to be registered
-  const tableIds = await registerTables(txHelper, worldContract, confirmations, mudConfig, mudConfig.namespace);
+  const registerResponse = await registerTables({
+    ...txConfig,
+    worldContract,
+    mudConfig,
+    namespace: mudConfig.namespace,
+  });
+  const tableIds = registerResponse.tableIds;
+  txConfig.nonce = registerResponse.nonce;
 
   // Blocking - Wait for resources to be registered before granting access to them
-  await registerSystems(
-    txHelper,
-    disableTxWait,
+  txConfig.nonce = await registerSystems({
+    ...txConfig,
     worldContract,
-    resolvedConfig.systems,
+    systems: resolvedConfig.systems,
     systemContracts,
-    mudConfig.namespace,
-    forgeOutDirectory
-  );
+    namespace: mudConfig.namespace,
+    forgeOutDirectory,
+  });
 
   // Blocking - Wait for System access to be granted before installing modules
-  await grantAccess(
-    txHelper,
-    disableTxWait,
+  txConfig.nonce = await grantAccess({
+    ...txConfig,
     worldContract,
-    resolvedConfig.systems,
-    mudConfig.namespace,
-    systemContracts
-  );
+    systems: resolvedConfig.systems,
+    systemContracts,
+    namespace: mudConfig.namespace,
+  });
 
   // Blocking - Wait for User Module installs before postDeploy is run
-  await installModules(txHelper, disableTxWait, worldContract, mudConfig.modules, tableIds, moduleContracts);
+  txConfig.nonce = await installModules({
+    ...txConfig,
+    worldContract,
+    modules: mudConfig.modules,
+    moduleContracts,
+    tableIds,
+  });
 
   // Double check that all transactions have been included by confirming the current nonce is the expected nonce
-  await txHelper.confirmNonce(pollInterval);
+  await confirmNonce(signer, txConfig.nonce, pollInterval);
 
   await postDeploy(mudConfig.postDeployScript, deployedWorldAddress, rpc, profile);
 

@@ -4,7 +4,7 @@ import { TransactionReceipt, TransactionResponse } from "@ethersproject/provider
 import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 import { resolveWithContext } from "@latticexyz/config";
 import { TableIds } from "./world";
-import { TxHelper } from "./txHelper";
+import { TxConfig, fastTxExecute } from "./txHelpers";
 
 type ModuleConfig = {
   name: string;
@@ -26,15 +26,15 @@ export function getUserModules(defaultModules: { name: string }[], configModules
 }
 
 export async function installModules(
-  txHelper: TxHelper,
-  disableTxWait: boolean,
-  worldContract: Contract,
-  modules: ModuleConfig,
-  tableIds: TableIds,
-  moduleContracts: Record<string, Promise<string>>
-): Promise<void> {
+  input: TxConfig & {
+    worldContract: Contract;
+    modules: ModuleConfig;
+    moduleContracts: Record<string, Promise<string>>;
+    tableIds: TableIds;
+  }
+): Promise<number> {
   console.log(chalk.blue("Installing Modules"));
-  const confirmations = disableTxWait ? 0 : 1;
+  const { confirmations, worldContract, modules, moduleContracts, tableIds } = input;
   // Install modules - non-blocking for tx, await all at end
   const modulePromisesNew: Promise<TransactionResponse | TransactionReceipt>[] = [];
   for (const module of modules) {
@@ -54,14 +54,17 @@ export async function installModules(
 
     // Send transaction to install module
     modulePromisesNew.push(
-      txHelper.fastTxExecute(
-        worldContract,
-        module.root ? "installRootModule" : "installModule",
-        [moduleAddress, abi.encode(types, values)],
-        confirmations
-      )
+      fastTxExecute({
+        ...input,
+        nonce: input.nonce++,
+        contract: worldContract,
+        func: module.root ? "installRootModule" : "installModule",
+        args: [moduleAddress, abi.encode(types, values)],
+        confirmations,
+      })
     );
   }
   await Promise.all(modulePromisesNew);
   console.log(chalk.green(`Modules Installed`));
+  return input.nonce;
 }

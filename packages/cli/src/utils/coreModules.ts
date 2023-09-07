@@ -1,15 +1,20 @@
 import chalk from "chalk";
 import { Contract } from "ethers";
-import { TxHelper } from "./txHelper";
+import { TxConfig, fastTxExecute } from "./txHelpers";
 
 export async function installCoreModule(
-  worldContract: Contract,
-  coreModuleAddress: string,
-  disableTxWait: boolean,
-  txHelper: TxHelper
-): Promise<void> {
-  const confirmations = disableTxWait ? 0 : 1;
+  input: TxConfig & { worldContract: Contract; coreModuleAddress: string }
+): Promise<number> {
   console.log(chalk.blue("Installing CoreModule"));
-  await txHelper.fastTxExecute(worldContract, "installRootModule", [coreModuleAddress, "0x"], confirmations);
+  const { worldContract, coreModuleAddress, confirmations } = input;
+  await fastTxExecute({
+    ...input,
+    nonce: input.nonce++,
+    contract: worldContract,
+    func: "installRootModule",
+    args: [coreModuleAddress, "0x"],
+    confirmations,
+  });
   console.log(chalk.green("Installed CoreModule"));
+  return input.nonce;
 }

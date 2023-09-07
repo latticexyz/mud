@@ -3,7 +3,7 @@ import { Contract, ethers } from "ethers";
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import { ParamType } from "ethers/lib/utils.js";
 import { tableIdToHex } from "@latticexyz/common";
-import { TxHelper, getContractData } from "./txHelper";
+import { getContractData, TxConfig, fastTxExecute } from "./txHelpers";
 
 type SystemsConfig = Record<
   string,
@@ -22,28 +22,30 @@ interface FunctionSignature {
 }
 
 export async function registerSystems(
-  txHelper: TxHelper,
-  disableTxWait: boolean,
-  worldContract: Contract,
-  systems: SystemsConfig,
-  systemContracts: Record<string, Promise<string>>,
-  namespace: string,
-  forgeOutDirectory: string
-): Promise<void> {
+  input: TxConfig & {
+    worldContract: Contract;
+    systems: SystemsConfig;
+    systemContracts: Record<string, Promise<string>>;
+    namespace: string;
+    forgeOutDirectory: string;
+  }
+): Promise<number> {
   console.log(chalk.blue("Registering Systems & Functions"));
-  const confirmations = disableTxWait ? 0 : 1;
+  const { confirmations, systems, namespace, worldContract, systemContracts, forgeOutDirectory } = input;
   // Register systems
   const systemRegisterPromises: Promise<TransactionResponse | TransactionReceipt>[] = [];
   for (const [systemName, { name, openAccess, registerFunctionSelectors }] of Object.entries(systems)) {
     // Register system at route
     console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${name}`));
     systemRegisterPromises.push(
-      txHelper.fastTxExecute(
-        worldContract,
-        "registerSystem",
-        [tableIdToHex(namespace, name), await systemContracts[systemName], openAccess],
-        confirmations
-      )
+      fastTxExecute({
+        ...input,
+        nonce: input.nonce++,
+        contract: worldContract,
+        func: "registerSystem",
+        args: [tableIdToHex(namespace, name), await systemContracts[systemName], openAccess],
+        confirmations: confirmations,
+      })
     );
 
     // Register function selectors for the system - non-blocking for tx, await all at end
@@ -64,21 +66,25 @@ export async function registerSystems(
           );
           const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
           systemRegisterPromises.push(
-            txHelper.fastTxExecute(
-              worldContract,
-              "registerRootFunctionSelector",
-              [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector],
-              confirmations
-            )
+            fastTxExecute({
+              ...input,
+              nonce: input.nonce++,
+              contract: worldContract,
+              func: "registerRootFunctionSelector",
+              args: [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector],
+              confirmations: confirmations,
+            })
           );
         } else {
           systemRegisterPromises.push(
-            txHelper.fastTxExecute(
-              worldContract,
-              "registerFunctionSelector",
-              [tableIdToHex(namespace, name), functionName, functionArgs],
-              confirmations
-            )
+            fastTxExecute({
+              ...input,
+              nonce: input.nonce++,
+              contract: worldContract,
+              func: "registerFunctionSelector",
+              args: [tableIdToHex(namespace, name), functionName, functionArgs],
+              confirmations: confirmations,
+            })
           );
         }
       }
@@ -86,19 +92,19 @@ export async function registerSystems(
   }
   await Promise.all(systemRegisterPromises);
   console.log(chalk.green(`Registered Systems & Functions`));
+  return input.nonce;
 }
 
 export async function grantAccess(
-  txHelper: TxHelper,
-  disableTxWait: boolean,
-  worldContract: Contract,
-  systems: SystemsConfig,
-  namespace: string,
-  systemContracts: Record<string, Promise<string>>
-): Promise<void> {
+  input: TxConfig & {
+    worldContract: Contract;
+    systems: SystemsConfig;
+    systemContracts: Record<string, Promise<string>>;
+    namespace: string;
+  }
+): Promise<number> {
   console.log(chalk.blue("Granting Access"));
-  const confirmations = disableTxWait ? 0 : 1;
-
+  const { confirmations, systems, namespace, worldContract, systemContracts } = input;
   // non-blocking for tx, await all at end
   const grantPromises: Promise<TransactionResponse | TransactionReceipt>[] = [];
   for (const [systemName, { name, accessListAddresses, accessListSystems }] of Object.entries(systems)) {
@@ -108,7 +114,14 @@ export async function grantAccess(
     accessListAddresses.map(async (address) => {
       console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
       grantPromises.push(
-        txHelper.fastTxExecute(worldContract, "grantAccess", [tableIdToHex(namespace, name), address], confirmations)
+        fastTxExecute({
+          ...input,
+          nonce: input.nonce++,
+          contract: worldContract,
+          func: "grantAccess",
+          args: [tableIdToHex(namespace, name), address],
+          confirmations,
+        })
       );
     });
 
@@ -116,17 +129,20 @@ export async function grantAccess(
     accessListSystems.map(async (granteeSystem) => {
       console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
       grantPromises.push(
-        txHelper.fastTxExecute(
-          worldContract,
-          "grantAccess",
-          [tableIdToHex(namespace, name), await systemContracts[granteeSystem]],
-          confirmations
-        )
+        fastTxExecute({
+          ...input,
+          nonce: input.nonce++,
+          contract: worldContract,
+          func: "grantAccess",
+          args: [tableIdToHex(namespace, name), await systemContracts[granteeSystem]],
+          confirmations,
+        })
       );
     });
   }
   await Promise.all(grantPromises);
   console.log(chalk.green(`Access Granted`));
+  return input.nonce;
 }
 
 function loadFunctionSignatures(contractName: string, forgeOutDirectory: string): FunctionSignature[] {

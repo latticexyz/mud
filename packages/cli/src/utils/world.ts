@@ -8,7 +8,7 @@ import { WorldConfig } from "@latticexyz/world";
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import { tableIdToHex } from "@latticexyz/common";
-import { TxConfig, TxHelper, deployContract, deployContractByName } from "./txHelper";
+import { TxConfig, deployContract, deployContractByName, fastTxExecute } from "./txHelpers";
 
 export type TableIds = { [tableName: string]: Uint8Array };
 
@@ -34,62 +34,70 @@ export async function deployWorldContract(
 }
 
 export async function registerNamesSpace(
-  txHelper: TxHelper,
-  worldContract: Contract,
-  namespace: string | undefined,
-  confirmations: number
-) {
+  input: TxConfig & { worldContract: Contract; namespace: string | undefined; confirmations: number }
+): Promise<number> {
   // Register namespace
-  if (namespace)
-    await txHelper.fastTxExecute(worldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
+  if (input.namespace)
+    await fastTxExecute({
+      ...input,
+      nonce: input.nonce++,
+      contract: input.worldContract,
+      func: "registerNamespace",
+      args: [toBytes16(input.namespace)],
+      confirmations: input.confirmations,
+    });
+  return input.nonce;
 }
 
 export async function registerTables(
-  txHelper: TxHelper,
-  worldContract: Contract,
-  confirmations: number,
-  mudConfig: StoreConfig & WorldConfig,
-  namespace: string
-): Promise<TableIds> {
+  input: TxConfig & {
+    worldContract: Contract;
+    namespace: string;
+    mudConfig: StoreConfig & WorldConfig;
+    confirmations: number;
+  }
+): Promise<{ tableIds: TableIds; nonce: number }> {
   console.log(chalk.blue("Registering Tables"));
   const tableIds: TableIds = {};
   // Register tables
   const tablePromises: Promise<TransactionResponse | TransactionReceipt>[] = [];
-  for (const [tableName, { name, schema, keySchema }] of Object.entries(mudConfig.tables)) {
-    console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
+  for (const [tableName, { name, schema, keySchema }] of Object.entries(input.mudConfig.tables)) {
+    console.log(chalk.blue(`Registering table ${tableName} at ${input.namespace}/${name}`));
 
     // Store the tableId for later use
-    tableIds[tableName] = toResourceSelector(namespace, name);
+    tableIds[tableName] = toResourceSelector(input.namespace, name);
 
     // Register table
     const schemaTypes = Object.values(schema).map((abiOrUserType) => {
-      const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
+      const { schemaType } = resolveAbiOrUserType(abiOrUserType, input.mudConfig);
       return schemaType;
     });
 
     const keyTypes = Object.values(keySchema).map((abiOrUserType) => {
-      const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
+      const { schemaType } = resolveAbiOrUserType(abiOrUserType, input.mudConfig);
       return schemaType;
     });
 
     tablePromises.push(
-      txHelper.fastTxExecute(
-        worldContract,
-        "registerTable",
-        [
-          tableIdToHex(namespace, name),
+      fastTxExecute({
+        ...input,
+        nonce: input.nonce++,
+        contract: input.worldContract,
+        func: "registerTable",
+        args: [
+          tableIdToHex(input.namespace, name),
           encodeSchema(keyTypes),
           encodeSchema(schemaTypes),
           Object.keys(keySchema),
           Object.keys(schema),
         ],
-        confirmations
-      )
+        confirmations: input.confirmations,
+      })
     );
   }
   await Promise.all(tablePromises);
   console.log(chalk.green(`Tables Registered`));
-  return tableIds;
+  return { tableIds, nonce: input.nonce };
 }
 
 // TODO: use TableId from utils as soon as utils are usable inside cli
