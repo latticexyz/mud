@@ -7,27 +7,27 @@ import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
 import { Hooks } from "../../src/codegen/Tables.sol";
 
 contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
-  address[] addresses;
+  bytes21[] hooks;
 
   function setUp() public {
     // Hooks schema is already registered by StoreCore
     bytes32 key = keccak256("somekey");
 
-    addresses = new address[](1);
-    addresses[0] = address(this);
+    hooks = new bytes21[](1);
+    hooks[0] = bytes21("some data");
 
-    Hooks.set(key, addresses);
+    Hooks.set(key, hooks);
   }
 
   function testGet() public {
     bytes32 key = keccak256("somekey");
 
     startGasReport("Hooks: get field (cold)");
-    address[] memory returnedAddresses = Hooks.get(key);
+    bytes21[] memory returnedAddresses = Hooks.get(key);
     endGasReport();
 
-    assertEq(returnedAddresses.length, addresses.length);
-    assertEq(returnedAddresses[0], addresses[0]);
+    assertEq(returnedAddresses.length, hooks.length);
+    assertEq(returnedAddresses[0], hooks[0]);
   }
 
   function testLength() public {
@@ -37,17 +37,17 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
     uint256 length = Hooks.length(key);
     endGasReport();
 
-    assertEq(length, addresses.length);
+    assertEq(length, hooks.length);
   }
 
   function testGetItem() public {
     bytes32 key = keccak256("somekey");
 
     startGasReport("Hooks: get 1 element (cold)");
-    address returnedAddress = Hooks.getItem(key, 0);
+    bytes21 returnedAddress = Hooks.getItem(key, 0);
     endGasReport();
 
-    assertEq(returnedAddress, addresses[0]);
+    assertEq(returnedAddress, hooks[0]);
   }
 
   function testPop() public {
@@ -59,18 +59,18 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
 
     uint256 length = Hooks.length(key);
 
-    assertEq(length, addresses.length - 1);
+    assertEq(length, hooks.length - 1);
   }
 
   function testUpdate() public {
     bytes32 key = keccak256("somekey");
 
-    address newAddress = address(bytes20(keccak256("alice")));
+    bytes21 newAddress = bytes21(bytes20(keccak256("alice")));
     startGasReport("Hooks: update 1 element (cold)");
     Hooks.update(key, 0, newAddress);
     endGasReport();
 
-    address[] memory returnedAddresses = Hooks.get(key);
+    bytes21[] memory returnedAddresses = Hooks.get(key);
     assertEq(returnedAddresses.length, 1);
     assertEq(returnedAddresses[0], newAddress);
   }
@@ -82,7 +82,7 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
     Hooks.deleteRecord(key);
     endGasReport();
 
-    address[] memory returnedAddresses = Hooks.get(key);
+    bytes21[] memory returnedAddresses = Hooks.get(key);
     assertEq(returnedAddresses.length, 0);
   }
 }

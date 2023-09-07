@@ -3,8 +3,8 @@ import worldPackageJson from "../../packages/world/package.json" assert { type: 
 export default {
   index: "Overview",
   introduction: "Introduction",
-  "quick-start": "Quickstart",
   "what-is-mud": "What is MUD?",
+  "quick-start": "Quickstart",
   store: "Store",
   world: "World",
   "client-side": "MUD client",

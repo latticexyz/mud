@@ -99,7 +99,7 @@ async function getChanges(include: "diff" | "all") {
     const changesetDiff = (await execa("git", ["diff", "main", ".changeset/pre.json"])).stdout;
 
     // Get the list of changesets
-    const addedLinesRegex = /\+\s+"([^"]+)"/g;
+    const addedLinesRegex = /\+\s+"(?!.*:)([^"]+)"/g;
     changesetsToInclude.push(...[...changesetDiff.matchAll(addedLinesRegex)].map((match) => match[1]));
   } else if (include === "all") {
     // Load all current changesets from the .changeset/pre.json file

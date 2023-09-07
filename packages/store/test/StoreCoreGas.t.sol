@@ -13,6 +13,7 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
+import { StoreHookLib } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
@@ -597,7 +598,18 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     startGasReport("register subscriber");
-    StoreCore.registerStoreHook(table, subscriber);
+    StoreCore.registerStoreHook(
+      table,
+      subscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      })
+    );
     endGasReport();
 
     bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
@@ -636,7 +648,18 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     startGasReport("register subscriber");
-    StoreCore.registerStoreHook(table, subscriber);
+    StoreCore.registerStoreHook(
+      table,
+      subscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      })
+    );
     endGasReport();
 
     uint32[] memory arrayData = new uint32[](1);

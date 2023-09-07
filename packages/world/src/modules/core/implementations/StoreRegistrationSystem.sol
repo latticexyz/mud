@@ -77,11 +77,11 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * Register a hook for the table at the given namepace and name.
    * Requires the caller to own the namespace.
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwnerOrSelf(tableId, _msgSender());
 
     // Register the hook
-    StoreCore.registerStoreHook(tableId, hook);
+    StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
   }
 }

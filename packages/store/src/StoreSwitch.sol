@@ -44,12 +44,12 @@ library StoreSwitch {
     _layout().storeAddress = _storeAddress;
   }
 
-  function registerStoreHook(bytes32 table, IStoreHook hook) internal {
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerStoreHook(table, hook);
+      StoreCore.registerStoreHook(table, hookAddress, enabledHooksBitmap);
     } else {
-      IStore(_storeAddress).registerStoreHook(table, hook);
+      IStore(_storeAddress).registerStoreHook(table, hookAddress, enabledHooksBitmap);
     }
   }
 

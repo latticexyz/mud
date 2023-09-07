@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["ts/index.ts", "ts/mud-gas-report.ts"],
+  entry: ["ts/index.ts", "ts/gas-report.ts"],
   target: "esnext",
   format: ["esm"],
   dts: false,

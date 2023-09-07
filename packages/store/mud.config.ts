@@ -7,7 +7,7 @@ export default mudConfig({
     ExampleEnum: ["None", "First", "Second", "Third"],
   },
   tables: {
-    Hooks: "address[]",
+    Hooks: "bytes21[]",
     Callbacks: "bytes24[]",
     Tables: {
       keySchema: {
