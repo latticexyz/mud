@@ -130,10 +130,10 @@ function readCounter() public view returns (uint32) {
 To get the value of the counter we use the `Counter` library we imported from `codegen/Tables.sol`.
 There are two versions of `get` in that library.
 
-[This version](https://github.com/latticexyz/mud/blob/230822-use-onchain/examples/onchain-client/lib/codegen/tables/Counter.sol#L60-L66) reads from the `World` of which it is a part.
+[This version](https://github.com/latticexyz/mud/blob/230822-use-onchain/examples/onchain-client/src/codegen/tables/Counter.sol#L60-L66) reads from the `World` of which it is a part.
 It is the version you use in a `System` deployed to that `World`.
 
-[This version](https://github.com/latticexyz/mud/blob/230822-use-onchain/examples/onchain-client/lib/codegen/tables/Counter.sol#L68-L74) gets a parameter which is the address of the `World`.
+[This version](https://github.com/latticexyz/mud/blob/230822-use-onchain/examples/onchain-client/src/codegen/tables/Counter.sol#L68-L74) gets a parameter which is the address of the `World`.
 It is the version you use in code which is not part of the `World` with the relevant table.
 
 ```solidity
