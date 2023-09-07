@@ -12,6 +12,29 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
+        internalType: "Schema";
+        name: "valueSchema";
+        type: "bytes32";
+      }
+    ];
+    name: "onAfterDeleteRecord";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
         internalType: "uint8";
         name: "schemaIndex";
         type: "uint8";
@@ -28,6 +51,57 @@ declare const abi: [
       }
     ];
     name: "onAfterSetField";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      },
+      {
+        internalType: "Schema";
+        name: "valueSchema";
+        type: "bytes32";
+      }
+    ];
+    name: "onAfterSetRecord";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        internalType: "Schema";
+        name: "valueSchema";
+        type: "bytes32";
+      }
+    ];
+    name: "onBeforeDeleteRecord";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";
@@ -78,29 +152,6 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
-        type: "bytes32";
-      }
-    ];
-    name: "onDeleteRecord";
-    outputs: [];
-    stateMutability: "nonpayable";
-    type: "function";
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32";
-        name: "table";
-        type: "bytes32";
-      },
-      {
-        internalType: "bytes32[]";
-        name: "key";
-        type: "bytes32[]";
-      },
-      {
         internalType: "bytes";
         name: "data";
         type: "bytes";
@@ -111,7 +162,7 @@ declare const abi: [
         type: "bytes32";
       }
     ];
-    name: "onSetRecord";
+    name: "onBeforeSetRecord";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";

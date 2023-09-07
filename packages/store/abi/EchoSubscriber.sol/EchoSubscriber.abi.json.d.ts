@@ -1,98 +1,16 @@
 declare const abi: [
   {
+    anonymous: false;
     inputs: [
       {
-        internalType: "bytes32";
-        name: "table";
-        type: "bytes32";
-      },
-      {
-        internalType: "Schema";
-        name: "keySchema";
-        type: "bytes32";
-      },
-      {
-        internalType: "Schema";
-        name: "valueSchema";
-        type: "bytes32";
-      },
-      {
-        internalType: "string[]";
-        name: "keyNames";
-        type: "string[]";
-      },
-      {
-        internalType: "string[]";
-        name: "fieldNames";
-        type: "string[]";
-      }
-    ];
-    stateMutability: "nonpayable";
-    type: "constructor";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "length";
-        type: "uint256";
-      }
-    ];
-    name: "PackedCounter_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "length";
-        type: "uint256";
-      }
-    ];
-    name: "SchemaLib_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "SchemaLib_StaticTypeAfterDynamicType";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
+        indexed: false;
         internalType: "bytes";
-        name: "data";
+        name: "";
         type: "bytes";
-      },
-      {
-        internalType: "uint256";
-        name: "start";
-        type: "uint256";
-      },
-      {
-        internalType: "uint256";
-        name: "end";
-        type: "uint256";
       }
     ];
-    name: "Slice_OutOfBounds";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "expected";
-        type: "uint256";
-      },
-      {
-        internalType: "uint256";
-        name: "received";
-        type: "uint256";
-      }
-    ];
-    name: "StoreCore_InvalidDataLength";
-    type: "error";
+    name: "HookCalled";
+    type: "event";
   },
   {
     inputs: [
@@ -121,27 +39,27 @@ declare const abi: [
     inputs: [
       {
         internalType: "bytes32";
-        name: "";
+        name: "table";
         type: "bytes32";
       },
       {
         internalType: "bytes32[]";
-        name: "";
+        name: "key";
         type: "bytes32[]";
       },
       {
         internalType: "uint8";
-        name: "";
+        name: "schemaIndex";
         type: "uint8";
       },
       {
         internalType: "bytes";
-        name: "";
+        name: "data";
         type: "bytes";
       },
       {
         internalType: "Schema";
-        name: "";
+        name: "valueSchem";
         type: "bytes32";
       }
     ];
