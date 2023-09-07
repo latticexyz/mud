@@ -24,7 +24,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   handler({ input }) {
-    const files = glob.sync(path.join(process.cwd(), input));
+    const files = glob.sync(input);
 
     if (!files.length) {
       console.error(`No files found for glob: ${input}`);
