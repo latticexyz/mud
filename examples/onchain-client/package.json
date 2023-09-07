@@ -4,7 +4,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build:mud": "mud tablegen && mud worldgen"
+    "build": "pnpm build:mud",
+    "build:mud": "mud tablegen && mud worldgen",
+    "script": "forge script --rpc-url http://localhost:8545 --broadcast script/Script.s.sol:ScriptClient"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
