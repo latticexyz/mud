@@ -10,11 +10,11 @@ import chalk from "chalk";
 dotenv.config();
 
 // $0 makes this a default command (as opposed to a sub-command),
-// which replaces `mud-gas-report gas-report` with just `mud-gas-report`
+// which replaces `gas-report gas-report` with just `gas-report`
 gasReport.command = "$0";
 
 yargs(hideBin(process.argv))
-  .scriptName("mud-gas-report")
+  .scriptName("gas-report")
   // Use the commands directory to scaffold
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- command array overload isn't typed, see https://github.com/yargs/yargs/blob/main/docs/advanced.md#esm-hierarchy
   .command(gasReport as any)
