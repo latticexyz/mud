@@ -17,9 +17,9 @@ contract ScriptClient is Script {
     // Start broadcasting transactions from that account
     vm.startBroadcast(myPrivateKey);
 
-    // Connect to the world using `WORLD_ADDR` from .env
-    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDR"));
-    world = IWorld(vm.envAddress("WORLD_ADDR"));
+    // Connect to the world using `WORLD_ADDRESS` from .env
+    console.log("Connecting to world at ", vm.envAddress("WORLD_ADDRESS"));
+    world = IWorld(vm.envAddress("WORLD_ADDRESS"));
 
     console.log("The counter values is now ", Counter.get(world));
 
