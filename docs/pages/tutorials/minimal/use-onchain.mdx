@@ -62,14 +62,14 @@ pnpm script
 You can check `package.json` to see that the script is executed by this command:
 
 ```sh
-forge script --rpc-url http://localhost:8545 --broadcast script/ScriptClient.s.sol:ScriptClient
+forge script --rpc-url http://localhost:8545 --broadcast script/Script.s.sol:ScriptClient
 ```
 
 - `--rpc-url` specifies the URL to an RPC node of the blockchain we want to interact with.
   In this case, this is one that runs locally.
   If your blockchain runs anywhere else, modify as needed.
 - `--broadcast` tells Foundry that we don't want to just simulate the transactions, but actually send them to the blockchain
-- `script/ScriptClient.s.sol:ScriptClient` is the contract to run as a script.
+- `script/Script.s.sol:ScriptClient` is the contract to run as a script.
   By convention, forge scripts are stored in `script` and have the extension `.s.sol`.
 
 <details>
@@ -167,7 +167,7 @@ You can run it with this command.
 forge script --rpc-url http://localhost:8545 --broadcast script/Script.s.sol:BypassSecurity
 ```
 
-It fails with this error, because we don't have the necessary access rights to write to the `Counter` table:
+It fails with this error, because we don't have the necessary access rights to write to the `Counter` table.
 
 ```
 == Logs ==
