@@ -28,7 +28,8 @@
     "@latticexyz/store-indexer": "1.42.0",
     "@latticexyz/store-sync": "1.42.0",
     "@latticexyz/utils": "1.42.0",
-    "@latticexyz/world": "1.42.0"
+    "@latticexyz/world": "1.42.0",
+    "@latticexyz/abi-ts": "2.0.0-next.5"
   },
   "changesets": [
     "afraid-hotels-bathe",
@@ -86,6 +87,8 @@
     "selfish-cycles-retire",
     "seven-flies-chew",
     "sharp-worms-kneel",
+    "short-ads-jog",
+    "six-cats-agree",
     "smooth-elephants-wave",
     "smooth-pots-nail",
     "soft-boxes-smile",
@@ -99,11 +102,13 @@
     "strong-geckos-shake",
     "tame-lemons-play",
     "thin-buses-reply",
+    "tricky-carrots-talk",
     "tricky-frogs-beam",
     "tricky-kangaroos-love",
     "tricky-olives-stare",
     "tricky-oranges-pump",
     "twenty-birds-scream",
+    "unlucky-guests-cover",
     "weak-mails-cross",
     "wild-gorillas-care",
     "witty-jokes-serve",

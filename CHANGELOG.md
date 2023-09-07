@@ -1,3 +1,78 @@
+# Version 2.0.0-next.6
+
+## Major changes
+
+**[style(gas-report): rename mud-gas-report to gas-report (#1410)](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4)** (@latticexyz/gas-report)
+
+Renames `mud-gas-report` binary to `gas-report`, since it's no longer MUD specific.
+
+## Minor changes
+
+**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/abi-ts, @latticexyz/cli)
+
+Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
+
+This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
+
+```
+pnpm add @latticexyz/abi-ts
+pnpm abi-ts
+```
+
+By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
+
+```console
+pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
+```
+
+**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (create-mud)
+
+We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+If you have a MUD project created from an older template, you can replace TypeChain with `abi-ts` by first updating your contracts' `package.json`:
+
+```diff
+-"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
++"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
+-"build:abi": "forge clean && forge build",
++"build:abi": "rimraf abi && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
++"build:abi-ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
+ "build:mud": "mud tablegen && mud worldgen",
+-"build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
+```
+
+And update your client's `setupNetwork.ts` with:
+
+```diff
+-import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
++import IWorldAbi from "contracts/abi/IWorld.sol/IWorld.abi.json";
+
+ const worldContract = createContract({
+   address: networkConfig.worldAddress as Hex,
+-  abi: IWorld__factory.abi,
++  abi: IWorldAbi,
+```
+
+**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/store, @latticexyz/world)
+
+We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+If you previously relied on TypeChain types from `@latticexyz/store` or `@latticexyz/world`, you will either need to migrate to viem or abitype using ABI JSON imports or generate TypeChain types from our exported ABI JSON files.
+
+```ts
+import { getContract } from "viem";
+import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.abi.json";
+
+const storeContract = getContract({
+  abi: IStoreAbi,
+  ...
+});
+
+await storeContract.write.setRecord(...);
+```
+
+---
+
 # Version 2.0.0-next.5
 
 ## Major changes
