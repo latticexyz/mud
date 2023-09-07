@@ -13,7 +13,7 @@ contract Create2Factory {
    * @dev Deploys a new Contract using create2.
    */
   function deployContract(bytes memory byteCode, uint256 salt) public {
-    address addr = Create2.create2Deploy(byteCode, salt);
+    address addr = Create2.deploy(byteCode, salt);
     emit ContractDeployed(addr, salt);
   }
 }

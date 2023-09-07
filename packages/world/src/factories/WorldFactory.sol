@@ -20,7 +20,7 @@ contract WorldFactory is IWorldFactory {
   */
   function deployWorld() public {
     bytes memory bytecode = type(World).creationCode;
-    address worldAddress = Create2.create2Deploy(bytecode, worldCount);
+    address worldAddress = Create2.deploy(bytecode, worldCount);
     IBaseWorld world = IBaseWorld(worldAddress);
     world.installRootModule(coreModule, new bytes(0));
     emit WorldDeployed(worldAddress);

@@ -14,7 +14,7 @@ library Create2 {
    * - `bytecode` must not be empty.
    * - `salt` must have not been used for `bytecode` already.
    */
-  function create2Deploy(bytes memory byteCode, uint256 salt) internal returns (address addr) {
+  function deploy(bytes memory byteCode, uint256 salt) internal returns (address addr) {
     assembly {
       addr := create2(0, add(byteCode, 0x20), mload(byteCode), salt)
       if iszero(extcodesize(addr)) {
