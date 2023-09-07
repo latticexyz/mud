@@ -5,9 +5,9 @@
   "license": "MIT",
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:ts",
-    "build:abi": "forge clean && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
+    "build:abi": "rimraf abi && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
     "build:mud": "mud tablegen && mud worldgen",
-    "build:ts": "rimraf abi-ts && mud abi-ts --input abi --output abi-ts && prettier --write 'abi-ts/**/*.ts'",
+    "build:ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts",

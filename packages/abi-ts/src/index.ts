@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { readFileSync, mkdirSync, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import glob from "glob";
 import path from "path";
 
@@ -15,27 +15,36 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      input: { type: "string", demandOption: true, desc: "Input directory of `*.abi.json` files" },
-      output: { type: "string", demandOption: true, desc: "Output directory for TS `as const` files" },
+      input: {
+        type: "string",
+        desc: "Input glob of ABI JSON files",
+        default: "**/*.abi.json",
+      },
     });
   },
 
-  handler({ input, output }) {
-    const cwd = process.cwd();
-    const inputDir = path.join(cwd, input);
-    const files = glob.sync(path.join(inputDir, "**/*.abi.json"));
+  handler({ input }) {
+    const files = glob.sync(path.join(process.cwd(), input));
+
+    if (!files.length) {
+      console.error(`No files found for glob: ${input}`);
+      process.exit(1);
+    }
+
     for (const jsonFilename of files) {
       const json = readFileSync(jsonFilename, "utf8").trim();
       if (json === "[]") {
         console.log("Skipping empty ABI file", jsonFilename);
         continue;
       }
-      const ts = `export default ${json} as const;\n`;
-      const tsFilename = path.join(cwd, output, path.relative(inputDir, jsonFilename.replace(/\.abi.json$/, ".ts")));
-      mkdirSync(path.dirname(tsFilename), { recursive: true });
+
+      const ts = `declare const abi: ${json}; export default abi;\n`;
+      const tsFilename = `${jsonFilename}.d.ts`;
+
       console.log("Writing", tsFilename);
       writeFileSync(tsFilename, ts);
     }
+
     process.exit(0);
   },
 };
