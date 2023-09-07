@@ -45,7 +45,7 @@
     "clean:js": "rimraf dist",
     "clean:mud": "rimraf src/codegen",
     "dev": "tsup --watch",
-    "gas-report": "mud-gas-report --save gas-report.json",
+    "gas-report": "gas-report --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test",
     "test:ci": "pnpm run test"
