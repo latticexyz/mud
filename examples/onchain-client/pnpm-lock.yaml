@@ -29,9 +29,12 @@ importers:
       '@latticexyz/world':
         specifier: 2.0.0-next.4
         version: 2.0.0-next.4(typescript@5.2.2)
+      ds-test:
+        specifier: github:dapphub/ds-test#e282159d5170298eb2455a6c05280ab5a73a4ef0
+        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
-        specifier: ^1.1.2
-        version: 1.1.2
+        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
     devDependencies:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
@@ -39,9 +42,6 @@ importers:
       '@types/node':
         specifier: ^18.15.11
         version: 18.17.14
-      ds-test:
-        specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
-        version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
 
 packages:
 
@@ -1377,10 +1377,6 @@ packages:
       path-exists: 5.0.0
     dev: false
 
-  /forge-std@1.1.2:
-    resolution: {integrity: sha512-Wfb0iAS9PcfjMKtGpWQw9mXzJxrWD62kJCUqqLcyuI0+VRtJ3j20XembjF3kS20qELYdXft1vD/SPFVWVKMFOw==}
-    dev: false
-
   /fs-extra@7.0.1:
     resolution: {integrity: sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==}
     engines: {node: '>=6 <7 || >=8'}
@@ -2180,4 +2176,10 @@ packages:
     resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/e282159d5170298eb2455a6c05280ab5a73a4ef0}
     name: ds-test
     version: 1.0.0
-    dev: true
+    dev: false
+
+  github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
+    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
+    name: forge-std
+    version: 1.6.0
+    dev: false

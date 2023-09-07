@@ -14,12 +14,11 @@
     "@latticexyz/schema-type": "2.0.0-next.4",
     "@latticexyz/store": "2.0.0-next.4",
     "@latticexyz/world": "2.0.0-next.4",
-    "forge-std": "^1.1.2"
+    "ds-test": "github:dapphub/ds-test#e282159d5170298eb2455a6c05280ab5a73a4ef0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^10.2.0",
-    "@types/node": "^18.15.11",
-    "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1"
+    "@types/node": "^18.15.11"
   }
 }
