@@ -237,7 +237,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "call a system via a callbound delegation",
-    "gasUsed": 44074
+    "gasUsed": 44114
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
@@ -249,7 +249,7 @@
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "call a system via a timebound delegation",
-    "gasUsed": 34779
+    "gasUsed": 34819
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -291,7 +291,7 @@
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 17853
+    "gasUsed": 17893
   },
   {
     "file": "test/World.t.sol",
