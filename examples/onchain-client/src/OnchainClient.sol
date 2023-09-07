@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Counter } from "codegen/Tables.sol";
-import { IWorld } from "codegen/world/IWorld.sol";
+import { Counter } from "src/codegen/Tables.sol";
+import { IWorld } from "src/codegen/world/IWorld.sol";
 
 contract OnchainClient {
   IWorld immutable world;
