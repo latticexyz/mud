@@ -14,7 +14,8 @@
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "test": "mud test"
+    "test": "mud test",
+    "test:bare": "concurrently --kill-others --raw 'anvil --base-fee 0 --silent' 'forge test --ffi'"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../../packages/cli",
@@ -25,7 +26,7 @@
     "@solidstate/contracts": "^0.0.52",
     "@types/node": "^18.15.11",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "rimraf": "^3.0.2",

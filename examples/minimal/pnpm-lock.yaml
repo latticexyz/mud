@@ -324,8 +324,8 @@ importers:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
       prettier:
         specifier: ^2.6.2
         version: 2.6.2
@@ -3860,8 +3860,8 @@ packages:
     version: 1.0.0
     dev: true
 
-  github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
-    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
+  github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d:
+    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1d9650e951204a0ddce9ff89c32f1997984cef4d}
     name: forge-std
     version: 1.6.0
     dev: true
