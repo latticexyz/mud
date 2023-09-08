@@ -1,9 +1,13 @@
 /*
  * Creates components for use by the client.
  *
- * By default it returns the components from setupNetwork.ts.
- * Add or override components here as needed.
+ * By default it returns the components from setupNetwork.ts, those which are
+ * automatically inferred from the mud.config.ts table definitions.
+ *
+ * You can add or override components here as needed. 
+ * 
  */
+
 import { SetupNetworkResult } from "./setupNetwork";
 
 export type ClientComponents = ReturnType<typeof createClientComponents>;
