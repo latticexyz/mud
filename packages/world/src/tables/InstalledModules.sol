@@ -133,24 +133,30 @@ library InstalledModules {
 
   /** Set the full data using individual values */
   function set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
-    bytes memory _data = encode(moduleAddress);
+    bytes memory _staticData = encodeStatic(moduleAddress);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
-    bytes memory _data = encode(moduleAddress);
+    bytes memory _staticData = encodeStatic(moduleAddress);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using the data struct */
@@ -168,9 +174,19 @@ library InstalledModules {
     _table.moduleAddress = (address(Bytes.slice20(_blob, 0)));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(address moduleAddress) internal pure returns (bytes memory) {
+    return abi.encodePacked(moduleAddress);
+  }
+
   /** Tightly pack full data using this table's schema */
   function encode(address moduleAddress) internal pure returns (bytes memory) {
-    return abi.encodePacked(moduleAddress);
+    bytes memory _staticData = encodeStatic(moduleAddress);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

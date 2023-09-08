@@ -216,15 +216,26 @@ library KeysWithValue {
     }
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(bytes32[] memory keysWithValue) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(keysWithValue.length * 32);
     }
+  }
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((keysWithValue)));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keysWithValue);
+    bytes memory _dynamicData = encodeDynamic(keysWithValue);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

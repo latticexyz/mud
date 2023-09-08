@@ -5,6 +5,7 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -29,7 +30,14 @@ contract KeysWithValueHook is IStoreHook {
     return IBaseWorld(StoreSwitch.getStoreAddress());
   }
 
-  function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
+  function onSetRecord(
+    bytes32 sourceTableId,
+    bytes32[] memory key,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    Schema valueSchema
+  ) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
@@ -39,6 +47,7 @@ contract KeysWithValueHook is IStoreHook {
     _removeKeyFromList(targetTableId, key[0], previousValue);
 
     // Push the key to the list of keys with the new value
+    bytes memory data = abi.encodePacked(staticData, encodedLengths, dynamicData);
     KeysWithValue.push(targetTableId, keccak256(data), key[0]);
   }
 

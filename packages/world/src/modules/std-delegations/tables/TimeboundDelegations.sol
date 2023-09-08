@@ -99,9 +99,19 @@ library TimeboundDelegations {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), getValueSchema());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint256 maxTimestamp) internal pure returns (bytes memory) {
+    return abi.encodePacked(maxTimestamp);
+  }
+
   /** Tightly pack full data using this table's schema */
   function encode(uint256 maxTimestamp) internal pure returns (bytes memory) {
-    return abi.encodePacked(maxTimestamp);
+    bytes memory _staticData = encodeStatic(maxTimestamp);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

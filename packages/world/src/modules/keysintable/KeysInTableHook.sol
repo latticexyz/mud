@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
@@ -40,7 +41,7 @@ contract KeysInTableHook is IStoreHook {
     }
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory, PackedCounter, bytes memory, Schema) public {
     handleSet(table, key);
   }
 

@@ -12,6 +12,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
@@ -81,9 +82,23 @@ contract WorldTestSystem is System {
     Schema valueSchema = StoreSwitch.getValueSchema(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, key, abi.encodePacked(data), valueSchema);
+      StoreCore.setRecord(
+        tableId,
+        key,
+        abi.encodePacked(data),
+        PackedCounter.wrap(bytes32(0)),
+        new bytes(0),
+        valueSchema
+      );
     } else {
-      IBaseWorld(msg.sender).setRecord(tableId, key, abi.encodePacked(data), valueSchema);
+      IBaseWorld(msg.sender).setRecord(
+        tableId,
+        key,
+        abi.encodePacked(data),
+        PackedCounter.wrap(bytes32(0)),
+        new bytes(0),
+        valueSchema
+      );
     }
   }
 
@@ -109,8 +124,15 @@ contract PayableFallbackSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, data, valueSchema));
+  function onSetRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    Schema valueSchema
+  ) public {
+    emit HookCalled(abi.encode(table, key, staticData, encodedLengths, dynamicData, valueSchema));
   }
 
   function onBeforeSetField(
@@ -512,7 +534,14 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(tableId, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueSchema);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      valueSchema
+    );
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
@@ -523,7 +552,14 @@ contract WorldTest is Test, GasReporter {
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueSchema);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      valueSchema
+    );
     assertTrue(Bool.get(world, tableId));
 
     // Delete the record via the tableId and expect it to be deleted
@@ -531,7 +567,14 @@ contract WorldTest is Test, GasReporter {
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), valueSchema);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      valueSchema
+    );
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
@@ -684,12 +727,12 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(tableId, tableHook);
 
     // Prepare data to write to the table
-    bytes memory value = abi.encodePacked(true);
+    bytes memory staticData = abi.encodePacked(true);
 
     // Expect the hook to be notified when a record is written
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, valueSchema));
-    world.setRecord(tableId, singletonKey, value, valueSchema);
+    emit HookCalled(abi.encode(tableId, singletonKey, staticData, bytes32(0), new bytes(0), valueSchema));
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
 
     // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
     // (See https://github.com/latticexyz/mud/issues/444)

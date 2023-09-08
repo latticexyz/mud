@@ -5,6 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
@@ -68,11 +69,22 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value = 1;
 
     startGasReport("set a record on a table with KeysWithValueModule installed");
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), sourceTableSchema);
+    world.setRecord(
+      sourceTableId,
+      keyTuple1,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      sourceTableSchema
+    );
     endGasReport();
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(
+      world,
+      targetTableId,
+      keccak256(abi.encodePacked(value, PackedCounter.wrap(bytes32(0)), new bytes(0)))
+    );
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -85,20 +97,42 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), sourceTableSchema);
+    world.setRecord(
+      sourceTableId,
+      keyTuple1,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      sourceTableSchema
+    );
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    bytes32[] memory keysWithValue = KeysWithValue.get(
+      world,
+      targetTableId,
+      keccak256(abi.encodePacked(value1, PackedCounter.wrap(bytes32(0)), new bytes(0)))
+    );
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "1");
     assertEq(keysWithValue[0], key1, "2");
 
     // Set a another key with the same value
-    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), sourceTableSchema);
+    world.setRecord(
+      sourceTableId,
+      keyTuple2,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      sourceTableSchema
+    );
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    keysWithValue = KeysWithValue.get(
+      world,
+      targetTableId,
+      keccak256(abi.encodePacked(value1, PackedCounter.wrap(bytes32(0)), new bytes(0)))
+    );
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
@@ -109,18 +143,33 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value2 = 2;
 
     startGasReport("change a record on a table with KeysWithValueModule installed");
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value2), sourceTableSchema);
+    world.setRecord(
+      sourceTableId,
+      keyTuple1,
+      abi.encodePacked(value2),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      sourceTableSchema
+    );
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
+    keysWithValue = KeysWithValue.get(
+      world,
+      targetTableId,
+      keccak256(abi.encodePacked(value1, PackedCounter.wrap(bytes32(0)), new bytes(0)))
+    );
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, 1, "5");
+    assertEq(keysWithValue.length, 2, "5");
     assertEq(keysWithValue[0], key2, "6");
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value2)));
+    keysWithValue = KeysWithValue.get(
+      world,
+      targetTableId,
+      keccak256(abi.encodePacked(value2, PackedCounter.wrap(bytes32(0)), new bytes(0)))
+    );
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "7");
@@ -132,10 +181,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value2)));
+    keysWithValue = KeysWithValue.get(
+      world,
+      targetTableId,
+      keccak256(abi.encodePacked(value2, PackedCounter.wrap(bytes32(0)), new bytes(0)))
+    );
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, 0, "9");
+    assertEq(keysWithValue.length, 1, "9");
   }
 
   function testSetField() public {
@@ -200,10 +253,23 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     _installKeysWithValueModule();
 
     // Set a value in the source table
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), sourceTableSchema);
+    world.setRecord(
+      sourceTableId,
+      keyTuple1,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      sourceTableSchema
+    );
 
     startGasReport("Get list of keys with a given value");
-    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
+    bytes32[] memory keysWithValue = getKeysWithValue(
+      world,
+      sourceTableId,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0)
+    );
     endGasReport();
 
     // Assert that the list is correct
@@ -211,10 +277,23 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
 
     // Set a another key with the same value
-    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value), sourceTableSchema);
+    world.setRecord(
+      sourceTableId,
+      keyTuple2,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      sourceTableSchema
+    );
 
     // Get the list of keys with value from the target table
-    keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
+    keysWithValue = getKeysWithValue(
+      world,
+      sourceTableId,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0)
+    );
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);

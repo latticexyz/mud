@@ -3,10 +3,11 @@ pragma solidity >=0.8.0;
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 
 contract EphemeralRecordSystem is IStoreEphemeral, System {
   using ResourceSelector for bytes32;
@@ -18,13 +19,15 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
   function emitEphemeralRecord(
     bytes32 resourceSelector,
     bytes32[] calldata key,
-    bytes calldata data,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     Schema valueSchema
   ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(resourceSelector, msg.sender);
 
     // Set the record
-    StoreCore.emitEphemeralRecord(resourceSelector, key, data, valueSchema);
+    StoreCore.emitEphemeralRecord(resourceSelector, key, staticData, encodedLengths, dynamicData, valueSchema);
   }
 }
