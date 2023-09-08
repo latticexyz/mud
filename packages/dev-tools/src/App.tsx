@@ -1,10 +1,11 @@
-import "./preflight.css";
-import "tailwindcss/tailwind.css";
-import { useEffect, useState } from "react";
-import { twMerge } from "tailwind-merge";
-import { router } from "./router";
+import { useEffect, useMemo } from "react";
 import { RouterProvider } from "react-router-dom";
+import { twMerge } from "tailwind-merge";
+import "tailwindcss/tailwind.css";
 import useLocalStorageState from "use-local-storage-state";
+import { useDevToolsContext } from "./DevToolsContext";
+import "./preflight.css";
+import { createRouter } from "./router";
 
 // TODO: fix tab index so that it's not possible to tab around in the UI when it's hidden
 
@@ -23,6 +24,8 @@ export function App() {
     return () => window.removeEventListener("keypress", listener);
   });
 
+  const settings = useDevToolsContext();
+  const router = useMemo(() => createRouter(settings), []);
   return (
     <div className="fixed inset-0 pointer-events-none">
       <div
@@ -35,14 +38,14 @@ export function App() {
         <div className="absolute bottom-0 right-full min-w-max flex flex-col-reverse items-end justify-center m-2 text-gray-500">
           <button
             type="button"
-            className="peer text-sm p-2 rounded leading-none transition opacity-60 hover:opacity-100"
+            className="peer text-sm rounded leading-none transition opacity-60 hover:opacity-100"
             onClick={() => setShown(!shown)}
           >
-            <span className="whitespace-nowrap font-medium">{shown ? "→" : "←"} MUD Dev Tools</span>
+            <span className="whitespace-nowrap font-medium text-xs">{shown ? "→" : "←"} MUD Dev Tools</span>
           </button>
           <span className="transition opacity-0 peer-hover:opacity-60 px-2 text-xs flex items-center justify-center gap-2">
-            Keyboard shortcut
-            <code className="bg-gray-500/10 p-1 rounded text-mono text-xs leading-none">`</code>
+            hotkey
+            <code className="bg-gray-500/10 p-1 border border-gray-300 rounded text-mono text-xs leading-none">`</code>
           </span>
         </div>
         <div
