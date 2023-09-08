@@ -55,8 +55,8 @@ export async function getNetworkConfig() {
    * 1. chainId query parameter
    * 2. chainid query parameter
    * 3. The VITE_CHAIN_ID environment variable set when the
-   *    user interface server was started
-   * 4. The default, 31773 (anvil)
+   *    vite dev server was started or client was built
+   * 4. The default, 31337 (anvil)
    */
   const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
 

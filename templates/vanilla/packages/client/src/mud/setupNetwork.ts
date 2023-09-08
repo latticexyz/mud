@@ -1,7 +1,7 @@
 /* Definitions required to connect to a blockchain */
 
 /*
- * The MUD client code is built on top of Viem
+ * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
