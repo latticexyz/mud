@@ -11,6 +11,8 @@ interface IWorldRegistrationSystem {
 
   function registerSystemHook(bytes32 resourceSelector, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
 
+  function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) external;
+
   function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) external;
 
   function registerFunctionSelector(

@@ -50,7 +50,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * Register a hook for the system at the given namespace and name
+   * Register a hook for the system at the given resource selector
    */
   function registerSystemHook(
     bytes32 resourceSelector,
@@ -62,6 +62,40 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // Register the hook
     SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooksBitmap)));
+  }
+
+  /**
+   * Unregister the given hook for the system at the given resource selector
+   */
+  function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) public virtual {
+    // Require caller to own the namespace
+    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+
+    // Get array of currently registered system hooks
+    bytes21[] memory currentHooks = SystemHooks.get(resourceSelector);
+
+    // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
+    bytes21[] memory newHooks = new bytes21[](currentHooks.length);
+
+    // Filter the array of current hooks
+    uint256 newHooksIndex;
+    unchecked {
+      for (uint256 currentHooksIndex; currentHooksIndex < currentHooks.length; currentHooksIndex++) {
+        if (Hook.wrap(currentHooks[currentHooksIndex]).getAddress() != address(hookAddress)) {
+          newHooks[newHooksIndex] = currentHooks[currentHooksIndex];
+          newHooksIndex++;
+        }
+      }
+    }
+
+    // Set the new hooks table length in place
+    // (Note: this does not update the free memory pointer)
+    assembly {
+      mstore(newHooks, newHooksIndex)
+    }
+
+    // Set the new hooks table
+    SystemHooks.set(resourceSelector, newHooks);
   }
 
   /**

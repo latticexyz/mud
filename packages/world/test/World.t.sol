@@ -113,7 +113,7 @@ contract PayableFallbackSystem is System {
   fallback() external payable {}
 }
 
-contract WorldTestSystemHook is ISystemHook {
+contract EchoSystemHook is ISystemHook {
   event SystemHookCalled(bytes data);
 
   function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
@@ -122,6 +122,18 @@ contract WorldTestSystemHook is ISystemHook {
 
   function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
     emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, funcSelectorAndArgs));
+  }
+}
+
+contract RevertSystemHook is ISystemHook {
+  event SystemHookCalled(bytes data);
+
+  function onBeforeCallSystem(address, bytes32, bytes memory) public pure {
+    revert("onBeforeCallSystem");
+  }
+
+  function onAfterCallSystem(address, bytes32, bytes memory) public pure {
+    revert("onAfterCallSystem");
   }
 }
 
@@ -850,7 +862,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, false);
 
     // Register a new hook
-    ISystemHook systemHook = new WorldTestSystemHook();
+    ISystemHook systemHook = new EchoSystemHook();
     world.registerSystemHook(
       systemId,
       systemHook,
@@ -860,6 +872,52 @@ contract WorldTest is Test, GasReporter {
     bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect the hooks to be called in correct order
+    vm.expectEmit(true, true, true, true);
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
+
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("fallback");
+
+    vm.expectEmit(true, true, true, true);
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
+
+    // Call a system fallback function without arguments via the World
+    world.call(systemId, funcSelectorAndArgs);
+  }
+
+  function testUnregisterSystemHook() public {
+    bytes32 systemId = ResourceSelector.from("namespace", "testTable");
+
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem(systemId, system, false);
+
+    // Register a new RevertSystemHook
+    ISystemHook revertSystemHook = new RevertSystemHook();
+    world.registerSystemHook(
+      systemId,
+      revertSystemHook,
+      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+    );
+
+    // Register a new EchoSystemHook
+    ISystemHook echoSystemHook = new EchoSystemHook();
+    world.registerSystemHook(
+      systemId,
+      echoSystemHook,
+      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+    );
+
+    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+
+    // Expect calls to fail while the RevertSystemHook is registered
+    vm.expectRevert(bytes("onBeforeCallSystem"));
+    world.call(systemId, funcSelectorAndArgs);
+
+    // Unregister the RevertSystemHook
+    world.unregisterSystemHook(systemId, revertSystemHook);
+
+    // Expect the echo hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
     emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
 
