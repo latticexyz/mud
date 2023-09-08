@@ -12,7 +12,7 @@ import {
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
-import { renderRecordMethods } from "./record";
+import { renderRecordData, renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
 
 export function renderTable(options: RenderTableOptions) {
@@ -122,6 +122,15 @@ library ${libraryName} {
   ${renderEncodedLengths(dynamicFields)}
 
   ${renderEncodeDynamic(dynamicFields)}
+
+  /** Tightly pack full data using this table's schema */
+  function encode(${renderArguments(
+    options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+  )}) internal pure returns (bytes memory) {
+    ${renderRecordData(options)}
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+  }
   
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {

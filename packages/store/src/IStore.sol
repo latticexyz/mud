@@ -45,7 +45,7 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, PackedCounter encodedLengths, bytes dynamicData);
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
 
   event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
   event StoreSpliceDynamicRecord(
@@ -54,7 +54,7 @@ interface IStoreWrite {
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    PackedCounter encodedLengths
+    bytes32 encodedLengths
   );
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
@@ -110,13 +110,7 @@ interface IStoreWrite {
 }
 
 interface IStoreEphemeral {
-  event StoreEphemeralRecord(
-    bytes32 table,
-    bytes32[] key,
-    bytes staticData,
-    PackedCounter encodedLengths,
-    bytes dynamicData
-  );
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
 
   // Emit the ephemeral event without modifying storage
   function emitEphemeralRecord(

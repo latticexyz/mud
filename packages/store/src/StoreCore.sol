@@ -15,8 +15,7 @@ import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, PackedCounter encodedLengths, bytes dynamicData);
-  // TODO: finalize dynamic lengths args (these names/positions are placeholders while I figure out of this is enough data for schemaless indexing)
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
   event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
   event StoreSpliceDynamicRecord(
     bytes32 table,
@@ -24,16 +23,10 @@ library StoreCore {
     uint48 start,
     uint40 deleteCount,
     bytes data,
-    PackedCounter encodedLengths
+    bytes32 encodedLengths
   );
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
-  event StoreEphemeralRecord(
-    bytes32 table,
-    bytes32[] key,
-    bytes staticData,
-    PackedCounter encodedLengths,
-    bytes dynamicData
-  );
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
 
   /**
    * Initialize internal tables.
@@ -162,7 +155,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(valueSchema, staticData, encodedLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreSetRecord(tableId, key, staticData, encodedLengths, dynamicData);
+    emit StoreSetRecord(tableId, key, staticData, encodedLengths.unwrap(), dynamicData);
 
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = Hooks.get(tableId);
@@ -408,7 +401,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(valueSchema, staticData, encodedLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreEphemeralRecord(tableId, key, staticData, encodedLengths, dynamicData);
+    emit StoreEphemeralRecord(tableId, key, staticData, encodedLengths.unwrap(), dynamicData);
 
     // Call onSetRecord hooks
     address[] memory hooks = Hooks.get(tableId);
@@ -597,7 +590,14 @@ library StoreCoreInternal {
     }
     uint256 deleteCount = oldFieldLength;
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicRecord(tableId, key, uint48(start), uint40(deleteCount), data, encodedLengths);
+    emit StoreCore.StoreSpliceDynamicRecord(
+      tableId,
+      key,
+      uint48(start),
+      uint40(deleteCount),
+      data,
+      encodedLengths.unwrap()
+    );
   }
 
   function _pushToDynamicField(
@@ -623,7 +623,7 @@ library StoreCoreInternal {
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, oldFieldLength, dataToPush);
 
     // Prepare data for the splice event
-    uint256 start;
+    uint256 start = oldFieldLength;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
       for (uint8 i; i < dynamicSchemaIndex; i++) {
@@ -638,7 +638,7 @@ library StoreCoreInternal {
       uint48(start),
       uint40(deleteCount),
       dataToPush,
-      encodedLengths
+      encodedLengths.unwrap()
     );
   }
 
@@ -681,7 +681,7 @@ library StoreCoreInternal {
       uint48(start),
       uint40(deleteCount),
       new bytes(0),
-      encodedLengths
+      encodedLengths.unwrap()
     );
   }
 
@@ -720,7 +720,7 @@ library StoreCoreInternal {
       uint48(start),
       uint40(deleteCount),
       dataToSet,
-      encodedLengths
+      encodedLengths.unwrap()
     );
   }
 

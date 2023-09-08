@@ -158,7 +158,19 @@
       {
         "indexed": false,
         "internalType": "bytes",
-        "name": "data",
+        "name": "staticData",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "encodedLengths",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "dynamicData",
         "type": "bytes"
       }
     ],
@@ -188,8 +200,8 @@
       },
       {
         "indexed": false,
-        "internalType": "PackedCounter",
-        "name": "dynamicDataLengths",
+        "internalType": "bytes32",
+        "name": "encodedLengths",
         "type": "bytes32"
       },
       {
@@ -238,7 +250,7 @@
       {
         "indexed": false,
         "internalType": "bytes32",
-        "name": "dynamicDataLengths",
+        "name": "encodedLengths",
         "type": "bytes32"
       }
     ],
@@ -324,7 +336,7 @@
       },
       {
         "internalType": "PackedCounter",
-        "name": "dynamicDataLengths",
+        "name": "encodedLengths",
         "type": "bytes32"
       },
       {
@@ -691,7 +703,7 @@
       },
       {
         "internalType": "PackedCounter",
-        "name": "dynamicDataLengths",
+        "name": "encodedLengths",
         "type": "bytes32"
       },
       {

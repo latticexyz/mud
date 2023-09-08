@@ -540,6 +540,16 @@ library Mixed {
     return abi.encodePacked(EncodeArray.encode((a32)), bytes((s)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
+    bytes memory _staticData = encodeStatic(u32, u128);
+
+    PackedCounter _encodedLengths = encodeLengths(a32, s);
+    bytes memory _dynamicData = encodeDynamic(a32, s);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+  }
+
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);

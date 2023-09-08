@@ -57,7 +57,9 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSetRecord(
       TablesTableId,
       key,
-      Tables.encode(keySchema.unwrap(), valueSchema.unwrap(), abi.encode(keyNames), abi.encode(fieldNames))
+      Tables.encodeStatic(keySchema.unwrap(), valueSchema.unwrap()),
+      Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)).unwrap(),
+      Tables.encodeDynamic(abi.encode(keyNames), abi.encode(fieldNames))
     );
     IStore(this).registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
 
@@ -193,21 +195,21 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
-    bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
+    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
 
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(table, key, data);
+    emit StoreSetRecord(table, key, staticData, bytes32(0), new bytes(0));
 
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
 
     // Get data
     bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
 
-    assertTrue(Bytes.equals(data, loadedData));
+    assertTrue(Bytes.equals(staticData, loadedData));
   }
 
   function testFailSetAndGetStaticData() public {
@@ -222,13 +224,13 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
-    bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
+    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
 
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
     // This should fail because the data is not 6 bytes long
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
@@ -238,7 +240,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Set data
-    bytes memory data = abi.encodePacked(
+    bytes memory staticData = abi.encodePacked(
       bytes16(0x0102030405060708090a0b0c0d0e0f10),
       bytes32(0x1112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f30)
     );
@@ -248,14 +250,14 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(table, key, data);
+    emit StoreSetRecord(table, key, staticData, bytes32(0), new bytes(0));
 
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
 
     // Get data
     bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
 
-    assertTrue(Bytes.equals(data, loadedData));
+    assertTrue(Bytes.equals(staticData, loadedData));
   }
 
   function testSetAndGetDynamicData() public {
@@ -294,6 +296,8 @@ contract StoreCoreTest is Test, StoreMock {
     }
 
     // Concat data
+    bytes memory staticData = abi.encodePacked(firstDataBytes);
+    bytes memory dynamicData = abi.encodePacked(secondDataBytes, thirdDataBytes);
     bytes memory data = abi.encodePacked(
       firstDataBytes,
       encodedDynamicLength.unwrap(),
@@ -307,10 +311,10 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(table, key, data);
+    emit StoreSetRecord(table, key, staticData, encodedDynamicLength.unwrap(), dynamicData);
 
     // Set data
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, encodedDynamicLength, dynamicData, valueSchema);
 
     // Get data
     bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
@@ -352,9 +356,9 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory firstDataPacked = abi.encodePacked(firstDataBytes);
 
-    // Expect a StoreSpliceRecord event to be emitted
+    // Expect a StoreSpliceStaticRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked, bytes32(0), 0);
+    emit StoreSpliceStaticRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
 
     // Set first field
     IStore(this).setField(table, key, 0, firstDataPacked, valueSchema);
@@ -380,14 +384,12 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceStaticRecord(
       table,
       key,
       uint48(firstDataPacked.length),
       uint40(secondDataPacked.length),
-      secondDataPacked,
-      bytes32(0),
-      0
+      secondDataPacked
     );
 
     IStore(this).setField(table, key, 1, secondDataPacked, valueSchema);
@@ -434,14 +436,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       table,
       key,
-      uint48(firstDataPacked.length + secondDataPacked.length + 32),
+      uint48(0),
       0,
       thirdDataBytes,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(thirdDataBytes.length, 0).unwrap()
     );
 
     // Set third field
@@ -464,14 +465,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       table,
       key,
-      uint48(firstDataPacked.length + secondDataPacked.length + 32 + thirdDataBytes.length),
+      uint48(thirdDataBytes.length),
       0,
       fourthDataBytes,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(thirdDataBytes.length, fourthDataBytes.length).unwrap()
     );
 
     // Set fourth field
@@ -498,14 +498,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       table,
       key,
-      uint48(firstDataPacked.length + secondDataPacked.length + 32 + thirdDataBytes.length),
+      uint48(thirdDataBytes.length),
       uint40(fourthDataBytes.length),
       thirdDataBytes,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(thirdDataBytes.length, thirdDataBytes.length).unwrap()
     );
 
     // Set fourth field
@@ -555,6 +554,8 @@ contract StoreCoreTest is Test, StoreMock {
     }
 
     // Concat data
+    bytes memory staticData = abi.encodePacked(firstDataBytes);
+    bytes memory dynamicData = abi.encodePacked(secondDataBytes, thirdDataBytes);
     bytes memory data = abi.encodePacked(
       firstDataBytes,
       encodedDynamicLength.unwrap(),
@@ -567,7 +568,7 @@ contract StoreCoreTest is Test, StoreMock {
     key[0] = bytes32("some.key");
 
     // Set data
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, encodedDynamicLength, dynamicData, valueSchema);
 
     // Get data
     bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
@@ -648,16 +649,15 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newSecondDataBytes = abi.encodePacked(data.secondDataBytes, data.secondDataToPush);
 
-    // Expect a StoreSpliceRecord event to be emitted
+    // Expect a StoreSpliceDynamicRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       data.table,
       data.key,
-      uint48(data.firstDataBytes.length + 32 + data.secondDataBytes.length),
+      uint48(data.secondDataBytes.length),
       0,
       data.secondDataToPush,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length).unwrap()
     );
 
     // Push to second field
@@ -694,14 +694,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       data.table,
       data.key,
-      uint48(data.firstDataBytes.length + 32 + data.newSecondDataBytes.length + data.thirdDataBytes.length),
+      uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
       data.thirdDataToPush,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length).unwrap()
     );
 
     // Push to third field
@@ -797,14 +796,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       data.table,
       data.key,
-      uint48(data.firstDataBytes.length + 32 + 4 * 1),
+      uint48(4 * 1),
       4 * 1,
       data.secondDataForUpdate,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.thirdDataBytes.length).unwrap()
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
@@ -843,14 +841,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       data.table,
       data.key,
-      uint48(data.firstDataBytes.length + 32 + data.newSecondDataBytes.length + 8 * 1),
+      uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,
       data.thirdDataForUpdate,
-      bytes32(0),
-      0
+      PackedCounterLib.pack(data.newSecondDataBytes.length, data.newThirdDataBytes.length).unwrap()
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
@@ -921,21 +918,21 @@ contract StoreCoreTest is Test, StoreMock {
 
     IStore(this).registerStoreHook(table, subscriber);
 
-    bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
-    assertEq(keccak256(data), keccak256(indexedData));
+    assertEq(keccak256(staticData), keccak256(indexedData));
 
-    data = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
+    staticData = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
 
-    IStore(this).setField(table, key, 0, data, valueSchema);
+    IStore(this).setField(table, key, 0, staticData, valueSchema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
-    assertEq(keccak256(data), keccak256(indexedData));
+    assertEq(keccak256(staticData), keccak256(indexedData));
 
     IStore(this).deleteRecord(table, key, valueSchema);
 
@@ -968,11 +965,11 @@ contract StoreCoreTest is Test, StoreMock {
     arrayData[0] = 0x01020304;
     bytes memory arrayDataBytes = EncodeArray.encode(arrayData);
     PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint40(arrayDataBytes.length));
-    bytes memory dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
+    bytes memory dynamicData = arrayDataBytes;
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
-    bytes memory data = abi.encodePacked(staticData, dynamicData);
+    bytes memory data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, staticData, encodedArrayDataLength, dynamicData, valueSchema);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
@@ -981,8 +978,8 @@ contract StoreCoreTest is Test, StoreMock {
     // Update dynamic data
     arrayData[0] = 0x11121314;
     arrayDataBytes = EncodeArray.encode(arrayData);
-    dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
-    data = abi.encodePacked(staticData, dynamicData);
+    dynamicData = arrayDataBytes;
+    data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
     IStore(this).setField(table, key, 1, arrayDataBytes, valueSchema);
 

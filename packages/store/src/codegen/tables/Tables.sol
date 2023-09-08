@@ -573,6 +573,21 @@ library Tables {
     return abi.encodePacked(bytes((abiEncodedKeyNames)), bytes((abiEncodedFieldNames)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(
+    bytes32 keySchema,
+    bytes32 valueSchema,
+    bytes memory abiEncodedKeyNames,
+    bytes memory abiEncodedFieldNames
+  ) internal pure returns (bytes memory) {
+    bytes memory _staticData = encodeStatic(keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+  }
+
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 tableId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);

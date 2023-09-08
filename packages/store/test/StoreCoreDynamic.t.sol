@@ -7,6 +7,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreCore } from "../src/StoreCore.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
+import { PackedCounterLib } from "../src/PackedCounter.sol";
 import { Schema } from "../src/Schema.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
@@ -89,14 +90,13 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       _table,
       _key,
-      uint48(32 + 32 + secondDataBytes.length - byteLengthToPop),
+      uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
-      bytes32(0),
-      0
+      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length).unwrap()
     );
 
     // Pop from second field
@@ -136,14 +136,13 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
 
     // Expect a StoreSpliceRecord event to be emitted after pop
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceRecord(
+    emit StoreSpliceDynamicRecord(
       _table,
       _key,
-      uint48(32 + 32 + secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
+      uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
-      bytes32(0),
-      0
+      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length).unwrap()
     );
 
     // Pop from the field

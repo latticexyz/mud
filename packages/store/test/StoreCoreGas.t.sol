@@ -127,12 +127,13 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
-    bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
+    bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
+    bytes memory dynamicData = new bytes(0);
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
     startGasReport("set static record (1 slot)");
-    StoreCore.setRecord(table, key, data, valueSchema);
+    StoreCore.setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, valueSchema);
     endGasReport();
 
     // Get data
@@ -148,16 +149,17 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Set data
-    bytes memory data = abi.encodePacked(
+    bytes memory staticData = abi.encodePacked(
       bytes16(0x0102030405060708090a0b0c0d0e0f10),
       bytes32(0x1112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f30)
     );
+    bytes memory dynamicData = new bytes(0);
 
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
     startGasReport("set static record (2 slots)");
-    StoreCore.setRecord(table, key, data, valueSchema);
+    StoreCore.setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, valueSchema);
     endGasReport();
 
     // Get data
@@ -202,12 +204,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     // Concat data
-    bytes memory data = abi.encodePacked(
-      firstDataBytes,
-      encodedDynamicLength.unwrap(),
-      secondDataBytes,
-      thirdDataBytes
-    );
+    bytes memory staticData = abi.encodePacked(firstDataBytes);
+    bytes memory dynamicData = abi.encodePacked(secondDataBytes, thirdDataBytes);
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -215,7 +213,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Set data
     startGasReport("set complex record with dynamic data (4 slots)");
-    StoreCore.setRecord(table, key, data, valueSchema);
+    StoreCore.setRecord(table, key, staticData, encodedDynamicLength, dynamicData, valueSchema);
     endGasReport();
 
     // Get data
@@ -366,19 +364,15 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     // Concat data
-    bytes memory data = abi.encodePacked(
-      firstDataBytes,
-      encodedDynamicLength.unwrap(),
-      secondDataBytes,
-      thirdDataBytes
-    );
+    bytes memory staticData = abi.encodePacked(firstDataBytes);
+    bytes memory dynamicData = abi.encodePacked(secondDataBytes, thirdDataBytes);
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
     // Set data
-    StoreCore.setRecord(table, key, data, valueSchema);
+    StoreCore.setRecord(table, key, staticData, encodedDynamicLength, dynamicData, valueSchema);
 
     // Delete data
     startGasReport("delete record (complex data, 3 slots)");
@@ -600,16 +594,17 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.registerStoreHook(table, subscriber);
     endGasReport();
 
-    bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory dynamicData = new bytes(0);
 
     startGasReport("set record on table with subscriber");
-    StoreCore.setRecord(table, key, data, valueSchema);
+    StoreCore.setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, valueSchema);
     endGasReport();
 
-    data = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
+    staticData = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
 
     startGasReport("set static field on table with subscriber");
-    StoreCore.setField(table, key, 0, data, valueSchema);
+    StoreCore.setField(table, key, 0, staticData, valueSchema);
     endGasReport();
 
     startGasReport("delete record on table with subscriber");
@@ -643,19 +638,19 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     arrayData[0] = 0x01020304;
     bytes memory arrayDataBytes = EncodeArray.encode(arrayData);
     PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint40(arrayDataBytes.length));
-    bytes memory dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
+    bytes memory dynamicData = arrayDataBytes;
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
-    bytes memory data = abi.encodePacked(staticData, dynamicData);
+    bytes memory data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
     startGasReport("set (dynamic) record on table with subscriber");
-    StoreCore.setRecord(table, key, data, valueSchema);
+    StoreCore.setRecord(table, key, staticData, encodedArrayDataLength, dynamicData, valueSchema);
     endGasReport();
 
     // Update dynamic data
     arrayData[0] = 0x11121314;
     arrayDataBytes = EncodeArray.encode(arrayData);
-    dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
-    data = abi.encodePacked(staticData, dynamicData);
+    dynamicData = arrayDataBytes;
+    data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
     startGasReport("set (dynamic) field on table with subscriber");
     StoreCore.setField(table, key, 1, arrayDataBytes, valueSchema);

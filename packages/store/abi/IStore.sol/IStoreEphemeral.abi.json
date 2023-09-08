@@ -17,7 +17,19 @@
       {
         "indexed": false,
         "internalType": "bytes",
-        "name": "data",
+        "name": "staticData",
+        "type": "bytes"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "encodedLengths",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "dynamicData",
         "type": "bytes"
       }
     ],
@@ -43,7 +55,7 @@
       },
       {
         "internalType": "PackedCounter",
-        "name": "dynamicDataLengths",
+        "name": "encodedLengths",
         "type": "bytes32"
       },
       {

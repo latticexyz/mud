@@ -228,6 +228,15 @@ library Callbacks {
     return abi.encodePacked(EncodeArray.encode((value)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(bytes24[] memory value) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+  }
+
   /** Encode keys as a bytes32 array using this table's schema */
   function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);

@@ -74,6 +74,31 @@ export function renderRecordMethods(options: RenderTableOptions) {
   return result;
 }
 
+export function renderRecordData(options: RenderTableOptions) {
+  let result = "";
+  if (options.staticFields.length > 0) {
+    result += `
+    bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+    `;
+  } else {
+    result += `bytes memory _staticData;`;
+  }
+
+  if (options.dynamicFields.length > 0) {
+    result += `
+    PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+    bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+    `;
+  } else {
+    result += `
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+    `;
+  }
+
+  return result;
+}
+
 // Renders the `decode` function that parses a bytes blob into the table data
 function renderDecodeFunction({ structName, fields, staticFields, dynamicFields }: RenderTableOptions) {
   // either set struct properties, or just variables
@@ -179,29 +204,4 @@ function renderDecodeDynamicFieldPartial(field: RenderDynamicField) {
       )
     )`;
   }
-}
-
-function renderRecordData(options: RenderTableOptions) {
-  let result = "";
-  if (options.staticFields.length > 0) {
-    result += `
-    bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
-    `;
-  } else {
-    result += `bytes memory _staticData;`;
-  }
-
-  if (options.dynamicFields.length > 0) {
-    result += `
-    PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
-    bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
-    `;
-  } else {
-    result += `
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
-    `;
-  }
-
-  return result;
 }
