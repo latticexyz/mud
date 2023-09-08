@@ -7,6 +7,8 @@ import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { InstalledModules, InstalledModulesData } from "../src/tables/InstalledModules.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
@@ -45,7 +47,8 @@ contract FactoriesTest is Test {
 
   function testWorldFactory() public {
     // Deploy WorldFactory with current CoreModule
-    address worldFactoryAddress = address(new WorldFactory(new CoreModule()));
+    CoreModule coreModule = new CoreModule();
+    address worldFactoryAddress = address(new WorldFactory(coreModule));
     IWorldFactory worldFactory = IWorldFactory(worldFactoryAddress);
 
     // Address we expect for World
@@ -60,7 +63,15 @@ contract FactoriesTest is Test {
     emit WorldDeployed(calculatedAddress);
     worldFactory.deployWorld();
 
-    // TODO - Can we test if core module has been installed correctly? (Confirmed visually via forge trace)
+    // Set the store address manually
+    StoreSwitch.setStoreAddress(calculatedAddress);
+
+    // Retrieve CoreModule address from InstalledModule table
+    InstalledModulesData memory installedModule = InstalledModules.get(bytes16("core.m"), keccak256(new bytes(0)));
+
+    // Confirm correct Core is installed
+    assertEq(installedModule.moduleAddress, address(coreModule));
+
     // Confirm worldCount (which is salt) has incremented
     assertEq(uint256(worldFactory.worldCount()), uint256(1));
   }
