@@ -15,6 +15,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
+import { Delegations } from "../../tables/Delegations.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
@@ -24,6 +25,7 @@ import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
+import { Balances } from "./tables/Balances.sol";
 
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
@@ -57,7 +59,9 @@ contract CoreModule is IModule, WorldContextConsumer {
    * Register core tables in the World
    */
   function _registerCoreTables() internal {
+    Balances.register();
     InstalledModules.register();
+    Delegations.register();
     ResourceAccess.register();
     Systems.register();
     FunctionSelectors.register();
@@ -76,6 +80,7 @@ contract CoreModule is IModule, WorldContextConsumer {
     // Use the CoreSystem's `registerSystem` implementation to register itself on the World.
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
+      msgValue: 0,
       target: coreSystem,
       funcSelectorAndArgs: abi.encodeWithSelector(
         WorldRegistrationSystem.registerSystem.selector,
@@ -116,6 +121,7 @@ contract CoreModule is IModule, WorldContextConsumer {
       // root function selectors in the World.
       WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
+        msgValue: 0,
         target: coreSystem,
         funcSelectorAndArgs: abi.encodeWithSelector(
           WorldRegistrationSystem.registerRootFunctionSelector.selector,

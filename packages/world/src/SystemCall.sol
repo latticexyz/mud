@@ -18,6 +18,7 @@ import { ISystemHook } from "./interfaces/ISystemHook.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
+import { Balances } from "./modules/core/tables/Balances.sol";
 
 library SystemCall {
   using ResourceSelector for bytes32;
@@ -28,9 +29,9 @@ library SystemCall {
    */
   function call(
     address caller,
+    uint256 value,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
-    uint256 value
+    bytes memory funcSelectorAndArgs
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
     (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
@@ -41,10 +42,18 @@ library SystemCall {
     // Allow access if the system is public or the caller has access to the namespace or name
     if (!publicAccess) AccessControl.requireAccess(resourceSelector, caller);
 
+    // If the msg.value is non-zero, update the namespace's balance
+    if (value > 0) {
+      bytes16 namespace = resourceSelector.getNamespace();
+      uint256 currentBalance = Balances.get(namespace);
+      Balances.set(namespace, currentBalance + value);
+    }
+
     // Call the system and forward any return data
     (success, data) = resourceSelector.getNamespace() == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
       ? WorldContextProvider.delegatecallWithContext({
         msgSender: caller,
+        msgValue: value,
         target: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs
       })
@@ -52,7 +61,7 @@ library SystemCall {
         msgSender: caller,
         target: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
-        value: value
+        msgValue: value
       });
   }
 
@@ -78,7 +87,12 @@ library SystemCall {
     }
 
     // Call the system and forward any return data
-    (success, data) = call(caller, resourceSelector, funcSelectorAndArgs, value);
+    (success, data) = call({
+      caller: caller,
+      value: value,
+      resourceSelector: resourceSelector,
+      funcSelectorAndArgs: funcSelectorAndArgs
+    });
 
     // Call onAfterCallSystem hooks (after calling the system)
     for (uint256 i; i < hooks.length; i++) {
@@ -99,7 +113,12 @@ library SystemCall {
     bytes memory funcSelectorAndArgs,
     uint256 value
   ) internal returns (bytes memory data) {
-    (bool success, bytes memory returnData) = callWithHooks(caller, resourceSelector, funcSelectorAndArgs, value);
+    (bool success, bytes memory returnData) = callWithHooks({
+      caller: caller,
+      value: value,
+      resourceSelector: resourceSelector,
+      funcSelectorAndArgs: funcSelectorAndArgs
+    });
     if (!success) revertWithBytes(returnData);
     return returnData;
   }

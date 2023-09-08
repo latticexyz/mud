@@ -7,6 +7,7 @@ import { NamespaceOwner, NamespaceOwnerTableId } from "./tables/NamespaceOwner.s
 import { ResourceAccess, ResourceAccessTableId } from "./tables/ResourceAccess.sol";
 import { InstalledModules, InstalledModulesData, InstalledModulesTableId } from "./tables/InstalledModules.sol";
 import { Delegations, DelegationsTableId } from "./tables/Delegations.sol";
+import { Balances, BalancesTableId } from "./modules/core/tables/Balances.sol";
 import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
 import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
 import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHooks.sol";

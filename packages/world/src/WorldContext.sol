@@ -16,6 +16,15 @@ abstract contract WorldContextConsumer {
     if (sender == address(0)) sender = msg.sender;
   }
 
+  // Extract the trusted msg.value value appended to the calldata
+  function _msgValue() internal pure returns (uint256 value) {
+    // TODO: make math work
+    assembly {
+      // 96 = 256 - 20 * 8
+      value := shr(96, calldataload(sub(calldatasize(), 20)))
+    }
+  }
+
   function _world() internal view returns (address) {
     return StoreSwitch.getStoreAddress();
   }
@@ -25,44 +34,64 @@ abstract contract WorldContextConsumer {
  * Simple utility function to call a contract and append the msg.sender to the calldata (to be consumed by WorldContextConsumer)
  */
 library WorldContextProvider {
-  function appendContext(bytes memory funcSelectorAndArgs, address msgSender) internal pure returns (bytes memory) {
-    return abi.encodePacked(funcSelectorAndArgs, msgSender);
+  function appendContext(
+    bytes memory funcSelectorAndArgs,
+    address msgSender,
+    uint256 msgValue
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(funcSelectorAndArgs, msgSender, msgValue);
   }
 
   function callWithContext(
-    address target,
-    bytes memory funcSelectorAndArgs,
     address msgSender,
-    uint256 value
+    uint256 msgValue,
+    address target,
+    bytes memory funcSelectorAndArgs
   ) internal returns (bool success, bytes memory data) {
-    (success, data) = target.call{ value: value }(appendContext(funcSelectorAndArgs, msgSender));
+    (success, data) = target.call{ value: 0 }(
+      appendContext({ funcSelectorAndArgs: funcSelectorAndArgs, msgSender: msgSender, msgValue: msgValue })
+    );
   }
 
   function delegatecallWithContext(
+    address msgSender,
+    uint256 msgValue,
     address target,
-    bytes memory funcSelectorAndArgs,
-    address msgSender
+    bytes memory funcSelectorAndArgs
   ) internal returns (bool success, bytes memory data) {
-    (success, data) = target.delegatecall(appendContext(funcSelectorAndArgs, msgSender));
+    (success, data) = target.delegatecall(
+      appendContext({ funcSelectorAndArgs: funcSelectorAndArgs, msgSender: msgSender, msgValue: msgValue })
+    );
   }
 
   function callWithContextOrRevert(
-    address target,
-    bytes memory funcSelectorAndArgs,
     address msgSender,
-    uint256 value
+    uint256 msgValue,
+    address target,
+    bytes memory funcSelectorAndArgs
   ) internal returns (bytes memory data) {
-    (bool success, bytes memory _data) = callWithContext(target, funcSelectorAndArgs, msgSender, value);
+    (bool success, bytes memory _data) = callWithContext({
+      msgSender: msgSender,
+      msgValue: msgValue,
+      target: target,
+      funcSelectorAndArgs: funcSelectorAndArgs
+    });
     if (!success) revertWithBytes(_data);
     return _data;
   }
 
   function delegatecallWithContextOrRevert(
+    address msgSender,
+    uint256 msgValue,
     address target,
-    bytes memory funcSelectorAndArgs,
-    address msgSender
+    bytes memory funcSelectorAndArgs
   ) internal returns (bytes memory data) {
-    (bool success, bytes memory _data) = delegatecallWithContext(target, funcSelectorAndArgs, msgSender);
+    (bool success, bytes memory _data) = delegatecallWithContext({
+      msgSender: msgSender,
+      msgValue: msgValue,
+      target: target,
+      funcSelectorAndArgs: funcSelectorAndArgs
+    });
     if (!success) revertWithBytes(_data);
     return _data;
   }
