@@ -74,7 +74,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * Register a hook for the table at the given namepace and name.
+   * Register a hook for the given tableId.
    * Requires the caller to own the namespace.
    */
   function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
@@ -83,5 +83,17 @@ contract StoreRegistrationSystem is System, IWorldErrors {
 
     // Register the hook
     StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
+  }
+
+  /**
+   * Unregister a hook for the given tableId.
+   * Requires the caller to own the namespace.
+   */
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) public virtual {
+    // Require caller to own the namespace
+    AccessControl.requireOwnerOrSelf(tableId, _msgSender());
+
+    // Unregister the hook
+    StoreCore.unregisterStoreHook(tableId, hookAddress);
   }
 }
