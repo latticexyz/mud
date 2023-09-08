@@ -27,11 +27,12 @@ import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { Balances } from "./tables/Balances.sol";
 
-import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
-import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
-import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
+import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
+import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
+import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
  * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
@@ -95,25 +96,28 @@ contract CoreModule is IModule, WorldContextConsumer {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[13] memory functionSelectors = [
+    bytes4[15] memory functionSelectors = [
+      // --- AccessManagementSystem ---
+      AccessManagementSystem.grantAccess.selector,
+      AccessManagementSystem.revokeAccess.selector,
+      AccessManagementSystem.transferOwnership.selector,
+      // --- BalanceTransferSystem ---
+      BalanceTransferSystem.transferBalanceToNamespace.selector,
+      BalanceTransferSystem.transferBalanceToAddress.selector,
+      // --- EphemeralRecordSystem ---
+      IStoreEphemeral.emitEphemeralRecord.selector,
+      // --- ModuleInstallationSystem ---
+      ModuleInstallationSystem.installModule.selector,
+      // --- StoreRegistrationSystem ---
+      StoreRegistrationSystem.registerTable.selector,
+      StoreRegistrationSystem.registerStoreHook.selector,
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
       WorldRegistrationSystem.registerSystemHook.selector,
       WorldRegistrationSystem.registerSystem.selector,
       WorldRegistrationSystem.registerFunctionSelector.selector,
       WorldRegistrationSystem.registerRootFunctionSelector.selector,
-      WorldRegistrationSystem.registerDelegation.selector,
-      // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerTable.selector,
-      StoreRegistrationSystem.registerStoreHook.selector,
-      // --- ModuleInstallationSystem ---
-      ModuleInstallationSystem.installModule.selector,
-      // --- AccessManagementSystem ---
-      AccessManagementSystem.grantAccess.selector,
-      AccessManagementSystem.revokeAccess.selector,
-      AccessManagementSystem.transferOwnership.selector,
-      // --- EphemeralRecordSystem ---
-      IStoreEphemeral.emitEphemeralRecord.selector
+      WorldRegistrationSystem.registerDelegation.selector
     ];
 
     for (uint256 i = 0; i < functionSelectors.length; i++) {

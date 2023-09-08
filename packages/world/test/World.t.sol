@@ -1180,6 +1180,14 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0 ether, "system should have 0 ether (bc it was delegatecalled)");
   }
 
+  function testTransferBalanceToNamespace() public {
+    revert("TODO");
+  }
+
+  function testTransferBalanceToAddress() public {
+    revert("TODO");
+  }
+
   // TODO: add a test for systems writing to tables via the World
   // (see https://github.com/latticexyz/mud/issues/444)
 }
