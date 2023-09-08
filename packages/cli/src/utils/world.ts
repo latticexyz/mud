@@ -33,7 +33,7 @@ export async function deployWorldContract(
       });
 }
 
-export async function registerNamesSpace(
+export async function registerNamespace(
   input: TxConfig & { worldContract: Contract; namespace: string | undefined; confirmations: number }
 ): Promise<number> {
   // Register namespace

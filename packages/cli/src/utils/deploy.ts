@@ -13,9 +13,8 @@ import {
   deployContract,
   confirmNonce,
 } from "./txHelpers";
-import { deployWorldContract as deployWorld, registerNamesSpace, registerTables } from "./world";
+import { deployWorldContract as deployWorld, registerNamespace, registerTables } from "./world";
 import { installCoreModule } from "./coreModules";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import { grantAccess, registerSystems } from "./systems";
 import { installModules, getUserModules } from "./modules";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
@@ -153,7 +152,7 @@ export async function deploy(
       coreModuleAddress: await coreModulePromise,
     });
 
-  txConfig.nonce = await registerNamesSpace({
+  txConfig.nonce = await registerNamespace({
     ...txConfig,
     worldContract,
     namespace: mudConfig.namespace,
