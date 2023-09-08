@@ -123,6 +123,36 @@ library StoreCore {
     Hooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooksBitmap)));
   }
 
+  /**
+   * Unregister a hook from the given tableId
+   */
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) internal {
+    bytes21[] memory currentHooks = Hooks.get(tableId);
+
+    // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
+    bytes21[] memory newHooks = new bytes21[](currentHooks.length);
+
+    // Filter the array of current hooks
+    uint256 newHooksIndex;
+    unchecked {
+      for (uint256 currentHooksIndex; currentHooksIndex < currentHooks.length; currentHooksIndex++) {
+        if (Hook.wrap(currentHooks[currentHooksIndex]).getAddress() != address(hookAddress)) {
+          newHooks[newHooksIndex] = currentHooks[currentHooksIndex];
+          newHooksIndex++;
+        }
+      }
+    }
+
+    // Set the new hooks table length in place
+    // (Note: this does not update the free memory pointer)
+    assembly {
+      mstore(newHooks, newHooksIndex)
+    }
+
+    // Set the new hooks table
+    Hooks.set(tableId, newHooks);
+  }
+
   /************************************************************************
    *
    *    SET DATA

@@ -249,7 +249,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register KeyEncoding schema",
-    "gasUsed": 669576
+    "gasUsed": 669560
   },
   {
     "file": "test/Mixed.t.sol",
@@ -261,7 +261,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "register Mixed schema",
-    "gasUsed": 531309
+    "gasUsed": 531268
   },
   {
     "file": "test/Mixed.t.sol",
@@ -561,7 +561,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteData",
     "name": "delete record (complex data, 3 slots)",
-    "gasUsed": 8421
+    "gasUsed": 8427
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -579,67 +579,67 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 60581
+    "gasUsed": 60596
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 70977
+    "gasUsed": 70995
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 24327
+    "gasUsed": 24302
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 19373
+    "gasUsed": 19391
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 60581
+    "gasUsed": 60596
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 163845
+    "gasUsed": 163863
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 26263
+    "gasUsed": 26238
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 20846
+    "gasUsed": 20864
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testPushToField",
     "name": "push to field (1 slot, 1 uint32 item)",
-    "gasUsed": 13346
+    "gasUsed": 13352
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testPushToField",
     "name": "push to field (2 slots, 10 uint32 items)",
-    "gasUsed": 35993
+    "gasUsed": 35999
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetSchema",
     "name": "StoreCore: register schema",
-    "gasUsed": 594625
+    "gasUsed": 594631
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -657,7 +657,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "set complex record with dynamic data (4 slots)",
-    "gasUsed": 102615
+    "gasUsed": 102621
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -699,7 +699,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set static field (1 slot)",
-    "gasUsed": 33280
+    "gasUsed": 33286
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -711,7 +711,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set static field (overlap 2 slot)",
-    "gasUsed": 32157
+    "gasUsed": 32163
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -723,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, first dynamic field)",
-    "gasUsed": 54199
+    "gasUsed": 54205
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -735,7 +735,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetField",
     "name": "set dynamic field (1 slot, second dynamic field)",
-    "gasUsed": 32317
+    "gasUsed": 32323
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -747,7 +747,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticData",
     "name": "set static record (1 slot)",
-    "gasUsed": 32833
+    "gasUsed": 32839
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -759,7 +759,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "set static record (2 slots)",
-    "gasUsed": 55336
+    "gasUsed": 55342
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -771,13 +771,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInField",
     "name": "update in field (1 slot, 1 uint32 item)",
-    "gasUsed": 13623
+    "gasUsed": 13629
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testUpdateInField",
     "name": "push to field (2 slots, 6 uint64 items)",
-    "gasUsed": 14653
+    "gasUsed": 14659
   },
   {
     "file": "test/StoreHook.t.sol",
