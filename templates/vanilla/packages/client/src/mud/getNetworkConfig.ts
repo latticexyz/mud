@@ -35,14 +35,6 @@ import worldsJson from "contracts/worlds.json";
  */
 import { supportedChains } from "./supportedChains";
 
-/* Process the list of deployed worlds.
- *
- * For every chainID we either have nothing
- * (https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype)
- * or a record with the World address and optionally the blockNumber
- * in which it was deployed
- * (https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type).
- */
 const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
 /* This is the function that does the actual work. */
