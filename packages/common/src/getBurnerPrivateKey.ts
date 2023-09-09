@@ -1,7 +1,7 @@
+import { Hex, isHex } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
-import { isHex, Hex } from "viem";
 
-function assertPrivateKey(privateKey: string, cacheKey: string): asserts privateKey is Hex {
+export function assertPrivateKey(privateKey: string, cacheKey: string): asserts privateKey is Hex {
   if (!isHex(privateKey)) {
     console.error("Private key found in cache is not valid hex", { privateKey, cacheKey });
     throw new Error(`Private key found in cache (${cacheKey}) is not valid hex`);
@@ -11,7 +11,9 @@ function assertPrivateKey(privateKey: string, cacheKey: string): asserts private
   privateKeyToAccount(privateKey);
 }
 
-export function getBurnerPrivateKey(cacheKey = "mud:burnerWallet"): Hex {
+export const DEFAULT_BURNER_CACHE_KEY = "mud:burnerWallet";
+
+export function getBurnerPrivateKey(cacheKey = DEFAULT_BURNER_CACHE_KEY): Hex {
   const cachedPrivateKey = localStorage.getItem(cacheKey);
 
   if (cachedPrivateKey != null) {
