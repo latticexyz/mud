@@ -14,7 +14,7 @@ See [World internals](/world/internals) for table and system details.
 
 2. **`RegistrationModule`**
 
-The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
+The [`RegistrationModule`] adds the [`RegistrationSystem`] along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
 
 #### **`UniqueEntityModule`**
 
