@@ -15,10 +15,6 @@ import { world } from "./world";
 import IWorldAbi from "contracts/abi/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, createContract, transportObserver, ContractWrite } from "@latticexyz/common";
 
-/*
- * Use the RxJS library (https://rxjs.dev/) to create
- * event handlers.
- */
 import { Subject, share } from "rxjs";
 
 /*
