@@ -1,5 +1,3 @@
-/* Definitions required to connect to a blockchain */
-
 /*
  * The MUD client code is built on top of viem
  * (https://viem.sh/docs/getting-started.html).
@@ -9,7 +7,6 @@ import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex,
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
-/* Get the network configuration. */
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/abi/IWorld.sol/IWorld.abi.json";
