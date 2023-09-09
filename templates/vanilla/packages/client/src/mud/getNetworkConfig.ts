@@ -39,10 +39,6 @@ const worlds = worldsJson as Partial<Record<string, { address: string; blockNumb
 
 /* This is the function that does the actual work. */
 export async function getNetworkConfig() {
-  /*
-   * Read the query sting parameters
-   * (https://en.wikipedia.org/wiki/Query_string).
-   */
   const params = new URLSearchParams(window.location.search);
 
   /*
