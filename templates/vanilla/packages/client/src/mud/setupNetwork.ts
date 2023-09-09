@@ -22,29 +22,22 @@ import { createBurnerAccount, createContract, transportObserver, ContractWrite }
 import { Subject, share } from "rxjs";
 
 /*
- * Import packages/contracts/mud.config.ts with the World
- * information. See
- * https://mud.dev/tutorials/walkthrough/minimal-onchain#mudconfigts
+ * Import our MUD config, which includes strong types for
+ * our tables and other config options. We use this to generate
+ * things like RECS components and get back strong types for them.
+ *
+ * See https://mud.dev/tutorials/walkthrough/minimal-onchain#mudconfigts
+ * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
 
-/*
- * The type definition for the return type of setup.
- * The result is an Awaited
- * (https://www.typescriptlang.org/docs/handbook/utility-types.html#awaitedtype),
- * which means it may not be immediately available.
- *
- * The Awaited result is of type ReturnType<typeof setup>,
- * which means that TypeScript will see the type that the
- * setup function returns and use that.
- */
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
   const networkConfig = await getNetworkConfig();
 
   /*
-   * Create a Viem public (read only) client
+   * Create a viem public (read only) client
    * (https://viem.sh/docs/clients/public.html)
    */
   const clientOptions = {
@@ -56,7 +49,7 @@ export async function setupNetwork() {
   const publicClient = createPublicClient(clientOptions);
 
   /*
-   * Create A temporary wallet and a Viem client for it
+   * Create A temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
@@ -66,8 +59,8 @@ export async function setupNetwork() {
   });
 
   /*
-   * An RxJS Subject (https://rxjs.dev/guide/subject) is
-   * a way to multicast events into multiple listeners.
+   * Create an observable for contract writes that we can
+   * pass into MUD dev tools for transaction observability.
    */
   const write$ = new Subject<ContractWrite>();
 
@@ -80,7 +73,12 @@ export async function setupNetwork() {
     onWrite: (write) => write$.next(write),
   });
 
-  /* Download the World state to have a local copy */
+  /*
+   * Sync on-chain state into RECS and keeps our client in sync.
+   * Uses the MUD indexer if available, otherwise falls back
+   * to the viem publicClient to make RPC calls to fetch MUD
+   * events from the chain.
+   */
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
     world,
     config: mudConfig,
