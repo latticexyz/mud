@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Hook } from "@latticexyz/store/src/Hook.sol";
+import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 
 import { System } from "../../../System.sol";
 import { WorldContextConsumer } from "../../../WorldContext.sol";
@@ -18,7 +18,7 @@ import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
-import { SystemHooks } from "../tables/SystemHooks.sol";
+import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
@@ -71,31 +71,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require caller to own the namespace
     AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
 
-    // Get array of currently registered system hooks
-    bytes21[] memory currentHooks = SystemHooks.get(resourceSelector);
-
-    // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
-    bytes21[] memory newHooks = new bytes21[](currentHooks.length);
-
-    // Filter the array of current hooks
-    uint256 newHooksIndex;
-    unchecked {
-      for (uint256 currentHooksIndex; currentHooksIndex < currentHooks.length; currentHooksIndex++) {
-        if (Hook.wrap(currentHooks[currentHooksIndex]).getAddress() != address(hookAddress)) {
-          newHooks[newHooksIndex] = currentHooks[currentHooksIndex];
-          newHooksIndex++;
-        }
-      }
-    }
-
-    // Set the new hooks table length in place
-    // (Note: this does not update the free memory pointer)
-    assembly {
-      mstore(newHooks, newHooksIndex)
-    }
-
-    // Set the new hooks table
-    SystemHooks.set(resourceSelector, newHooks);
+    // Remove the hook from the list of hooks for this resourceSelector in the system hooks table
+    HookLib.filterListByAddress(SystemHooksTableId, resourceSelector, address(hookAddress));
   }
 
   /**
