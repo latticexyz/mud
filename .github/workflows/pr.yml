@@ -12,6 +12,7 @@ jobs:
     name: Validate PR title
     runs-on: ubuntu-latest
     steps:
+      - run: echo "hello world"
       - uses: amannn/action-semantic-pull-request@v5.2.0
         with:
           # This ensures the subject doesn't start with an uppercase character
