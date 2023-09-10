@@ -47,7 +47,12 @@ contract KeysWithValueHook is IStoreHook {
     _removeKeyFromList(targetTableId, key[0], previousValue);
 
     // Push the key to the list of keys with the new value
-    bytes memory data = abi.encodePacked(staticData, encodedLengths, dynamicData);
+    bytes memory data;
+    if (dynamicData.length > 0) {
+      data = abi.encodePacked(staticData, encodedLengths, dynamicData);
+    } else {
+      data = staticData;
+    }
     KeysWithValue.push(targetTableId, keccak256(data), key[0]);
   }
 

@@ -755,7 +755,10 @@ library Statics {
     Enum1 v6,
     Enum2 v7
   ) internal {
-    bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6, v7);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](7);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -766,7 +769,7 @@ library Statics {
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -787,7 +790,10 @@ library Statics {
     Enum1 v6,
     Enum2 v7
   ) internal {
-    bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6, v7);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](7);
     _keyTuple[0] = bytes32(uint256(k1));
@@ -798,7 +804,7 @@ library Statics {
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
     _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setRecord(_tableId, _keyTuple, _data, getValueSchema());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Set the full data using the data struct */
@@ -863,6 +869,19 @@ library Statics {
     _table.v7 = Enum2(uint8(Bytes.slice1(_blob, 74)));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(
+    uint256 v1,
+    int32 v2,
+    bytes16 v3,
+    address v4,
+    bool v5,
+    Enum1 v6,
+    Enum2 v7
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
+  }
+
   /** Tightly pack full data using this table's schema */
   function encode(
     uint256 v1,
@@ -873,7 +892,12 @@ library Statics {
     Enum1 v6,
     Enum2 v7
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6, v7);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

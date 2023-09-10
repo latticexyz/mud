@@ -24,7 +24,12 @@ function getKeysWithValue(
   bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
-  bytes memory value = abi.encodePacked(staticData, encodedLengths, dynamicData);
+  bytes memory value;
+  if (dynamicData.length > 0) {
+    value = abi.encodePacked(staticData, encodedLengths, dynamicData);
+  } else {
+    value = staticData;
+  }
   keysWithValue = KeysWithValue.get(keysWithValueTableId, keccak256(value));
 }
 
@@ -42,6 +47,11 @@ function getKeysWithValue(
   bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
-  bytes memory value = abi.encodePacked(staticData, encodedLengths, dynamicData);
+  bytes memory value;
+  if (dynamicData.length > 0) {
+    value = abi.encodePacked(staticData, encodedLengths, dynamicData);
+  } else {
+    value = staticData;
+  }
   keysWithValue = KeysWithValue.get(store, keysWithValueTableId, keccak256(value));
 }

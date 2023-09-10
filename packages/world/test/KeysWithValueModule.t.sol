@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -80,11 +80,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(
-      world,
-      targetTableId,
-      keccak256(abi.encodePacked(value, PackedCounter.wrap(bytes32(0)), new bytes(0)))
-    );
+    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -107,11 +103,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     );
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.get(
-      world,
-      targetTableId,
-      keccak256(abi.encodePacked(value1, PackedCounter.wrap(bytes32(0)), new bytes(0)))
-    );
+    bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "1");
@@ -128,11 +120,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     );
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(
-      world,
-      targetTableId,
-      keccak256(abi.encodePacked(value1, PackedCounter.wrap(bytes32(0)), new bytes(0)))
-    );
+    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
@@ -154,22 +142,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = KeysWithValue.get(
-      world,
-      targetTableId,
-      keccak256(abi.encodePacked(value1, PackedCounter.wrap(bytes32(0)), new bytes(0)))
-    );
+    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value1)));
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, 2, "5");
+    assertEq(keysWithValue.length, 1, "5");
     assertEq(keysWithValue[0], key2, "6");
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(
-      world,
-      targetTableId,
-      keccak256(abi.encodePacked(value2, PackedCounter.wrap(bytes32(0)), new bytes(0)))
-    );
+    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "7");
@@ -181,14 +161,10 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     endGasReport();
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = KeysWithValue.get(
-      world,
-      targetTableId,
-      keccak256(abi.encodePacked(value2, PackedCounter.wrap(bytes32(0)), new bytes(0)))
-    );
+    keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encodePacked(value2)));
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, 1, "9");
+    assertEq(keysWithValue.length, 0, "9");
   }
 
   function testSetField() public {
