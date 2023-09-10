@@ -134,7 +134,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidDataLength",
+    name: "StoreCore_InvalidDynamicDataLength",
     type: "error",
   },
   {
@@ -167,6 +167,22 @@ const _abi = [
       },
     ],
     name: "StoreCore_InvalidKeyNamesLength",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidStaticDataLength",
     type: "error",
   },
   {
@@ -308,7 +324,19 @@ const _abi = [
       {
         indexed: false,
         internalType: "bytes",
-        name: "data",
+        name: "staticData",
+        type: "bytes",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "encodedLengths",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "dynamicData",
         type: "bytes",
       },
     ],
@@ -333,7 +361,19 @@ const _abi = [
       {
         indexed: false,
         internalType: "bytes",
-        name: "data",
+        name: "staticData",
+        type: "bytes",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "encodedLengths",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "dynamicData",
         type: "bytes",
       },
     ],
@@ -376,17 +416,48 @@ const _abi = [
       {
         indexed: false,
         internalType: "bytes32",
-        name: "newDynamicLengths",
+        name: "encodedLengths",
+        type: "bytes32",
+      },
+    ],
+    name: "StoreSpliceDynamicRecord",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "table",
         type: "bytes32",
       },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "dynamicLengthsStart",
-        type: "uint256",
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        indexed: false,
+        internalType: "uint48",
+        name: "start",
+        type: "uint48",
+      },
+      {
+        indexed: false,
+        internalType: "uint40",
+        name: "deleteCount",
+        type: "uint40",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
       },
     ],
-    name: "StoreSpliceRecord",
+    name: "StoreSpliceStaticRecord",
     type: "event",
   },
   {
@@ -479,7 +550,17 @@ const _abi = [
       },
       {
         internalType: "bytes",
-        name: "data",
+        name: "staticData",
+        type: "bytes",
+      },
+      {
+        internalType: "PackedCounter",
+        name: "encodedLengths",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "dynamicData",
         type: "bytes",
       },
       {
@@ -1094,7 +1175,17 @@ const _abi = [
       },
       {
         internalType: "bytes",
-        name: "data",
+        name: "staticData",
+        type: "bytes",
+      },
+      {
+        internalType: "PackedCounter",
+        name: "encodedLengths",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "dynamicData",
         type: "bytes",
       },
       {

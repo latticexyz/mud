@@ -43,7 +43,7 @@ export interface IWorldInterface extends utils.Interface {
     "deleteRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
     "dynamicArrayBytesStruct((bytes)[])": FunctionFragment;
     "dynamicArrayStringStruct((string)[])": FunctionFragment;
-    "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
+    "emitEphemeralRecord(bytes32,bytes32[],bytes,bytes32,bytes,bytes32)": FunctionFragment;
     "getField(bytes32,bytes32[],uint8,bytes32)": FunctionFragment;
     "getFieldLength(bytes32,bytes32[],uint8,bytes32)": FunctionFragment;
     "getFieldSlice(bytes32,bytes32[],uint8,bytes32,uint256,uint256)": FunctionFragment;
@@ -68,7 +68,7 @@ export interface IWorldInterface extends utils.Interface {
     "revokeAccess(bytes32,address)": FunctionFragment;
     "sendMessage(string)": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes,bytes32)": FunctionFragment;
-    "setRecord(bytes32,bytes32[],bytes,bytes32)": FunctionFragment;
+    "setRecord(bytes32,bytes32[],bytes,bytes32,bytes,bytes32)": FunctionFragment;
     "staticArrayBytesStruct(tuple[1])": FunctionFragment;
     "staticArrayStringStruct(tuple[1])": FunctionFragment;
     "transferOwnership(bytes16,address)": FunctionFragment;
@@ -149,6 +149,8 @@ export interface IWorldInterface extends utils.Interface {
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>
     ]
@@ -313,6 +315,8 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[],
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>
     ]
   ): string;
@@ -465,16 +469,18 @@ export interface IWorldInterface extends utils.Interface {
   events: {
     "HelloWorld()": EventFragment;
     "StoreDeleteRecord(bytes32,bytes32[])": EventFragment;
-    "StoreEphemeralRecord(bytes32,bytes32[],bytes)": EventFragment;
-    "StoreSetRecord(bytes32,bytes32[],bytes)": EventFragment;
-    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes,bytes32,uint256)": EventFragment;
+    "StoreEphemeralRecord(bytes32,bytes32[],bytes,bytes32,bytes)": EventFragment;
+    "StoreSetRecord(bytes32,bytes32[],bytes,bytes32,bytes)": EventFragment;
+    "StoreSpliceDynamicRecord(bytes32,bytes32[],uint48,uint40,bytes,bytes32)": EventFragment;
+    "StoreSpliceStaticRecord(bytes32,bytes32[],uint48,uint40,bytes)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "HelloWorld"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreDeleteRecord"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreEphemeralRecord"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreSetRecord"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "StoreSpliceRecord"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StoreSpliceDynamicRecord"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StoreSpliceStaticRecord"): EventFragment;
 }
 
 export interface HelloWorldEventObject {}
@@ -497,10 +503,12 @@ export type StoreDeleteRecordEventFilter =
 export interface StoreEphemeralRecordEventObject {
   table: string;
   key: string[];
-  data: string;
+  staticData: string;
+  encodedLengths: string;
+  dynamicData: string;
 }
 export type StoreEphemeralRecordEvent = TypedEvent<
-  [string, string[], string],
+  [string, string[], string, string, string],
   StoreEphemeralRecordEventObject
 >;
 
@@ -510,31 +518,47 @@ export type StoreEphemeralRecordEventFilter =
 export interface StoreSetRecordEventObject {
   table: string;
   key: string[];
-  data: string;
+  staticData: string;
+  encodedLengths: string;
+  dynamicData: string;
 }
 export type StoreSetRecordEvent = TypedEvent<
-  [string, string[], string],
+  [string, string[], string, string, string],
   StoreSetRecordEventObject
 >;
 
 export type StoreSetRecordEventFilter = TypedEventFilter<StoreSetRecordEvent>;
 
-export interface StoreSpliceRecordEventObject {
+export interface StoreSpliceDynamicRecordEventObject {
   table: string;
   key: string[];
   start: number;
   deleteCount: number;
   data: string;
-  newDynamicLengths: string;
-  dynamicLengthsStart: BigNumber;
+  encodedLengths: string;
 }
-export type StoreSpliceRecordEvent = TypedEvent<
-  [string, string[], number, number, string, string, BigNumber],
-  StoreSpliceRecordEventObject
+export type StoreSpliceDynamicRecordEvent = TypedEvent<
+  [string, string[], number, number, string, string],
+  StoreSpliceDynamicRecordEventObject
 >;
 
-export type StoreSpliceRecordEventFilter =
-  TypedEventFilter<StoreSpliceRecordEvent>;
+export type StoreSpliceDynamicRecordEventFilter =
+  TypedEventFilter<StoreSpliceDynamicRecordEvent>;
+
+export interface StoreSpliceStaticRecordEventObject {
+  table: string;
+  key: string[];
+  start: number;
+  deleteCount: number;
+  data: string;
+}
+export type StoreSpliceStaticRecordEvent = TypedEvent<
+  [string, string[], number, number, string],
+  StoreSpliceStaticRecordEventObject
+>;
+
+export type StoreSpliceStaticRecordEventFilter =
+  TypedEventFilter<StoreSpliceStaticRecordEvent>;
 
 export interface IWorld extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -596,7 +620,9 @@ export interface IWorld extends BaseContract {
     emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -767,7 +793,9 @@ export interface IWorld extends BaseContract {
     setRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
@@ -836,7 +864,9 @@ export interface IWorld extends BaseContract {
   emitEphemeralRecord(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
-    data: PromiseOrValue<BytesLike>,
+    staticData: PromiseOrValue<BytesLike>,
+    encodedLengths: PromiseOrValue<BytesLike>,
+    dynamicData: PromiseOrValue<BytesLike>,
     valueSchema: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1007,7 +1037,9 @@ export interface IWorld extends BaseContract {
   setRecord(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
-    data: PromiseOrValue<BytesLike>,
+    staticData: PromiseOrValue<BytesLike>,
+    encodedLengths: PromiseOrValue<BytesLike>,
+    dynamicData: PromiseOrValue<BytesLike>,
     valueSchema: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
@@ -1076,7 +1108,9 @@ export interface IWorld extends BaseContract {
     emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1245,7 +1279,9 @@ export interface IWorld extends BaseContract {
     setRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1289,46 +1325,67 @@ export interface IWorld extends BaseContract {
     ): StoreDeleteRecordEventFilter;
     StoreDeleteRecord(table?: null, key?: null): StoreDeleteRecordEventFilter;
 
-    "StoreEphemeralRecord(bytes32,bytes32[],bytes)"(
+    "StoreEphemeralRecord(bytes32,bytes32[],bytes,bytes32,bytes)"(
       table?: null,
       key?: null,
-      data?: null
+      staticData?: null,
+      encodedLengths?: null,
+      dynamicData?: null
     ): StoreEphemeralRecordEventFilter;
     StoreEphemeralRecord(
       table?: null,
       key?: null,
-      data?: null
+      staticData?: null,
+      encodedLengths?: null,
+      dynamicData?: null
     ): StoreEphemeralRecordEventFilter;
 
-    "StoreSetRecord(bytes32,bytes32[],bytes)"(
+    "StoreSetRecord(bytes32,bytes32[],bytes,bytes32,bytes)"(
       table?: null,
       key?: null,
-      data?: null
+      staticData?: null,
+      encodedLengths?: null,
+      dynamicData?: null
     ): StoreSetRecordEventFilter;
     StoreSetRecord(
       table?: null,
       key?: null,
-      data?: null
+      staticData?: null,
+      encodedLengths?: null,
+      dynamicData?: null
     ): StoreSetRecordEventFilter;
 
-    "StoreSpliceRecord(bytes32,bytes32[],uint48,uint40,bytes,bytes32,uint256)"(
+    "StoreSpliceDynamicRecord(bytes32,bytes32[],uint48,uint40,bytes,bytes32)"(
       table?: null,
       key?: null,
       start?: null,
       deleteCount?: null,
       data?: null,
-      newDynamicLengths?: null,
-      dynamicLengthsStart?: null
-    ): StoreSpliceRecordEventFilter;
-    StoreSpliceRecord(
+      encodedLengths?: null
+    ): StoreSpliceDynamicRecordEventFilter;
+    StoreSpliceDynamicRecord(
       table?: null,
       key?: null,
       start?: null,
       deleteCount?: null,
       data?: null,
-      newDynamicLengths?: null,
-      dynamicLengthsStart?: null
-    ): StoreSpliceRecordEventFilter;
+      encodedLengths?: null
+    ): StoreSpliceDynamicRecordEventFilter;
+
+    "StoreSpliceStaticRecord(bytes32,bytes32[],uint48,uint40,bytes)"(
+      table?: null,
+      key?: null,
+      start?: null,
+      deleteCount?: null,
+      data?: null
+    ): StoreSpliceStaticRecordEventFilter;
+    StoreSpliceStaticRecord(
+      table?: null,
+      key?: null,
+      start?: null,
+      deleteCount?: null,
+      data?: null
+    ): StoreSpliceStaticRecordEventFilter;
   };
 
   estimateGas: {
@@ -1365,7 +1422,9 @@ export interface IWorld extends BaseContract {
     emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1536,7 +1595,9 @@ export interface IWorld extends BaseContract {
     setRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
@@ -1606,7 +1667,9 @@ export interface IWorld extends BaseContract {
     emitEphemeralRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
@@ -1777,7 +1840,9 @@ export interface IWorld extends BaseContract {
     setRecord(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
+      staticData: PromiseOrValue<BytesLike>,
+      encodedLengths: PromiseOrValue<BytesLike>,
+      dynamicData: PromiseOrValue<BytesLike>,
       valueSchema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;

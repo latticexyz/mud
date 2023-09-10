@@ -13,8 +13,15 @@ import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.s
 contract ChatNamespacedTest is MudTest {
   function testEmitEphemeral() public {
     bytes32[] memory keyTuple;
+    string memory value = "test";
     vm.expectEmit(true, true, true, true);
-    emit StoreCore.StoreEphemeralRecord(MessageTableTableId, keyTuple, MessageTable.encode("test"));
-    IChatNamespacedSystem(worldAddress).namespace_ChatNamespaced_sendMessage("test");
+    emit StoreCore.StoreEphemeralRecord(
+      MessageTableTableId,
+      keyTuple,
+      new bytes(0),
+      MessageTable.encodeLengths(value).unwrap(),
+      MessageTable.encodeDynamic(value)
+    );
+    IChatNamespacedSystem(worldAddress).namespace_ChatNamespaced_sendMessage(value);
   }
 }

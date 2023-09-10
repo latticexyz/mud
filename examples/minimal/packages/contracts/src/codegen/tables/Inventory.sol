@@ -105,9 +105,19 @@ library Inventory {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getValueSchema());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 amount) internal pure returns (bytes memory) {
+    return abi.encodePacked(amount);
+  }
+
   /** Tightly pack full data using this table's schema */
   function encode(uint32 amount) internal pure returns (bytes memory) {
-    return abi.encodePacked(amount);
+    bytes memory _staticData = encodeStatic(amount);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

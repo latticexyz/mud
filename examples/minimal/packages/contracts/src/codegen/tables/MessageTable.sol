@@ -59,31 +59,46 @@ library MessageTable {
 
   /** Emit the ephemeral event using individual values */
   function emitEphemeral(string memory value) internal {
-    bytes memory _data = encode(value);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
   function emitEphemeral(IStore _store, string memory value) internal {
-    bytes memory _data = encode(value);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getValueSchema());
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(string memory value) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(string memory value) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(bytes(value).length);
     }
+  }
 
-    return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(string memory value) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((value)));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(string memory value) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's schema */

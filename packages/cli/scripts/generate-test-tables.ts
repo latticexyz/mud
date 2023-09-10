@@ -19,8 +19,7 @@ try {
           k3: "bytes16",
           k4: "address",
           k5: "bool",
-          k6: "Enum1",
-          k7: "Enum2",
+          k6: "Enum2",
         },
         schema: {
           v1: "uint256",
@@ -29,7 +28,6 @@ try {
           v4: "address",
           v5: "bool",
           v6: "Enum1",
-          v7: "Enum2",
         },
       },
       Dynamics1: {
