@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { System } from "../../../System.sol";
+import { revertWithBytes } from "../../../revertWithBytes.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
@@ -44,6 +45,9 @@ contract BalanceTransferSystem is System, IWorldErrors {
 
     // Update the balances
     Balances.set(fromNamespace, balance - amount);
-    payable(toAddress).transfer(amount);
+
+    // Transfer the balance to the given address, revert on failure
+    (bool success, bytes memory data) = payable(toAddress).call{ value: amount }("");
+    if (!success) revertWithBytes(data);
   }
 }
