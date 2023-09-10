@@ -135,7 +135,7 @@ Let’s break it down:
 
 First, notice there is no `namespace` key: all our resources will be installed in the `ROOT` namespace, and our systems' functions will be registered as-is on the World.
 
-Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
+Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](https://latticexyz.notion.site/Store-930ed995c2b14782ae9a949e1e3c8fe9).
 
 Lastly, this project has one system at `IncrementSystem.sol`, but it does not need to be in the config. Any file that ends in `*System.sol` is considered a system and deployed by default.
 
