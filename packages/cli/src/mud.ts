@@ -27,8 +27,11 @@ yargs(hideBin(process.argv))
       );
     }
     console.log("");
-    logError(err);
-    console.log("");
+    // Even though `.fail` type says we should get an `Error`, this can sometimes be undefined
+    if (err != null) {
+      logError(err);
+      console.log("");
+    }
 
     process.exit(1);
   })

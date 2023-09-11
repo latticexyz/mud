@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+
 import { ResourceType } from "../core/tables/ResourceType.sol";
 import { Resource } from "../../Types.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
-import { WorldContext } from "../../WorldContext.sol";
+import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
@@ -24,7 +26,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
-contract KeysInTableModule is IModule, WorldContext {
+contract KeysInTableModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
   // The KeysInTableHook is deployed once and infers the target table id
@@ -52,6 +54,17 @@ contract KeysInTableModule is IModule, WorldContext {
     }
 
     // Register a hook that is called when a value is set in the source table
-    world.registerStoreHook(sourceTableId, hook);
+    world.registerStoreHook(
+      sourceTableId,
+      hook,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: false,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      })
+    );
   }
 }

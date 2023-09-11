@@ -7,9 +7,9 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "systemAddress",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",
@@ -30,9 +30,9 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "systemAddress",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
       },
       {
         "internalType": "bytes",

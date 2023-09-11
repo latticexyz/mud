@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/common",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.7",
   "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
@@ -53,7 +53,8 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run"
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/schema-type": "workspace:*",

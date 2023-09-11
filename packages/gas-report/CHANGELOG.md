@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Major Changes
+
+- [#1410](https://github.com/latticexyz/mud/pull/1410) [`9af542d3`](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4) Thanks [@holic](https://github.com/holic)! - Renames `mud-gas-report` binary to `gas-report`, since it's no longer MUD specific.
+
+## 2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ## 2.0.0-next.3

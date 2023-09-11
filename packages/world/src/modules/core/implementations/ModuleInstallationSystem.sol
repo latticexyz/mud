@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { Call } from "../../../Call.sol";
+import { WorldContextProvider } from "../../../WorldContext.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../../tables/InstalledModules.sol";
 
@@ -16,11 +16,10 @@ contract ModuleInstallationSystem is System {
    * Install the given module at the given namespace in the World.
    */
   function installModule(IModule module, bytes memory args) public {
-    Call.withSender({
+    WorldContextProvider.callWithContextOrRevert({
       msgSender: _msgSender(),
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: false,
       value: 0
     });
 

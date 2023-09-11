@@ -2,11 +2,12 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
-import { WorldContext } from "../../WorldContext.sol";
+import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
@@ -25,7 +26,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
-contract KeysWithValueModule is IModule, WorldContext {
+contract KeysWithValueModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
   // The KeysWithValueHook is deployed once and infers the target table id
@@ -48,6 +49,17 @@ contract KeysWithValueModule is IModule, WorldContext {
     IBaseWorld(_world()).grantAccess(targetTableSelector, address(hook));
 
     // Register a hook that is called when a value is set in the source table
-    StoreSwitch.registerStoreHook(sourceTableId, hook);
+    StoreSwitch.registerStoreHook(
+      sourceTableId,
+      hook,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      })
+    );
   }
 }

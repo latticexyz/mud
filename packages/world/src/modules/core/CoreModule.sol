@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Call } from "../../Call.sol";
+import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { WorldContext } from "../../WorldContext.sol";
+import { WorldContextConsumer } from "../../WorldContext.sol";
 import { Resource } from "../../Types.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -38,7 +38,7 @@ import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.s
  * This module is required to be delegatecalled (via `World.registerRootSystem`),
  * because it needs to install root tables, systems and function selectors.
  */
-contract CoreModule is IModule, WorldContext {
+contract CoreModule is IModule, WorldContextConsumer {
   // Since the CoreSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable coreSystem = address(new CoreSystem());
@@ -74,11 +74,9 @@ contract CoreModule is IModule, WorldContext {
    */
   function _registerCoreSystem() internal {
     // Use the CoreSystem's `registerSystem` implementation to register itself on the World.
-    Call.withSender({
+    WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
       target: coreSystem,
-      delegate: true,
-      value: 0,
       funcSelectorAndArgs: abi.encodeWithSelector(
         WorldRegistrationSystem.registerSystem.selector,
         ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
@@ -92,13 +90,14 @@ contract CoreModule is IModule, WorldContext {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[11] memory functionSelectors = [
+    bytes4[13] memory functionSelectors = [
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
       WorldRegistrationSystem.registerSystemHook.selector,
       WorldRegistrationSystem.registerSystem.selector,
       WorldRegistrationSystem.registerFunctionSelector.selector,
       WorldRegistrationSystem.registerRootFunctionSelector.selector,
+      WorldRegistrationSystem.registerDelegation.selector,
       // --- StoreRegistrationSystem ---
       StoreRegistrationSystem.registerTable.selector,
       StoreRegistrationSystem.registerStoreHook.selector,
@@ -107,6 +106,7 @@ contract CoreModule is IModule, WorldContext {
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
+      AccessManagementSystem.transferOwnership.selector,
       // --- EphemeralRecordSystem ---
       IStoreEphemeral.emitEphemeralRecord.selector
     ];
@@ -114,11 +114,9 @@ contract CoreModule is IModule, WorldContext {
     for (uint256 i = 0; i < functionSelectors.length; i++) {
       // Use the CoreSystem's `registerRootFunctionSelector` to register the
       // root function selectors in the World.
-      Call.withSender({
+      WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
         target: coreSystem,
-        delegate: true,
-        value: 0,
         funcSelectorAndArgs: abi.encodeWithSelector(
           WorldRegistrationSystem.registerRootFunctionSelector.selector,
           ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),

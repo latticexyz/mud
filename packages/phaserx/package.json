@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/phaserx",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -19,7 +19,8 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
-    "test": "tsc --noEmit"
+    "test": "tsc --noEmit",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "@latticexyz/utils": "workspace:*",
