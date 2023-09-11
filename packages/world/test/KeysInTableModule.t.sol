@@ -75,7 +75,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
   // This test is expected to fail because `getKeySchema()` on StoreCore reverts on singleton tables
   function testInstallSingleton() public {
-    vm.expectRevert();
+    vm.expectRevert(KeysInTableModule.KeysInTableModule_EmptyKeySchema.selector);
     world.installRootModule(keysInTableModule, abi.encode(singletonTableId));
   }
 

@@ -84,6 +84,11 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
   }
 
+  function testInstallSingleton() public {
+    vm.expectRevert(KeysWithValueModule.KeysWithValueModule_EmptyKeySchema.selector);
+    world.installRootModule(keysWithValueModule, abi.encode(singletonTableId));
+  }
+
   function testSetAndDeleteRecordHook() public {
     _installKeysWithValueModule();
 
@@ -225,10 +230,5 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue.length, 2);
     assertEq(keysWithValue[0], key1);
     assertEq(keysWithValue[1], key2);
-  }
-
-  function testInstallSingleton() public {
-    vm.expectRevert();
-    world.installRootModule(keysWithValueModule, abi.encode(singletonTableId));
   }
 }
