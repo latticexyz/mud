@@ -59,7 +59,7 @@ In most basic cases, you don’t need to worry about namespaces and access contr
 
 Systems are stateless pieces of logic executed on the World, represented as a resource within a namespace.
 They are written in Solidity and compile to the EVM like regular smart contracts. You can think of them as SQL functions acting your SQL database (Store in this case).
-Systems read and store their state on the World's Store. These storage access are abstracted via the libraries generated with `tablegen`. You can learn more about `tablegen` in the [Store doc](/store/reading-and-writing).
+Systems read and  their state on the World's . These storage access are abstracted via the libraries generated with `tablegen`. You can learn more about `tablegen` in the [ doc](//reading-and-writing).
 
 **Reading and writing to the state in a system:**
 
@@ -135,7 +135,7 @@ Let’s break it down:
 
 First, notice there is no `namespace` key: all our resources will be installed in the `ROOT` namespace, and our systems' functions will be registered as-is on the World.
 
-Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](https://latticexyz.notion.site/Store-930ed995c2b14782ae9a949e1e3c8fe9).
+Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](/store).
 
 Lastly, this project has one system at `IncrementSystem.sol`, but it does not need to be in the config. Any file that ends in `*System.sol` is considered a system and deployed by default.
 
