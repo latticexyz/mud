@@ -4,26 +4,26 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
-import { Hooks } from "../../src/codegen/Tables.sol";
+import { StoreHooks } from "../../src/codegen/Tables.sol";
 
-contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
+contract StoreHooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
   bytes21[] hooks;
 
   function setUp() public {
-    // Hooks schema is already registered by StoreCore
+    // StoreHooks schema is already registered by StoreCore
     bytes32 key = keccak256("somekey");
 
     hooks = new bytes21[](1);
     hooks[0] = bytes21("some data");
 
-    Hooks.set(key, hooks);
+    StoreHooks.set(key, hooks);
   }
 
   function testGet() public {
     bytes32 key = keccak256("somekey");
 
-    startGasReport("Hooks: get field (cold)");
-    bytes21[] memory returnedAddresses = Hooks.get(key);
+    startGasReport("StoreHooks: get field (cold)");
+    bytes21[] memory returnedAddresses = StoreHooks.get(key);
     endGasReport();
 
     assertEq(returnedAddresses.length, hooks.length);
@@ -33,8 +33,8 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
   function testLength() public {
     bytes32 key = keccak256("somekey");
 
-    startGasReport("Hooks: get length (cold)");
-    uint256 length = Hooks.length(key);
+    startGasReport("StoreHooks: get length (cold)");
+    uint256 length = StoreHooks.length(key);
     endGasReport();
 
     assertEq(length, hooks.length);
@@ -43,8 +43,8 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
   function testGetItem() public {
     bytes32 key = keccak256("somekey");
 
-    startGasReport("Hooks: get 1 element (cold)");
-    bytes21 returnedAddress = Hooks.getItem(key, 0);
+    startGasReport("StoreHooks: get 1 element (cold)");
+    bytes21 returnedAddress = StoreHooks.getItem(key, 0);
     endGasReport();
 
     assertEq(returnedAddress, hooks[0]);
@@ -53,11 +53,11 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
   function testPop() public {
     bytes32 key = keccak256("somekey");
 
-    startGasReport("Hooks: pop 1 element (cold)");
-    Hooks.pop(key);
+    startGasReport("StoreHooks: pop 1 element (cold)");
+    StoreHooks.pop(key);
     endGasReport();
 
-    uint256 length = Hooks.length(key);
+    uint256 length = StoreHooks.length(key);
 
     assertEq(length, hooks.length - 1);
   }
@@ -66,11 +66,11 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
     bytes32 key = keccak256("somekey");
 
     bytes21 newAddress = bytes21(bytes20(keccak256("alice")));
-    startGasReport("Hooks: update 1 element (cold)");
-    Hooks.update(key, 0, newAddress);
+    startGasReport("StoreHooks: update 1 element (cold)");
+    StoreHooks.update(key, 0, newAddress);
     endGasReport();
 
-    bytes21[] memory returnedAddresses = Hooks.get(key);
+    bytes21[] memory returnedAddresses = StoreHooks.get(key);
     assertEq(returnedAddresses.length, 1);
     assertEq(returnedAddresses[0], newAddress);
   }
@@ -78,11 +78,11 @@ contract HooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
   function testDelete() public {
     bytes32 key = keccak256("somekey");
 
-    startGasReport("Hooks: delete record (cold)");
-    Hooks.deleteRecord(key);
+    startGasReport("StoreHooks: delete record (cold)");
+    StoreHooks.deleteRecord(key);
     endGasReport();
 
-    bytes21[] memory returnedAddresses = Hooks.get(key);
+    bytes21[] memory returnedAddresses = StoreHooks.get(key);
     assertEq(returnedAddresses.length, 0);
   }
 }
