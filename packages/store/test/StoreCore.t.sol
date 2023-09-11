@@ -18,6 +18,8 @@ import { StoreHookLib } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
+import { RevertSubscriber } from "./RevertSubscriber.sol";
+import { EchoSubscriber } from "./EchoSubscriber.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -27,6 +29,7 @@ struct TestStruct {
 
 contract StoreCoreTest is Test, StoreMock {
   TestStruct private testStruct;
+  event HookCalled(bytes);
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
@@ -821,7 +824,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data3Slice.length, 0);
   }
 
-  function testHooks() public {
+  function testRegisterHook() public {
     bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
@@ -873,6 +876,94 @@ contract StoreCoreTest is Test, StoreMock {
     // Get data from indexed table - the indexer should have mirrored the data there
     indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
+  }
+
+  function testUnregisterHook() public {
+    bytes32 table = keccak256("some.table");
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = keccak256("some key");
+
+    // Register table's schema
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
+    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+
+    // Create a RevertSubscriber and an EchoSubscriber
+    RevertSubscriber revertSubscriber = new RevertSubscriber();
+    EchoSubscriber echoSubscriber = new EchoSubscriber();
+
+    // Register both subscribers
+    IStore(this).registerStoreHook(
+      table,
+      revertSubscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
+    // Register both subscribers
+    IStore(this).registerStoreHook(
+      table,
+      echoSubscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
+
+    bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+
+    // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
+    vm.expectRevert(bytes("onBeforeSetRecord"));
+    IStore(this).setRecord(table, key, data, valueSchema);
+
+    // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
+    vm.expectRevert(bytes("onBeforeSetField"));
+    IStore(this).setField(table, key, 0, data, valueSchema);
+
+    // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
+    vm.expectRevert(bytes("onBeforeDeleteRecord"));
+    IStore(this).deleteRecord(table, key, valueSchema);
+
+    // Unregister the RevertSubscriber
+    IStore(this).unregisterStoreHook(table, revertSubscriber);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, data, valueSchema));
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, data, valueSchema));
+
+    IStore(this).setRecord(table, key, data, valueSchema);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetField hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, uint8(0), data, valueSchema));
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetField hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, uint8(0), data, valueSchema));
+
+    IStore(this).setField(table, key, 0, data, valueSchema);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeDeleteRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, valueSchema));
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterDeleteRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, valueSchema));
+
+    IStore(this).deleteRecord(table, key, valueSchema);
   }
 
   function testHooksDynamicData() public {

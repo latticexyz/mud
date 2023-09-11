@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Hooks } from "./codegen/tables/Hooks.sol";
+
 // 20 bytes address, 1 byte bitmap of enabled hooks
 type Hook is bytes21;
 
@@ -13,6 +15,36 @@ library HookLib {
   function encode(address hookAddress, uint8 encodedHooks) internal pure returns (Hook) {
     // Move the address to the leftmost 20 bytes and the bitmap to the rightmost byte
     return Hook.wrap(bytes21(bytes20(hookAddress)) | bytes21(uint168(encodedHooks)));
+  }
+
+  /**
+   * Filter the given hook from the hook list at the given key in the given hook table
+   */
+  function filterListByAddress(bytes32 hookTableId, bytes32 key, address hookAddressToRemove) internal {
+    bytes21[] memory currentHooks = Hooks.get(hookTableId, key);
+
+    // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
+    bytes21[] memory newHooks = new bytes21[](currentHooks.length);
+
+    // Filter the array of current hooks
+    uint256 newHooksIndex;
+    unchecked {
+      for (uint256 currentHooksIndex; currentHooksIndex < currentHooks.length; currentHooksIndex++) {
+        if (Hook.wrap(currentHooks[currentHooksIndex]).getAddress() != address(hookAddressToRemove)) {
+          newHooks[newHooksIndex] = currentHooks[currentHooksIndex];
+          newHooksIndex++;
+        }
+      }
+    }
+
+    // Set the new hooks table length in place
+    // (Note: this does not update the free memory pointer)
+    assembly {
+      mstore(newHooks, newHooksIndex)
+    }
+
+    // Set the new hooks table
+    Hooks.set(hookTableId, key, newHooks);
   }
 }
 
