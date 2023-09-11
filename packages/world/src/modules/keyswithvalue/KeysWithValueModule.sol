@@ -29,6 +29,8 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 contract KeysWithValueModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
+  error KeysWithValueModule_EmptyKeySchema();
+
   // The KeysWithValueHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
   KeysWithValueHook immutable hook = new KeysWithValueHook();
@@ -42,11 +44,18 @@ contract KeysWithValueModule is IModule, WorldContextConsumer {
     bytes32 sourceTableId = abi.decode(args, (bytes32));
     bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
+    IBaseWorld world = IBaseWorld(_world());
+
+    // It doesn't make sense to index keys of a singleton table (only a single value)
+    if (world.getKeySchema(sourceTableId).isEmpty()) {
+      revert KeysWithValueModule_EmptyKeySchema();
+    }
+
     // Register the target table
-    KeysWithValue.register(IBaseWorld(_world()), targetTableSelector);
+    KeysWithValue.register(world, targetTableSelector);
 
     // Grant the hook access to the target table
-    IBaseWorld(_world()).grantAccess(targetTableSelector, address(hook));
+    world.grantAccess(targetTableSelector, address(hook));
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(

@@ -29,6 +29,8 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
 contract KeysInTableModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
+  error KeysInTableModule_EmptyKeySchema();
+
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
   KeysInTableHook immutable hook = new KeysInTableHook();
@@ -42,6 +44,11 @@ contract KeysInTableModule is IModule, WorldContextConsumer {
     bytes32 sourceTableId = abi.decode(args, (bytes32));
 
     IBaseWorld world = IBaseWorld(_world());
+
+    // It doesn't make sense to index keys of a singleton table (only a single value)
+    if (world.getKeySchema(sourceTableId).isEmpty()) {
+      revert KeysInTableModule_EmptyKeySchema();
+    }
 
     if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables
