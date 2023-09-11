@@ -7,7 +7,7 @@ export default mudConfig({
     ExampleEnum: ["None", "First", "Second", "Third"],
   },
   tables: {
-    Hooks: "bytes21[]",
+    StoreHooks: "bytes21[]",
     Callbacks: "bytes24[]",
     Tables: {
       keySchema: {
@@ -19,6 +19,11 @@ export default mudConfig({
         abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },
+    },
+    // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
+    Hooks: {
+      schema: "bytes21[]",
+      tableIdArgument: true,
     },
     // TODO: move these test tables to a separate mud config
     Mixed: {

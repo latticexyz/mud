@@ -54,6 +54,15 @@ library StoreSwitch {
     }
   }
 
+  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.unregisterStoreHook(table, hookAddress);
+    } else {
+      IStore(_storeAddress).unregisterStoreHook(table, hookAddress);
+    }
+  }
+
   function getValueSchema(bytes32 table) internal view returns (Schema valueSchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {

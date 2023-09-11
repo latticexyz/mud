@@ -70,11 +70,13 @@ export async function* fetchLogs<TAbiEvents extends readonly AbiEvent[]>({
   while (fromBlock <= getLogsOpts.toBlock) {
     try {
       const toBlock = fromBlock + blockRange;
+      debug("getting logs", { fromBlock, toBlock });
       const logs = await publicClient.getLogs({ ...getLogsOpts, fromBlock, toBlock, strict: true });
       yield { fromBlock, toBlock, logs };
       fromBlock = toBlock + 1n;
       blockRange = bigIntMin(maxBlockRange, getLogsOpts.toBlock - fromBlock);
     } catch (error: unknown) {
+      debug("error getting logs:", String(error));
       if (!(error instanceof Error)) throw error;
 
       // TODO: figure out actual rate limit message for RPCs
