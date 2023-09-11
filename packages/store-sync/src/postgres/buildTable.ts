@@ -1,8 +1,8 @@
 import { AnyPgColumnBuilder, PgTableWithColumns, pgSchema } from "drizzle-orm/pg-core";
-import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildColumn } from "./buildColumn";
 import { Address, getAddress } from "viem";
 import { transformSchemaName } from "./transformSchemaName";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 // TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
@@ -12,10 +12,7 @@ export const metaColumns = {
   __isDeleted: buildColumn("__isDeleted", "bool").notNull(),
 } as const satisfies Record<string, AnyPgColumnBuilder>;
 
-type PgTableFromSchema<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
-> = PgTableWithColumns<{
+type PgTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableWithColumns<{
   name: string;
   schema: string;
   columns: {
@@ -30,10 +27,7 @@ type PgTableFromSchema<
   };
 }>;
 
-type BuildTableOptions<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
-> = {
+type BuildTableOptions<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = {
   address: Address;
   namespace: string;
   name: string;
@@ -41,15 +35,12 @@ type BuildTableOptions<
   valueSchema: TValueSchema;
 };
 
-type BuildTableResult<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
-> = PgTableFromSchema<TKeySchema, TValueSchema>;
+type BuildTableResult<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = PgTableFromSchema<
+  TKeySchema,
+  TValueSchema
+>;
 
-export function buildTable<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
->({
+export function buildTable<TKeySchema extends KeySchema, TValueSchema extends ValueSchema>({
   address,
   namespace,
   name,

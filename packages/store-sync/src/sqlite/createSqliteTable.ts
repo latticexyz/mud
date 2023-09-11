@@ -1,8 +1,8 @@
 import { AnySQLiteColumnBuilder, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
-import { SchemaAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { buildSqliteColumn } from "./buildSqliteColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 export const metaColumns = {
   __key: buildSqliteColumn("__key", "bytes").notNull().primaryKey(),
@@ -11,10 +11,7 @@ export const metaColumns = {
   __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
 } as const satisfies Record<string, AnySQLiteColumnBuilder>;
 
-type SQLiteTableFromSchema<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
-> = SQLiteTableWithColumns<{
+type SQLiteTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = SQLiteTableWithColumns<{
   name: string;
   schema: string | undefined;
   columns: {
@@ -29,10 +26,7 @@ type SQLiteTableFromSchema<
   };
 }>;
 
-type CreateSqliteTableOptions<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
-> = {
+type CreateSqliteTableOptions<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = {
   address: Address;
   namespace: string;
   name: string;
@@ -40,15 +34,12 @@ type CreateSqliteTableOptions<
   valueSchema: TValueSchema;
 };
 
-type CreateSqliteTableResult<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
-> = SQLiteTableFromSchema<TKeySchema, TValueSchema>;
+type CreateSqliteTableResult<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = SQLiteTableFromSchema<
+  TKeySchema,
+  TValueSchema
+>;
 
-export function createSqliteTable<
-  TKeySchema extends Record<string, StaticAbiType>,
-  TValueSchema extends Record<string, SchemaAbiType>
->({
+export function createSqliteTable<TKeySchema extends KeySchema, TValueSchema extends ValueSchema>({
   address,
   namespace,
   name,
