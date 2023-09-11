@@ -8,6 +8,11 @@ import { Schema, SchemaLib } from "../src/Schema.sol";
  * Overrides for encode function to simplify tests
  */
 library SchemaEncodeHelper {
+  function encode() internal pure returns (Schema) {
+    SchemaType[] memory schema = new SchemaType[](0);
+    return SchemaLib.encode(schema);
+  }
+
   function encode(SchemaType a) internal pure returns (Schema) {
     SchemaType[] memory schema = new SchemaType[](1);
     schema[0] = a;

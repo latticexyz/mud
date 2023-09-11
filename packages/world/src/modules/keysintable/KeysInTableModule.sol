@@ -29,11 +29,12 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
 contract KeysInTableModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
+  error KeysInTableModule_TableNotFound();
   error KeysInTableModule_EmptyKeySchema();
 
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
-  KeysInTableHook immutable hook = new KeysInTableHook();
+  KeysInTableHook public immutable hook = new KeysInTableHook();
 
   function getName() public pure returns (bytes16) {
     return bytes16("keysInTable");
@@ -45,8 +46,11 @@ contract KeysInTableModule is IModule, WorldContextConsumer {
 
     IBaseWorld world = IBaseWorld(_world());
 
+    if (!world.hasTable(sourceTableId)) {
+      revert KeysInTableModule_TableNotFound();
+    }
     // It doesn't make sense to index keys of a singleton table (only a single value)
-    if (world.getKeySchema(sourceTableId).isEmpty()) {
+    if (world.hasTable(sourceTableId) && world.getKeySchema(sourceTableId).isEmpty()) {
       revert KeysInTableModule_EmptyKeySchema();
     }
 

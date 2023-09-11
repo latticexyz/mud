@@ -5,6 +5,8 @@ import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStoreRead {
+  function hasTable(bytes32 table) external view returns (bool);
+
   function getValueSchema(bytes32 table) external view returns (Schema schema);
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);

@@ -20,41 +20,41 @@ import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
-  IBaseWorld world;
-  KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
+  IBaseWorld public world;
+  KeysInTableModule public keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
 
-  bytes16 namespace = ROOT_NAMESPACE;
-  bytes16 name = bytes16("source");
-  bytes16 singletonName = bytes16("singleton");
-  bytes16 compositeName = bytes16("composite");
-  bytes32 key1 = keccak256("test");
-  bytes32[] keyTuple1;
-  bytes32 key2 = keccak256("test2");
-  bytes32[] keyTuple2;
-  bytes32 key3 = keccak256("test3");
-  bytes32[] keyTuple3;
+  bytes16 public namespace = ROOT_NAMESPACE;
+  bytes16 public name = bytes16("source");
+  bytes16 public singletonName = bytes16("singleton");
+  bytes16 public compositeName = bytes16("composite");
+  bytes32 public key1 = keccak256("test");
+  bytes32[] public keyTuple1;
+  bytes32 public key2 = keccak256("test2");
+  bytes32[] public keyTuple2;
+  bytes32 public key3 = keccak256("test3");
+  bytes32[] public keyTuple3;
 
-  Schema tableValueSchema;
-  Schema tableKeySchema;
-  Schema singletonKeySchema;
-  Schema compositeKeySchema;
-  bytes32 tableId = ResourceSelector.from(namespace, name);
-  bytes32 singletonTableId = ResourceSelector.from(namespace, singletonName);
-  bytes32 compositeTableId = ResourceSelector.from(namespace, compositeName);
+  bytes32 public tableId = ResourceSelector.from(namespace, name);
+  bytes32 public singletonTableId = ResourceSelector.from(namespace, singletonName);
+  bytes32 public compositeTableId = ResourceSelector.from(namespace, compositeName);
 
-  uint256 val1 = 123;
-  uint256 val2 = 42;
+  Schema public tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+  Schema public tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+  Schema public compositeKeySchema =
+    SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
+  Schema public singletonKeySchema = SchemaEncodeHelper.encode();
+
+  uint256 public val1 = 123;
+  uint256 public val2 = 42;
 
   function setUp() public {
-    tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
-    tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
-    compositeKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
-
-    SchemaType[] memory _schema = new SchemaType[](0);
-    singletonKeySchema = SchemaLib.encode(_schema);
-
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
+
+    world.registerTable(tableId, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
+    world.registerTable(singletonTableId, singletonKeySchema, tableValueSchema, new string[](0), new string[](1));
+    world.registerTable(compositeTableId, compositeKeySchema, tableValueSchema, new string[](3), new string[](1));
+
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
@@ -64,35 +64,19 @@ contract KeysInTableModuleTest is Test, GasReporter {
   }
 
   function _installKeysInTableModule() internal {
-    // Register source table
-    world.registerTable(tableId, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
-    world.registerTable(singletonTableId, singletonKeySchema, tableValueSchema, new string[](0), new string[](1));
-    world.registerTable(compositeTableId, compositeKeySchema, tableValueSchema, new string[](3), new string[](1));
-
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
     startGasReport("install keys in table module");
     world.installRootModule(keysInTableModule, abi.encode(tableId));
     endGasReport();
-    world.installRootModule(keysInTableModule, abi.encode(singletonTableId));
     world.installRootModule(keysInTableModule, abi.encode(compositeTableId));
   }
 
   // This test is expected to fail because `getKeySchema()` on StoreCore reverts on singleton tables
-  // TODO: we need to be able to determine whether a table is singleton vs. nonexistent
   function testInstallSingleton() public {
-    _installKeysInTableModule();
-
-    bytes32[] memory keyTuple = new bytes32[](0);
-
-    world.setRecord(singletonTableId, keyTuple, abi.encodePacked(val1), tableValueSchema);
-
-    // Get the list of keys in this target table
-    bytes32[][] memory keysInTable = getKeysInTable(world, singletonTableId);
-
-    // Assert that the list is correct
-    assertEq(keysInTable.length, 0);
+    vm.expectRevert();
+    world.installRootModule(keysInTableModule, abi.encode(singletonTableId));
   }
 
   function testInstallComposite() public {
