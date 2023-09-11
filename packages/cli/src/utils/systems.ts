@@ -31,7 +31,7 @@ export async function registerSystems(
   }
 ): Promise<number> {
   console.log(chalk.blue("Registering Systems & Functions"));
-  const { confirmations, systems, namespace, worldContract, systemContracts, forgeOutDirectory } = input;
+  const { systems, namespace, worldContract, systemContracts, forgeOutDirectory } = input;
   // Register systems
   const systemRegisterPromises: Promise<TransactionResponse | TransactionReceipt>[] = [];
   for (const [systemName, { name, openAccess, registerFunctionSelectors }] of Object.entries(systems)) {
@@ -44,7 +44,6 @@ export async function registerSystems(
         contract: worldContract,
         func: "registerSystem",
         args: [tableIdToHex(namespace, name), await systemContracts[systemName], openAccess],
-        confirmations: confirmations,
       })
     );
 
@@ -72,7 +71,6 @@ export async function registerSystems(
               contract: worldContract,
               func: "registerRootFunctionSelector",
               args: [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector],
-              confirmations: confirmations,
             })
           );
         } else {
@@ -83,7 +81,6 @@ export async function registerSystems(
               contract: worldContract,
               func: "registerFunctionSelector",
               args: [tableIdToHex(namespace, name), functionName, functionArgs],
-              confirmations: confirmations,
             })
           );
         }
@@ -104,7 +101,7 @@ export async function grantAccess(
   }
 ): Promise<number> {
   console.log(chalk.blue("Granting Access"));
-  const { confirmations, systems, namespace, worldContract, systemContracts } = input;
+  const { systems, namespace, worldContract, systemContracts } = input;
   // non-blocking for tx, await all at end
   const grantPromises: Promise<TransactionResponse | TransactionReceipt>[] = [];
   for (const [systemName, { name, accessListAddresses, accessListSystems }] of Object.entries(systems)) {
@@ -120,7 +117,6 @@ export async function grantAccess(
           contract: worldContract,
           func: "grantAccess",
           args: [tableIdToHex(namespace, name), address],
-          confirmations,
         })
       );
     });
@@ -135,7 +131,6 @@ export async function grantAccess(
           contract: worldContract,
           func: "grantAccess",
           args: [tableIdToHex(namespace, name), await systemContracts[granteeSystem]],
-          confirmations,
         })
       );
     });

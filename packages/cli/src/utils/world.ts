@@ -44,7 +44,6 @@ export async function registerNamespace(
       contract: input.worldContract,
       func: "registerNamespace",
       args: [toBytes16(input.namespace)],
-      confirmations: input.confirmations,
     });
   return input.nonce;
 }
@@ -91,7 +90,6 @@ export async function registerTables(
           Object.keys(keySchema),
           Object.keys(schema),
         ],
-        confirmations: input.confirmations,
       })
     );
   }

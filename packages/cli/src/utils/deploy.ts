@@ -14,9 +14,8 @@ import {
   confirmNonce,
 } from "./txHelpers";
 import { deployWorldContract as deployWorld, registerNamespace, registerTables } from "./world";
-import { installCoreModule } from "./coreModules";
+import { installCoreModule, installModules, getUserModules, updateModuleAddresses } from "./modules";
 import { grantAccess, registerSystems } from "./systems";
-import { installModules, getUserModules } from "./modules";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
@@ -187,12 +186,13 @@ export async function deploy(
     namespace: mudConfig.namespace,
   });
 
+  const modules = await updateModuleAddresses({ moduleContracts, modules: mudConfig.modules });
+
   // Blocking - Wait for User Module installs before postDeploy is run
   txConfig.nonce = await installModules({
     ...txConfig,
     worldContract,
-    modules: mudConfig.modules,
-    moduleContracts,
+    modules,
     tableIds,
   });
 
