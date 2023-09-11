@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
+
 import { System } from "../../../System.sol";
 import { WorldContextConsumer } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { SystemCall } from "../../../SystemCall.sol";
+import { SystemHookLib } from "../../../SystemHook.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
@@ -15,7 +18,7 @@ import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
-import { SystemHooks } from "../tables/SystemHooks.sol";
+import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
@@ -47,14 +50,29 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
-   * Register a hook for the system at the given namespace and name
+   * Register a hook for the system at the given resource selector
    */
-  function registerSystemHook(bytes32 resourceSelector, ISystemHook hook) public virtual {
+  function registerSystemHook(
+    bytes32 resourceSelector,
+    ISystemHook hookAddress,
+    uint8 enabledHooksBitmap
+  ) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
 
     // Register the hook
-    SystemHooks.push(resourceSelector, address(hook));
+    SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooksBitmap)));
+  }
+
+  /**
+   * Unregister the given hook for the system at the given resource selector
+   */
+  function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) public virtual {
+    // Require caller to own the namespace
+    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+
+    // Remove the hook from the list of hooks for this resourceSelector in the system hooks table
+    HookLib.filterListByAddress(SystemHooksTableId, resourceSelector, address(hookAddress));
   }
 
   /**

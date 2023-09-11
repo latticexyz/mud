@@ -16,9 +16,12 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
+import { StoreHookLib } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
+import { RevertSubscriber } from "./RevertSubscriber.sol";
+import { EchoSubscriber } from "./EchoSubscriber.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -28,6 +31,7 @@ struct TestStruct {
 
 contract StoreCoreTest is Test, StoreMock {
   TestStruct private testStruct;
+  event HookCalled(bytes);
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
@@ -861,7 +865,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data3Slice.length, 0);
   }
 
-  function testHooks() public {
+  function testRegisterHook() public {
     bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
@@ -881,7 +885,18 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](1)
     );
 
-    IStore(this).registerStoreHook(table, subscriber);
+    IStore(this).registerStoreHook(
+      table,
+      subscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      })
+    );
 
     bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -906,6 +921,95 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 
+  function testUnregisterHook() public {
+    bytes32 table = keccak256("some.table");
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = keccak256("some key");
+
+    // Register table's schema
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+
+    // Create a RevertSubscriber and an EchoSubscriber
+    RevertSubscriber revertSubscriber = new RevertSubscriber();
+    EchoSubscriber echoSubscriber = new EchoSubscriber();
+
+    // Register both subscribers
+    IStore(this).registerStoreHook(
+      table,
+      revertSubscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
+    // Register both subscribers
+    IStore(this).registerStoreHook(
+      table,
+      echoSubscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
+
+    bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+
+    // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
+    vm.expectRevert(bytes("onBeforeSetRecord"));
+    IStore(this).setRecord(table, key, data, fieldLayout);
+
+    // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
+    vm.expectRevert(bytes("onBeforeSetField"));
+    IStore(this).setField(table, key, 0, data, fieldLayout);
+
+    // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
+    vm.expectRevert(bytes("onBeforeDeleteRecord"));
+    IStore(this).deleteRecord(table, key, fieldLayout);
+
+    // Unregister the RevertSubscriber
+    IStore(this).unregisterStoreHook(table, revertSubscriber);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, data, fieldLayout));
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, data, fieldLayout));
+
+    IStore(this).setRecord(table, key, data, fieldLayout);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetField hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, uint8(0), data, fieldLayout));
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetField hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, uint8(0), data, fieldLayout));
+
+    IStore(this).setField(table, key, 0, data, fieldLayout);
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeDeleteRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, fieldLayout));
+
+    // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterDeleteRecord hook is called
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(table, key, fieldLayout));
+
+    IStore(this).deleteRecord(table, key, fieldLayout);
+  }
+
   function testHooksDynamicData() public {
     bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
@@ -926,7 +1030,18 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](2)
     );
 
-    IStore(this).registerStoreHook(table, subscriber);
+    IStore(this).registerStoreHook(
+      table,
+      subscriber,
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: false,
+        onBeforeSetField: true,
+        onAfterSetField: false,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: false
+      })
+    );
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;

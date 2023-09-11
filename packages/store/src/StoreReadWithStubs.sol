@@ -60,7 +60,14 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function registerStoreHook(bytes32, IStoreHook) public virtual {
+  function registerStoreHook(bytes32, IStoreHook, uint8) public virtual {
+    revert StoreReadWithStubs_NotImplemented();
+  }
+
+  /**
+   * Not implemented in StoreReadWithStubs
+   */
+  function unregisterStoreHook(bytes32, IStoreHook) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 

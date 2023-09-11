@@ -1,9 +1,9 @@
 import { Page } from "@playwright/test";
-import { IWorld__factory } from "../../contracts/types/ethers-contracts/factories/IWorld__factory";
+import IWorldAbi from "../../contracts/abi/IWorld.sol/IWorld.abi.json";
 import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 import { AbiParametersToPrimitiveTypes, ExtractAbiFunction, ExtractAbiFunctionNames } from "abitype";
 
-type WorldAbi = typeof IWorld__factory.abi;
+type WorldAbi = typeof IWorldAbi;
 
 type WorldContract = GetContractReturnType<WorldAbi, PublicClient, WalletClient>;
 

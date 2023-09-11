@@ -1,6 +1,7 @@
 import { CommandModule } from "yargs";
 
 import gasReport from "@latticexyz/gas-report";
+import abiTs from "@latticexyz/abi-ts";
 
 import devnode from "./devnode";
 import faucet from "./faucet";
@@ -26,4 +27,5 @@ export const commands: CommandModule<any, any>[] = [
   test,
   trace,
   devContracts,
+  abiTs,
 ];

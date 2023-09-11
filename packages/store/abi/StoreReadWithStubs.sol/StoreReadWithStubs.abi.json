@@ -610,6 +610,11 @@
         "internalType": "contract IStoreHook",
         "name": "",
         "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
       }
     ],
     "name": "registerStoreHook",
@@ -712,6 +717,24 @@
       }
     ],
     "name": "setRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "contract IStoreHook",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "unregisterStoreHook",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

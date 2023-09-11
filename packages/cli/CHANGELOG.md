@@ -1,5 +1,54 @@
 # Change Log
 
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15), [`2459e15f`](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc), [`18d3aea5`](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/world@2.0.0-next.7
+  - @latticexyz/abi-ts@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/gas-report@2.0.0-next.7
+  - @latticexyz/protocol-parser@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+  - @latticexyz/services@2.0.0-next.7
+  - @latticexyz/utils@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Minor Changes
+
+- [#1413](https://github.com/latticexyz/mud/pull/1413) [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561) Thanks [@holic](https://github.com/holic)! - Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
+
+  This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
+
+  ```
+  pnpm add @latticexyz/abi-ts
+  pnpm abi-ts
+  ```
+
+  By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
+
+  ```console
+  pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561), [`9af542d3`](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4), [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/abi-ts@2.0.0-next.6
+  - @latticexyz/gas-report@2.0.0-next.6
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/world@2.0.0-next.6
+  - @latticexyz/schema-type@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/config@2.0.0-next.6
+  - @latticexyz/protocol-parser@2.0.0-next.6
+  - @latticexyz/services@2.0.0-next.6
+  - @latticexyz/utils@2.0.0-next.6
+
 ## 2.0.0-next.5
 
 ### Patch Changes

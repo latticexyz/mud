@@ -1,3 +1,162 @@
+# Version 2.0.0-next.7
+
+## Major changes
+
+**[feat(store,world): more granularity for onchain hooks (#1399)](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15)** (@latticexyz/store, @latticexyz/world)
+
+- The `onSetRecord` hook is split into `onBeforeSetRecord` and `onAfterSetRecord` and the `onDeleteRecord` hook is split into `onBeforeDeleteRecord` and `onAfterDeleteRecord`.
+  The purpose of this change is to allow more fine-grained control over the point in the lifecycle at which hooks are executed.
+
+  The previous hooks were executed before modifying data, so they can be replaced with the respective `onBefore` hooks.
+
+  ```diff
+  - function onSetRecord(
+  + function onBeforeSetRecord(
+      bytes32 table,
+      bytes32[] memory key,
+      bytes memory data,
+      Schema valueSchema
+    ) public;
+
+  - function onDeleteRecord(
+  + function onBeforeDeleteRecord(
+      bytes32 table,
+      bytes32[] memory key,
+      Schema valueSchema
+    ) public;
+  ```
+
+- It is now possible to specify which methods of a hook contract should be called when registering a hook. The purpose of this change is to save gas by avoiding to call no-op hook methods.
+
+  ```diff
+  function registerStoreHook(
+    bytes32 tableId,
+  - IStoreHook hookAddress
+  + IStoreHook hookAddress,
+  + uint8 enabledHooksBitmap
+  ) public;
+
+  function registerSystemHook(
+    bytes32 systemId,
+  - ISystemHook hookAddress
+  + ISystemHook hookAddress,
+  + uint8 enabledHooksBitmap
+  ) public;
+  ```
+
+  There are `StoreHookLib` and `SystemHookLib` with helper functions to encode the bitmap of enabled hooks.
+
+  ```solidity
+  import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+
+  uint8 storeHookBitmap = StoreBookLib.encodeBitmap({
+    onBeforeSetRecord: true,
+    onAfterSetRecord: true,
+    onBeforeSetField: true,
+    onAfterSetField: true,
+    onBeforeDeleteRecord: true,
+    onAfterDeleteRecord: true
+  });
+  ```
+
+  ```solidity
+  import { SystemHookLib } from "@latticexyz/world/src/SystemHook.sol";
+
+  uint8 systemHookBitmap = SystemHookLib.encodeBitmap({
+    onBeforeCallSystem: true,
+    onAfterCallSystem: true
+  });
+  ```
+
+- The `onSetRecord` hook call for `emitEphemeralRecord` has been removed to save gas and to more clearly distinguish ephemeral tables as offchain tables.
+
+## Patch changes
+
+**[fix(abi-ts): remove cwd join (#1418)](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc)** (@latticexyz/abi-ts)
+
+Let `glob` handle resolving the glob against the current working directory.
+
+**[feat(world): allow callFrom from own address without explicit delegation (#1407)](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)** (@latticexyz/world)
+
+Allow `callFrom` with the own address as `delegator` without requiring an explicit delegation
+
+---
+
+# Version 2.0.0-next.6
+
+## Major changes
+
+**[style(gas-report): rename mud-gas-report to gas-report (#1410)](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4)** (@latticexyz/gas-report)
+
+Renames `mud-gas-report` binary to `gas-report`, since it's no longer MUD specific.
+
+## Minor changes
+
+**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/abi-ts, @latticexyz/cli)
+
+Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
+
+This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
+
+```
+pnpm add @latticexyz/abi-ts
+pnpm abi-ts
+```
+
+By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
+
+```console
+pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
+```
+
+**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (create-mud)
+
+We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+If you have a MUD project created from an older template, you can replace TypeChain with `abi-ts` by first updating your contracts' `package.json`:
+
+```diff
+-"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
++"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
+-"build:abi": "forge clean && forge build",
++"build:abi": "rimraf abi && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
++"build:abi-ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
+ "build:mud": "mud tablegen && mud worldgen",
+-"build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
+```
+
+And update your client's `setupNetwork.ts` with:
+
+```diff
+-import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
++import IWorldAbi from "contracts/abi/IWorld.sol/IWorld.abi.json";
+
+ const worldContract = createContract({
+   address: networkConfig.worldAddress as Hex,
+-  abi: IWorld__factory.abi,
++  abi: IWorldAbi,
+```
+
+**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/store, @latticexyz/world)
+
+We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+If you previously relied on TypeChain types from `@latticexyz/store` or `@latticexyz/world`, you will either need to migrate to viem or abitype using ABI JSON imports or generate TypeChain types from our exported ABI JSON files.
+
+```ts
+import { getContract } from "viem";
+import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.abi.json";
+
+const storeContract = getContract({
+  abi: IStoreAbi,
+  ...
+});
+
+await storeContract.write.setRecord(...);
+```
+
+---
+
 # Version 2.0.0-next.5
 
 ## Major changes

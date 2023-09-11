@@ -132,15 +132,19 @@ interface IStoreRegistration {
   ) external;
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hook) external;
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
+
+  // Unregister a hook for the given tableId
+  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
 interface IStoreHook {
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) external;
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) external;
 
-  // Split onSetField into pre and post to simplify the implementation of hooks
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) external;
+
   function onBeforeSetField(
     bytes32 table,
     bytes32[] memory key,
@@ -157,5 +161,7 @@ interface IStoreHook {
     FieldLayout fieldLayout
   ) external;
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
+  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
 }

@@ -23,9 +23,13 @@ contract MirrorSubscriber is IStoreHook {
     _table = table;
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setRecord(indexerTableId, key, data, fieldLayout);
+  }
+
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
+    // NOOP
   }
 
   function onBeforeSetField(
@@ -39,10 +43,16 @@ contract MirrorSubscriber is IStoreHook {
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data, fieldLayout);
   }
 
-  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {}
+  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {
+    // NOOP
+  }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
     if (table != table) revert("invalid table");
     StoreSwitch.deleteRecord(indexerTableId, key, fieldLayout);
+  }
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+    // NOOP
   }
 }

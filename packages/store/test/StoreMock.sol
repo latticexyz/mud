@@ -88,7 +88,12 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hook) public {
-    StoreCore.registerStoreHook(table, hook);
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) public {
+    StoreCore.registerStoreHook(table, hookAddress, enabledHooksBitmap);
+  }
+
+  // Unregister hook to be called when a record or field is set or deleted
+  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) public {
+    StoreCore.unregisterStoreHook(table, hookAddress);
   }
 }
