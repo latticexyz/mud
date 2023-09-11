@@ -1,0 +1,16 @@
+declare const abi: [
+  {
+    inputs: [];
+    name: "uniqueEntity_system_getUniqueEntity";
+    outputs: [
+      {
+        internalType: "bytes32";
+        name: "uniqueEntity";
+        type: "bytes32";
+      }
+    ];
+    stateMutability: "nonpayable";
+    type: "function";
+  }
+];
+export default abi;

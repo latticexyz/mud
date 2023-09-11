@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/schema-type",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.7",
   "description": "SchemaType enum for various languages",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist/typescript",
     "dev": "tsup --watch",
-    "gas-report": "mud-gas-report --save gas-report.json",
+    "gas-report": "gas-report --save gas-report.json",
     "test": "vitest typecheck --run && vitest --run && forge test",
     "test:ci": "pnpm run test"
   },

@@ -81,7 +81,7 @@ export default mudConfig({
       keySchema: {
         resourceSelector: "bytes32",
       },
-      schema: "address[]",
+      schema: "bytes21[]",
     },
     ResourceType: {
       directory: "modules/core/tables",

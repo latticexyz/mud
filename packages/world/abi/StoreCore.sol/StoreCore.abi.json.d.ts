@@ -1,0 +1,176 @@
+declare const abi: [
+  {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      }
+    ];
+    name: "StoreDeleteRecord";
+    type: "event";
+  },
+  {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "staticData";
+        type: "bytes";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "encodedLengths";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "dynamicData";
+        type: "bytes";
+      }
+    ];
+    name: "StoreEphemeralRecord";
+    type: "event";
+  },
+  {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "staticData";
+        type: "bytes";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "encodedLengths";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "dynamicData";
+        type: "bytes";
+      }
+    ];
+    name: "StoreSetRecord";
+    type: "event";
+  },
+  {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        indexed: false;
+        internalType: "uint48";
+        name: "start";
+        type: "uint48";
+      },
+      {
+        indexed: false;
+        internalType: "uint40";
+        name: "deleteCount";
+        type: "uint40";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "encodedLengths";
+        type: "bytes32";
+      }
+    ];
+    name: "StoreSpliceDynamicRecord";
+    type: "event";
+  },
+  {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        indexed: false;
+        internalType: "uint48";
+        name: "start";
+        type: "uint48";
+      },
+      {
+        indexed: false;
+        internalType: "uint40";
+        name: "deleteCount";
+        type: "uint40";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      }
+    ];
+    name: "StoreSpliceStaticRecord";
+    type: "event";
+  }
+];
+export default abi;

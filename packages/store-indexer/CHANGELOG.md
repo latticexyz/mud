@@ -1,5 +1,35 @@
 # @latticexyz/store-indexer
 
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/store-sync@2.0.0-next.7
+  - @latticexyz/block-logs-stream@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/store-sync@2.0.0-next.6
+  - @latticexyz/block-logs-stream@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/store-sync@2.0.0-next.5
+  - @latticexyz/block-logs-stream@2.0.0-next.5
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes
