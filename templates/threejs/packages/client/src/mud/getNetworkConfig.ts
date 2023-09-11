@@ -13,12 +13,11 @@
  */
 import { getBurnerPrivateKey } from "@latticexyz/common";
 
-
 /*
  * Import the addresses of the World, possibly on multiple chains,
  * from packages/contracts/worlds.json. When the contracts package
  * deploys a new `World`, it updates this file.
- */  
+ */
 import worlds from "contracts/worlds.json";
 
 /*
