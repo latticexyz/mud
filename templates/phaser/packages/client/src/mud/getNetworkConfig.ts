@@ -18,7 +18,7 @@ import { getBurnerPrivateKey } from "@latticexyz/common";
  * from packages/contracts/worlds.json. When the contracts package
  * deploys a new `World`, it updates this file.
  */
-import worldsJson from "contracts/worlds.json";
+import worlds from "contracts/worlds.json";
 
 /*
  * The supported chains.
@@ -35,9 +35,6 @@ import worldsJson from "contracts/worlds.json";
  */
 import { supportedChains } from "./supportedChains";
 
-const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
-
-/* This is the function that does the actual work. */
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
 

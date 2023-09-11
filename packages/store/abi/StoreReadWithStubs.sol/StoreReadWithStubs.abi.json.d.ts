@@ -668,6 +668,24 @@ declare const abi: [
         type: "bytes32";
       },
       {
+        internalType: "contract IStoreHook";
+        name: "";
+        type: "address";
+      }
+    ];
+    name: "unregisterStoreHook";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "";
+        type: "bytes32";
+      },
+      {
         internalType: "bytes32[]";
         name: "";
         type: "bytes32[]";
