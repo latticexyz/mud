@@ -8,11 +8,11 @@ import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { Hooks, Tables, HooksTableId } from "./codegen/Tables.sol";
+import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
-import { Hook } from "./Hook.sol";
+import { Hook, HookLib } from "./Hook.sol";
 import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 
 library StoreCore {
@@ -25,8 +25,6 @@ library StoreCore {
   /**
    * Initialize internal tables.
    * Consumers must call this function in their constructor.
-   * TODO: should we turn the schema table into a "proper table" and register it here?
-   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
     // StoreSwitch uses the storeAddress to decide where to write data to.
@@ -36,7 +34,7 @@ library StoreCore {
 
     // Register internal tables
     Tables.register();
-    Hooks.register();
+    StoreHooks.register();
   }
 
   /************************************************************************
@@ -122,7 +120,14 @@ library StoreCore {
    * Register hooks to be called when a record or field is set or deleted
    */
   function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
-    Hooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooksBitmap)));
+    StoreHooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooksBitmap)));
+  }
+
+  /**
+   * Unregister a hook from the given tableId
+   */
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) internal {
+    HookLib.filterListByAddress(StoreHooksTableId, tableId, address(hookAddress));
   }
 
   /************************************************************************
@@ -145,7 +150,7 @@ library StoreCore {
     emit StoreSetRecord(tableId, key, data);
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
@@ -212,7 +217,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, data);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
@@ -243,7 +248,7 @@ library StoreCore {
     emit StoreDeleteRecord(tableId, key);
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_DELETE_RECORD))) {
@@ -294,7 +299,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
@@ -338,7 +343,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
@@ -392,7 +397,7 @@ library StoreCore {
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = Hooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks.get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {

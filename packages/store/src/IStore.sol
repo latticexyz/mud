@@ -124,6 +124,9 @@ interface IStoreRegistration {
 
   // Register hook to be called when a record or field is set or deleted
   function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
+
+  // Unregister a hook for the given tableId
+  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
