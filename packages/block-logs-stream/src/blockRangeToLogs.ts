@@ -2,6 +2,7 @@ import { EMPTY, OperatorFunction, concatMap, from, pipe, tap } from "rxjs";
 import { FetchLogsResult, fetchLogs } from "./fetchLogs";
 import { AbiEvent } from "abitype";
 import { Address, BlockNumber, PublicClient } from "viem";
+import { debug } from "./debug";
 
 export type BlockRangeToLogsOptions<TAbiEvents extends readonly AbiEvent[]> = {
   /**
@@ -50,9 +51,10 @@ export function blockRangeToLogs<TAbiEvents extends readonly AbiEvent[]>({
       toBlock = endBlock;
     }),
     // concatMap only processes the next emission once the inner observable completes,
-    // so it always uses the latest`toBlock` value.
+    // so it always uses the latest `toBlock` value.
     concatMap(() => {
       if (fromBlock > toBlock) return EMPTY;
+      debug("fetching logs for block range", { fromBlock, toBlock });
       return from(
         fetchLogs({
           publicClient,
