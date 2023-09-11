@@ -54,6 +54,7 @@ contract KeysInTableModule is IModule, WorldContextConsumer {
       revert KeysInTableModule_EmptyKeySchema();
     }
 
+    // TODO: should this use `world.hasTable`?
     if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables
       KeysInTable.register(world);
