@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { ERC165 } from "./ERC165.sol";
+import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 // ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
 bytes4 constant SYSTEM_HOOK_INTERFACE_ID = ISystemHook.onBeforeCallSystem.selector ^
   ISystemHook.onAfterCallSystem.selector ^
-  ERC165.supportsInterface.selector;
+  ERC165_INTERFACE_ID;
 
-interface ISystemHook is ERC165 {
+interface ISystemHook is IERC165 {
   function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) external;
 
   function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) external;

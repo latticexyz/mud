@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-bytes4 constant ERC165_INTERFACE_ID = ERC165.supportsInterface.selector;
+bytes4 constant ERC165_INTERFACE_ID = IERC165.supportsInterface.selector;
 
 // See https://eips.ethereum.org/EIPS/eip-165
-interface ERC165 {
+interface IERC165 {
   /// @notice Query if a contract implements an interface
   /// @param interfaceID The interface identifier, as specified in ERC-165
   /// @dev Interface identification is specified in ERC-165. This function

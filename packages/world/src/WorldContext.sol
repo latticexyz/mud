@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
-import { ERC165_INTERFACE_ID } from "./interfaces/ERC165.sol";
+import { ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";
 import { IWorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./interfaces/IWorldContextConsumer.sol";
 
 // The context size is 20 bytes for msg.sender, and 32 bytes for msg.value

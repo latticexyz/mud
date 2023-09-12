@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Hook, HookLib } from "./Hook.sol";
 import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "./IStoreHook.sol";
-import { ERC165_INTERFACE_ID } from "./ERC165.sol";
+import { ERC165_INTERFACE_ID } from "./IERC165.sol";
 
 enum StoreHookType {
   BEFORE_SET_RECORD,

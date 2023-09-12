@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "./interfaces/ISystemHook.sol";
-import { ERC165_INTERFACE_ID } from "./interfaces/ERC165.sol";
+import { ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";
 
 enum SystemHookType {
   BEFORE_CALL_SYSTEM,
