@@ -1000,7 +1000,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
     vm.expectRevert(bytes("onBeforeSetField"));
@@ -1015,13 +1015,13 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, data, valueSchema));
+    emit HookCalled(abi.encode(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, data, valueSchema));
+    emit HookCalled(abi.encode(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema));
 
-    IStore(this).setRecord(table, key, data, valueSchema);
+    IStore(this).setRecord(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetField hook is called
     vm.expectEmit(true, true, true, true);
