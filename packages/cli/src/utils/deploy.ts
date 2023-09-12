@@ -198,7 +198,6 @@ export async function deploy(
         // Register function selectors for the system
         if (registerFunctionSelectors) {
           const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
-          console.log("function signatures to register", functionSignatures);
           const isRoot = namespace === "";
           // Using Promise.all to avoid blocking on async calls
           await Promise.all(
