@@ -14,9 +14,8 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
-import { KeysInTable } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
-import { KeysInTableTableId, UsedKeysIndexTableId } from "./constants.sol";
+import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
+import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -51,12 +50,44 @@ contract KeysInTableModule is IModule, WorldContextConsumer {
 
     if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables
-      KeysInTable.register(world, KeysInTableTableId);
-      UsedKeysIndex.register(world, UsedKeysIndexTableId);
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(
+          world.registerTable,
+          (
+            KeysInTableTableId,
+            KeysInTable.getKeySchema(),
+            KeysInTable.getValueSchema(),
+            KeysInTable.getKeyNames(),
+            KeysInTable.getFieldNames()
+          )
+        )
+      );
+      if (!success) revertWithBytes(returnData);
+
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(
+          world.registerTable,
+          (
+            UsedKeysIndexTableId,
+            UsedKeysIndex.getKeySchema(),
+            UsedKeysIndex.getValueSchema(),
+            UsedKeysIndex.getKeyNames(),
+            UsedKeysIndex.getFieldNames()
+          )
+        )
+      );
+      if (!success) revertWithBytes(returnData);
 
       // Grant the hook access to the tables
-      world.grantAccess(KeysInTableTableId, address(hook));
-      world.grantAccess(UsedKeysIndexTableId, address(hook));
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(world.grantAccess, (KeysInTableTableId, address(hook)))
+      );
+      if (!success) revertWithBytes(returnData);
+
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(world.grantAccess, (UsedKeysIndexTableId, address(hook)))
+      );
+      if (!success) revertWithBytes(returnData);
     }
 
     // Register a hook that is called when a value is set in the source table

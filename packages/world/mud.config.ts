@@ -132,7 +132,6 @@ export default mudConfig({
         keys3: "bytes32[]",
         keys4: "bytes32[]",
       },
-      tableIdArgument: true,
     },
     UsedKeysIndex: {
       directory: "modules/keysintable/tables",
@@ -142,7 +141,6 @@ export default mudConfig({
       },
       schema: { has: "bool", index: "uint40" },
       dataStruct: false,
-      tableIdArgument: true,
     },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
