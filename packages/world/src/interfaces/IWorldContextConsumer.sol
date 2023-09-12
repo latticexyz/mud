@@ -11,6 +11,8 @@ bytes4 constant WORLD_CONTEXT_CONSUMER_INTERFACE_ID = IWorldContextConsumer._msg
 
 interface IWorldContextConsumer is ERC165 {
   function _msgSender() external view returns (address);
+
   function _msgValue() external view returns (uint256);
+
   function _world() external view returns (address);
 }
