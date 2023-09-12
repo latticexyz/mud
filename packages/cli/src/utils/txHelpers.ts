@@ -11,8 +11,6 @@ export type CallData = {
   args: unknown[];
 };
 
-type ContractNames = string[];
-
 export type ContractCode = {
   name: string;
   abi: ContractInterface;
@@ -21,7 +19,6 @@ export type ContractCode = {
 
 export type TxConfig = {
   signer: ethers.Wallet;
-  nonce: number;
   maxPriorityFeePerGas: number | undefined;
   maxFeePerGas: BigNumber | undefined;
   gasPrice: BigNumber | undefined;
@@ -30,7 +27,7 @@ export type TxConfig = {
 };
 
 export function deployContractsByCode(
-  input: TxConfig & { contracts: ContractCode[] }
+  input: TxConfig & { nonce: number; contracts: ContractCode[] }
 ): Record<string, Promise<string>> {
   // TODO - can check via Create2 in future
   return input.contracts.reduce<Record<string, Promise<string>>>((acc, contract) => {
@@ -43,22 +40,7 @@ export function deployContractsByCode(
   }, {});
 }
 
-export function deployContractsByName(
-  input: TxConfig & { contracts: ContractNames; forgeOutDirectory: string }
-): Record<string, Promise<string>> {
-  // TODO - can check via Create2 in future
-  return input.contracts.reduce<Record<string, Promise<string>>>((acc, contractName) => {
-    console.log(chalk.blue(`Deploying ${contractName}`));
-    acc[contractName] = deployContractByName({
-      ...input,
-      nonce: input.nonce++,
-      contractName,
-    });
-    return acc;
-  }, {});
-}
-
-export async function deployContract(input: TxConfig & { contract: ContractCode }): Promise<string> {
+export async function deployContract(input: TxConfig & { nonce: number; contract: ContractCode }): Promise<string> {
   const { signer, nonce, maxPriorityFeePerGas, maxFeePerGas, debug, gasPrice, confirmations, contract } = input;
 
   try {
@@ -88,7 +70,7 @@ export async function deployContract(input: TxConfig & { contract: ContractCode 
 }
 
 export async function deployContractByName(
-  input: TxConfig & { contractName: string; forgeOutDirectory: string }
+  input: TxConfig & { nonce: number; contractName: string; forgeOutDirectory: string }
 ): Promise<string> {
   const { abi, bytecode } = getContractData(input.contractName, input.forgeOutDirectory);
   return deployContract({
@@ -134,6 +116,7 @@ export async function fastTxExecute<
   F extends keyof C
 >(
   input: TxConfig & {
+    nonce: number;
     contract: C;
     func: F;
     args: Parameters<C[F]>;

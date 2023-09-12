@@ -5,22 +5,18 @@ import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import {
   setInternalFeePerGas,
-  deployContractsByName,
-  ContractCode,
   deployContractsByCode,
-  deployContract,
   confirmNonce,
   fastTxExecute,
+  ContractCode,
+  getContractData,
 } from "./txHelpers";
 import { deployWorldContract } from "./world";
 import { getTableIds, getRegisterTable } from "./tables";
-import { getUserModules, getModuleCall } from "./modules";
+import { defaultModules, getUserModules, getModuleCall } from "./modules";
 import { grantAccess, registerFunctionCalls, registerSystemCall } from "./systems";
 import { toBytes16, postDeploy } from "./utils";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
-import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
-import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
-import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
 
 export interface DeployConfig {
@@ -44,32 +40,10 @@ export async function deploy(
   existingContractNames: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
-  // These modules are always deployed
-  const defaultModules: ContractCode[] = [
-    {
-      name: "KeysWithValueModule",
-      abi: KeysWithValueModuleData.abi,
-      bytecode: KeysWithValueModuleData.bytecode,
-    },
-    {
-      name: "KeysInTableModule",
-      abi: KeysInTableModuleData.abi,
-      bytecode: KeysInTableModuleData.bytecode,
-    },
-    {
-      name: "UniqueEntityModule",
-      abi: UniqueEntityModuleData.abi,
-      bytecode: UniqueEntityModuleData.bytecode,
-    },
-  ];
-
-  // Filters any default modules from config
-  const userModules = getUserModules(defaultModules, mudConfig.modules);
-  const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
-
   const startTime = Date.now();
   const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
     deployConfig;
+  const resolvedConfig = resolveWorldConfig(mudConfig, existingContractNames);
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -78,15 +52,14 @@ export async function deploy(
   const signer = new ethers.Wallet(privateKey, provider);
   console.log("Deploying from", signer.address);
 
-  const initialNonce = await signer.getTransactionCount();
-  console.log("Initial nonce", initialNonce);
+  let nonce = await signer.getTransactionCount();
+  console.log("Initial nonce", nonce);
 
   const txParams = await setInternalFeePerGas(signer, priorityFeeMultiplier);
 
   const txConfig = {
     ...txParams,
     signer,
-    nonce: initialNonce,
     debug: !!debug,
     disableTxWait,
     confirmations: disableTxWait ? 0 : 1,
@@ -97,48 +70,52 @@ export async function deploy(
   console.log("Start deployment at block", blockNumber);
 
   // Deploy all contracts - World, Core, Systems, Module. Non-blocking.
-  const worldPromise: Promise<string> = deployWorldContract({
-    ...txConfig,
-    worldAddress,
-    worldContractName: mudConfig.worldContractName,
-    forgeOutDirectory,
+  const worldPromise: Promise<string> = worldAddress
+    ? Promise.resolve(worldAddress)
+    : deployWorldContract({
+        ...txConfig,
+        nonce: nonce++,
+        worldContractName: mudConfig.worldContractName,
+        forgeOutDirectory,
+      });
+
+  // Filters any default modules from config
+  const userModules = getUserModules(defaultModules, mudConfig.modules);
+  const userModuleContracts = Object.keys(userModules).map((name) => {
+    const { abi, bytecode } = getContractData(name, forgeOutDirectory);
+    return {
+      name,
+      abi,
+      bytecode,
+    } as ContractCode;
   });
-  txConfig.nonce++;
 
-  console.log(chalk.blue(`Deploying CoreModule`));
+  const systemContracts = Object.keys(resolvedConfig.systems).map((name) => {
+    const { abi, bytecode } = getContractData(name, forgeOutDirectory);
+    return {
+      name,
+      abi,
+      bytecode,
+    } as ContractCode;
+  });
 
-  // TODO: This only needs to be deployed once per chain, add a check if they exist already (use create2)
-  const coreModulePromise = deployContract({
-    ...txConfig,
-    contract: {
+  const contracts: ContractCode[] = [
+    {
       name: "CoreModule",
       abi: CoreModuleData.abi,
       bytecode: CoreModuleData.bytecode,
     },
-  });
-  txConfig.nonce++;
+    ...defaultModules,
+    ...userModuleContracts,
+    ...systemContracts,
+  ];
 
-  const defaultModuleContracts = deployContractsByCode({
+  const deployedContracts = deployContractsByCode({
     ...txConfig,
-    contracts: defaultModules,
+    nonce,
+    contracts,
   });
-  txConfig.nonce = txConfig.nonce + Object.keys(defaultModules).length;
-
-  const userModuleContracts = deployContractsByName({
-    ...txConfig,
-    contracts: Object.keys(userModules),
-    forgeOutDirectory,
-  });
-  txConfig.nonce = txConfig.nonce + Object.keys(userModules).length;
-
-  const moduleContracts = { ...defaultModuleContracts, ...userModuleContracts };
-
-  const systemContracts = deployContractsByName({
-    ...txConfig,
-    contracts: Object.keys(resolvedConfig.systems),
-    forgeOutDirectory,
-  });
-  txConfig.nonce = txConfig.nonce + Object.keys(resolvedConfig.systems).length;
+  nonce = nonce + contracts.length;
 
   // Wait for world to be deployed
   const deployedWorldAddress = await worldPromise;
@@ -149,10 +126,10 @@ export async function deploy(
     console.log(chalk.blue("Installing CoreModule"));
     await fastTxExecute({
       ...txConfig,
-      nonce: txConfig.nonce++,
+      nonce: nonce++,
       contract: worldContract,
       func: "installRootModule",
-      args: [await coreModulePromise, "0x"],
+      args: [await deployedContracts["CoreModule"], "0x"],
     });
     console.log(chalk.green("Installed CoreModule"));
   }
@@ -161,7 +138,7 @@ export async function deploy(
     console.log(chalk.blue("Registering Namespace"));
     await fastTxExecute({
       ...txConfig,
-      nonce: txConfig.nonce++,
+      nonce: nonce++,
       contract: worldContract,
       func: "registerNamespace",
       args: [toBytes16(mudConfig.namespace)],
@@ -177,7 +154,7 @@ export async function deploy(
     registerTableCalls.map((call) =>
       fastTxExecute({
         ...txConfig,
-        nonce: txConfig.nonce++,
+        nonce: nonce++,
         contract: worldContract,
         ...call,
       })
@@ -189,7 +166,7 @@ export async function deploy(
   const systemCalls = await Promise.all(
     Object.entries(resolvedConfig.systems).map(([systemName, system]) =>
       registerSystemCall({
-        systemContracts,
+        systemContracts: deployedContracts,
         systemName,
         system,
         namespace: mudConfig.namespace,
@@ -208,7 +185,7 @@ export async function deploy(
     [...systemCalls, ...functionCalls].map((call) =>
       fastTxExecute({
         ...txConfig,
-        nonce: txConfig.nonce++,
+        nonce: nonce++,
         contract: worldContract,
         ...call,
       })
@@ -219,7 +196,7 @@ export async function deploy(
   // Wait for System access to be granted before installing modules
   const grantCalls = await grantAccess({
     systems: Object.values(resolvedConfig.systems),
-    systemContracts,
+    systemContracts: deployedContracts,
     namespace: mudConfig.namespace,
   });
 
@@ -228,7 +205,7 @@ export async function deploy(
     grantCalls.map((call) =>
       fastTxExecute({
         ...txConfig,
-        nonce: txConfig.nonce++,
+        nonce: nonce++,
         contract: worldContract,
         ...call,
       })
@@ -236,14 +213,14 @@ export async function deploy(
   );
   console.log(chalk.green(`Access granted`));
 
-  const moduleCalls = await Promise.all(mudConfig.modules.map((m) => getModuleCall(moduleContracts, m, tableIds)));
+  const moduleCalls = await Promise.all(mudConfig.modules.map((m) => getModuleCall(deployedContracts, m, tableIds)));
 
   console.log(chalk.blue("Installing User Modules"));
   await Promise.all(
     moduleCalls.map((call) =>
       fastTxExecute({
         ...txConfig,
-        nonce: txConfig.nonce++,
+        nonce: nonce++,
         contract: worldContract,
         ...call,
       })
@@ -252,7 +229,7 @@ export async function deploy(
   console.log(chalk.green(`User Modules Installed`));
 
   // Double check that all transactions have been included by confirming the current nonce is the expected nonce
-  await confirmNonce(signer, txConfig.nonce, pollInterval);
+  await confirmNonce(signer, nonce, pollInterval);
 
   await postDeploy(mudConfig.postDeployScript, deployedWorldAddress, rpc, profile);
 
