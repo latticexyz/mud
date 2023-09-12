@@ -13,8 +13,6 @@ uint256 constant ACC_BITS = 7 * 8;
 uint256 constant VAL_BITS = 5 * 8;
 // Maximum value of a 5-byte section
 uint256 constant MAX_VAL = type(uint40).max;
-// PackedCounter's capacity
-uint256 constant MAX_DYNAMIC_FIELDS = 5;
 
 /**
  * Static functions for PackedCounter
