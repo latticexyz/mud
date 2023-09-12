@@ -585,19 +585,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 70983
+    "gasUsed": 71005
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 24290
+    "gasUsed": 24312
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 19379
+    "gasUsed": 19401
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -609,19 +609,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 163851
+    "gasUsed": 163873
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 26226
+    "gasUsed": 26248
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 20852
+    "gasUsed": 20837
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -783,7 +783,7 @@
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call an enabled hook",
-    "gasUsed": 10135
+    "gasUsed": 10157
   },
   {
     "file": "test/StoreHook.t.sol",

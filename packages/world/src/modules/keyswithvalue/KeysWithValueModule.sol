@@ -3,9 +3,9 @@ pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -27,7 +27,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * Note: this module currently only supports `installRoot` (via `World.installRootModule`).
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
-contract KeysWithValueModule is IModule, WorldContextConsumer {
+contract KeysWithValueModule is Module {
   using ResourceSelector for bytes32;
 
   // The KeysWithValueHook is deployed once and infers the target table id

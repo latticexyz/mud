@@ -12,4 +12,5 @@ interface IWorldErrors {
   error ModuleAlreadyInstalled(string module);
   error DelegationNotFound(address delegator, address delegatee);
   error InsufficientBalance(uint256 balance, uint256 amount);
+  error InterfaceNotSupported(address contractAddress, bytes4 interfaceId);
 }

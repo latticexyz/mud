@@ -3,15 +3,17 @@ pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
+import { ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";
+import { IWorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "./interfaces/IWorldContextConsumer.sol";
 
 // The context size is 20 bytes for msg.sender, and 32 bytes for msg.value
 uint256 constant CONTEXT_BYTES = 20 + 32;
 
 // Similar to https://eips.ethereum.org/EIPS/eip-2771, but any contract can be the trusted forwarder.
 // This should only be used for contracts without own storage, like Systems.
-abstract contract WorldContextConsumer {
+abstract contract WorldContextConsumer is IWorldContextConsumer {
   // Extract the trusted msg.sender value appended to the calldata
-  function _msgSender() internal view returns (address sender) {
+  function _msgSender() public view returns (address sender) {
     assembly {
       // Load 32 bytes from calldata at position calldatasize() - context size,
       // then shift left 96 bits (to right-align the address)
@@ -22,15 +24,20 @@ abstract contract WorldContextConsumer {
   }
 
   // Extract the trusted msg.value value appended to the calldata
-  function _msgValue() internal pure returns (uint256 value) {
+  function _msgValue() public pure returns (uint256 value) {
     assembly {
       // Load 32 bytes from calldata at position calldatasize() - 32 bytes,
       value := calldataload(sub(calldatasize(), 32))
     }
   }
 
-  function _world() internal view returns (address) {
+  function _world() public view returns (address) {
     return StoreSwitch.getStoreAddress();
+  }
+
+  // ERC-165 supportsInterface (see https://eips.ethereum.org/EIPS/eip-165)
+  function supportsInterface(bytes4 interfaceId) public pure virtual returns (bool) {
+    return interfaceId == WORLD_CONTEXT_CONSUMER_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
   }
 }
 

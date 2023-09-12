@@ -5,11 +5,10 @@ import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
 import { ResourceType } from "../core/tables/ResourceType.sol";
 import { Resource } from "../../Types.sol";
+import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
-import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
@@ -27,7 +26,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  * Note: this module currently only supports `installRoot` (via `World.installRootModule`).
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
-contract KeysInTableModule is IModule, WorldContextConsumer {
+contract KeysInTableModule is Module {
   using ResourceSelector for bytes32;
 
   // The KeysInTableHook is deployed once and infers the target table id

@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-interface IModule {
+import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+
+// ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
+bytes4 constant MODULE_INTERFACE_ID = IModule.getName.selector ^
+  IModule.installRoot.selector ^
+  IModule.install.selector ^
+  ERC165_INTERFACE_ID;
+
+interface IModule is IERC165 {
   error RequiredModuleNotFound(string resourceSelector);
   error RootInstallModeNotSupported();
   error NonRootInstallNotSupported();

@@ -15,13 +15,13 @@ import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
+import { requireInterface } from "./requireInterface.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 import { Delegations } from "./tables/Delegations.sol";
 
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
-import { IModule } from "./interfaces/IModule.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
@@ -50,6 +50,9 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function installRootModule(IModule module, bytes memory args) public {
     AccessControl.requireOwner(ROOT_NAMESPACE, msg.sender);
+
+    // Require the provided address to implement the IModule interface
+    requireInterface(address(module), MODULE_INTERFACE_ID);
 
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: msg.sender,

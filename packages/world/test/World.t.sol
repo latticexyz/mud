@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -23,8 +23,9 @@ import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
-import { SystemHookLib } from "../src/SystemHook.sol";
-import { WorldContextProvider } from "../src/WorldContext.sol";
+import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
+import { SystemHookLib, SystemHook } from "../src/SystemHook.sol";
+import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -36,7 +37,7 @@ import { ResourceType } from "../src/modules/core/tables/ResourceType.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
-import { ISystemHook } from "../src/interfaces/ISystemHook.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
 
 import { Bool } from "./tables/Bool.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
@@ -114,7 +115,7 @@ contract PayableFallbackSystem is System {
   fallback() external payable {}
 }
 
-contract EchoSystemHook is ISystemHook {
+contract EchoSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
   function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
@@ -126,7 +127,7 @@ contract EchoSystemHook is ISystemHook {
   }
 }
 
-contract RevertSystemHook is ISystemHook {
+contract RevertSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
   function onBeforeCallSystem(address, bytes32, bytes memory) public pure {
@@ -191,6 +192,28 @@ contract WorldTest is Test, GasReporter {
     assertEq(Tables.getValueSchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getValueSchema()));
     assertEq(Tables.getAbiEncodedKeyNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
     assertEq(Tables.getAbiEncodedFieldNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
+  }
+
+  function testRegisterModuleRevertInterfaceNotSupported() public {
+    // Expect an error when trying to register a module that doesn't implement the IModule interface
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        Module(address(world)), // The World contract does not implement the IModule interface
+        MODULE_INTERFACE_ID
+      )
+    );
+    world.installModule(Module(address(world)), new bytes(0));
+
+    // Expect an error when trying to register a root module that doesn't implement the IModule interface
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        Module(address(world)), // The World contract does not implement the IModule interface
+        MODULE_INTERFACE_ID
+      )
+    );
+    world.installRootModule(Module(address(world)), new bytes(0));
   }
 
   function testRootNamespace() public {
@@ -365,6 +388,16 @@ contract WorldTest is Test, GasReporter {
     // Expect the registration to fail when coming from the World (since the World address doesn't have access)
     _expectAccessDenied(address(world), "", "");
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
+
+    // Expect the registration to fail if the provided address does not implement the WorldContextConsumer interface
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        address(world),
+        WORLD_CONTEXT_CONSUMER_INTERFACE_ID
+      )
+    );
+    world.registerSystem(ResourceSelector.from("someNamespace", "invalidSystem"), System(address(world)), true);
   }
 
   function testUpgradeSystem() public {
@@ -775,6 +808,23 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(abi.encode(tableId, singletonKey, valueSchema));
 
     world.deleteRecord(tableId, singletonKey, valueSchema);
+
+    // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.InterfaceNotSupported.selector, address(world), STORE_HOOK_INTERFACE_ID)
+    );
+    world.registerStoreHook(
+      tableId,
+      IStoreHook(address(world)), // the World contract does not implement the store hook interface
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
   }
 
   function testUnregisterStoreHook() public {
@@ -865,6 +915,16 @@ contract WorldTest is Test, GasReporter {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
+
+    // Expect the registration to fail if the contract does not implement the system hook interface
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.InterfaceNotSupported.selector, address(world), SYSTEM_HOOK_INTERFACE_ID)
+    );
+    world.registerSystemHook(
+      systemId,
+      ISystemHook(address(world)), // the World contract does not implement the system hook interface
+      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+    );
 
     // Register a new hook
     ISystemHook systemHook = new EchoSystemHook();

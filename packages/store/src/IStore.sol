@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
+import { IStoreHook } from "./IStoreHook.sol";
 
 interface IStoreRead {
   function getValueSchema(bytes32 table) external view returns (Schema schema);
@@ -130,29 +131,3 @@ interface IStoreRegistration {
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
-
-interface IStoreHook {
-  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
-
-  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
-
-  function onBeforeSetField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data,
-    Schema valueSchema
-  ) external;
-
-  function onAfterSetField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data,
-    Schema valueSchema
-  ) external;
-
-  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) external;
-
-  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) external;
-}

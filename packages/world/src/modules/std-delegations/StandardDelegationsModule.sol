@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
+import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
@@ -18,7 +18,7 @@ import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
 /**
  * This module registers tables and delegation control systems required for standard delegations
  */
-contract StandardDelegationsModule is IModule, WorldContextConsumer {
+contract StandardDelegationsModule is Module {
   CallboundDelegationControl private immutable callboundDelegationControl = new CallboundDelegationControl();
   TimeboundDelegationControl private immutable timeboundDelegationControl = new TimeboundDelegationControl();
 

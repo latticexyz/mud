@@ -4,18 +4,20 @@ pragma solidity >=0.8.0;
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 
 import { System } from "../../../System.sol";
-import { WorldContextConsumer } from "../../../WorldContext.sol";
+import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { SystemHookLib } from "../../../SystemHook.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
+import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { Delegations } from "../../../tables/Delegations.sol";
-import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
 import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
@@ -57,6 +59,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ISystemHook hookAddress,
     uint8 enabledHooksBitmap
   ) public virtual {
+    // Require the provided address to implement the ISystemHook interface
+    requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
+
     // Require caller to own the namespace
     AccessControl.requireOwner(resourceSelector, _msgSender());
 
@@ -85,6 +90,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * making it possible to upgrade systems.
    */
   function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) public virtual {
+    // Require the provided address to implement the WorldContextConsumer interface
+    requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
+
     // Require the name to not be the namespace's root name
     if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
@@ -203,8 +211,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Store the delegation control contract address
     Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
 
-    // If the delegation is not unlimited, call the delegation control contract's init function
+    // If the delegation is not unlimited...
     if (delegationControlId != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
+      // Require the delegationControl contract to implement the IDelegationControl interface
+      (address delegationControl, ) = Systems.get(delegationControlId);
+      requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+
+      // Call the delegation control contract's init function
       SystemCall.call({
         caller: _msgSender(),
         resourceSelector: delegationControlId,
