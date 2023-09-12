@@ -3,11 +3,10 @@ pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { WorldContextConsumer } from "../../WorldContext.sol";
 import { Resource } from "../../Types.sol";
+import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -40,7 +39,7 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
  * This module only supports `installRoot` (via `World.registerRootSystem`),
  * because it needs to install root tables, systems and function selectors.
  */
-contract CoreModule is IModule, WorldContextConsumer {
+contract CoreModule is Module {
   // Since the CoreSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable coreSystem = address(new CoreSystem());

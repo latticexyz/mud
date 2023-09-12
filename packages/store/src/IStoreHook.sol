@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { Schema } from "./Schema.sol";
+import { ERC165 } from "./ERC165.sol";
+
+// ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
+bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector ^
+  IStoreHook.onAfterSetRecord.selector ^
+  IStoreHook.onBeforeSetField.selector ^
+  IStoreHook.onAfterSetField.selector ^
+  IStoreHook.onBeforeDeleteRecord.selector ^
+  IStoreHook.onAfterDeleteRecord.selector;
+
+interface IStoreHook is ERC165 {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
+
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
+
+  function onBeforeSetField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) external;
+
+  function onAfterSetField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data,
+    Schema valueSchema
+  ) external;
+
+  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) external;
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) external;
+}

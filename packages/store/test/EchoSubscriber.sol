@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "../src/IStore.sol";
+import { StoreHook } from "../src/StoreHook.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract EchoSubscriber is IStoreHook {
+contract EchoSubscriber is StoreHook {
   event HookCalled(bytes);
 
   function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
