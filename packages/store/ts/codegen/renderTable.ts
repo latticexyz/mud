@@ -112,7 +112,7 @@ library ${libraryName} {
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Register the table keys' and values' field layout, key names and value names${_commentSuffix} */
+    /** Register the table with its config${_commentSuffix} */
     function register(${renderArguments([_typedStore, _typedTableId])}) internal {
       ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
