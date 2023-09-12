@@ -1,5 +1,10 @@
 declare const abi: [
   {
+    inputs: [];
+    name: "NonRootInstallNotSupported";
+    type: "error";
+  },
+  {
     inputs: [
       {
         internalType: "string";
@@ -8,6 +13,11 @@ declare const abi: [
       }
     ];
     name: "RequiredModuleNotFound";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "RootInstallModeNotSupported";
     type: "error";
   },
   {
@@ -43,11 +53,24 @@ declare const abi: [
     inputs: [
       {
         internalType: "bytes";
-        name: "args";
+        name: "";
         type: "bytes";
       }
     ];
     name: "install";
+    outputs: [];
+    stateMutability: "pure";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes";
+        name: "args";
+        type: "bytes";
+      }
+    ];
+    name: "installRoot";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";

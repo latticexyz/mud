@@ -1,5 +1,10 @@
 declare const abi: [
   {
+    inputs: [];
+    name: "NonRootInstallNotSupported";
+    type: "error";
+  },
+  {
     inputs: [
       {
         internalType: "string";
@@ -8,6 +13,11 @@ declare const abi: [
       }
     ];
     name: "RequiredModuleNotFound";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "RootInstallModeNotSupported";
     type: "error";
   },
   {
@@ -24,6 +34,91 @@ declare const abi: [
   {
     inputs: [];
     name: "SchemaLib_StaticTypeAfterDynamicType";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      },
+      {
+        internalType: "uint256";
+        name: "start";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "end";
+        type: "uint256";
+      }
+    ];
+    name: "Slice_OutOfBounds";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidDataLength";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidFieldNamesLength";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidKeyNamesLength";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "tableId";
+        type: "bytes32";
+      },
+      {
+        internalType: "string";
+        name: "tableIdString";
+        type: "string";
+      }
+    ];
+    name: "StoreCore_TableAlreadyExists";
     type: "error";
   },
   {
@@ -48,6 +143,19 @@ declare const abi: [
       }
     ];
     name: "install";
+    outputs: [];
+    stateMutability: "pure";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes";
+        name: "";
+        type: "bytes";
+      }
+    ];
+    name: "installRoot";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";

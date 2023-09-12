@@ -58,7 +58,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     uint8 enabledHooksBitmap
   ) public virtual {
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Register the hook
     SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooksBitmap)));
@@ -69,7 +69,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) public virtual {
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Remove the hook from the list of hooks for this resourceSelector in the system hooks table
     HookLib.filterListByAddress(SystemHooksTableId, resourceSelector, address(hookAddress));
@@ -98,7 +98,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // otherwise require caller to own the namespace
     bytes16 namespace = resourceSelector.getNamespace();
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, _msgSender());
+    else AccessControl.requireOwner(namespace, _msgSender());
 
     // Require no resource other than a system to exist at this selector yet
     Resource resourceType = ResourceType.get(resourceSelector);
@@ -144,7 +144,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(resourceSelector.getNamespace());
@@ -179,7 +179,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
     // Require the caller to own the root namespace
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, _msgSender());
+    AccessControl.requireOwner(ROOT_NAMESPACE, _msgSender());
 
     // Require the function selector to be globally unique
     bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);

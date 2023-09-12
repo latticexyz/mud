@@ -6,6 +6,7 @@ import { IModule } from "../../interfaces/IModule.sol";
 
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
+import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { CallboundDelegationControl } from "./CallboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "./TimeboundDelegationControl.sol";
@@ -25,15 +26,26 @@ contract StandardDelegationsModule is IModule, WorldContextConsumer {
     return MODULE_NAME;
   }
 
-  function install(bytes memory) public {
+  function installRoot(bytes memory) public {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register tables
-    CallboundDelegations.register(world);
-    TimeboundDelegations.register(world);
+    CallboundDelegations.register();
+    TimeboundDelegations.register();
 
     // Register systems
-    world.registerSystem(CALLBOUND_DELEGATION, callboundDelegationControl, true);
-    world.registerSystem(TIMEBOUND_DELEGATION, timeboundDelegationControl, true);
+    (bool success, bytes memory returnData) = address(world).delegatecall(
+      abi.encodeCall(world.registerSystem, (CALLBOUND_DELEGATION, callboundDelegationControl, true))
+    );
+    if (!success) revertWithBytes(returnData);
+
+    (success, returnData) = address(world).delegatecall(
+      abi.encodeCall(world.registerSystem, (TIMEBOUND_DELEGATION, timeboundDelegationControl, true))
+    );
+    if (!success) revertWithBytes(returnData);
+  }
+
+  function install(bytes memory) public pure {
+    revert NonRootInstallNotSupported();
   }
 }

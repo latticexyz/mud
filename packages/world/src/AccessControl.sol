@@ -32,12 +32,11 @@ library AccessControl {
   }
 
   /**
-   * Check for ownership of the namespace of the given resource selector
-   * or identity of the caller to this contract's own address.
+   * Check for ownership of the namespace of the given resource selector.
    * Reverts with AccessDenied if the check fails.
    */
-  function requireOwnerOrSelf(bytes32 resourceSelector, address caller) internal view {
-    if (address(this) != caller && NamespaceOwner.get(resourceSelector.getNamespace()) != caller) {
+  function requireOwner(bytes32 resourceSelector, address caller) internal view {
+    if (NamespaceOwner.get(resourceSelector.getNamespace()) != caller) {
       revert IWorldErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
