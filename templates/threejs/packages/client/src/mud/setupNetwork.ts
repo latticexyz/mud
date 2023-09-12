@@ -55,7 +55,9 @@ export async function setupNetwork() {
    */
   const write$ = new Subject<ContractWrite>();
 
-  /* Create an object for communicating with the deployed World. */
+  /*
+   * Create an object for communicating with the deployed World.
+   */
   const worldContract = createContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
