@@ -1,4 +1,5 @@
-/* Network specific configuration for the client.
+/*
+ * Network specific configuration for the client.
  * By default connect to the anvil test network.
  *
  */
@@ -35,7 +36,9 @@ import worlds from "contracts/worlds.json";
  */
 import { supportedChains } from "./supportedChains";
 
-/* This is the function that does the actual work. */
+/*
+ * This is the function that does the actual work.
+ */
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);
 
@@ -49,7 +52,9 @@ export async function getNetworkConfig() {
    */
   const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
 
-  /* Find the chain (unless it isn't in the list of supported chains). */
+  /*
+   * Find the chain (unless it isn't in the list of supported chains).
+   */
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
   if (!chain) {
