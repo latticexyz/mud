@@ -17,7 +17,7 @@ import {
 import { deployWorldContract } from "./world";
 import { getTableIds, getRegisterTable } from "./tables";
 import { getUserModules, getModuleCall } from "./modules";
-import { grantAccess, registerSystems } from "./systems";
+import { grantAccess, registerFunctionCalls, registerSystemCall } from "./systems";
 import { toBytes16 } from "./utils";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
@@ -187,15 +187,36 @@ export async function deploy(
   );
   console.log(chalk.green(`Tables registered`));
 
-  // Blocking - Wait for resources to be registered before granting access to them
-  txConfig.nonce = await registerSystems({
-    ...txConfig,
-    worldContract,
-    systems: resolvedConfig.systems,
-    systemContracts,
-    namespace: mudConfig.namespace,
-    forgeOutDirectory,
-  });
+  console.log(chalk.blue("Registering Systems and Functions"));
+  const systemCalls = await Promise.all(
+    Object.entries(resolvedConfig.systems).map(([systemName, system]) =>
+      registerSystemCall({
+        systemContracts,
+        systemName,
+        system,
+        namespace: mudConfig.namespace,
+      })
+    )
+  );
+  const functionCalls = Object.entries(resolvedConfig.systems).flatMap(([systemName, system]) =>
+    registerFunctionCalls({
+      systemName,
+      system,
+      namespace: mudConfig.namespace,
+      forgeOutDirectory,
+    })
+  );
+  await Promise.all(
+    [...systemCalls, ...functionCalls].map((call) =>
+      fastTxExecute({
+        ...txConfig,
+        nonce: txConfig.nonce++,
+        contract: worldContract,
+        ...call,
+      })
+    )
+  );
+  console.log(chalk.green(`Systems and Functions registered`));
 
   // Blocking - Wait for System access to be granted before installing modules
   txConfig.nonce = await grantAccess({

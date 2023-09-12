@@ -1,6 +1,6 @@
 import { defaultAbiCoder } from "ethers/lib/utils.js";
 import { resolveWithContext } from "@latticexyz/config";
-import { TableIds } from "../world";
+import { TableIds } from "../tables";
 import { Module } from "./types";
 import { CallData } from "../txHelpers";
 
