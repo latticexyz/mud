@@ -304,6 +304,25 @@ declare const abi: [
     ];
     stateMutability: "view";
     type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      }
+    ];
+    name: "hasTable";
+    outputs: [
+      {
+        internalType: "bool";
+        name: "";
+        type: "bool";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
   }
 ];
 export default abi;
