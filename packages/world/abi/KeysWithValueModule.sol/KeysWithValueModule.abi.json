@@ -1,13 +1,7 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "length",
-        "type": "uint256"
-      }
-    ],
-    "name": "PackedCounter_InvalidLength",
+    "inputs": [],
+    "name": "NonRootInstallNotSupported",
     "type": "error"
   },
   {
@@ -19,6 +13,11 @@
       }
     ],
     "name": "RequiredModuleNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RootInstallModeNotSupported",
     "type": "error"
   },
   {
@@ -38,32 +37,6 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "start",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "end",
-        "type": "uint256"
-      }
-    ],
-    "name": "Slice_OutOfBounds",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "StoreCore_NotDynamicField",
-    "type": "error"
-  },
-  {
     "inputs": [],
     "name": "getName",
     "outputs": [
@@ -80,11 +53,24 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "args",
+        "name": "",
         "type": "bytes"
       }
     ],
     "name": "install",
+    "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "args",
+        "type": "bytes"
+      }
+    ],
+    "name": "installRoot",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

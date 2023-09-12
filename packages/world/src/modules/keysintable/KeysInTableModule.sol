@@ -11,6 +11,7 @@ import { IModule } from "../../interfaces/IModule.sol";
 
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
+import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
 import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
@@ -23,48 +24,93 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  *
  * Note: if a table with composite keys is used, only the first key is indexed
  *
- * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
- * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
+ * Note: this module currently only supports `installRoot` (via `World.installRootModule`).
+ * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
 contract KeysInTableModule is IModule, WorldContextConsumer {
   using ResourceSelector for bytes32;
 
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
-  KeysInTableHook immutable hook = new KeysInTableHook();
+  KeysInTableHook private immutable hook = new KeysInTableHook();
 
   function getName() public pure returns (bytes16) {
     return bytes16("keysInTable");
   }
 
-  function install(bytes memory args) public override {
+  function installRoot(bytes memory args) public override {
     // Extract source table id from args
     bytes32 sourceTableId = abi.decode(args, (bytes32));
 
     IBaseWorld world = IBaseWorld(_world());
 
+    // Initialize variable to reuse in low level calls
+    bool success;
+    bytes memory returnData;
+
     if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables
-      KeysInTable.register(world);
-      UsedKeysIndex.register(world);
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(
+          world.registerTable,
+          (
+            KeysInTableTableId,
+            KeysInTable.getKeySchema(),
+            KeysInTable.getValueSchema(),
+            KeysInTable.getKeyNames(),
+            KeysInTable.getFieldNames()
+          )
+        )
+      );
+      if (!success) revertWithBytes(returnData);
+
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(
+          world.registerTable,
+          (
+            UsedKeysIndexTableId,
+            UsedKeysIndex.getKeySchema(),
+            UsedKeysIndex.getValueSchema(),
+            UsedKeysIndex.getKeyNames(),
+            UsedKeysIndex.getFieldNames()
+          )
+        )
+      );
+      if (!success) revertWithBytes(returnData);
 
       // Grant the hook access to the tables
-      world.grantAccess(KeysInTableTableId, address(hook));
-      world.grantAccess(UsedKeysIndexTableId, address(hook));
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(world.grantAccess, (KeysInTableTableId, address(hook)))
+      );
+      if (!success) revertWithBytes(returnData);
+
+      (success, returnData) = address(world).delegatecall(
+        abi.encodeCall(world.grantAccess, (UsedKeysIndexTableId, address(hook)))
+      );
+      if (!success) revertWithBytes(returnData);
     }
 
     // Register a hook that is called when a value is set in the source table
-    world.registerStoreHook(
-      sourceTableId,
-      hook,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: false
-      })
+    (success, returnData) = address(world).delegatecall(
+      abi.encodeCall(
+        world.registerStoreHook,
+        (
+          sourceTableId,
+          hook,
+          StoreHookLib.encodeBitmap({
+            onBeforeSetRecord: true,
+            onAfterSetRecord: false,
+            onBeforeSetField: false,
+            onAfterSetField: true,
+            onBeforeDeleteRecord: true,
+            onAfterDeleteRecord: false
+          })
+        )
+      )
     );
+  }
+
+  function install(bytes memory) public pure {
+    revert NonRootInstallNotSupported();
   }
 }

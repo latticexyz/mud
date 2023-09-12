@@ -304,8 +304,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), namespace, "");
     world.registerTable(otherTableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
-    // Expect the World to be allowed to call registerTable
-    vm.prank(address(world));
+    // Expect the World to not be allowed to call registerTable via an external call
+    _expectAccessDenied(address(world), namespace, "");
     world.registerTable(otherTableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
   }
 
@@ -362,8 +362,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "", "");
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
 
-    // Expect the registration to succeed when coming from the World
-    vm.prank(address(world));
+    // Expect the registration to fail when coming from the World (since the World address doesn't have access)
+    _expectAccessDenied(address(world), "", "");
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
   }
 
@@ -1047,8 +1047,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "", "");
     world.registerRootFunctionSelector(resourceSelector, worldFunc, sysFunc);
 
-    // Expect the World to be able to register a root function selector
-    vm.prank(address(world));
+    // Expect the World to not be able to register a root function selector when calling the function externally
+    _expectAccessDenied(address(world), "", "");
     world.registerRootFunctionSelector(resourceSelector, "smth", "smth");
 
     startGasReport("Register a root function selector");

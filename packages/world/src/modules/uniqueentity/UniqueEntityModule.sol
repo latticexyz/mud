@@ -19,10 +19,14 @@ import { NAMESPACE, MODULE_NAME, SYSTEM_NAME, TABLE_NAME } from "./constants.sol
 contract UniqueEntityModule is IModule, WorldContextConsumer {
   // Since the UniqueEntitySystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
-  UniqueEntitySystem immutable uniqueEntitySystem = new UniqueEntitySystem();
+  UniqueEntitySystem private immutable uniqueEntitySystem = new UniqueEntitySystem();
 
   function getName() public pure returns (bytes16) {
     return MODULE_NAME;
+  }
+
+  function installRoot(bytes memory args) public {
+    install(args);
   }
 
   function install(bytes memory) public {

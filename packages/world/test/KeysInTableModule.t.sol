@@ -20,30 +20,30 @@ import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
-  IBaseWorld world;
-  KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
+  IBaseWorld private world;
+  KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
 
-  bytes16 namespace = ROOT_NAMESPACE;
-  bytes16 name = bytes16("source");
-  bytes16 singletonName = bytes16("singleton");
-  bytes16 compositeName = bytes16("composite");
-  bytes32 key1 = keccak256("test");
-  bytes32[] keyTuple1;
-  bytes32 key2 = keccak256("test2");
-  bytes32[] keyTuple2;
-  bytes32 key3 = keccak256("test3");
-  bytes32[] keyTuple3;
+  bytes16 private namespace = ROOT_NAMESPACE;
+  bytes16 private name = bytes16("source");
+  bytes16 private singletonName = bytes16("singleton");
+  bytes16 private compositeName = bytes16("composite");
+  bytes32 private key1 = keccak256("test");
+  bytes32[] private keyTuple1;
+  bytes32 private key2 = keccak256("test2");
+  bytes32[] private keyTuple2;
+  bytes32 private key3 = keccak256("test3");
+  bytes32[] private keyTuple3;
 
-  Schema tableValueSchema;
-  Schema tableKeySchema;
-  Schema singletonKeySchema;
-  Schema compositeKeySchema;
-  bytes32 tableId = ResourceSelector.from(namespace, name);
-  bytes32 singletonTableId = ResourceSelector.from(namespace, singletonName);
-  bytes32 compositeTableId = ResourceSelector.from(namespace, compositeName);
+  Schema private tableValueSchema;
+  Schema private tableKeySchema;
+  Schema private singletonKeySchema;
+  Schema private compositeKeySchema;
+  bytes32 private tableId = ResourceSelector.from(namespace, name);
+  bytes32 private singletonTableId = ResourceSelector.from(namespace, singletonName);
+  bytes32 private compositeTableId = ResourceSelector.from(namespace, compositeName);
 
-  uint256 val1 = 123;
-  uint256 val2 = 42;
+  uint256 private val1 = 123;
+  uint256 private val2 = 42;
 
   function setUp() public {
     tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);

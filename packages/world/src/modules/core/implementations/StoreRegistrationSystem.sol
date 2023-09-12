@@ -59,7 +59,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
       });
     } else {
       // otherwise require caller to own the namespace
-      AccessControl.requireOwnerOrSelf(namespace, _msgSender());
+      AccessControl.requireOwner(namespace, _msgSender());
     }
 
     // Require no resource to exist at this selector yet
@@ -80,7 +80,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    */
   function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(tableId, _msgSender());
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the hook
     StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
@@ -92,7 +92,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    */
   function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) public virtual {
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(tableId, _msgSender());
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Unregister the hook
     StoreCore.unregisterStoreHook(tableId, hookAddress);
