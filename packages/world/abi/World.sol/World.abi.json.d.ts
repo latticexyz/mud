@@ -77,6 +77,22 @@ declare const abi: [
   {
     inputs: [
       {
+        internalType: "address";
+        name: "contractAddress";
+        type: "address";
+      },
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "InterfaceNotSupported";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
         internalType: "string";
         name: "resource";
         type: "string";
