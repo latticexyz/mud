@@ -17,9 +17,6 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("UsedKeysIndex")));
-bytes32 constant UsedKeysIndexTableId = _tableId;
-
 library UsedKeysIndex {
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
@@ -54,17 +51,17 @@ library UsedKeysIndex {
   }
 
   /** Register the table's key schema, value schema, key names and value names */
-  function register() internal {
+  function register(bytes32 _tableId) internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table's key schema, value schema, key names and value names (using the specified store) */
-  function register(IStore _store) internal {
+  function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get has */
-  function getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
+  function getHas(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -74,7 +71,12 @@ library UsedKeysIndex {
   }
 
   /** Get has (using the specified store) */
-  function getHas(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
+  function getHas(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    bytes32 keysHash
+  ) internal view returns (bool has) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -84,7 +86,7 @@ library UsedKeysIndex {
   }
 
   /** Set has */
-  function setHas(bytes32 sourceTable, bytes32 keysHash, bool has) internal {
+  function setHas(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -93,7 +95,7 @@ library UsedKeysIndex {
   }
 
   /** Set has (using the specified store) */
-  function setHas(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
+  function setHas(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -102,7 +104,7 @@ library UsedKeysIndex {
   }
 
   /** Get index */
-  function getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
+  function getIndex(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -112,7 +114,12 @@ library UsedKeysIndex {
   }
 
   /** Get index (using the specified store) */
-  function getIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
+  function getIndex(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    bytes32 keysHash
+  ) internal view returns (uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -122,7 +129,7 @@ library UsedKeysIndex {
   }
 
   /** Set index */
-  function setIndex(bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
+  function setIndex(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -131,7 +138,7 @@ library UsedKeysIndex {
   }
 
   /** Set index (using the specified store) */
-  function setIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
+  function setIndex(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -140,7 +147,7 @@ library UsedKeysIndex {
   }
 
   /** Get the full data */
-  function get(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
+  function get(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -150,7 +157,12 @@ library UsedKeysIndex {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
+  function get(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    bytes32 keysHash
+  ) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -160,7 +172,7 @@ library UsedKeysIndex {
   }
 
   /** Set the full data using individual values */
-  function set(bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
+  function set(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
     bytes memory _data = encode(has, index);
 
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -171,7 +183,14 @@ library UsedKeysIndex {
   }
 
   /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
+  function set(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    bytes32 keysHash,
+    bool has,
+    uint40 index
+  ) internal {
     bytes memory _data = encode(has, index);
 
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -203,7 +222,7 @@ library UsedKeysIndex {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 sourceTable, bytes32 keysHash) internal {
+  function deleteRecord(bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
@@ -212,7 +231,7 @@ library UsedKeysIndex {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal {
+  function deleteRecord(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 keysHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;

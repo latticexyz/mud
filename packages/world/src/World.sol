@@ -49,13 +49,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, msg.sender);
+    AccessControl.requireOwner(ROOT_NAMESPACE, msg.sender);
 
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.installRoot.selector, args)
     });
 
     // Register the module in the InstalledModules table

@@ -17,9 +17,6 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("KeysInTable")));
-bytes32 constant KeysInTableTableId = _tableId;
-
 struct KeysInTableData {
   bytes32[] keys0;
   bytes32[] keys1;
@@ -66,17 +63,17 @@ library KeysInTable {
   }
 
   /** Register the table's key schema, value schema, key names and value names */
-  function register() internal {
+  function register(bytes32 _tableId) internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table's key schema, value schema, key names and value names (using the specified store) */
-  function register(IStore _store) internal {
+  function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get keys0 */
-  function getKeys0(bytes32 sourceTable) internal view returns (bytes32[] memory keys0) {
+  function getKeys0(bytes32 _tableId, bytes32 sourceTable) internal view returns (bytes32[] memory keys0) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -85,7 +82,11 @@ library KeysInTable {
   }
 
   /** Get keys0 (using the specified store) */
-  function getKeys0(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys0) {
+  function getKeys0(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable
+  ) internal view returns (bytes32[] memory keys0) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -94,7 +95,7 @@ library KeysInTable {
   }
 
   /** Set keys0 */
-  function setKeys0(bytes32 sourceTable, bytes32[] memory keys0) internal {
+  function setKeys0(bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys0) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -102,7 +103,7 @@ library KeysInTable {
   }
 
   /** Set keys0 (using the specified store) */
-  function setKeys0(IStore _store, bytes32 sourceTable, bytes32[] memory keys0) internal {
+  function setKeys0(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys0) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -110,7 +111,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys0 */
-  function lengthKeys0(bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys0(bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -121,7 +122,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys0 (using the specified store) */
-  function lengthKeys0(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys0(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -135,7 +136,7 @@ library KeysInTable {
    * Get an item of keys0
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys0(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys0(bytes32 _tableId, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -156,7 +157,12 @@ library KeysInTable {
    * Get an item of keys0 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys0(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys0(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index
+  ) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -174,7 +180,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys0 */
-  function pushKeys0(bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys0(bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -182,7 +188,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys0 (using the specified store) */
-  function pushKeys0(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys0(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -190,7 +196,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys0 */
-  function popKeys0(bytes32 sourceTable) internal {
+  function popKeys0(bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -198,7 +204,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys0 (using the specified store) */
-  function popKeys0(IStore _store, bytes32 sourceTable) internal {
+  function popKeys0(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -209,7 +215,7 @@ library KeysInTable {
    * Update an element of keys0 at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys0(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys0(bytes32 _tableId, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -222,7 +228,13 @@ library KeysInTable {
    * Update an element of keys0 (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys0(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys0(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index,
+    bytes32 _element
+  ) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -232,7 +244,7 @@ library KeysInTable {
   }
 
   /** Get keys1 */
-  function getKeys1(bytes32 sourceTable) internal view returns (bytes32[] memory keys1) {
+  function getKeys1(bytes32 _tableId, bytes32 sourceTable) internal view returns (bytes32[] memory keys1) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -241,7 +253,11 @@ library KeysInTable {
   }
 
   /** Get keys1 (using the specified store) */
-  function getKeys1(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys1) {
+  function getKeys1(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable
+  ) internal view returns (bytes32[] memory keys1) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -250,7 +266,7 @@ library KeysInTable {
   }
 
   /** Set keys1 */
-  function setKeys1(bytes32 sourceTable, bytes32[] memory keys1) internal {
+  function setKeys1(bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys1) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -258,7 +274,7 @@ library KeysInTable {
   }
 
   /** Set keys1 (using the specified store) */
-  function setKeys1(IStore _store, bytes32 sourceTable, bytes32[] memory keys1) internal {
+  function setKeys1(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys1) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -266,7 +282,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys1 */
-  function lengthKeys1(bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys1(bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -277,7 +293,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys1 (using the specified store) */
-  function lengthKeys1(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys1(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -291,7 +307,7 @@ library KeysInTable {
    * Get an item of keys1
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys1(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys1(bytes32 _tableId, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -312,7 +328,12 @@ library KeysInTable {
    * Get an item of keys1 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys1(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys1(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index
+  ) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -330,7 +351,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys1 */
-  function pushKeys1(bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys1(bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -338,7 +359,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys1 (using the specified store) */
-  function pushKeys1(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys1(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -346,7 +367,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys1 */
-  function popKeys1(bytes32 sourceTable) internal {
+  function popKeys1(bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -354,7 +375,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys1 (using the specified store) */
-  function popKeys1(IStore _store, bytes32 sourceTable) internal {
+  function popKeys1(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -365,7 +386,7 @@ library KeysInTable {
    * Update an element of keys1 at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys1(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys1(bytes32 _tableId, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -378,7 +399,13 @@ library KeysInTable {
    * Update an element of keys1 (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys1(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys1(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index,
+    bytes32 _element
+  ) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -388,7 +415,7 @@ library KeysInTable {
   }
 
   /** Get keys2 */
-  function getKeys2(bytes32 sourceTable) internal view returns (bytes32[] memory keys2) {
+  function getKeys2(bytes32 _tableId, bytes32 sourceTable) internal view returns (bytes32[] memory keys2) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -397,7 +424,11 @@ library KeysInTable {
   }
 
   /** Get keys2 (using the specified store) */
-  function getKeys2(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys2) {
+  function getKeys2(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable
+  ) internal view returns (bytes32[] memory keys2) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -406,7 +437,7 @@ library KeysInTable {
   }
 
   /** Set keys2 */
-  function setKeys2(bytes32 sourceTable, bytes32[] memory keys2) internal {
+  function setKeys2(bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys2) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -414,7 +445,7 @@ library KeysInTable {
   }
 
   /** Set keys2 (using the specified store) */
-  function setKeys2(IStore _store, bytes32 sourceTable, bytes32[] memory keys2) internal {
+  function setKeys2(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys2) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -422,7 +453,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys2 */
-  function lengthKeys2(bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys2(bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -433,7 +464,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys2 (using the specified store) */
-  function lengthKeys2(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys2(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -447,7 +478,7 @@ library KeysInTable {
    * Get an item of keys2
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys2(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys2(bytes32 _tableId, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -468,7 +499,12 @@ library KeysInTable {
    * Get an item of keys2 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys2(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys2(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index
+  ) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -486,7 +522,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys2 */
-  function pushKeys2(bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys2(bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -494,7 +530,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys2 (using the specified store) */
-  function pushKeys2(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys2(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -502,7 +538,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys2 */
-  function popKeys2(bytes32 sourceTable) internal {
+  function popKeys2(bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -510,7 +546,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys2 (using the specified store) */
-  function popKeys2(IStore _store, bytes32 sourceTable) internal {
+  function popKeys2(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -521,7 +557,7 @@ library KeysInTable {
    * Update an element of keys2 at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys2(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys2(bytes32 _tableId, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -534,7 +570,13 @@ library KeysInTable {
    * Update an element of keys2 (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys2(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys2(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index,
+    bytes32 _element
+  ) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -544,7 +586,7 @@ library KeysInTable {
   }
 
   /** Get keys3 */
-  function getKeys3(bytes32 sourceTable) internal view returns (bytes32[] memory keys3) {
+  function getKeys3(bytes32 _tableId, bytes32 sourceTable) internal view returns (bytes32[] memory keys3) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -553,7 +595,11 @@ library KeysInTable {
   }
 
   /** Get keys3 (using the specified store) */
-  function getKeys3(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys3) {
+  function getKeys3(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable
+  ) internal view returns (bytes32[] memory keys3) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -562,7 +608,7 @@ library KeysInTable {
   }
 
   /** Set keys3 */
-  function setKeys3(bytes32 sourceTable, bytes32[] memory keys3) internal {
+  function setKeys3(bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys3) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -570,7 +616,7 @@ library KeysInTable {
   }
 
   /** Set keys3 (using the specified store) */
-  function setKeys3(IStore _store, bytes32 sourceTable, bytes32[] memory keys3) internal {
+  function setKeys3(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys3) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -578,7 +624,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys3 */
-  function lengthKeys3(bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys3(bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -589,7 +635,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys3 (using the specified store) */
-  function lengthKeys3(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys3(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -603,7 +649,7 @@ library KeysInTable {
    * Get an item of keys3
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys3(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys3(bytes32 _tableId, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -624,7 +670,12 @@ library KeysInTable {
    * Get an item of keys3 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys3(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys3(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index
+  ) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -642,7 +693,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys3 */
-  function pushKeys3(bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys3(bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -650,7 +701,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys3 (using the specified store) */
-  function pushKeys3(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys3(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -658,7 +709,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys3 */
-  function popKeys3(bytes32 sourceTable) internal {
+  function popKeys3(bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -666,7 +717,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys3 (using the specified store) */
-  function popKeys3(IStore _store, bytes32 sourceTable) internal {
+  function popKeys3(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -677,7 +728,7 @@ library KeysInTable {
    * Update an element of keys3 at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys3(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys3(bytes32 _tableId, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -690,7 +741,13 @@ library KeysInTable {
    * Update an element of keys3 (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys3(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys3(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index,
+    bytes32 _element
+  ) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -700,7 +757,7 @@ library KeysInTable {
   }
 
   /** Get keys4 */
-  function getKeys4(bytes32 sourceTable) internal view returns (bytes32[] memory keys4) {
+  function getKeys4(bytes32 _tableId, bytes32 sourceTable) internal view returns (bytes32[] memory keys4) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -709,7 +766,11 @@ library KeysInTable {
   }
 
   /** Get keys4 (using the specified store) */
-  function getKeys4(IStore _store, bytes32 sourceTable) internal view returns (bytes32[] memory keys4) {
+  function getKeys4(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable
+  ) internal view returns (bytes32[] memory keys4) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -718,7 +779,7 @@ library KeysInTable {
   }
 
   /** Set keys4 */
-  function setKeys4(bytes32 sourceTable, bytes32[] memory keys4) internal {
+  function setKeys4(bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys4) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -726,7 +787,7 @@ library KeysInTable {
   }
 
   /** Set keys4 (using the specified store) */
-  function setKeys4(IStore _store, bytes32 sourceTable, bytes32[] memory keys4) internal {
+  function setKeys4(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32[] memory keys4) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -734,7 +795,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys4 */
-  function lengthKeys4(bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys4(bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -745,7 +806,7 @@ library KeysInTable {
   }
 
   /** Get the length of keys4 (using the specified store) */
-  function lengthKeys4(IStore _store, bytes32 sourceTable) internal view returns (uint256) {
+  function lengthKeys4(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -759,7 +820,7 @@ library KeysInTable {
    * Get an item of keys4
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys4(bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys4(bytes32 _tableId, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -780,7 +841,12 @@ library KeysInTable {
    * Get an item of keys4 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItemKeys4(IStore _store, bytes32 sourceTable, uint256 _index) internal view returns (bytes32) {
+  function getItemKeys4(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index
+  ) internal view returns (bytes32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -798,7 +864,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys4 */
-  function pushKeys4(bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys4(bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -806,7 +872,7 @@ library KeysInTable {
   }
 
   /** Push an element to keys4 (using the specified store) */
-  function pushKeys4(IStore _store, bytes32 sourceTable, bytes32 _element) internal {
+  function pushKeys4(IStore _store, bytes32 _tableId, bytes32 sourceTable, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -814,7 +880,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys4 */
-  function popKeys4(bytes32 sourceTable) internal {
+  function popKeys4(bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -822,7 +888,7 @@ library KeysInTable {
   }
 
   /** Pop an element from keys4 (using the specified store) */
-  function popKeys4(IStore _store, bytes32 sourceTable) internal {
+  function popKeys4(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -833,7 +899,7 @@ library KeysInTable {
    * Update an element of keys4 at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys4(bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys4(bytes32 _tableId, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -846,7 +912,13 @@ library KeysInTable {
    * Update an element of keys4 (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function updateKeys4(IStore _store, bytes32 sourceTable, uint256 _index, bytes32 _element) internal {
+  function updateKeys4(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable,
+    uint256 _index,
+    bytes32 _element
+  ) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -856,7 +928,7 @@ library KeysInTable {
   }
 
   /** Get the full data */
-  function get(bytes32 sourceTable) internal view returns (KeysInTableData memory _table) {
+  function get(bytes32 _tableId, bytes32 sourceTable) internal view returns (KeysInTableData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -865,7 +937,11 @@ library KeysInTable {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 sourceTable) internal view returns (KeysInTableData memory _table) {
+  function get(
+    IStore _store,
+    bytes32 _tableId,
+    bytes32 sourceTable
+  ) internal view returns (KeysInTableData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -875,6 +951,7 @@ library KeysInTable {
 
   /** Set the full data using individual values */
   function set(
+    bytes32 _tableId,
     bytes32 sourceTable,
     bytes32[] memory keys0,
     bytes32[] memory keys1,
@@ -893,6 +970,7 @@ library KeysInTable {
   /** Set the full data using individual values (using the specified store) */
   function set(
     IStore _store,
+    bytes32 _tableId,
     bytes32 sourceTable,
     bytes32[] memory keys0,
     bytes32[] memory keys1,
@@ -909,13 +987,13 @@ library KeysInTable {
   }
 
   /** Set the full data using the data struct */
-  function set(bytes32 sourceTable, KeysInTableData memory _table) internal {
-    set(sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+  function set(bytes32 _tableId, bytes32 sourceTable, KeysInTableData memory _table) internal {
+    set(_tableId, sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
   }
 
   /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 sourceTable, KeysInTableData memory _table) internal {
-    set(_store, sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
+  function set(IStore _store, bytes32 _tableId, bytes32 sourceTable, KeysInTableData memory _table) internal {
+    set(_store, _tableId, sourceTable, _table.keys0, _table.keys1, _table.keys2, _table.keys3, _table.keys4);
   }
 
   /**
@@ -1002,7 +1080,7 @@ library KeysInTable {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 sourceTable) internal {
+  function deleteRecord(bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
@@ -1010,7 +1088,7 @@ library KeysInTable {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 sourceTable) internal {
+  function deleteRecord(IStore _store, bytes32 _tableId, bytes32 sourceTable) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 

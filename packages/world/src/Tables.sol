@@ -14,8 +14,8 @@ import { SystemHooks, SystemHooksTableId } from "./modules/core/tables/SystemHoo
 import { ResourceType, ResourceTypeTableId } from "./modules/core/tables/ResourceType.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
 import { KeysWithValue } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
-import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
-import { UsedKeysIndex, UsedKeysIndexTableId } from "./modules/keysintable/tables/UsedKeysIndex.sol";
+import { KeysInTable, KeysInTableData } from "./modules/keysintable/tables/KeysInTable.sol";
+import { UsedKeysIndex } from "./modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { CallboundDelegations, CallboundDelegationsTableId } from "./modules/std-delegations/tables/CallboundDelegations.sol";
 import { TimeboundDelegations, TimeboundDelegationsTableId } from "./modules/std-delegations/tables/TimeboundDelegations.sol";

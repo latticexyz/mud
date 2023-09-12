@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
+import { UsedKeysIndexTableId } from "./constants.sol";
 
 /**
  * Get whether the key is in the given table.
@@ -14,7 +15,7 @@ import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 function hasKey(bytes32 tableId, bytes32[] memory key) view returns (bool) {
   bytes32 keysHash = keccak256(abi.encode(key));
 
-  return UsedKeysIndex.getHas(tableId, keysHash);
+  return UsedKeysIndex.getHas(UsedKeysIndexTableId, tableId, keysHash);
 }
 
 /**
@@ -23,5 +24,5 @@ function hasKey(bytes32 tableId, bytes32[] memory key) view returns (bool) {
 function hasKey(IStore store, bytes32 tableId, bytes32[] memory key) view returns (bool) {
   bytes32 keysHash = keccak256(abi.encode(key));
 
-  return UsedKeysIndex.getHas(store, tableId, keysHash);
+  return UsedKeysIndex.getHas(store, UsedKeysIndexTableId, tableId, keysHash);
 }
