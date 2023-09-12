@@ -48,7 +48,9 @@ export async function getNetworkConfig() {
    */
   const chainId = Number(params.get("chainId") || params.get("chainid") || import.meta.env.VITE_CHAIN_ID || 31337);
 
-  /* Find the chain (unless it isn't in the list of supported chains). */
+  /* 
+   * Find the chain (unless it isn't in the list of supported chains). 
+   */
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
   if (!chain) {
