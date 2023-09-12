@@ -35,12 +35,12 @@ contract FieldLayoutTest is Test, GasReporter {
   }
 
   function testInvalidFieldLayoutStaticTypeIsZero() public {
-    vm.expectRevert(FieldLayoutLib.FieldLayoutLib_StaticTypeIsZero.selector);
+    vm.expectRevert(FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero.selector);
     FieldLayoutEncodeHelper.encode(1, 0, 1);
   }
 
   function testInvalidFieldLayoutStaticTypeDoesNotFitInAWord() public {
-    vm.expectRevert(FieldLayoutLib.FieldLayoutLib_StaticTypeDoesNotFitInAWord.selector);
+    vm.expectRevert(FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord.selector);
     FieldLayoutEncodeHelper.encode(1, 33, 1);
   }
 

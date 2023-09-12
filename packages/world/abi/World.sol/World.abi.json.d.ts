@@ -49,12 +49,12 @@ declare const abi: [
   },
   {
     inputs: [];
-    name: "FieldLayoutLib_StaticTypeDoesNotFitInAWord";
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
     type: "error";
   },
   {
     inputs: [];
-    name: "FieldLayoutLib_StaticTypeIsZero";
+    name: "FieldLayoutLib_StaticLengthIsZero";
     type: "error";
   },
   {

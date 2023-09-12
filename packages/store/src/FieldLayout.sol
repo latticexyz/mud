@@ -15,8 +15,8 @@ using FieldLayoutInstance for FieldLayout global;
  */
 library FieldLayoutLib {
   error FieldLayoutLib_InvalidLength(uint256 length);
-  error FieldLayoutLib_StaticTypeIsZero();
-  error FieldLayoutLib_StaticTypeDoesNotFitInAWord();
+  error FieldLayoutLib_StaticLengthIsZero();
+  error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
 
   // Based on PackedCounter's capacity
   uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
@@ -35,9 +35,9 @@ library FieldLayoutLib {
     for (uint256 i = 0; i < _staticFields.length; ) {
       uint256 staticByteLength = _staticFields[i];
       if (staticByteLength == 0) {
-        revert FieldLayoutLib_StaticTypeIsZero();
+        revert FieldLayoutLib_StaticLengthIsZero();
       } else if (staticByteLength > 32) {
-        revert FieldLayoutLib_StaticTypeDoesNotFitInAWord();
+        revert FieldLayoutLib_StaticLengthDoesNotFitInAWord();
       }
 
       unchecked {
@@ -131,9 +131,9 @@ library FieldLayoutInstance {
     for (uint256 i; i < _numStaticFields; ) {
       uint256 staticByteLength = fieldLayout.atIndex(i);
       if (staticByteLength == 0) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticTypeIsZero();
+        revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero();
       } else if (staticByteLength > 32) {
-        revert FieldLayoutLib.FieldLayoutLib_StaticTypeDoesNotFitInAWord();
+        revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord();
       }
       unchecked {
         i++;
