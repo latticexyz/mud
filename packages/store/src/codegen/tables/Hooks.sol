@@ -54,7 +54,7 @@ library Hooks {
     fieldNames[0] = "value";
   }
 
-  /** Register the table keys' and values' field layout, key names and value names */
+  /** Register the table with its config */
   function register(bytes32 _tableId) internal {
     StoreSwitch.registerTable(
       _tableId,
@@ -66,7 +66,7 @@ library Hooks {
     );
   }
 
-  /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
+  /** Register the table with its config (using the specified store) */
   function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }

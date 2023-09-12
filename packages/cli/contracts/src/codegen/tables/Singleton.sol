@@ -62,7 +62,7 @@ library Singleton {
     fieldNames[3] = "v4";
   }
 
-  /** Register the table keys' and values' field layout, key names and value names */
+  /** Register the table with its config */
   function register() internal {
     StoreSwitch.registerTable(
       _tableId,
@@ -74,7 +74,7 @@ library Singleton {
     );
   }
 
-  /** Register the table keys' and values' field layout, key names and value names (using the specified store) */
+  /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
