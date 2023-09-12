@@ -4,7 +4,7 @@ import { assertExhaustive } from "@latticexyz/common/utils";
 import { address, json } from "./columnTypes";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function buildSqliteColumn(name: string, schemaAbiType: SchemaAbiType) {
+export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
   switch (schemaAbiType) {
     case "bool":
       return integer(name, { mode: "boolean" });

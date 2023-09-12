@@ -2,7 +2,7 @@ import { Hex, PublicClient, concatHex, getAddress } from "viem";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { and, eq, sql } from "drizzle-orm";
 import { sqliteTableToSql } from "./sqliteTableToSql";
-import { createSqliteTable } from "./createSqliteTable";
+import { buildTable } from "./buildTable";
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import { getTableName } from "./getTableName";
@@ -39,7 +39,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
       for (const table of newTables) {
         debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
-        const sqliteTable = createSqliteTable({
+        const sqliteTable = buildTable({
           address: table.address,
           namespace: table.namespace,
           name: table.name,
@@ -104,7 +104,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           continue;
         }
 
-        const sqliteTable = createSqliteTable(table);
+        const sqliteTable = buildTable(table);
         const uniqueKey = concatHex(log.args.key as Hex[]);
         const key = decodeKey(table.keySchema, log.args.key);
 

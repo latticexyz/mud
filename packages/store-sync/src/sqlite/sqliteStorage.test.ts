@@ -3,7 +3,7 @@ import { sqliteStorage } from "./sqliteStorage";
 import { getTables } from "./getTables";
 import { chainState, mudStoreTables } from "./internalTables";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { createSqliteTable } from "./createSqliteTable";
+import { buildTable } from "./buildTable";
 import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
 import { createPublicClient, http } from "viem";
@@ -135,7 +135,7 @@ describe("sqliteStorage", async () => {
       ]
     `);
 
-    const sqliteTable = createSqliteTable(tables[0]);
+    const sqliteTable = buildTable(tables[0]);
     expect(db.select().from(sqliteTable).all()).toMatchInlineSnapshot("[]");
   });
 });
