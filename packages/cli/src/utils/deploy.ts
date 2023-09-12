@@ -14,7 +14,8 @@ import {
   confirmNonce,
   fastTxExecute,
 } from "./txHelpers";
-import { deployWorldContract as deployWorld, registerNamespace, registerTables } from "./world";
+import { deployWorldContract } from "./world";
+import { getTableIds, getRegisterTable } from "./tables";
 import { getUserModules, getModuleCall } from "./modules";
 import { grantAccess, registerSystems } from "./systems";
 import { toBytes16 } from "./utils";
@@ -98,7 +99,7 @@ export async function deploy(
   console.log("Start deployment at block", blockNumber);
 
   // Deploy all contracts - World, Core, Systems, Module. Non-blocking.
-  const worldPromise: Promise<string> = deployWorld({
+  const worldPromise: Promise<string> = deployWorldContract({
     ...txConfig,
     worldAddress,
     worldContractName: mudConfig.worldContractName,
@@ -158,7 +159,8 @@ export async function deploy(
     console.log(chalk.green("Installed CoreModule"));
   }
 
-  if (mudConfig.namespace)
+  if (mudConfig.namespace) {
+    console.log(chalk.blue("Registering Namespace"));
     await fastTxExecute({
       ...txConfig,
       nonce: txConfig.nonce++,
@@ -166,16 +168,24 @@ export async function deploy(
       func: "registerNamespace",
       args: [toBytes16(mudConfig.namespace)],
     });
+    console.log(chalk.green("Namespace registered"));
+  }
 
-  // Blocking - Wait for tables to be registered
-  const registerResponse = await registerTables({
-    ...txConfig,
-    worldContract,
-    mudConfig,
-    namespace: mudConfig.namespace,
-  });
-  const tableIds = registerResponse.tableIds;
-  txConfig.nonce = registerResponse.nonce;
+  const tableIds = getTableIds(mudConfig);
+  const registerTableCalls = Object.values(mudConfig.tables).map((table) => getRegisterTable(table, mudConfig));
+
+  console.log(chalk.blue("Registering tables"));
+  await Promise.all(
+    registerTableCalls.map((call) =>
+      fastTxExecute({
+        ...txConfig,
+        nonce: txConfig.nonce++,
+        contract: worldContract,
+        ...call,
+      })
+    )
+  );
+  console.log(chalk.green(`Tables registered`));
 
   // Blocking - Wait for resources to be registered before granting access to them
   txConfig.nonce = await registerSystems({
