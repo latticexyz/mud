@@ -1,17 +1,15 @@
-import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
+import { Address, Block, Hex, Log, PublicClient } from "viem";
 import { GroupLogsByBlockNumberResult } from "@latticexyz/block-logs-stream";
 import {
   StoreConfig,
-  KeySchema,
-  ValueSchema,
   ConfigToKeyPrimitives as Key,
   ConfigToValuePrimitives as Value,
-  TableRecord,
   StoreEventsAbiItem,
   StoreEventsAbi,
 } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { BlockStorageOperations } from "./blockLogsToStorage";
+import { KeySchema, ValueSchema, TableRecord } from "@latticexyz/protocol-parser";
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
