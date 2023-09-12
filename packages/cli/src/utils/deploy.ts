@@ -12,9 +12,10 @@ import {
   deployContractsByCode,
   deployContract,
   confirmNonce,
+  fastTxExecute,
 } from "./txHelpers";
 import { deployWorldContract as deployWorld, registerNamespace, registerTables } from "./world";
-import { installCoreModule, installModules, getUserModules, updateModuleAddresses } from "./modules";
+import { getUserModules, getModuleCall } from "./modules";
 import { grantAccess, registerSystems } from "./systems";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
@@ -144,12 +145,17 @@ export async function deploy(
   const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldData.abi);
 
   // If an existing World is passed assume its coreModule is already installed - blocking to install if not
-  if (!worldAddress)
-    txConfig.nonce = await installCoreModule({
+  if (!worldAddress) {
+    console.log(chalk.blue("Installing CoreModule"));
+    await fastTxExecute({
       ...txConfig,
-      worldContract,
-      coreModuleAddress: await coreModulePromise,
+      nonce: txConfig.nonce++,
+      contract: worldContract,
+      func: "installRootModule",
+      args: [await coreModulePromise, "0x"],
     });
+    console.log(chalk.green("Installed CoreModule"));
+  }
 
   txConfig.nonce = await registerNamespace({
     ...txConfig,
@@ -186,15 +192,20 @@ export async function deploy(
     namespace: mudConfig.namespace,
   });
 
-  const modules = await updateModuleAddresses({ moduleContracts, modules: mudConfig.modules });
+  const moduleCalls = await Promise.all(mudConfig.modules.map((m) => getModuleCall(moduleContracts, m, tableIds)));
 
-  // Blocking - Wait for User Module installs before postDeploy is run
-  txConfig.nonce = await installModules({
-    ...txConfig,
-    worldContract,
-    modules,
-    tableIds,
-  });
+  console.log(chalk.blue("Installing User Modules"));
+  await Promise.all(
+    moduleCalls.map((call) =>
+      fastTxExecute({
+        ...txConfig,
+        nonce: txConfig.nonce++,
+        contract: worldContract,
+        ...call,
+      })
+    )
+  );
+  console.log(chalk.green(`User Modules Installed`));
 
   // Double check that all transactions have been included by confirming the current nonce is the expected nonce
   await confirmNonce(signer, txConfig.nonce, pollInterval);

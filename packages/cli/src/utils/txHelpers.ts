@@ -6,6 +6,11 @@ import { Fragment } from "ethers/lib/utils.js";
 import { TransactionReceipt, TransactionResponse } from "@ethersproject/providers";
 import { MUDError } from "@latticexyz/common/errors";
 
+export type CallData = {
+  func: string;
+  args: unknown[];
+};
+
 type ContractNames = string[];
 
 export type ContractCode = {
