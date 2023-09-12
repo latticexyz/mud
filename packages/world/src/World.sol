@@ -221,7 +221,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * ETH sent to the world without calldata is added to the root namespace's balance
+   * ETH sent to the World without calldata is added to the root namespace's balance
    */
   receive() external payable {
     uint256 rootBalance = Balances.get(ROOT_NAMESPACE);
