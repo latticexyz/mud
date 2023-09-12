@@ -1,6 +1,6 @@
-/* Network specific configuration for the client.
+/*
+ * Network specific configuration for the client.
  * By default connect to the anvil test network.
- *
  */
 
 /*

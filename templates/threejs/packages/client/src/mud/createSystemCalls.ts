@@ -44,10 +44,6 @@ export function createSystemCalls(
     const playerPosition = getComponentValue(Position, playerEntity);
 
     if (playerPosition) {
-      /*
-       * Because MoveSystem is in the root namespace, .moveTo can be called directly
-       * on the World contract.
-       */
       await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY, playerPosition.z + deltaZ);
     } else {
       await moveTo(deltaX, deltaY, deltaZ);
