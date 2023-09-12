@@ -10,7 +10,8 @@ bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector 
   IStoreHook.onBeforeSetField.selector ^
   IStoreHook.onAfterSetField.selector ^
   IStoreHook.onBeforeDeleteRecord.selector ^
-  IStoreHook.onAfterDeleteRecord.selector;
+  IStoreHook.onAfterDeleteRecord.selector ^
+  ERC165.supportsInterface.selector;
 
 interface IStoreHook is ERC165 {
   function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) external;
