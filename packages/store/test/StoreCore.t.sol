@@ -153,7 +153,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, oneName, oneName);
 
     // Register table with invalid value names
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidValueNamesLength.selector, 1, 4));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 4));
     IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, fourNames, fourNames);
   }
 

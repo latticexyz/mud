@@ -90,7 +90,7 @@ library StoreCore {
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
-    string[] memory valueNames
+    string[] memory fieldNames
   ) internal {
     // Verify the field layout is valid
     fieldLayout.validate({ allowEmpty: false });
@@ -104,8 +104,8 @@ library StoreCore {
     }
 
     // Verify the number of value names
-    if (valueNames.length != fieldLayout.numFields()) {
-      revert IStoreErrors.StoreCore_InvalidValueNamesLength(fieldLayout.numFields(), valueNames.length);
+    if (fieldNames.length != fieldLayout.numFields()) {
+      revert IStoreErrors.StoreCore_InvalidFieldNamesLength(fieldLayout.numFields(), fieldNames.length);
     }
     // Verify the number of value schema types
     if (valueSchema.numFields() != fieldLayout.numFields()) {
@@ -124,7 +124,7 @@ library StoreCore {
       Schema.unwrap(keySchema),
       Schema.unwrap(valueSchema),
       abi.encode(keyNames),
-      abi.encode(valueNames)
+      abi.encode(fieldNames)
     );
   }
 
