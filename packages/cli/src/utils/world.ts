@@ -8,6 +8,7 @@ import { WorldConfig } from "@latticexyz/world";
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import { tableIdToHex } from "@latticexyz/common";
+import { toBytes16 } from "./utils";
 import { TxConfig, deployContract, deployContractByName, fastTxExecute } from "./txHelpers";
 
 export type TableIds = { [tableName: string]: Uint8Array };
@@ -106,22 +107,5 @@ function toResourceSelector(namespace: string, file: string): Uint8Array {
   const result = new Uint8Array(32);
   result.set(namespaceBytes);
   result.set(fileBytes, 16);
-  return result;
-}
-
-// TODO: use stringToBytes16 from utils as soon as utils are usable inside cli
-// (see https://github.com/latticexyz/mud/issues/499)
-function toBytes16(input: string) {
-  if (input.length > 16) throw new Error("String does not fit into 16 bytes");
-
-  const result = new Uint8Array(16);
-  // Set ascii bytes
-  for (let i = 0; i < input.length; i++) {
-    result[i] = input.charCodeAt(i);
-  }
-  // Set the remaining bytes to 0
-  for (let i = input.length; i < 16; i++) {
-    result[i] = 0;
-  }
   return result;
 }

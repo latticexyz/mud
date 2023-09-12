@@ -17,6 +17,7 @@ import {
 import { deployWorldContract as deployWorld, registerNamespace, registerTables } from "./world";
 import { getUserModules, getModuleCall } from "./modules";
 import { grantAccess, registerSystems } from "./systems";
+import { toBytes16 } from "./utils";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
@@ -157,11 +158,14 @@ export async function deploy(
     console.log(chalk.green("Installed CoreModule"));
   }
 
-  txConfig.nonce = await registerNamespace({
-    ...txConfig,
-    worldContract,
-    namespace: mudConfig.namespace,
-  });
+  if (mudConfig.namespace)
+    await fastTxExecute({
+      ...txConfig,
+      nonce: txConfig.nonce++,
+      contract: worldContract,
+      func: "registerNamespace",
+      args: [toBytes16(mudConfig.namespace)],
+    });
 
   // Blocking - Wait for tables to be registered
   const registerResponse = await registerTables({
