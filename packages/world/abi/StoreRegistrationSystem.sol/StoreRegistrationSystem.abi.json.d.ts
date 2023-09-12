@@ -195,7 +195,7 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "StoreCore_InvalidKeyNamesLength";
+    name: "StoreCore_InvalidFieldNamesLength";
     type: "error";
   },
   {
@@ -211,7 +211,7 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "StoreCore_InvalidValueNamesLength";
+    name: "StoreCore_InvalidKeyNamesLength";
     type: "error";
   },
   {
