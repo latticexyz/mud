@@ -53,6 +53,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
       (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
       WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
+        msgValue: 0,
         target: systemAddress,
         funcSelectorAndArgs: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace)
       });

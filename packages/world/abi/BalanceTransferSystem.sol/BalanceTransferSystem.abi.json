@@ -178,11 +178,6 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "StoreCore_NotDynamicField",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -196,52 +191,23 @@
   {
     "inputs": [
       {
+        "internalType": "bytes16",
+        "name": "fromNamespace",
+        "type": "bytes16"
+      },
+      {
         "internalType": "address",
-        "name": "delegatee",
+        "name": "toAddress",
         "type": "address"
       },
       {
-        "internalType": "bytes32",
-        "name": "delegationControlId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "initFuncSelectorAndArgs",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "registerDelegation",
+    "name": "transferBalanceToAddress",
     "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceSelector",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "string",
-        "name": "systemFunctionName",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "systemFunctionArguments",
-        "type": "string"
-      }
-    ],
-    "name": "registerFunctionSelector",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "worldFunctionSelector",
-        "type": "bytes4"
-      }
-    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -249,104 +215,21 @@
     "inputs": [
       {
         "internalType": "bytes16",
-        "name": "namespace",
+        "name": "fromNamespace",
         "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "toNamespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
-    "name": "registerNamespace",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceSelector",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes4",
-        "name": "worldFunctionSelector",
-        "type": "bytes4"
-      },
-      {
-        "internalType": "bytes4",
-        "name": "systemFunctionSelector",
-        "type": "bytes4"
-      }
-    ],
-    "name": "registerRootFunctionSelector",
-    "outputs": [
-      {
-        "internalType": "bytes4",
-        "name": "",
-        "type": "bytes4"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceSelector",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "contract WorldContextConsumer",
-        "name": "system",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "publicAccess",
-        "type": "bool"
-      }
-    ],
-    "name": "registerSystem",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceSelector",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "contract ISystemHook",
-        "name": "hookAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint8",
-        "name": "enabledHooksBitmap",
-        "type": "uint8"
-      }
-    ],
-    "name": "registerSystemHook",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "resourceSelector",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "contract ISystemHook",
-        "name": "hookAddress",
-        "type": "address"
-      }
-    ],
-    "name": "unregisterSystemHook",
+    "name": "transferBalanceToNamespace",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
