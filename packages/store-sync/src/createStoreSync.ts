@@ -1,5 +1,5 @@
 import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
-import { Hex, TransactionReceiptNotFoundError, encodeAbiParameters } from "viem";
+import { Hex, TransactionReceiptNotFoundError } from "viem";
 import {
   StorageAdapter,
   StorageAdapterBlock,
@@ -7,8 +7,6 @@ import {
   SyncOptions,
   SyncResult,
   TableWithRecords,
-  schemasTable,
-  schemasTableId,
 } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
@@ -33,7 +31,7 @@ import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
-import { encodeKey, encodeValue, keySchemaToHex, schemaToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
+import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 
 const debug = parentDebug.extend("createStoreSync");
 
@@ -140,7 +138,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
             args: {
               table: table.tableId,
               key: encodeKey(table.keySchema, record.key),
-              data: encodeValue(table.valueSchema, record.value),
+              ...encodeValueArgs(table.valueSchema, record.value),
             },
           })
         )

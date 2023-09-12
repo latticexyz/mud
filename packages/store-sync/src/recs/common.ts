@@ -14,7 +14,9 @@ export type StoreComponentMetadata = RecsMetadata & {
 export type ConfigToRecsComponents<TConfig extends StoreConfig> = {
   [tableName in keyof TConfig["tables"] & string]: RecsComponent<
     {
-      __data: RecsType.String;
+      __staticData: RecsType.OptionalString;
+      __encodedLengths: RecsType.OptionalString;
+      __dynamicData: RecsType.OptionalString;
     } & {
       [fieldName in keyof TConfig["tables"][tableName]["schema"] & string]: RecsType &
         SchemaAbiTypeToRecsType<SchemaAbiType & TConfig["tables"][tableName]["schema"][fieldName]>;

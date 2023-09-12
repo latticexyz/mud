@@ -1,7 +1,7 @@
 import { DynamicAbiType, SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
-import { maxUint256, numberToHex } from "viem";
+import { Hex, numberToHex } from "viem";
 
-export const UNCHANGED_PACKED_COUNTER = numberToHex(maxUint256);
+export const UNCHANGED_PACKED_COUNTER = numberToHex(1, { size: 32 });
 
 /** @deprecated use `KeySchema` or `ValueSchema` instead */
 export type Schema = {
@@ -26,4 +26,10 @@ export type SchemaToPrimitives<TSchema extends ValueSchema> = {
 export type TableRecord<TKeySchema extends KeySchema = KeySchema, TValueSchema extends ValueSchema = ValueSchema> = {
   key: SchemaToPrimitives<TKeySchema>;
   value: SchemaToPrimitives<TValueSchema>;
+};
+
+export type ValueArgs = {
+  staticData: Hex;
+  encodedLengths: Hex;
+  dynamicData: Hex;
 };

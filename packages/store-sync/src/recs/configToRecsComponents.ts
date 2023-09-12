@@ -21,7 +21,9 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
               schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
             ])
           ),
-          __data: Type.String,
+          __staticData: Type.OptionalString,
+          __encodedLengths: Type.OptionalString,
+          __dynamicData: Type.OptionalString,
         },
         {
           id: tableIdToHex(config.namespace, tableName),

@@ -12,17 +12,19 @@ import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { StoreComponentMetadata } from "./common";
 import { hexToTableId } from "@latticexyz/common";
-import { decodeValue } from "@latticexyz/protocol-parser";
-import { Hex } from "viem";
+import { decodeValueArgs, readHex, staticDataLength } from "@latticexyz/protocol-parser";
+import { Hex, concatHex } from "viem";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
-import { spliceValueHex } from "../spliceValueHex";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { isStaticAbiType } from "@latticexyz/schema-type";
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
   components,
 }: {
+  // TODO: switch to RECS world so we can fetch components from current list in case new components are registered later
   components: ReturnType<typeof defineInternalComponents> &
     Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
   config?: TConfig;
@@ -61,7 +63,9 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
       const component = componentsByTableId[table.tableId];
       if (!component) {
         debug(
-          `skipping update for unknown component: ${table.tableId}. Available components: ${Object.keys(components)}`
+          `skipping update for unknown component: ${table.tableId} (${table.namespace}:${
+            table.name
+          }). Available components: ${Object.keys(components)}`
         );
         continue;
       }
@@ -69,18 +73,92 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
       const entity = hexKeyTupleToEntity(log.args.key);
 
       if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
-        const value = decodeValue(table.valueSchema, log.args.data);
-        debug("setting component", table.tableId, entity, value);
-        setComponent(component, entity, { ...value, __data: log.args.data });
-      } else if (log.eventName === "StoreSpliceRecord") {
-        const previousData = (getComponentValue(component, entity)?.__data as Hex) ?? "0x";
-        const newData = spliceValueHex(previousData, log);
-        const newValue = decodeValue(table.valueSchema, newData);
-        debug("setting component via splice", table.tableId, entity, { newValue, newData, previousData });
-        setComponent(component, entity, { ...newValue, __data: newData });
+        const value = decodeValueArgs(table.valueSchema, log.args);
+        debug("setting component", {
+          namespace: table.namespace,
+          name: table.name,
+          entity,
+          value,
+        });
+        setComponent(component, entity, {
+          ...value,
+          __staticData: log.args.staticData,
+          __encodedLengths: log.args.encodedLengths,
+          __dynamicData: log.args.dynamicData,
+        });
+      } else if (log.eventName === "StoreSpliceStaticRecord") {
+        // TODO: add tests that this works when no record had been set before
+        const previousValue = getComponentValue(component, entity);
+        const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
+        const start = log.args.start;
+        const end = start + log.args.deleteCount;
+        const newStaticData = concatHex([
+          readHex(previousStaticData, 0, start),
+          log.args.data,
+          readHex(previousStaticData, end),
+        ]);
+        const newValue = decodeValueArgs(table.valueSchema, {
+          staticData: readHex(
+            newStaticData,
+            0,
+            staticDataLength(Object.values(table.valueSchema).filter(isStaticAbiType))
+          ),
+          encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
+          dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
+        });
+        debug("setting component via splice static", {
+          namespace: table.namespace,
+          name: table.name,
+          entity,
+          previousStaticData,
+          newStaticData,
+          previousValue,
+          newValue,
+        });
+        setComponent(component, entity, {
+          ...newValue,
+          __staticData: newStaticData,
+        });
+      } else if (log.eventName === "StoreSpliceDynamicRecord") {
+        // TODO: add tests that this works when no record had been set before
+        const previousValue = getComponentValue(component, entity);
+        const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
+        const start = log.args.start;
+        const end = start + log.args.deleteCount;
+        const newDynamicData = concatHex([
+          readHex(previousDynamicData, 0, start),
+          log.args.data,
+          readHex(previousDynamicData, end),
+        ]);
+        const newValue = decodeValueArgs(table.valueSchema, {
+          staticData: (previousValue?.__staticData as Hex) ?? "0x",
+          // TODO: handle unchanged encoded lengths
+          encodedLengths: log.args.encodedLengths,
+          dynamicData: newDynamicData,
+        });
+        debug("setting component via splice dynamic", {
+          namespace: table.namespace,
+          name: table.name,
+          entity,
+          previousDynamicData,
+          newDynamicData,
+          previousValue,
+          newValue,
+        });
+        setComponent(component, entity, {
+          ...newValue,
+          __encodedLengths: log.args.encodedLengths,
+          __dynamicData: newDynamicData,
+        });
       } else if (log.eventName === "StoreDeleteRecord") {
-        debug("deleting component", table.tableId, entity);
+        debug("deleting component", {
+          namespace: table.namespace,
+          name: table.name,
+          entity,
+        });
         removeComponent(component, entity);
+      } else {
+        assertExhaustive(log.eventName);
       }
     }
   };

@@ -1,16 +1,11 @@
-import { decodeRecord, abiTypesToSchema, hexToSchema } from "@latticexyz/protocol-parser";
-import { ConfigToValuePrimitives } from "@latticexyz/store";
-import { decodeAbiParameters, parseAbiParameters } from "viem";
+import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser";
+import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
 import { hexToTableId } from "@latticexyz/common";
-import storeConfig from "@latticexyz/store/mud.config";
 
 // TODO: add tableToLog
 
 export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord" }): Table {
-  // TODO: refactor encode/decode to use Record<string, SchemaAbiType> schemas
-  // TODO: refactor to decode key with protocol-parser utils
-
   const [tableId, ...otherKeys] = log.args.key;
   if (otherKeys.length) {
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
@@ -18,10 +13,10 @@ export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord
 
   const table = hexToTableId(tableId);
 
-  const valueTuple = decodeRecord(abiTypesToSchema(Object.values(schemasTable.schema)), log.args.data);
-  const value = Object.fromEntries(
-    Object.keys(schemasTable.schema).map((name, i) => [name, valueTuple[i]])
-  ) as ConfigToValuePrimitives<typeof storeConfig, typeof schemasTable.name>;
+  const value = decodeValue(
+    schemasTable.schema,
+    concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData])
+  );
 
   const keySchema = hexToSchema(value.keySchema);
   const valueSchema = hexToSchema(value.valueSchema);

@@ -14,6 +14,9 @@ uint256 constant VAL_BITS = 5 * 8;
 // Maximum value of a 5-byte section
 uint256 constant MAX_VAL = type(uint40).max;
 
+// We use a specific, invalid packed counter (total length != sum of lengths) to represent "unchanged" for the purpose of events and off-chain indexing
+bytes32 constant UNCHANGED_PACKED_COUNTER = bytes32(uint256(1));
+
 /**
  * Static functions for PackedCounter
  * The caller must ensure that the value arguments are <= MAX_VAL
