@@ -332,6 +332,24 @@ declare const abi: [
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "resourceSelector";
+        type: "bytes32";
+      },
+      {
+        internalType: "contract ISystemHook";
+        name: "hookAddress";
+        type: "address";
+      }
+    ];
+    name: "unregisterSystemHook";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
   }
 ];
 export default abi;

@@ -8,10 +8,13 @@ export function encodeField<TSchemaAbiType extends SchemaAbiType>(
 ): Hex {
   if (isArrayAbiType(fieldType) && Array.isArray(value)) {
     const staticFieldType = arrayAbiTypeToStaticAbiType(fieldType);
-    return encodePacked(
-      value.map(() => staticFieldType),
-      value
-    );
+    // TODO: we can remove conditional once this is fixed: https://github.com/wagmi-dev/viem/pull/1147
+    return value.length === 0
+      ? "0x"
+      : encodePacked(
+          value.map(() => staticFieldType),
+          value
+        );
   }
   return encodePacked([fieldType], [value]);
 }

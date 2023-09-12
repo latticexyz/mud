@@ -17,9 +17,6 @@ import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks")));
-bytes32 constant HooksTableId = _tableId;
-
 library Hooks {
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
@@ -50,17 +47,17 @@ library Hooks {
   }
 
   /** Register the table's key schema, value schema, key names and value names */
-  function register() internal {
+  function register(bytes32 _tableId) internal {
     StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table's key schema, value schema, key names and value names (using the specified store) */
-  function register(IStore _store) internal {
+  function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get value */
-  function get(bytes32 key) internal view returns (bytes21[] memory value) {
+  function get(bytes32 _tableId, bytes32 key) internal view returns (bytes21[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -69,7 +66,7 @@ library Hooks {
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (bytes21[] memory value) {
+  function get(IStore _store, bytes32 _tableId, bytes32 key) internal view returns (bytes21[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -78,7 +75,7 @@ library Hooks {
   }
 
   /** Set value */
-  function set(bytes32 key, bytes21[] memory value) internal {
+  function set(bytes32 _tableId, bytes32 key, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -86,7 +83,7 @@ library Hooks {
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, bytes32 key, bytes21[] memory value) internal {
+  function set(IStore _store, bytes32 _tableId, bytes32 key, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -94,7 +91,7 @@ library Hooks {
   }
 
   /** Get the length of value */
-  function length(bytes32 key) internal view returns (uint256) {
+  function length(bytes32 _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -105,7 +102,7 @@ library Hooks {
   }
 
   /** Get the length of value (using the specified store) */
-  function length(IStore _store, bytes32 key) internal view returns (uint256) {
+  function length(IStore _store, bytes32 _tableId, bytes32 key) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -119,7 +116,7 @@ library Hooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItem(bytes32 key, uint256 _index) internal view returns (bytes21) {
+  function getItem(bytes32 _tableId, bytes32 key, uint256 _index) internal view returns (bytes21) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -140,7 +137,7 @@ library Hooks {
    * Get an item of value (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItem(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes21) {
+  function getItem(IStore _store, bytes32 _tableId, bytes32 key, uint256 _index) internal view returns (bytes21) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -158,7 +155,7 @@ library Hooks {
   }
 
   /** Push an element to value */
-  function push(bytes32 key, bytes21 _element) internal {
+  function push(bytes32 _tableId, bytes32 key, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -166,7 +163,7 @@ library Hooks {
   }
 
   /** Push an element to value (using the specified store) */
-  function push(IStore _store, bytes32 key, bytes21 _element) internal {
+  function push(IStore _store, bytes32 _tableId, bytes32 key, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -174,7 +171,7 @@ library Hooks {
   }
 
   /** Pop an element from value */
-  function pop(bytes32 key) internal {
+  function pop(bytes32 _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -182,7 +179,7 @@ library Hooks {
   }
 
   /** Pop an element from value (using the specified store) */
-  function pop(IStore _store, bytes32 key) internal {
+  function pop(IStore _store, bytes32 _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -193,7 +190,7 @@ library Hooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function update(bytes32 key, uint256 _index, bytes21 _element) internal {
+  function update(bytes32 _tableId, bytes32 key, uint256 _index, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -206,7 +203,7 @@ library Hooks {
    * Update an element of value (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function update(IStore _store, bytes32 key, uint256 _index, bytes21 _element) internal {
+  function update(IStore _store, bytes32 _tableId, bytes32 key, uint256 _index, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -235,7 +232,7 @@ library Hooks {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 key) internal {
+  function deleteRecord(bytes32 _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
@@ -243,7 +240,7 @@ library Hooks {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 key) internal {
+  function deleteRecord(IStore _store, bytes32 _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
