@@ -217,7 +217,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       (address delegationControl, ) = Systems.get(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
 
-      // Rall the delegation control contract's init function
+      // Call the delegation control contract's init function
       SystemCall.call({
         caller: _msgSender(),
         resourceSelector: delegationControlId,
