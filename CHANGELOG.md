@@ -1,460 +1,6 @@
-# Version 2.0.0-next.7
+## Version 2.0.0-next.3
 
-## Major changes
-
-**[feat(store,world): more granularity for onchain hooks (#1399)](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15)** (@latticexyz/store, @latticexyz/world)
-
-- The `onSetRecord` hook is split into `onBeforeSetRecord` and `onAfterSetRecord` and the `onDeleteRecord` hook is split into `onBeforeDeleteRecord` and `onAfterDeleteRecord`.
-  The purpose of this change is to allow more fine-grained control over the point in the lifecycle at which hooks are executed.
-
-  The previous hooks were executed before modifying data, so they can be replaced with the respective `onBefore` hooks.
-
-  ```diff
-  - function onSetRecord(
-  + function onBeforeSetRecord(
-      bytes32 table,
-      bytes32[] memory key,
-      bytes memory data,
-      Schema valueSchema
-    ) public;
-
-  - function onDeleteRecord(
-  + function onBeforeDeleteRecord(
-      bytes32 table,
-      bytes32[] memory key,
-      Schema valueSchema
-    ) public;
-  ```
-
-- It is now possible to specify which methods of a hook contract should be called when registering a hook. The purpose of this change is to save gas by avoiding to call no-op hook methods.
-
-  ```diff
-  function registerStoreHook(
-    bytes32 tableId,
-  - IStoreHook hookAddress
-  + IStoreHook hookAddress,
-  + uint8 enabledHooksBitmap
-  ) public;
-
-  function registerSystemHook(
-    bytes32 systemId,
-  - ISystemHook hookAddress
-  + ISystemHook hookAddress,
-  + uint8 enabledHooksBitmap
-  ) public;
-  ```
-
-  There are `StoreHookLib` and `SystemHookLib` with helper functions to encode the bitmap of enabled hooks.
-
-  ```solidity
-  import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
-
-  uint8 storeHookBitmap = StoreBookLib.encodeBitmap({
-    onBeforeSetRecord: true,
-    onAfterSetRecord: true,
-    onBeforeSetField: true,
-    onAfterSetField: true,
-    onBeforeDeleteRecord: true,
-    onAfterDeleteRecord: true
-  });
-  ```
-
-  ```solidity
-  import { SystemHookLib } from "@latticexyz/world/src/SystemHook.sol";
-
-  uint8 systemHookBitmap = SystemHookLib.encodeBitmap({
-    onBeforeCallSystem: true,
-    onAfterCallSystem: true
-  });
-  ```
-
-- The `onSetRecord` hook call for `emitEphemeralRecord` has been removed to save gas and to more clearly distinguish ephemeral tables as offchain tables.
-
-## Patch changes
-
-**[fix(abi-ts): remove cwd join (#1418)](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc)** (@latticexyz/abi-ts)
-
-Let `glob` handle resolving the glob against the current working directory.
-
-**[feat(world): allow callFrom from own address without explicit delegation (#1407)](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)** (@latticexyz/world)
-
-Allow `callFrom` with the own address as `delegator` without requiring an explicit delegation
-
----
-
-# Version 2.0.0-next.6
-
-## Major changes
-
-**[style(gas-report): rename mud-gas-report to gas-report (#1410)](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4)** (@latticexyz/gas-report)
-
-Renames `mud-gas-report` binary to `gas-report`, since it's no longer MUD specific.
-
-## Minor changes
-
-**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/abi-ts, @latticexyz/cli)
-
-Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
-
-This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
-
-```
-pnpm add @latticexyz/abi-ts
-pnpm abi-ts
-```
-
-By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
-
-```console
-pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
-```
-
-**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (create-mud)
-
-We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
-
-If you have a MUD project created from an older template, you can replace TypeChain with `abi-ts` by first updating your contracts' `package.json`:
-
-```diff
--"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
-+"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
--"build:abi": "forge clean && forge build",
-+"build:abi": "rimraf abi && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
-+"build:abi-ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
- "build:mud": "mud tablegen && mud worldgen",
--"build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
-```
-
-And update your client's `setupNetwork.ts` with:
-
-```diff
--import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-+import IWorldAbi from "contracts/abi/IWorld.sol/IWorld.abi.json";
-
- const worldContract = createContract({
-   address: networkConfig.worldAddress as Hex,
--  abi: IWorld__factory.abi,
-+  abi: IWorldAbi,
-```
-
-**[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/store, @latticexyz/world)
-
-We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
-
-If you previously relied on TypeChain types from `@latticexyz/store` or `@latticexyz/world`, you will either need to migrate to viem or abitype using ABI JSON imports or generate TypeChain types from our exported ABI JSON files.
-
-```ts
-import { getContract } from "viem";
-import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.abi.json";
-
-const storeContract = getContract({
-  abi: IStoreAbi,
-  ...
-});
-
-await storeContract.write.setRecord(...);
-```
-
----
-
-# Version 2.0.0-next.5
-
-## Major changes
-
-**[refactor(world): separate call utils into `WorldContextProvider` and `SystemCall` (#1370)](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe)** (@latticexyz/world)
-
-- The previous `Call.withSender` util is replaced with `WorldContextProvider`, since the usecase of appending the `msg.sender` to the calldata is tightly coupled with `WorldContextConsumer` (which extracts the appended context from the calldata).
-
-  The previous `Call.withSender` utility reverted if the call failed and only returned the returndata on success. This is replaced with `callWithContextOrRevert`/`delegatecallWithContextOrRevert`
-
-  ```diff
-  -import { Call } from "@latticexyz/world/src/Call.sol";
-  +import { WorldContextProvider } from "@latticexyz/world/src/WorldContext.sol";
-
-  -Call.withSender({
-  -  delegate: false,
-  -  value: 0,
-  -  ...
-  -});
-  +WorldContextProvider.callWithContextOrRevert({
-  +  value: 0,
-  +  ...
-  +});
-
-  -Call.withSender({
-  -  delegate: true,
-  -  value: 0,
-  -  ...
-  -});
-  +WorldContextProvider.delegatecallWithContextOrRevert({
-  +  ...
-  +});
-  ```
-
-  In addition there are utils that return a `bool success` flag instead of reverting on errors. This mirrors the behavior of Solidity's low level `call`/`delegatecall` functions and is useful in situations where additional logic should be executed in case of a reverting external call.
-
-  ```solidity
-  library WorldContextProvider {
-    function callWithContext(
-      address target, // Address to call
-      bytes memory funcSelectorAndArgs, // Abi encoded function selector and arguments to pass to pass to the contract
-      address msgSender, // Address to append to the calldata as context for msgSender
-      uint256 value // Value to pass with the call
-    ) internal returns (bool success, bytes memory data);
-
-    function delegatecallWithContext(
-      address target, // Address to call
-      bytes memory funcSelectorAndArgs, // Abi encoded function selector and arguments to pass to pass to the contract
-      address msgSender // Address to append to the calldata as context for msgSender
-    ) internal returns (bool success, bytes memory data);
-  }
-  ```
-
-- `WorldContext` is renamed to `WorldContextConsumer` to clarify the relationship between `WorldContextProvider` (appending context to the calldata) and `WorldContextConsumer` (extracting context from the calldata)
-
-  ```diff
-  -import { WorldContext } from "@latticexyz/world/src/WorldContext.sol";
-  -import { WorldContextConsumer } from "@latticexyz/world/src/WorldContext.sol";
-  ```
-
-- The `World` contract previously had a `_call` method to handle calling systems via their resource selector, performing accesss control checks and call hooks registered for the system.
-
-  ```solidity
-  library SystemCall {
-    /**
-     * Calls a system via its resource selector and perform access control checks.
-     * Does not revert if the call fails, but returns a `success` flag along with the returndata.
-     */
-    function call(
-      address caller,
-      bytes32 resourceSelector,
-      bytes memory funcSelectorAndArgs,
-      uint256 value
-    ) internal returns (bool success, bytes memory data);
-
-    /**
-     * Calls a system via its resource selector, perform access control checks and trigger hooks registered for the system.
-     * Does not revert if the call fails, but returns a `success` flag along with the returndata.
-     */
-    function callWithHooks(
-      address caller,
-      bytes32 resourceSelector,
-      bytes memory funcSelectorAndArgs,
-      uint256 value
-    ) internal returns (bool success, bytes memory data);
-
-    /**
-     * Calls a system via its resource selector, perform access control checks and trigger hooks registered for the system.
-     * Reverts if the call fails.
-     */
-    function callWithHooksOrRevert(
-      address caller,
-      bytes32 resourceSelector,
-      bytes memory funcSelectorAndArgs,
-      uint256 value
-    ) internal returns (bytes memory data);
-  }
-  ```
-
-- System hooks now are called with the system's resource selector instead of its address. The system's address can still easily obtained within the hook via `Systems.get(resourceSelector)` if necessary.
-
-  ```diff
-  interface ISystemHook {
-    function onBeforeCallSystem(
-      address msgSender,
-  -   address systemAddress,
-  +   bytes32 resourceSelector,
-      bytes memory funcSelectorAndArgs
-    ) external;
-
-    function onAfterCallSystem(
-      address msgSender,
-  -   address systemAddress,
-  +   bytes32 resourceSelector,
-      bytes memory funcSelectorAndArgs
-    ) external;
-  }
-  ```
-
-## Minor changes
-
-**[feat(world): add support for upgrading systems (#1378)](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b)** (@latticexyz/world)
-
-It is now possible to upgrade systems by calling `registerSystem` again with an existing system id (resource selector).
-
-```solidity
-// Register a system
-world.registerSystem(systemId, systemAddress, publicAccess);
-
-// Upgrade the system by calling `registerSystem` with the
-// same system id but a new system address or publicAccess flag
-world.registerSystem(systemId, newSystemAddress, newPublicAccess);
-```
-
-**[feat(world): add callFrom entry point (#1364)](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed)** (@latticexyz/world)
-
-The `World` has a new `callFrom` entry point which allows systems to be called on behalf of other addresses if those addresses have registered a delegation.
-If there is a delegation, the call is forwarded to the system with `delegator` as `msgSender`.
-
-```solidity
-interface IBaseWorld {
-  function callFrom(
-    address delegator,
-    bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs
-  ) external payable virtual returns (bytes memory);
-}
-```
-
-A delegation can be registered via the `World`'s `registerDelegation` function.
-If `delegatee` is `address(0)`, the delegation is considered to be a "fallback" delegation and is used in `callFrom` if there is no delegation is found for the specific caller.
-Otherwise the delegation is registered for the specific `delegatee`.
-
-```solidity
-interface IBaseWorld {
-  function registerDelegation(
-    address delegatee,
-    bytes32 delegationControl,
-    bytes memory initFuncSelectorAndArgs
-  ) external;
-}
-```
-
-The `delegationControl` refers to the resource selector of a `DelegationControl` system that must have been registered beforehand.
-As part of registering the delegation, the `DelegationControl` system is called with the provided `initFuncSelectorAndArgs`.
-This can be used to initialize data in the given `DelegationControl` system.
-
-The `DelegationControl` system must implement the `IDelegationControl` interface:
-
-```solidity
-interface IDelegationControl {
-  function verify(address delegator, bytes32 systemId, bytes calldata funcSelectorAndArgs) external returns (bool);
-}
-```
-
-When `callFrom` is called, the `World` checks if a delegation is registered for the given caller, and if so calls the delegation control's `verify` function with the same same arguments as `callFrom`.
-If the call to `verify` is successful and returns `true`, the delegation is valid and the call is forwarded to the system with `delegator` as `msgSender`.
-
-Note: if `UNLIMITED_DELEGATION` (from `@latticexyz/world/src/constants.sol`) is passed as `delegationControl`, the external call to the delegation control contract is skipped and the delegation is considered valid.
-
-For examples of `DelegationControl` systems, check out the `CallboundDelegationControl` or `TimeboundDelegationControl` systems in the `std-delegations` module.
-See `StandardDelegations.t.sol` for usage examples.
-
-**[feat(world): allow transferring ownership of namespaces (#1274)](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b)** (@latticexyz/world)
-
-It is now possible to transfer ownership of namespaces!
-
-```solidity
-// Register a new namespace
-world.registerNamespace("namespace");
-// It's owned by the caller of the function (address(this))
-
-// Transfer ownership of the namespace to address(42)
-world.transferOwnership("namespace", address(42));
-// It's now owned by address(42)
-```
-
-## Patch changes
-
-**[fix(services): correctly export typescript types (#1377)](https://github.com/latticexyz/mud/commit/33f50f8a473398dcc19b17d10a17a552a82678c7)** (@latticexyz/services)
-
-Fixed an issue where the TypeScript types for createFaucetService were not exported correctly from the @latticexyz/services package
-
-**[feat: docker monorepo build (#1219)](https://github.com/latticexyz/mud/commit/80a26419f15177333b523bac5d09767487b4ffef)** (@latticexyz/services)
-
-The build phase of services now works on machines with older protobuf compilers
-
-**[refactor: remove v1 network package, remove snap sync module, deprecate std-client (#1311)](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)** (@latticexyz/common, @latticexyz/store, @latticexyz/world)
-
-- Refactor tightcoder to use typescript functions instead of ejs
-- Optimize `TightCoder` library
-- Add `isLeftAligned` and `getLeftPaddingBits` common codegen helpers
-
-**[fix(cli): make mud test exit with code 1 on test error (#1371)](https://github.com/latticexyz/mud/commit/dc258e6860196ad34bf1d4ac7fce382f70e2c0c8)** (@latticexyz/cli)
-
-The `mud test` cli now exits with code 1 on test failure. It used to exit with code 0, which meant that CIs didn't notice test failures.
-
----
-
-# Version 2.0.0-next.4
-
-## Major changes
-
-**[docs: changeset for deleted network package (#1348)](https://github.com/latticexyz/mud/commit/42c7d898630c93805a5e345bdc8d87c2674b5110)** (@latticexyz/network)
-
-Removes `network` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
-
-**[chore: delete std-contracts package (#1341)](https://github.com/latticexyz/mud/commit/c32c8e8f2ccac02c4242f715f296bffd5465bd71)** (@latticexyz/cli, @latticexyz/std-contracts)
-
-Removes `std-contracts` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
-
-**[chore: delete solecs package (#1340)](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64)** (@latticexyz/cli, @latticexyz/recs, @latticexyz/solecs, @latticexyz/std-client)
-
-Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
-
-**[feat(recs,std-client): move action system to recs (#1351)](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c)** (@latticexyz/recs, @latticexyz/std-client)
-
-- Moved `createActionSystem` from `std-client` to `recs` package and updated it to better support v2 sync stack.
-
-  If you want to use `createActionSystem` alongside `syncToRecs`, you'll need to pass in arguments like so:
-
-  ```ts
-  import { syncToRecs } from "@latticexyz/store-sync/recs";
-  import { createActionSystem } from "@latticexyz/recs/deprecated";
-  import { from, mergeMap } from "rxjs";
-
-  const { blockLogsStorage$, waitForTransaction } = syncToRecs({
-    world,
-    ...
-  });
-
-  const txReduced$ = blockLogsStorage$.pipe(
-    mergeMap(({ operations }) => from(operations.map((op) => op.log?.transactionHash).filter(isDefined)))
-  );
-
-  const actionSystem = createActionSystem(world, txReduced$, waitForTransaction);
-  ```
-
-- Fixed a bug in `waitForComponentValueIn` that caused the promise to not resolve if the component value was already set when the function was called.
-
-- Fixed a bug in `createActionSystem` that caused optimistic updates to be incorrectly propagated to requirement checks. To fix the bug, you must now pass in the full component object to the action's `updates` instead of just the component name.
-
-  ```diff
-    actions.add({
-      updates: () => [
-        {
-  -       component: "Resource",
-  +       component: Resource,
-          ...
-        }
-      ],
-      ...
-    });
-  ```
-
-**[chore: delete std-client package (#1342)](https://github.com/latticexyz/mud/commit/c03aff39e9882c8a827a3ed1ee81816231973816)** (@latticexyz/std-client)
-
-Removes `std-client` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
-
-**[chore: delete ecs-browser package (#1339)](https://github.com/latticexyz/mud/commit/6255a314240b1d36a8735f3dc7eb1672e16bac1a)** (@latticexyz/ecs-browser)
-
-Removes `ecs-browser` package. This has now been replaced by `dev-tools`, which comes out-of-the-box when creating a new MUD app from the templates (`pnpm create mud@next your-app-name`). We'll be adding deeper RECS support (querying for entities) in a future release.
-
-**[chore: delete store-cache package (#1343)](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1)** (@latticexyz/store-cache)
-
-Removes `store-cache` package. Please see the [changelog](https://mud.dev/changelog) for how to migrate your app to the new `store-sync` package. Or create a new project from an up-to-date template with `pnpm create mud@next your-app-name`.
-
-If you need reactivity, we recommend using `recs` package and `syncToRecs`. We'll be adding reactivity to `syncToSqlite` in a future release.
-
-**[chore: delete store-cache package (#1343)](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1)** (@latticexyz/react)
-
-Removes `useRow` and `useRows` hooks, previously powered by `store-cache`, which is now deprecated. Please use `recs` and the corresponding `useEntityQuery` and `useComponentValue` hooks. We'll have more hooks soon for SQL.js sync backends.
-
----
-
-# Version 2.0.0-next.3
-
-## Major changes
+### Major changes
 
 **[feat(world, store): stop loading schema from storage, require schema as an argument (#1174)](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world, create-mud)
 
@@ -561,7 +107,7 @@ Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
   + import { ... } from "@latticexyz/std-client/deprecated";
   ```
 
-## Patch changes
+### Patch changes
 
 **[feat(common,store-sync): improve initial sync to not block returned promise (#1315)](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e)** (@latticexyz/common, @latticexyz/store-sync)
 
@@ -599,9 +145,9 @@ Return `uint256` instead of `uint8` in SchemaInstance numFields methods
 
 ---
 
-# Version 2.0.0-next.2
+## Version 2.0.0-next.2
 
-## Major changes
+### Major changes
 
 **[feat(store-indexer): use fastify, move trpc to /trpc (#1232)](https://github.com/latticexyz/mud/commit/b621fb97731a0ceed9b67d741f40648a8aa64817)** (@latticexyz/store-indexer)
 
@@ -685,7 +231,7 @@ if (import.meta.env.DEV) {
 }
 ```
 
-## Minor changes
+### Minor changes
 
 **[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/common)
 
@@ -734,7 +280,7 @@ if (result.status === "fulfilled") {
 }
 ```
 
-## Patch changes
+### Patch changes
 
 **[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/dev-tools, @latticexyz/network, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/std-client, @latticexyz/store-indexer, @latticexyz/store-sync, create-mud)
 
@@ -750,9 +296,9 @@ remove usages of `isNonPendingBlock` and `isNonPendingLog` (fixed with more spec
 
 ---
 
-# Version 2.0.0-next.1
+## Version 2.0.0-next.1
 
-## Major changes
+### Major changes
 
 **[chore: fix changeset type (#1220)](https://github.com/latticexyz/mud/commit/2f6cfef91daacf09db82a4b7c69cff3af583b8f6)** (@latticexyz/store-indexer, @latticexyz/store-sync)
 
@@ -985,7 +531,7 @@ Add utils for using viem with MUD
 
 Also renames `mudTransportObserver` to `transportObserver`.
 
-## Minor changes
+### Minor changes
 
 **[feat(common): add viem utils (#1245)](https://github.com/latticexyz/mud/commit/3fb9ce2839271a0dcfe97f86394195f7a6f70f50)** (@latticexyz/common)
 
@@ -1033,7 +579,7 @@ add type narrowing `isStaticAbiType`
 - Moves zero gas fee override to `createContract` until https://github.com/wagmi-dev/viem/pull/963 or similar feature lands
 - Skip simulation if `gas` is provided
 
-## Patch changes
+### Patch changes
 
 **[fix(cli): add support for legacy transactions in deploy script (#1178)](https://github.com/latticexyz/mud/commit/168a4cb43ce4f7bfbdb7b1b9d4c305b912a0d3f2)** (@latticexyz/cli)
 
@@ -1126,9 +672,9 @@ This may break if you were previously dependent on `component.id`, `component.me
 
 ---
 
-# Version 2.0.0-next.0
+## Version 2.0.0-next.0
 
-## Minor changes
+### Minor changes
 
 **[feat(store-sync): add store sync package (#1075)](https://github.com/latticexyz/mud/commit/904fd7d4ee06a86e481e3e02fd5744224376d0c9)** (@latticexyz/block-logs-stream, @latticexyz/protocol-parser, @latticexyz/store-sync, @latticexyz/store)
 
@@ -1287,7 +833,7 @@ pnpm mud set-version --tag main && pnpm install
 pnpm mud set-version --commit db19ea39 && pnpm install
 ```
 
-## Patch changes
+### Patch changes
 
 **[fix(protocol-parser): properly decode empty records (#1177)](https://github.com/latticexyz/mud/commit/4bb7e8cbf0da45c85b70532dc73791e0e2e1d78c)** (@latticexyz/protocol-parser)
 
