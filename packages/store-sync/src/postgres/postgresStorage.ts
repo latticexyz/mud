@@ -13,8 +13,10 @@ import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValue } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValue, decodeValueArgs, readHex, staticDataLength } from "@latticexyz/protocol-parser";
 import { spliceValueHex } from "../spliceValueHex";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { isStaticAbiType } from "@latticexyz/schema-type";
 
 // Currently assumes one DB per chain ID
 
@@ -111,13 +113,20 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
         debug(log.eventName, log);
 
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
-          const value = decodeValue(table.valueSchema, log.args.data);
-          debug("upserting record", { key, value, log });
+          const value = decodeValueArgs(table.valueSchema, log.args);
+          debug("upserting record", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+            value,
+          });
           await tx
             .insert(sqlTable)
             .values({
               __key: uniqueKey,
-              __data: log.args.data,
+              __staticData: log.args.staticData,
+              __encodedLengths: log.args.encodedLengths,
+              __dynamicData: log.args.dynamicData,
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: false,
               ...key,
@@ -126,25 +135,45 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .onConflictDoUpdate({
               target: sqlTable.__key,
               set: {
-                __data: log.args.data,
+                __staticData: log.args.staticData,
+                __encodedLengths: log.args.encodedLengths,
+                __dynamicData: log.args.dynamicData,
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: false,
                 ...value,
               },
             })
             .execute();
-        } else if (log.eventName === "StoreSpliceRecord") {
+        } else if (log.eventName === "StoreSpliceStaticRecord") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
-          const previousData =
-            (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0]?.__data ?? "0x";
-          const newData = spliceValueHex(previousData, log);
-          const newValue = decodeValue(table.valueSchema, newData);
-          debug("upserting record via splice", { key, previousData, newData, newValue, log });
+          const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
+          const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
+          const start = log.args.start;
+          const end = start + log.args.deleteCount;
+          const newStaticData = concatHex([
+            readHex(previousStaticData, 0, start),
+            log.args.data,
+            readHex(previousStaticData, end),
+          ]);
+          const newValue = decodeValueArgs(table.valueSchema, {
+            staticData: newStaticData,
+            encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
+            dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
+          });
+          debug("upserting record via splice static", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+            previousStaticData,
+            newStaticData,
+            previousValue,
+            newValue,
+          });
           await tx
             .insert(sqlTable)
             .values({
               __key: uniqueKey,
-              __data: newData,
+              __staticData: newStaticData,
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: false,
               ...key,
@@ -153,7 +182,57 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .onConflictDoUpdate({
               target: sqlTable.__key,
               set: {
-                __data: newData,
+                __staticData: newStaticData,
+                __lastUpdatedBlockNumber: blockNumber,
+                __isDeleted: false,
+                ...newValue,
+              },
+            })
+            .execute();
+        } else if (log.eventName === "StoreSpliceDynamicRecord") {
+          // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
+          const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
+          const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
+          const start = log.args.start;
+          const end = start + log.args.deleteCount;
+          const newDynamicData = concatHex([
+            readHex(previousDynamicData, 0, start),
+            log.args.data,
+            readHex(previousDynamicData, end),
+          ]);
+          const newValue = decodeValueArgs(table.valueSchema, {
+            staticData: (previousValue?.__staticData as Hex) ?? "0x",
+            // TODO: handle unchanged encoded lengths
+            encodedLengths: log.args.encodedLengths,
+            dynamicData: newDynamicData,
+          });
+          debug("upserting record via splice dynamic", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+            previousDynamicData,
+            newDynamicData,
+            previousValue,
+            newValue,
+          });
+          await tx
+            .insert(sqlTable)
+            .values({
+              __key: uniqueKey,
+              // TODO: handle unchanged encoded lengths
+              __encodedLengths: log.args.encodedLengths,
+              __dynamicData: newDynamicData,
+              __lastUpdatedBlockNumber: blockNumber,
+              __isDeleted: false,
+              ...key,
+              ...newValue,
+            })
+            .onConflictDoUpdate({
+              target: sqlTable.__key,
+              set: {
+                // TODO: handle unchanged encoded lengths
+                __encodedLengths: log.args.encodedLengths,
+                __dynamicData: newDynamicData,
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: false,
                 ...newValue,
@@ -162,7 +241,11 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             .execute();
         } else if (log.eventName === "StoreDeleteRecord") {
           // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
-          debug("deleting record", { key, log });
+          debug("deleting record", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+          });
           await tx
             .update(sqlTable)
             .set({
@@ -171,6 +254,8 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             })
             .where(eq(sqlTable.__key, uniqueKey))
             .execute();
+        } else {
+          assertExhaustive(log.eventName);
         }
       }
 

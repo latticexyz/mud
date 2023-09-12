@@ -7,7 +7,9 @@ import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 // TODO: convert camel case to snake case for DB storage?
 export const metaColumns = {
   __key: buildColumn("__key", "bytes").primaryKey(),
-  __data: buildColumn("__data", "bytes").notNull(),
+  __staticData: buildColumn("__staticData", "bytes"),
+  __encodedLengths: buildColumn("__encodedLengths", "bytes"),
+  __dynamicData: buildColumn("__dynamicData", "bytes"),
   __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
   // TODO: last updated block hash?
   __isDeleted: buildColumn("__isDeleted", "bool").notNull(),

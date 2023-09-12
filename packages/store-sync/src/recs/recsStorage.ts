@@ -98,11 +98,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           readHex(previousStaticData, end),
         ]);
         const newValue = decodeValueArgs(table.valueSchema, {
-          staticData: readHex(
-            newStaticData,
-            0,
-            staticDataLength(Object.values(table.valueSchema).filter(isStaticAbiType))
-          ),
+          staticData: newStaticData,
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
           dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
         });
