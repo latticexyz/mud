@@ -42,7 +42,7 @@ export async function setupNetwork() {
   const publicClient = createPublicClient(clientOptions);
 
   /*
-   * Create A temporary wallet and a viem client for it
+   * Create a temporary wallet and a viem client for it
    * (see https://viem.sh/docs/clients/wallet.html).
    */
   const burnerAccount = createBurnerAccount(networkConfig.privateKey as Hex);
