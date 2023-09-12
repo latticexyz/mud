@@ -3,6 +3,8 @@ pragma solidity >=0.8.0;
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
+import { MAX_DYNAMIC_FIELDS } from "./PackedCounter.sol";
+
 // - 2 bytes static length of the schema
 // - 1 byte for number of static size fields
 // - 1 byte for number of dynamic size fields
@@ -17,9 +19,6 @@ using SchemaInstance for Schema global;
 library SchemaLib {
   error SchemaLib_InvalidLength(uint256 length);
   error SchemaLib_StaticTypeAfterDynamicType();
-
-  // Based on PackedCounter's capacity
-  uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
 
   /**
    * Encode the given schema into a single bytes32
@@ -133,7 +132,7 @@ library SchemaInstance {
 
     // Schema must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = schema.numDynamicFields();
-    if (_numDynamicFields > SchemaLib.MAX_DYNAMIC_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert SchemaLib.SchemaLib_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = schema.numStaticFields();
     // Schema must not have more than 28 fields in total

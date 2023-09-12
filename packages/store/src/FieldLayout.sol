@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { MAX_DYNAMIC_FIELDS } from "./PackedCounter.sol";
+
 // - 2 bytes for total length of all static fields
 // - 1 byte for number of static size fields
 // - 1 byte for number of dynamic size fields
@@ -28,9 +30,6 @@ library FieldLayoutLib {
   error FieldLayoutLib_InvalidLength(uint256 length);
   error FieldLayoutLib_StaticLengthIsZero();
   error FieldLayoutLib_StaticLengthDoesNotFitInAWord();
-
-  // Based on PackedCounter's capacity
-  uint256 internal constant MAX_DYNAMIC_FIELDS = 5;
 
   /**
    * Encode the given field layout into a single bytes32
@@ -131,8 +130,7 @@ library FieldLayoutInstance {
 
     // FieldLayout must have no more than MAX_DYNAMIC_FIELDS
     uint256 _numDynamicFields = fieldLayout.numDynamicFields();
-    if (_numDynamicFields > FieldLayoutLib.MAX_DYNAMIC_FIELDS)
-      revert FieldLayoutLib.FieldLayoutLib_InvalidLength(_numDynamicFields);
+    if (_numDynamicFields > MAX_DYNAMIC_FIELDS) revert FieldLayoutLib.FieldLayoutLib_InvalidLength(_numDynamicFields);
 
     uint256 _numStaticFields = fieldLayout.numStaticFields();
     // FieldLayout must not have more than 28 lengths in total
