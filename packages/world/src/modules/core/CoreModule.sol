@@ -15,6 +15,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
+import { Delegations } from "../../tables/Delegations.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
@@ -58,6 +59,7 @@ contract CoreModule is IModule, WorldContextConsumer {
    */
   function _registerCoreTables() internal {
     InstalledModules.register();
+    Delegations.register();
     ResourceAccess.register();
     Systems.register();
     FunctionSelectors.register();
