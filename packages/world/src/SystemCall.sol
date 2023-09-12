@@ -59,9 +59,9 @@ library SystemCall {
       })
       : WorldContextProvider.callWithContext({
         msgSender: caller,
+        msgValue: value,
         target: systemAddress,
-        funcSelectorAndArgs: funcSelectorAndArgs,
-        msgValue: value
+        funcSelectorAndArgs: funcSelectorAndArgs
       });
   }
 

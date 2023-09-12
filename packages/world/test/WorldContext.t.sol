@@ -37,4 +37,17 @@ contract WorldContextTest is Test, GasReporter {
       funcSelectorAndArgs: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
     });
   }
+
+  function testFuzzDelegatecallExtractContext(bytes memory args, address msgSender, uint256 msgValue) public {
+    vm.assume(msgSender != address(0));
+
+    vm.expectEmit(true, true, true, true);
+    emit Context(args, msgSender, msgValue);
+    WorldContextProvider.delegatecallWithContextOrRevert({
+      msgSender: msgSender,
+      msgValue: msgValue,
+      target: address(consumer),
+      funcSelectorAndArgs: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
+    });
+  }
 }
