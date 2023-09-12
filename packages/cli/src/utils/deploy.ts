@@ -1,8 +1,6 @@
-import { existsSync } from "fs";
-import path from "path";
 import chalk from "chalk";
 import { ethers } from "ethers";
-import { getOutDirectory, cast, getScriptDirectory, forge } from "@latticexyz/common/foundry";
+import { getOutDirectory, cast } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import {
@@ -18,7 +16,7 @@ import { deployWorldContract } from "./world";
 import { getTableIds, getRegisterTable } from "./tables";
 import { getUserModules, getModuleCall } from "./modules";
 import { grantAccess, registerFunctionCalls, registerSystemCall } from "./systems";
-import { toBytes16 } from "./utils";
+import { toBytes16, postDeploy } from "./utils";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
@@ -218,14 +216,25 @@ export async function deploy(
   );
   console.log(chalk.green(`Systems and Functions registered`));
 
-  // Blocking - Wait for System access to be granted before installing modules
-  txConfig.nonce = await grantAccess({
-    ...txConfig,
-    worldContract,
-    systems: resolvedConfig.systems,
+  // Wait for System access to be granted before installing modules
+  const grantCalls = await grantAccess({
+    systems: Object.values(resolvedConfig.systems),
     systemContracts,
     namespace: mudConfig.namespace,
   });
+
+  console.log(chalk.blue("Granting Access"));
+  await Promise.all(
+    grantCalls.map((call) =>
+      fastTxExecute({
+        ...txConfig,
+        nonce: txConfig.nonce++,
+        contract: worldContract,
+        ...call,
+      })
+    )
+  );
+  console.log(chalk.green(`Access granted`));
 
   const moduleCalls = await Promise.all(mudConfig.modules.map((m) => getModuleCall(moduleContracts, m, tableIds)));
 
@@ -250,25 +259,4 @@ export async function deploy(
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
   return { worldAddress: deployedWorldAddress, blockNumber };
-}
-
-async function postDeploy(
-  postDeployScript: string,
-  worldAddress: string,
-  rpc: string,
-  profile: string | undefined
-): Promise<void> {
-  // Execute postDeploy forge script
-  const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
-  if (existsSync(postDeployPath)) {
-    console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
-    await forge(
-      ["script", postDeployScript, "--sig", "run(address)", worldAddress, "--broadcast", "--rpc-url", rpc, "-vvv"],
-      {
-        profile: profile,
-      }
-    );
-  } else {
-    console.log(`No script at ${postDeployPath}, skipping post deploy hook`);
-  }
 }
