@@ -56,6 +56,22 @@ declare const abi: [
   {
     inputs: [
       {
+        internalType: "uint256";
+        name: "balance";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "amount";
+        type: "uint256";
+      }
+    ];
+    name: "InsufficientBalance";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
         internalType: "string";
         name: "resource";
         type: "string";
@@ -562,6 +578,52 @@ declare const abi: [
       }
     ];
     name: "revokeAccess";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16";
+        name: "fromNamespace";
+        type: "bytes16";
+      },
+      {
+        internalType: "address";
+        name: "toAddress";
+        type: "address";
+      },
+      {
+        internalType: "uint256";
+        name: "amount";
+        type: "uint256";
+      }
+    ];
+    name: "transferBalanceToAddress";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16";
+        name: "fromNamespace";
+        type: "bytes16";
+      },
+      {
+        internalType: "bytes16";
+        name: "toNamespace";
+        type: "bytes16";
+      },
+      {
+        internalType: "uint256";
+        name: "amount";
+        type: "uint256";
+      }
+    ];
+    name: "transferBalanceToNamespace";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";

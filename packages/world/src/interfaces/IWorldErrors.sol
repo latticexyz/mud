@@ -11,4 +11,5 @@ interface IWorldErrors {
   error FunctionSelectorNotFound(bytes4 functionSelector);
   error ModuleAlreadyInstalled(string module);
   error DelegationNotFound(address delegator, address delegatee);
+  error InsufficientBalance(uint256 balance, uint256 amount);
 }
