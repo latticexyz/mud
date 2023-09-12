@@ -13,8 +13,9 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToTableId, tableIdToHex } from "@latticexyz/common";
-import { decodeKey, decodeValue } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValue, decodeValueArgs, readHex } from "@latticexyz/protocol-parser";
 import { spliceValueHex } from "../spliceValueHex";
+import { assertExhaustive } from "@latticexyz/common/utils";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
 
@@ -104,53 +105,127 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           continue;
         }
 
-        const sqliteTable = buildTable(table);
+        const sqlTable = buildTable(table);
         const uniqueKey = concatHex(log.args.key as Hex[]);
         const key = decodeKey(table.keySchema, log.args.key);
 
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
-          // TODO: figure out if we need to pad anything or set defaults
-          const value = decodeValue(table.valueSchema, log.args.data);
-          debug("upserting record", { key, value, log });
-          tx.insert(sqliteTable)
+          const value = decodeValueArgs(table.valueSchema, log.args);
+          debug("upserting record", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+            value,
+          });
+          tx.insert(sqlTable)
             .values({
               __key: uniqueKey,
-              __data: log.args.data,
+              __staticData: log.args.staticData,
+              __encodedLengths: log.args.encodedLengths,
+              __dynamicData: log.args.dynamicData,
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: false,
               ...key,
               ...value,
             })
             .onConflictDoUpdate({
-              target: sqliteTable.__key,
+              target: sqlTable.__key,
               set: {
-                __data: log.args.data,
+                __staticData: log.args.staticData,
+                __encodedLengths: log.args.encodedLengths,
+                __dynamicData: log.args.dynamicData,
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: false,
                 ...value,
               },
             })
             .run();
-        } else if (log.eventName === "StoreSpliceRecord") {
+        } else if (log.eventName === "StoreSpliceStaticRecord") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
-          const previousData =
-            tx.select().from(sqliteTable).where(eq(sqliteTable.__key, uniqueKey)).all()[0]?.__data ?? "0x";
-          const newData = spliceValueHex(previousData, log);
-          const newValue = decodeValue(table.valueSchema, newData);
-          debug("upserting record via splice", { key, previousData, newData, newValue, log });
-          tx.insert(sqliteTable)
+          const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
+          const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
+          const start = log.args.start;
+          const end = start + log.args.deleteCount;
+          const newStaticData = concatHex([
+            readHex(previousStaticData, 0, start),
+            log.args.data,
+            readHex(previousStaticData, end),
+          ]);
+          const newValue = decodeValueArgs(table.valueSchema, {
+            staticData: newStaticData,
+            encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
+            dynamicData: (previousValue?.__dynamicData as Hex) ?? "0x",
+          });
+          debug("upserting record via splice static", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+            previousStaticData,
+            newStaticData,
+            previousValue,
+            newValue,
+          });
+          tx.insert(sqlTable)
             .values({
               __key: uniqueKey,
-              __data: newData,
+              __staticData: newStaticData,
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: false,
               ...key,
               ...newValue,
             })
             .onConflictDoUpdate({
-              target: sqliteTable.__key,
+              target: sqlTable.__key,
               set: {
-                __data: newData,
+                __staticData: newStaticData,
+                __lastUpdatedBlockNumber: blockNumber,
+                __isDeleted: false,
+                ...newValue,
+              },
+            })
+            .run();
+        } else if (log.eventName === "StoreSpliceDynamicRecord") {
+          const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
+          const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
+          const start = log.args.start;
+          const end = start + log.args.deleteCount;
+          const newDynamicData = concatHex([
+            readHex(previousDynamicData, 0, start),
+            log.args.data,
+            readHex(previousDynamicData, end),
+          ]);
+          const newValue = decodeValueArgs(table.valueSchema, {
+            staticData: (previousValue?.__staticData as Hex) ?? "0x",
+            // TODO: handle unchanged encoded lengths
+            encodedLengths: log.args.encodedLengths,
+            dynamicData: newDynamicData,
+          });
+          debug("upserting record via splice dynamic", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+            previousDynamicData,
+            newDynamicData,
+            previousValue,
+            newValue,
+          });
+          tx.insert(sqlTable)
+            .values({
+              __key: uniqueKey,
+              // TODO: handle unchanged encoded lengths
+              __encodedLengths: log.args.encodedLengths,
+              __dynamicData: newDynamicData,
+              __lastUpdatedBlockNumber: blockNumber,
+              __isDeleted: false,
+              ...key,
+              ...newValue,
+            })
+            .onConflictDoUpdate({
+              target: sqlTable.__key,
+              set: {
+                // TODO: handle unchanged encoded lengths
+                __encodedLengths: log.args.encodedLengths,
+                __dynamicData: newDynamicData,
                 __lastUpdatedBlockNumber: blockNumber,
                 __isDeleted: false,
                 ...newValue,
@@ -159,14 +234,20 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             .run();
         } else if (log.eventName === "StoreDeleteRecord") {
           // TODO: should we upsert so we at least have a DB record of when a thing was created/deleted within the same block?
-          debug("deleting record", { key, log });
-          tx.update(sqliteTable)
+          debug("deleting record", {
+            namespace: table.namespace,
+            name: table.name,
+            key,
+          });
+          tx.update(sqlTable)
             .set({
               __lastUpdatedBlockNumber: blockNumber,
               __isDeleted: true,
             })
-            .where(eq(sqliteTable.__key, uniqueKey))
+            .where(eq(sqlTable.__key, uniqueKey))
             .run();
+        } else {
+          assertExhaustive(log.eventName);
         }
       }
 
