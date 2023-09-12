@@ -1,3 +1,6 @@
+/*
+ * This file sets up all the definitions required for a MUD client.
+ */
 import { createClientComponents } from "./createClientComponents";
 import { createSystemCalls } from "./createSystemCalls";
 import { setupNetwork } from "./setupNetwork";
