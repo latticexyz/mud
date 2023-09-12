@@ -2,7 +2,7 @@ import { Hex } from "viem";
 import { decodeStaticField } from "./decodeStaticField";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { InvalidHexLengthForPackedCounterError, PackedCounterLengthMismatchError } from "./errors";
-import { padSliceHex } from "./padSliceHex";
+import { readHex } from "./readHex";
 
 // Keep this logic in sync with PackedCounter.sol
 
@@ -19,9 +19,9 @@ export function hexToPackedCounter(data: Hex): {
     throw new InvalidHexLengthForPackedCounterError(data);
   }
 
-  const totalByteLength = decodeStaticField("uint56", padSliceHex(data, 32 - 7, 32));
+  const totalByteLength = decodeStaticField("uint56", readHex(data, 32 - 7, 32));
   // TODO: use schema to make sure we only parse as many as we need (rather than zeroes at the end)?
-  const reversedFieldByteLengths = decodeDynamicField("uint40[]", padSliceHex(data, 0, 32 - 7));
+  const reversedFieldByteLengths = decodeDynamicField("uint40[]", readHex(data, 0, 32 - 7));
   // Reverse the lengths
   const fieldByteLengths = Object.freeze([...reversedFieldByteLengths].reverse());
 

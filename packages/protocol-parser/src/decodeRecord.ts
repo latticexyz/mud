@@ -10,7 +10,7 @@ import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 import { hexToPackedCounter } from "./hexToPackedCounter";
 import { staticDataLength } from "./staticDataLength";
-import { padSliceHex } from "./padSliceHex";
+import { readHex } from "./readHex";
 
 /** @deprecated use `decodeValue` instead */
 export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimitiveType | DynamicPrimitiveType)[] {
@@ -19,7 +19,7 @@ export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimiti
   let bytesOffset = 0;
   schema.staticFields.forEach((fieldType) => {
     const fieldByteLength = staticAbiTypeToByteLength[fieldType];
-    const value = decodeStaticField(fieldType, padSliceHex(data, bytesOffset, bytesOffset + fieldByteLength));
+    const value = decodeStaticField(fieldType, readHex(data, bytesOffset, bytesOffset + fieldByteLength));
     bytesOffset += fieldByteLength;
     values.push(value);
   });
@@ -39,13 +39,13 @@ export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimiti
   }
 
   if (schema.dynamicFields.length > 0) {
-    const dataLayout = hexToPackedCounter(padSliceHex(data, bytesOffset, bytesOffset + 32));
+    const dataLayout = hexToPackedCounter(readHex(data, bytesOffset, bytesOffset + 32));
     bytesOffset += 32;
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = dataLayout.fieldByteLengths[i];
       if (dataLength > 0) {
-        const value = decodeDynamicField(fieldType, padSliceHex(data, bytesOffset, bytesOffset + dataLength));
+        const value = decodeDynamicField(fieldType, readHex(data, bytesOffset, bytesOffset + dataLength));
         bytesOffset += dataLength;
         values.push(value);
       } else {

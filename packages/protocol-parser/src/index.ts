@@ -17,7 +17,7 @@ export * from "./hexToPackedCounter";
 export * from "./hexToSchema";
 export * from "./hexToTableSchema";
 export * from "./keySchemaToHex";
-export * from "./padSliceHex";
+export * from "./readHex";
 export * from "./schemaIndexToAbiType";
 export * from "./schemaToHex";
 export * from "./staticDataLength";
