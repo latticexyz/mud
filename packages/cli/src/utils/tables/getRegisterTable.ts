@@ -2,7 +2,7 @@ import { encodeSchema } from "@latticexyz/schema-type/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { tableIdToHex } from "@latticexyz/common";
-import { CallData } from "../txHelpers";
+import { CallData } from "../utils";
 import { Table } from "./types";
 
 export function getRegisterTable(table: Table, storeConfig: StoreConfig): CallData {

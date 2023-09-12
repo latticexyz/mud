@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { ParamType } from "ethers/lib/utils.js";
-import { getContractData } from "../txHelpers";
+import { getContractData } from "../utils";
 import { FunctionSignature } from "./types";
 
 export function loadFunctionSignatures(contractName: string, forgeOutDirectory: string): FunctionSignature[] {

@@ -2,7 +2,7 @@ import { defaultAbiCoder } from "ethers/lib/utils.js";
 import { resolveWithContext } from "@latticexyz/config";
 import { TableIds } from "../tables";
 import { Module } from "./types";
-import { CallData } from "../txHelpers";
+import { CallData } from "../utils";
 
 export async function getModuleCall(
   moduleContracts: Record<string, Promise<string>>,

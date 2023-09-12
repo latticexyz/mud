@@ -7,7 +7,7 @@ import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { getChainId } from "../utils/getChainId";
+import { getChainId } from "./utils";
 import { getExistingContracts } from "./getExistingContracts";
 
 export type DeployOptions = {

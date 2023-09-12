@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { TxConfig, deployContract, getContractData } from "./txHelpers";
+import { TxConfig, deployContract, getContractData } from "./utils";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };

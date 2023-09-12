@@ -1,5 +1,5 @@
 import { tableIdToHex } from "@latticexyz/common";
-import { CallData } from "../txHelpers";
+import { CallData } from "../utils";
 import { FunctionSignature, System } from "./types";
 import { loadFunctionSignatures, toFunctionSelector } from "./utils";
 

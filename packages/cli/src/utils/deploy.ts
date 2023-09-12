@@ -3,19 +3,20 @@ import { ethers } from "ethers";
 import { getOutDirectory, cast } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
-import {
-  setInternalFeePerGas,
-  deployContractsByCode,
-  confirmNonce,
-  fastTxExecute,
-  ContractCode,
-  getContractData,
-} from "./txHelpers";
 import { deployWorldContract } from "./world";
 import { getTableIds, getRegisterTable } from "./tables";
 import { defaultModules, getUserModules, getModuleCall } from "./modules";
 import { grantAccess, registerFunctionCalls, registerSystemCall } from "./systems";
-import { toBytes16, postDeploy } from "./utils";
+import {
+  toBytes16,
+  postDeploy,
+  setInternalFeePerGas,
+  confirmNonce,
+  fastTxExecute,
+  ContractCode,
+  getContractData,
+  deployContract,
+} from "./utils";
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
 
@@ -110,12 +111,14 @@ export async function deploy(
     ...systemContracts,
   ];
 
-  const deployedContracts = deployContractsByCode({
-    ...txConfig,
-    nonce,
-    contracts,
-  });
-  nonce = nonce + contracts.length;
+  const deployedContracts = contracts.reduce<Record<string, Promise<string>>>((acc, contract) => {
+    acc[contract.name] = deployContract({
+      ...txConfig,
+      nonce: nonce++,
+      contract,
+    });
+    return acc;
+  }, {});
 
   // Wait for world to be deployed
   const deployedWorldAddress = await worldPromise;
