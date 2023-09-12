@@ -24,12 +24,14 @@ import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
+import { Balances } from "./tables/Balances.sol";
 
-import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
-import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
-import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
+import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
+import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
+import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
  * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
@@ -57,6 +59,7 @@ contract CoreModule is IModule, WorldContextConsumer {
    * Register core tables in the World
    */
   function _registerCoreTables() internal {
+    Balances.register();
     InstalledModules.register();
     ResourceAccess.register();
     Systems.register();
@@ -76,6 +79,7 @@ contract CoreModule is IModule, WorldContextConsumer {
     // Use the CoreSystem's `registerSystem` implementation to register itself on the World.
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
+      msgValue: 0,
       target: coreSystem,
       funcSelectorAndArgs: abi.encodeWithSelector(
         WorldRegistrationSystem.registerSystem.selector,
@@ -90,7 +94,22 @@ contract CoreModule is IModule, WorldContextConsumer {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[15] memory functionSelectors = [
+    bytes4[17] memory functionSelectors = [
+      // --- AccessManagementSystem ---
+      AccessManagementSystem.grantAccess.selector,
+      AccessManagementSystem.revokeAccess.selector,
+      AccessManagementSystem.transferOwnership.selector,
+      // --- BalanceTransferSystem ---
+      BalanceTransferSystem.transferBalanceToNamespace.selector,
+      BalanceTransferSystem.transferBalanceToAddress.selector,
+      // --- EphemeralRecordSystem ---
+      IStoreEphemeral.emitEphemeralRecord.selector,
+      // --- ModuleInstallationSystem ---
+      ModuleInstallationSystem.installModule.selector,
+      // --- StoreRegistrationSystem ---
+      StoreRegistrationSystem.registerTable.selector,
+      StoreRegistrationSystem.registerStoreHook.selector,
+      StoreRegistrationSystem.unregisterStoreHook.selector,
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
       WorldRegistrationSystem.registerSystemHook.selector,
@@ -98,19 +117,7 @@ contract CoreModule is IModule, WorldContextConsumer {
       WorldRegistrationSystem.registerSystem.selector,
       WorldRegistrationSystem.registerFunctionSelector.selector,
       WorldRegistrationSystem.registerRootFunctionSelector.selector,
-      WorldRegistrationSystem.registerDelegation.selector,
-      // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerTable.selector,
-      StoreRegistrationSystem.registerStoreHook.selector,
-      StoreRegistrationSystem.unregisterStoreHook.selector,
-      // --- ModuleInstallationSystem ---
-      ModuleInstallationSystem.installModule.selector,
-      // --- AccessManagementSystem ---
-      AccessManagementSystem.grantAccess.selector,
-      AccessManagementSystem.revokeAccess.selector,
-      AccessManagementSystem.transferOwnership.selector,
-      // --- EphemeralRecordSystem ---
-      IStoreEphemeral.emitEphemeralRecord.selector
+      WorldRegistrationSystem.registerDelegation.selector
     ];
 
     for (uint256 i = 0; i < functionSelectors.length; i++) {
@@ -118,6 +125,7 @@ contract CoreModule is IModule, WorldContextConsumer {
       // root function selectors in the World.
       WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
+        msgValue: 0,
         target: coreSystem,
         funcSelectorAndArgs: abi.encodeWithSelector(
           WorldRegistrationSystem.registerRootFunctionSelector.selector,

@@ -18,9 +18,9 @@ contract ModuleInstallationSystem is System {
   function installModule(IModule module, bytes memory args) public {
     WorldContextProvider.callWithContextOrRevert({
       msgSender: _msgSender(),
+      msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      value: 0
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
     });
 
     // Register the module in the InstalledModules table

@@ -136,6 +136,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
    * which would save one sload per call, but add some complexity to upgrading systems. TBD.
    * (see https://github.com/latticexyz/mud/issues/444)
+   * TODO: replace separate systemFunctionName and systemFunctionArguments with a signature argument
    */
   function registerFunctionSelector(
     bytes32 resourceSelector,

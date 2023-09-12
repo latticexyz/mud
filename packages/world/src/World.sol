@@ -28,6 +28,7 @@ import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+import { Balances } from "./modules/core/tables/Balances.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
@@ -38,8 +39,6 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     // module, so that we can use it for access control checks in `installRootModule`.
     NamespaceOwner.register();
     NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
-
-    // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
 
     emit HelloWorld();
   }
@@ -54,6 +53,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
 
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
+      msgValue: 0,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
     });
@@ -221,9 +221,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Allow the World to receive ETH
+   * ETH sent to the World without calldata is added to the root namespace's balance
    */
-  receive() external payable {}
+  receive() external payable {
+    uint256 rootBalance = Balances.get(ROOT_NAMESPACE);
+    Balances.set(ROOT_NAMESPACE, rootBalance + msg.value);
+  }
 
   /**
    * Fallback function to call registered function selectors
