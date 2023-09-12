@@ -22,6 +22,7 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
 import { SystemHookLib } from "../src/SystemHook.sol";
+import { WorldContextProvider } from "../src/WorldContext.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -656,7 +657,11 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         WorldTestSystem.delegateCallSubSystem.selector, // Function in system
         address(subSystem), // Address of subsystem
-        abi.encodePacked(WorldTestSystem.msgSender.selector, address(this)) // Function in subsystem
+        WorldContextProvider.appendContext({
+          funcSelectorAndArgs: abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
+          msgSender: address(this),
+          msgValue: uint256(0)
+        })
       )
     );
 
@@ -1052,12 +1057,12 @@ contract WorldTest is Test, GasReporter {
     );
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
-    assertEq(address(world).balance, 0 ether, "world should still have 0 ether");
-    assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   function testNonPayableSystem() public {
-    // Register a root system with a non-payable function in the world
+    // Register a non-root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
     bytes16 namespace = "noroot";
     bytes16 name = "testSystem";
@@ -1082,16 +1087,17 @@ contract WorldTest is Test, GasReporter {
     (bool success, ) = address(world).call{ value: 0.5 ether }(
       abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
     );
-    assertFalse(success, "transfer should fail");
-    assertEq(alice.balance, 1 ether, "alice should have 1 ether");
-    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
+    // The call should succeed because the value is not forwarded to the system
+    assertTrue(success, "transfer should succeed");
+    assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
     assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   function testNonPayableFallbackSystem() public {
     // Register a root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = "noroot";
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     world.registerSystem(resourceSelector, system, true);
@@ -1119,9 +1125,9 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testPayableFallbackSystem() public {
-    // Register a root system with a non-payable function in the world
+    // Register a root system with a payable function in the world
     PayableFallbackSystem system = new PayableFallbackSystem();
-    bytes16 namespace = "noroot";
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     world.registerSystem(resourceSelector, system, true);
@@ -1142,16 +1148,16 @@ contract WorldTest is Test, GasReporter {
 
     // Send 0.5 eth to the system's fallback function (non-payable) via the World
     (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeWithSignature("systemFallback()"));
-    assertTrue(success, "transfer should fail");
+    assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
-    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
-    assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   function testPayableRootSystem() public {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = "";
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     world.registerSystem(resourceSelector, system, true);
@@ -1177,15 +1183,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
-    assertEq(address(system).balance, 0 ether, "system should have 0 ether (bc it was delegatecalled)");
-  }
-
-  function testTransferBalanceToNamespace() public {
-    revert("TODO");
-  }
-
-  function testTransferBalanceToAddress() public {
-    revert("TODO");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   // TODO: add a test for systems writing to tables via the World
