@@ -1,6 +1,6 @@
-# Version 2.0.0-next.7
+## Version 2.0.0-next.7
 
-## Major changes
+### Major changes
 
 **[feat(store,world): more granularity for onchain hooks (#1399)](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15)** (@latticexyz/store, @latticexyz/world)
 
@@ -70,7 +70,7 @@
 
 - The `onSetRecord` hook call for `emitEphemeralRecord` has been removed to save gas and to more clearly distinguish ephemeral tables as offchain tables.
 
-## Patch changes
+### Patch changes
 
 **[fix(abi-ts): remove cwd join (#1418)](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc)** (@latticexyz/abi-ts)
 
@@ -82,15 +82,15 @@ Allow `callFrom` with the own address as `delegator` without requiring an explic
 
 ---
 
-# Version 2.0.0-next.6
+## Version 2.0.0-next.6
 
-## Major changes
+### Major changes
 
 **[style(gas-report): rename mud-gas-report to gas-report (#1410)](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4)** (@latticexyz/gas-report)
 
 Renames `mud-gas-report` binary to `gas-report`, since it's no longer MUD specific.
 
-## Minor changes
+### Minor changes
 
 **[docs: rework abi-ts changesets (#1413)](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)** (@latticexyz/abi-ts, @latticexyz/cli)
 
@@ -157,9 +157,9 @@ await storeContract.write.setRecord(...);
 
 ---
 
-# Version 2.0.0-next.5
+## Version 2.0.0-next.5
 
-## Major changes
+### Major changes
 
 **[refactor(world): separate call utils into `WorldContextProvider` and `SystemCall` (#1370)](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe)** (@latticexyz/world)
 
@@ -276,7 +276,7 @@ await storeContract.write.setRecord(...);
   }
   ```
 
-## Minor changes
+### Minor changes
 
 **[feat(world): add support for upgrading systems (#1378)](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b)** (@latticexyz/world)
 
@@ -354,7 +354,7 @@ world.transferOwnership("namespace", address(42));
 // It's now owned by address(42)
 ```
 
-## Patch changes
+### Patch changes
 
 **[fix(services): correctly export typescript types (#1377)](https://github.com/latticexyz/mud/commit/33f50f8a473398dcc19b17d10a17a552a82678c7)** (@latticexyz/services)
 
@@ -376,9 +376,9 @@ The `mud test` cli now exits with code 1 on test failure. It used to exit with c
 
 ---
 
-# Version 2.0.0-next.4
+## Version 2.0.0-next.4
 
-## Major changes
+### Major changes
 
 **[docs: changeset for deleted network package (#1348)](https://github.com/latticexyz/mud/commit/42c7d898630c93805a5e345bdc8d87c2674b5110)** (@latticexyz/network)
 
@@ -452,9 +452,9 @@ Removes `useRow` and `useRows` hooks, previously powered by `store-cache`, which
 
 ---
 
-# Version 2.0.0-next.3
+## Version 2.0.0-next.3
 
-## Major changes
+### Major changes
 
 **[feat(world, store): stop loading schema from storage, require schema as an argument (#1174)](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57)** (@latticexyz/cli, @latticexyz/store, @latticexyz/world, create-mud)
 
@@ -561,7 +561,7 @@ Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
   + import { ... } from "@latticexyz/std-client/deprecated";
   ```
 
-## Patch changes
+### Patch changes
 
 **[feat(common,store-sync): improve initial sync to not block returned promise (#1315)](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e)** (@latticexyz/common, @latticexyz/store-sync)
 
@@ -599,9 +599,9 @@ Return `uint256` instead of `uint8` in SchemaInstance numFields methods
 
 ---
 
-# Version 2.0.0-next.2
+## Version 2.0.0-next.2
 
-## Major changes
+### Major changes
 
 **[feat(store-indexer): use fastify, move trpc to /trpc (#1232)](https://github.com/latticexyz/mud/commit/b621fb97731a0ceed9b67d741f40648a8aa64817)** (@latticexyz/store-indexer)
 
@@ -685,7 +685,7 @@ if (import.meta.env.DEV) {
 }
 ```
 
-## Minor changes
+### Minor changes
 
 **[feat(dev-tools): use new sync stack (#1284)](https://github.com/latticexyz/mud/commit/939916bcd5c9f3caf0399e9ab7689e77e6bef7ad)** (@latticexyz/common)
 
@@ -734,7 +734,7 @@ if (result.status === "fulfilled") {
 }
 ```
 
-## Patch changes
+### Patch changes
 
 **[feat: bump viem to 1.6.0 (#1308)](https://github.com/latticexyz/mud/commit/b8a6158d63738ebfc1e7eb221909436d050c7e39)** (@latticexyz/block-logs-stream, @latticexyz/common, @latticexyz/dev-tools, @latticexyz/network, @latticexyz/protocol-parser, @latticexyz/schema-type, @latticexyz/std-client, @latticexyz/store-indexer, @latticexyz/store-sync, create-mud)
 
@@ -750,9 +750,9 @@ remove usages of `isNonPendingBlock` and `isNonPendingLog` (fixed with more spec
 
 ---
 
-# Version 2.0.0-next.1
+## Version 2.0.0-next.1
 
-## Major changes
+### Major changes
 
 **[chore: fix changeset type (#1220)](https://github.com/latticexyz/mud/commit/2f6cfef91daacf09db82a4b7c69cff3af583b8f6)** (@latticexyz/store-indexer, @latticexyz/store-sync)
 
@@ -985,7 +985,7 @@ Add utils for using viem with MUD
 
 Also renames `mudTransportObserver` to `transportObserver`.
 
-## Minor changes
+### Minor changes
 
 **[feat(common): add viem utils (#1245)](https://github.com/latticexyz/mud/commit/3fb9ce2839271a0dcfe97f86394195f7a6f70f50)** (@latticexyz/common)
 
@@ -1033,7 +1033,7 @@ add type narrowing `isStaticAbiType`
 - Moves zero gas fee override to `createContract` until https://github.com/wagmi-dev/viem/pull/963 or similar feature lands
 - Skip simulation if `gas` is provided
 
-## Patch changes
+### Patch changes
 
 **[fix(cli): add support for legacy transactions in deploy script (#1178)](https://github.com/latticexyz/mud/commit/168a4cb43ce4f7bfbdb7b1b9d4c305b912a0d3f2)** (@latticexyz/cli)
 
@@ -1126,9 +1126,9 @@ This may break if you were previously dependent on `component.id`, `component.me
 
 ---
 
-# Version 2.0.0-next.0
+## Version 2.0.0-next.0
 
-## Minor changes
+### Minor changes
 
 **[feat(store-sync): add store sync package (#1075)](https://github.com/latticexyz/mud/commit/904fd7d4ee06a86e481e3e02fd5744224376d0c9)** (@latticexyz/block-logs-stream, @latticexyz/protocol-parser, @latticexyz/store-sync, @latticexyz/store)
 
@@ -1287,7 +1287,7 @@ pnpm mud set-version --tag main && pnpm install
 pnpm mud set-version --commit db19ea39 && pnpm install
 ```
 
-## Patch changes
+### Patch changes
 
 **[fix(protocol-parser): properly decode empty records (#1177)](https://github.com/latticexyz/mud/commit/4bb7e8cbf0da45c85b70532dc73791e0e2e1d78c)** (@latticexyz/protocol-parser)
 
