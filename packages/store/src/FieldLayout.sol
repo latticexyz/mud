@@ -10,6 +10,17 @@ type FieldLayout is bytes32;
 
 using FieldLayoutInstance for FieldLayout global;
 
+// Total byte length of an EVM word
+uint256 constant WORD_SIZE = 32;
+// Index of the last byte in an EVM word
+uint256 constant WORD_LAST_INDEX = 31;
+// Conversion for bit shifting
+uint256 constant BYTE_TO_BITS = 8;
+
+uint256 constant OFFSET_TOTAL_LENGTH = (WORD_SIZE - 2) * BYTE_TO_BITS;
+uint256 constant OFFSET_NUM_STATIC_FIELDS = (WORD_SIZE - 2 - 1) * BYTE_TO_BITS;
+uint256 constant OFFSET_NUM_DYNAMIC_FIELDS = (WORD_SIZE - 2 - 1 - 1) * BYTE_TO_BITS;
+
 /**
  * Static functions for FieldLayout
  */
@@ -36,7 +47,7 @@ library FieldLayoutLib {
       uint256 staticByteLength = _staticFields[i];
       if (staticByteLength == 0) {
         revert FieldLayoutLib_StaticLengthIsZero();
-      } else if (staticByteLength > 32) {
+      } else if (staticByteLength > WORD_SIZE) {
         revert FieldLayoutLib_StaticLengthDoesNotFitInAWord();
       }
 
@@ -45,7 +56,7 @@ library FieldLayoutLib {
         totalLength += staticByteLength;
         // Sequentially store lengths after the first 4 bytes (which are reserved for total length and field numbers)
         // (safe because of the initial _staticFields.length check)
-        fieldLayout |= uint256(_staticFields[i]) << ((31 - 4 - i) * 8);
+        fieldLayout |= uint256(_staticFields[i]) << ((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
         i++;
       }
     }
@@ -54,9 +65,9 @@ library FieldLayoutLib {
     // number of static fields in the 3rd byte,
     // number of dynamic fields in the 4th byte
     // (optimizer can handle this, no need for unchecked or single-line assignment)
-    fieldLayout |= totalLength << ((32 - 2) * 8);
-    fieldLayout |= _staticFields.length << ((32 - 2 - 1) * 8);
-    fieldLayout |= numDynamicFields << ((32 - 2 - 1 - 1) * 8);
+    fieldLayout |= totalLength << OFFSET_TOTAL_LENGTH;
+    fieldLayout |= _staticFields.length << OFFSET_NUM_STATIC_FIELDS;
+    fieldLayout |= numDynamicFields << OFFSET_NUM_DYNAMIC_FIELDS;
 
     return FieldLayout.wrap(bytes32(fieldLayout));
   }
@@ -67,33 +78,33 @@ library FieldLayoutLib {
  */
 library FieldLayoutInstance {
   /**
-   * Get the total static byte length for the given field layout
-   */
-  function staticDataLength(FieldLayout fieldLayout) internal pure returns (uint256) {
-    return uint256(FieldLayout.unwrap(fieldLayout)) >> ((32 - 2) * 8);
-  }
-
-  /**
    * Get the static byte length at the given index
    */
   function atIndex(FieldLayout fieldLayout, uint256 index) internal pure returns (uint256) {
     unchecked {
-      return uint8(uint256(fieldLayout.unwrap()) >> ((31 - 4 - index) * 8));
+      return uint8(uint256(fieldLayout.unwrap()) >> ((WORD_LAST_INDEX - 4 - index) * BYTE_TO_BITS));
     }
   }
 
   /**
-   * Get the number of dynamic length fields for the field layout
+   * Get the total static byte length for the given field layout
    */
-  function numDynamicFields(FieldLayout fieldLayout) internal pure returns (uint256) {
-    return uint8(uint256(fieldLayout.unwrap()) >> ((31 - 3) * 8));
+  function staticDataLength(FieldLayout fieldLayout) internal pure returns (uint256) {
+    return uint256(FieldLayout.unwrap(fieldLayout)) >> OFFSET_TOTAL_LENGTH;
   }
 
   /**
    * Get the number of static fields for the field layout
    */
   function numStaticFields(FieldLayout fieldLayout) internal pure returns (uint256) {
-    return uint8(uint256(fieldLayout.unwrap()) >> ((31 - 2) * 8));
+    return uint8(uint256(fieldLayout.unwrap()) >> OFFSET_NUM_STATIC_FIELDS);
+  }
+
+  /**
+   * Get the number of dynamic length fields for the field layout
+   */
+  function numDynamicFields(FieldLayout fieldLayout) internal pure returns (uint256) {
+    return uint8(uint256(fieldLayout.unwrap()) >> OFFSET_NUM_DYNAMIC_FIELDS);
   }
 
   /**
@@ -102,7 +113,8 @@ library FieldLayoutInstance {
   function numFields(FieldLayout fieldLayout) internal pure returns (uint256) {
     unchecked {
       return
-        uint8(uint256(fieldLayout.unwrap()) >> ((31 - 3) * 8)) + uint8(uint256(fieldLayout.unwrap()) >> ((31 - 2) * 8));
+        uint8(uint256(fieldLayout.unwrap()) >> OFFSET_NUM_STATIC_FIELDS) +
+        uint8(uint256(fieldLayout.unwrap()) >> OFFSET_NUM_DYNAMIC_FIELDS);
     }
   }
 
@@ -132,7 +144,7 @@ library FieldLayoutInstance {
       uint256 staticByteLength = fieldLayout.atIndex(i);
       if (staticByteLength == 0) {
         revert FieldLayoutLib.FieldLayoutLib_StaticLengthIsZero();
-      } else if (staticByteLength > 32) {
+      } else if (staticByteLength > WORD_SIZE) {
         revert FieldLayoutLib.FieldLayoutLib_StaticLengthDoesNotFitInAWord();
       }
       unchecked {
