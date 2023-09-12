@@ -17,7 +17,7 @@ import { Subject, share } from "rxjs";
  * our tables and other config options. We use this to generate
  * things like RECS components and get back strong types for them.
  *
- * See https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/contracts/mud.config.ts
+ * See https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/threejs/packages/contracts/mud.config.ts
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";

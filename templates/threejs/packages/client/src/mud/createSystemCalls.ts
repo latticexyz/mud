@@ -18,14 +18,14 @@ export function createSystemCalls(
    *
    * - Out of this parameter, we only care about two fields:
    *   - worldContract (which comes from createContract, see
-   *     https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/client/src/mud/setupNetwork.ts#L31).
+   *     https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/threejs/packages/client/src/mud/setupNetwork.ts#L31).
    *   - waitForTransaction (which comes from syncToRecs, see
-   *     https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/client/src/mud/setupNetwork.ts#L39).
+   *     https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/threejs/packages/client/src/mud/setupNetwork.ts#L39).
    *
    * - From the second parameter, which is a ClientComponent,
    *   we only care about Position. This parameter comes to use
    *   through createClientComponents.ts, but it originates in
-   *   syncToRecs (https://github.com/latticexyz/mud/blob/main/templates/threejs/packages/client/src/mud/setupNetwork.ts#L39).
+   *   syncToRecs (https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/threejs/packages/client/src/mud/setupNetwork.ts#L39).
    */
   { worldContract, waitForTransaction, playerEntity }: SetupNetworkResult,
   { Position }: ClientComponents
