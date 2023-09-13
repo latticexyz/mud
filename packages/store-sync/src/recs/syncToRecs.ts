@@ -7,7 +7,6 @@ import { createStoreSync } from "../createStoreSync";
 import { ConfigToRecsComponents } from "./common";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
-import { configToRecsComponents } from "./configToRecsComponents";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 
@@ -36,17 +35,10 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   indexerUrl,
   startSync = true,
 }: SyncToRecsOptions<TConfig>): Promise<SyncToRecsResult<TConfig>> {
-  const components = {
-    ...configToRecsComponents(world, config),
-    ...configToRecsComponents(world, storeConfig),
-    ...configToRecsComponents(world, worldConfig),
-    ...defineInternalComponents(world),
-  };
-
-  world.registerEntity({ id: singletonEntity });
+  const { storageAdapter, components } = recsStorage({ world, config });
 
   const storeSync = await createStoreSync({
-    storageAdapter: recsStorage({ components, config }),
+    storageAdapter,
     config,
     address,
     publicClient,

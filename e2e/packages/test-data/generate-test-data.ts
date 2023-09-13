@@ -11,6 +11,7 @@ import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/abi/IWorld.sol/IWorld.abi.json";
 import { iteratorToArray } from "@latticexyz/common/utils";
+import superjson from "superjson";
 
 const logsFilename = path.join(path.dirname(fileURLToPath(import.meta.url)), `../../../test-data/world-logs.json`);
 
@@ -86,10 +87,7 @@ const logs = (
 ).flatMap((range) => range.logs);
 
 console.log("writing logs to", logsFilename);
-await fs.writeFile(
-  logsFilename,
-  JSON.stringify(logs, (k, v) => (typeof v === "bigint" ? v.toString() : v), 2)
-);
+await fs.writeFile(logsFilename, JSON.stringify(superjson.serialize(logs), null, 2));
 
 console.log("stopping anvil");
 await anvil.stop();

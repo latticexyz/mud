@@ -2,8 +2,7 @@ import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
 import {
   ComponentValue,
-  Component as RecsComponent,
-  Schema as RecsSchema,
+  World as RecsWorld,
   getComponentValue,
   removeComponent,
   setComponent,
@@ -13,25 +12,41 @@ import { isDefined } from "@latticexyz/common/utils";
 import { schemaToDefaults } from "../schemaToDefaults";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
-import { StoreComponentMetadata } from "./common";
+import { ConfigToRecsComponents } from "./common";
 import { tableIdToHex } from "@latticexyz/common";
 import { encodeEntity } from "./encodeEntity";
 import { StorageAdapter } from "../common";
+import { configToRecsComponents } from "./configToRecsComponents";
+import { singletonEntity } from "./singletonEntity";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
 
+// TODO: extract types to options/result
+// TODO: make config optional again?
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
-  components,
+  world,
+  config,
 }: {
-  components: ReturnType<typeof defineInternalComponents> &
-    Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
-  config?: TConfig;
-}): StorageAdapter<TConfig> {
+  world: RecsWorld;
+  config: TConfig;
+}): {
+  storageAdapter: StorageAdapter<TConfig>;
+  components: ConfigToRecsComponents<TConfig> &
+    ConfigToRecsComponents<typeof storeConfig> &
+    ConfigToRecsComponents<typeof worldConfig> &
+    ReturnType<typeof defineInternalComponents>;
+} {
+  world.registerEntity({ id: singletonEntity });
+
+  const components = {
+    ...configToRecsComponents(world, config),
+    ...configToRecsComponents(world, storeConfig),
+    ...configToRecsComponents(world, worldConfig),
+    ...defineInternalComponents(world),
+  };
   // TODO: do we need to store block number?
 
-  const componentsByTableId = Object.fromEntries(
-    Object.entries(components).map(([id, component]) => [component.id, component])
-  );
-
-  return {
+  const storageAdapter = {
     async registerTables({ tables }) {
       for (const table of tables) {
         // TODO: check if table exists already and skip/warn?
@@ -60,7 +75,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         }
 
         const tableId = tableIdToHex(operation.namespace, operation.name);
-        const component = componentsByTableId[tableId];
+        const component = world.components.find((component) => component.id === tableId);
         if (!component) {
           debug(`skipping update for unknown component: ${tableId}. Available components: ${Object.keys(components)}`);
           continue;
@@ -88,4 +103,6 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
       }
     },
   } as StorageAdapter<TConfig>;
+
+  return { storageAdapter, components };
 }
