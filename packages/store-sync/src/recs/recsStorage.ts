@@ -47,7 +47,6 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     ...configToRecsComponents(world, worldConfig),
     ...defineInternalComponents(world),
   };
-  // TODO: do we need to store block number?
 
   const storageAdapter = {
     async registerTables({ tables }) {
