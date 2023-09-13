@@ -22,26 +22,19 @@ export function renderTightCoderAutoTestFunction({ typeId }: { typeId: string })
       assertEq(decoded[1], val1);
       assertEq(decoded[2], val2);
     }
-  `.trim();
+  `;
 }
 
 export function renderTightCoderAutoTest() {
-  let result = `${renderedSolidityHeader}
+  return `
+    ${renderedSolidityHeader}
 
     import { Test } from "forge-std/Test.sol";
     import { EncodeArray } from "../../src/tightcoder/EncodeArray.sol";
     import { SliceLib } from "../../src/Slice.sol";
 
     contract TightCoderAutoTest is Test {
-  `;
-
-  for (const staticAbiType of staticAbiTypes) {
-    result += renderTightCoderAutoTestFunction({ typeId: staticAbiType });
-  }
-
-  result += `
+      ${staticAbiTypes.map((staticAbiType) => renderTightCoderAutoTestFunction({ typeId: staticAbiType })).join("")}
     }
   `;
-
-  return result;
 }
