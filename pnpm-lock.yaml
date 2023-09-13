@@ -90,12 +90,6 @@ importers:
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
-      '@latticexyz/schema-type':
-        specifier: workspace:*
-        version: link:../schema-type
       abitype:
         specifier: 0.9.3
         version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
