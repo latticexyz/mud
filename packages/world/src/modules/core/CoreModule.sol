@@ -63,6 +63,7 @@ contract CoreModule is Module {
    * Register core tables in the World
    */
   function _registerCoreTables() internal {
+    NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
     Delegations.register();
@@ -73,6 +74,7 @@ contract CoreModule is Module {
     SystemRegistry.register();
     ResourceType.register();
 
+    NamespaceOwner.set(ROOT_NAMESPACE, _msgSender());
     ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
     ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
   }
