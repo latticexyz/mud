@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
+import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { StoreRead } from "./StoreRead.sol";
 
@@ -17,42 +18,42 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function registerTable(bytes32, Schema, Schema, string[] calldata, string[] calldata) public virtual {
+  function registerTable(bytes32, FieldLayout, Schema, Schema, string[] calldata, string[] calldata) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function setRecord(bytes32, bytes32[] calldata, bytes calldata, Schema) public virtual {
+  function setRecord(bytes32, bytes32[] calldata, bytes calldata, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function setField(bytes32, bytes32[] calldata, uint8, bytes calldata, Schema) public virtual {
+  function setField(bytes32, bytes32[] calldata, uint8, bytes calldata, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function pushToField(bytes32, bytes32[] calldata, uint8, bytes calldata, Schema) public virtual {
+  function pushToField(bytes32, bytes32[] calldata, uint8, bytes calldata, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function popFromField(bytes32, bytes32[] calldata, uint8, uint256, Schema) public virtual {
+  function popFromField(bytes32, bytes32[] calldata, uint8, uint256, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function updateInField(bytes32, bytes32[] calldata, uint8, uint256, bytes calldata, Schema) public virtual {
+  function updateInField(bytes32, bytes32[] calldata, uint8, uint256, bytes calldata, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
@@ -73,14 +74,14 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function deleteRecord(bytes32, bytes32[] calldata, Schema) public virtual {
+  function deleteRecord(bytes32, bytes32[] calldata, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 
   /**
    * Not implemented in StoreReadWithStubs
    */
-  function emitEphemeralRecord(bytes32, bytes32[] calldata, bytes calldata, Schema) public virtual {
+  function emitEphemeralRecord(bytes32, bytes32[] calldata, bytes calldata, FieldLayout) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
 }

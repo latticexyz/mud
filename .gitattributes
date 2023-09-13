@@ -1,0 +1,3 @@
+# suppress diffs for codegen in PRs
+**/abi/**/* linguist-generated=true
+**/codegen/**/* linguist-generated=true

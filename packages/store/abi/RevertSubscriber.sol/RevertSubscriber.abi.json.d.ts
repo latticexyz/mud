@@ -12,7 +12,7 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -45,7 +45,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -73,7 +73,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -96,7 +96,7 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -129,7 +129,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -157,7 +157,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }

@@ -7,7 +7,7 @@ import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js
 import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
 import { resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/common/errors";
-import { encodeSchema } from "@latticexyz/schema-type/deprecated";
+import { encodeSchema, getStaticByteLength } from "@latticexyz/schema-type/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
@@ -18,6 +18,7 @@ import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.s
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 import { tableIdToHex } from "@latticexyz/common";
+import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 
 export interface DeployConfig {
   profile?: string;
@@ -158,6 +159,12 @@ export async function deploy(
         return schemaType;
       });
 
+      const schemaTypeLengths = schemaTypes.map((schemaType) => getStaticByteLength(schemaType));
+      const fieldLayout = {
+        staticFieldLengths: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength > 0),
+        numDynamicFields: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength === 0).length,
+      };
+
       const keyTypes = Object.values(keySchema).map((abiOrUserType) => {
         const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
@@ -168,6 +175,7 @@ export async function deploy(
         "registerTable",
         [
           tableIdToHex(namespace, name),
+          fieldLayoutToHex(fieldLayout),
           encodeSchema(keyTypes),
           encodeSchema(schemaTypes),
           Object.keys(keySchema),

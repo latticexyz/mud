@@ -1,5 +1,26 @@
 declare const abi: [
   {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      }
+    ];
+    name: "FieldLayoutLib_InvalidLength";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthIsZero";
+    type: "error";
+  },
+  {
     inputs: [];
     name: "NonRootInstallNotSupported";
     type: "error";
@@ -103,6 +124,22 @@ declare const abi: [
       }
     ];
     name: "StoreCore_InvalidKeyNamesLength";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidValueSchemaLength";
     type: "error";
   },
   {

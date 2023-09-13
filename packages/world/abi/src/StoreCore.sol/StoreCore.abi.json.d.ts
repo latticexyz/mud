@@ -61,7 +61,7 @@ declare const abi: [
       {
         indexed: false;
         internalType: "uint8";
-        name: "schemaIndex";
+        name: "fieldIndex";
         type: "uint8";
       },
       {
