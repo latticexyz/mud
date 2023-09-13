@@ -136,7 +136,7 @@ export async function deploy(
   // Install core Modules
   if (!worldAddress) {
     console.log(chalk.blue("Installing core World modules"));
-    await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"], confirmations);
+    await fastTxExecute(WorldContract, "initialize", [await modulePromises.CoreModule], confirmations);
     console.log(chalk.green("Installed core World modules"));
   }
 
