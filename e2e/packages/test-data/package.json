@@ -1,0 +1,21 @@
+{
+  "name": "test-data",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "generate-test-data": "tsx generate-test-data.ts"
+  },
+  "devDependencies": {
+    "@latticexyz/block-logs-stream": "link:../../../packages/block-logs-stream",
+    "@latticexyz/cli": "link:../../../packages/cli",
+    "@latticexyz/common": "link:../../../packages/common",
+    "@latticexyz/store": "link:../../../packages/store",
+    "@viem/anvil": "^0.0.6",
+    "execa": "^7.1.1",
+    "tsx": "^3.12.6",
+    "typescript": "5.1.6",
+    "viem": "1.6.0"
+  }
+}
