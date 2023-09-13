@@ -3,14 +3,20 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { createAnvil } from "@viem/anvil";
 import { execa } from "execa";
-import { ClientConfig, createPublicClient, createWalletClient, http, isHex } from "viem";
+import {
+  ClientConfig,
+  createPublicClient,
+  createWalletClient,
+  encodeEventTopics,
+  http,
+  isHex,
+  numberToHex,
+} from "viem";
 import { mudFoundry } from "@latticexyz/common/chains";
 import { createContract } from "@latticexyz/common";
-import { fetchLogs } from "@latticexyz/block-logs-stream";
 import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
 import IWorldAbi from "../contracts/abi/IWorld.sol/IWorld.abi.json";
-import { iteratorToArray } from "@latticexyz/common/utils";
 
 const logsFilename = path.join(path.dirname(fileURLToPath(import.meta.url)), `../../../test-data/world-logs.json`);
 
@@ -73,23 +79,27 @@ console.log("waiting for tx");
 const receipt = await publicClient.waitForTransactionReceipt({ hash: lastTx });
 
 console.log("fetching logs", receipt.blockNumber);
-const logs = (
-  await iteratorToArray(
-    fetchLogs({
-      publicClient,
+const logs = await publicClient.request({
+  method: "eth_getLogs",
+  params: [
+    {
       address: worldAddress,
-      events: storeEventsAbi,
-      fromBlock: 0n,
-      toBlock: receipt.blockNumber,
-    })
-  )
-).flatMap((range) => range.logs);
+      topics: [
+        storeEventsAbi.flatMap((event) =>
+          encodeEventTopics({
+            abi: [event],
+            eventName: event.name,
+          })
+        ),
+      ],
+      fromBlock: numberToHex(0n),
+      toBlock: numberToHex(receipt.blockNumber),
+    },
+  ],
+});
 
-console.log("writing logs to", logsFilename);
-await fs.writeFile(
-  logsFilename,
-  JSON.stringify(logs, (k, v) => (typeof v === "bigint" ? v.toString() : v), 2)
-);
+console.log("writing", logs.length, "logs to", logsFilename);
+await fs.writeFile(logsFilename, JSON.stringify(logs, null, 2));
 
 console.log("stopping anvil");
 await anvil.stop();
