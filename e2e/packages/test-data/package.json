@@ -14,7 +14,6 @@
     "@latticexyz/store": "link:../../../packages/store",
     "@viem/anvil": "^0.0.6",
     "execa": "^7.1.1",
-    "superjson": "^1.12.4",
     "tsx": "^3.12.6",
     "typescript": "5.1.6",
     "viem": "1.6.0"
