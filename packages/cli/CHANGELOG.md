@@ -1,5 +1,87 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies [[`1d60930d`](https://github.com/latticexyz/mud/commit/1d60930d6d4c9a0bda262e5e23a5f719b9dd48c7), [`b9e562d8`](https://github.com/latticexyz/mud/commit/b9e562d8f7a6051bb1a7262979b268fd2c83daac), [`51914d65`](https://github.com/latticexyz/mud/commit/51914d656d8cd8d851ccc8296d249cf09f53e670), [`2ca75f9b`](https://github.com/latticexyz/mud/commit/2ca75f9b9063ea33524e6c609b87f5494f678fa0), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98)]:
+  - @latticexyz/store@2.0.0-next.8
+  - @latticexyz/world@2.0.0-next.8
+  - @latticexyz/protocol-parser@2.0.0-next.8
+  - @latticexyz/abi-ts@2.0.0-next.8
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/config@2.0.0-next.8
+  - @latticexyz/gas-report@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+  - @latticexyz/services@2.0.0-next.8
+  - @latticexyz/utils@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15), [`2459e15f`](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc), [`18d3aea5`](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/world@2.0.0-next.7
+  - @latticexyz/abi-ts@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/gas-report@2.0.0-next.7
+  - @latticexyz/protocol-parser@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+  - @latticexyz/services@2.0.0-next.7
+  - @latticexyz/utils@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Minor Changes
+
+- [#1413](https://github.com/latticexyz/mud/pull/1413) [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561) Thanks [@holic](https://github.com/holic)! - Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
+
+  This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
+
+  ```
+  pnpm add @latticexyz/abi-ts
+  pnpm abi-ts
+  ```
+
+  By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
+
+  ```console
+  pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561), [`9af542d3`](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4), [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/abi-ts@2.0.0-next.6
+  - @latticexyz/gas-report@2.0.0-next.6
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/world@2.0.0-next.6
+  - @latticexyz/schema-type@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/config@2.0.0-next.6
+  - @latticexyz/protocol-parser@2.0.0-next.6
+  - @latticexyz/services@2.0.0-next.6
+  - @latticexyz/utils@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- [#1371](https://github.com/latticexyz/mud/pull/1371) [`dc258e68`](https://github.com/latticexyz/mud/commit/dc258e6860196ad34bf1d4ac7fce382f70e2c0c8) Thanks [@alvrs](https://github.com/alvrs)! - The `mud test` cli now exits with code 1 on test failure. It used to exit with code 0, which meant that CIs didn't notice test failures.
+
+- Updated dependencies [[`ce97426c`](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b), [`33f50f8a`](https://github.com/latticexyz/mud/commit/33f50f8a473398dcc19b17d10a17a552a82678c7), [`80a26419`](https://github.com/latticexyz/mud/commit/80a26419f15177333b523bac5d09767487b4ffef), [`1ca35e9a`](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed), [`9d0f492a`](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe), [`c583f3cd`](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b)]:
+  - @latticexyz/world@2.0.0-next.5
+  - @latticexyz/services@2.0.0-next.5
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/config@2.0.0-next.5
+  - @latticexyz/gas-report@2.0.0-next.5
+  - @latticexyz/protocol-parser@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+  - @latticexyz/utils@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes

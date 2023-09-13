@@ -26,6 +26,22 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "delegator",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+    ],
+    name: "DelegationNotFound",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes4",
         name: "functionSelector",
         type: "bytes4",
@@ -134,7 +150,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidFieldNamesLength",
+    name: "StoreCore_InvalidKeyNamesLength",
     type: "error",
   },
   {
@@ -150,7 +166,23 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "StoreCore_InvalidKeyNamesLength",
+    name: "StoreCore_InvalidValueNamesLength",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidValueSchemaLength",
     type: "error",
   },
   {
@@ -382,6 +414,35 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "delegator",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "resourceSelector",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "funcSelectorAndArgs",
+        type: "bytes",
+      },
+    ],
+    name: "callFrom",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "",
+        type: "bytes",
+      },
+    ],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
@@ -392,8 +453,8 @@ const _abi = [
         type: "bytes32[]",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -420,8 +481,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -448,8 +509,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -459,6 +520,25 @@ const _abi = [
         internalType: "bytes",
         name: "data",
         type: "bytes",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+    ],
+    name: "getFieldLayout",
+    outputs: [
+      {
+        internalType: "FieldLayout",
+        name: "fieldLayout",
+        type: "bytes32",
       },
     ],
     stateMutability: "view",
@@ -482,8 +562,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -516,8 +596,8 @@ const _abi = [
         type: "uint8",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
       {
@@ -574,8 +654,8 @@ const _abi = [
         type: "bytes32[]",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -693,8 +773,8 @@ const _abi = [
         type: "uint256",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -757,12 +837,35 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
     name: "pushToField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "delegatee",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "delegationControlId",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes",
+        name: "initFuncSelectorAndArgs",
+        type: "bytes",
+      },
+    ],
+    name: "registerDelegation",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -864,7 +967,7 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "contract System",
+        internalType: "contract WorldContextConsumer",
         name: "system",
         type: "address",
       },
@@ -902,6 +1005,11 @@ const _abi = [
       {
         internalType: "bytes32",
         name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
       {
@@ -984,8 +1092,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -1012,8 +1120,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],
@@ -1044,6 +1152,24 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
@@ -1069,8 +1195,8 @@ const _abi = [
         type: "bytes",
       },
       {
-        internalType: "Schema",
-        name: "valueSchema",
+        internalType: "FieldLayout",
+        name: "fieldLayout",
         type: "bytes32",
       },
     ],

@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/gas-report",
-  "version": "2.0.0-next.4",
+  "version": "2.0.0-next.8",
   "description": "Gas reporter for specific lines within forge tests",
   "repository": {
     "type": "git",
@@ -20,13 +20,15 @@
     }
   },
   "bin": {
-    "mud-gas-report": "./dist/mud-gas-report.js"
+    "gas-report": "./dist/gas-report.js"
   },
   "scripts": {
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
-    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test"
+    "prepare": "mkdir -p ./dist && touch ./dist/gas-report.js",
+    "test": "vitest typecheck --run --passWithNoTests && vitest --run --passWithNoTests && forge test",
+    "test:ci": "pnpm run test"
   },
   "dependencies": {
     "chalk": "^5.3.0",

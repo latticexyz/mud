@@ -7,19 +7,18 @@ import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js
 import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
 import { resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/common/errors";
-import { encodeSchema } from "@latticexyz/schema-type/deprecated";
+import { encodeSchema, getStaticByteLength } from "@latticexyz/schema-type/deprecated";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 import { tableIdToHex } from "@latticexyz/common";
-import { abiTypesToSchema, schemaToHex } from "@latticexyz/protocol-parser";
+import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 
 export interface DeployConfig {
   profile?: string;
@@ -49,6 +48,8 @@ export async function deploy(
   const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
     deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
+
+  const baseSystemFunctionNames = (await loadFunctionSignatures("System")).map((item) => item.functionName);
 
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
@@ -128,7 +129,7 @@ export async function deploy(
   const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldData.abi, signer) as IBaseWorld;
+  const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldData.abi, signer);
 
   const confirmations = disableTxWait ? 0 : 1;
 
@@ -158,6 +159,12 @@ export async function deploy(
         return schemaType;
       });
 
+      const schemaTypeLengths = schemaTypes.map((schemaType) => getStaticByteLength(schemaType));
+      const fieldLayout = {
+        staticFieldLengths: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength > 0),
+        numDynamicFields: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength === 0).length,
+      };
+
       const keyTypes = Object.values(keySchema).map((abiOrUserType) => {
         const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
@@ -168,6 +175,7 @@ export async function deploy(
         "registerTable",
         [
           tableIdToHex(namespace, name),
+          fieldLayoutToHex(fieldLayout),
           encodeSchema(keyTypes),
           encodeSchema(schemaTypes),
           Object.keys(keySchema),
@@ -445,7 +453,7 @@ export async function deploy(
   async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
     const { abi } = await getContractData(contractName);
 
-    return abi
+    const functionSelectors = abi
       .filter((item) => ["fallback", "function"].includes(item.type))
       .map((item) => {
         if (item.type === "fallback") return { functionName: "", functionArgs: "" };
@@ -455,6 +463,11 @@ export async function deploy(
           functionArgs: parseComponents(item.inputs),
         };
       });
+
+    return contractName === "System"
+      ? functionSelectors
+      : // Filter out functions that are defined in the base System contract for all non-base systems
+        functionSelectors.filter((item) => !baseSystemFunctionNames.includes(item.functionName));
   }
 
   /**

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "../../../System.sol";
@@ -10,10 +11,10 @@ import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { Call } from "../../../Call.sol";
+import { requireInterface } from "../../../requireInterface.sol";
+import { WorldContextProvider } from "../../../WorldContext.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
@@ -37,6 +38,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    */
   function registerTable(
     bytes32 resourceSelector,
+    FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] calldata keyNames,
@@ -48,19 +50,18 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     // If the namespace doesn't exist yet, register it
     bytes16 namespace = resourceSelector.getNamespace();
     if (ResourceType.get(namespace) == Resource.NONE) {
-      // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
+      // We can't call IBaseWorld(this).registerNamespace directly because it would be handled like
       // an external call, so msg.sender would be the address of the World contract
       (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
-      Call.withSender({
+      WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
+        msgValue: 0,
         target: systemAddress,
-        funcSelectorAndArgs: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace),
-        delegate: true,
-        value: 0
+        funcSelectorAndArgs: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace)
       });
     } else {
       // otherwise require caller to own the namespace
-      AccessControl.requireOwnerOrSelf(namespace, _msgSender());
+      AccessControl.requireOwner(namespace, _msgSender());
     }
 
     // Require no resource to exist at this selector yet
@@ -72,18 +73,33 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerTable(resourceSelector, keySchema, valueSchema, keyNames, fieldNames);
+    StoreCore.registerTable(resourceSelector, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   /**
-   * Register a hook for the table at the given namepace and name.
+   * Register a hook for the given tableId.
    * Requires the caller to own the namespace.
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+    // Require the hook to implement the store hook interface
+    requireInterface(address(hookAddress), STORE_HOOK_INTERFACE_ID);
+
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(tableId, _msgSender());
+    AccessControl.requireOwner(tableId, _msgSender());
 
     // Register the hook
-    StoreCore.registerStoreHook(tableId, hook);
+    StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
+  }
+
+  /**
+   * Unregister a hook for the given tableId.
+   * Requires the caller to own the namespace.
+   */
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) public virtual {
+    // Require caller to own the namespace
+    AccessControl.requireOwner(tableId, _msgSender());
+
+    // Unregister the hook
+    StoreCore.unregisterStoreHook(tableId, hookAddress);
   }
 }

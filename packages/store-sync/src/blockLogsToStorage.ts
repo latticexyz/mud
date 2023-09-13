@@ -8,25 +8,13 @@ import {
 import { decodeAbiParameters, getAddress, parseAbiParameters } from "viem";
 import { debug } from "./debug";
 import { isDefined } from "@latticexyz/common/utils";
-import { BlockLogs, StorageOperation, Table } from "./common";
+import { BlockLogs, StorageAdapter, StorageOperation, Table } from "./common";
 import { hexToTableId, tableIdToHex } from "@latticexyz/common";
 import storeConfig from "@latticexyz/store/mud.config";
 
 // TODO: adjust when we get namespace support (https://github.com/latticexyz/mud/issues/994) and when table has namespace key (https://github.com/latticexyz/mud/issues/1201)
 const schemasTable = storeConfig.tables.Tables;
 const schemasTableId = tableIdToHex(storeConfig.namespace, schemasTable.name);
-
-export type BlockLogsToStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
-  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: Table[] }) => Promise<void>;
-  getTables: (opts: {
-    blockNumber: BlockLogs["blockNumber"];
-    tables: Pick<Table, "address" | "namespace" | "name">[];
-  }) => Promise<Table[]>;
-  storeOperations: (opts: {
-    blockNumber: BlockLogs["blockNumber"];
-    operations: StorageOperation<TConfig>[];
-  }) => Promise<void>;
-};
 
 export type BlockStorageOperations<TConfig extends StoreConfig = StoreConfig> = {
   blockNumber: BlockLogs["blockNumber"];
@@ -41,7 +29,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
   registerTables,
   getTables,
   storeOperations,
-}: BlockLogsToStorageOptions<TConfig>): BlockLogsToStorageResult<TConfig> {
+}: StorageAdapter<TConfig>): BlockLogsToStorageResult<TConfig> {
   return async (block) => {
     // Find table schema registration events
     const newTables = block.logs

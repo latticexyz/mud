@@ -18,6 +18,22 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      }
+    ],
+    "name": "DelegationNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "functionSelector",
         "type": "bytes4"
@@ -35,6 +51,38 @@
       }
     ],
     "name": "FunctionSelectorNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "balance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "InsufficientBalance",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "contractAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "InterfaceNotSupported",
     "type": "error"
   },
   {
@@ -143,6 +191,22 @@
       }
     ],
     "name": "StoreCore_InvalidKeyNamesLength",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "expected",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "received",
+        "type": "uint256"
+      }
+    ],
+    "name": "StoreCore_InvalidValueSchemaLength",
     "type": "error"
   },
   {
@@ -331,6 +395,35 @@
   {
     "inputs": [
       {
+        "internalType": "address",
+        "name": "delegator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "funcSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "callFrom",
+    "outputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes32",
         "name": "table",
         "type": "bytes32"
@@ -341,8 +434,8 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -369,8 +462,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -397,8 +490,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -408,6 +501,25 @@
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "table",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getFieldLayout",
+    "outputs": [
+      {
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
+        "type": "bytes32"
       }
     ],
     "stateMutability": "view",
@@ -431,8 +543,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -465,8 +577,8 @@
         "type": "uint8"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       },
       {
@@ -523,8 +635,8 @@
         "type": "bytes32[]"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -635,8 +747,8 @@
         "type": "uint256"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -668,12 +780,35 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
     "name": "pushToField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "delegatee",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "delegationControlId",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "bytes",
+        "name": "initFuncSelectorAndArgs",
+        "type": "bytes"
+      }
+    ],
+    "name": "registerDelegation",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -758,8 +893,13 @@
       },
       {
         "internalType": "contract IStoreHook",
-        "name": "hook",
+        "name": "hookAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "enabledHooksBitmap",
+        "type": "uint8"
       }
     ],
     "name": "registerStoreHook",
@@ -775,7 +915,7 @@
         "type": "bytes32"
       },
       {
-        "internalType": "contract System",
+        "internalType": "contract WorldContextConsumer",
         "name": "system",
         "type": "address"
       },
@@ -799,8 +939,13 @@
       },
       {
         "internalType": "contract ISystemHook",
-        "name": "hook",
+        "name": "hookAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "enabledHooksBitmap",
+        "type": "uint8"
       }
     ],
     "name": "registerSystemHook",
@@ -813,6 +958,11 @@
       {
         "internalType": "bytes32",
         "name": "table",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       },
       {
@@ -882,8 +1032,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
@@ -910,12 +1060,112 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],
     "name": "setRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "fromNamespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "toAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferBalanceToAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "fromNamespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "bytes16",
+        "name": "toNamespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferBalanceToNamespace",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes16",
+        "name": "namespace",
+        "type": "bytes16"
+      },
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "table",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "contract IStoreHook",
+        "name": "hookAddress",
+        "type": "address"
+      }
+    ],
+    "name": "unregisterStoreHook",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "resourceSelector",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "contract ISystemHook",
+        "name": "hookAddress",
+        "type": "address"
+      }
+    ],
+    "name": "unregisterSystemHook",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -948,8 +1198,8 @@
         "type": "bytes"
       },
       {
-        "internalType": "Schema",
-        "name": "valueSchema",
+        "internalType": "FieldLayout",
+        "name": "fieldLayout",
         "type": "bytes32"
       }
     ],

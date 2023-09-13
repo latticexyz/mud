@@ -1,7 +1,8 @@
-import { KeySchema, StoreConfig, ValueSchema } from "@latticexyz/store";
+import { StoreConfig } from "@latticexyz/store";
 import { Component as RecsComponent, Metadata as RecsMetadata, Type as RecsType } from "@latticexyz/recs";
 import { SchemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { SchemaAbiType } from "@latticexyz/schema-type";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 export type StoreComponentMetadata = RecsMetadata & {
   componentName: string;

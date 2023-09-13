@@ -1,17 +1,15 @@
-import { Address, Block, Hex, Log, PublicClient, TransactionReceipt } from "viem";
+import { Address, Block, Hex, Log, PublicClient } from "viem";
 import { GroupLogsByBlockNumberResult } from "@latticexyz/block-logs-stream";
 import {
   StoreConfig,
-  KeySchema,
-  ValueSchema,
   ConfigToKeyPrimitives as Key,
   ConfigToValuePrimitives as Value,
-  TableRecord,
   StoreEventsAbiItem,
   StoreEventsAbi,
 } from "@latticexyz/store";
 import { Observable } from "rxjs";
 import { BlockStorageOperations } from "./blockLogsToStorage";
+import { KeySchema, ValueSchema, TableRecord } from "@latticexyz/protocol-parser";
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
@@ -119,5 +117,17 @@ export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
   blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
-  waitForTransaction: (tx: Hex) => Promise<{ receipt: TransactionReceipt }>;
+  waitForTransaction: (tx: Hex) => Promise<void>;
+};
+
+export type StorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
+  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: Table[] }) => Promise<void>;
+  getTables: (opts: {
+    blockNumber: BlockLogs["blockNumber"];
+    tables: Pick<Table, "address" | "namespace" | "name">[];
+  }) => Promise<Table[]>;
+  storeOperations: (opts: {
+    blockNumber: BlockLogs["blockNumber"];
+    operations: StorageOperation<TConfig>[];
+  }) => Promise<void>;
 };

@@ -1,18 +1,5 @@
-import { SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
+import { SchemaAbiType, SchemaAbiTypeToPrimitiveType } from "@latticexyz/schema-type";
 import { FieldData, FullSchemaConfig, StoreConfig } from "./config";
-
-export type KeySchema = Record<string, StaticAbiType>;
-export type ValueSchema = Record<string, SchemaAbiType>;
-
-/** Map a table schema like `{ value: "uint256" }` to its primitive types like `{ value: bigint }` */
-export type SchemaToPrimitives<TSchema extends ValueSchema> = {
-  [key in keyof TSchema]: SchemaAbiTypeToPrimitiveType<TSchema[key]>;
-};
-
-export type TableRecord<TKeySchema extends KeySchema = KeySchema, TValueSchema extends ValueSchema = ValueSchema> = {
-  key: SchemaToPrimitives<TKeySchema>;
-  value: SchemaToPrimitives<TValueSchema>;
-};
 
 export type ConfigFieldTypeToSchemaAbiType<T extends FieldData<string>> = T extends SchemaAbiType
   ? T

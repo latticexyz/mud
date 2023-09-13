@@ -1,5 +1,41 @@
 # @latticexyz/protocol-parser
 
+## 2.0.0-next.8
+
+### Minor Changes
+
+- [#1443](https://github.com/latticexyz/mud/pull/1443) [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98) Thanks [@holic](https://github.com/holic)! - Adds `decodeKey`, `decodeValue`, `encodeKey`, and `encodeValue` helpers to decode/encode from key/value schemas. Deprecates previous methods that use a schema object with static/dynamic field arrays, originally attempting to model our on-chain behavior but ended up not very ergonomic when working with table configs.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/schema-type@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+
 ## 2.0.0-next.4
 
 ### Patch Changes

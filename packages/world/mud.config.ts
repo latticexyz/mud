@@ -42,11 +42,29 @@ export default mudConfig({
       // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
       dataStruct: true,
     },
+    Delegations: {
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+      },
+      schema: {
+        delegationControlId: "bytes32",
+      },
+    },
     /************************************************************************
      *
      *    MODULE TABLES
      *
      ************************************************************************/
+    Balances: {
+      directory: "modules/core/tables",
+      keySchema: {
+        namespace: "bytes16",
+      },
+      schema: {
+        balance: "uint256",
+      },
+    },
     Systems: {
       directory: "modules/core/tables",
       keySchema: {
@@ -72,7 +90,7 @@ export default mudConfig({
       keySchema: {
         resourceSelector: "bytes32",
       },
-      schema: "address[]",
+      schema: "bytes21[]",
     },
     ResourceType: {
       directory: "modules/core/tables",
@@ -130,6 +148,28 @@ export default mudConfig({
       schema: "uint256",
       tableIdArgument: true,
       storeArgument: true,
+    },
+    CallboundDelegations: {
+      directory: "modules/std-delegations/tables",
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+        resourceSelector: "bytes32",
+        funcSelectorAndArgsHash: "bytes32",
+      },
+      schema: {
+        availableCalls: "uint256",
+      },
+    },
+    TimeboundDelegations: {
+      directory: "modules/std-delegations/tables",
+      keySchema: {
+        delegator: "address",
+        delegatee: "address",
+      },
+      schema: {
+        maxTimestamp: "uint256",
+      },
     },
     /************************************************************************
      *

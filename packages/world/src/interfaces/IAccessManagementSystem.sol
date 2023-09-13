@@ -7,4 +7,6 @@ interface IAccessManagementSystem {
   function grantAccess(bytes32 resourceSelector, address grantee) external;
 
   function revokeAccess(bytes32 resourceSelector, address grantee) external;
+
+  function transferOwnership(bytes16 namespace, address newOwner) external;
 }
