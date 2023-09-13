@@ -24,6 +24,7 @@ export const yDeployOptions = {
     default: 1000,
   },
   skipBuild: { type: "boolean", desc: "Skip rebuilding the contracts before deploying" },
+  privateKey: { type: "string", desc: "Private key of the deployer", default: process.env.PRIVATE_KEY },
 } satisfies Record<keyof DeployOptions, Options>;
 
 const commandModule: CommandModule<DeployOptions, DeployOptions> = {

@@ -7,32 +7,35 @@ import { StoreSwitch } from "../src/StoreSwitch.sol";
 
 contract MudTest is Test {
   address public worldAddress = vm.envOr("WORLD_ADDRESS", address(0));
-  // TODO: figure out how to uniquely identify this among other tests, or run tests in series rather than parallel, to avoid anvil nonce issues
-  VmSafe.Wallet public deployer = vm.createWallet("deployer");
 
   function setUp() public virtual {
     if (worldAddress == address(0)) {
-      // worldAddress = vm.deployContract("World");
-      // vm.setEnvAddress("WORLD_ADDRESS", worldAddress);
-      console.log("deploying world");
+      // assign a random anvil.js instance based on the test contract's bytecode, effectively allowing us parallelize tests
+      string memory rpcUrl = string.concat(
+        "http://127.0.0.1:8545/",
+        vm.toString(uint32(uint256(keccak256(address(this).code))))
+      );
 
-      console.log("setting deployer private key", vm.toString(bytes32(deployer.privateKey)));
-      vm.setEnv("PRIVATE_KEY", vm.toString(bytes32(deployer.privateKey)));
-      string[] memory deployCommand = new string[](5);
+      console.log("deploying world via", rpcUrl);
+      string[] memory deployCommand = new string[](7);
       deployCommand[0] = "pnpm";
       deployCommand[1] = "mud";
       deployCommand[2] = "deploy";
-      deployCommand[3] = "--saveDeployment";
-      deployCommand[4] = "false";
+      deployCommand[3] = "--rpc";
+      deployCommand[4] = rpcUrl;
+      deployCommand[5] = "--saveDeployment";
+      deployCommand[6] = "false";
 
-      VmSafe.FfiResult memory result = vm.tryFfi(deployCommand);
-      console.log("exit code", vm.toString(result.exit_code));
-      console.log("stdout", string(result.stdout));
-      console.log("stderr", string(result.stderr));
+      VmSafe.FfiResult memory deployResult = vm.tryFfi(deployCommand);
+      console.log("exit code", vm.toString(deployResult.exit_code));
+      console.log("stdout", string(deployResult.stdout));
+      console.log("stderr", string(deployResult.stderr));
 
-      revert("nope");
+      // World address is fairly stable when it's the first contract deployed on the node, which should be the case in our tests.
+      // TODO: compute world address once we have CREATE2 support
+      worldAddress = 0x5FbDB2315678afecb367f032d93F642f64180aa3;
     }
-    worldAddress = vm.parseAddress(vm.readFile(".mudtest"));
+
     StoreSwitch.setStoreAddress(worldAddress);
   }
 }

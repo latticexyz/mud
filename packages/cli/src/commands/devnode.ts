@@ -15,7 +15,7 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      blocktime: { type: "number", default: 1, decs: "Interval in which new blocks are produced" },
+      blocktime: { type: "number", default: 1, desc: "Interval in which new blocks are produced" },
     });
   },
 

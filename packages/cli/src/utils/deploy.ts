@@ -341,6 +341,7 @@ export async function deploy(
       ],
       {
         profile,
+        privateKey,
       }
     );
   } else {
