@@ -540,6 +540,10 @@ library StoreCore {
     }
   }
 
+  function loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32) {
+    return StoreCoreInternal._loadStaticField(storagePointer, length, offset);
+  }
+
   /**
    * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
    */
@@ -592,6 +596,10 @@ library StoreCoreInternal {
    *    SET DATA
    *
    ************************************************************************/
+
+  function _loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32) {
+    return Storage.loadField(storagePointer, length, offset);
+  }
 
   function _setStaticField(
     bytes32 tableId,
@@ -780,7 +788,7 @@ library StoreCoreInternal {
    * Compute the storage location based on tableId id and index tuple
    */
   function _getStaticDataLocation(bytes32 tableId, bytes32[] memory key) internal pure returns (uint256) {
-    return uint256(keccak256(abi.encode(SLOT, tableId, key)));
+    return uint256(SLOT ^ tableId ^ keccak256(abi.encodePacked(key)));
   }
 
   /**

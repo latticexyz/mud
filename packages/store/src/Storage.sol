@@ -99,6 +99,18 @@ library Storage {
     }
   }
 
+  function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
+    if (offset >= 32) {
+      unchecked {
+        storagePointer += offset / 32;
+        offset %= 32;
+      }
+    }
+    assembly {
+      result := shr(mul(sub(32, length), 8), shl(mul(offset, 8), sload(storagePointer)))
+    }
+  }
+
   function load(uint256 storagePointer) internal view returns (bytes32 word) {
     assembly {
       word := sload(storagePointer)

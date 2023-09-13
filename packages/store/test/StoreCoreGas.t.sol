@@ -290,6 +290,17 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.getField(table, key, 0, fieldLayout);
     endGasReport();
 
+    {
+      // constants
+      uint256 staticByteLength = fieldLayout.atIndex(0);
+      uint256 offset = StoreCoreInternal._getStaticDataOffset(fieldLayout, 0);
+      startGasReport("get static field V2 (1 slot)");
+      // needs to be computed onchain
+      uint256 location = StoreCoreInternal._getStaticDataLocation(table, key);
+      StoreCore.loadStaticField(location, staticByteLength, offset);
+      endGasReport();
+    }
+
     // Set second field
     bytes32 secondDataBytes = keccak256("some data");
     bytes memory secondDataPacked = abi.encodePacked(secondDataBytes);
