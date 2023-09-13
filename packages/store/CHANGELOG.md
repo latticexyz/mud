@@ -1,5 +1,71 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Major Changes
+
+- [#1458](https://github.com/latticexyz/mud/pull/1458) [`b9e562d8`](https://github.com/latticexyz/mud/commit/b9e562d8f7a6051bb1a7262979b268fd2c83daac) Thanks [@alvrs](https://github.com/alvrs)! - The `World` now performs `ERC165` interface checks to ensure that the `StoreHook`, `SystemHook`, `System`, `DelegationControl` and `Module` contracts to actually implement their respective interfaces before registering them in the World.
+
+  The required `supportsInterface` methods are implemented on the respective base contracts.
+  When creating one of these contracts, the recommended approach is to extend the base contract rather than the interface.
+
+  ```diff
+  - import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+  + import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+
+  - contract MyStoreHook is IStoreHook {}
+  + contract MyStoreHook is StoreHook {}
+  ```
+
+  ```diff
+  - import { ISystemHook } from "@latticexyz/world/src/interfaces/ISystemHook.sol";
+  + import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+
+  - contract MySystemHook is ISystemHook {}
+  + contract MySystemHook is SystemHook {}
+  ```
+
+  ```diff
+  - import { IDelegationControl } from "@latticexyz/world/src/interfaces/IDelegationControl.sol";
+  + import { DelegationControl } from "@latticexyz/world/src/DelegationControl.sol";
+
+  - contract MyDelegationControl is IDelegationControl {}
+  + contract MyDelegationControl is DelegationControl {}
+  ```
+
+  ```diff
+  - import { IModule } from "@latticexyz/world/src/interfaces/IModule.sol";
+  + import { Module } from "@latticexyz/world/src/Module.sol";
+
+  - contract MyModule is IModule {}
+  + contract MyModule is Module {}
+  ```
+
+### Minor Changes
+
+- [#1422](https://github.com/latticexyz/mud/pull/1422) [`1d60930d`](https://github.com/latticexyz/mud/commit/1d60930d6d4c9a0bda262e5e23a5f719b9dd48c7) Thanks [@alvrs](https://github.com/alvrs)! - It is now possible to unregister Store hooks and System hooks.
+
+  ```solidity
+  interface IStore {
+    function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
+    // ...
+  }
+
+  interface IWorld {
+    function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) external;
+    // ...
+  }
+  ```
+
+- [#1443](https://github.com/latticexyz/mud/pull/1443) [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98) Thanks [@holic](https://github.com/holic)! - Moved `KeySchema`, `ValueSchema`, `SchemaToPrimitives` and `TableRecord` types into `@latticexyz/protocol-parser`
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/config@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+
 ## 2.0.0-next.7
 
 ### Major Changes

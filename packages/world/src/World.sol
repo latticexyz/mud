@@ -15,19 +15,20 @@ import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
+import { requireInterface } from "./requireInterface.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 import { Delegations } from "./tables/Delegations.sol";
 
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
-import { IModule } from "./interfaces/IModule.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+import { Balances } from "./modules/core/tables/Balances.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
@@ -39,8 +40,6 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     NamespaceOwner.register();
     NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
 
-    // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
-
     emit HelloWorld();
   }
 
@@ -50,12 +49,16 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, msg.sender);
+    AccessControl.requireOwner(ROOT_NAMESPACE, msg.sender);
+
+    // Require the provided address to implement the IModule interface
+    requireInterface(address(module), MODULE_INTERFACE_ID);
 
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
+      msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.installRoot.selector, args)
     });
 
     // Register the module in the InstalledModules table
@@ -221,9 +224,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Allow the World to receive ETH
+   * ETH sent to the World without calldata is added to the root namespace's balance
    */
-  receive() external payable {}
+  receive() external payable {
+    uint256 rootBalance = Balances.get(ROOT_NAMESPACE);
+    Balances.set(ROOT_NAMESPACE, rootBalance + msg.value);
+  }
 
   /**
    * Fallback function to call registered function selectors

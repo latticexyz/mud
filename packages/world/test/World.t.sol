@@ -6,7 +6,7 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -23,7 +23,9 @@ import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
-import { SystemHookLib } from "../src/SystemHook.sol";
+import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
+import { SystemHookLib, SystemHook } from "../src/SystemHook.sol";
+import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -35,7 +37,7 @@ import { ResourceType } from "../src/modules/core/tables/ResourceType.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
-import { ISystemHook } from "../src/interfaces/ISystemHook.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
 
 import { Bool } from "./tables/Bool.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
@@ -113,7 +115,7 @@ contract PayableFallbackSystem is System {
   fallback() external payable {}
 }
 
-contract EchoSystemHook is ISystemHook {
+contract EchoSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
   function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
@@ -125,7 +127,7 @@ contract EchoSystemHook is ISystemHook {
   }
 }
 
-contract RevertSystemHook is ISystemHook {
+contract RevertSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
   function onBeforeCallSystem(address, bytes32, bytes memory) public pure {
@@ -190,6 +192,28 @@ contract WorldTest is Test, GasReporter {
     assertEq(Tables.getValueSchema(world, NamespaceOwnerTableId), Schema.unwrap(NamespaceOwner.getValueSchema()));
     assertEq(Tables.getAbiEncodedKeyNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
     assertEq(Tables.getAbiEncodedFieldNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
+  }
+
+  function testRegisterModuleRevertInterfaceNotSupported() public {
+    // Expect an error when trying to register a module that doesn't implement the IModule interface
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        Module(address(world)), // The World contract does not implement the IModule interface
+        MODULE_INTERFACE_ID
+      )
+    );
+    world.installModule(Module(address(world)), new bytes(0));
+
+    // Expect an error when trying to register a root module that doesn't implement the IModule interface
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        Module(address(world)), // The World contract does not implement the IModule interface
+        MODULE_INTERFACE_ID
+      )
+    );
+    world.installRootModule(Module(address(world)), new bytes(0));
   }
 
   function testRootNamespace() public {
@@ -303,8 +327,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), namespace, "");
     world.registerTable(otherTableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
-    // Expect the World to be allowed to call registerTable
-    vm.prank(address(world));
+    // Expect the World to not be allowed to call registerTable via an external call
+    _expectAccessDenied(address(world), namespace, "");
     world.registerTable(otherTableSelector, defaultKeySchema, valueSchema, keyNames, fieldNames);
   }
 
@@ -361,9 +385,19 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "", "");
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
 
-    // Expect the registration to succeed when coming from the World
-    vm.prank(address(world));
+    // Expect the registration to fail when coming from the World (since the World address doesn't have access)
+    _expectAccessDenied(address(world), "", "");
     world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
+
+    // Expect the registration to fail if the provided address does not implement the WorldContextConsumer interface
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        address(world),
+        WORLD_CONTEXT_CONSUMER_INTERFACE_ID
+      )
+    );
+    world.registerSystem(ResourceSelector.from("someNamespace", "invalidSystem"), System(address(world)), true);
   }
 
   function testUpgradeSystem() public {
@@ -630,7 +664,11 @@ contract WorldTest is Test, GasReporter {
       abi.encodeWithSelector(
         WorldTestSystem.delegateCallSubSystem.selector, // Function in system
         address(subSystem), // Address of subsystem
-        abi.encodePacked(WorldTestSystem.msgSender.selector, address(this)) // Function in subsystem
+        WorldContextProvider.appendContext({
+          funcSelectorAndArgs: abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
+          msgSender: address(this),
+          msgValue: uint256(0)
+        })
       )
     );
 
@@ -770,6 +808,23 @@ contract WorldTest is Test, GasReporter {
     emit HookCalled(abi.encode(tableId, singletonKey, valueSchema));
 
     world.deleteRecord(tableId, singletonKey, valueSchema);
+
+    // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.InterfaceNotSupported.selector, address(world), STORE_HOOK_INTERFACE_ID)
+    );
+    world.registerStoreHook(
+      tableId,
+      IStoreHook(address(world)), // the World contract does not implement the store hook interface
+      StoreHookLib.encodeBitmap({
+        onBeforeSetRecord: true,
+        onAfterSetRecord: true,
+        onBeforeSetField: true,
+        onAfterSetField: true,
+        onBeforeDeleteRecord: true,
+        onAfterDeleteRecord: true
+      })
+    );
   }
 
   function testUnregisterStoreHook() public {
@@ -860,6 +915,16 @@ contract WorldTest is Test, GasReporter {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
+
+    // Expect the registration to fail if the contract does not implement the system hook interface
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.InterfaceNotSupported.selector, address(world), SYSTEM_HOOK_INTERFACE_ID)
+    );
+    world.registerSystemHook(
+      systemId,
+      ISystemHook(address(world)), // the World contract does not implement the system hook interface
+      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+    );
 
     // Register a new hook
     ISystemHook systemHook = new EchoSystemHook();
@@ -1042,8 +1107,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "", "");
     world.registerRootFunctionSelector(resourceSelector, worldFunc, sysFunc);
 
-    // Expect the World to be able to register a root function selector
-    vm.prank(address(world));
+    // Expect the World to not be able to register a root function selector when calling the function externally
+    _expectAccessDenied(address(world), "", "");
     world.registerRootFunctionSelector(resourceSelector, "smth", "smth");
 
     startGasReport("Register a root function selector");
@@ -1154,12 +1219,12 @@ contract WorldTest is Test, GasReporter {
     );
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
-    assertEq(address(world).balance, 0 ether, "world should still have 0 ether");
-    assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   function testNonPayableSystem() public {
-    // Register a root system with a non-payable function in the world
+    // Register a non-root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
     bytes16 namespace = "noroot";
     bytes16 name = "testSystem";
@@ -1184,16 +1249,17 @@ contract WorldTest is Test, GasReporter {
     (bool success, ) = address(world).call{ value: 0.5 ether }(
       abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
     );
-    assertFalse(success, "transfer should fail");
-    assertEq(alice.balance, 1 ether, "alice should have 1 ether");
-    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
+    // The call should succeed because the value is not forwarded to the system
+    assertTrue(success, "transfer should succeed");
+    assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
     assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   function testNonPayableFallbackSystem() public {
     // Register a root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = "noroot";
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     world.registerSystem(resourceSelector, system, true);
@@ -1221,9 +1287,9 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testPayableFallbackSystem() public {
-    // Register a root system with a non-payable function in the world
+    // Register a root system with a payable function in the world
     PayableFallbackSystem system = new PayableFallbackSystem();
-    bytes16 namespace = "noroot";
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     world.registerSystem(resourceSelector, system, true);
@@ -1244,16 +1310,16 @@ contract WorldTest is Test, GasReporter {
 
     // Send 0.5 eth to the system's fallback function (non-payable) via the World
     (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeWithSignature("systemFallback()"));
-    assertTrue(success, "transfer should fail");
+    assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
-    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
-    assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   function testPayableRootSystem() public {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = "";
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
     bytes32 resourceSelector = ResourceSelector.from(namespace, name);
     world.registerSystem(resourceSelector, system, true);
@@ -1279,7 +1345,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
-    assertEq(address(system).balance, 0 ether, "system should have 0 ether (bc it was delegatecalled)");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
   }
 
   // TODO: add a test for systems writing to tables via the World

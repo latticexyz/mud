@@ -19,7 +19,7 @@ contract AccessManagementSystem is System {
    */
   function grantAccess(bytes32 resourceSelector, address grantee) public virtual {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Grant access to the given resource
     ResourceAccess.set(resourceSelector, grantee, true);
@@ -31,7 +31,7 @@ contract AccessManagementSystem is System {
    */
   function revokeAccess(bytes32 resourceSelector, address grantee) public virtual {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Revoke access from the given resource
     ResourceAccess.deleteRecord(resourceSelector, grantee);
@@ -44,7 +44,7 @@ contract AccessManagementSystem is System {
    */
   function transferOwnership(bytes16 namespace, address newOwner) public virtual {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(namespace, _msgSender());
+    AccessControl.requireOwner(namespace, _msgSender());
 
     // Set namespace new owner
     NamespaceOwner.set(namespace, newOwner);

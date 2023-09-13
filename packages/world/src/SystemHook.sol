@@ -2,7 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "./interfaces/ISystemHook.sol";
+import { ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";
 
 enum SystemHookType {
   BEFORE_CALL_SYSTEM,
@@ -25,5 +26,12 @@ library SystemHookLib {
    */
   function encode(ISystemHook systemHook, uint8 enabledHooksBitmap) internal pure returns (Hook) {
     return HookLib.encode(address(systemHook), enabledHooksBitmap);
+  }
+}
+
+abstract contract SystemHook is ISystemHook {
+  // ERC-165 supportsInterface (see https://eips.ethereum.org/EIPS/eip-165)
+  function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
+    return interfaceId == SYSTEM_HOOK_INTERFACE_ID || interfaceId == ERC165_INTERFACE_ID;
   }
 }

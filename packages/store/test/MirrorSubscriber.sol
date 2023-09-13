@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook } from "../src/IStore.sol";
+import { IStore } from "../src/IStore.sol";
+import { StoreHook } from "../src/StoreHook.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Schema } from "../src/Schema.sol";
 
 bytes32 constant indexerTableId = keccak256("indexer.table");
 
-contract MirrorSubscriber is IStoreHook {
+contract MirrorSubscriber is StoreHook {
   bytes32 _table;
 
   constructor(
