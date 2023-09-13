@@ -2,6 +2,7 @@ import { integer, pgSchema, text } from "drizzle-orm/pg-core";
 import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { transformSchemaName } from "./transformSchemaName";
 import { asAddress, asBigInt, asJson, asNumber } from "./columnTypes";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function buildInternalTables() {
@@ -22,8 +23,8 @@ export function buildInternalTables() {
       tableId: text("table_id").notNull(),
       namespace: text("namespace").notNull(),
       name: text("name").notNull(),
-      keySchema: asJson<Record<string, StaticAbiType>>("key_schema").notNull(),
-      valueSchema: asJson<Record<string, StaticAbiType | DynamicAbiType>>("value_schema").notNull(),
+      keySchema: asJson<KeySchema>("key_schema").notNull(),
+      valueSchema: asJson<ValueSchema>("value_schema").notNull(),
       lastUpdatedBlockNumber: asBigInt("last_updated_block_number", "numeric"),
       // TODO: last block hash?
       lastError: text("last_error"),

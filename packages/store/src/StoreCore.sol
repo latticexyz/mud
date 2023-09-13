@@ -10,7 +10,7 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
-import { IStoreHook } from "./IStore.sol";
+import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { StoreHookLib, StoreHookType } from "./StoreHook.sol";

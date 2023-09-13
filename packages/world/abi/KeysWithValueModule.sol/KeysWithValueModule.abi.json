@@ -21,14 +21,8 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "length",
-        "type": "uint256"
-      }
-    ],
-    "name": "PackedCounter_InvalidLength",
+    "inputs": [],
+    "name": "NonRootInstallNotSupported",
     "type": "error"
   },
   {
@@ -40,6 +34,11 @@
       }
     ],
     "name": "RequiredModuleNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "RootInstallModeNotSupported",
     "type": "error"
   },
   {
@@ -59,30 +58,43 @@
     "type": "error"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "_msgSender",
+    "outputs": [
       {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint256",
-        "name": "start",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "end",
-        "type": "uint256"
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
       }
     ],
-    "name": "Slice_OutOfBounds",
-    "type": "error"
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
-    "name": "StoreCore_NotDynamicField",
-    "type": "error"
+    "name": "_msgValue",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "value",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "_world",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -101,13 +113,45 @@
     "inputs": [
       {
         "internalType": "bytes",
-        "name": "args",
+        "name": "",
         "type": "bytes"
       }
     ],
     "name": "install",
     "outputs": [],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "args",
+        "type": "bytes"
+      }
+    ],
+    "name": "installRoot",
+    "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   }
 ]

@@ -4,18 +4,20 @@ pragma solidity >=0.8.0;
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 
 import { System } from "../../../System.sol";
-import { WorldContextConsumer } from "../../../WorldContext.sol";
+import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { Resource } from "../../../Types.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { SystemHookLib } from "../../../SystemHook.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
+import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { Delegations } from "../../../tables/Delegations.sol";
-import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
+import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
+import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
 import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
@@ -57,8 +59,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ISystemHook hookAddress,
     uint8 enabledHooksBitmap
   ) public virtual {
+    // Require the provided address to implement the ISystemHook interface
+    requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
+
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Register the hook
     SystemHooks.push(resourceSelector, Hook.unwrap(SystemHookLib.encode(hookAddress, enabledHooksBitmap)));
@@ -69,7 +74,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) public virtual {
     // Require caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Remove the hook from the list of hooks for this resourceSelector in the system hooks table
     HookLib.filterListByAddress(SystemHooksTableId, resourceSelector, address(hookAddress));
@@ -85,6 +90,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * making it possible to upgrade systems.
    */
   function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) public virtual {
+    // Require the provided address to implement the WorldContextConsumer interface
+    requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
+
     // Require the name to not be the namespace's root name
     if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
@@ -98,7 +106,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // otherwise require caller to own the namespace
     bytes16 namespace = resourceSelector.getNamespace();
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, _msgSender());
+    else AccessControl.requireOwner(namespace, _msgSender());
 
     // Require no resource other than a system to exist at this selector yet
     Resource resourceType = ResourceType.get(resourceSelector);
@@ -136,6 +144,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
    * which would save one sload per call, but add some complexity to upgrading systems. TBD.
    * (see https://github.com/latticexyz/mud/issues/444)
+   * TODO: replace separate systemFunctionName and systemFunctionArguments with a signature argument
    */
   function registerFunctionSelector(
     bytes32 resourceSelector,
@@ -143,7 +152,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(resourceSelector.getNamespace());
@@ -178,7 +187,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
     // Require the caller to own the root namespace
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, _msgSender());
+    AccessControl.requireOwner(ROOT_NAMESPACE, _msgSender());
 
     // Require the function selector to be globally unique
     bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);
@@ -202,8 +211,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Store the delegation control contract address
     Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
 
-    // If the delegation is not unlimited, call the delegation control contract's init function
+    // If the delegation is not unlimited...
     if (delegationControlId != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
+      // Require the delegationControl contract to implement the IDelegationControl interface
+      (address delegationControl, ) = Systems.get(delegationControlId);
+      requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
+
+      // Call the delegation control contract's init function
       SystemCall.call({
         caller: _msgSender(),
         resourceSelector: delegationControlId,

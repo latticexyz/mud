@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "../src/IStore.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { StoreHook } from "../src/StoreHook.sol";
 
-contract RevertSubscriber is IStoreHook {
+contract RevertSubscriber is StoreHook {
   function onBeforeSetRecord(bytes32, bytes32[] memory, bytes memory, FieldLayout) public pure {
     revert("onBeforeSetRecord");
   }

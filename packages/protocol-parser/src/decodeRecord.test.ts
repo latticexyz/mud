@@ -21,4 +21,16 @@ describe("decodeRecord", () => {
       ]
     `);
   });
+
+  it("can decode an out of bounds array", () => {
+    const schema = { staticFields: [], dynamicFields: ["uint32[]"] } as const;
+    const values = decodeRecord(schema, "0x0000000000000000000000000000000000000000000000000400000000000004");
+    expect(values).toMatchInlineSnapshot(`
+      [
+        [
+          0,
+        ],
+      ]
+    `);
+  });
 });

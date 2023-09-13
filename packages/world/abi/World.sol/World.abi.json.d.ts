@@ -82,6 +82,38 @@ declare const abi: [
   {
     inputs: [
       {
+        internalType: "uint256";
+        name: "balance";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "amount";
+        type: "uint256";
+      }
+    ];
+    name: "InsufficientBalance";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "address";
+        name: "contractAddress";
+        type: "address";
+      },
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "InterfaceNotSupported";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
         internalType: "string";
         name: "resource";
         type: "string";

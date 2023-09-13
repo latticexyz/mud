@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
+import { IStoreHook } from "./IStoreHook.sol";
 
 interface IStoreRead {
   function getFieldLayout(bytes32 table) external view returns (FieldLayout fieldLayout);
@@ -139,29 +140,3 @@ interface IStoreRegistration {
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
-
-interface IStoreHook {
-  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) external;
-
-  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) external;
-
-  function onBeforeSetField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
-  ) external;
-
-  function onAfterSetField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
-  ) external;
-
-  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
-
-  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
-}

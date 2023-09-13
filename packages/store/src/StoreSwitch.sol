@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook } from "./IStore.sol";
-import { Schema } from "./Schema.sol";
+import { IStore } from "./IStore.sol";
+import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
+import { Schema } from "./Schema.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 
 /**

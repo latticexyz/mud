@@ -49,6 +49,8 @@ export async function deploy(
     deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
+  const baseSystemFunctionNames = (await loadFunctionSignatures("System")).map((item) => item.functionName);
+
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
   provider.pollingInterval = pollInterval;
@@ -451,7 +453,7 @@ export async function deploy(
   async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
     const { abi } = await getContractData(contractName);
 
-    return abi
+    const functionSelectors = abi
       .filter((item) => ["fallback", "function"].includes(item.type))
       .map((item) => {
         if (item.type === "fallback") return { functionName: "", functionArgs: "" };
@@ -461,6 +463,11 @@ export async function deploy(
           functionArgs: parseComponents(item.inputs),
         };
       });
+
+    return contractName === "System"
+      ? functionSelectors
+      : // Filter out functions that are defined in the base System contract for all non-base systems
+        functionSelectors.filter((item) => !baseSystemFunctionNames.includes(item.functionName));
   }
 
   /**
