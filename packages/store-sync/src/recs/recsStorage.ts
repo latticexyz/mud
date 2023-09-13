@@ -1,41 +1,50 @@
 import { StoreConfig } from "@latticexyz/store";
 import { debug } from "./debug";
-import {
-  Component as RecsComponent,
-  Schema as RecsSchema,
-  getComponentValue,
-  hasComponent,
-  removeComponent,
-  setComponent,
-} from "@latticexyz/recs";
+import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
-import { StoreComponentMetadata } from "./common";
 import { hexToTableId } from "@latticexyz/common";
-import { decodeValueArgs, readHex, staticDataLength } from "@latticexyz/protocol-parser";
+import { decodeValueArgs, readHex } from "@latticexyz/protocol-parser";
 import { Hex, concatHex } from "viem";
-import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexKeyTupleToEntity } from "./hexKeyTupleToEntity";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { isStaticAbiType } from "@latticexyz/schema-type";
+import { ConfigToRecsComponents } from "./common";
+import { StorageAdapter, StorageAdapterBlock } from "../common";
+import { configToRecsComponents } from "./configToRecsComponents";
+import { singletonEntity } from "./singletonEntity";
+import storeConfig from "@latticexyz/store/mud.config";
+import worldConfig from "@latticexyz/world/mud.config";
+
+export type RecsStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
+  world: RecsWorld;
+  // TODO: make config optional?
+  config: TConfig;
+};
+
+export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
+  storageAdapter: StorageAdapter;
+  components: ConfigToRecsComponents<TConfig> &
+    ConfigToRecsComponents<typeof storeConfig> &
+    ConfigToRecsComponents<typeof worldConfig> &
+    ReturnType<typeof defineInternalComponents>;
+};
 
 export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
-  components,
-}: {
-  // TODO: switch to RECS world so we can fetch components from current list in case new components are registered later
-  components: ReturnType<typeof defineInternalComponents> &
-    Record<string, RecsComponent<RecsSchema, StoreComponentMetadata>>;
-  config?: TConfig;
-}): StorageAdapter {
-  // TODO: do we need to store block number?
+  world,
+  config,
+}: RecsStorageOptions<TConfig>): RecsStorageAdapter<TConfig> {
+  world.registerEntity({ id: singletonEntity });
 
-  const componentsByTableId = Object.fromEntries(
-    Object.entries(components).map(([id, component]) => [component.id, component])
-  );
+  const components = {
+    ...configToRecsComponents(world, config),
+    ...configToRecsComponents(world, storeConfig),
+    ...configToRecsComponents(world, worldConfig),
+    ...defineInternalComponents(world),
+  };
 
-  return async function recsStorageAdapter({ logs }) {
+  async function recsStorageAdapter({ logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
     for (const newTable of newTables) {
       const tableEntity = getTableEntity(newTable);
@@ -60,7 +69,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         continue;
       }
 
-      const component = componentsByTableId[table.tableId];
+      const component = world.components.find((c) => c.id === table.tableId);
       if (!component) {
         debug(
           `skipping update for unknown component: ${table.tableId} (${table.namespace}:${
@@ -157,5 +166,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         assertExhaustive(log.eventName);
       }
     }
-  };
+  }
+
+  return { storageAdapter: recsStorageAdapter, components };
 }
