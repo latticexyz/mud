@@ -309,7 +309,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 697846
+    "gasUsed": 697905
   },
   {
     "file": "test/Mixed.t.sol",
@@ -903,7 +903,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: push 1 element",
-    "gasUsed": 39000
+    "gasUsed": 39001
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
@@ -1059,7 +1059,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 421468
+    "gasUsed": 421491
   },
   {
     "file": "test/Vector2.t.sol",
