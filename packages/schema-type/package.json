@@ -40,7 +40,7 @@
   "devDependencies": {
     "@latticexyz/gas-report": "workspace:*",
     "ds-test": "https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d",
     "tsup": "^6.7.0",
     "vitest": "0.31.4"
   },

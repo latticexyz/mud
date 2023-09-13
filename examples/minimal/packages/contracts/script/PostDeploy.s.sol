@@ -15,6 +15,7 @@ contract PostDeploy is Script {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
 
     // Start broadcasting transactions from the deployer account
+    console.log("broadcasting from deployer address", vm.addr(deployerPrivateKey));
     vm.startBroadcast(deployerPrivateKey);
 
     // Manually deploy a system with another namespace

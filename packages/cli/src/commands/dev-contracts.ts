@@ -28,11 +28,11 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options({
       rpc: {
         type: "string",
-        decs: "RPC endpoint of the development node. If none is provided, an anvil instance is spawned in the background on port 8545.",
+        desc: "RPC endpoint of the development node. If none is provided, an anvil instance is spawned in the background on port 8545.",
       },
       configPath: {
         type: "string",
-        decs: "Path to MUD config",
+        desc: "Path to MUD config",
       },
     });
   },

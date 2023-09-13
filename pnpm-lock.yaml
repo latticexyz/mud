@@ -225,8 +225,8 @@ importers:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
@@ -436,8 +436,8 @@ importers:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
@@ -456,8 +456,8 @@ importers:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
     devDependencies:
       '@nomicfoundation/hardhat-chai-matchers':
         specifier: ^1.0.3
@@ -639,8 +639,8 @@ importers:
         specifier: https://github.com/dapphub/ds-test.git#e282159d5170298eb2455a6c05280ab5a73a4ef0
         version: github.com/dapphub/ds-test/e282159d5170298eb2455a6c05280ab5a73a4ef0
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
@@ -735,8 +735,8 @@ importers:
         specifier: ^3.1.8
         version: 3.1.8
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
       hardhat:
         specifier: ^2.10.2
         version: 2.10.2(typescript@5.1.6)
@@ -969,8 +969,8 @@ importers:
         specifier: ^3.1.8
         version: 3.1.8
       forge-std:
-        specifier: https://github.com/foundry-rs/forge-std.git#74cfb77e308dd188d2f58864aaf44963ae6b88b1
-        version: github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1
+        specifier: https://github.com/foundry-rs/forge-std.git#1d9650e951204a0ddce9ff89c32f1997984cef4d
+        version: github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d
       glob:
         specifier: ^8.0.3
         version: 8.0.3
@@ -2865,7 +2865,7 @@ packages:
     resolution: {integrity: sha512-bcKpo1oj54hGholplGLpqPHRbIsnbixFtc06nwuNM5/dwSXOq/AAYoIBRsBmnZJSdfeNW5rnff7NTAz3ZCqR9Q==}
     dependencies:
       '@noble/curves': 1.0.0
-      '@noble/hashes': 1.3.0
+      '@noble/hashes': 1.3.1
       '@scure/base': 1.1.1
     dev: false
 
@@ -2879,7 +2879,7 @@ packages:
   /@scure/bip39@1.2.0:
     resolution: {integrity: sha512-SX/uKq52cuxm4YFXWFaVByaSHJh2w3BnokVSeUJVCv6K7WulT9u2BuNRBhuFl8vAuYnzx9bEu9WgpcNYTrYieg==}
     dependencies:
-      '@noble/hashes': 1.3.0
+      '@noble/hashes': 1.3.1
       '@scure/base': 1.1.1
     dev: false
 
@@ -11361,8 +11361,8 @@ packages:
     name: ds-test
     version: 1.0.0
 
-  github.com/foundry-rs/forge-std/74cfb77e308dd188d2f58864aaf44963ae6b88b1:
-    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/74cfb77e308dd188d2f58864aaf44963ae6b88b1}
+  github.com/foundry-rs/forge-std/1d9650e951204a0ddce9ff89c32f1997984cef4d:
+    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/1d9650e951204a0ddce9ff89c32f1997984cef4d}
     name: forge-std
     version: 1.6.0
 
