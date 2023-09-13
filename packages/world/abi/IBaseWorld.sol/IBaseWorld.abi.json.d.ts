@@ -416,6 +416,19 @@ declare const abi: [
     type: "function";
   },
   {
+    inputs: [];
+    name: "creator";
+    outputs: [
+      {
+        internalType: "address";
+        name: "";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
     inputs: [
       {
         internalType: "bytes32";
