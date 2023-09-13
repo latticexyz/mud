@@ -11,8 +11,8 @@ import { Hook } from "../src/Hook.sol";
 import { StoreHookType } from "../src/StoreHook.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { IStoreHook } from "../src/IStore.sol";
-import { Schema } from "../src/Schema.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 
 contract StoreHookTest is Test, GasReporter {
   event HookCalled(bytes);
@@ -26,7 +26,7 @@ contract StoreHookTest is Test, GasReporter {
   PackedCounter private encodedLengths = PackedCounter.wrap(bytes32(0));
   bytes private dynamicData = new bytes(0);
   uint8 private schemaIndex = 1;
-  Schema private valueSchema = Schema.wrap(0);
+  FieldLayout private fieldLayout = FieldLayout.wrap(0);
 
   function testEncodeBitmap() public {
     assertEq(
@@ -286,7 +286,7 @@ contract StoreHookTest is Test, GasReporter {
     bytes memory emptyDynamicData = new bytes(0);
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, staticData, encodedLengths, emptyDynamicData, valueSchema));
+    emit HookCalled(abi.encode(tableId, key, staticData, encodedLengths, emptyDynamicData, fieldLayout));
     startGasReport("call an enabled hook");
     if (storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
       IStoreHook(storeHook.getAddress()).onBeforeSetRecord(
@@ -295,7 +295,7 @@ contract StoreHookTest is Test, GasReporter {
         staticData,
         encodedLengths,
         dynamicData,
-        valueSchema
+        fieldLayout
       );
     }
     endGasReport();
@@ -321,7 +321,7 @@ contract StoreHookTest is Test, GasReporter {
         staticData,
         encodedLengths,
         dynamicData,
-        valueSchema
+        fieldLayout
       );
     }
     endGasReport();

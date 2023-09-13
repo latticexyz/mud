@@ -7,7 +7,9 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { World } from "../src/World.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { System } from "../src/System.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { DELEGATION_CONTROL_INTERFACE_ID } from "../src/interfaces/IDelegationControl.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
 import { StandardDelegationsModule } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
@@ -110,5 +112,23 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     vm.prank(delegatee);
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
     world.callFrom(delegator, systemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+  }
+
+  function testRegisterDelegationRevertInterfaceNotSupported() public {
+    // Register a system that is not a delegation control system
+    System noDelegationControlSystem = new System();
+    bytes32 noDelegationControlId = ResourceSelector.from("namespace", "noDelegation");
+    world.registerSystem(noDelegationControlId, noDelegationControlSystem, true);
+
+    // Expect the registration to revert if the system does not implement the delegation control interface
+    vm.prank(delegator);
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InterfaceNotSupported.selector,
+        address(noDelegationControlSystem),
+        DELEGATION_CONTROL_INTERFACE_ID
+      )
+    );
+    world.registerDelegation(delegatee, noDelegationControlId, new bytes(1));
   }
 }

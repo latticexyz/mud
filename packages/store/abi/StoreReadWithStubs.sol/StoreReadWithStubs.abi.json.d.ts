@@ -7,6 +7,27 @@ declare const abi: [
         type: "uint256";
       }
     ];
+    name: "FieldLayoutLib_InvalidLength";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthIsZero";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      }
+    ];
     name: "SchemaLib_InvalidLength";
     type: "error";
   },
@@ -114,6 +135,22 @@ declare const abi: [
       }
     ];
     name: "StoreCore_InvalidStaticDataLength";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidValueSchemaLength";
     type: "error";
   },
   {
@@ -349,7 +386,7 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -387,7 +424,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -415,8 +452,8 @@ declare const abi: [
         type: "uint8";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -426,6 +463,25 @@ declare const abi: [
         internalType: "bytes";
         name: "data";
         type: "bytes";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      }
+    ];
+    name: "getFieldLayout";
+    outputs: [
+      {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
+        type: "bytes32";
       }
     ];
     stateMutability: "view";
@@ -449,8 +505,8 @@ declare const abi: [
         type: "uint8";
       },
       {
-        internalType: "Schema";
-        name: "schema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -483,8 +539,8 @@ declare const abi: [
         type: "uint8";
       },
       {
-        internalType: "Schema";
-        name: "schema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       },
       {
@@ -541,8 +597,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -599,7 +655,7 @@ declare const abi: [
         type: "uint256";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -632,7 +688,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -669,6 +725,11 @@ declare const abi: [
     inputs: [
       {
         internalType: "bytes32";
+        name: "";
+        type: "bytes32";
+      },
+      {
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       },
@@ -721,7 +782,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -759,7 +820,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -815,7 +876,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }

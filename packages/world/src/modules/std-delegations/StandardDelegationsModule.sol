@@ -2,10 +2,11 @@
 pragma solidity >=0.8.0;
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
+import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
+import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { CallboundDelegationControl } from "./CallboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "./TimeboundDelegationControl.sol";
@@ -17,7 +18,7 @@ import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
 /**
  * This module registers tables and delegation control systems required for standard delegations
  */
-contract StandardDelegationsModule is IModule, WorldContextConsumer {
+contract StandardDelegationsModule is Module {
   CallboundDelegationControl private immutable callboundDelegationControl = new CallboundDelegationControl();
   TimeboundDelegationControl private immutable timeboundDelegationControl = new TimeboundDelegationControl();
 
@@ -25,15 +26,26 @@ contract StandardDelegationsModule is IModule, WorldContextConsumer {
     return MODULE_NAME;
   }
 
-  function install(bytes memory) public {
+  function installRoot(bytes memory) public {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register tables
-    CallboundDelegations.register(world);
-    TimeboundDelegations.register(world);
+    CallboundDelegations.register();
+    TimeboundDelegations.register();
 
     // Register systems
-    world.registerSystem(CALLBOUND_DELEGATION, callboundDelegationControl, true);
-    world.registerSystem(TIMEBOUND_DELEGATION, timeboundDelegationControl, true);
+    (bool success, bytes memory returnData) = address(world).delegatecall(
+      abi.encodeCall(world.registerSystem, (CALLBOUND_DELEGATION, callboundDelegationControl, true))
+    );
+    if (!success) revertWithBytes(returnData);
+
+    (success, returnData) = address(world).delegatecall(
+      abi.encodeCall(world.registerSystem, (TIMEBOUND_DELEGATION, timeboundDelegationControl, true))
+    );
+    if (!success) revertWithBytes(returnData);
+  }
+
+  function install(bytes memory) public pure {
+    revert NonRootInstallNotSupported();
   }
 }

@@ -30,6 +30,11 @@ declare const abi: [
         type: "bytes32";
       },
       {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
+        type: "bytes32";
+      },
+      {
         internalType: "Schema";
         name: "keySchema";
         type: "bytes32";

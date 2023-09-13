@@ -3,11 +3,10 @@ pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { WorldContextConsumer } from "../../WorldContext.sol";
 import { Resource } from "../../Types.sol";
+import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -37,10 +36,10 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
  * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
 
  * Note:
- * This module is required to be delegatecalled (via `World.registerRootSystem`),
+ * This module only supports `installRoot` (via `World.registerRootSystem`),
  * because it needs to install root tables, systems and function selectors.
  */
-contract CoreModule is IModule, WorldContextConsumer {
+contract CoreModule is Module {
   // Since the CoreSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable coreSystem = address(new CoreSystem());
@@ -49,10 +48,14 @@ contract CoreModule is IModule, WorldContextConsumer {
     return CORE_MODULE_NAME;
   }
 
-  function install(bytes memory) public override {
+  function installRoot(bytes memory) public override {
     _registerCoreTables();
     _registerCoreSystem();
     _registerFunctionSelectors();
+  }
+
+  function install(bytes memory) public pure {
+    revert NonRootInstallNotSupported();
   }
 
   /**
@@ -81,11 +84,9 @@ contract CoreModule is IModule, WorldContextConsumer {
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreSystem,
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.registerSystem.selector,
-        ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
-        coreSystem,
-        true
+      funcSelectorAndArgs: abi.encodeCall(
+        WorldRegistrationSystem.registerSystem,
+        (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
       )
     });
   }
@@ -127,11 +128,9 @@ contract CoreModule is IModule, WorldContextConsumer {
         msgSender: _msgSender(),
         msgValue: 0,
         target: coreSystem,
-        funcSelectorAndArgs: abi.encodeWithSelector(
-          WorldRegistrationSystem.registerRootFunctionSelector.selector,
-          ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME),
-          functionSelectors[i],
-          functionSelectors[i]
+        funcSelectorAndArgs: abi.encodeCall(
+          WorldRegistrationSystem.registerRootFunctionSelector,
+          (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
         )
       });
     }

@@ -7,6 +7,7 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
@@ -14,6 +15,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
+import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
@@ -35,7 +37,8 @@ contract StoreCoreTest is Test, StoreMock {
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   string[] defaultKeyNames = new string[](1);
 
-  function testRegisterAndGetSchema() public {
+  function testRegisterAndGetFieldLayout() public {
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -61,17 +64,15 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSetRecord(
       TablesTableId,
       key,
-      Tables.encodeStatic(keySchema.unwrap(), valueSchema.unwrap()),
+      Tables.encodeStatic(fieldLayout.unwrap(), keySchema.unwrap(), valueSchema.unwrap()),
       Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)).unwrap(),
       Tables.encodeDynamic(abi.encode(keyNames), abi.encode(fieldNames))
     );
-    IStore(this).registerTable(table, keySchema, valueSchema, keyNames, fieldNames);
+    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
 
-    Schema loadedValueSchema = IStore(this).getValueSchema(table);
-    assertEq(loadedValueSchema.unwrap(), valueSchema.unwrap());
-
-    Schema loadedKeySchema = IStore(this).getKeySchema(table);
-    assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
+    assertEq(IStore(this).getFieldLayout(table).unwrap(), fieldLayout.unwrap());
+    assertEq(IStore(this).getValueSchema(table).unwrap(), valueSchema.unwrap());
+    assertEq(IStore(this).getKeySchema(table).unwrap(), keySchema.unwrap());
 
     bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), table);
     assertEq(loadedKeyNames, abi.encode(keyNames));
@@ -80,21 +81,23 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(loadedFieldNames, abi.encode(fieldNames));
   }
 
-  function testFailRegisterInvalidSchema() public {
+  function testFailRegisterInvalidFieldLayout() public {
     string[] memory keyNames = new string[](2);
     string[] memory fieldNames = new string[](4);
     IStore(this).registerTable(
       keccak256("table"),
-      Schema.wrap(keccak256("random bytes as schema")),
+      FieldLayout.wrap(keccak256("random bytes as value field layout")),
       Schema.wrap(keccak256("random bytes as key schema")),
+      Schema.wrap(keccak256("random bytes as schema")),
       keyNames,
       fieldNames
     );
   }
 
-  function testHasSchema() public {
+  function testHasFieldLayoutAndSchema() public {
     string[] memory keyNames = new string[](1);
     string[] memory fieldNames = new string[](4);
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -103,13 +106,19 @@ contract StoreCoreTest is Test, StoreMock {
     );
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
 
+    IStore(this).getFieldLayout(table);
     IStore(this).getValueSchema(table);
     IStore(this).getKeySchema(table);
+
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
+    );
+    IStore(this).getFieldLayout(table2);
 
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_TableNotFound.selector, table2, string(abi.encodePacked(table2)))
@@ -124,6 +133,7 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testRegisterTableRevertNames() public {
     bytes32 table = keccak256("some.table");
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
     Schema keySchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -136,16 +146,17 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table with invalid key names
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidKeyNamesLength.selector, 4, 1));
-    IStore(this).registerTable(table, keySchema, valueSchema, oneName, oneName);
+    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, oneName, oneName);
 
     // Register table with invalid value names
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 4));
-    IStore(this).registerTable(table, keySchema, valueSchema, fourNames, fourNames);
+    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, fourNames, fourNames);
   }
 
   function testSetAndGetDynamicDataLength() public {
     bytes32 table = keccak256("some.table");
 
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -154,8 +165,8 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT32_ARRAY
     );
 
-    // Register schema
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](5));
+    // Register table
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](5));
 
     // Create some key
     bytes32[] memory key = new bytes32[](1);
@@ -187,7 +198,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetStaticData() public {
-    // Register table's schema
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -196,7 +208,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
     bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -208,16 +220,17 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(table, key, staticData, bytes32(0), new bytes(0));
 
-    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Get data
-    bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
+    bytes memory loadedData = IStore(this).getRecord(table, key, fieldLayout);
 
     assertTrue(Bytes.equals(staticData, loadedData));
   }
 
   function testFailSetAndGetStaticData() public {
-    // Register table's schema
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -225,7 +238,7 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT16
     );
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
     bytes memory staticData = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
@@ -234,14 +247,17 @@ contract StoreCoreTest is Test, StoreMock {
     key[0] = keccak256("some.key");
 
     // This should fail because the data is not 6 bytes long
-    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
-    // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    {
+      Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
+      IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    }
 
     // Set data
     bytes memory staticData = abi.encodePacked(
@@ -256,10 +272,10 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(table, key, staticData, bytes32(0), new bytes(0));
 
-    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Get data
-    bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
+    bytes memory loadedData = IStore(this).getRecord(table, key, fieldLayout);
 
     assertTrue(Bytes.equals(staticData, loadedData));
   }
@@ -267,13 +283,16 @@ contract StoreCoreTest is Test, StoreMock {
   function testSetAndGetDynamicData() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(
-      SchemaType.UINT128,
-      SchemaType.UINT32_ARRAY,
-      SchemaType.UINT32_ARRAY
-    );
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
+    {
+      Schema valueSchema = SchemaEncodeHelper.encode(
+        SchemaType.UINT128,
+        SchemaType.UINT32_ARRAY,
+        SchemaType.UINT32_ARRAY
+      );
+      IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -318,10 +337,10 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSetRecord(table, key, staticData, encodedDynamicLength.unwrap(), dynamicData);
 
     // Set data
-    IStore(this).setRecord(table, key, staticData, encodedDynamicLength, dynamicData, valueSchema);
+    IStore(this).setRecord(table, key, staticData, encodedDynamicLength, dynamicData, fieldLayout);
 
     // Get data
-    bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
+    bytes memory loadedData = IStore(this).getRecord(table, key, fieldLayout);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -343,14 +362,17 @@ contract StoreCoreTest is Test, StoreMock {
   function testSetAndGetField() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(
-      SchemaType.UINT128,
-      SchemaType.UINT256,
-      SchemaType.UINT32_ARRAY,
-      SchemaType.UINT32_ARRAY
-    );
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
+    {
+      Schema valueSchema = SchemaEncodeHelper.encode(
+        SchemaType.UINT128,
+        SchemaType.UINT256,
+        SchemaType.UINT32_ARRAY,
+        SchemaType.UINT32_ARRAY
+      );
+      IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -365,21 +387,21 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSpliceStaticRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
 
     // Set first field
-    IStore(this).setField(table, key, 0, firstDataPacked, valueSchema);
+    IStore(this).setField(table, key, 0, firstDataPacked, fieldLayout);
 
     ////////////////
     // Static data
     ////////////////
 
     // Get first field
-    bytes memory loadedData = IStore(this).getField(table, key, 0, valueSchema);
+    bytes memory loadedData = IStore(this).getField(table, key, 0, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, 16);
     assertEq(bytes16(loadedData), bytes16(firstDataBytes));
 
     // Verify the second index is not set yet
-    assertEq(uint256(bytes32(IStore(this).getField(table, key, 1, valueSchema))), 0);
+    assertEq(uint256(bytes32(IStore(this).getField(table, key, 1, fieldLayout))), 0);
 
     // Set second field
     bytes32 secondDataBytes = keccak256("some data");
@@ -396,24 +418,25 @@ contract StoreCoreTest is Test, StoreMock {
       secondDataPacked
     );
 
-    IStore(this).setField(table, key, 1, secondDataPacked, valueSchema);
+    IStore(this).setField(table, key, 1, secondDataPacked, fieldLayout);
 
     // Get second field
-    loadedData = IStore(this).getField(table, key, 1, valueSchema);
+    loadedData = IStore(this).getField(table, key, 1, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, 32);
     assertEq(bytes32(loadedData), secondDataBytes);
 
     // Verify the first field didn't change
-    assertEq(bytes16(IStore(this).getField(table, key, 0, valueSchema)), bytes16(firstDataBytes));
+    assertEq(bytes16(IStore(this).getField(table, key, 0, fieldLayout)), bytes16(firstDataBytes));
 
     // Verify the full static data is correct
+    assertEq(IStore(this).getFieldLayout(table).staticDataLength(), 48);
     assertEq(IStore(this).getValueSchema(table).staticDataLength(), 48);
-    assertEq(Bytes.slice16(IStore(this).getRecord(table, key, valueSchema), 0), firstDataBytes);
-    assertEq(Bytes.slice32(IStore(this).getRecord(table, key, valueSchema), 16), secondDataBytes);
+    assertEq(Bytes.slice16(IStore(this).getRecord(table, key, fieldLayout), 0), firstDataBytes);
+    assertEq(Bytes.slice32(IStore(this).getRecord(table, key, fieldLayout), 16), secondDataBytes);
     assertEq(
-      keccak256(SliceLib.getSubslice(IStore(this).getRecord(table, key, valueSchema), 0, 48).toBytes()),
+      keccak256(SliceLib.getSubslice(IStore(this).getRecord(table, key, fieldLayout), 0, 48).toBytes()),
       keccak256(abi.encodePacked(firstDataBytes, secondDataBytes))
     );
 
@@ -450,10 +473,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Set third field
-    IStore(this).setField(table, key, 2, thirdDataBytes, valueSchema);
+    IStore(this).setField(table, key, 2, thirdDataBytes, fieldLayout);
 
     // Get third field
-    loadedData = IStore(this).getField(table, key, 2, valueSchema);
+    loadedData = IStore(this).getField(table, key, 2, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 2);
@@ -461,11 +484,11 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
 
     // Verify the fourth field is not set yet
-    assertEq(IStore(this).getField(table, key, 3, valueSchema).length, 0);
+    assertEq(IStore(this).getField(table, key, 3, fieldLayout).length, 0);
 
     // Verify none of the previous fields were impacted
-    assertEq(bytes16(IStore(this).getField(table, key, 0, valueSchema)), bytes16(firstDataBytes));
-    assertEq(bytes32(IStore(this).getField(table, key, 1, valueSchema)), bytes32(secondDataBytes));
+    assertEq(bytes16(IStore(this).getField(table, key, 0, fieldLayout)), bytes16(firstDataBytes));
+    assertEq(bytes32(IStore(this).getField(table, key, 1, fieldLayout)), bytes32(secondDataBytes));
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
@@ -479,10 +502,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Set fourth field
-    IStore(this).setField(table, key, 3, fourthDataBytes, valueSchema);
+    IStore(this).setField(table, key, 3, fourthDataBytes, fieldLayout);
 
     // Get fourth field
-    loadedData = IStore(this).getField(table, key, 3, valueSchema);
+    loadedData = IStore(this).getField(table, key, 3, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, fourthDataBytes.length);
@@ -491,7 +514,7 @@ contract StoreCoreTest is Test, StoreMock {
     // Verify all fields are correct
     PackedCounter encodedLengths = PackedCounterLib.pack(uint40(thirdDataBytes.length), uint40(fourthDataBytes.length));
     assertEq(
-      keccak256(IStore(this).getRecord(table, key, valueSchema)),
+      keccak256(IStore(this).getRecord(table, key, fieldLayout)),
       keccak256(
         abi.encodePacked(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes)
       )
@@ -512,10 +535,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Set fourth field
-    IStore(this).setField(table, key, 3, thirdDataBytes, valueSchema);
+    IStore(this).setField(table, key, 3, thirdDataBytes, fieldLayout);
 
     // Get fourth field
-    loadedData = IStore(this).getField(table, key, 3, valueSchema);
+    loadedData = IStore(this).getField(table, key, 3, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, thirdDataBytes.length);
@@ -525,13 +548,16 @@ contract StoreCoreTest is Test, StoreMock {
   function testDeleteData() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
-    Schema valueSchema = SchemaEncodeHelper.encode(
-      SchemaType.UINT128,
-      SchemaType.UINT32_ARRAY,
-      SchemaType.UINT32_ARRAY
-    );
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
+    {
+      Schema valueSchema = SchemaEncodeHelper.encode(
+        SchemaType.UINT128,
+        SchemaType.UINT32_ARRAY,
+        SchemaType.UINT32_ARRAY
+      );
+      IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -572,10 +598,10 @@ contract StoreCoreTest is Test, StoreMock {
     key[0] = bytes32("some.key");
 
     // Set data
-    IStore(this).setRecord(table, key, staticData, encodedDynamicLength, dynamicData, valueSchema);
+    IStore(this).setRecord(table, key, staticData, encodedDynamicLength, dynamicData, fieldLayout);
 
     // Get data
-    bytes memory loadedData = IStore(this).getRecord(table, key, valueSchema);
+    bytes memory loadedData = IStore(this).getRecord(table, key, fieldLayout);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -585,11 +611,11 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreDeleteRecord(table, key);
 
     // Delete data
-    IStore(this).deleteRecord(table, key, valueSchema);
+    IStore(this).deleteRecord(table, key, fieldLayout);
 
     // Verify data is deleted
-    loadedData = IStore(this).getRecord(table, key, valueSchema);
-    assertEq(keccak256(loadedData), keccak256(new bytes(valueSchema.staticDataLength())));
+    loadedData = IStore(this).getRecord(table, key, fieldLayout);
+    assertEq(keccak256(loadedData), keccak256(new bytes(fieldLayout.staticDataLength())));
   }
 
   struct TestPushToFieldData {
@@ -610,13 +636,21 @@ contract StoreCoreTest is Test, StoreMock {
 
     data.table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT256,
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT32_ARRAY
     );
-    IStore(this).registerTable(data.table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    IStore(this).registerTable(
+      data.table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     data.key = new bytes32[](1);
@@ -640,10 +674,10 @@ contract StoreCoreTest is Test, StoreMock {
     }
 
     // Set fields
-    IStore(this).setField(data.table, data.key, 0, abi.encodePacked(data.firstDataBytes), valueSchema);
-    IStore(this).setField(data.table, data.key, 1, data.secondDataBytes, valueSchema);
+    IStore(this).setField(data.table, data.key, 0, abi.encodePacked(data.firstDataBytes), fieldLayout);
+    IStore(this).setField(data.table, data.key, 1, data.secondDataBytes, fieldLayout);
     // Initialize a field with push
-    IStore(this).pushToField(data.table, data.key, 2, data.thirdDataBytes, valueSchema);
+    IStore(this).pushToField(data.table, data.key, 2, data.thirdDataBytes, fieldLayout);
 
     // Create data to push
     {
@@ -665,10 +699,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Push to second field
-    IStore(this).pushToField(data.table, data.key, 1, data.secondDataToPush, valueSchema);
+    IStore(this).pushToField(data.table, data.key, 1, data.secondDataToPush, fieldLayout);
 
     // Get second field
-    data.loadedData = IStore(this).getField(data.table, data.key, 1, valueSchema);
+    data.loadedData = IStore(this).getField(data.table, data.key, 1, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, 2 + 1);
@@ -676,8 +710,8 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data.loadedData, data.newSecondDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, valueSchema)), data.firstDataBytes);
-    assertEq(IStore(this).getField(data.table, data.key, 2, valueSchema), data.thirdDataBytes);
+    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, fieldLayout)), data.firstDataBytes);
+    assertEq(IStore(this).getField(data.table, data.key, 2, fieldLayout), data.thirdDataBytes);
 
     // Create data to push
     {
@@ -708,10 +742,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Push to third field
-    IStore(this).pushToField(data.table, data.key, 2, data.thirdDataToPush, valueSchema);
+    IStore(this).pushToField(data.table, data.key, 2, data.thirdDataToPush, fieldLayout);
 
     // Get third field
-    data.loadedData = IStore(this).getField(data.table, data.key, 2, valueSchema);
+    data.loadedData = IStore(this).getField(data.table, data.key, 2, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, 3 + 10);
@@ -719,8 +753,8 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data.loadedData, data.newThirdDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, valueSchema)), data.firstDataBytes);
-    assertEq(IStore(this).getField(data.table, data.key, 1, valueSchema), data.newSecondDataBytes);
+    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, fieldLayout)), data.firstDataBytes);
+    assertEq(IStore(this).getField(data.table, data.key, 1, fieldLayout), data.newSecondDataBytes);
   }
 
   struct TestUpdateInFieldData {
@@ -756,13 +790,21 @@ contract StoreCoreTest is Test, StoreMock {
 
     data.table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT256,
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT64_ARRAY
     );
-    IStore(this).registerTable(data.table, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    IStore(this).registerTable(
+      data.table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     data.key = new bytes32[](1);
@@ -785,9 +827,9 @@ contract StoreCoreTest is Test, StoreMock {
     data.thirdDataBytes = EncodeArray.encode(data.thirdData);
 
     // Set fields
-    IStore(this).setField(data.table, data.key, 0, abi.encodePacked(data.firstDataBytes), valueSchema);
-    IStore(this).setField(data.table, data.key, 1, data.secondDataBytes, valueSchema);
-    IStore(this).setField(data.table, data.key, 2, data.thirdDataBytes, valueSchema);
+    IStore(this).setField(data.table, data.key, 0, abi.encodePacked(data.firstDataBytes), fieldLayout);
+    IStore(this).setField(data.table, data.key, 1, data.secondDataBytes, fieldLayout);
+    IStore(this).setField(data.table, data.key, 2, data.thirdDataBytes, fieldLayout);
 
     // Create data to use for the update
     {
@@ -810,10 +852,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Update index 1 in second field (4 = byte length of uint32)
-    IStore(this).updateInField(data.table, data.key, 1, 4 * 1, data.secondDataForUpdate, valueSchema);
+    IStore(this).updateInField(data.table, data.key, 1, 4 * 1, data.secondDataForUpdate, fieldLayout);
 
     // Get second field
-    data.loadedData = IStore(this).getField(data.table, data.key, 1, valueSchema);
+    data.loadedData = IStore(this).getField(data.table, data.key, 1, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint32().length, data.secondData.length);
@@ -821,8 +863,8 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data.loadedData, data.newSecondDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, valueSchema)), data.firstDataBytes);
-    assertEq(IStore(this).getField(data.table, data.key, 2, valueSchema), data.thirdDataBytes);
+    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, fieldLayout)), data.firstDataBytes);
+    assertEq(IStore(this).getField(data.table, data.key, 2, fieldLayout), data.thirdDataBytes);
 
     // Create data for update
     {
@@ -855,10 +897,10 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
-    IStore(this).updateInField(data.table, data.key, 2, 8 * 1, data.thirdDataForUpdate, valueSchema);
+    IStore(this).updateInField(data.table, data.key, 2, 8 * 1, data.thirdDataForUpdate, fieldLayout);
 
     // Get third field
-    data.loadedData = IStore(this).getField(data.table, data.key, 2, valueSchema);
+    data.loadedData = IStore(this).getField(data.table, data.key, 2, fieldLayout);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(data.loadedData).decodeArray_uint64().length, data.thirdData.length);
@@ -866,39 +908,40 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(data.loadedData, data.newThirdDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, valueSchema)), data.firstDataBytes);
-    assertEq(IStore(this).getField(data.table, data.key, 1, valueSchema), data.newSecondDataBytes);
+    assertEq(bytes32(IStore(this).getField(data.table, data.key, 0, fieldLayout)), data.firstDataBytes);
+    assertEq(IStore(this).getField(data.table, data.key, 1, fieldLayout), data.newSecondDataBytes);
 
     // startByteIndex must not overflow
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_DataIndexOverflow.selector, type(uint40).max, type(uint56).max)
     );
-    IStore(this).updateInField(data.table, data.key, 2, type(uint56).max, data.thirdDataForUpdate, valueSchema);
+    IStore(this).updateInField(data.table, data.key, 2, type(uint56).max, data.thirdDataForUpdate, fieldLayout);
   }
 
   function testAccessEmptyData() public {
     bytes32 table = keccak256("some.table");
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
-    bytes memory data1 = IStore(this).getRecord(table, key, valueSchema);
-    assertEq(data1.length, valueSchema.staticDataLength());
+    bytes memory data1 = IStore(this).getRecord(table, key, fieldLayout);
+    assertEq(data1.length, fieldLayout.staticDataLength());
 
-    bytes memory data2 = IStore(this).getField(table, key, 0, valueSchema);
-    assertEq(data2.length, valueSchema.staticDataLength());
+    bytes memory data2 = IStore(this).getField(table, key, 0, fieldLayout);
+    assertEq(data2.length, fieldLayout.staticDataLength());
 
-    bytes memory data3 = IStore(this).getField(table, key, 1, valueSchema);
+    bytes memory data3 = IStore(this).getField(table, key, 1, fieldLayout);
     assertEq(data3.length, 0);
 
-    uint256 data3Length = IStore(this).getFieldLength(table, key, 1, valueSchema);
+    uint256 data3Length = IStore(this).getFieldLength(table, key, 1, fieldLayout);
     assertEq(data3Length, 0);
 
-    bytes memory data3Slice = IStore(this).getFieldSlice(table, key, 1, valueSchema, 0, 0);
+    bytes memory data3Slice = IStore(this).getFieldSlice(table, key, 1, fieldLayout, 0, 0);
     assertEq(data3Slice.length, 0);
   }
 
@@ -907,13 +950,15 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
-    // Register table's schema
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
       table,
+      fieldLayout,
       defaultKeySchema,
       valueSchema,
       new string[](1),
@@ -935,24 +980,24 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
-    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
+    IStore(this).setRecord(table, key, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
+    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, fieldLayout);
     assertEq(keccak256(staticData), keccak256(indexedData));
 
     staticData = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
 
-    IStore(this).setField(table, key, 0, staticData, valueSchema);
+    IStore(this).setField(table, key, 0, staticData, fieldLayout);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
+    indexedData = IStore(this).getRecord(indexerTableId, key, fieldLayout);
     assertEq(keccak256(staticData), keccak256(indexedData));
 
-    IStore(this).deleteRecord(table, key, valueSchema);
+    IStore(this).deleteRecord(table, key, fieldLayout);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
+    indexedData = IStore(this).getRecord(indexerTableId, key, fieldLayout);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 
@@ -962,8 +1007,9 @@ contract StoreCoreTest is Test, StoreMock {
     key[0] = keccak256("some key");
 
     // Register table's schema
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Create a RevertSubscriber and an EchoSubscriber
     RevertSubscriber revertSubscriber = new RevertSubscriber();
@@ -1000,48 +1046,48 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    IStore(this).setRecord(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
+    IStore(this).setRecord(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
     vm.expectRevert(bytes("onBeforeSetField"));
-    IStore(this).setField(table, key, 0, data, valueSchema);
+    IStore(this).setField(table, key, 0, data, fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
-    IStore(this).deleteRecord(table, key, valueSchema);
+    IStore(this).deleteRecord(table, key, fieldLayout);
 
     // Unregister the RevertSubscriber
     IStore(this).unregisterStoreHook(table, revertSubscriber);
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema));
+    emit HookCalled(abi.encode(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema));
+    emit HookCalled(abi.encode(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout));
 
-    IStore(this).setRecord(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), valueSchema);
+    IStore(this).setRecord(table, key, data, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSetField hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, uint8(0), data, valueSchema));
+    emit HookCalled(abi.encode(table, key, uint8(0), data, fieldLayout));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSetField hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, uint8(0), data, valueSchema));
+    emit HookCalled(abi.encode(table, key, uint8(0), data, fieldLayout));
 
-    IStore(this).setField(table, key, 0, data, valueSchema);
+    IStore(this).setField(table, key, 0, data, fieldLayout);
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeDeleteRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, valueSchema));
+    emit HookCalled(abi.encode(table, key, fieldLayout));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterDeleteRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(table, key, valueSchema));
+    emit HookCalled(abi.encode(table, key, fieldLayout));
 
-    IStore(this).deleteRecord(table, key, valueSchema);
+    IStore(this).deleteRecord(table, key, fieldLayout);
   }
 
   function testHooksDynamicData() public {
@@ -1049,13 +1095,15 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
-    // Register table's schema
+    // Register table
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
-    IStore(this).registerTable(table, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
       table,
+      fieldLayout,
       defaultKeySchema,
       valueSchema,
       new string[](1),
@@ -1083,10 +1131,10 @@ contract StoreCoreTest is Test, StoreMock {
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
-    IStore(this).setRecord(table, key, staticData, encodedArrayDataLength, dynamicData, valueSchema);
+    IStore(this).setRecord(table, key, staticData, encodedArrayDataLength, dynamicData, fieldLayout);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
+    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key, fieldLayout);
     assertEq(keccak256(data), keccak256(indexedData));
 
     // Update dynamic data
@@ -1095,16 +1143,16 @@ contract StoreCoreTest is Test, StoreMock {
     dynamicData = arrayDataBytes;
     data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
-    IStore(this).setField(table, key, 1, arrayDataBytes, valueSchema);
+    IStore(this).setField(table, key, 1, arrayDataBytes, fieldLayout);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
+    indexedData = IStore(this).getRecord(indexerTableId, key, fieldLayout);
     assertEq(keccak256(data), keccak256(indexedData));
 
-    IStore(this).deleteRecord(table, key, valueSchema);
+    IStore(this).deleteRecord(table, key, fieldLayout);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = IStore(this).getRecord(indexerTableId, key, valueSchema);
+    indexedData = IStore(this).getRecord(indexerTableId, key, fieldLayout);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 }

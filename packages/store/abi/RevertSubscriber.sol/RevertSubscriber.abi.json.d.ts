@@ -12,7 +12,7 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -45,7 +45,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -83,7 +83,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -106,7 +106,7 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -139,7 +139,7 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
@@ -177,13 +177,32 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
+        internalType: "FieldLayout";
         name: "";
         type: "bytes32";
       }
     ];
     name: "onBeforeSetRecord";
     outputs: [];
+    stateMutability: "pure";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "supportsInterface";
+    outputs: [
+      {
+        internalType: "bool";
+        name: "";
+        type: "bool";
+      }
+    ];
     stateMutability: "pure";
     type: "function";
   }

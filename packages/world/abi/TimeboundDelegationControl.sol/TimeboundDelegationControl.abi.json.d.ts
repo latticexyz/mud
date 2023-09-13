@@ -7,7 +7,17 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "PackedCounter_InvalidLength";
+    name: "FieldLayoutLib_InvalidLength";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthIsZero";
     type: "error";
   },
   {
@@ -18,12 +28,7 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "SchemaLib_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "SchemaLib_StaticTypeAfterDynamicType";
+    name: "PackedCounter_InvalidLength";
     type: "error";
   },
   {
@@ -48,6 +53,45 @@ declare const abi: [
     type: "error";
   },
   {
+    inputs: [];
+    name: "_msgSender";
+    outputs: [
+      {
+        internalType: "address";
+        name: "sender";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [];
+    name: "_msgValue";
+    outputs: [
+      {
+        internalType: "uint256";
+        name: "value";
+        type: "uint256";
+      }
+    ];
+    stateMutability: "pure";
+    type: "function";
+  },
+  {
+    inputs: [];
+    name: "_world";
+    outputs: [
+      {
+        internalType: "address";
+        name: "";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
     inputs: [
       {
         internalType: "address";
@@ -63,6 +107,25 @@ declare const abi: [
     name: "initDelegation";
     outputs: [];
     stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "supportsInterface";
+    outputs: [
+      {
+        internalType: "bool";
+        name: "";
+        type: "bool";
+      }
+    ];
+    stateMutability: "pure";
     type: "function";
   },
   {

@@ -64,8 +64,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];

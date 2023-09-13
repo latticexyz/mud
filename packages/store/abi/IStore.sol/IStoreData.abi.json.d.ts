@@ -148,8 +148,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -176,8 +176,8 @@ declare const abi: [
         type: "uint8";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -187,6 +187,25 @@ declare const abi: [
         internalType: "bytes";
         name: "data";
         type: "bytes";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      }
+    ];
+    name: "getFieldLayout";
+    outputs: [
+      {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
+        type: "bytes32";
       }
     ];
     stateMutability: "view";
@@ -210,8 +229,8 @@ declare const abi: [
         type: "uint8";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -244,8 +263,8 @@ declare const abi: [
         type: "uint8";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       },
       {
@@ -302,8 +321,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -360,8 +379,8 @@ declare const abi: [
         type: "uint256";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -393,8 +412,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -426,8 +445,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -464,8 +483,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -502,8 +521,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];

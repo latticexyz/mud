@@ -7,7 +7,17 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "PackedCounter_InvalidLength";
+    name: "FieldLayoutLib_InvalidLength";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthIsZero";
     type: "error";
   },
   {
@@ -18,12 +28,7 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "SchemaLib_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "SchemaLib_StaticTypeAfterDynamicType";
+    name: "PackedCounter_InvalidLength";
     type: "error";
   },
   {
@@ -65,8 +70,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -98,8 +103,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -136,8 +141,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -159,8 +164,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -192,8 +197,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -230,14 +235,33 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
     name: "onBeforeSetRecord";
     outputs: [];
     stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "supportsInterface";
+    outputs: [
+      {
+        internalType: "bool";
+        name: "";
+        type: "bool";
+      }
+    ];
+    stateMutability: "pure";
     type: "function";
   }
 ];

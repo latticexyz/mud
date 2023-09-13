@@ -12,8 +12,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -36,7 +36,7 @@ declare const abi: [
       },
       {
         internalType: "uint8";
-        name: "schemaIndex";
+        name: "fieldIndex";
         type: "uint8";
       },
       {
@@ -45,8 +45,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -83,8 +83,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -106,8 +106,8 @@ declare const abi: [
         type: "bytes32[]";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -130,7 +130,7 @@ declare const abi: [
       },
       {
         internalType: "uint8";
-        name: "schemaIndex";
+        name: "fieldIndex";
         type: "uint8";
       },
       {
@@ -139,8 +139,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -177,14 +177,33 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
     name: "onBeforeSetRecord";
     outputs: [];
     stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes4";
+        name: "interfaceID";
+        type: "bytes4";
+      }
+    ];
+    name: "supportsInterface";
+    outputs: [
+      {
+        internalType: "bool";
+        name: "";
+        type: "bool";
+      }
+    ];
+    stateMutability: "view";
     type: "function";
   }
 ];

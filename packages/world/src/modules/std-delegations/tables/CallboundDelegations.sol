@@ -14,6 +14,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
@@ -21,6 +22,14 @@ bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Callb
 bytes32 constant CallboundDelegationsTableId = _tableId;
 
 library CallboundDelegations {
+  /** Get the table values' field layout */
+  function getFieldLayout() internal pure returns (FieldLayout) {
+    uint256[] memory _fieldLayout = new uint256[](1);
+    _fieldLayout[0] = 32;
+
+    return FieldLayoutLib.encode(_fieldLayout, 0);
+  }
+
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](4);
@@ -55,14 +64,21 @@ library CallboundDelegations {
     fieldNames[0] = "availableCalls";
   }
 
-  /** Register the table's key schema, value schema, key names and value names */
+  /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    StoreSwitch.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
   }
 
-  /** Register the table's key schema, value schema, key names and value names (using the specified store) */
+  /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get availableCalls */
@@ -78,7 +94,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getValueSchema());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
@@ -96,7 +112,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getValueSchema());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
@@ -114,7 +130,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), getValueSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), getFieldLayout());
   }
 
   /** Set availableCalls (using the specified store) */
@@ -132,7 +148,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), getValueSchema());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), getFieldLayout());
   }
 
   /** Tightly pack static data using this table's schema */
@@ -140,7 +156,7 @@ library CallboundDelegations {
     return abi.encodePacked(availableCalls);
   }
 
-  /** Tightly pack full data using this table's schema */
+  /** Tightly pack full data using this table's field layout */
   function encode(uint256 availableCalls) internal pure returns (bytes memory) {
     bytes memory _staticData = encodeStatic(availableCalls);
 
@@ -150,7 +166,7 @@ library CallboundDelegations {
     return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple(
     address delegator,
     address delegatee,
@@ -179,7 +195,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getValueSchema());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -196,6 +212,6 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, getValueSchema());
+    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 }

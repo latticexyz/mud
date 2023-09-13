@@ -15,6 +15,7 @@ export * from "./encodeRecord";
 export * from "./encodeValue";
 export * from "./encodeValueArgs";
 export * from "./errors";
+export * from "./fieldLayoutToHex";
 export * from "./hexToPackedCounter";
 export * from "./hexToSchema";
 export * from "./hexToTableSchema";

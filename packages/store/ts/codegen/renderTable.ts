@@ -48,6 +48,7 @@ import { Bytes } from "${storeImportPath}Bytes.sol";
 import { Memory } from "${storeImportPath}Memory.sol";
 import { SliceLib } from "${storeImportPath}Slice.sol";
 import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
+import { FieldLayout, FieldLayoutLib } from "${storeImportPath}FieldLayout.sol";
 import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
 import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
 
@@ -73,6 +74,14 @@ ${
 }
 
 library ${libraryName} {
+  /** Get the table values' field layout */
+  function getFieldLayout() internal pure returns (FieldLayout) {
+    uint256[] memory _fieldLayout = new uint256[](${staticFields.length});
+    ${renderList(staticFields, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
+
+    return FieldLayoutLib.encode(_fieldLayout, ${dynamicFields.length});
+  }
+
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
@@ -104,9 +113,9 @@ library ${libraryName} {
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Register the table's key schema, value schema, key names and value names${_commentSuffix} */
+    /** Register the table with its config${_commentSuffix} */
     function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerTable(_tableId, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+      ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
   `
   )}
@@ -123,7 +132,7 @@ library ${libraryName} {
 
   ${renderEncodeDynamic(dynamicFields)}
 
-  /** Tightly pack full data using this table's schema */
+  /** Tightly pack full data using this table's field layout */
   function encode(${renderArguments(
     options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
   )}) internal pure returns (bytes memory) {
@@ -132,7 +141,7 @@ library ${libraryName} {
     return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
   
-  /** Encode keys as a bytes32 array using this table's schema */
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
     ${_keyTupleDefinition}
     return _keyTuple;
@@ -146,7 +155,7 @@ library ${libraryName} {
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_keyTupleDefinition}
-      ${_store}.deleteRecord(_tableId, _keyTuple, getValueSchema());
+      ${_store}.deleteRecord(_tableId, _keyTuple, getFieldLayout());
     }
   `
         )

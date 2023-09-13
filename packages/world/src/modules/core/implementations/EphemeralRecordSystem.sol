@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { AccessControl } from "../../../AccessControl.sol";
@@ -22,12 +22,12 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
     bytes calldata staticData,
     PackedCounter encodedLengths,
     bytes calldata dynamicData,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(resourceSelector, msg.sender);
 
     // Set the record
-    StoreCore.emitEphemeralRecord(resourceSelector, key, staticData, encodedLengths, dynamicData, valueSchema);
+    StoreCore.emitEphemeralRecord(resourceSelector, key, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 }

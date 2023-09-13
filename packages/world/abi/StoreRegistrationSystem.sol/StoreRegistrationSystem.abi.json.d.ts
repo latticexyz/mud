@@ -34,6 +34,27 @@ declare const abi: [
   {
     inputs: [
       {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      }
+    ];
+    name: "FieldLayoutLib_InvalidLength";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthIsZero";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes4";
         name: "functionSelector";
         type: "bytes4";
@@ -67,6 +88,22 @@ declare const abi: [
       }
     ];
     name: "InsufficientBalance";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
+        internalType: "address";
+        name: "contractAddress";
+        type: "address";
+      },
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "InterfaceNotSupported";
     type: "error";
   },
   {
@@ -226,6 +263,22 @@ declare const abi: [
     type: "error";
   },
   {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidValueSchemaLength";
+    type: "error";
+  },
+  {
     inputs: [];
     name: "StoreCore_NotDynamicField";
     type: "error";
@@ -258,6 +311,45 @@ declare const abi: [
     type: "error";
   },
   {
+    inputs: [];
+    name: "_msgSender";
+    outputs: [
+      {
+        internalType: "address";
+        name: "sender";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [];
+    name: "_msgValue";
+    outputs: [
+      {
+        internalType: "uint256";
+        name: "value";
+        type: "uint256";
+      }
+    ];
+    stateMutability: "pure";
+    type: "function";
+  },
+  {
+    inputs: [];
+    name: "_world";
+    outputs: [
+      {
+        internalType: "address";
+        name: "";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
     inputs: [
       {
         internalType: "bytes32";
@@ -288,6 +380,11 @@ declare const abi: [
         type: "bytes32";
       },
       {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
+        type: "bytes32";
+      },
+      {
         internalType: "Schema";
         name: "keySchema";
         type: "bytes32";
@@ -311,6 +408,25 @@ declare const abi: [
     name: "registerTable";
     outputs: [];
     stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes4";
+        name: "interfaceId";
+        type: "bytes4";
+      }
+    ];
+    name: "supportsInterface";
+    outputs: [
+      {
+        internalType: "bool";
+        name: "";
+        type: "bool";
+      }
+    ];
+    stateMutability: "pure";
     type: "function";
   },
   {

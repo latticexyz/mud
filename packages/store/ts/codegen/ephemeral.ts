@@ -20,7 +20,7 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
 
       ${_keyTupleDefinition}
 
-      ${_store}.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getValueSchema());
+      ${_store}.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
     }
   `
   );
