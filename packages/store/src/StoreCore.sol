@@ -540,6 +540,9 @@ library StoreCore {
     }
   }
 
+  /**
+   * Load the static field stored at the given storagePointer, with the given length and offset
+   */
   function loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32) {
     return StoreCoreInternal._loadStaticField(storagePointer, length, offset);
   }
@@ -814,14 +817,14 @@ library StoreCoreInternal {
     bytes32[] memory key,
     uint8 schemaIndex
   ) internal pure returns (uint256) {
-    return uint256(keccak256(abi.encode(SLOT, tableId, key, schemaIndex)));
+    return uint256(SLOT ^ tableId ^ keccak256(abi.encode(key, schemaIndex)));
   }
 
   /**
    * Compute the storage location for the length of the dynamic data
    */
   function _getDynamicDataLengthLocation(bytes32 tableId, bytes32[] memory key) internal pure returns (uint256) {
-    return uint256(keccak256(abi.encode(SLOT, tableId, key, "length")));
+    return uint256(SLOT ^ tableId ^ bytes32("length") ^ keccak256(abi.encodePacked(key)));
   }
 
   /**
