@@ -17,7 +17,12 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, FieldLayout fieldLayout) public {
+  function setRecord(
+    bytes32 table,
+    bytes32[] calldata key,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) public virtual {
     StoreCore.setRecord(table, key, data, fieldLayout);
   }
 
@@ -28,7 +33,7 @@ contract StoreMock is IStore, StoreRead {
     uint8 schemaIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public {
+  ) public virtual {
     StoreCore.setField(table, key, schemaIndex, data, fieldLayout);
   }
 
@@ -39,7 +44,7 @@ contract StoreMock is IStore, StoreRead {
     uint8 schemaIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
-  ) public {
+  ) public virtual {
     StoreCore.pushToField(table, key, schemaIndex, dataToPush, fieldLayout);
   }
 
@@ -50,7 +55,7 @@ contract StoreMock is IStore, StoreRead {
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
-  ) public {
+  ) public virtual {
     StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
@@ -62,12 +67,12 @@ contract StoreMock is IStore, StoreRead {
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
-  ) public {
+  ) public virtual {
     StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public virtual {
     StoreCore.deleteRecord(table, key, fieldLayout);
   }
 
@@ -77,7 +82,7 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata key,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public {
+  ) public virtual {
     StoreCore.emitEphemeralRecord(table, key, data, fieldLayout);
   }
 
@@ -88,17 +93,17 @@ contract StoreMock is IStore, StoreRead {
     Schema valueSchema,
     string[] calldata keyNames,
     string[] calldata fieldNames
-  ) public {
+  ) public virtual {
     StoreCore.registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) public {
+  function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     StoreCore.registerStoreHook(table, hookAddress, enabledHooksBitmap);
   }
 
   // Unregister hook to be called when a record or field is set or deleted
-  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) public {
+  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) public virtual {
     StoreCore.unregisterStoreHook(table, hookAddress);
   }
 }

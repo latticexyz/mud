@@ -5,11 +5,11 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract Vector2Test is Test, GasReporter, StoreReadWithStubs {
+contract Vector2Test is Test, GasReporter, StoreMock {
   function testRegisterAndGetFieldLayout() public {
     startGasReport("register Vector2 field layout");
     Vector2.register();

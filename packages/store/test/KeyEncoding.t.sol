@@ -6,11 +6,11 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
 import { ExampleEnum } from "../src/codegen/Types.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
+contract KeyEncodingTest is Test, GasReporter, StoreMock {
   function testRegisterAndGetFieldLayout() public {
     startGasReport("register KeyEncoding table");
     KeyEncoding.register();

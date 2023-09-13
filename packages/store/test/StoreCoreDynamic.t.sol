@@ -9,11 +9,11 @@ import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
-contract StoreCoreDynamicTest is Test, GasReporter, StoreReadWithStubs {
+contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _key;
