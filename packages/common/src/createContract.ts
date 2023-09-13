@@ -48,7 +48,7 @@ export type CreateContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
-  getResourceSelector: (functionName: string) => Promise<string>;
+  getResourceSelector: (functionName: string) => Promise<Hex>;
   onWrite?: (write: ContractWrite) => void;
 };
 

@@ -3,17 +3,7 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import {
-  createPublicClient,
-  fallback,
-  webSocket,
-  http,
-  createWalletClient,
-  Hex,
-  parseEther,
-  ClientConfig,
-  getAbiItem,
-} from "viem";
+import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 

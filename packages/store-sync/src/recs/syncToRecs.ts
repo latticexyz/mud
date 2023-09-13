@@ -20,7 +20,7 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
   components: RecsStorageAdapter<TConfig>["components"];
   stopSync: () => void;
-  getResourceSelector: (functionName: string) => Promise<string>;
+  getResourceSelector: (functionName: string) => Promise<Hex>;
 };
 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
@@ -68,7 +68,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   const functionSelectorToResourceSelector = new Map<Hex, Hex>();
 
-  const getResourceSelector = async (functionName: string): Promise<string> => {
+  const getResourceSelector = async (functionName: string): Promise<Hex> => {
     const functionSignature = getAbiItem({
       abi,
       name: functionName,
@@ -77,7 +77,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
     const worldFunctionSelector = getFunctionSelector(functionSignature);
 
     if (functionSelectorToResourceSelector.has(worldFunctionSelector)) {
-      return functionSelectorToResourceSelector.get(worldFunctionSelector) as string;
+      return functionSelectorToResourceSelector.get(worldFunctionSelector) as Hex;
     }
 
     const entity = encodeEntity(components.FunctionSelectors.metadata.keySchema, {
@@ -102,7 +102,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
     functionSelectorToResourceSelector.set(worldFunctionSelector, selectors.resourceSelector as Hex);
 
-    return selectors.resourceSelector;
+    return selectors.resourceSelector as Hex;
   };
 
   return {
