@@ -21,21 +21,24 @@ import { singletonEntity } from "./singletonEntity";
 import storeConfig from "@latticexyz/store/mud.config";
 import worldConfig from "@latticexyz/world/mud.config";
 
-// TODO: extract types to options/result
-// TODO: make config optional again?
-export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
-  world,
-  config,
-}: {
+export type RecsStorageOptions<TConfig extends StoreConfig = StoreConfig> = {
   world: RecsWorld;
   config: TConfig;
-}): {
+};
+
+export type RecsStorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
   storageAdapter: StorageAdapter<TConfig>;
   components: ConfigToRecsComponents<TConfig> &
     ConfigToRecsComponents<typeof storeConfig> &
     ConfigToRecsComponents<typeof worldConfig> &
     ReturnType<typeof defineInternalComponents>;
-} {
+};
+
+// TODO: make config optional?
+export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
+  world,
+  config,
+}: RecsStorageOptions<TConfig>): RecsStorageAdapter<TConfig> {
   world.registerEntity({ id: singletonEntity });
 
   const components = {

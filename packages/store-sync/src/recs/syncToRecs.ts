@@ -1,12 +1,8 @@
 import { StoreConfig } from "@latticexyz/store";
 import { World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
-import { recsStorage } from "./recsStorage";
-import { defineInternalComponents } from "./defineInternalComponents";
+import { RecsStorageAdapter, recsStorage } from "./recsStorage";
 import { createStoreSync } from "../createStoreSync";
-import { ConfigToRecsComponents } from "./common";
-import storeConfig from "@latticexyz/store/mud.config";
-import worldConfig from "@latticexyz/world/mud.config";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 
@@ -17,10 +13,7 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<
 };
 
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
-  components: ConfigToRecsComponents<TConfig> &
-    ConfigToRecsComponents<typeof storeConfig> &
-    ConfigToRecsComponents<typeof worldConfig> &
-    ReturnType<typeof defineInternalComponents>;
+  components: RecsStorageAdapter<TConfig>["components"];
   stopSync: () => void;
 };
 
