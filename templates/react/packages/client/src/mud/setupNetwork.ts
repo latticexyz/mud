@@ -3,7 +3,18 @@
  * (https://viem.sh/docs/getting-started.html).
  * This line imports the functions we need from it.
  */
-import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
+import {
+  createPublicClient,
+  fallback,
+  webSocket,
+  http,
+  createWalletClient,
+  Hex,
+  parseEther,
+  ClientConfig,
+  getFunctionSelector,
+  getAbiItem,
+} from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 
@@ -23,6 +34,7 @@ import { Subject, share } from "rxjs";
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
+import { Entity, getComponentValue, getComponentValueStrict } from "@latticexyz/recs";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -58,17 +70,6 @@ export async function setupNetwork() {
   const write$ = new Subject<ContractWrite>();
 
   /*
-   * Create an object for communicating with the deployed World.
-   */
-  const worldContract = createContract({
-    address: networkConfig.worldAddress as Hex,
-    abi: IWorldAbi,
-    publicClient,
-    walletClient: burnerWalletClient,
-    onWrite: (write) => write$.next(write),
-  });
-
-  /*
    * Sync on-chain state into RECS and keeps our client in sync.
    * Uses the MUD indexer if available, otherwise falls back
    * to the viem publicClient to make RPC calls to fetch MUD
@@ -80,6 +81,37 @@ export async function setupNetwork() {
     address: networkConfig.worldAddress as Hex,
     publicClient,
     startBlock: BigInt(networkConfig.initialBlockNumber),
+  });
+
+  // return this function from syncToRecs
+  const getResourceSelector = (functionName: string) => {
+    const functionSignature = getAbiItem({
+      abi: IWorldAbi,
+      name: functionName,
+    });
+    const worldFunctionSelector = getFunctionSelector(functionSignature);
+    console.log({ worldFunctionSelector, functionSignature, components });
+    const entity = encodeEntity(components.FunctionSelectors.metadata.keySchema, {
+      functionSelector: worldFunctionSelector,
+    });
+    // TODO don't strict to throw custom error
+    // Use rpc call as a fallback when entity is not found
+    // cache selectors on client side
+    // improve typings
+    const selectors = getComponentValueStrict(components.FunctionSelectors, entity);
+    return selectors?.resourceSelector;
+  };
+
+  /*
+   * Create an object for communicating with the deployed World.
+   */
+  const worldContract = createContract({
+    address: networkConfig.worldAddress as Hex,
+    abi: IWorldAbi,
+    publicClient,
+    walletClient: burnerWalletClient,
+    onWrite: (write) => write$.next(write),
+    getResourceSelector,
   });
 
   /*

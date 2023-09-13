@@ -11,6 +11,8 @@ import {
   Transport,
   WalletClient,
   WriteContractParameters,
+  encodeFunctionData,
+  encodePacked,
   getContract,
 } from "viem";
 import pRetry from "p-retry";
@@ -47,6 +49,7 @@ export type CreateContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
+  getResourceSelector: (name: string) => string;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -64,6 +67,7 @@ export function createContract<
   publicClient,
   walletClient,
   onWrite,
+  getResourceSelector,
 }: CreateContractOptions<
   TTransport,
   TAddress,
@@ -149,12 +153,22 @@ export function createContract<
                 options: UnionOmit<WriteContractParameters, "address" | "abi" | "functionName" | "args">;
               }
             >getFunctionParameters(parameters as any);
+            const resourceSelector = getResourceSelector(functionName);
 
-            const request = {
+            // TODO figure out how to strongly type this
+            const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
+              abi,
+              functionName: functionName,
+              args,
+            });
+            const argsForCallFrom = [walletClient.account.address, resourceSelector, funcSelectorAndArgs]; // TODO replace address with delegator
+
+            console.log({ argsForCallFrom, resourceSelector, funcSelectorAndArgs });
+            const request: WriteContractParameters = {
               address,
               abi,
-              functionName,
-              args,
+              functionName: "callFrom",
+              args: argsForCallFrom,
               ...options,
             };
 
