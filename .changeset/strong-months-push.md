@@ -1,12 +1,9 @@
 ---
-"@latticexyz/world": minor
+"@latticexyz/store": major
 ---
 
-The `World` contract now stores the original creator of the `World` in an immutable state variable.
-It is used internally to only allow the original creator to initialize the `World` in a separate transaction.
+- `StoreCore`'s `initialize` function is split into `initialize` (to set the `StoreSwitch`'s `storeAddress`) and `registerCoreTables` (to register the `Tables` and `StoreHooks` tables).
+  The purpose of this is to give consumers more granular control over the setup flow.
 
-```solidity
-interface IBaseWorld {
-  function creator() external view returns (address);
-}
-```
+- The `StoreRead` contract no longer calls `StoreCore.initialize` in its constructor.
+  `StoreCore` consumers are expected to call `StoreCore.initialize` and `StoreCore.registerCoreTable` in their own setup logic.
