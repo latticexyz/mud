@@ -50,7 +50,7 @@ export async function deploy(
   const forgeOutDirectory = await getOutDirectory(profile);
 
   const baseSystemFunctionNames = (await loadFunctionSignatures("System")).map((item) => item.functionName);
-  console.log("Base system function names", baseSystemFunctionNames);
+
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
   provider.pollingInterval = pollInterval;
@@ -469,10 +469,6 @@ export async function deploy(
   async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
     const { abi } = await getContractData(contractName);
 
-    if (contractName === "System") {
-      console.log("system abi", abi);
-    }
-
     const functionSelectors = abi
       .filter((item) => ["fallback", "function"].includes(item.type))
       .map((item) => {
@@ -544,10 +540,6 @@ export async function deploy(
   async function getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
     let data: any;
     const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
-
-    if (contractName === "System") {
-      console.log("contractDataPath", contractDataPath);
-    }
     try {
       data = JSON.parse(readFileSync(contractDataPath, "utf8"));
     } catch (error: any) {
