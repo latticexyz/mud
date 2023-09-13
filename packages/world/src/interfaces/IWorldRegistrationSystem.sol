@@ -21,11 +21,23 @@ interface IWorldRegistrationSystem {
     string memory systemFunctionArguments
   ) external returns (bytes4 worldFunctionSelector);
 
+  function registerFunctionSelectors(
+    bytes32 resourceSelector,
+    string[] memory systemFunctionNames,
+    string[] memory systemFunctionArguments
+  ) external;
+
   function registerRootFunctionSelector(
     bytes32 resourceSelector,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) external returns (bytes4);
+
+  function registerRootFunctionSelectors(
+    bytes32 resourceSelector,
+    bytes4[] memory worldFunctionSelectors,
+    bytes4[] memory systemFunctionSelectors
+  ) external;
 
   function registerDelegation(
     address delegatee,

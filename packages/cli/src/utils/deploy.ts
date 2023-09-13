@@ -50,7 +50,7 @@ export async function deploy(
   const forgeOutDirectory = await getOutDirectory(profile);
 
   const baseSystemFunctionNames = (await loadFunctionSignatures("System")).map((item) => item.functionName);
-
+  console.log("Base system function names", baseSystemFunctionNames);
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
   provider.pollingInterval = pollInterval;
@@ -207,38 +207,54 @@ export async function deploy(
         if (registerFunctionSelectors) {
           const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
           const isRoot = namespace === "";
-          // Using Promise.all to avoid blocking on async calls
-          await Promise.all(
-            functionSignatures.map(async ({ functionName, functionArgs }) => {
-              const functionSignature = isRoot
-                ? functionName + functionArgs
-                : `${namespace}_${name}_${functionName}${functionArgs}`;
 
-              console.log(chalk.blue(`Registering function "${functionSignature}"`));
-              if (isRoot) {
-                const worldFunctionSelector = toFunctionSelector(
-                  functionSignature === ""
-                    ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
-                    : { functionName, functionArgs }
-                );
-                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
-                await fastTxExecute(
-                  WorldContract,
-                  "registerRootFunctionSelector",
-                  [tableIdToHex(namespace, name), worldFunctionSelector, systemFunctionSelector],
-                  confirmations
-                );
-              } else {
-                await fastTxExecute(
-                  WorldContract,
-                  "registerFunctionSelector",
-                  [tableIdToHex(namespace, name), functionName, functionArgs],
-                  confirmations
-                );
-              }
-              console.log(chalk.green(`Registered function "${functionSignature}"`));
-            })
-          );
+          const worldFunctionSelectors: string[] = []; // bytes4[]
+          const systemFunctionSelectors: string[] = []; // bytes4[]
+
+          const nonRootFunctionNames: string[] = [];
+          const nonRootFunctionArguments: string[] = [];
+
+          functionSignatures.forEach(({ functionName, functionArgs }) => {
+            const functionSignature = isRoot
+              ? functionName + functionArgs
+              : `${namespace}_${name}_${functionName}${functionArgs}`;
+
+            console.log(chalk.blue(`Preparing function "${functionSignature}" for registration`));
+
+            if (isRoot) {
+              const worldFunctionSelector = toFunctionSelector(
+                functionSignature === "" ? { functionName: systemName, functionArgs } : { functionName, functionArgs }
+              );
+              const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+
+              worldFunctionSelectors.push(worldFunctionSelector);
+              systemFunctionSelectors.push(systemFunctionSelector);
+            } else {
+              nonRootFunctionNames.push(functionName);
+              nonRootFunctionArguments.push(functionArgs);
+            }
+          });
+
+          if (isRoot) {
+            await fastTxExecute(
+              WorldContract,
+              "registerRootFunctionSelectors",
+              [tableIdToHex(namespace, name), worldFunctionSelectors, systemFunctionSelectors],
+              confirmations
+            );
+            console.log(chalk.green(`Registered root functions at ${name} ${namespace}`));
+          }
+
+          if (nonRootFunctionNames.length) {
+            console.log(chalk.blue(`Registering non-root functions in batch`));
+            await fastTxExecute(
+              WorldContract,
+              "registerFunctionSelectors",
+              [tableIdToHex(namespace, name), nonRootFunctionNames, nonRootFunctionArguments],
+              confirmations
+            );
+            console.log(chalk.green(`Registered non-root functions at ${name} ${namespace}}`));
+          }
         }
       }
     ),
@@ -453,6 +469,10 @@ export async function deploy(
   async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
     const { abi } = await getContractData(contractName);
 
+    if (contractName === "System") {
+      console.log("system abi", abi);
+    }
+
     const functionSelectors = abi
       .filter((item) => ["fallback", "function"].includes(item.type))
       .map((item) => {
@@ -524,6 +544,10 @@ export async function deploy(
   async function getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
     let data: any;
     const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
+
+    if (contractName === "System") {
+      console.log("contractDataPath", contractDataPath);
+    }
     try {
       data = JSON.parse(readFileSync(contractDataPath, "utf8"));
     } catch (error: any) {

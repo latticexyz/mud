@@ -97,7 +97,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[17] memory functionSelectors = [
+    bytes4[19] memory functionSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -119,7 +119,9 @@ contract CoreModule is Module {
       WorldRegistrationSystem.unregisterSystemHook.selector,
       WorldRegistrationSystem.registerSystem.selector,
       WorldRegistrationSystem.registerFunctionSelector.selector,
+      WorldRegistrationSystem.registerFunctionSelectors.selector,
       WorldRegistrationSystem.registerRootFunctionSelector.selector,
+      WorldRegistrationSystem.registerRootFunctionSelectors.selector,
       WorldRegistrationSystem.registerDelegation.selector
     ];
 
