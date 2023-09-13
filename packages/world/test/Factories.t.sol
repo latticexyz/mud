@@ -2,13 +2,16 @@
 pragma solidity >=0.8.0;
 
 import { Test, console } from "forge-std/Test.sol";
+
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World } from "../src/World.sol";
+import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
-import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { InstalledModules, InstalledModulesData } from "../src/tables/InstalledModules.sol";
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
@@ -74,5 +77,8 @@ contract FactoriesTest is Test {
 
     // Confirm worldCount (which is salt) has incremented
     assertEq(uint256(worldFactory.worldCount()), uint256(1));
+
+    // Confirm the msg.sender is owner of the root namespace of the new world
+    assertEq(NamespaceOwner.get(ROOT_NAMESPACE), address(this));
   }
 }
