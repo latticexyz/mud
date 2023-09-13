@@ -7,7 +7,7 @@ export default {
   "quick-start": "Quickstart",
   store: "Store",
   world: "World",
-  "client-side": "MUD client",
+  client: "MUD client",
   indexer: "Indexer",
   cli: "CLI",
   ecs: "ECS and MUD",
