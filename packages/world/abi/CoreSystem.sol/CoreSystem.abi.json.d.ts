@@ -34,6 +34,27 @@ declare const abi: [
   {
     inputs: [
       {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      }
+    ];
+    name: "FieldLayoutLib_InvalidLength";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "FieldLayoutLib_StaticLengthIsZero";
+    type: "error";
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes4";
         name: "functionSelector";
         type: "bytes4";
@@ -226,6 +247,22 @@ declare const abi: [
     type: "error";
   },
   {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "expected";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "received";
+        type: "uint256";
+      }
+    ];
+    name: "StoreCore_InvalidValueSchemaLength";
+    type: "error";
+  },
+  {
     inputs: [];
     name: "StoreCore_NotDynamicField";
     type: "error";
@@ -339,8 +376,8 @@ declare const abi: [
         type: "bytes";
       },
       {
-        internalType: "Schema";
-        name: "valueSchema";
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       }
     ];
@@ -553,6 +590,11 @@ declare const abi: [
       {
         internalType: "bytes32";
         name: "resourceSelector";
+        type: "bytes32";
+      },
+      {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
         type: "bytes32";
       },
       {

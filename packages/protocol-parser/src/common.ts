@@ -12,6 +12,11 @@ export type TableSchema = {
   readonly valueSchema: Schema;
 };
 
+export type FieldLayout = {
+  readonly staticFieldLengths: readonly number[];
+  readonly numDynamicFields: number;
+};
+
 export type KeySchema = Record<string, StaticAbiType>;
 export type ValueSchema = Record<string, SchemaAbiType>;
 

@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreHook } from "../src/StoreHook.sol";
-import { Schema } from "../src/Schema.sol";
 
 contract EchoSubscriber is StoreHook {
   event HookCalled(bytes);
 
-  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, data, valueSchema));
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
+    emit HookCalled(abi.encode(table, key, data, fieldLayout));
   }
 
-  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, data, valueSchema));
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
+    emit HookCalled(abi.encode(table, key, data, fieldLayout));
   }
 
   function onBeforeSetField(
@@ -20,9 +20,9 @@ contract EchoSubscriber is StoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) public {
-    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchema));
+    emit HookCalled(abi.encode(table, key, schemaIndex, data, fieldLayout));
   }
 
   function onAfterSetField(
@@ -30,16 +30,16 @@ contract EchoSubscriber is StoreHook {
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data,
-    Schema valueSchem
+    FieldLayout fieldLayout
   ) public {
-    emit HookCalled(abi.encode(table, key, schemaIndex, data, valueSchem));
+    emit HookCalled(abi.encode(table, key, schemaIndex, data, fieldLayout));
   }
 
-  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, valueSchema));
+  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+    emit HookCalled(abi.encode(table, key, fieldLayout));
   }
 
-  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
-    emit HookCalled(abi.encode(table, key, valueSchema));
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+    emit HookCalled(abi.encode(table, key, fieldLayout));
   }
 }

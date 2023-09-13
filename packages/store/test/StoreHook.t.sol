@@ -11,7 +11,7 @@ import { Hook } from "../src/Hook.sol";
 import { StoreHookType } from "../src/StoreHook.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { IStoreHook } from "../src/IStore.sol";
-import { Schema } from "../src/Schema.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 
 contract StoreHookTest is Test, GasReporter {
   event HookCalled(bytes);
@@ -22,8 +22,7 @@ contract StoreHookTest is Test, GasReporter {
   bytes32 private tableId = "table";
   bytes32[] private key = new bytes32[](1);
   bytes private data = "data";
-  uint8 private schemaIndex = 1;
-  Schema private valueSchema = Schema.wrap(0);
+  FieldLayout private fieldLayout = FieldLayout.wrap(0);
 
   function testEncodeBitmap() public {
     assertEq(
@@ -280,10 +279,10 @@ contract StoreHookTest is Test, GasReporter {
     );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, data, valueSchema));
+    emit HookCalled(abi.encode(tableId, key, data, fieldLayout));
     startGasReport("call an enabled hook");
     if (storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
-      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
+      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(tableId, key, data, fieldLayout);
     }
     endGasReport();
 
@@ -302,7 +301,7 @@ contract StoreHookTest is Test, GasReporter {
     // Expect the to not be called - otherwise the test will fail with a revert
     startGasReport("call a disabled hook");
     if (revertHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
-      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(tableId, key, data, valueSchema);
+      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(tableId, key, data, fieldLayout);
     }
     endGasReport();
   }

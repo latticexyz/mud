@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
@@ -40,23 +40,23 @@ contract KeysInTableHook is StoreHook {
     }
   }
 
-  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory, FieldLayout) public {
     handleSet(table, key);
   }
 
-  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory, FieldLayout) public {
     // NOOP
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
     // NOOP
   }
 
-  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {
+  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
     handleSet(table, key);
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory key, Schema) public {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout) public {
     bytes32 keysHash = keccak256(abi.encode(key));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
@@ -125,7 +125,7 @@ contract KeysInTableHook is StoreHook {
     }
   }
 
-  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
     // NOOP
   }
 }
