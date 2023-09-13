@@ -100,17 +100,6 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "module",
-        "type": "string"
-      }
-    ],
-    "name": "ModuleAlreadyInstalled",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
         "name": "resource",
         "type": "string"
       }
@@ -260,6 +249,11 @@
       }
     ],
     "name": "SystemExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WorldAlreadyInitialized",
     "type": "error"
   },
   {
@@ -684,6 +678,19 @@
       }
     ],
     "name": "grantAccess",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IModule",
+        "name": "coreModule",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
