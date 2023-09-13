@@ -9,6 +9,7 @@ import { Module } from "../../Module.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
@@ -50,6 +51,7 @@ contract CoreModule is Module {
   }
 
   function installRoot(bytes memory) public override {
+    StoreCore.initialize();
     _registerCoreTables();
     _registerCoreSystem();
     _registerFunctionSelectors();
