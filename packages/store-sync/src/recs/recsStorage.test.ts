@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest";
 import { blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { createWorld, getComponentEntities, getComponentValue } from "@latticexyz/recs";
-// TODO: figure out if this needs to be imported from a package rather than relative path
-// TODO: if relative imports are fine, probably should put the e2e test data with its mud config?
 import mudConfig from "../../../../e2e/packages/contracts/mud.config";
 import worldRpcLogs from "../../../../test-data/world-logs.json";
 import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
