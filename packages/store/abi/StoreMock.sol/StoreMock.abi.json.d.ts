@@ -1,5 +1,10 @@
 declare const abi: [
   {
+    inputs: [];
+    stateMutability: "nonpayable";
+    type: "constructor";
+  },
+  {
     inputs: [
       {
         internalType: "uint256";

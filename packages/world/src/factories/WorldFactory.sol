@@ -26,7 +26,7 @@ contract WorldFactory is IWorldFactory {
     IBaseWorld world = IBaseWorld(worldAddress);
 
     // Initialize the World and transfer ownership to the caller
-    world.installRootModule(coreModule, new bytes(0));
+    world.initialize(coreModule);
     world.transferOwnership(ROOT_NAMESPACE, msg.sender);
 
     emit WorldDeployed(worldAddress);

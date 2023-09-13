@@ -7,10 +7,6 @@ import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 
 contract StoreRead is IStoreRead {
-  constructor() {
-    StoreCore.initialize();
-  }
-
   function getFieldLayout(bytes32 table) public view virtual returns (FieldLayout fieldLayout) {
     fieldLayout = StoreCore.getFieldLayout(table);
   }

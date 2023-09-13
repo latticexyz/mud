@@ -100,17 +100,6 @@
     "inputs": [
       {
         "internalType": "string",
-        "name": "module",
-        "type": "string"
-      }
-    ],
-    "name": "ModuleAlreadyInstalled",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
         "name": "resource",
         "type": "string"
       }
@@ -260,6 +249,11 @@
       }
     ],
     "name": "SystemExists",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "WorldAlreadyInitialized",
     "type": "error"
   },
   {
@@ -419,6 +413,19 @@
       }
     ],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "creator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -684,6 +691,19 @@
       }
     ],
     "name": "grantAccess",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IModule",
+        "name": "coreModule",
+        "type": "address"
+      }
+    ],
+    "name": "initialize",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
