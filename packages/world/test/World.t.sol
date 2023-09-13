@@ -157,7 +157,7 @@ contract WorldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
 
     key = "testKey";
     keyTuple = new bytes32[](1);

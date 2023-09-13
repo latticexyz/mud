@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
@@ -37,11 +38,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
 
   constructor() {
     creator = msg.sender;
+    StoreCore.initialize();
     emit HelloWorld();
   }
 
   /**
-   * Allows the installation of the core module if it is not installed yet.
+   * Allows the creator of the World to initialize the World once.
    */
   function initialize(IModule coreModule) public {
     // Only the initial creator of the World can initialize it

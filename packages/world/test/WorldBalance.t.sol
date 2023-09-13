@@ -31,7 +31,7 @@ contract WorldBalanceTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
     world.registerSystem(rootSystemId, rootSystem, true);
     world.registerSystem(nonRootSystemId, nonRootSystem, true);
 

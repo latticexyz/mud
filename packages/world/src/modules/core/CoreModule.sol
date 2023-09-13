@@ -51,7 +51,7 @@ contract CoreModule is Module {
   }
 
   function installRoot(bytes memory) public override {
-    StoreCore.initialize();
+    StoreCore.registerCoreTables();
     _registerCoreTables();
     _registerCoreSystem();
     _registerFunctionSelectors();

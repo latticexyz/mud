@@ -40,4 +40,9 @@ interface IWorldCall {
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   event HelloWorld();
+
+  /**
+   * Allows the creator of the World to initialize the World once.
+   */
+  function initialize(IModule coreModule) external;
 }

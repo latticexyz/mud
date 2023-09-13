@@ -11,6 +11,11 @@ import { StoreRead } from "../src/StoreRead.sol";
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
 contract StoreMock is IStore, StoreRead {
+  constructor() {
+    StoreCore.initialize();
+    StoreCore.registerCoreTables();
+  }
+
   // Set full record (including full dynamic data)
   function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, FieldLayout fieldLayout) public {
     StoreCore.setRecord(table, key, data, fieldLayout);
