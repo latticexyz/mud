@@ -12,7 +12,6 @@ import {
   Hex,
   parseEther,
   ClientConfig,
-  getFunctionSelector,
   getAbiItem,
 } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
@@ -34,7 +33,6 @@ import { Subject, share } from "rxjs";
  * for the source of this information.
  */
 import mudConfig from "contracts/mud.config";
-import { Entity, getComponentValue, getComponentValueStrict } from "@latticexyz/recs";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -75,32 +73,15 @@ export async function setupNetwork() {
    * to the viem publicClient to make RPC calls to fetch MUD
    * events from the chain.
    */
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
-    world,
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
-  });
-
-  // return this function from syncToRecs
-  const getResourceSelector = (functionName: string) => {
-    const functionSignature = getAbiItem({
+  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+    await syncToRecs({
+      world,
       abi: IWorldAbi,
-      name: functionName,
+      config: mudConfig,
+      address: networkConfig.worldAddress as Hex,
+      publicClient,
+      startBlock: BigInt(networkConfig.initialBlockNumber),
     });
-    const worldFunctionSelector = getFunctionSelector(functionSignature);
-    console.log({ worldFunctionSelector, functionSignature, components });
-    const entity = encodeEntity(components.FunctionSelectors.metadata.keySchema, {
-      functionSelector: worldFunctionSelector,
-    });
-    // TODO don't strict to throw custom error
-    // Use rpc call as a fallback when entity is not found
-    // cache selectors on client side
-    // improve typings
-    const selectors = getComponentValueStrict(components.FunctionSelectors, entity);
-    return selectors?.resourceSelector;
-  };
 
   /*
    * Create an object for communicating with the deployed World.

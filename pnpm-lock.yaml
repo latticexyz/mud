@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -857,6 +853,9 @@ importers:
       '@trpc/server':
         specifier: 10.34.0
         version: 10.34.0
+      abitype:
+        specifier: 0.9.3
+        version: 0.9.3(typescript@5.1.6)(zod@3.21.4)
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
@@ -11388,3 +11387,7 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false

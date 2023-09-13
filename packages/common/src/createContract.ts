@@ -12,7 +12,6 @@ import {
   WalletClient,
   WriteContractParameters,
   encodeFunctionData,
-  encodePacked,
   getContract,
 } from "viem";
 import pRetry from "p-retry";
@@ -49,7 +48,7 @@ export type CreateContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
-  getResourceSelector: (name: string) => string;
+  getResourceSelector: (functionName: string) => Promise<string>;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -145,7 +144,7 @@ export function createContract<
             );
           }
 
-          return (...parameters) => {
+          return async (...parameters) => {
             const id = `${walletClient.chain.id}:${walletClient.account.address}:${nextWriteId++}`;
             const { args, options } = <
               {
@@ -153,7 +152,7 @@ export function createContract<
                 options: UnionOmit<WriteContractParameters, "address" | "abi" | "functionName" | "args">;
               }
             >getFunctionParameters(parameters as any);
-            const resourceSelector = getResourceSelector(functionName);
+            const resourceSelector = await getResourceSelector(functionName);
 
             // TODO figure out how to strongly type this
             const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
