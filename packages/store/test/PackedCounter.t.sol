@@ -102,4 +102,9 @@ contract PackedCounterTest is Test, GasReporter {
     endGasReport();
     assertEq(packedCounter.total(), 1 * 32 + 2 * 20 + 3 * 1 + 4 * 16);
   }
+
+  function testHexEncoding() public {
+    PackedCounter packedCounter = PackedCounterLib.pack(160, 544);
+    assertEq(packedCounter.unwrap(), hex"000000000000000000000000000000000000022000000000a0000000000002c0");
+  }
 }
