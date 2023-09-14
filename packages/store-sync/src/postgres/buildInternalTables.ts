@@ -1,5 +1,4 @@
 import { integer, pgSchema, text } from "drizzle-orm/pg-core";
-import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
 import { transformSchemaName } from "./transformSchemaName";
 import { asAddress, asBigInt, asJson, asNumber } from "./columnTypes";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";

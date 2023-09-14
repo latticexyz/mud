@@ -92,7 +92,7 @@ contract StoreCoreTest is Test, StoreMock {
       keccak256("table"),
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
       Schema.wrap(keccak256("random bytes as key schema")),
-      Schema.wrap(keccak256("random bytes as schema")),
+      Schema.wrap(keccak256("random bytes as value schema")),
       keyNames,
       fieldNames
     );
@@ -926,7 +926,7 @@ contract StoreCoreTest is Test, StoreMock {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
-    // Register table's schema
+    // Register table's value schema
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
     IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));

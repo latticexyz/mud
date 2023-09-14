@@ -37,7 +37,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   }
 
   function setUp() public {
-    // Register table's schema
+    // Register table's value schema
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT256,
