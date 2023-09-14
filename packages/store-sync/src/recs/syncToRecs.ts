@@ -8,7 +8,7 @@ import { SyncStep } from "../SyncStep";
 import { Hex } from "viem";
 import { encodeEntity } from "./encodeEntity";
 import { decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
-import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.json";
+import IStoreAbi from "@latticexyz/store/out/IStore.sol/IStore.abi.json";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
