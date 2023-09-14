@@ -86,6 +86,7 @@ library Bool {
   /** Get value */
   function get(bytes32 _tableId) internal view returns (bool value) {
     bytes32 _keyHash = keccak256(abi.encode());
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
@@ -94,6 +95,7 @@ library Bool {
   /** Get value */
   function _get(bytes32 _tableId) internal view returns (bool value) {
     bytes32 _keyHash = keccak256(abi.encode());
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
@@ -102,6 +104,7 @@ library Bool {
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 _tableId) internal view returns (bool value) {
     bytes32 _keyHash = keccak256(abi.encode());
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
@@ -111,7 +114,9 @@ library Bool {
   function set(bytes32 _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
       storagePointer,
       1,
@@ -128,7 +133,9 @@ library Bool {
   function _set(bytes32 _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
       storagePointer,
       1,
@@ -145,7 +152,9 @@ library Bool {
   function set(IStore _store, bytes32 _tableId, bool value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 1, 0, abi.encodePacked((value)), _tableId, _keyTuple, 0, getFieldLayout());
   }
 

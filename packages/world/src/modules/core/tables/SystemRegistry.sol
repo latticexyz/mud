@@ -91,6 +91,7 @@ library SystemRegistry {
   /** Get resourceSelector */
   function get(address system) internal view returns (bytes32 resourceSelector) {
     bytes32 _keyHash = keccak256(abi.encode(system));
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (bytes32(_blob));
@@ -99,6 +100,7 @@ library SystemRegistry {
   /** Get resourceSelector */
   function _get(address system) internal view returns (bytes32 resourceSelector) {
     bytes32 _keyHash = keccak256(abi.encode(system));
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
     return (bytes32(_blob));
@@ -107,6 +109,7 @@ library SystemRegistry {
   /** Get resourceSelector (using the specified store) */
   function get(IStore _store, address system) internal view returns (bytes32 resourceSelector) {
     bytes32 _keyHash = keccak256(abi.encode(system));
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (bytes32(_blob));
@@ -117,7 +120,9 @@ library SystemRegistry {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(system));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
       storagePointer,
       32,
@@ -135,7 +140,9 @@ library SystemRegistry {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(system));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
       storagePointer,
       32,
@@ -153,7 +160,9 @@ library SystemRegistry {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(system));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(
       storagePointer,
       32,

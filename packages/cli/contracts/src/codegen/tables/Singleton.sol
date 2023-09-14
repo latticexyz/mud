@@ -95,6 +95,7 @@ library Singleton {
   /** Get v1 */
   function getV1() internal view returns (int256 v1) {
     bytes32 _keyHash = keccak256(abi.encode());
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (int256(uint256(bytes32(_blob))));
@@ -103,6 +104,7 @@ library Singleton {
   /** Get v1 */
   function _getV1() internal view returns (int256 v1) {
     bytes32 _keyHash = keccak256(abi.encode());
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
     return (int256(uint256(bytes32(_blob))));
@@ -111,6 +113,7 @@ library Singleton {
   /** Get v1 (using the specified store) */
   function getV1(IStore _store) internal view returns (int256 v1) {
     bytes32 _keyHash = keccak256(abi.encode());
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (int256(uint256(bytes32(_blob))));
@@ -120,7 +123,9 @@ library Singleton {
   function setV1(int256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
       storagePointer,
       32,
@@ -137,7 +142,9 @@ library Singleton {
   function _setV1(int256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(storagePointer, 32, 0, abi.encodePacked((v1)), _tableId, _keyTuple, 0, getFieldLayout());
   }
 
@@ -145,7 +152,9 @@ library Singleton {
   function setV1(IStore _store, int256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 32, 0, abi.encodePacked((v1)), _tableId, _keyTuple, 0, getFieldLayout());
   }
 

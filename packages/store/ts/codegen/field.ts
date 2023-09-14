@@ -77,7 +77,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedFieldName,
         ])}) internal {
           ${_keyTupleDefinition}
-          uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+          ${_keyhashDefinition}
+          uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
           ${_store}.storeStaticField(storagePointer, ${field.staticByteLength}, ${offset}, ${renderEncodeFieldSingle(
           field
         )}, _tableId, _keyTuple, ${schemaIndex}, getFieldLayout());

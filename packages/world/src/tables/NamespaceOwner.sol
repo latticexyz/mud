@@ -91,6 +91,7 @@ library NamespaceOwner {
   /** Get owner */
   function get(bytes16 namespace) internal view returns (address owner) {
     bytes32 _keyHash = keccak256(abi.encode(namespace));
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
@@ -99,6 +100,7 @@ library NamespaceOwner {
   /** Get owner */
   function _get(bytes16 namespace) internal view returns (address owner) {
     bytes32 _keyHash = keccak256(abi.encode(namespace));
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
@@ -107,6 +109,7 @@ library NamespaceOwner {
   /** Get owner (using the specified store) */
   function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
     bytes32 _keyHash = keccak256(abi.encode(namespace));
+
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
@@ -117,7 +120,9 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(namespace));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
       storagePointer,
       20,
@@ -135,7 +140,9 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(namespace));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
       storagePointer,
       20,
@@ -153,7 +160,9 @@ library NamespaceOwner {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(namespace));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 20, 0, abi.encodePacked((owner)), _tableId, _keyTuple, 0, getFieldLayout());
   }
 
