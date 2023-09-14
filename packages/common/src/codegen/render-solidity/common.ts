@@ -41,6 +41,7 @@ export function renderCommonData({
   _keyArgs: string;
   _typedKeyArgs: string;
   _keyTupleDefinition: string;
+  _keyhashDefinition: string;
 } {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
@@ -54,12 +55,17 @@ export function renderCommonData({
     ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
   `;
 
+  const _keyhashDefinition = `
+    bytes32 _keyHash = keccak256(abi.encode(${keyTuple.map(({ name }) => name).join(", ")}));
+  `;
+
   return {
     _tableId,
     _typedTableId,
     _keyArgs,
     _typedKeyArgs,
     _keyTupleDefinition,
+    _keyhashDefinition,
   };
 }
 

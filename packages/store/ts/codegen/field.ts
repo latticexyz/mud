@@ -9,7 +9,7 @@ import { RenderTableOptions } from "./types";
 
 export function renderFieldMethods(options: RenderTableOptions) {
   const storeArgument = options.storeArgument;
-  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition, _keyhashDefinition } = renderCommonData(options);
 
   let result = "";
   let offset = 0;
@@ -58,7 +58,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal view returns (${_typedFieldName}) {
-          bytes32 _keyHash = keccak256(abi.encode(${options.keyTuple.map(({ name }) => name).join(", ")}));
+          ${_keyhashDefinition}
           uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
           bytes32 _blob = ${_store}.loadStaticField(storagePointer, ${field.staticByteLength}, ${offset});
           return ${renderDecodeStaticValueType(field)};
