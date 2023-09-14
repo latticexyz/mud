@@ -48,7 +48,7 @@ export type CreateContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
-  getResourceSelector: (functionName: string) => Promise<Hex>;
+  getResourceSelector: (functionName: string, abi: Abi) => Promise<Hex>;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -152,7 +152,7 @@ export function createContract<
                 options: UnionOmit<WriteContractParameters, "address" | "abi" | "functionName" | "args">;
               }
             >getFunctionParameters(parameters as any);
-            const resourceSelector = await getResourceSelector(functionName);
+            const resourceSelector = await getResourceSelector(functionName, abi);
 
             // TODO figure out how to strongly type this
             const funcSelectorAndArgs = encodeFunctionData<Abi, string>({

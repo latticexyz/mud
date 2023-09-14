@@ -1,6 +1,4 @@
 import { StoreConfig } from "@latticexyz/store";
-import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
-import { getStaticByteLength } from "@latticexyz/schema-type/deprecated";
 import { World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";
@@ -9,12 +7,11 @@ import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 import { Abi, getAbiItem, getFunctionSelector, Hex } from "viem";
 import { encodeEntity } from "./encodeEntity";
-import { decodeValue, fieldLayoutToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
+import { decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
 import { AbiFunction } from "abitype";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
-  abi: Abi;
   config: TConfig;
   startSync?: boolean;
 };
@@ -22,12 +19,11 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
   components: RecsStorageAdapter<TConfig>["components"];
   stopSync: () => void;
-  getResourceSelector: (functionName: string) => Promise<Hex>;
+  getResourceSelector: (functionName: string, abi: Abi) => Promise<Hex>;
 };
 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world,
-  abi,
   config,
   address,
   publicClient,
@@ -70,11 +66,12 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   const functionSelectorToResourceSelector = new Map<Hex, Hex>();
 
-  const getResourceSelector = async (functionName: string): Promise<Hex> => {
+  const getResourceSelector = async (functionName: string, abi: Abi): Promise<Hex> => {
     const functionSignature = getAbiItem({
       abi,
       name: functionName,
     }) as AbiFunction;
+    if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
 
     const worldFunctionSelector = getFunctionSelector(functionSignature);
 
@@ -90,19 +87,8 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
     // If we can't find selectors due to not being synced yet, we can try to read them from the world contract
     if (!selectors) {
-      // TODO move to computation after table registration?
-      const schemaTypes = Object.values(components.FunctionSelectors.metadata.valueSchema).map((abiOrUserType) => {
-        const { schemaType } = resolveAbiOrUserType(abiOrUserType, config);
-        return schemaType;
-      });
-
-      const schemaTypeLengths = schemaTypes.map((schemaType) => getStaticByteLength(schemaType));
-      const fieldLayout = {
-        staticFieldLengths: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength > 0),
-        numDynamicFields: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength === 0).length,
-      };
-
-      const encodedFieldLayout = fieldLayoutToHex(fieldLayout);
+      // TODO make fieldLayout a table metadata field
+      const encodedFieldLayout = valueSchemaToFieldLayoutHex(components.FunctionSelectors.metadata.valueSchema);
 
       const selectorRecord = (await publicClient.readContract({
         address: address as Hex,
