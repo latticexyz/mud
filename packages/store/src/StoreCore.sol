@@ -858,7 +858,8 @@ library StoreCoreInternal {
     bytes32[] memory key,
     uint8 schemaIndex
   ) internal pure returns (uint256) {
-    return uint256(SLOT ^ tableId ^ keccak256(abi.encode(key, schemaIndex)));
+    // offset by 1 to avoid collision with static data
+    return uint256(SLOT ^ tableId ^ bytes1(schemaIndex + 1) ^ keccak256(abi.encodePacked(key)));
   }
 
   /**
