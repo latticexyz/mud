@@ -1,5 +1,5 @@
 import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser";
-import { concatHex, decodeAbiParameters } from "viem";
+import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
 import { hexToTableId } from "@latticexyz/common";
 
@@ -21,8 +21,8 @@ export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord
   const keySchema = hexToSchema(value.keySchema);
   const valueSchema = hexToSchema(value.valueSchema);
 
-  const keyNames = decodeAbiParameters([{ type: "string[]" }], value.abiEncodedKeyNames)[0];
-  const fieldNames = decodeAbiParameters([{ type: "string[]" }], value.abiEncodedFieldNames)[0];
+  const keyNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedKeyNames)[0];
+  const fieldNames = decodeAbiParameters(parseAbiParameters("string[]"), value.abiEncodedFieldNames)[0];
 
   const valueAbiTypes = [...valueSchema.staticFields, ...valueSchema.dynamicFields];
 
