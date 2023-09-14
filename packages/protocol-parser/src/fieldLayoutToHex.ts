@@ -1,6 +1,7 @@
 import { Hex } from "viem";
 import { FieldLayout } from "./common";
 
+/** @deprecated use `valueSchemaToFieldLayoutHex` instead */
 export function fieldLayoutToHex(fieldLayout: FieldLayout): Hex {
   const staticDataLength = fieldLayout.staticFieldLengths.reduce((totalLength, length) => totalLength + length, 0);
   return `0x${[
