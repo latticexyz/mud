@@ -20,6 +20,8 @@ const worldLogs = worldRpcLogs.map((log) => {
   return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
 });
 
+console.log("world logs", worldLogs);
+
 describe("recsStorage", () => {
   it("creates components", async () => {
     const world = createWorld();

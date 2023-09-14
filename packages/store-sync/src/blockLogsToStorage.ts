@@ -41,7 +41,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           // TODO: refactor encode/decode to use Record<string, SchemaAbiType> schemas
           // TODO: refactor to decode key with protocol-parser utils
 
-          const [tableId, ...otherKeys] = log.args.key;
+          const [tableId, ...otherKeys] = log.args.keyTuple;
           if (otherKeys.length) {
             console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
           }
@@ -115,7 +115,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           const keyNames = Object.keys(table.keySchema);
           const keyValues = decodeKeyTuple(
             { staticFields: Object.values(table.keySchema), dynamicFields: [] },
-            log.args.key
+            log.args.keyTuple
           );
           const key = Object.fromEntries(keyValues.map((value, i) => [keyNames[i], value])) as Key<
             TConfig,
