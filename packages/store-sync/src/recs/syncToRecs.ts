@@ -77,6 +77,9 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
     let selectors = getComponentValue(components.FunctionSelectors, entity);
 
+    console.log(
+      `Received selectors from component: resource - ${selector?.resourceSelector}, function - ${selectors?.systemFunctionSelector}`
+    );
     // If we can't find selectors due to not being synced yet, we can try to read them from the world contract
     if (!selectors) {
       // TODO make fieldLayout a table metadata field
@@ -91,7 +94,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
       selectors = decodeValue(components.FunctionSelectors.metadata.valueSchema, selectorRecord);
       console.log(
-        `Received selectors from world contract: resource - ${selectors.resourceSelector}, function - ${selectors.functionSelector}`
+        `Received selectors from world contract: resource - ${selectors.resourceSelector}, function - ${selectors.systemFunctionSelector}`
       );
     }
 
