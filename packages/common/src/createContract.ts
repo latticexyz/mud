@@ -12,9 +12,12 @@ import {
   WalletClient,
   WriteContractParameters,
   encodeFunctionData,
+  getAbiItem,
   getContract,
+  getFunctionSelector,
 } from "viem";
 import pRetry from "p-retry";
+import { AbiFunction } from "abitype";
 import { createNonceManager } from "./createNonceManager";
 import { debug as parentDebug } from "./debug";
 import { UnionOmit } from "./type-utils/common";
@@ -48,7 +51,7 @@ export type CreateContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
-  getResourceSelector: (functionName: string, abi: Abi) => Promise<Hex>;
+  getResourceSelector: (functionSelector: Hex) => Promise<Hex>;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -152,9 +155,16 @@ export function createContract<
                 options: UnionOmit<WriteContractParameters, "address" | "abi" | "functionName" | "args">;
               }
             >getFunctionParameters(parameters as any);
-            const resourceSelector = await getResourceSelector(functionName, abi);
 
-            // TODO figure out how to strongly type this
+            const functionSignature = getAbiItem<Abi, string>({
+              abi,
+              name: functionName,
+            }) as AbiFunction;
+            const functionSelector = getFunctionSelector(functionSignature);
+            if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
+            const resourceSelector = await getResourceSelector(functionSelector);
+
+            // TODO figure out how to strongly type Abi
             const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
               abi,
               functionName: functionName,

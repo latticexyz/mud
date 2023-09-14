@@ -5,10 +5,10 @@ import { RecsStorageAdapter, recsStorage } from "./recsStorage";
 import { createStoreSync } from "../createStoreSync";
 import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
-import { Abi, getAbiItem, getFunctionSelector, Hex } from "viem";
+import { Hex } from "viem";
 import { encodeEntity } from "./encodeEntity";
 import { decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
-import { AbiFunction } from "abitype";
+import IStoreAbi from "@latticexyz/store/abi/IStore.sol/IStore.abi.json";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
@@ -19,7 +19,7 @@ type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<
 type SyncToRecsResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
   components: RecsStorageAdapter<TConfig>["components"];
   stopSync: () => void;
-  getResourceSelector: (functionName: string, abi: Abi) => Promise<Hex>;
+  getResourceSelector: (functionSelector: Hex) => Promise<Hex>;
 };
 
 export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
@@ -66,21 +66,13 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   const functionSelectorToResourceSelector = new Map<Hex, Hex>();
 
-  const getResourceSelector = async (functionName: string, abi: Abi): Promise<Hex> => {
-    const functionSignature = getAbiItem({
-      abi,
-      name: functionName,
-    }) as AbiFunction;
-    if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
-
-    const worldFunctionSelector = getFunctionSelector(functionSignature);
-
-    if (functionSelectorToResourceSelector.has(worldFunctionSelector)) {
-      return functionSelectorToResourceSelector.get(worldFunctionSelector) as Hex;
+  const getResourceSelector = async (functionSelector: Hex): Promise<Hex> => {
+    if (functionSelectorToResourceSelector.has(functionSelector)) {
+      return functionSelectorToResourceSelector.get(functionSelector) as Hex;
     }
 
     const entity = encodeEntity(components.FunctionSelectors.metadata.keySchema, {
-      functionSelector: worldFunctionSelector,
+      functionSelector,
     });
 
     let selectors = getComponentValue(components.FunctionSelectors, entity);
@@ -92,15 +84,15 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
       const selectorRecord = (await publicClient.readContract({
         address: address as Hex,
-        abi,
+        abi: IStoreAbi,
         functionName: "getRecord",
-        args: [components.FunctionSelectors.id, [entity], encodedFieldLayout],
+        args: [components.FunctionSelectors.id as Hex, [entity as Hex], encodedFieldLayout],
       })) as Hex;
 
       selectors = decodeValue(components.FunctionSelectors.metadata.valueSchema, selectorRecord);
     }
 
-    functionSelectorToResourceSelector.set(worldFunctionSelector, selectors.resourceSelector as Hex);
+    functionSelectorToResourceSelector.set(functionSelector, selectors.resourceSelector as Hex);
 
     return selectors.resourceSelector as Hex;
   };

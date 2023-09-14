@@ -64,7 +64,6 @@ export async function setupNetwork() {
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
     await syncToRecs({
       world,
-      abi: IWorldAbi,
       config: mudConfig,
       address: networkConfig.worldAddress as Hex,
       publicClient,

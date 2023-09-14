@@ -58,7 +58,6 @@ export async function setupNetwork() {
   const write$ = new Subject<ContractWrite>();
 
   /*
-  /*
    * Sync on-chain state into RECS and keeps our client in sync.
    * Uses the MUD indexer if available, otherwise falls back
    * to the viem publicClient to make RPC calls to fetch MUD
@@ -67,7 +66,6 @@ export async function setupNetwork() {
   const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
     await syncToRecs({
       world,
-      abi: IWorldAbi,
       config: mudConfig,
       address: networkConfig.worldAddress as Hex,
       publicClient,
@@ -85,7 +83,6 @@ export async function setupNetwork() {
     onWrite: (write) => write$.next(write),
     getResourceSelector,
   });
-
   /*
    * If there is a faucet, request (test) ETH if you have
    * less than 1 ETH. Repeat every 20 seconds to ensure you don't
