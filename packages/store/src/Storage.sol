@@ -107,7 +107,7 @@ library Storage {
       }
     }
     assembly {
-      result := shr(mul(sub(32, length), 8), shl(mul(offset, 8), sload(storagePointer)))
+      result := shl(mul(offset, 8), sload(storagePointer))
     }
   }
 
