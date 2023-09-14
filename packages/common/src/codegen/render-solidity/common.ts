@@ -56,7 +56,9 @@ export function renderCommonData({
   `;
 
   const _keyhashDefinition = `
-    bytes32 _keyHash = keccak256(abi.encode(${keyTuple.map(({ name }) => name).join(", ")}));
+    bytes32 _keyHash = keccak256(abi.encodePacked(${keyTuple
+      .map((key) => renderValueTypeToBytes32(key.name, key))
+      .join(", ")}));
   `;
 
   return {
