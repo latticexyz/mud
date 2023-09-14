@@ -17,7 +17,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _key;
-  bytes32 internal _table = keccak256("some.table");
+  bytes32 internal _table = keccak256("some.tableId");
 
   bytes32 internal firstDataBytes;
   uint32[] internal secondData;
@@ -27,17 +27,17 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
   // Expose an external popFromField function for testing purposes of indexers (see testHooks)
   function popFromField(
-    bytes32 table,
+    bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public override {
-    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
   function setUp() public {
-    // Register table's value schema
+    // Register tableId's value schema
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT256,

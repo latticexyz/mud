@@ -17,10 +17,10 @@ import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 fieldIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
-  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 tableId, bytes32[] key, uint8 fieldIndex, bytes data);
+  event StoreDeleteRecord(bytes32 tableId, bytes32[] key);
+  event StoreEphemeralRecord(bytes32 tableId, bytes32[] key, bytes data);
 
   /**
    * Intialize the store address to use in StoreSwitch.

@@ -36,7 +36,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       .map((log) => {
         try {
           if (log.eventName !== "StoreSetRecord") return;
-          if (log.args.table !== schemasTableId) return;
+          if (log.args.tableId !== schemasTableId) return;
 
           // TODO: refactor encode/decode to use Record<string, SchemaAbiType> schemas
           // TODO: refactor to decode key with protocol-parser utils
@@ -87,8 +87,8 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
         block.logs.map((log) =>
           JSON.stringify({
             address: getAddress(log.address),
-            tableId: log.args.table,
-            ...hexToTableId(log.args.table),
+            tableId: log.args.tableId,
+            ...hexToTableId(log.args.tableId),
           })
         )
       )
@@ -106,9 +106,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
     const operations = block.logs
       .map((log): StorageOperation<TConfig> | undefined => {
         try {
-          const table = tables[`${getAddress(log.address)}:${log.args.table}`];
+          const table = tables[`${getAddress(log.address)}:${log.args.tableId}`];
           if (!table) {
-            debug("no table found for event, skipping", hexToTableId(log.args.table), log);
+            debug("no table found for event, skipping", hexToTableId(log.args.tableId), log);
             return;
           }
 

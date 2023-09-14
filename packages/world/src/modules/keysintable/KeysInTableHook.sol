@@ -8,17 +8,17 @@ import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 
 /**
- * Note: if a table with composite keys is used, only the first key is indexed
+ * Note: if a tableId with composite keys is used, only the first key is indexed
  */
 contract KeysInTableHook is StoreHook {
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
     bytes32 keysHash = keccak256(abi.encode(key));
 
-    // If the key has not yet been set in the table...
+    // If the key has not yet been set in the tableId...
     if (!UsedKeysIndex.getHas(tableId, keysHash)) {
       uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
-      // Push the key to the list of keys in this table
+      // Push the key to the list of keys in this tableId
       if (key.length > 0) {
         KeysInTable.pushKeys0(tableId, key[0]);
         if (key.length > 1) {
@@ -40,35 +40,35 @@ contract KeysInTableHook is StoreHook {
     }
   }
 
-  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory, FieldLayout) public {
-    handleSet(table, key);
+  function onBeforeSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory, FieldLayout) public {
+    handleSet(tableId, key);
   }
 
-  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory, FieldLayout) public {
+  function onAfterSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory, FieldLayout) public {
     // NOOP
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
+  function onBeforeSetField(bytes32 tableId, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
     // NOOP
   }
 
-  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
-    handleSet(table, key);
+  function onAfterSetField(bytes32 tableId, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
+    handleSet(tableId, key);
   }
 
   function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout) public {
     bytes32 keysHash = keccak256(abi.encode(key));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
-    // If the key was part of the table...
+    // If the key was part of the tableId...
     if (has) {
-      // Delete the index as the key is not in the table
+      // Delete the index as the key is not in the tableId
       UsedKeysIndex.deleteRecord(tableId, keysHash);
 
       uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
       if (length == 1) {
-        // Delete the list of keys in this table
+        // Delete the list of keys in this tableId
         KeysInTable.deleteRecord(tableId);
       } else {
         if (key.length > 0) {
@@ -77,7 +77,7 @@ contract KeysInTableHook is StoreHook {
           bytes32 lastKey = KeysInTable.getItemKeys0(tableId, length - 1);
           lastKeyTuple[0] = lastKey;
 
-          // Remove the key from the list of keys in this table
+          // Remove the key from the list of keys in this tableId
           KeysInTable.updateKeys0(tableId, index, lastKey);
           KeysInTable.popKeys0(tableId);
 
@@ -85,7 +85,7 @@ contract KeysInTableHook is StoreHook {
             lastKey = KeysInTable.getItemKeys1(tableId, length - 1);
             lastKeyTuple[1] = lastKey;
 
-            // Remove the key from the list of keys in this table
+            // Remove the key from the list of keys in this tableId
             KeysInTable.updateKeys1(tableId, index, lastKey);
             KeysInTable.popKeys1(tableId);
 
@@ -93,7 +93,7 @@ contract KeysInTableHook is StoreHook {
               lastKey = KeysInTable.getItemKeys2(tableId, length - 1);
               lastKeyTuple[2] = lastKey;
 
-              // Swap and pop the key from the list of keys in this table
+              // Swap and pop the key from the list of keys in this tableId
               KeysInTable.updateKeys2(tableId, index, lastKey);
               KeysInTable.popKeys2(tableId);
 
@@ -101,7 +101,7 @@ contract KeysInTableHook is StoreHook {
                 lastKey = KeysInTable.getItemKeys3(tableId, length - 1);
                 lastKeyTuple[3] = lastKey;
 
-                // Remove the key from the list of keys in this table
+                // Remove the key from the list of keys in this tableId
                 KeysInTable.updateKeys3(tableId, index, lastKey);
                 KeysInTable.popKeys3(tableId);
 
@@ -109,7 +109,7 @@ contract KeysInTableHook is StoreHook {
                   lastKey = KeysInTable.getItemKeys4(tableId, length - 1);
                   lastKeyTuple[4] = lastKey;
 
-                  // Remove the key from the list of keys in this table
+                  // Remove the key from the list of keys in this tableId
                   KeysInTable.updateKeys4(tableId, index, lastKey);
                   KeysInTable.popKeys4(tableId);
                 }
@@ -125,7 +125,7 @@ contract KeysInTableHook is StoreHook {
     }
   }
 
-  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout fieldLayout) public {
     // NOOP
   }
 }

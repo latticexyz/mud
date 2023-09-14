@@ -82,25 +82,25 @@ This is an example of a Mirror hook which mirrors a table into another one:
 uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
 
 contract MirrorSubscriber is IStoreHook {
-  uint256 _table;
+  bytes32 _tableId;
 
   constructor(uint256 table, Schema keySchema, Schema valueSchema) {
     IStore(msg.sender).registerSchema(indexerTableId, valueSchema, keySchema);
-    _table = table;
+    _tableId = tableId;
   }
 
-  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
-    if (_table != table) revert("invalid table");
+  function onSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) public {
+    if (_tableId != tableId) revert("invalid tableId");
     StoreSwitch.setRecord(indexerTableId, key, data);
   }
 
-  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
-    if (_table != table) revert("invalid table");
+  function onSetField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+    if (_tableId != tableId) revert("invalid tableId");
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
   }
 
-  function onDeleteRecord(uint256 table, bytes32[] memory key) public {
-    if (_table != table) revert("invalid table");
+  function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
+    if (_tableId != tableId) revert("invalid tableId");
     StoreSwitch.deleteRecord(indexerTableId, key);
   }
 }
@@ -109,11 +109,11 @@ contract MirrorSubscriber is IStoreHook {
 Registering the hook can be done using the low-level Store API:
 
 ```solidity
-uint256 table = keccak256("table");
+bytes32 tableId = keccak256("table");
 Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
 Schema keySchema = SchemaLib.encode(SchemaType.UINT256);
-MirrorSubscriber subscriber = new MirrorSubscriber(table, keySchema, valueSchema);
-StoreCore.registerStoreHook(table, subscriber);
+MirrorSubscriber subscriber = new MirrorSubscriber(tableId, keySchema, valueSchema);
+StoreCore.registerStoreHook(tableId, subscriber);
 ```
 
 ### Accessing Store from a `CALL` or `DELEGATECALL` transparently
