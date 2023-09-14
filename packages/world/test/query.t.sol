@@ -52,7 +52,7 @@ contract QueryTest is Test, GasReporter {
     tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
 
     key1[0] = "test1";
     key2[0] = "test2";

@@ -100,17 +100,6 @@ declare const abi: [
     inputs: [
       {
         internalType: "string";
-        name: "module";
-        type: "string";
-      }
-    ];
-    name: "ModuleAlreadyInstalled";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "string";
         name: "resource";
         type: "string";
       }
@@ -276,6 +265,11 @@ declare const abi: [
       }
     ];
     name: "SystemExists";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "WorldAlreadyInitialized";
     type: "error";
   },
   {
@@ -508,6 +502,19 @@ declare const abi: [
       }
     ];
     stateMutability: "payable";
+    type: "function";
+  },
+  {
+    inputs: [];
+    name: "creator";
+    outputs: [
+      {
+        internalType: "address";
+        name: "";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
     type: "function";
   },
   {
@@ -783,6 +790,19 @@ declare const abi: [
       }
     ];
     name: "grantAccess";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IModule";
+        name: "coreModule";
+        type: "address";
+      }
+    ];
+    name: "initialize";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";

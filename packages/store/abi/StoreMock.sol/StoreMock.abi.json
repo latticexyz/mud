@@ -1,5 +1,10 @@
 [
   {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",

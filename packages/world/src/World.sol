@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
@@ -31,18 +32,34 @@ import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
 import { Balances } from "./modules/core/tables/Balances.sol";
+import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
+  address public immutable creator;
 
   constructor() {
-    // Register internal NamespaceOwner table and give ownership of the root
-    // namespace to msg.sender. This is done in the constructor instead of a
-    // module, so that we can use it for access control checks in `installRootModule`.
-    NamespaceOwner.register();
-    NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
-
+    creator = msg.sender;
+    StoreCore.initialize();
     emit HelloWorld();
+  }
+
+  /**
+   * Allows the creator of the World to initialize the World once.
+   */
+  function initialize(IModule coreModule) public {
+    // Only the initial creator of the World can initialize it
+    if (msg.sender != creator) {
+      revert AccessDenied(ResourceSelector.from(ROOT_NAMESPACE).toString(), msg.sender);
+    }
+
+    // The World can only be initialized once
+    if (InstalledModules.getModuleAddress(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+      revert WorldAlreadyInitialized();
+    }
+
+    // Initialize the World by installing the core module
+    _installRootModule(coreModule, new bytes(0));
   }
 
   /**
@@ -52,7 +69,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function installRootModule(IModule module, bytes memory args) public {
     AccessControl.requireOwner(ROOT_NAMESPACE, msg.sender);
+    _installRootModule(module, args);
+  }
 
+  function _installRootModule(IModule module, bytes memory args) internal {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), MODULE_INTERFACE_ID);
 

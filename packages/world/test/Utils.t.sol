@@ -25,7 +25,7 @@ contract UtilsTest is Test {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
   }
 
   function _registerAndGetNamespace(bytes16 namespace) internal returns (bytes16 returnedNamespace) {

@@ -903,7 +903,7 @@
     "file": "test/tables/Callbacks.t.sol",
     "test": "testSetAndGet",
     "name": "Callbacks: push 1 element",
-    "gasUsed": 39348
+    "gasUsed": 39350
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
@@ -1005,7 +1005,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testUpdate",
     "name": "StoreHooks: update 1 element (cold)",
-    "gasUsed": 28556
+    "gasUsed": 28567
   },
   {
     "file": "test/tightcoder/DecodeSlice.t.sol",

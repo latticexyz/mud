@@ -125,17 +125,6 @@ declare const abi: [
   {
     inputs: [
       {
-        internalType: "string";
-        name: "module";
-        type: "string";
-      }
-    ];
-    name: "ModuleAlreadyInstalled";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256";
         name: "length";
         type: "uint256";
@@ -164,22 +153,6 @@ declare const abi: [
       }
     ];
     name: "ResourceNotFound";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "length";
-        type: "uint256";
-      }
-    ];
-    name: "SchemaLib_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "SchemaLib_StaticTypeAfterDynamicType";
     type: "error";
   },
   {
@@ -248,76 +221,12 @@ declare const abi: [
         type: "uint256";
       }
     ];
-    name: "StoreCore_InvalidFieldNamesLength";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "expected";
-        type: "uint256";
-      },
-      {
-        internalType: "uint256";
-        name: "received";
-        type: "uint256";
-      }
-    ];
-    name: "StoreCore_InvalidKeyNamesLength";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "expected";
-        type: "uint256";
-      },
-      {
-        internalType: "uint256";
-        name: "received";
-        type: "uint256";
-      }
-    ];
     name: "StoreCore_InvalidStaticDataLength";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "expected";
-        type: "uint256";
-      },
-      {
-        internalType: "uint256";
-        name: "received";
-        type: "uint256";
-      }
-    ];
-    name: "StoreCore_InvalidValueSchemaLength";
     type: "error";
   },
   {
     inputs: [];
     name: "StoreCore_NotDynamicField";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32";
-        name: "tableId";
-        type: "bytes32";
-      },
-      {
-        internalType: "string";
-        name: "tableIdString";
-        type: "string";
-      }
-    ];
-    name: "StoreCore_TableAlreadyExists";
     type: "error";
   },
   {
@@ -345,6 +254,11 @@ declare const abi: [
       }
     ];
     name: "SystemExists";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "WorldAlreadyInitialized";
     type: "error";
   },
   {
@@ -544,6 +458,19 @@ declare const abi: [
       }
     ];
     stateMutability: "payable";
+    type: "function";
+  },
+  {
+    inputs: [];
+    name: "creator";
+    outputs: [
+      {
+        internalType: "address";
+        name: "";
+        type: "address";
+      }
+    ];
+    stateMutability: "view";
     type: "function";
   },
   {
@@ -765,6 +692,19 @@ declare const abi: [
       }
     ];
     stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IModule";
+        name: "coreModule";
+        type: "address";
+      }
+    ];
+    name: "initialize";
+    outputs: [];
+    stateMutability: "nonpayable";
     type: "function";
   },
   {

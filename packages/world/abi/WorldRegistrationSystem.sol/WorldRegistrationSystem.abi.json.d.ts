@@ -120,17 +120,6 @@ declare const abi: [
   {
     inputs: [
       {
-        internalType: "string";
-        name: "module";
-        type: "string";
-      }
-    ];
-    name: "ModuleAlreadyInstalled";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256";
         name: "length";
         type: "uint256";
@@ -228,6 +217,11 @@ declare const abi: [
       }
     ];
     name: "SystemExists";
+    type: "error";
+  },
+  {
+    inputs: [];
+    name: "WorldAlreadyInitialized";
     type: "error";
   },
   {

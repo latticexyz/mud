@@ -31,7 +31,7 @@ library StoreCore {
   event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
 
   /**
-   * Initialize internal tables.
+   * Intialize the store address to use in StoreSwitch.
    * Consumers must call this function in their constructor.
    */
   function initialize() internal {
@@ -39,8 +39,15 @@ library StoreCore {
     // If StoreSwitch is called in the context of a Store contract (storeAddress == address(this)),
     // StoreSwitch uses internal methods to write data instead of external calls.
     StoreSwitch.setStoreAddress(address(this));
+  }
 
-    // Register internal tables
+  /**
+   * Register core tables.
+   * Consumers must call this function in their constructor before setting
+   * any table data to allow indexers to decode table events.
+   */
+  function registerCoreTables() internal {
+    // Register core tables
     Tables.register();
     StoreHooks.register();
   }

@@ -16,6 +16,7 @@ export default {
   reference: "Reference",
   contribute: "Contribute",
   changelog: "Changelog",
+  retrospectives: "Retrospectives",
   version: {
     title: worldPackageJson.version,
     type: "menu",
