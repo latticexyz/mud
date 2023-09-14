@@ -140,6 +140,9 @@ const commandModule: CommandModule<Options, Options> = {
       // Run worldgen to generate interfaces based on the systems
       await worldgenHandler({ config, clean: true, srcDir: srcDirectory });
 
+      // Build the contracts
+      await forge(["build"]);
+
       // Generate TS-friendly ABI files
       // We rebuild into a separate dir to have a clean set of ABIs without test/script contracts
       await forge(["build", "--extra-output-files", "abi", "--out", "abi", "--skip", "test", "script", "MudTest.sol"]);
