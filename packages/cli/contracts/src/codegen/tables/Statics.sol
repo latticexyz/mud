@@ -24,6 +24,10 @@ import { Enum1, Enum2 } from "./../Types.sol";
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Statics")));
 bytes32 constant StaticsTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x004b070020041014010101000000000000000000000000000000000000000000
+);
+
 struct StaticsData {
   uint256 v1;
   int32 v2;
@@ -37,16 +41,7 @@ struct StaticsData {
 library Statics {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](7);
-    _fieldLayout[0] = 32;
-    _fieldLayout[1] = 4;
-    _fieldLayout[2] = 16;
-    _fieldLayout[3] = 20;
-    _fieldLayout[4] = 1;
-    _fieldLayout[5] = 1;
-    _fieldLayout[6] = 1;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */

@@ -18,12 +18,14 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0000000100000000000000000000000000000000000000000000000000000000
+);
+
 library KeysWithValue {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](0);
-
-    return FieldLayoutLib.encode(_fieldLayout, 1);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */

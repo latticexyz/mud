@@ -21,6 +21,10 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Dynamics2")));
 bytes32 constant Dynamics2TableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0000000300000000000000000000000000000000000000000000000000000000
+);
+
 struct Dynamics2Data {
   uint64[] u64;
   string str;
@@ -30,9 +34,7 @@ struct Dynamics2Data {
 library Dynamics2 {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](0);
-
-    return FieldLayoutLib.encode(_fieldLayout, 3);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */

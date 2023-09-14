@@ -21,6 +21,10 @@ import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Vector2")));
 bytes32 constant Vector2TableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0008020004040000000000000000000000000000000000000000000000000000
+);
+
 struct Vector2Data {
   uint32 x;
   uint32 y;
@@ -29,11 +33,7 @@ struct Vector2Data {
 library Vector2 {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](2);
-    _fieldLayout[0] = 4;
-    _fieldLayout[1] = 4;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */

@@ -1,5 +1,6 @@
 import {
   RenderDynamicField,
+  RenderType,
   renderArguments,
   renderCommonData,
   renderList,
@@ -62,6 +63,8 @@ ${
 
 ${staticResourceData ? renderTableId(staticResourceData).tableIdDefinition : ""}
 
+FieldLayout constant _fieldLayout = ${renderFieldLayout(fields)};
+
 ${
   !structName
     ? ""
@@ -75,10 +78,7 @@ ${
 library ${libraryName} {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](${staticFields.length});
-    ${renderList(staticFields, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
-
-    return FieldLayoutLib.encode(_fieldLayout, ${dynamicFields.length});
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -187,4 +187,48 @@ function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   } else {
     return "";
   }
+}
+
+function renderFieldLayout(fields: RenderType[]) {
+  return `FieldLayout.wrap(${encodeFieldLayout(fields)})`;
+}
+
+// TODO: refactor to new file
+export const WORD_SIZE = 32;
+export const MAX_TOTAL_FIELDS = 28;
+export const WORD_LAST_INDEX = 31;
+export const BYTE_TO_BITS = 8;
+export const MAX_DYNAMIC_FIELDS = 5;
+export const TOTAL_LENGTH = (WORD_SIZE - 2) * BYTE_TO_BITS;
+export const NUM_STATIC_FIELDS = (WORD_SIZE - 2 - 1) * BYTE_TO_BITS;
+export const NUM_DYNAMIC_FIELDS = (WORD_SIZE - 2 - 1 - 1) * BYTE_TO_BITS;
+
+export function encodeFieldLayout(fields: RenderType[]) {
+  if (fields.length > MAX_TOTAL_FIELDS) throw new Error(`FieldLayout: invalid length ${fields.length}`);
+  let fieldLayout = 0n;
+  let totalLength = 0;
+  let dynamicFields = 0;
+
+  for (let i = 0; i < fields.length; i++) {
+    const { isDynamic, staticByteLength } = fields[i];
+    if (isDynamic) {
+      dynamicFields++;
+      continue;
+    } else if (dynamicFields > 0) {
+      throw new Error(`FieldLayout: static type after dynamic type`);
+    }
+
+    totalLength += staticByteLength;
+    fieldLayout |= BigInt(staticByteLength) << BigInt((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
+  }
+
+  if (dynamicFields > MAX_DYNAMIC_FIELDS) throw new Error(`FieldLayout: invalid length ${dynamicFields}`);
+
+  const staticFields = fields.length - dynamicFields;
+
+  fieldLayout |= BigInt(totalLength) << BigInt(TOTAL_LENGTH);
+  fieldLayout |= BigInt(staticFields) << BigInt(NUM_STATIC_FIELDS);
+  fieldLayout |= BigInt(dynamicFields) << BigInt(NUM_DYNAMIC_FIELDS);
+
+  return `0x${fieldLayout.toString(16).padStart(64, "0")}`;
 }

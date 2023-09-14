@@ -21,6 +21,10 @@ import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Mixed")));
 bytes32 constant MixedTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0014020204100000000000000000000000000000000000000000000000000000
+);
+
 struct MixedData {
   uint32 u32;
   uint128 u128;
@@ -31,11 +35,7 @@ struct MixedData {
 library Mixed {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](2);
-    _fieldLayout[0] = 4;
-    _fieldLayout[1] = 16;
-
-    return FieldLayoutLib.encode(_fieldLayout, 2);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */

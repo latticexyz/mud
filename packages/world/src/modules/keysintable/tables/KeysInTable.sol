@@ -21,6 +21,10 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("KeysInTable")));
 bytes32 constant KeysInTableTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0000000500000000000000000000000000000000000000000000000000000000
+);
+
 struct KeysInTableData {
   bytes32[] keys0;
   bytes32[] keys1;
@@ -32,9 +36,7 @@ struct KeysInTableData {
 library KeysInTable {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](0);
-
-    return FieldLayoutLib.encode(_fieldLayout, 5);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
