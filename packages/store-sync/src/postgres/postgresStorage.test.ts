@@ -47,14 +47,16 @@ describe("postgresStorage", async () => {
   });
 
   it("should create tables and data from block log", async () => {
-    await Promise.all(blocks.map(storageAdapter.storageAdapter));
+    for (const block of blocks) {
+      await storageAdapter.storageAdapter(block);
+    }
 
     expect(await db.select().from(storageAdapter.internalTables.chain)).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
           "lastError": null,
-          "lastUpdatedBlockNumber": 4n,
+          "lastUpdatedBlockNumber": 5n,
           "schemaVersion": 1,
         },
       ]
@@ -72,7 +74,7 @@ describe("postgresStorage", async () => {
           "key": "0x5FbDB2315678afecb367f032d93F642f64180aa3::NumberList",
           "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 4n,
+          "lastUpdatedBlockNumber": 5n,
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
@@ -90,7 +92,7 @@ describe("postgresStorage", async () => {
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "keySchema": {},
-          "lastUpdatedBlockNumber": 4n,
+          "lastUpdatedBlockNumber": 5n,
           "name": "NumberList",
           "namespace": "",
           "tableId": "0x000000000000000000000000000000004e756d6265724c697374000000000000",
@@ -102,7 +104,22 @@ describe("postgresStorage", async () => {
     `);
 
     const sqlTable = buildTable(tables[0]);
-    expect(await db.select().from(sqlTable)).toMatchInlineSnapshot("[]");
+    expect(await db.select().from(sqlTable)).toMatchInlineSnapshot(`
+      [
+        {
+          "__dynamicData": "0x000001a400000045",
+          "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
+          "__isDeleted": false,
+          "__key": "0x",
+          "__lastUpdatedBlockNumber": 5n,
+          "__staticData": null,
+          "value": [
+            420,
+            69,
+          ],
+        },
+      ]
+    `);
 
     await storageAdapter.cleanUp();
   });

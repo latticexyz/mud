@@ -55,14 +55,16 @@ describe("sqliteStorage", async () => {
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot("[]");
     expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot("[]");
 
-    await Promise.all(blocks.map(storageAdapter));
+    for (const block of blocks) {
+      await storageAdapter(block);
+    }
 
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
           "lastError": null,
-          "lastUpdatedBlockNumber": 4n,
+          "lastUpdatedBlockNumber": 5n,
           "schemaVersion": 1,
         },
       ]

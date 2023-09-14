@@ -35,7 +35,9 @@ describe("recsStorage", () => {
     const world = createWorld();
     const { storageAdapter, components } = recsStorage({ world, config: mudConfig });
 
-    await Promise.all(blocks.map(storageAdapter));
+    for (const block of blocks) {
+      await storageAdapter(block);
+    }
 
     expect(Array.from(getComponentEntities(components.NumberList))).toMatchInlineSnapshot(`
       [
