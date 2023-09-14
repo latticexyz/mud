@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 // Import store internals
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
@@ -74,30 +74,43 @@ library UniqueEntity {
   function get(bytes32 _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (uint256(Bytes.slice32(_blob, 0)));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (uint256(Bytes.slice32(_blob, 0)));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Set value */
   function set(bytes32 _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreSwitch.storeStaticField(
+      storagePointer,
+      32,
+      0,
+      abi.encodePacked((value)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
   }
 
   /** Set value (using the specified store) */
   function set(IStore _store, bytes32 _tableId, uint256 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    _store.storeStaticField(storagePointer, 32, 0, abi.encodePacked((value)), _tableId, _keyTuple, 0, getFieldLayout());
   }
 
   /** Tightly pack full data using this table's field layout */

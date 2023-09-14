@@ -19,27 +19,6 @@ declare const abi: [
     inputs: [
       {
         internalType: "uint256";
-        name: "length";
-        type: "uint256";
-      }
-    ];
-    name: "FieldLayoutLib_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "FieldLayoutLib_StaticLengthIsZero";
-    type: "error";
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256";
         name: "expected";
         type: "uint256";
       },

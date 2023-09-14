@@ -1,13 +1,13 @@
 import {
+  RenderDynamicField,
   renderArguments,
   renderCommonData,
   renderList,
-  renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
-  renderWithStore,
   renderTypeHelpers,
-  RenderDynamicField,
+  renderWithStore,
+  renderedSolidityHeader,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
@@ -42,7 +42,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 // Import store internals
 import { IStore } from "${storeImportPath}IStore.sol";
 import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
-import { StoreCore } from "${storeImportPath}StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "${storeImportPath}StoreCore.sol";
 import { Bytes } from "${storeImportPath}Bytes.sol";
 import { Memory } from "${storeImportPath}Memory.sol";
 import { SliceLib } from "${storeImportPath}Slice.sol";

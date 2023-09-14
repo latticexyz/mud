@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 // Import store internals
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
@@ -87,8 +87,9 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (address(Bytes.slice20(_blob, 0)));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 0);
+    return (address(bytes20(_blob)));
   }
 
   /** Get moduleAddress (using the specified store) */
@@ -101,8 +102,9 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (address(Bytes.slice20(_blob, 0)));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = _store.loadStaticField(storagePointer, 20, 0);
+    return (address(bytes20(_blob)));
   }
 
   /** Set moduleAddress */
@@ -111,7 +113,17 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreSwitch.storeStaticField(
+      storagePointer,
+      20,
+      0,
+      abi.encodePacked((moduleAddress)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
   }
 
   /** Set moduleAddress (using the specified store) */
@@ -120,7 +132,17 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    _store.storeStaticField(
+      storagePointer,
+      20,
+      0,
+      abi.encodePacked((moduleAddress)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
   }
 
   /** Get the full data */

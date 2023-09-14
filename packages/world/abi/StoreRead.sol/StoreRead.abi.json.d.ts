@@ -1,26 +1,5 @@
 declare const abi: [
   {
-    inputs: [
-      {
-        internalType: "uint256";
-        name: "length";
-        type: "uint256";
-      }
-    ];
-    name: "FieldLayoutLib_InvalidLength";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "FieldLayoutLib_StaticLengthDoesNotFitInAWord";
-    type: "error";
-  },
-  {
-    inputs: [];
-    name: "FieldLayoutLib_StaticLengthIsZero";
-    type: "error";
-  },
-  {
     inputs: [];
     name: "StoreCore_NotDynamicField";
     type: "error";
@@ -233,6 +212,35 @@ declare const abi: [
       {
         internalType: "Schema";
         name: "schema";
+        type: "bytes32";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "storagePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "offset";
+        type: "uint256";
+      }
+    ];
+    name: "loadStaticField";
+    outputs: [
+      {
+        internalType: "bytes32";
+        name: "";
         type: "bytes32";
       }
     ];

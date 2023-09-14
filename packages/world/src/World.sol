@@ -126,6 +126,23 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     StoreCore.setField(tableId, key, schemaIndex, data, fieldLayout);
   }
 
+  function storeStaticField(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset,
+    bytes memory data,
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    FieldLayout fieldLayout
+  ) public virtual {
+    // Require access to namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Set the field
+    StoreCore.storeStaticField(storagePointer, length, offset, data, tableId, key, schemaIndex, fieldLayout);
+  }
+
   /**
    * Push data to the end of a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).

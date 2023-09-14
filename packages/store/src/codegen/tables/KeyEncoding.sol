@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 // Import store internals
 import { IStore } from "../../IStore.sol";
 import { StoreSwitch } from "../../StoreSwitch.sol";
-import { StoreCore } from "../../StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "../../StoreCore.sol";
 import { Bytes } from "../../Bytes.sol";
 import { Memory } from "../../Memory.sol";
 import { SliceLib } from "../../Slice.sol";
@@ -105,8 +105,9 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 0);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get value (using the specified store) */
@@ -127,8 +128,9 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = _store.loadStaticField(storagePointer, 1, 0);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set value */
@@ -141,7 +143,17 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreSwitch.storeStaticField(
+      storagePointer,
+      1,
+      0,
+      abi.encodePacked((value)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
   }
 
   /** Set value (using the specified store) */
@@ -163,7 +175,8 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    _store.storeStaticField(storagePointer, 1, 0, abi.encodePacked((value)), _tableId, _keyTuple, 0, getFieldLayout());
   }
 
   /** Tightly pack full data using this table's field layout */

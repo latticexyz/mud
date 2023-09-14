@@ -196,6 +196,35 @@ declare const abi: [
     ];
     stateMutability: "view";
     type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "storagePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "offset";
+        type: "uint256";
+      }
+    ];
+    name: "loadStaticField";
+    outputs: [
+      {
+        internalType: "bytes32";
+        name: "";
+        type: "bytes32";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
   }
 ];
 export default abi;

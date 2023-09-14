@@ -298,6 +298,35 @@ declare const abi: [
   {
     inputs: [
       {
+        internalType: "uint256";
+        name: "storagePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "offset";
+        type: "uint256";
+      }
+    ];
+    name: "loadStaticField";
+    outputs: [
+      {
+        internalType: "bytes32";
+        name: "";
+        type: "bytes32";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32";
         name: "table";
         type: "bytes32";
@@ -418,6 +447,54 @@ declare const abi: [
       }
     ];
     name: "setRecord";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "storagePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "length";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "offset";
+        type: "uint256";
+      },
+      {
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      },
+      {
+        internalType: "bytes32";
+        name: "tableId";
+        type: "bytes32";
+      },
+      {
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        internalType: "uint8";
+        name: "schemaIndex";
+        type: "uint8";
+      },
+      {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
+        type: "bytes32";
+      }
+    ];
+    name: "storeStaticField";
     outputs: [];
     stateMutability: "nonpayable";
     type: "function";

@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 // Import store internals
 import { IStore } from "../../IStore.sol";
 import { StoreSwitch } from "../../StoreSwitch.sol";
-import { StoreCore } from "../../StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "../../StoreCore.sol";
 import { Bytes } from "../../Bytes.sol";
 import { Memory } from "../../Memory.sol";
 import { SliceLib } from "../../Slice.sol";
@@ -98,8 +98,9 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
+    return (bytes32(_blob));
   }
 
   /** Get fieldLayout (using the specified store) */
@@ -107,8 +108,9 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
+    return (bytes32(_blob));
   }
 
   /** Set fieldLayout */
@@ -116,7 +118,17 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreSwitch.storeStaticField(
+      storagePointer,
+      32,
+      0,
+      abi.encodePacked((fieldLayout)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
   }
 
   /** Set fieldLayout (using the specified store) */
@@ -124,7 +136,17 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    _store.storeStaticField(
+      storagePointer,
+      32,
+      0,
+      abi.encodePacked((fieldLayout)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
   }
 
   /** Get keySchema */
@@ -132,8 +154,9 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 32);
+    return (bytes32(_blob));
   }
 
   /** Get keySchema (using the specified store) */
@@ -141,8 +164,9 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = _store.loadStaticField(storagePointer, 32, 32);
+    return (bytes32(_blob));
   }
 
   /** Set keySchema */
@@ -150,7 +174,17 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreSwitch.storeStaticField(
+      storagePointer,
+      32,
+      32,
+      abi.encodePacked((keySchema)),
+      _tableId,
+      _keyTuple,
+      1,
+      getFieldLayout()
+    );
   }
 
   /** Set keySchema (using the specified store) */
@@ -158,7 +192,17 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    _store.storeStaticField(
+      storagePointer,
+      32,
+      32,
+      abi.encodePacked((keySchema)),
+      _tableId,
+      _keyTuple,
+      1,
+      getFieldLayout()
+    );
   }
 
   /** Get valueSchema */
@@ -166,8 +210,9 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 64);
+    return (bytes32(_blob));
   }
 
   /** Get valueSchema (using the specified store) */
@@ -175,8 +220,9 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _blob = _store.loadStaticField(storagePointer, 32, 64);
+    return (bytes32(_blob));
   }
 
   /** Set valueSchema */
@@ -184,7 +230,17 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreSwitch.storeStaticField(
+      storagePointer,
+      32,
+      64,
+      abi.encodePacked((valueSchema)),
+      _tableId,
+      _keyTuple,
+      2,
+      getFieldLayout()
+    );
   }
 
   /** Set valueSchema (using the specified store) */
@@ -192,7 +248,17 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    _store.storeStaticField(
+      storagePointer,
+      32,
+      64,
+      abi.encodePacked((valueSchema)),
+      _tableId,
+      _keyTuple,
+      2,
+      getFieldLayout()
+    );
   }
 
   /** Get abiEncodedKeyNames */
