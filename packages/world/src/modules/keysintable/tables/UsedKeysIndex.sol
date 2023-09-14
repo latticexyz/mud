@@ -82,22 +82,16 @@ library UsedKeysIndex {
 
   /** Get has */
   function getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get has (using the specified store) */
   function getHas(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -133,22 +127,16 @@ library UsedKeysIndex {
 
   /** Get index */
   function getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 5, 1);
     return (uint40(bytes5(_blob)));
   }
 
   /** Get index (using the specified store) */
   function getIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = sourceTable;
-    _keyTuple[1] = keysHash;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 5, 1);
     return (uint40(bytes5(_blob)));
   }

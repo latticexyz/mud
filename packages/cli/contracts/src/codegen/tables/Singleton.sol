@@ -82,18 +82,16 @@ library Singleton {
 
   /** Get v1 */
   function getV1() internal view returns (int256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (int256(uint256(bytes32(_blob))));
   }
 
   /** Get v1 (using the specified store) */
   function getV1(IStore _store) internal view returns (int256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (int256(uint256(bytes32(_blob))));
   }

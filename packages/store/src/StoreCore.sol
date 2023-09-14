@@ -832,7 +832,11 @@ library StoreCoreInternal {
    * Compute the storage location based on tableId id and index tuple
    */
   function _getStaticDataLocation(bytes32 tableId, bytes32[] memory key) internal pure returns (uint256) {
-    return uint256(SLOT ^ tableId ^ keccak256(abi.encodePacked(key)));
+    return _getStaticDataLocation(tableId, keccak256(abi.encodePacked(key)));
+  }
+
+  function _getStaticDataLocation(bytes32 tableId, bytes32 keyHash) internal pure returns (uint256) {
+    return uint256(SLOT ^ tableId ^ keyHash);
   }
 
   /**

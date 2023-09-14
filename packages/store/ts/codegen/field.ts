@@ -58,8 +58,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal view returns (${_typedFieldName}) {
-          ${_keyTupleDefinition}
-          uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+          bytes32 _keyHash = keccak256(abi.encode(${options.keyTuple.map(({ name }) => name).join(", ")}));
+          uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
           bytes32 _blob = ${_store}.loadStaticField(storagePointer, ${field.staticByteLength}, ${offset});
           return ${renderDecodeStaticValueType(field)};
         }

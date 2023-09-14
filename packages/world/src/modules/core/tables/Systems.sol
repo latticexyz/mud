@@ -80,20 +80,16 @@ library Systems {
 
   /** Get system */
   function getSystem(bytes32 resourceSelector) internal view returns (address system) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(resourceSelector));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
   }
 
   /** Get system (using the specified store) */
   function getSystem(IStore _store, bytes32 resourceSelector) internal view returns (address system) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(resourceSelector));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
   }
@@ -136,20 +132,16 @@ library Systems {
 
   /** Get publicAccess */
   function getPublicAccess(bytes32 resourceSelector) internal view returns (bool publicAccess) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(resourceSelector));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 20);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get publicAccess (using the specified store) */
   function getPublicAccess(IStore _store, bytes32 resourceSelector) internal view returns (bool publicAccess) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(resourceSelector));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 20);
     return (_toBool(uint8(bytes1(_blob))));
   }

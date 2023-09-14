@@ -123,16 +123,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (uint256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }
@@ -148,16 +140,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (uint256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }
@@ -221,16 +205,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (int32 v2) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 4, 32);
     return (int32(uint32(bytes4(_blob))));
   }
@@ -246,16 +222,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (int32 v2) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 4, 32);
     return (int32(uint32(bytes4(_blob))));
   }
@@ -319,16 +287,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (bytes16 v3) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 16, 36);
     return (bytes16(_blob));
   }
@@ -344,16 +304,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (bytes16 v3) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 16, 36);
     return (bytes16(_blob));
   }
@@ -417,16 +369,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (address v4) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 52);
     return (address(bytes20(_blob)));
   }
@@ -442,16 +386,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (address v4) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 20, 52);
     return (address(bytes20(_blob)));
   }
@@ -515,16 +451,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (bool v5) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 72);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -540,16 +468,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (bool v5) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 72);
     return (_toBool(uint8(bytes1(_blob))));
   }
@@ -613,16 +533,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (Enum1 v6) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 73);
     return Enum1(uint8(bytes1(_blob)));
   }
@@ -638,16 +550,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (Enum1 v6) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 73);
     return Enum1(uint8(bytes1(_blob)));
   }
@@ -720,16 +624,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (Enum2 v7) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 74);
     return Enum2(uint8(bytes1(_blob)));
   }
@@ -745,16 +641,8 @@ library Statics {
     Enum1 k6,
     Enum2 k7
   ) internal view returns (Enum2 v7) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(k1, k2, k3, k4, k5, k6, k7));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 74);
     return Enum2(uint8(bytes1(_blob)));
   }

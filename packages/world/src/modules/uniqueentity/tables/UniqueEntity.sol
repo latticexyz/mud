@@ -73,18 +73,16 @@ library UniqueEntity {
 
   /** Get value */
   function get(bytes32 _tableId) internal view returns (uint256 value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 _tableId) internal view returns (uint256 value) {
-    bytes32[] memory _keyTuple = new bytes32[](0);
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }

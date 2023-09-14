@@ -84,11 +84,8 @@ library InstalledModules {
 
   /** Get moduleAddress */
   function getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(moduleName);
-    _keyTuple[1] = argumentsHash;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
   }
@@ -99,11 +96,8 @@ library InstalledModules {
     bytes16 moduleName,
     bytes32 argumentsHash
   ) internal view returns (address moduleAddress) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(moduleName);
-    _keyTuple[1] = argumentsHash;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
   }

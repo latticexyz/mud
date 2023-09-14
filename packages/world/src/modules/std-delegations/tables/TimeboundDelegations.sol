@@ -80,22 +80,16 @@ library TimeboundDelegations {
 
   /** Get maxTimestamp */
   function get(address delegator, address delegatee) internal view returns (uint256 maxTimestamp) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }
 
   /** Get maxTimestamp (using the specified store) */
   function get(IStore _store, address delegator, address delegatee) internal view returns (uint256 maxTimestamp) {
-    bytes32[] memory _keyTuple = new bytes32[](2);
-    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
-    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }

@@ -94,20 +94,16 @@ library Tables {
 
   /** Get fieldLayout */
   function getFieldLayout(bytes32 tableId) internal view returns (bytes32 fieldLayout) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = tableId;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(tableId));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
     return (bytes32(_blob));
   }
 
   /** Get fieldLayout (using the specified store) */
   function getFieldLayout(IStore _store, bytes32 tableId) internal view returns (bytes32 fieldLayout) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = tableId;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(tableId));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
     return (bytes32(_blob));
   }
@@ -150,20 +146,16 @@ library Tables {
 
   /** Get keySchema */
   function getKeySchema(bytes32 tableId) internal view returns (bytes32 keySchema) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = tableId;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(tableId));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 32);
     return (bytes32(_blob));
   }
 
   /** Get keySchema (using the specified store) */
   function getKeySchema(IStore _store, bytes32 tableId) internal view returns (bytes32 keySchema) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = tableId;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(tableId));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 32);
     return (bytes32(_blob));
   }
@@ -206,20 +198,16 @@ library Tables {
 
   /** Get valueSchema */
   function getValueSchema(bytes32 tableId) internal view returns (bytes32 valueSchema) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = tableId;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(tableId));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 64);
     return (bytes32(_blob));
   }
 
   /** Get valueSchema (using the specified store) */
   function getValueSchema(IStore _store, bytes32 tableId) internal view returns (bytes32 valueSchema) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = tableId;
-
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    bytes32 _keyHash = keccak256(abi.encode(tableId));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 64);
     return (bytes32(_blob));
   }
