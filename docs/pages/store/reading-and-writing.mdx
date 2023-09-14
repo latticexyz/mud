@@ -21,7 +21,7 @@ This section assumes the existence of “MyTable” as described with the config
 // definition of MyTable
 tables: {
   MyTable: {
-    schema: {
+    valueSchema: {
       foo: "uint256",
       bar: "bool",
       fooArray: "uint256[]", // Store supports dynamic arrays
@@ -106,7 +106,7 @@ This section assumes the existence of “MyTable” as described with the config
 // definition of MyTable
 tables: {
   MyTable: {
-    schema: {
+    valueSchema: {
       foo: "uint256",
       bar: "bool",
     },
@@ -147,8 +147,8 @@ uint256 tableId = uint256(keccak256("MyTable"));
 bytes32[] memory key = new bytes32[](1);
 key[0] = keccak256("some.key");
 // Retrieve a record
-Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
-bytes memory loadedData = StoreCore.getRecord(tableId, key, schema);
+Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
+bytes memory loadedData = StoreCore.getRecord(tableId, key, valueSchema);
 uint256 foo = (uint256(Bytes.slice4(loadedData, 0)));
 uint256 bar = (uint256(Bytes.slice4(loadedData, 32)));
 ```

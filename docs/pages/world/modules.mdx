@@ -96,7 +96,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 ```solidity
 // assumes this ownership table:
 // Owners: {
-//   schema: "address",
+//   valueSchema: "address",
 //   keySchema: { nftId: "uint256" }
 // }
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
@@ -157,7 +157,7 @@ import { resolveTableId } from "@latticexyz/config";
 export default mudConfig({
   tables: {
     MyTable: {
-      schema: "uint32",
+      valueSchema: "uint32",
     },
   },
   modules: [
