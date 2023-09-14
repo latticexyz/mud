@@ -101,7 +101,14 @@ library CallboundDelegations {
     bytes32 resourceSelector,
     bytes32 funcSelectorAndArgsHash
   ) internal view returns (uint256 availableCalls) {
-    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee, resourceSelector, funcSelectorAndArgsHash));
+    bytes32 _keyHash = keccak256(
+      abi.encodePacked(
+        bytes32(uint256(uint160(delegator))),
+        bytes32(uint256(uint160(delegatee))),
+        resourceSelector,
+        funcSelectorAndArgsHash
+      )
+    );
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
@@ -115,7 +122,14 @@ library CallboundDelegations {
     bytes32 resourceSelector,
     bytes32 funcSelectorAndArgsHash
   ) internal view returns (uint256 availableCalls) {
-    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee, resourceSelector, funcSelectorAndArgsHash));
+    bytes32 _keyHash = keccak256(
+      abi.encodePacked(
+        bytes32(uint256(uint160(delegator))),
+        bytes32(uint256(uint160(delegatee))),
+        resourceSelector,
+        funcSelectorAndArgsHash
+      )
+    );
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
@@ -130,7 +144,14 @@ library CallboundDelegations {
     bytes32 resourceSelector,
     bytes32 funcSelectorAndArgsHash
   ) internal view returns (uint256 availableCalls) {
-    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee, resourceSelector, funcSelectorAndArgsHash));
+    bytes32 _keyHash = keccak256(
+      abi.encodePacked(
+        bytes32(uint256(uint160(delegator))),
+        bytes32(uint256(uint160(delegatee))),
+        resourceSelector,
+        funcSelectorAndArgsHash
+      )
+    );
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
@@ -151,7 +172,14 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee, resourceSelector, funcSelectorAndArgsHash));
+    bytes32 _keyHash = keccak256(
+      abi.encodePacked(
+        bytes32(uint256(uint160(delegator))),
+        bytes32(uint256(uint160(delegatee))),
+        resourceSelector,
+        funcSelectorAndArgsHash
+      )
+    );
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -180,7 +208,14 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee, resourceSelector, funcSelectorAndArgsHash));
+    bytes32 _keyHash = keccak256(
+      abi.encodePacked(
+        bytes32(uint256(uint160(delegator))),
+        bytes32(uint256(uint160(delegatee))),
+        resourceSelector,
+        funcSelectorAndArgsHash
+      )
+    );
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -210,7 +245,14 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(delegator, delegatee, resourceSelector, funcSelectorAndArgsHash));
+    bytes32 _keyHash = keccak256(
+      abi.encodePacked(
+        bytes32(uint256(uint160(delegator))),
+        bytes32(uint256(uint160(delegatee))),
+        resourceSelector,
+        funcSelectorAndArgsHash
+      )
+    );
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(

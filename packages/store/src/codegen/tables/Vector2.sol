@@ -97,7 +97,7 @@ library Vector2 {
 
   /** Get x */
   function getX(bytes32 key) internal view returns (uint32 x) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 4, 0);
@@ -106,7 +106,7 @@ library Vector2 {
 
   /** Get x */
   function _getX(bytes32 key) internal view returns (uint32 x) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 0);
@@ -115,7 +115,7 @@ library Vector2 {
 
   /** Get x (using the specified store) */
   function getX(IStore _store, bytes32 key) internal view returns (uint32 x) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 4, 0);
@@ -127,7 +127,7 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(storagePointer, 4, 0, abi.encodePacked((x)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -138,7 +138,7 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(storagePointer, 4, 0, abi.encodePacked((x)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -149,7 +149,7 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 4, 0, abi.encodePacked((x)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -157,7 +157,7 @@ library Vector2 {
 
   /** Get y */
   function getY(bytes32 key) internal view returns (uint32 y) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 4, 4);
@@ -166,7 +166,7 @@ library Vector2 {
 
   /** Get y */
   function _getY(bytes32 key) internal view returns (uint32 y) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 4);
@@ -175,7 +175,7 @@ library Vector2 {
 
   /** Get y (using the specified store) */
   function getY(IStore _store, bytes32 key) internal view returns (uint32 y) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 4, 4);
@@ -187,7 +187,7 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(storagePointer, 4, 4, abi.encodePacked((y)), _tableId, _keyTuple, 1, getFieldLayout());
@@ -198,7 +198,7 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(storagePointer, 4, 4, abi.encodePacked((y)), _tableId, _keyTuple, 1, getFieldLayout());
@@ -209,7 +209,7 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 4, 4, abi.encodePacked((y)), _tableId, _keyTuple, 1, getFieldLayout());

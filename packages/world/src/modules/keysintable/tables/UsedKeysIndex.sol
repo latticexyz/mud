@@ -94,7 +94,7 @@ library UsedKeysIndex {
 
   /** Get has */
   function getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 0);
@@ -103,7 +103,7 @@ library UsedKeysIndex {
 
   /** Get has */
   function _getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 0);
@@ -112,7 +112,7 @@ library UsedKeysIndex {
 
   /** Get has (using the specified store) */
   function getHas(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 1, 0);
@@ -125,7 +125,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -146,7 +146,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(storagePointer, 1, 0, abi.encodePacked((has)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -158,7 +158,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 1, 0, abi.encodePacked((has)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -166,7 +166,7 @@ library UsedKeysIndex {
 
   /** Get index */
   function getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 5, 1);
@@ -175,7 +175,7 @@ library UsedKeysIndex {
 
   /** Get index */
   function _getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 5, 1);
@@ -184,7 +184,7 @@ library UsedKeysIndex {
 
   /** Get index (using the specified store) */
   function getIndex(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 5, 1);
@@ -197,7 +197,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -218,7 +218,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -239,7 +239,7 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 5, 1, abi.encodePacked((index)), _tableId, _keyTuple, 1, getFieldLayout());

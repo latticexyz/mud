@@ -103,7 +103,7 @@ library Mixed {
 
   /** Get u32 */
   function getU32(bytes32 key) internal view returns (uint32 u32) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 4, 0);
@@ -112,7 +112,7 @@ library Mixed {
 
   /** Get u32 */
   function _getU32(bytes32 key) internal view returns (uint32 u32) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 0);
@@ -121,7 +121,7 @@ library Mixed {
 
   /** Get u32 (using the specified store) */
   function getU32(IStore _store, bytes32 key) internal view returns (uint32 u32) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 4, 0);
@@ -133,7 +133,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -153,7 +153,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(storagePointer, 4, 0, abi.encodePacked((u32)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -164,7 +164,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 4, 0, abi.encodePacked((u32)), _tableId, _keyTuple, 0, getFieldLayout());
@@ -172,7 +172,7 @@ library Mixed {
 
   /** Get u128 */
   function getU128(bytes32 key) internal view returns (uint128 u128) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 16, 4);
@@ -181,7 +181,7 @@ library Mixed {
 
   /** Get u128 */
   function _getU128(bytes32 key) internal view returns (uint128 u128) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 16, 4);
@@ -190,7 +190,7 @@ library Mixed {
 
   /** Get u128 (using the specified store) */
   function getU128(IStore _store, bytes32 key) internal view returns (uint128 u128) {
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 16, 4);
@@ -202,7 +202,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -222,7 +222,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -242,7 +242,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes32 _keyHash = keccak256(abi.encode(key));
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(storagePointer, 16, 4, abi.encodePacked((u128)), _tableId, _keyTuple, 1, getFieldLayout());
@@ -250,28 +250,31 @@ library Mixed {
 
   /** Get a32 */
   function getA32(bytes32 key) internal view returns (uint32[] memory a32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = StoreSwitch.loadDynamicField(storagePointer, lengthStoragePointer, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /** Get a32 */
   function _getA32(bytes32 key) internal view returns (uint32[] memory a32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = StoreCore.loadDynamicField(storagePointer, lengthStoragePointer, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
   /** Get a32 (using the specified store) */
   function getA32(IStore _store, bytes32 key) internal view returns (uint32[] memory a32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = _store.loadDynamicField(storagePointer, lengthStoragePointer, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -301,10 +304,10 @@ library Mixed {
 
   /** Get the length of a32 */
   function lengthA32(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = StoreSwitch.loadFieldLength(lengthStoragePointer, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -312,10 +315,10 @@ library Mixed {
 
   /** Get the length of a32 */
   function _lengthA32(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = StoreCore.loadFieldLength(lengthStoragePointer, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -323,10 +326,10 @@ library Mixed {
 
   /** Get the length of a32 (using the specified store) */
   function lengthA32(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = _store.loadFieldLength(lengthStoragePointer, 0);
     unchecked {
       return _byteLength / 4;
     }
@@ -337,18 +340,11 @@ library Mixed {
    * (unchecked, returns invalid data if index overflows)
    */
   function getItemA32(bytes32 key, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        2,
-        getFieldLayout(),
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreSwitch.loadFieldSlice(storagePointer, _index * 4, (_index + 1) * 4);
       return (uint32(Bytes.slice4(_blob, 0)));
     }
   }
@@ -358,18 +354,11 @@ library Mixed {
    * (unchecked, returns invalid data if index overflows)
    */
   function _getItemA32(bytes32 key, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        2,
-        getFieldLayout(),
-        _index * 4,
-        (_index + 1) * 4
-      );
+      bytes memory _blob = StoreCore.loadFieldSlice(storagePointer, _index * 4, (_index + 1) * 4);
       return (uint32(Bytes.slice4(_blob, 0)));
     }
   }
@@ -379,11 +368,11 @@ library Mixed {
    * (unchecked, returns invalid data if index overflows)
    */
   function getItemA32(IStore _store, bytes32 key, uint256 _index) internal view returns (uint32) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getFieldLayout(), _index * 4, (_index + 1) * 4);
+      bytes memory _blob = _store.loadFieldSlice(storagePointer, _index * 4, (_index + 1) * 4);
       return (uint32(Bytes.slice4(_blob, 0)));
     }
   }
@@ -477,28 +466,31 @@ library Mixed {
 
   /** Get s */
   function getS(bytes32 key) internal view returns (string memory s) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 1);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = StoreSwitch.loadDynamicField(storagePointer, lengthStoragePointer, 1);
     return (string(_blob));
   }
 
   /** Get s */
   function _getS(bytes32 key) internal view returns (string memory s) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 1);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = StoreCore.loadDynamicField(storagePointer, lengthStoragePointer, 1);
     return (string(_blob));
   }
 
   /** Get s (using the specified store) */
   function getS(IStore _store, bytes32 key) internal view returns (string memory s) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 1);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = _store.loadDynamicField(storagePointer, lengthStoragePointer, 1);
     return (string(_blob));
   }
 
@@ -528,10 +520,10 @@ library Mixed {
 
   /** Get the length of s */
   function lengthS(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = StoreSwitch.loadFieldLength(lengthStoragePointer, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -539,10 +531,10 @@ library Mixed {
 
   /** Get the length of s */
   function _lengthS(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = StoreCore.loadFieldLength(lengthStoragePointer, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -550,10 +542,10 @@ library Mixed {
 
   /** Get the length of s (using the specified store) */
   function lengthS(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = _store.loadFieldLength(lengthStoragePointer, 1);
     unchecked {
       return _byteLength / 1;
     }
@@ -564,18 +556,11 @@ library Mixed {
    * (unchecked, returns invalid data if index overflows)
    */
   function getItemS(bytes32 key, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 1);
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        getFieldLayout(),
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreSwitch.loadFieldSlice(storagePointer, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -585,18 +570,11 @@ library Mixed {
    * (unchecked, returns invalid data if index overflows)
    */
   function _getItemS(bytes32 key, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 1);
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        getFieldLayout(),
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreCore.loadFieldSlice(storagePointer, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -606,11 +584,11 @@ library Mixed {
    * (unchecked, returns invalid data if index overflows)
    */
   function getItemS(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 1);
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getFieldLayout(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.loadFieldSlice(storagePointer, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }

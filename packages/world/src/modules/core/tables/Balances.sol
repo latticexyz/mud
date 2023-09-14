@@ -90,7 +90,7 @@ library Balances {
 
   /** Get balance */
   function get(bytes16 namespace) internal view returns (uint256 balance) {
-    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(namespace)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
@@ -99,7 +99,7 @@ library Balances {
 
   /** Get balance */
   function _get(bytes16 namespace) internal view returns (uint256 balance) {
-    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(namespace)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
@@ -108,7 +108,7 @@ library Balances {
 
   /** Get balance (using the specified store) */
   function get(IStore _store, bytes16 namespace) internal view returns (uint256 balance) {
-    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(namespace)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
@@ -120,7 +120,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(namespace)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -140,7 +140,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(namespace)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -160,7 +160,7 @@ library Balances {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
 
-    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(namespace)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(

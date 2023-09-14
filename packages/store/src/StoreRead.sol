@@ -46,6 +46,14 @@ contract StoreRead is IStoreRead {
     return StoreCore.loadStaticField(storagePointer, length, offset);
   }
 
+  function loadDynamicField(
+    uint256 storagePointer,
+    uint256 lengthStoragePointer,
+    uint8 dynamicSchemaIndex
+  ) public view virtual returns (bytes memory) {
+    return StoreCore.loadDynamicField(storagePointer, lengthStoragePointer, dynamicSchemaIndex);
+  }
+
   function getFieldLength(
     bytes32 tableId,
     bytes32[] memory key,
@@ -53,6 +61,13 @@ contract StoreRead is IStoreRead {
     FieldLayout fieldLayout
   ) public view virtual returns (uint256) {
     return StoreCore.getFieldLength(tableId, key, schemaIndex, fieldLayout);
+  }
+
+  function loadFieldLength(
+    uint256 lengthStoragePointer,
+    uint8 dynamicSchemaIndex
+  ) public view virtual returns (uint256) {
+    return StoreCore.loadFieldLength(lengthStoragePointer, dynamicSchemaIndex);
   }
 
   function getFieldSlice(
@@ -64,5 +79,13 @@ contract StoreRead is IStoreRead {
     uint256 end
   ) public view virtual returns (bytes memory) {
     return StoreCore.getFieldSlice(tableId, key, schemaIndex, fieldLayout, start, end);
+  }
+
+  function loadFieldSlice(
+    uint256 storagePointer,
+    uint256 start,
+    uint256 end
+  ) public view virtual returns (bytes memory) {
+    return StoreCore.loadFieldSlice(storagePointer, start, end);
   }
 }

@@ -263,6 +263,19 @@ library StoreSwitch {
     }
   }
 
+  function loadDynamicField(
+    uint256 storagePointer,
+    uint256 lengthStoragePointer,
+    uint8 dynamicSchemaIndex
+  ) public view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.loadDynamicField(storagePointer, lengthStoragePointer, dynamicSchemaIndex);
+    } else {
+      return IStore(_storeAddress).loadDynamicField(storagePointer, lengthStoragePointer, dynamicSchemaIndex);
+    }
+  }
+
   function getFieldLength(
     bytes32 table,
     bytes32[] memory key,
@@ -274,6 +287,15 @@ library StoreSwitch {
       return StoreCore.getFieldLength(table, key, fieldIndex, fieldLayout);
     } else {
       return IStore(_storeAddress).getFieldLength(table, key, fieldIndex, fieldLayout);
+    }
+  }
+
+  function loadFieldLength(uint256 lengthStoragePointer, uint8 dynamicSchemaIndex) internal view returns (uint256) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.loadFieldLength(lengthStoragePointer, dynamicSchemaIndex);
+    } else {
+      return IStore(_storeAddress).loadFieldLength(lengthStoragePointer, dynamicSchemaIndex);
     }
   }
 
@@ -290,6 +312,15 @@ library StoreSwitch {
       return StoreCore.getFieldSlice(table, key, fieldIndex, fieldLayout, start, end);
     } else {
       return IStore(_storeAddress).getFieldSlice(table, key, fieldIndex, fieldLayout, start, end);
+    }
+  }
+
+  function loadFieldSlice(uint256 storagePointer, uint256 start, uint256 end) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.loadFieldSlice(storagePointer, start, end);
+    } else {
+      return IStore(_storeAddress).loadFieldSlice(storagePointer, start, end);
     }
   }
 }

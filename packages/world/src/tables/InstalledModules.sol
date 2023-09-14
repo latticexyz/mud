@@ -96,7 +96,7 @@ library InstalledModules {
 
   /** Get moduleAddress */
   function getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
-    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 0);
@@ -105,7 +105,7 @@ library InstalledModules {
 
   /** Get moduleAddress */
   function _getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
-    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 20, 0);
@@ -118,7 +118,7 @@ library InstalledModules {
     bytes16 moduleName,
     bytes32 argumentsHash
   ) internal view returns (address moduleAddress) {
-    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 20, 0);
@@ -131,7 +131,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -152,7 +152,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -173,7 +173,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(

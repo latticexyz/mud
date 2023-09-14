@@ -15,6 +15,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
   let offset = 0;
   for (const [schemaIndex, field] of options.fields.entries()) {
     const _typedFieldName = `${field.typeWithLocation} ${field.name}`;
+    const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
 
     if (field.isDynamic) {
       result += renderWithStore(
@@ -26,8 +27,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal view returns (${_typedFieldName}) {
-          ${_keyTupleDefinition}
-          bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex}, getFieldLayout());
+          ${_keyhashDefinition}
+          uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, ${dynamicSchemaIndex});
+          uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+          bytes memory _blob = ${_store}.loadDynamicField(storagePointer, lengthStoragePointer, ${dynamicSchemaIndex});
           return ${renderDecodeFieldSingle(field)};
         }
       `
@@ -99,8 +102,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal view returns (uint256) {
-          ${_keyTupleDefinition}
-          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, getFieldLayout());
+          ${_keyhashDefinition}
+          uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+          uint256 _byteLength = ${_store}.loadFieldLength(lengthStoragePointer, ${dynamicSchemaIndex});
           unchecked {
             return _byteLength / ${portionData.elementLength};
           }
@@ -121,13 +125,11 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
           "uint256 _index",
         ])}) internal view returns (${portionData.typeWithLocation}) {
-          ${_keyTupleDefinition}
+          ${_keyhashDefinition}
+          uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, ${dynamicSchemaIndex});
           unchecked {
-            bytes memory _blob = ${_store}.getFieldSlice(
-              _tableId,
-              _keyTuple,
-              ${schemaIndex},
-              getFieldLayout(),
+            bytes memory _blob = ${_store}.loadFieldSlice(
+              storagePointer,
               _index * ${portionData.elementLength},
               (_index + 1) * ${portionData.elementLength}
             );

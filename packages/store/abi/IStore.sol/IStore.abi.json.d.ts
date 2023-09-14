@@ -479,6 +479,88 @@ declare const abi: [
       },
       {
         internalType: "uint256";
+        name: "lengthStoragePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint8";
+        name: "dynamicSchemaIndex";
+        type: "uint8";
+      }
+    ];
+    name: "loadDynamicField";
+    outputs: [
+      {
+        internalType: "bytes";
+        name: "";
+        type: "bytes";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "lengthStoragePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint8";
+        name: "dynamicSchemaIndex";
+        type: "uint8";
+      }
+    ];
+    name: "loadFieldLength";
+    outputs: [
+      {
+        internalType: "uint256";
+        name: "";
+        type: "uint256";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "storagePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "start";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
+        name: "end";
+        type: "uint256";
+      }
+    ];
+    name: "loadFieldSlice";
+    outputs: [
+      {
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      }
+    ];
+    stateMutability: "view";
+    type: "function";
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256";
+        name: "storagePointer";
+        type: "uint256";
+      },
+      {
+        internalType: "uint256";
         name: "length";
         type: "uint256";
       },

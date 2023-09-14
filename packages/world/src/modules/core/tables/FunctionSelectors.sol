@@ -92,7 +92,7 @@ library FunctionSelectors {
 
   /** Get resourceSelector */
   function getResourceSelector(bytes4 functionSelector) internal view returns (bytes32 resourceSelector) {
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
@@ -101,7 +101,7 @@ library FunctionSelectors {
 
   /** Get resourceSelector */
   function _getResourceSelector(bytes4 functionSelector) internal view returns (bytes32 resourceSelector) {
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
@@ -113,7 +113,7 @@ library FunctionSelectors {
     IStore _store,
     bytes4 functionSelector
   ) internal view returns (bytes32 resourceSelector) {
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 32, 0);
@@ -125,7 +125,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -145,7 +145,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -165,7 +165,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(
@@ -182,7 +182,7 @@ library FunctionSelectors {
 
   /** Get systemFunctionSelector */
   function getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 4, 32);
@@ -191,7 +191,7 @@ library FunctionSelectors {
 
   /** Get systemFunctionSelector */
   function _getSystemFunctionSelector(bytes4 functionSelector) internal view returns (bytes4 systemFunctionSelector) {
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 32);
@@ -203,7 +203,7 @@ library FunctionSelectors {
     IStore _store,
     bytes4 functionSelector
   ) internal view returns (bytes4 systemFunctionSelector) {
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = _store.loadStaticField(storagePointer, 4, 32);
@@ -215,7 +215,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreSwitch.storeStaticField(
@@ -235,7 +235,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     StoreCore.storeStaticField(
@@ -255,7 +255,7 @@ library FunctionSelectors {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    bytes32 _keyHash = keccak256(abi.encode(functionSelector));
+    bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(functionSelector)));
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     _store.storeStaticField(

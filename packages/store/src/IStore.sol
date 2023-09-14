@@ -30,6 +30,12 @@ interface IStoreRead {
 
   function loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) external view returns (bytes32);
 
+  function loadDynamicField(
+    uint256 storagePointer,
+    uint256 lengthStoragePointer,
+    uint8 dynamicSchemaIndex
+  ) external view returns (bytes memory);
+
   // Get field length at schema index
   function getFieldLength(
     bytes32 table,
@@ -37,6 +43,8 @@ interface IStoreRead {
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) external view returns (uint256);
+
+  function loadFieldLength(uint256 lengthStoragePointer, uint8 dynamicSchemaIndex) external view returns (uint256);
 
   // Get start:end slice of the field at schema index
   function getFieldSlice(
@@ -47,6 +55,8 @@ interface IStoreRead {
     uint256 start,
     uint256 end
   ) external view returns (bytes memory data);
+
+  function loadFieldSlice(uint256 storagePointer, uint256 start, uint256 end) external view returns (bytes memory data);
 }
 
 interface IStoreWrite {

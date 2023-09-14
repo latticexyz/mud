@@ -581,6 +581,15 @@ library StoreCore {
     return StoreCoreInternal._loadStaticField(storagePointer, length, offset);
   }
 
+  function loadDynamicField(
+    uint256 storagePointer,
+    uint256 lengthStoragePointer,
+    uint8 dynamicSchemaIndex
+  ) internal view returns (bytes memory) {
+    uint256 length = StoreCoreInternal._loadFieldLength(lengthStoragePointer, dynamicSchemaIndex);
+    return StoreCoreInternal._loadFieldSlice(storagePointer, length, 0);
+  }
+
   /**
    * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
    */
@@ -598,6 +607,10 @@ library StoreCore {
       uint8 dynamicFieldLayoutIndex = schemaIndex - numStaticFields;
       return StoreCoreInternal._loadEncodedDynamicDataLength(tableId, key).atIndex(dynamicFieldLayoutIndex);
     }
+  }
+
+  function loadFieldLength(uint256 lengthStoragePointer, uint8 dynamicSchemaIndex) internal view returns (uint256) {
+    return StoreCoreInternal._loadFieldLength(lengthStoragePointer, dynamicSchemaIndex);
   }
 
   /**
@@ -623,6 +636,10 @@ library StoreCore {
 
     return Storage.load({ storagePointer: location, length: end - start, offset: start });
   }
+
+  function loadFieldSlice(uint256 storagePointer, uint256 start, uint256 end) internal view returns (bytes memory) {
+    return StoreCoreInternal._loadFieldSlice(storagePointer, end - start, start);
+  }
 }
 
 library StoreCoreInternal {
@@ -636,6 +653,18 @@ library StoreCoreInternal {
 
   function _loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32) {
     return Storage.loadField(storagePointer, length, offset);
+  }
+
+  function _loadFieldLength(uint256 lengthStoragePointer, uint8 dynamicSchemaIndex) internal view returns (uint256) {
+    return PackedCounter.wrap(Storage.load(lengthStoragePointer)).atIndex(dynamicSchemaIndex);
+  }
+
+  function _loadFieldSlice(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset
+  ) internal view returns (bytes memory) {
+    return Storage.load({ storagePointer: storagePointer, length: length, offset: offset });
   }
 
   function _storeStaticField(uint256 storagePointer, uint256 length, uint256 offset, bytes memory data) internal {
@@ -862,15 +891,27 @@ library StoreCoreInternal {
     bytes32[] memory key,
     uint8 schemaIndex
   ) internal pure returns (uint256) {
+    return _getDynamicDataLocation(tableId, keccak256(abi.encodePacked(key)), schemaIndex);
+  }
+
+  function _getDynamicDataLocation(
+    bytes32 tableId,
+    bytes32 keyHash,
+    uint8 schemaIndex
+  ) internal pure returns (uint256) {
     // offset by 1 to avoid collision with static data
-    return uint256(SLOT ^ tableId ^ bytes1(schemaIndex + 1) ^ keccak256(abi.encodePacked(key)));
+    return uint256(SLOT ^ tableId ^ bytes1(schemaIndex + 1) ^ keyHash);
   }
 
   /**
    * Compute the storage location for the length of the dynamic data
    */
   function _getDynamicDataLengthLocation(bytes32 tableId, bytes32[] memory key) internal pure returns (uint256) {
-    return uint256(SLOT ^ tableId ^ bytes32("length") ^ keccak256(abi.encodePacked(key)));
+    return _getDynamicDataLengthLocation(tableId, keccak256(abi.encodePacked(key)));
+  }
+
+  function _getDynamicDataLengthLocation(bytes32 tableId, bytes32 keyHash) internal pure returns (uint256) {
+    return uint256(SLOT ^ tableId ^ bytes32("length") ^ keyHash);
   }
 
   /**

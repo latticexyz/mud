@@ -90,28 +90,31 @@ library Callbacks {
 
   /** Get value */
   function get(bytes32 key) internal view returns (bytes24[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = StoreSwitch.loadDynamicField(storagePointer, lengthStoragePointer, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
   /** Get value */
   function _get(bytes32 key) internal view returns (bytes24[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = StoreCore.loadDynamicField(storagePointer, lengthStoragePointer, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 key) internal view returns (bytes24[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    bytes memory _blob = _store.loadDynamicField(storagePointer, lengthStoragePointer, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
@@ -141,10 +144,10 @@ library Callbacks {
 
   /** Get the length of value */
   function length(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = StoreSwitch.loadFieldLength(lengthStoragePointer, 0);
     unchecked {
       return _byteLength / 24;
     }
@@ -152,10 +155,10 @@ library Callbacks {
 
   /** Get the length of value */
   function _length(bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = StoreCore.loadFieldLength(lengthStoragePointer, 0);
     unchecked {
       return _byteLength / 24;
     }
@@ -163,10 +166,10 @@ library Callbacks {
 
   /** Get the length of value (using the specified store) */
   function length(IStore _store, bytes32 key) internal view returns (uint256) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 lengthStoragePointer = StoreCoreInternal._getDynamicDataLengthLocation(_tableId, _keyHash);
+    uint256 _byteLength = _store.loadFieldLength(lengthStoragePointer, 0);
     unchecked {
       return _byteLength / 24;
     }
@@ -177,18 +180,11 @@ library Callbacks {
    * (unchecked, returns invalid data if index overflows)
    */
   function getItem(bytes32 key, uint256 _index) internal view returns (bytes24) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
     unchecked {
-      bytes memory _blob = StoreSwitch.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        getFieldLayout(),
-        _index * 24,
-        (_index + 1) * 24
-      );
+      bytes memory _blob = StoreSwitch.loadFieldSlice(storagePointer, _index * 24, (_index + 1) * 24);
       return (Bytes.slice24(_blob, 0));
     }
   }
@@ -198,18 +194,11 @@ library Callbacks {
    * (unchecked, returns invalid data if index overflows)
    */
   function _getItem(bytes32 key, uint256 _index) internal view returns (bytes24) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        getFieldLayout(),
-        _index * 24,
-        (_index + 1) * 24
-      );
+      bytes memory _blob = StoreCore.loadFieldSlice(storagePointer, _index * 24, (_index + 1) * 24);
       return (Bytes.slice24(_blob, 0));
     }
   }
@@ -219,18 +208,11 @@ library Callbacks {
    * (unchecked, returns invalid data if index overflows)
    */
   function getItem(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes24) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
+    bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
+    uint256 storagePointer = StoreCoreInternal._getDynamicDataLocation(_tableId, _keyHash, 0);
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        0,
-        getFieldLayout(),
-        _index * 24,
-        (_index + 1) * 24
-      );
+      bytes memory _blob = _store.loadFieldSlice(storagePointer, _index * 24, (_index + 1) * 24);
       return (Bytes.slice24(_blob, 0));
     }
   }
