@@ -45,7 +45,7 @@ export async function deployHandler(args: DeployOptions) {
   // Run forge build
   if (!skipBuild) {
     await forge(["build", "--skip", "test", "script"], { profile });
-    await execa("mud", ["abi-ts"]);
+    await execa("mud", ["abi-ts"], { stdio: "inherit" });
   }
 
   // Get a list of all contract names

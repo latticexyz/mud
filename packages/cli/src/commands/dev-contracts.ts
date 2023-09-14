@@ -144,7 +144,7 @@ const commandModule: CommandModule<Options, Options> = {
       await forge(["build", "--skip", "test", "script"]);
 
       // Generate TS type definitions for ABIs
-      await execa("mud", ["abi-ts"]);
+      await execa("mud", ["abi-ts"], { stdio: "inherit" });
     }
 
     /** Run after codegen if either mud config or contracts changed */
