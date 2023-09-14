@@ -28,8 +28,9 @@ They are written under the assumption you are using `anvil` for your test chain,
 1. Run a test world.
    The easiest way to do this is to follow [these directions](tutorials/minimal#getting-the-initial-version) in a separate command line window.
 
-   **Note**: While MUD v2 is in alpha, we might need to change the data definitions.
-   To ensure your world is compatible with the indexer, use `mud@main` to create it, instead of ~`mud@next`~.
+   **Note**: While MUD v2 is in alpha, there might be breaking changes between pre-release versions.
+   To ensure your World is compatible with your indexer, make sure both are running the same MUD version.
+   To create a project with the MUD version on the `main` branch, use `mud@main` instead of ~`mud@next`~.
 
    ```sh copy
    pnpm create mud@main project-name
