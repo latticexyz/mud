@@ -1,6 +1,7 @@
 *
 
-!abi/**
+!out/**/*.abi.json
+!out/**/*.abi.json.d.ts
 !src/**
 !ts/**
 !package.json

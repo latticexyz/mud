@@ -1,0 +1,373 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/Tables.sol",
+    "id": 7231,
+    "exportedSymbols": {
+      "Callbacks": [
+        8240
+      ],
+      "CallbacksTableId": [
+        7283
+      ],
+      "Hooks": [
+        9260
+      ],
+      "KeyEncoding": [
+        10407
+      ],
+      "KeyEncodingTableId": [
+        9308
+      ],
+      "Mixed": [
+        12862
+      ],
+      "MixedData": [
+        10481
+      ],
+      "MixedTableId": [
+        10471
+      ],
+      "StoreHooks": [
+        13865
+      ],
+      "StoreHooksTableId": [
+        12908
+      ],
+      "Tables": [
+        16483
+      ],
+      "TablesData": [
+        13922
+      ],
+      "TablesTableId": [
+        13911
+      ],
+      "Vector2": [
+        17471
+      ],
+      "Vector2Data": [
+        16534
+      ],
+      "Vector2TableId": [
+        16529
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:557:16",
+    "nodes": [
+      {
+        "id": 7207,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:16",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 7210,
+        "nodeType": "ImportDirective",
+        "src": "107:72:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/StoreHooks.sol",
+        "file": "./tables/StoreHooks.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 13866,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7208,
+              "name": "StoreHooks",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 13865,
+              "src": "116:10:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7209,
+              "name": "StoreHooksTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 12908,
+              "src": "128:17:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 7213,
+        "nodeType": "ImportDirective",
+        "src": "180:69:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/Callbacks.sol",
+        "file": "./tables/Callbacks.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 8241,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7211,
+              "name": "Callbacks",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 8240,
+              "src": "189:9:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7212,
+              "name": "CallbacksTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 7283,
+              "src": "200:16:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 7217,
+        "nodeType": "ImportDirective",
+        "src": "250:72:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/Tables.sol",
+        "file": "./tables/Tables.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 16484,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7214,
+              "name": "Tables",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 16483,
+              "src": "259:6:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7215,
+              "name": "TablesData",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 13922,
+              "src": "267:10:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7216,
+              "name": "TablesTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 13911,
+              "src": "279:13:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 7219,
+        "nodeType": "ImportDirective",
+        "src": "323:43:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/Hooks.sol",
+        "file": "./tables/Hooks.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 9261,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7218,
+              "name": "Hooks",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 9260,
+              "src": "332:5:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 7223,
+        "nodeType": "ImportDirective",
+        "src": "367:68:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/Mixed.sol",
+        "file": "./tables/Mixed.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 12863,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7220,
+              "name": "Mixed",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 12862,
+              "src": "376:5:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7221,
+              "name": "MixedData",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 10481,
+              "src": "383:9:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7222,
+              "name": "MixedTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 10471,
+              "src": "394:12:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 7227,
+        "nodeType": "ImportDirective",
+        "src": "436:76:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/Vector2.sol",
+        "file": "./tables/Vector2.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 17472,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7224,
+              "name": "Vector2",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 17471,
+              "src": "445:7:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7225,
+              "name": "Vector2Data",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 16534,
+              "src": "454:11:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7226,
+              "name": "Vector2TableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 16529,
+              "src": "467:14:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 7230,
+        "nodeType": "ImportDirective",
+        "src": "513:75:16",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/codegen/tables/KeyEncoding.sol",
+        "file": "./tables/KeyEncoding.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 7231,
+        "sourceUnit": 10426,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 7228,
+              "name": "KeyEncoding",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 10407,
+              "src": "522:11:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 7229,
+              "name": "KeyEncodingTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 9308,
+              "src": "535:18:16",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 16
+}

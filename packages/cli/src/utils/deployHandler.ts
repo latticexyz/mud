@@ -44,9 +44,7 @@ export async function deployHandler(args: DeployOptions) {
 
   // Run forge build
   if (!skipBuild) {
-    await forge(["build", "--extra-output-files", "abi", "--out", "abi", "--skip", "test", "script", "MudTest.sol"], {
-      profile,
-    });
+    await forge(["build", "--skip", "test", "script"], { profile });
     await execa("mud", ["abi-ts"]);
   }
 

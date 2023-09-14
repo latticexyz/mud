@@ -1,0 +1,1928 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "table",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "key",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "FieldLayout",
+          "name": "fieldLayout",
+          "type": "bytes32"
+        }
+      ],
+      "name": "onAfterDeleteRecord",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "table",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "key",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "uint8",
+          "name": "schemaIndex",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "FieldLayout",
+          "name": "fieldLayout",
+          "type": "bytes32"
+        }
+      ],
+      "name": "onAfterSetField",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "table",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "key",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "FieldLayout",
+          "name": "fieldLayout",
+          "type": "bytes32"
+        }
+      ],
+      "name": "onAfterSetRecord",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "table",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "key",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "FieldLayout",
+          "name": "fieldLayout",
+          "type": "bytes32"
+        }
+      ],
+      "name": "onBeforeDeleteRecord",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "table",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "key",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "uint8",
+          "name": "schemaIndex",
+          "type": "uint8"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "FieldLayout",
+          "name": "fieldLayout",
+          "type": "bytes32"
+        }
+      ],
+      "name": "onBeforeSetField",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "table",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32[]",
+          "name": "key",
+          "type": "bytes32[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        },
+        {
+          "internalType": "FieldLayout",
+          "name": "fieldLayout",
+          "type": "bytes32"
+        }
+      ],
+      "name": "onBeforeSetRecord",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceID",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "onAfterDeleteRecord(bytes32,bytes32[],bytes32)": "83b5c95b",
+    "onAfterSetField(bytes32,bytes32[],uint8,bytes,bytes32)": "7da508a2",
+    "onAfterSetRecord(bytes32,bytes32[],bytes,bytes32)": "4d08d1ad",
+    "onBeforeDeleteRecord(bytes32,bytes32[],bytes32)": "9faeaf45",
+    "onBeforeSetField(bytes32,bytes32[],uint8,bytes,bytes32)": "bf11b74e",
+    "onBeforeSetRecord(bytes32,bytes32[],bytes,bytes32)": "d2cea89f",
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"table\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"key\",\"type\":\"bytes32[]\"},{\"internalType\":\"FieldLayout\",\"name\":\"fieldLayout\",\"type\":\"bytes32\"}],\"name\":\"onAfterDeleteRecord\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"table\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"key\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint8\",\"name\":\"schemaIndex\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"FieldLayout\",\"name\":\"fieldLayout\",\"type\":\"bytes32\"}],\"name\":\"onAfterSetField\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"table\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"key\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"FieldLayout\",\"name\":\"fieldLayout\",\"type\":\"bytes32\"}],\"name\":\"onAfterSetRecord\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"table\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"key\",\"type\":\"bytes32[]\"},{\"internalType\":\"FieldLayout\",\"name\":\"fieldLayout\",\"type\":\"bytes32\"}],\"name\":\"onBeforeDeleteRecord\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"table\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"key\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint8\",\"name\":\"schemaIndex\",\"type\":\"uint8\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"FieldLayout\",\"name\":\"fieldLayout\",\"type\":\"bytes32\"}],\"name\":\"onBeforeSetField\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"table\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32[]\",\"name\":\"key\",\"type\":\"bytes32[]\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"},{\"internalType\":\"FieldLayout\",\"name\":\"fieldLayout\",\"type\":\"bytes32\"}],\"name\":\"onBeforeSetRecord\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceID\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"supportsInterface(bytes4)\":{\"details\":\"Interface identification is specified in ERC-165. This function  uses less than 30,000 gas.\",\"params\":{\"interfaceID\":\"The interface identifier, as specified in ERC-165\"},\"returns\":{\"_0\":\"`true` if the contract implements `interfaceID` and  `interfaceID` is not 0xffffffff, `false` otherwise\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"supportsInterface(bytes4)\":{\"notice\":\"Query if a contract implements an interface\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreHook.sol\":\"IStoreHook\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/FieldLayout.sol\":{\"keccak256\":\"0x3c30839b8d37f733085ce33e25e2a3b69bce0841c43062b3cbb031f1f71d26d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e6d067176e7a7269df942620e4f9643ca1cb16390e0be6c1b2b9ab716a1030ef\",\"dweb:/ipfs/QmeH7m1PgjgpcZd2PAeJauZ2BU84qjmrHKhqktir8exiEX\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/IERC165.sol\":{\"keccak256\":\"0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350\",\"dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreHook.sol\":{\"keccak256\":\"0xacdacf30eb020f9418daea73d50524a1e3d34d4dc62c3c4d102292a0fcd7f01d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e3843a425d929b8cb7c33df40957d393ec245814331722c7ea18bec1b67cafa7\",\"dweb:/ipfs/QmWttHYEEjTp7HDsNLmBHLpEyExuFwGQ1D992qpHqFtMFb\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/constants.sol\":{\"keccak256\":\"0x1614411e0dcfddfcefdf560ca48bbc5567b74193ca873ebd65800251bb6fc9d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://19df1549602ec232516b688b6b6688c092765637f9543072a3730f0c9ef5caad\",\"dweb:/ipfs/Qmc4rYgS2cRjDXiF9E5WCMaVKKFqYzsbPGAiDJvhKR4Cm8\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "table",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "key",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "FieldLayout",
+              "name": "fieldLayout",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onAfterDeleteRecord"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "table",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "key",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "uint8",
+              "name": "schemaIndex",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "FieldLayout",
+              "name": "fieldLayout",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onAfterSetField"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "table",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "key",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "FieldLayout",
+              "name": "fieldLayout",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onAfterSetRecord"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "table",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "key",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "FieldLayout",
+              "name": "fieldLayout",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onBeforeDeleteRecord"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "table",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "key",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "uint8",
+              "name": "schemaIndex",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "FieldLayout",
+              "name": "fieldLayout",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onBeforeSetField"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "table",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32[]",
+              "name": "key",
+              "type": "bytes32[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            },
+            {
+              "internalType": "FieldLayout",
+              "name": "fieldLayout",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onBeforeSetRecord"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceID",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "supportsInterface(bytes4)": {
+            "details": "Interface identification is specified in ERC-165. This function  uses less than 30,000 gas.",
+            "params": {
+              "interfaceID": "The interface identifier, as specified in ERC-165"
+            },
+            "returns": {
+              "_0": "`true` if the contract implements `interfaceID` and  `interfaceID` is not 0xffffffff, `false` otherwise"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "supportsInterface(bytes4)": {
+            "notice": "Query if a contract implements an interface"
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreHook.sol": "IStoreHook"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/store/src/FieldLayout.sol": {
+        "keccak256": "0x3c30839b8d37f733085ce33e25e2a3b69bce0841c43062b3cbb031f1f71d26d0",
+        "urls": [
+          "bzz-raw://e6d067176e7a7269df942620e4f9643ca1cb16390e0be6c1b2b9ab716a1030ef",
+          "dweb:/ipfs/QmeH7m1PgjgpcZd2PAeJauZ2BU84qjmrHKhqktir8exiEX"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IERC165.sol": {
+        "keccak256": "0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577",
+        "urls": [
+          "bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350",
+          "dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreHook.sol": {
+        "keccak256": "0xacdacf30eb020f9418daea73d50524a1e3d34d4dc62c3c4d102292a0fcd7f01d",
+        "urls": [
+          "bzz-raw://e3843a425d929b8cb7c33df40957d393ec245814331722c7ea18bec1b67cafa7",
+          "dweb:/ipfs/QmWttHYEEjTp7HDsNLmBHLpEyExuFwGQ1D992qpHqFtMFb"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/store/src/constants.sol": {
+        "keccak256": "0x1614411e0dcfddfcefdf560ca48bbc5567b74193ca873ebd65800251bb6fc9d0",
+        "urls": [
+          "bzz-raw://19df1549602ec232516b688b6b6688c092765637f9543072a3730f0c9ef5caad",
+          "dweb:/ipfs/Qmc4rYgS2cRjDXiF9E5WCMaVKKFqYzsbPGAiDJvhKR4Cm8"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreHook.sol",
+    "id": 1893,
+    "exportedSymbols": {
+      "ERC165_INTERFACE_ID": [
+        1430
+      ],
+      "FieldLayout": [
+        808
+      ],
+      "IERC165": [
+        1439
+      ],
+      "IStoreHook": [
+        1892
+      ],
+      "STORE_HOOK_INTERFACE_ID": [
+        1811
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:1334:6",
+    "nodes": [
+      {
+        "id": 1779,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:6",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 1781,
+        "nodeType": "ImportDirective",
+        "src": "58:48:6",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/FieldLayout.sol",
+        "file": "./FieldLayout.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1893,
+        "sourceUnit": 1227,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1780,
+              "name": "FieldLayout",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 808,
+              "src": "67:11:6",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1784,
+        "nodeType": "ImportDirective",
+        "src": "107:61:6",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IERC165.sol",
+        "file": "./IERC165.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 1893,
+        "sourceUnit": 1440,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 1782,
+              "name": "IERC165",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1439,
+              "src": "116:7:6",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 1783,
+              "name": "ERC165_INTERFACE_ID",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 1430,
+              "src": "125:19:6",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 1811,
+        "nodeType": "VariableDeclaration",
+        "src": "239:314:6",
+        "nodes": [],
+        "constant": true,
+        "mutability": "constant",
+        "name": "STORE_HOOK_INTERFACE_ID",
+        "nameLocation": "255:23:6",
+        "scope": 1893,
+        "stateVariable": false,
+        "storageLocation": "default",
+        "typeDescriptions": {
+          "typeIdentifier": "t_bytes4",
+          "typeString": "bytes4"
+        },
+        "typeName": {
+          "id": 1785,
+          "name": "bytes4",
+          "nodeType": "ElementaryTypeName",
+          "src": "239:6:6",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes4",
+            "typeString": "bytes4"
+          }
+        },
+        "value": {
+          "commonType": {
+            "typeIdentifier": "t_bytes4",
+            "typeString": "bytes4"
+          },
+          "id": 1810,
+          "isConstant": false,
+          "isLValue": false,
+          "isPure": true,
+          "lValueRequested": false,
+          "leftExpression": {
+            "commonType": {
+              "typeIdentifier": "t_bytes4",
+              "typeString": "bytes4"
+            },
+            "id": 1808,
+            "isConstant": false,
+            "isLValue": false,
+            "isPure": true,
+            "lValueRequested": false,
+            "leftExpression": {
+              "commonType": {
+                "typeIdentifier": "t_bytes4",
+                "typeString": "bytes4"
+              },
+              "id": 1804,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "lValueRequested": false,
+              "leftExpression": {
+                "commonType": {
+                  "typeIdentifier": "t_bytes4",
+                  "typeString": "bytes4"
+                },
+                "id": 1800,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": true,
+                "lValueRequested": false,
+                "leftExpression": {
+                  "commonType": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "id": 1796,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "leftExpression": {
+                    "commonType": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    },
+                    "id": 1792,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "expression": {
+                        "expression": {
+                          "id": 1786,
+                          "name": "IStoreHook",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1892,
+                          "src": "281:10:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_IStoreHook_$1892_$",
+                            "typeString": "type(contract IStoreHook)"
+                          }
+                        },
+                        "id": 1787,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "onBeforeSetRecord",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 1826,
+                        "src": "281:28:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_declaration_nonpayable$_t_bytes32_$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_bytes_memory_ptr_$_t_userDefinedValueType$_FieldLayout_$808_$returns$__$",
+                          "typeString": "function IStoreHook.onBeforeSetRecord(bytes32,bytes32[] memory,bytes memory,FieldLayout)"
+                        }
+                      },
+                      "id": 1788,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberName": "selector",
+                      "nodeType": "MemberAccess",
+                      "src": "281:37:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes4",
+                        "typeString": "bytes4"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "^",
+                    "rightExpression": {
+                      "expression": {
+                        "expression": {
+                          "id": 1789,
+                          "name": "IStoreHook",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 1892,
+                          "src": "323:10:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_IStoreHook_$1892_$",
+                            "typeString": "type(contract IStoreHook)"
+                          }
+                        },
+                        "id": 1790,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "memberName": "onAfterSetRecord",
+                        "nodeType": "MemberAccess",
+                        "referencedDeclaration": 1839,
+                        "src": "323:27:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_declaration_nonpayable$_t_bytes32_$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_bytes_memory_ptr_$_t_userDefinedValueType$_FieldLayout_$808_$returns$__$",
+                          "typeString": "function IStoreHook.onAfterSetRecord(bytes32,bytes32[] memory,bytes memory,FieldLayout)"
+                        }
+                      },
+                      "id": 1791,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberName": "selector",
+                      "nodeType": "MemberAccess",
+                      "src": "323:36:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes4",
+                        "typeString": "bytes4"
+                      }
+                    },
+                    "src": "281:78:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "nodeType": "BinaryOperation",
+                  "operator": "^",
+                  "rightExpression": {
+                    "expression": {
+                      "expression": {
+                        "id": 1793,
+                        "name": "IStoreHook",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1892,
+                        "src": "364:10:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_contract$_IStoreHook_$1892_$",
+                          "typeString": "type(contract IStoreHook)"
+                        }
+                      },
+                      "id": 1794,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "memberName": "onBeforeSetField",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 1854,
+                      "src": "364:27:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_declaration_nonpayable$_t_bytes32_$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_uint8_$_t_bytes_memory_ptr_$_t_userDefinedValueType$_FieldLayout_$808_$returns$__$",
+                        "typeString": "function IStoreHook.onBeforeSetField(bytes32,bytes32[] memory,uint8,bytes memory,FieldLayout)"
+                      }
+                    },
+                    "id": 1795,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "memberName": "selector",
+                    "nodeType": "MemberAccess",
+                    "src": "364:36:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "src": "281:119:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  }
+                },
+                "nodeType": "BinaryOperation",
+                "operator": "^",
+                "rightExpression": {
+                  "expression": {
+                    "expression": {
+                      "id": 1797,
+                      "name": "IStoreHook",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 1892,
+                      "src": "405:10:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_contract$_IStoreHook_$1892_$",
+                        "typeString": "type(contract IStoreHook)"
+                      }
+                    },
+                    "id": 1798,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "memberName": "onAfterSetField",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 1869,
+                    "src": "405:26:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_function_declaration_nonpayable$_t_bytes32_$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_uint8_$_t_bytes_memory_ptr_$_t_userDefinedValueType$_FieldLayout_$808_$returns$__$",
+                      "typeString": "function IStoreHook.onAfterSetField(bytes32,bytes32[] memory,uint8,bytes memory,FieldLayout)"
+                    }
+                  },
+                  "id": 1799,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "memberName": "selector",
+                  "nodeType": "MemberAccess",
+                  "src": "405:35:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  }
+                },
+                "src": "281:159:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes4",
+                  "typeString": "bytes4"
+                }
+              },
+              "nodeType": "BinaryOperation",
+              "operator": "^",
+              "rightExpression": {
+                "expression": {
+                  "expression": {
+                    "id": 1801,
+                    "name": "IStoreHook",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 1892,
+                    "src": "445:10:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_type$_t_contract$_IStoreHook_$1892_$",
+                      "typeString": "type(contract IStoreHook)"
+                    }
+                  },
+                  "id": 1802,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "memberName": "onBeforeDeleteRecord",
+                  "nodeType": "MemberAccess",
+                  "referencedDeclaration": 1880,
+                  "src": "445:31:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_function_declaration_nonpayable$_t_bytes32_$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_userDefinedValueType$_FieldLayout_$808_$returns$__$",
+                    "typeString": "function IStoreHook.onBeforeDeleteRecord(bytes32,bytes32[] memory,FieldLayout)"
+                  }
+                },
+                "id": 1803,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": true,
+                "lValueRequested": false,
+                "memberName": "selector",
+                "nodeType": "MemberAccess",
+                "src": "445:40:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes4",
+                  "typeString": "bytes4"
+                }
+              },
+              "src": "281:204:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes4",
+                "typeString": "bytes4"
+              }
+            },
+            "nodeType": "BinaryOperation",
+            "operator": "^",
+            "rightExpression": {
+              "expression": {
+                "expression": {
+                  "id": 1805,
+                  "name": "IStoreHook",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 1892,
+                  "src": "490:10:6",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_contract$_IStoreHook_$1892_$",
+                    "typeString": "type(contract IStoreHook)"
+                  }
+                },
+                "id": 1806,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": true,
+                "lValueRequested": false,
+                "memberName": "onAfterDeleteRecord",
+                "nodeType": "MemberAccess",
+                "referencedDeclaration": 1891,
+                "src": "490:30:6",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_function_declaration_nonpayable$_t_bytes32_$_t_array$_t_bytes32_$dyn_memory_ptr_$_t_userDefinedValueType$_FieldLayout_$808_$returns$__$",
+                  "typeString": "function IStoreHook.onAfterDeleteRecord(bytes32,bytes32[] memory,FieldLayout)"
+                }
+              },
+              "id": 1807,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "lValueRequested": false,
+              "memberName": "selector",
+              "nodeType": "MemberAccess",
+              "src": "490:39:6",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes4",
+                "typeString": "bytes4"
+              }
+            },
+            "src": "281:248:6",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes4",
+              "typeString": "bytes4"
+            }
+          },
+          "nodeType": "BinaryOperation",
+          "operator": "^",
+          "rightExpression": {
+            "id": 1809,
+            "name": "ERC165_INTERFACE_ID",
+            "nodeType": "Identifier",
+            "overloadedDeclarations": [],
+            "referencedDeclaration": 1430,
+            "src": "534:19:6",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bytes4",
+              "typeString": "bytes4"
+            }
+          },
+          "src": "281:272:6",
+          "typeDescriptions": {
+            "typeIdentifier": "t_bytes4",
+            "typeString": "bytes4"
+          }
+        },
+        "visibility": "internal"
+      },
+      {
+        "id": 1892,
+        "nodeType": "ContractDefinition",
+        "src": "556:809:6",
+        "nodes": [
+          {
+            "id": 1826,
+            "nodeType": "FunctionDefinition",
+            "src": "592:117:6",
+            "nodes": [],
+            "functionSelector": "d2cea89f",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onBeforeSetRecord",
+            "nameLocation": "601:17:6",
+            "parameters": {
+              "id": 1824,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1815,
+                  "mutability": "mutable",
+                  "name": "table",
+                  "nameLocation": "627:5:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1826,
+                  "src": "619:13:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1814,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "619:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1818,
+                  "mutability": "mutable",
+                  "name": "key",
+                  "nameLocation": "651:3:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1826,
+                  "src": "634:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1816,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "634:7:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 1817,
+                    "nodeType": "ArrayTypeName",
+                    "src": "634:9:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1820,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nameLocation": "669:4:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1826,
+                  "src": "656:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 1819,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "656:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1823,
+                  "mutability": "mutable",
+                  "name": "fieldLayout",
+                  "nameLocation": "687:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1826,
+                  "src": "675:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                    "typeString": "FieldLayout"
+                  },
+                  "typeName": {
+                    "id": 1822,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1821,
+                      "name": "FieldLayout",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 808,
+                      "src": "675:11:6"
+                    },
+                    "referencedDeclaration": 808,
+                    "src": "675:11:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                      "typeString": "FieldLayout"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "618:81:6"
+            },
+            "returnParameters": {
+              "id": 1825,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "708:0:6"
+            },
+            "scope": 1892,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1839,
+            "nodeType": "FunctionDefinition",
+            "src": "713:116:6",
+            "nodes": [],
+            "functionSelector": "4d08d1ad",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onAfterSetRecord",
+            "nameLocation": "722:16:6",
+            "parameters": {
+              "id": 1837,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1828,
+                  "mutability": "mutable",
+                  "name": "table",
+                  "nameLocation": "747:5:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1839,
+                  "src": "739:13:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1827,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "739:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1831,
+                  "mutability": "mutable",
+                  "name": "key",
+                  "nameLocation": "771:3:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1839,
+                  "src": "754:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1829,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "754:7:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 1830,
+                    "nodeType": "ArrayTypeName",
+                    "src": "754:9:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1833,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nameLocation": "789:4:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1839,
+                  "src": "776:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 1832,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "776:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1836,
+                  "mutability": "mutable",
+                  "name": "fieldLayout",
+                  "nameLocation": "807:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1839,
+                  "src": "795:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                    "typeString": "FieldLayout"
+                  },
+                  "typeName": {
+                    "id": 1835,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1834,
+                      "name": "FieldLayout",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 808,
+                      "src": "795:11:6"
+                    },
+                    "referencedDeclaration": 808,
+                    "src": "795:11:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                      "typeString": "FieldLayout"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "738:81:6"
+            },
+            "returnParameters": {
+              "id": 1838,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "828:0:6"
+            },
+            "scope": 1892,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1854,
+            "nodeType": "FunctionDefinition",
+            "src": "833:159:6",
+            "nodes": [],
+            "functionSelector": "bf11b74e",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onBeforeSetField",
+            "nameLocation": "842:16:6",
+            "parameters": {
+              "id": 1852,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1841,
+                  "mutability": "mutable",
+                  "name": "table",
+                  "nameLocation": "872:5:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1854,
+                  "src": "864:13:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1840,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "864:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1844,
+                  "mutability": "mutable",
+                  "name": "key",
+                  "nameLocation": "900:3:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1854,
+                  "src": "883:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1842,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "883:7:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 1843,
+                    "nodeType": "ArrayTypeName",
+                    "src": "883:9:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1846,
+                  "mutability": "mutable",
+                  "name": "schemaIndex",
+                  "nameLocation": "915:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1854,
+                  "src": "909:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1845,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "909:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1848,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nameLocation": "945:4:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1854,
+                  "src": "932:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 1847,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "932:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1851,
+                  "mutability": "mutable",
+                  "name": "fieldLayout",
+                  "nameLocation": "967:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1854,
+                  "src": "955:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                    "typeString": "FieldLayout"
+                  },
+                  "typeName": {
+                    "id": 1850,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1849,
+                      "name": "FieldLayout",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 808,
+                      "src": "955:11:6"
+                    },
+                    "referencedDeclaration": 808,
+                    "src": "955:11:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                      "typeString": "FieldLayout"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "858:124:6"
+            },
+            "returnParameters": {
+              "id": 1853,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "991:0:6"
+            },
+            "scope": 1892,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1869,
+            "nodeType": "FunctionDefinition",
+            "src": "996:158:6",
+            "nodes": [],
+            "functionSelector": "7da508a2",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onAfterSetField",
+            "nameLocation": "1005:15:6",
+            "parameters": {
+              "id": 1867,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1856,
+                  "mutability": "mutable",
+                  "name": "table",
+                  "nameLocation": "1034:5:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1869,
+                  "src": "1026:13:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1855,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1026:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1859,
+                  "mutability": "mutable",
+                  "name": "key",
+                  "nameLocation": "1062:3:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1869,
+                  "src": "1045:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1857,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1045:7:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 1858,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1045:9:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1861,
+                  "mutability": "mutable",
+                  "name": "schemaIndex",
+                  "nameLocation": "1077:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1869,
+                  "src": "1071:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 1860,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1071:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1863,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nameLocation": "1107:4:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1869,
+                  "src": "1094:17:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 1862,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1094:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1866,
+                  "mutability": "mutable",
+                  "name": "fieldLayout",
+                  "nameLocation": "1129:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1869,
+                  "src": "1117:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                    "typeString": "FieldLayout"
+                  },
+                  "typeName": {
+                    "id": 1865,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1864,
+                      "name": "FieldLayout",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 808,
+                      "src": "1117:11:6"
+                    },
+                    "referencedDeclaration": 808,
+                    "src": "1117:11:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                      "typeString": "FieldLayout"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1020:124:6"
+            },
+            "returnParameters": {
+              "id": 1868,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1153:0:6"
+            },
+            "scope": 1892,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1880,
+            "nodeType": "FunctionDefinition",
+            "src": "1158:101:6",
+            "nodes": [],
+            "functionSelector": "9faeaf45",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onBeforeDeleteRecord",
+            "nameLocation": "1167:20:6",
+            "parameters": {
+              "id": 1878,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1871,
+                  "mutability": "mutable",
+                  "name": "table",
+                  "nameLocation": "1196:5:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1880,
+                  "src": "1188:13:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1870,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1188:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1874,
+                  "mutability": "mutable",
+                  "name": "key",
+                  "nameLocation": "1220:3:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1880,
+                  "src": "1203:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1872,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1203:7:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 1873,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1203:9:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1877,
+                  "mutability": "mutable",
+                  "name": "fieldLayout",
+                  "nameLocation": "1237:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1880,
+                  "src": "1225:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                    "typeString": "FieldLayout"
+                  },
+                  "typeName": {
+                    "id": 1876,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1875,
+                      "name": "FieldLayout",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 808,
+                      "src": "1225:11:6"
+                    },
+                    "referencedDeclaration": 808,
+                    "src": "1225:11:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                      "typeString": "FieldLayout"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1187:62:6"
+            },
+            "returnParameters": {
+              "id": 1879,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1258:0:6"
+            },
+            "scope": 1892,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 1891,
+            "nodeType": "FunctionDefinition",
+            "src": "1263:100:6",
+            "nodes": [],
+            "functionSelector": "83b5c95b",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onAfterDeleteRecord",
+            "nameLocation": "1272:19:6",
+            "parameters": {
+              "id": 1889,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1882,
+                  "mutability": "mutable",
+                  "name": "table",
+                  "nameLocation": "1300:5:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1891,
+                  "src": "1292:13:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1881,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1292:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1885,
+                  "mutability": "mutable",
+                  "name": "key",
+                  "nameLocation": "1324:3:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1891,
+                  "src": "1307:20:6",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_bytes32_$dyn_memory_ptr",
+                    "typeString": "bytes32[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 1883,
+                      "name": "bytes32",
+                      "nodeType": "ElementaryTypeName",
+                      "src": "1307:7:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bytes32",
+                        "typeString": "bytes32"
+                      }
+                    },
+                    "id": 1884,
+                    "nodeType": "ArrayTypeName",
+                    "src": "1307:9:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_bytes32_$dyn_storage_ptr",
+                      "typeString": "bytes32[]"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1888,
+                  "mutability": "mutable",
+                  "name": "fieldLayout",
+                  "nameLocation": "1341:11:6",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1891,
+                  "src": "1329:23:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                    "typeString": "FieldLayout"
+                  },
+                  "typeName": {
+                    "id": 1887,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 1886,
+                      "name": "FieldLayout",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 808,
+                      "src": "1329:11:6"
+                    },
+                    "referencedDeclaration": 808,
+                    "src": "1329:11:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_userDefinedValueType$_FieldLayout_$808",
+                      "typeString": "FieldLayout"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1291:62:6"
+            },
+            "returnParameters": {
+              "id": 1890,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1362:0:6"
+            },
+            "scope": 1892,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 1812,
+              "name": "IERC165",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 1439,
+              "src": "580:7:6"
+            },
+            "id": 1813,
+            "nodeType": "InheritanceSpecifier",
+            "src": "580:7:6"
+          }
+        ],
+        "canonicalName": "IStoreHook",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          1892,
+          1439
+        ],
+        "name": "IStoreHook",
+        "nameLocation": "566:10:6",
+        "scope": 1893,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 6
+}

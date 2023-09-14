@@ -1,0 +1,1957 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "node_modules/@latticexyz/schema-type/src/solidity/SchemaType.sol",
+    "id": 23714,
+    "exportedSymbols": {
+      "SchemaType": [
+        23672
+      ],
+      "getStaticByteLength": [
+        23713
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:3683:42",
+    "nodes": [
+      {
+        "id": 23469,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:42",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 23473,
+        "nodeType": "UsingForDirective",
+        "src": "58:52:42",
+        "nodes": [],
+        "functionList": [
+          {
+            "function": {
+              "id": 23470,
+              "name": "getStaticByteLength",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 23713,
+              "src": "66:19:42"
+            }
+          }
+        ],
+        "global": true,
+        "typeName": {
+          "id": 23472,
+          "nodeType": "UserDefinedTypeName",
+          "pathNode": {
+            "id": 23471,
+            "name": "SchemaType",
+            "nodeType": "IdentifierPath",
+            "referencedDeclaration": 23672,
+            "src": "92:10:42"
+          },
+          "referencedDeclaration": 23672,
+          "src": "92:10:42",
+          "typeDescriptions": {
+            "typeIdentifier": "t_enum$_SchemaType_$23672",
+            "typeString": "enum SchemaType"
+          }
+        }
+      },
+      {
+        "id": 23672,
+        "nodeType": "EnumDefinition",
+        "src": "406:2641:42",
+        "nodes": [],
+        "canonicalName": "SchemaType",
+        "members": [
+          {
+            "id": 23474,
+            "name": "UINT8",
+            "nameLocation": "426:5:42",
+            "nodeType": "EnumValue",
+            "src": "426:5:42"
+          },
+          {
+            "id": 23475,
+            "name": "UINT16",
+            "nameLocation": "435:6:42",
+            "nodeType": "EnumValue",
+            "src": "435:6:42"
+          },
+          {
+            "id": 23476,
+            "name": "UINT24",
+            "nameLocation": "445:6:42",
+            "nodeType": "EnumValue",
+            "src": "445:6:42"
+          },
+          {
+            "id": 23477,
+            "name": "UINT32",
+            "nameLocation": "455:6:42",
+            "nodeType": "EnumValue",
+            "src": "455:6:42"
+          },
+          {
+            "id": 23478,
+            "name": "UINT40",
+            "nameLocation": "465:6:42",
+            "nodeType": "EnumValue",
+            "src": "465:6:42"
+          },
+          {
+            "id": 23479,
+            "name": "UINT48",
+            "nameLocation": "475:6:42",
+            "nodeType": "EnumValue",
+            "src": "475:6:42"
+          },
+          {
+            "id": 23480,
+            "name": "UINT56",
+            "nameLocation": "485:6:42",
+            "nodeType": "EnumValue",
+            "src": "485:6:42"
+          },
+          {
+            "id": 23481,
+            "name": "UINT64",
+            "nameLocation": "495:6:42",
+            "nodeType": "EnumValue",
+            "src": "495:6:42"
+          },
+          {
+            "id": 23482,
+            "name": "UINT72",
+            "nameLocation": "505:6:42",
+            "nodeType": "EnumValue",
+            "src": "505:6:42"
+          },
+          {
+            "id": 23483,
+            "name": "UINT80",
+            "nameLocation": "515:6:42",
+            "nodeType": "EnumValue",
+            "src": "515:6:42"
+          },
+          {
+            "id": 23484,
+            "name": "UINT88",
+            "nameLocation": "525:6:42",
+            "nodeType": "EnumValue",
+            "src": "525:6:42"
+          },
+          {
+            "id": 23485,
+            "name": "UINT96",
+            "nameLocation": "535:6:42",
+            "nodeType": "EnumValue",
+            "src": "535:6:42"
+          },
+          {
+            "id": 23486,
+            "name": "UINT104",
+            "nameLocation": "545:7:42",
+            "nodeType": "EnumValue",
+            "src": "545:7:42"
+          },
+          {
+            "id": 23487,
+            "name": "UINT112",
+            "nameLocation": "556:7:42",
+            "nodeType": "EnumValue",
+            "src": "556:7:42"
+          },
+          {
+            "id": 23488,
+            "name": "UINT120",
+            "nameLocation": "567:7:42",
+            "nodeType": "EnumValue",
+            "src": "567:7:42"
+          },
+          {
+            "id": 23489,
+            "name": "UINT128",
+            "nameLocation": "578:7:42",
+            "nodeType": "EnumValue",
+            "src": "578:7:42"
+          },
+          {
+            "id": 23490,
+            "name": "UINT136",
+            "nameLocation": "589:7:42",
+            "nodeType": "EnumValue",
+            "src": "589:7:42"
+          },
+          {
+            "id": 23491,
+            "name": "UINT144",
+            "nameLocation": "600:7:42",
+            "nodeType": "EnumValue",
+            "src": "600:7:42"
+          },
+          {
+            "id": 23492,
+            "name": "UINT152",
+            "nameLocation": "611:7:42",
+            "nodeType": "EnumValue",
+            "src": "611:7:42"
+          },
+          {
+            "id": 23493,
+            "name": "UINT160",
+            "nameLocation": "622:7:42",
+            "nodeType": "EnumValue",
+            "src": "622:7:42"
+          },
+          {
+            "id": 23494,
+            "name": "UINT168",
+            "nameLocation": "633:7:42",
+            "nodeType": "EnumValue",
+            "src": "633:7:42"
+          },
+          {
+            "id": 23495,
+            "name": "UINT176",
+            "nameLocation": "644:7:42",
+            "nodeType": "EnumValue",
+            "src": "644:7:42"
+          },
+          {
+            "id": 23496,
+            "name": "UINT184",
+            "nameLocation": "655:7:42",
+            "nodeType": "EnumValue",
+            "src": "655:7:42"
+          },
+          {
+            "id": 23497,
+            "name": "UINT192",
+            "nameLocation": "666:7:42",
+            "nodeType": "EnumValue",
+            "src": "666:7:42"
+          },
+          {
+            "id": 23498,
+            "name": "UINT200",
+            "nameLocation": "677:7:42",
+            "nodeType": "EnumValue",
+            "src": "677:7:42"
+          },
+          {
+            "id": 23499,
+            "name": "UINT208",
+            "nameLocation": "688:7:42",
+            "nodeType": "EnumValue",
+            "src": "688:7:42"
+          },
+          {
+            "id": 23500,
+            "name": "UINT216",
+            "nameLocation": "699:7:42",
+            "nodeType": "EnumValue",
+            "src": "699:7:42"
+          },
+          {
+            "id": 23501,
+            "name": "UINT224",
+            "nameLocation": "710:7:42",
+            "nodeType": "EnumValue",
+            "src": "710:7:42"
+          },
+          {
+            "id": 23502,
+            "name": "UINT232",
+            "nameLocation": "721:7:42",
+            "nodeType": "EnumValue",
+            "src": "721:7:42"
+          },
+          {
+            "id": 23503,
+            "name": "UINT240",
+            "nameLocation": "732:7:42",
+            "nodeType": "EnumValue",
+            "src": "732:7:42"
+          },
+          {
+            "id": 23504,
+            "name": "UINT248",
+            "nameLocation": "743:7:42",
+            "nodeType": "EnumValue",
+            "src": "743:7:42"
+          },
+          {
+            "id": 23505,
+            "name": "UINT256",
+            "nameLocation": "754:7:42",
+            "nodeType": "EnumValue",
+            "src": "754:7:42"
+          },
+          {
+            "id": 23506,
+            "name": "INT8",
+            "nameLocation": "765:4:42",
+            "nodeType": "EnumValue",
+            "src": "765:4:42"
+          },
+          {
+            "id": 23507,
+            "name": "INT16",
+            "nameLocation": "773:5:42",
+            "nodeType": "EnumValue",
+            "src": "773:5:42"
+          },
+          {
+            "id": 23508,
+            "name": "INT24",
+            "nameLocation": "782:5:42",
+            "nodeType": "EnumValue",
+            "src": "782:5:42"
+          },
+          {
+            "id": 23509,
+            "name": "INT32",
+            "nameLocation": "791:5:42",
+            "nodeType": "EnumValue",
+            "src": "791:5:42"
+          },
+          {
+            "id": 23510,
+            "name": "INT40",
+            "nameLocation": "800:5:42",
+            "nodeType": "EnumValue",
+            "src": "800:5:42"
+          },
+          {
+            "id": 23511,
+            "name": "INT48",
+            "nameLocation": "809:5:42",
+            "nodeType": "EnumValue",
+            "src": "809:5:42"
+          },
+          {
+            "id": 23512,
+            "name": "INT56",
+            "nameLocation": "818:5:42",
+            "nodeType": "EnumValue",
+            "src": "818:5:42"
+          },
+          {
+            "id": 23513,
+            "name": "INT64",
+            "nameLocation": "827:5:42",
+            "nodeType": "EnumValue",
+            "src": "827:5:42"
+          },
+          {
+            "id": 23514,
+            "name": "INT72",
+            "nameLocation": "836:5:42",
+            "nodeType": "EnumValue",
+            "src": "836:5:42"
+          },
+          {
+            "id": 23515,
+            "name": "INT80",
+            "nameLocation": "845:5:42",
+            "nodeType": "EnumValue",
+            "src": "845:5:42"
+          },
+          {
+            "id": 23516,
+            "name": "INT88",
+            "nameLocation": "854:5:42",
+            "nodeType": "EnumValue",
+            "src": "854:5:42"
+          },
+          {
+            "id": 23517,
+            "name": "INT96",
+            "nameLocation": "863:5:42",
+            "nodeType": "EnumValue",
+            "src": "863:5:42"
+          },
+          {
+            "id": 23518,
+            "name": "INT104",
+            "nameLocation": "872:6:42",
+            "nodeType": "EnumValue",
+            "src": "872:6:42"
+          },
+          {
+            "id": 23519,
+            "name": "INT112",
+            "nameLocation": "882:6:42",
+            "nodeType": "EnumValue",
+            "src": "882:6:42"
+          },
+          {
+            "id": 23520,
+            "name": "INT120",
+            "nameLocation": "892:6:42",
+            "nodeType": "EnumValue",
+            "src": "892:6:42"
+          },
+          {
+            "id": 23521,
+            "name": "INT128",
+            "nameLocation": "902:6:42",
+            "nodeType": "EnumValue",
+            "src": "902:6:42"
+          },
+          {
+            "id": 23522,
+            "name": "INT136",
+            "nameLocation": "912:6:42",
+            "nodeType": "EnumValue",
+            "src": "912:6:42"
+          },
+          {
+            "id": 23523,
+            "name": "INT144",
+            "nameLocation": "922:6:42",
+            "nodeType": "EnumValue",
+            "src": "922:6:42"
+          },
+          {
+            "id": 23524,
+            "name": "INT152",
+            "nameLocation": "932:6:42",
+            "nodeType": "EnumValue",
+            "src": "932:6:42"
+          },
+          {
+            "id": 23525,
+            "name": "INT160",
+            "nameLocation": "942:6:42",
+            "nodeType": "EnumValue",
+            "src": "942:6:42"
+          },
+          {
+            "id": 23526,
+            "name": "INT168",
+            "nameLocation": "952:6:42",
+            "nodeType": "EnumValue",
+            "src": "952:6:42"
+          },
+          {
+            "id": 23527,
+            "name": "INT176",
+            "nameLocation": "962:6:42",
+            "nodeType": "EnumValue",
+            "src": "962:6:42"
+          },
+          {
+            "id": 23528,
+            "name": "INT184",
+            "nameLocation": "972:6:42",
+            "nodeType": "EnumValue",
+            "src": "972:6:42"
+          },
+          {
+            "id": 23529,
+            "name": "INT192",
+            "nameLocation": "982:6:42",
+            "nodeType": "EnumValue",
+            "src": "982:6:42"
+          },
+          {
+            "id": 23530,
+            "name": "INT200",
+            "nameLocation": "992:6:42",
+            "nodeType": "EnumValue",
+            "src": "992:6:42"
+          },
+          {
+            "id": 23531,
+            "name": "INT208",
+            "nameLocation": "1002:6:42",
+            "nodeType": "EnumValue",
+            "src": "1002:6:42"
+          },
+          {
+            "id": 23532,
+            "name": "INT216",
+            "nameLocation": "1012:6:42",
+            "nodeType": "EnumValue",
+            "src": "1012:6:42"
+          },
+          {
+            "id": 23533,
+            "name": "INT224",
+            "nameLocation": "1022:6:42",
+            "nodeType": "EnumValue",
+            "src": "1022:6:42"
+          },
+          {
+            "id": 23534,
+            "name": "INT232",
+            "nameLocation": "1032:6:42",
+            "nodeType": "EnumValue",
+            "src": "1032:6:42"
+          },
+          {
+            "id": 23535,
+            "name": "INT240",
+            "nameLocation": "1042:6:42",
+            "nodeType": "EnumValue",
+            "src": "1042:6:42"
+          },
+          {
+            "id": 23536,
+            "name": "INT248",
+            "nameLocation": "1052:6:42",
+            "nodeType": "EnumValue",
+            "src": "1052:6:42"
+          },
+          {
+            "id": 23537,
+            "name": "INT256",
+            "nameLocation": "1062:6:42",
+            "nodeType": "EnumValue",
+            "src": "1062:6:42"
+          },
+          {
+            "id": 23538,
+            "name": "BYTES1",
+            "nameLocation": "1072:6:42",
+            "nodeType": "EnumValue",
+            "src": "1072:6:42"
+          },
+          {
+            "id": 23539,
+            "name": "BYTES2",
+            "nameLocation": "1082:6:42",
+            "nodeType": "EnumValue",
+            "src": "1082:6:42"
+          },
+          {
+            "id": 23540,
+            "name": "BYTES3",
+            "nameLocation": "1092:6:42",
+            "nodeType": "EnumValue",
+            "src": "1092:6:42"
+          },
+          {
+            "id": 23541,
+            "name": "BYTES4",
+            "nameLocation": "1102:6:42",
+            "nodeType": "EnumValue",
+            "src": "1102:6:42"
+          },
+          {
+            "id": 23542,
+            "name": "BYTES5",
+            "nameLocation": "1112:6:42",
+            "nodeType": "EnumValue",
+            "src": "1112:6:42"
+          },
+          {
+            "id": 23543,
+            "name": "BYTES6",
+            "nameLocation": "1122:6:42",
+            "nodeType": "EnumValue",
+            "src": "1122:6:42"
+          },
+          {
+            "id": 23544,
+            "name": "BYTES7",
+            "nameLocation": "1132:6:42",
+            "nodeType": "EnumValue",
+            "src": "1132:6:42"
+          },
+          {
+            "id": 23545,
+            "name": "BYTES8",
+            "nameLocation": "1142:6:42",
+            "nodeType": "EnumValue",
+            "src": "1142:6:42"
+          },
+          {
+            "id": 23546,
+            "name": "BYTES9",
+            "nameLocation": "1152:6:42",
+            "nodeType": "EnumValue",
+            "src": "1152:6:42"
+          },
+          {
+            "id": 23547,
+            "name": "BYTES10",
+            "nameLocation": "1162:7:42",
+            "nodeType": "EnumValue",
+            "src": "1162:7:42"
+          },
+          {
+            "id": 23548,
+            "name": "BYTES11",
+            "nameLocation": "1173:7:42",
+            "nodeType": "EnumValue",
+            "src": "1173:7:42"
+          },
+          {
+            "id": 23549,
+            "name": "BYTES12",
+            "nameLocation": "1184:7:42",
+            "nodeType": "EnumValue",
+            "src": "1184:7:42"
+          },
+          {
+            "id": 23550,
+            "name": "BYTES13",
+            "nameLocation": "1195:7:42",
+            "nodeType": "EnumValue",
+            "src": "1195:7:42"
+          },
+          {
+            "id": 23551,
+            "name": "BYTES14",
+            "nameLocation": "1206:7:42",
+            "nodeType": "EnumValue",
+            "src": "1206:7:42"
+          },
+          {
+            "id": 23552,
+            "name": "BYTES15",
+            "nameLocation": "1217:7:42",
+            "nodeType": "EnumValue",
+            "src": "1217:7:42"
+          },
+          {
+            "id": 23553,
+            "name": "BYTES16",
+            "nameLocation": "1228:7:42",
+            "nodeType": "EnumValue",
+            "src": "1228:7:42"
+          },
+          {
+            "id": 23554,
+            "name": "BYTES17",
+            "nameLocation": "1239:7:42",
+            "nodeType": "EnumValue",
+            "src": "1239:7:42"
+          },
+          {
+            "id": 23555,
+            "name": "BYTES18",
+            "nameLocation": "1250:7:42",
+            "nodeType": "EnumValue",
+            "src": "1250:7:42"
+          },
+          {
+            "id": 23556,
+            "name": "BYTES19",
+            "nameLocation": "1261:7:42",
+            "nodeType": "EnumValue",
+            "src": "1261:7:42"
+          },
+          {
+            "id": 23557,
+            "name": "BYTES20",
+            "nameLocation": "1272:7:42",
+            "nodeType": "EnumValue",
+            "src": "1272:7:42"
+          },
+          {
+            "id": 23558,
+            "name": "BYTES21",
+            "nameLocation": "1283:7:42",
+            "nodeType": "EnumValue",
+            "src": "1283:7:42"
+          },
+          {
+            "id": 23559,
+            "name": "BYTES22",
+            "nameLocation": "1294:7:42",
+            "nodeType": "EnumValue",
+            "src": "1294:7:42"
+          },
+          {
+            "id": 23560,
+            "name": "BYTES23",
+            "nameLocation": "1305:7:42",
+            "nodeType": "EnumValue",
+            "src": "1305:7:42"
+          },
+          {
+            "id": 23561,
+            "name": "BYTES24",
+            "nameLocation": "1316:7:42",
+            "nodeType": "EnumValue",
+            "src": "1316:7:42"
+          },
+          {
+            "id": 23562,
+            "name": "BYTES25",
+            "nameLocation": "1327:7:42",
+            "nodeType": "EnumValue",
+            "src": "1327:7:42"
+          },
+          {
+            "id": 23563,
+            "name": "BYTES26",
+            "nameLocation": "1338:7:42",
+            "nodeType": "EnumValue",
+            "src": "1338:7:42"
+          },
+          {
+            "id": 23564,
+            "name": "BYTES27",
+            "nameLocation": "1349:7:42",
+            "nodeType": "EnumValue",
+            "src": "1349:7:42"
+          },
+          {
+            "id": 23565,
+            "name": "BYTES28",
+            "nameLocation": "1360:7:42",
+            "nodeType": "EnumValue",
+            "src": "1360:7:42"
+          },
+          {
+            "id": 23566,
+            "name": "BYTES29",
+            "nameLocation": "1371:7:42",
+            "nodeType": "EnumValue",
+            "src": "1371:7:42"
+          },
+          {
+            "id": 23567,
+            "name": "BYTES30",
+            "nameLocation": "1382:7:42",
+            "nodeType": "EnumValue",
+            "src": "1382:7:42"
+          },
+          {
+            "id": 23568,
+            "name": "BYTES31",
+            "nameLocation": "1393:7:42",
+            "nodeType": "EnumValue",
+            "src": "1393:7:42"
+          },
+          {
+            "id": 23569,
+            "name": "BYTES32",
+            "nameLocation": "1404:7:42",
+            "nodeType": "EnumValue",
+            "src": "1404:7:42"
+          },
+          {
+            "id": 23570,
+            "name": "BOOL",
+            "nameLocation": "1415:4:42",
+            "nodeType": "EnumValue",
+            "src": "1415:4:42"
+          },
+          {
+            "id": 23571,
+            "name": "ADDRESS",
+            "nameLocation": "1423:7:42",
+            "nodeType": "EnumValue",
+            "src": "1423:7:42"
+          },
+          {
+            "id": 23572,
+            "name": "UINT8_ARRAY",
+            "nameLocation": "1434:11:42",
+            "nodeType": "EnumValue",
+            "src": "1434:11:42"
+          },
+          {
+            "id": 23573,
+            "name": "UINT16_ARRAY",
+            "nameLocation": "1449:12:42",
+            "nodeType": "EnumValue",
+            "src": "1449:12:42"
+          },
+          {
+            "id": 23574,
+            "name": "UINT24_ARRAY",
+            "nameLocation": "1465:12:42",
+            "nodeType": "EnumValue",
+            "src": "1465:12:42"
+          },
+          {
+            "id": 23575,
+            "name": "UINT32_ARRAY",
+            "nameLocation": "1481:12:42",
+            "nodeType": "EnumValue",
+            "src": "1481:12:42"
+          },
+          {
+            "id": 23576,
+            "name": "UINT40_ARRAY",
+            "nameLocation": "1497:12:42",
+            "nodeType": "EnumValue",
+            "src": "1497:12:42"
+          },
+          {
+            "id": 23577,
+            "name": "UINT48_ARRAY",
+            "nameLocation": "1513:12:42",
+            "nodeType": "EnumValue",
+            "src": "1513:12:42"
+          },
+          {
+            "id": 23578,
+            "name": "UINT56_ARRAY",
+            "nameLocation": "1529:12:42",
+            "nodeType": "EnumValue",
+            "src": "1529:12:42"
+          },
+          {
+            "id": 23579,
+            "name": "UINT64_ARRAY",
+            "nameLocation": "1545:12:42",
+            "nodeType": "EnumValue",
+            "src": "1545:12:42"
+          },
+          {
+            "id": 23580,
+            "name": "UINT72_ARRAY",
+            "nameLocation": "1561:12:42",
+            "nodeType": "EnumValue",
+            "src": "1561:12:42"
+          },
+          {
+            "id": 23581,
+            "name": "UINT80_ARRAY",
+            "nameLocation": "1577:12:42",
+            "nodeType": "EnumValue",
+            "src": "1577:12:42"
+          },
+          {
+            "id": 23582,
+            "name": "UINT88_ARRAY",
+            "nameLocation": "1593:12:42",
+            "nodeType": "EnumValue",
+            "src": "1593:12:42"
+          },
+          {
+            "id": 23583,
+            "name": "UINT96_ARRAY",
+            "nameLocation": "1609:12:42",
+            "nodeType": "EnumValue",
+            "src": "1609:12:42"
+          },
+          {
+            "id": 23584,
+            "name": "UINT104_ARRAY",
+            "nameLocation": "1625:13:42",
+            "nodeType": "EnumValue",
+            "src": "1625:13:42"
+          },
+          {
+            "id": 23585,
+            "name": "UINT112_ARRAY",
+            "nameLocation": "1642:13:42",
+            "nodeType": "EnumValue",
+            "src": "1642:13:42"
+          },
+          {
+            "id": 23586,
+            "name": "UINT120_ARRAY",
+            "nameLocation": "1659:13:42",
+            "nodeType": "EnumValue",
+            "src": "1659:13:42"
+          },
+          {
+            "id": 23587,
+            "name": "UINT128_ARRAY",
+            "nameLocation": "1676:13:42",
+            "nodeType": "EnumValue",
+            "src": "1676:13:42"
+          },
+          {
+            "id": 23588,
+            "name": "UINT136_ARRAY",
+            "nameLocation": "1693:13:42",
+            "nodeType": "EnumValue",
+            "src": "1693:13:42"
+          },
+          {
+            "id": 23589,
+            "name": "UINT144_ARRAY",
+            "nameLocation": "1710:13:42",
+            "nodeType": "EnumValue",
+            "src": "1710:13:42"
+          },
+          {
+            "id": 23590,
+            "name": "UINT152_ARRAY",
+            "nameLocation": "1727:13:42",
+            "nodeType": "EnumValue",
+            "src": "1727:13:42"
+          },
+          {
+            "id": 23591,
+            "name": "UINT160_ARRAY",
+            "nameLocation": "1744:13:42",
+            "nodeType": "EnumValue",
+            "src": "1744:13:42"
+          },
+          {
+            "id": 23592,
+            "name": "UINT168_ARRAY",
+            "nameLocation": "1761:13:42",
+            "nodeType": "EnumValue",
+            "src": "1761:13:42"
+          },
+          {
+            "id": 23593,
+            "name": "UINT176_ARRAY",
+            "nameLocation": "1778:13:42",
+            "nodeType": "EnumValue",
+            "src": "1778:13:42"
+          },
+          {
+            "id": 23594,
+            "name": "UINT184_ARRAY",
+            "nameLocation": "1795:13:42",
+            "nodeType": "EnumValue",
+            "src": "1795:13:42"
+          },
+          {
+            "id": 23595,
+            "name": "UINT192_ARRAY",
+            "nameLocation": "1812:13:42",
+            "nodeType": "EnumValue",
+            "src": "1812:13:42"
+          },
+          {
+            "id": 23596,
+            "name": "UINT200_ARRAY",
+            "nameLocation": "1829:13:42",
+            "nodeType": "EnumValue",
+            "src": "1829:13:42"
+          },
+          {
+            "id": 23597,
+            "name": "UINT208_ARRAY",
+            "nameLocation": "1846:13:42",
+            "nodeType": "EnumValue",
+            "src": "1846:13:42"
+          },
+          {
+            "id": 23598,
+            "name": "UINT216_ARRAY",
+            "nameLocation": "1863:13:42",
+            "nodeType": "EnumValue",
+            "src": "1863:13:42"
+          },
+          {
+            "id": 23599,
+            "name": "UINT224_ARRAY",
+            "nameLocation": "1880:13:42",
+            "nodeType": "EnumValue",
+            "src": "1880:13:42"
+          },
+          {
+            "id": 23600,
+            "name": "UINT232_ARRAY",
+            "nameLocation": "1897:13:42",
+            "nodeType": "EnumValue",
+            "src": "1897:13:42"
+          },
+          {
+            "id": 23601,
+            "name": "UINT240_ARRAY",
+            "nameLocation": "1914:13:42",
+            "nodeType": "EnumValue",
+            "src": "1914:13:42"
+          },
+          {
+            "id": 23602,
+            "name": "UINT248_ARRAY",
+            "nameLocation": "1931:13:42",
+            "nodeType": "EnumValue",
+            "src": "1931:13:42"
+          },
+          {
+            "id": 23603,
+            "name": "UINT256_ARRAY",
+            "nameLocation": "1948:13:42",
+            "nodeType": "EnumValue",
+            "src": "1948:13:42"
+          },
+          {
+            "id": 23604,
+            "name": "INT8_ARRAY",
+            "nameLocation": "1965:10:42",
+            "nodeType": "EnumValue",
+            "src": "1965:10:42"
+          },
+          {
+            "id": 23605,
+            "name": "INT16_ARRAY",
+            "nameLocation": "1979:11:42",
+            "nodeType": "EnumValue",
+            "src": "1979:11:42"
+          },
+          {
+            "id": 23606,
+            "name": "INT24_ARRAY",
+            "nameLocation": "1994:11:42",
+            "nodeType": "EnumValue",
+            "src": "1994:11:42"
+          },
+          {
+            "id": 23607,
+            "name": "INT32_ARRAY",
+            "nameLocation": "2009:11:42",
+            "nodeType": "EnumValue",
+            "src": "2009:11:42"
+          },
+          {
+            "id": 23608,
+            "name": "INT40_ARRAY",
+            "nameLocation": "2024:11:42",
+            "nodeType": "EnumValue",
+            "src": "2024:11:42"
+          },
+          {
+            "id": 23609,
+            "name": "INT48_ARRAY",
+            "nameLocation": "2039:11:42",
+            "nodeType": "EnumValue",
+            "src": "2039:11:42"
+          },
+          {
+            "id": 23610,
+            "name": "INT56_ARRAY",
+            "nameLocation": "2054:11:42",
+            "nodeType": "EnumValue",
+            "src": "2054:11:42"
+          },
+          {
+            "id": 23611,
+            "name": "INT64_ARRAY",
+            "nameLocation": "2069:11:42",
+            "nodeType": "EnumValue",
+            "src": "2069:11:42"
+          },
+          {
+            "id": 23612,
+            "name": "INT72_ARRAY",
+            "nameLocation": "2084:11:42",
+            "nodeType": "EnumValue",
+            "src": "2084:11:42"
+          },
+          {
+            "id": 23613,
+            "name": "INT80_ARRAY",
+            "nameLocation": "2099:11:42",
+            "nodeType": "EnumValue",
+            "src": "2099:11:42"
+          },
+          {
+            "id": 23614,
+            "name": "INT88_ARRAY",
+            "nameLocation": "2114:11:42",
+            "nodeType": "EnumValue",
+            "src": "2114:11:42"
+          },
+          {
+            "id": 23615,
+            "name": "INT96_ARRAY",
+            "nameLocation": "2129:11:42",
+            "nodeType": "EnumValue",
+            "src": "2129:11:42"
+          },
+          {
+            "id": 23616,
+            "name": "INT104_ARRAY",
+            "nameLocation": "2144:12:42",
+            "nodeType": "EnumValue",
+            "src": "2144:12:42"
+          },
+          {
+            "id": 23617,
+            "name": "INT112_ARRAY",
+            "nameLocation": "2160:12:42",
+            "nodeType": "EnumValue",
+            "src": "2160:12:42"
+          },
+          {
+            "id": 23618,
+            "name": "INT120_ARRAY",
+            "nameLocation": "2176:12:42",
+            "nodeType": "EnumValue",
+            "src": "2176:12:42"
+          },
+          {
+            "id": 23619,
+            "name": "INT128_ARRAY",
+            "nameLocation": "2192:12:42",
+            "nodeType": "EnumValue",
+            "src": "2192:12:42"
+          },
+          {
+            "id": 23620,
+            "name": "INT136_ARRAY",
+            "nameLocation": "2208:12:42",
+            "nodeType": "EnumValue",
+            "src": "2208:12:42"
+          },
+          {
+            "id": 23621,
+            "name": "INT144_ARRAY",
+            "nameLocation": "2224:12:42",
+            "nodeType": "EnumValue",
+            "src": "2224:12:42"
+          },
+          {
+            "id": 23622,
+            "name": "INT152_ARRAY",
+            "nameLocation": "2240:12:42",
+            "nodeType": "EnumValue",
+            "src": "2240:12:42"
+          },
+          {
+            "id": 23623,
+            "name": "INT160_ARRAY",
+            "nameLocation": "2256:12:42",
+            "nodeType": "EnumValue",
+            "src": "2256:12:42"
+          },
+          {
+            "id": 23624,
+            "name": "INT168_ARRAY",
+            "nameLocation": "2272:12:42",
+            "nodeType": "EnumValue",
+            "src": "2272:12:42"
+          },
+          {
+            "id": 23625,
+            "name": "INT176_ARRAY",
+            "nameLocation": "2288:12:42",
+            "nodeType": "EnumValue",
+            "src": "2288:12:42"
+          },
+          {
+            "id": 23626,
+            "name": "INT184_ARRAY",
+            "nameLocation": "2304:12:42",
+            "nodeType": "EnumValue",
+            "src": "2304:12:42"
+          },
+          {
+            "id": 23627,
+            "name": "INT192_ARRAY",
+            "nameLocation": "2320:12:42",
+            "nodeType": "EnumValue",
+            "src": "2320:12:42"
+          },
+          {
+            "id": 23628,
+            "name": "INT200_ARRAY",
+            "nameLocation": "2336:12:42",
+            "nodeType": "EnumValue",
+            "src": "2336:12:42"
+          },
+          {
+            "id": 23629,
+            "name": "INT208_ARRAY",
+            "nameLocation": "2352:12:42",
+            "nodeType": "EnumValue",
+            "src": "2352:12:42"
+          },
+          {
+            "id": 23630,
+            "name": "INT216_ARRAY",
+            "nameLocation": "2368:12:42",
+            "nodeType": "EnumValue",
+            "src": "2368:12:42"
+          },
+          {
+            "id": 23631,
+            "name": "INT224_ARRAY",
+            "nameLocation": "2384:12:42",
+            "nodeType": "EnumValue",
+            "src": "2384:12:42"
+          },
+          {
+            "id": 23632,
+            "name": "INT232_ARRAY",
+            "nameLocation": "2400:12:42",
+            "nodeType": "EnumValue",
+            "src": "2400:12:42"
+          },
+          {
+            "id": 23633,
+            "name": "INT240_ARRAY",
+            "nameLocation": "2416:12:42",
+            "nodeType": "EnumValue",
+            "src": "2416:12:42"
+          },
+          {
+            "id": 23634,
+            "name": "INT248_ARRAY",
+            "nameLocation": "2432:12:42",
+            "nodeType": "EnumValue",
+            "src": "2432:12:42"
+          },
+          {
+            "id": 23635,
+            "name": "INT256_ARRAY",
+            "nameLocation": "2448:12:42",
+            "nodeType": "EnumValue",
+            "src": "2448:12:42"
+          },
+          {
+            "id": 23636,
+            "name": "BYTES1_ARRAY",
+            "nameLocation": "2464:12:42",
+            "nodeType": "EnumValue",
+            "src": "2464:12:42"
+          },
+          {
+            "id": 23637,
+            "name": "BYTES2_ARRAY",
+            "nameLocation": "2480:12:42",
+            "nodeType": "EnumValue",
+            "src": "2480:12:42"
+          },
+          {
+            "id": 23638,
+            "name": "BYTES3_ARRAY",
+            "nameLocation": "2496:12:42",
+            "nodeType": "EnumValue",
+            "src": "2496:12:42"
+          },
+          {
+            "id": 23639,
+            "name": "BYTES4_ARRAY",
+            "nameLocation": "2512:12:42",
+            "nodeType": "EnumValue",
+            "src": "2512:12:42"
+          },
+          {
+            "id": 23640,
+            "name": "BYTES5_ARRAY",
+            "nameLocation": "2528:12:42",
+            "nodeType": "EnumValue",
+            "src": "2528:12:42"
+          },
+          {
+            "id": 23641,
+            "name": "BYTES6_ARRAY",
+            "nameLocation": "2544:12:42",
+            "nodeType": "EnumValue",
+            "src": "2544:12:42"
+          },
+          {
+            "id": 23642,
+            "name": "BYTES7_ARRAY",
+            "nameLocation": "2560:12:42",
+            "nodeType": "EnumValue",
+            "src": "2560:12:42"
+          },
+          {
+            "id": 23643,
+            "name": "BYTES8_ARRAY",
+            "nameLocation": "2576:12:42",
+            "nodeType": "EnumValue",
+            "src": "2576:12:42"
+          },
+          {
+            "id": 23644,
+            "name": "BYTES9_ARRAY",
+            "nameLocation": "2592:12:42",
+            "nodeType": "EnumValue",
+            "src": "2592:12:42"
+          },
+          {
+            "id": 23645,
+            "name": "BYTES10_ARRAY",
+            "nameLocation": "2608:13:42",
+            "nodeType": "EnumValue",
+            "src": "2608:13:42"
+          },
+          {
+            "id": 23646,
+            "name": "BYTES11_ARRAY",
+            "nameLocation": "2625:13:42",
+            "nodeType": "EnumValue",
+            "src": "2625:13:42"
+          },
+          {
+            "id": 23647,
+            "name": "BYTES12_ARRAY",
+            "nameLocation": "2642:13:42",
+            "nodeType": "EnumValue",
+            "src": "2642:13:42"
+          },
+          {
+            "id": 23648,
+            "name": "BYTES13_ARRAY",
+            "nameLocation": "2659:13:42",
+            "nodeType": "EnumValue",
+            "src": "2659:13:42"
+          },
+          {
+            "id": 23649,
+            "name": "BYTES14_ARRAY",
+            "nameLocation": "2676:13:42",
+            "nodeType": "EnumValue",
+            "src": "2676:13:42"
+          },
+          {
+            "id": 23650,
+            "name": "BYTES15_ARRAY",
+            "nameLocation": "2693:13:42",
+            "nodeType": "EnumValue",
+            "src": "2693:13:42"
+          },
+          {
+            "id": 23651,
+            "name": "BYTES16_ARRAY",
+            "nameLocation": "2710:13:42",
+            "nodeType": "EnumValue",
+            "src": "2710:13:42"
+          },
+          {
+            "id": 23652,
+            "name": "BYTES17_ARRAY",
+            "nameLocation": "2727:13:42",
+            "nodeType": "EnumValue",
+            "src": "2727:13:42"
+          },
+          {
+            "id": 23653,
+            "name": "BYTES18_ARRAY",
+            "nameLocation": "2744:13:42",
+            "nodeType": "EnumValue",
+            "src": "2744:13:42"
+          },
+          {
+            "id": 23654,
+            "name": "BYTES19_ARRAY",
+            "nameLocation": "2761:13:42",
+            "nodeType": "EnumValue",
+            "src": "2761:13:42"
+          },
+          {
+            "id": 23655,
+            "name": "BYTES20_ARRAY",
+            "nameLocation": "2778:13:42",
+            "nodeType": "EnumValue",
+            "src": "2778:13:42"
+          },
+          {
+            "id": 23656,
+            "name": "BYTES21_ARRAY",
+            "nameLocation": "2795:13:42",
+            "nodeType": "EnumValue",
+            "src": "2795:13:42"
+          },
+          {
+            "id": 23657,
+            "name": "BYTES22_ARRAY",
+            "nameLocation": "2812:13:42",
+            "nodeType": "EnumValue",
+            "src": "2812:13:42"
+          },
+          {
+            "id": 23658,
+            "name": "BYTES23_ARRAY",
+            "nameLocation": "2829:13:42",
+            "nodeType": "EnumValue",
+            "src": "2829:13:42"
+          },
+          {
+            "id": 23659,
+            "name": "BYTES24_ARRAY",
+            "nameLocation": "2846:13:42",
+            "nodeType": "EnumValue",
+            "src": "2846:13:42"
+          },
+          {
+            "id": 23660,
+            "name": "BYTES25_ARRAY",
+            "nameLocation": "2863:13:42",
+            "nodeType": "EnumValue",
+            "src": "2863:13:42"
+          },
+          {
+            "id": 23661,
+            "name": "BYTES26_ARRAY",
+            "nameLocation": "2880:13:42",
+            "nodeType": "EnumValue",
+            "src": "2880:13:42"
+          },
+          {
+            "id": 23662,
+            "name": "BYTES27_ARRAY",
+            "nameLocation": "2897:13:42",
+            "nodeType": "EnumValue",
+            "src": "2897:13:42"
+          },
+          {
+            "id": 23663,
+            "name": "BYTES28_ARRAY",
+            "nameLocation": "2914:13:42",
+            "nodeType": "EnumValue",
+            "src": "2914:13:42"
+          },
+          {
+            "id": 23664,
+            "name": "BYTES29_ARRAY",
+            "nameLocation": "2931:13:42",
+            "nodeType": "EnumValue",
+            "src": "2931:13:42"
+          },
+          {
+            "id": 23665,
+            "name": "BYTES30_ARRAY",
+            "nameLocation": "2948:13:42",
+            "nodeType": "EnumValue",
+            "src": "2948:13:42"
+          },
+          {
+            "id": 23666,
+            "name": "BYTES31_ARRAY",
+            "nameLocation": "2965:13:42",
+            "nodeType": "EnumValue",
+            "src": "2965:13:42"
+          },
+          {
+            "id": 23667,
+            "name": "BYTES32_ARRAY",
+            "nameLocation": "2982:13:42",
+            "nodeType": "EnumValue",
+            "src": "2982:13:42"
+          },
+          {
+            "id": 23668,
+            "name": "BOOL_ARRAY",
+            "nameLocation": "2999:10:42",
+            "nodeType": "EnumValue",
+            "src": "2999:10:42"
+          },
+          {
+            "id": 23669,
+            "name": "ADDRESS_ARRAY",
+            "nameLocation": "3013:13:42",
+            "nodeType": "EnumValue",
+            "src": "3013:13:42"
+          },
+          {
+            "id": 23670,
+            "name": "BYTES",
+            "nameLocation": "3030:5:42",
+            "nodeType": "EnumValue",
+            "src": "3030:5:42"
+          },
+          {
+            "id": 23671,
+            "name": "STRING",
+            "nameLocation": "3039:6:42",
+            "nodeType": "EnumValue",
+            "src": "3039:6:42"
+          }
+        ],
+        "name": "SchemaType",
+        "nameLocation": "411:10:42"
+      },
+      {
+        "id": 23713,
+        "nodeType": "FunctionDefinition",
+        "src": "3194:520:42",
+        "nodes": [],
+        "body": {
+          "id": 23712,
+          "nodeType": "Block",
+          "src": "3269:445:42",
+          "nodes": [],
+          "statements": [
+            {
+              "assignments": [
+                23682
+              ],
+              "declarations": [
+                {
+                  "constant": false,
+                  "id": 23682,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "3281:5:42",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23712,
+                  "src": "3273:13:42",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 23681,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3273:7:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "id": 23687,
+              "initialValue": {
+                "arguments": [
+                  {
+                    "id": 23685,
+                    "name": "schemaType",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 23676,
+                    "src": "3295:10:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_SchemaType_$23672",
+                      "typeString": "enum SchemaType"
+                    }
+                  }
+                ],
+                "expression": {
+                  "argumentTypes": [
+                    {
+                      "typeIdentifier": "t_enum$_SchemaType_$23672",
+                      "typeString": "enum SchemaType"
+                    }
+                  ],
+                  "id": 23684,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "nodeType": "ElementaryTypeNameExpression",
+                  "src": "3289:5:42",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_type$_t_uint8_$",
+                    "typeString": "type(uint8)"
+                  },
+                  "typeName": {
+                    "id": 23683,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3289:5:42",
+                    "typeDescriptions": {}
+                  }
+                },
+                "id": 23686,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": false,
+                "kind": "typeConversion",
+                "lValueRequested": false,
+                "names": [],
+                "nodeType": "FunctionCall",
+                "src": "3289:17:42",
+                "tryCall": false,
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint8",
+                  "typeString": "uint8"
+                }
+              },
+              "nodeType": "VariableDeclarationStatement",
+              "src": "3273:33:42"
+            },
+            {
+              "condition": {
+                "commonType": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "id": 23690,
+                "isConstant": false,
+                "isLValue": false,
+                "isPure": false,
+                "lValueRequested": false,
+                "leftExpression": {
+                  "id": 23688,
+                  "name": "index",
+                  "nodeType": "Identifier",
+                  "overloadedDeclarations": [],
+                  "referencedDeclaration": 23682,
+                  "src": "3315:5:42",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "nodeType": "BinaryOperation",
+                "operator": "<",
+                "rightExpression": {
+                  "hexValue": "3937",
+                  "id": 23689,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "kind": "number",
+                  "lValueRequested": false,
+                  "nodeType": "Literal",
+                  "src": "3323:2:42",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_rational_97_by_1",
+                    "typeString": "int_const 97"
+                  },
+                  "value": "97"
+                },
+                "src": "3315:10:42",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bool",
+                  "typeString": "bool"
+                }
+              },
+              "falseBody": {
+                "condition": {
+                  "commonType": {
+                    "typeIdentifier": "t_enum$_SchemaType_$23672",
+                    "typeString": "enum SchemaType"
+                  },
+                  "id": 23703,
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": false,
+                  "lValueRequested": false,
+                  "leftExpression": {
+                    "id": 23700,
+                    "name": "schemaType",
+                    "nodeType": "Identifier",
+                    "overloadedDeclarations": [],
+                    "referencedDeclaration": 23676,
+                    "src": "3595:10:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_SchemaType_$23672",
+                      "typeString": "enum SchemaType"
+                    }
+                  },
+                  "nodeType": "BinaryOperation",
+                  "operator": "==",
+                  "rightExpression": {
+                    "expression": {
+                      "id": 23701,
+                      "name": "SchemaType",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 23672,
+                      "src": "3609:10:42",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_enum$_SchemaType_$23672_$",
+                        "typeString": "type(enum SchemaType)"
+                      }
+                    },
+                    "id": 23702,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "lValueRequested": false,
+                    "memberName": "ADDRESS",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 23571,
+                    "src": "3609:18:42",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_SchemaType_$23672",
+                      "typeString": "enum SchemaType"
+                    }
+                  },
+                  "src": "3595:32:42",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  }
+                },
+                "falseBody": {
+                  "id": 23709,
+                  "nodeType": "Block",
+                  "src": "3655:57:42",
+                  "statements": [
+                    {
+                      "expression": {
+                        "hexValue": "30",
+                        "id": 23707,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "3706:1:42",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_0_by_1",
+                          "typeString": "int_const 0"
+                        },
+                        "value": "0"
+                      },
+                      "functionReturnParameters": 23680,
+                      "id": 23708,
+                      "nodeType": "Return",
+                      "src": "3699:8:42"
+                    }
+                  ]
+                },
+                "id": 23710,
+                "nodeType": "IfStatement",
+                "src": "3591:121:42",
+                "trueBody": {
+                  "id": 23706,
+                  "nodeType": "Block",
+                  "src": "3629:20:42",
+                  "statements": [
+                    {
+                      "expression": {
+                        "hexValue": "3230",
+                        "id": 23704,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "number",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "3642:2:42",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_rational_20_by_1",
+                          "typeString": "int_const 20"
+                        },
+                        "value": "20"
+                      },
+                      "functionReturnParameters": 23680,
+                      "id": 23705,
+                      "nodeType": "Return",
+                      "src": "3635:9:42"
+                    }
+                  ]
+                }
+              },
+              "id": 23711,
+              "nodeType": "IfStatement",
+              "src": "3311:401:42",
+              "trueBody": {
+                "id": 23699,
+                "nodeType": "Block",
+                "src": "3327:258:42",
+                "statements": [
+                  {
+                    "id": 23698,
+                    "nodeType": "UncheckedBlock",
+                    "src": "3533:48:42",
+                    "statements": [
+                      {
+                        "expression": {
+                          "commonType": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          "id": 23696,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "leftExpression": {
+                            "components": [
+                              {
+                                "commonType": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                },
+                                "id": 23693,
+                                "isConstant": false,
+                                "isLValue": false,
+                                "isPure": false,
+                                "lValueRequested": false,
+                                "leftExpression": {
+                                  "id": 23691,
+                                  "name": "index",
+                                  "nodeType": "Identifier",
+                                  "overloadedDeclarations": [],
+                                  "referencedDeclaration": 23682,
+                                  "src": "3559:5:42",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_uint256",
+                                    "typeString": "uint256"
+                                  }
+                                },
+                                "nodeType": "BinaryOperation",
+                                "operator": "&",
+                                "rightExpression": {
+                                  "hexValue": "3331",
+                                  "id": 23692,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "kind": "number",
+                                  "lValueRequested": false,
+                                  "nodeType": "Literal",
+                                  "src": "3567:2:42",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_rational_31_by_1",
+                                    "typeString": "int_const 31"
+                                  },
+                                  "value": "31"
+                                },
+                                "src": "3559:10:42",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_uint256",
+                                  "typeString": "uint256"
+                                }
+                              }
+                            ],
+                            "id": 23694,
+                            "isConstant": false,
+                            "isInlineArray": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "nodeType": "TupleExpression",
+                            "src": "3558:12:42",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_uint256",
+                              "typeString": "uint256"
+                            }
+                          },
+                          "nodeType": "BinaryOperation",
+                          "operator": "+",
+                          "rightExpression": {
+                            "hexValue": "31",
+                            "id": 23695,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "3573:1:42",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_rational_1_by_1",
+                              "typeString": "int_const 1"
+                            },
+                            "value": "1"
+                          },
+                          "src": "3558:16:42",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        "functionReturnParameters": 23680,
+                        "id": 23697,
+                        "nodeType": "Return",
+                        "src": "3551:23:42"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "documentation": {
+          "id": 23673,
+          "nodeType": "StructuredDocumentation",
+          "src": "3049:144:42",
+          "text": " Get the length of the data for the given schema type\n (Because Solidity doesn't support constant arrays, we need to use a function)"
+        },
+        "implemented": true,
+        "kind": "freeFunction",
+        "modifiers": [],
+        "name": "getStaticByteLength",
+        "nameLocation": "3203:19:42",
+        "parameters": {
+          "id": 23677,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 23676,
+              "mutability": "mutable",
+              "name": "schemaType",
+              "nameLocation": "3234:10:42",
+              "nodeType": "VariableDeclaration",
+              "scope": 23713,
+              "src": "3223:21:42",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_enum$_SchemaType_$23672",
+                "typeString": "enum SchemaType"
+              },
+              "typeName": {
+                "id": 23675,
+                "nodeType": "UserDefinedTypeName",
+                "pathNode": {
+                  "id": 23674,
+                  "name": "SchemaType",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 23672,
+                  "src": "3223:10:42"
+                },
+                "referencedDeclaration": 23672,
+                "src": "3223:10:42",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_enum$_SchemaType_$23672",
+                  "typeString": "enum SchemaType"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "3222:23:42"
+        },
+        "returnParameters": {
+          "id": 23680,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 23679,
+              "mutability": "mutable",
+              "name": "",
+              "nameLocation": "-1:-1:-1",
+              "nodeType": "VariableDeclaration",
+              "scope": 23713,
+              "src": "3260:7:42",
+              "stateVariable": false,
+              "storageLocation": "default",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              },
+              "typeName": {
+                "id": 23678,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "3260:7:42",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "3259:9:42"
+        },
+        "scope": 23714,
+        "stateMutability": "pure",
+        "virtual": false,
+        "visibility": "internal"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 42
+}

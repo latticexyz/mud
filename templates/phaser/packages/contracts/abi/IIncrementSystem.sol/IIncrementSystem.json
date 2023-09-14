@@ -1,0 +1,196 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "increment",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "increment()": "d09de08a"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"increment\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/codegen/world/IIncrementSystem.sol\":\"IIncrementSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"src/codegen/world/IIncrementSystem.sol\":{\"keccak256\":\"0x95a311d7d154ec18b90bc7a1d01af6e8b9d56d0a2b9c82c9bbcd2a836f845c6f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://40980039bc330eb1255d0e51fba1ca1389a4c6494e02a025d9c15b61f147b1f5\",\"dweb:/ipfs/QmSEhFzdtX8jT7m8MLad3CEheARrcSSVp9cAMCqbemC9ej\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "increment",
+          "outputs": [
+            {
+              "internalType": "uint32",
+              "name": "",
+              "type": "uint32"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/codegen/world/IIncrementSystem.sol": "IIncrementSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/codegen/world/IIncrementSystem.sol": {
+        "keccak256": "0x95a311d7d154ec18b90bc7a1d01af6e8b9d56d0a2b9c82c9bbcd2a836f845c6f",
+        "urls": [
+          "bzz-raw://40980039bc330eb1255d0e51fba1ca1389a4c6494e02a025d9c15b61f147b1f5",
+          "dweb:/ipfs/QmSEhFzdtX8jT7m8MLad3CEheARrcSSVp9cAMCqbemC9ej"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/codegen/world/IIncrementSystem.sol",
+    "id": 28439,
+    "exportedSymbols": {
+      "IIncrementSystem": [
+        28438
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:156:69",
+    "nodes": [
+      {
+        "id": 28432,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:69",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 28438,
+        "nodeType": "ContractDefinition",
+        "src": "107:80:69",
+        "nodes": [
+          {
+            "id": 28437,
+            "nodeType": "FunctionDefinition",
+            "src": "138:47:69",
+            "nodes": [],
+            "functionSelector": "d09de08a",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "increment",
+            "nameLocation": "147:9:69",
+            "parameters": {
+              "id": 28433,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "156:2:69"
+            },
+            "returnParameters": {
+              "id": 28436,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 28435,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 28437,
+                  "src": "177:6:69",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 28434,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "177:6:69",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "176:8:69"
+            },
+            "scope": 28438,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IIncrementSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          28438
+        ],
+        "name": "IIncrementSystem",
+        "nameLocation": "117:16:69",
+        "scope": 28439,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 69
+}

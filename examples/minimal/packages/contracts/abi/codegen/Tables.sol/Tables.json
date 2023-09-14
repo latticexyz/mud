@@ -1,0 +1,167 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/codegen/Tables.sol",
+    "id": 39735,
+    "exportedSymbols": {
+      "CounterTable": [
+        40188
+      ],
+      "CounterTableTableId": [
+        39780
+      ],
+      "Inventory": [
+        40996
+      ],
+      "InventoryTableId": [
+        40234
+      ],
+      "MessageTable": [
+        41337
+      ],
+      "MessageTableTableId": [
+        41042
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:303:88",
+    "nodes": [
+      {
+        "id": 39725,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:88",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 39728,
+        "nodeType": "ImportDirective",
+        "src": "107:78:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/CounterTable.sol",
+        "file": "./tables/CounterTable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 39735,
+        "sourceUnit": 40189,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 39726,
+              "name": "CounterTable",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 40188,
+              "src": "116:12:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 39727,
+              "name": "CounterTableTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 39780,
+              "src": "130:19:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 39731,
+        "nodeType": "ImportDirective",
+        "src": "186:78:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/MessageTable.sol",
+        "file": "./tables/MessageTable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 39735,
+        "sourceUnit": 41338,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 39729,
+              "name": "MessageTable",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 41337,
+              "src": "195:12:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 39730,
+              "name": "MessageTableTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 41042,
+              "src": "209:19:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 39734,
+        "nodeType": "ImportDirective",
+        "src": "265:69:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/Inventory.sol",
+        "file": "./tables/Inventory.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 39735,
+        "sourceUnit": 40997,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 39732,
+              "name": "Inventory",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 40996,
+              "src": "274:9:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 39733,
+              "name": "InventoryTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 40234,
+              "src": "285:16:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 88
+}

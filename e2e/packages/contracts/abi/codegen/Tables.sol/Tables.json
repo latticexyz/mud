@@ -1,0 +1,241 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "src/codegen/Tables.sol",
+    "id": 32730,
+    "exportedSymbols": {
+      "Multi": [
+        34544
+      ],
+      "MultiData": [
+        32780
+      ],
+      "MultiTableId": [
+        32775
+      ],
+      "Number": [
+        35156
+      ],
+      "NumberList": [
+        36053
+      ],
+      "NumberListTableId": [
+        35202
+      ],
+      "NumberTableId": [
+        34608
+      ],
+      "Vector": [
+        37199
+      ],
+      "VectorData": [
+        36104
+      ],
+      "VectorTableId": [
+        36099
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:351:88",
+    "nodes": [
+      {
+        "id": 32715,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:88",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 32718,
+        "nodeType": "ImportDirective",
+        "src": "107:60:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/Number.sol",
+        "file": "./tables/Number.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 32730,
+        "sourceUnit": 35157,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 32716,
+              "name": "Number",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 35156,
+              "src": "116:6:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 32717,
+              "name": "NumberTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 34608,
+              "src": "124:13:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 32722,
+        "nodeType": "ImportDirective",
+        "src": "168:72:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/Vector.sol",
+        "file": "./tables/Vector.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 32730,
+        "sourceUnit": 37200,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 32719,
+              "name": "Vector",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 37199,
+              "src": "177:6:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 32720,
+              "name": "VectorData",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 36104,
+              "src": "185:10:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 32721,
+              "name": "VectorTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 36099,
+              "src": "197:13:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 32725,
+        "nodeType": "ImportDirective",
+        "src": "241:72:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/NumberList.sol",
+        "file": "./tables/NumberList.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 32730,
+        "sourceUnit": 36054,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 32723,
+              "name": "NumberList",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 36053,
+              "src": "250:10:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 32724,
+              "name": "NumberListTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 35202,
+              "src": "262:17:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 32729,
+        "nodeType": "ImportDirective",
+        "src": "314:68:88",
+        "nodes": [],
+        "absolutePath": "src/codegen/tables/Multi.sol",
+        "file": "./tables/Multi.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 32730,
+        "sourceUnit": 34563,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 32726,
+              "name": "Multi",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 34544,
+              "src": "323:5:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 32727,
+              "name": "MultiData",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 32780,
+              "src": "330:9:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 32728,
+              "name": "MultiTableId",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 32775,
+              "src": "341:12:88",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 88
+}

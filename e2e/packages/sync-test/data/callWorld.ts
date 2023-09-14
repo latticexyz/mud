@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import IWorldAbi from "../../contracts/abi/IWorld.sol/IWorld.abi.json";
+import IWorldAbi from "../../contracts/out/IWorld.sol/IWorld.abi.json";
 import { GetContractReturnType, PublicClient, WalletClient } from "viem";
 import { AbiParametersToPrimitiveTypes, ExtractAbiFunction, ExtractAbiFunctionNames } from "abitype";
 

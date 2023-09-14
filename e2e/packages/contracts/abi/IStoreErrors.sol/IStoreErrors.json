@@ -1,0 +1,989 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "length",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "received",
+          "type": "uint256"
+        }
+      ],
+      "name": "StoreCore_DataIndexOverflow",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "received",
+          "type": "uint256"
+        }
+      ],
+      "name": "StoreCore_InvalidDynamicDataLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "received",
+          "type": "uint256"
+        }
+      ],
+      "name": "StoreCore_InvalidFieldNamesLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "received",
+          "type": "uint256"
+        }
+      ],
+      "name": "StoreCore_InvalidKeyNamesLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "received",
+          "type": "uint256"
+        }
+      ],
+      "name": "StoreCore_InvalidStaticDataLength",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "expected",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "received",
+          "type": "uint256"
+        }
+      ],
+      "name": "StoreCore_InvalidValueSchemaLength",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "StoreCore_NotDynamicField",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "StoreCore_NotImplemented",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "tableId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "tableIdString",
+          "type": "string"
+        }
+      ],
+      "name": "StoreCore_TableAlreadyExists",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "tableId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "tableIdString",
+          "type": "string"
+        }
+      ],
+      "name": "StoreCore_TableNotFound",
+      "type": "error"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {},
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"length\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"received\",\"type\":\"uint256\"}],\"name\":\"StoreCore_DataIndexOverflow\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"expected\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"received\",\"type\":\"uint256\"}],\"name\":\"StoreCore_InvalidDynamicDataLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"expected\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"received\",\"type\":\"uint256\"}],\"name\":\"StoreCore_InvalidFieldNamesLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"expected\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"received\",\"type\":\"uint256\"}],\"name\":\"StoreCore_InvalidKeyNamesLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"expected\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"received\",\"type\":\"uint256\"}],\"name\":\"StoreCore_InvalidStaticDataLength\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"expected\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"received\",\"type\":\"uint256\"}],\"name\":\"StoreCore_InvalidValueSchemaLength\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"StoreCore_NotDynamicField\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"StoreCore_NotImplemented\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"tableId\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"tableIdString\",\"type\":\"string\"}],\"name\":\"StoreCore_TableAlreadyExists\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"tableId\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"tableIdString\",\"type\":\"string\"}],\"name\":\"StoreCore_TableNotFound\",\"type\":\"error\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreErrors.sol\":\"IStoreErrors\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreErrors.sol\":{\"keccak256\":\"0x0566b0b18c69ce1269ea7af91e6db9f9f318ccf129d185fb0d2c881425d0c47f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://082da5270f4e99738e09d320bbf45840ba6be67730d19a612fb99deb5a384d46\",\"dweb:/ipfs/QmdGKid1frG4Na3A9ssmoKbxuTtAsRGsMXpuFHgL4hfDPa\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "length",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "received",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_DataIndexOverflow"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "expected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "received",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_InvalidDynamicDataLength"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "expected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "received",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_InvalidFieldNamesLength"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "expected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "received",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_InvalidKeyNamesLength"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "expected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "received",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_InvalidStaticDataLength"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "expected",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "received",
+              "type": "uint256"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_InvalidValueSchemaLength"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "StoreCore_NotDynamicField"
+        },
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "StoreCore_NotImplemented"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "tableId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "tableIdString",
+              "type": "string"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_TableAlreadyExists"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "tableId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "tableIdString",
+              "type": "string"
+            }
+          ],
+          "type": "error",
+          "name": "StoreCore_TableNotFound"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreErrors.sol": "IStoreErrors"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreErrors.sol": {
+        "keccak256": "0x0566b0b18c69ce1269ea7af91e6db9f9f318ccf129d185fb0d2c881425d0c47f",
+        "urls": [
+          "bzz-raw://082da5270f4e99738e09d320bbf45840ba6be67730d19a612fb99deb5a384d46",
+          "dweb:/ipfs/QmdGKid1frG4Na3A9ssmoKbxuTtAsRGsMXpuFHgL4hfDPa"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/store/src/IStoreErrors.sol",
+    "id": 1821,
+    "exportedSymbols": {
+      "IStoreErrors": [
+        1820
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:851:5",
+    "nodes": [
+      {
+        "id": 1767,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:5",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 1820,
+        "nodeType": "ContractDefinition",
+        "src": "58:824:5",
+        "nodes": [
+          {
+            "id": 1773,
+            "nodeType": "ErrorDefinition",
+            "src": "194:74:5",
+            "nodes": [],
+            "errorSelector": "147bbb8c",
+            "name": "StoreCore_TableAlreadyExists",
+            "nameLocation": "200:28:5",
+            "parameters": {
+              "id": 1772,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1769,
+                  "mutability": "mutable",
+                  "name": "tableId",
+                  "nameLocation": "237:7:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1773,
+                  "src": "229:15:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1768,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "229:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1771,
+                  "mutability": "mutable",
+                  "name": "tableIdString",
+                  "nameLocation": "253:13:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1773,
+                  "src": "246:20:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1770,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "246:6:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "228:39:5"
+            }
+          },
+          {
+            "id": 1779,
+            "nodeType": "ErrorDefinition",
+            "src": "271:69:5",
+            "nodes": [],
+            "errorSelector": "d623a70d",
+            "name": "StoreCore_TableNotFound",
+            "nameLocation": "277:23:5",
+            "parameters": {
+              "id": 1778,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1775,
+                  "mutability": "mutable",
+                  "name": "tableId",
+                  "nameLocation": "309:7:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1779,
+                  "src": "301:15:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 1774,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "301:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1777,
+                  "mutability": "mutable",
+                  "name": "tableIdString",
+                  "nameLocation": "325:13:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1779,
+                  "src": "318:20:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 1776,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "318:6:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "300:39:5"
+            }
+          },
+          {
+            "id": 1781,
+            "nodeType": "ErrorDefinition",
+            "src": "344:33:5",
+            "nodes": [],
+            "errorSelector": "91eb046c",
+            "name": "StoreCore_NotImplemented",
+            "nameLocation": "350:24:5",
+            "parameters": {
+              "id": 1780,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "374:2:5"
+            }
+          },
+          {
+            "id": 1783,
+            "nodeType": "ErrorDefinition",
+            "src": "380:34:5",
+            "nodes": [],
+            "errorSelector": "14306eb8",
+            "name": "StoreCore_NotDynamicField",
+            "nameLocation": "386:25:5",
+            "parameters": {
+              "id": 1782,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "411:2:5"
+            }
+          },
+          {
+            "id": 1789,
+            "nodeType": "ErrorDefinition",
+            "src": "417:76:5",
+            "nodes": [],
+            "errorSelector": "87d57127",
+            "name": "StoreCore_InvalidStaticDataLength",
+            "nameLocation": "423:33:5",
+            "parameters": {
+              "id": 1788,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1785,
+                  "mutability": "mutable",
+                  "name": "expected",
+                  "nameLocation": "465:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1789,
+                  "src": "457:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1784,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "457:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1787,
+                  "mutability": "mutable",
+                  "name": "received",
+                  "nameLocation": "483:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1789,
+                  "src": "475:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1786,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "475:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "456:36:5"
+            }
+          },
+          {
+            "id": 1795,
+            "nodeType": "ErrorDefinition",
+            "src": "496:77:5",
+            "nodes": [],
+            "errorSelector": "6f2d536b",
+            "name": "StoreCore_InvalidDynamicDataLength",
+            "nameLocation": "502:34:5",
+            "parameters": {
+              "id": 1794,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1791,
+                  "mutability": "mutable",
+                  "name": "expected",
+                  "nameLocation": "545:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1795,
+                  "src": "537:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1790,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "537:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1793,
+                  "mutability": "mutable",
+                  "name": "received",
+                  "nameLocation": "563:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1795,
+                  "src": "555:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1792,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "555:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "536:36:5"
+            }
+          },
+          {
+            "id": 1801,
+            "nodeType": "ErrorDefinition",
+            "src": "576:74:5",
+            "nodes": [],
+            "errorSelector": "891fedf7",
+            "name": "StoreCore_InvalidKeyNamesLength",
+            "nameLocation": "582:31:5",
+            "parameters": {
+              "id": 1800,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1797,
+                  "mutability": "mutable",
+                  "name": "expected",
+                  "nameLocation": "622:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1801,
+                  "src": "614:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1796,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "614:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1799,
+                  "mutability": "mutable",
+                  "name": "received",
+                  "nameLocation": "640:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1801,
+                  "src": "632:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1798,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "632:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "613:36:5"
+            }
+          },
+          {
+            "id": 1807,
+            "nodeType": "ErrorDefinition",
+            "src": "653:76:5",
+            "nodes": [],
+            "errorSelector": "f2b27559",
+            "name": "StoreCore_InvalidFieldNamesLength",
+            "nameLocation": "659:33:5",
+            "parameters": {
+              "id": 1806,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1803,
+                  "mutability": "mutable",
+                  "name": "expected",
+                  "nameLocation": "701:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1807,
+                  "src": "693:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1802,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "693:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1805,
+                  "mutability": "mutable",
+                  "name": "received",
+                  "nameLocation": "719:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1807,
+                  "src": "711:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1804,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "711:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "692:36:5"
+            }
+          },
+          {
+            "id": 1813,
+            "nodeType": "ErrorDefinition",
+            "src": "732:77:5",
+            "nodes": [],
+            "errorSelector": "86761ac9",
+            "name": "StoreCore_InvalidValueSchemaLength",
+            "nameLocation": "738:34:5",
+            "parameters": {
+              "id": 1812,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1809,
+                  "mutability": "mutable",
+                  "name": "expected",
+                  "nameLocation": "781:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1813,
+                  "src": "773:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1808,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "773:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1811,
+                  "mutability": "mutable",
+                  "name": "received",
+                  "nameLocation": "799:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1813,
+                  "src": "791:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1810,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "791:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "772:36:5"
+            }
+          },
+          {
+            "id": 1819,
+            "nodeType": "ErrorDefinition",
+            "src": "812:68:5",
+            "nodes": [],
+            "errorSelector": "7cd3b807",
+            "name": "StoreCore_DataIndexOverflow",
+            "nameLocation": "818:27:5",
+            "parameters": {
+              "id": 1818,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1815,
+                  "mutability": "mutable",
+                  "name": "length",
+                  "nameLocation": "854:6:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1819,
+                  "src": "846:14:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1814,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "846:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 1817,
+                  "mutability": "mutable",
+                  "name": "received",
+                  "nameLocation": "870:8:5",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1819,
+                  "src": "862:16:5",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1816,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "862:7:5",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "845:34:5"
+            }
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IStoreErrors",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          1820
+        ],
+        "name": "IStoreErrors",
+        "nameLocation": "68:12:5",
+        "scope": 1821,
+        "usedErrors": [
+          1773,
+          1779,
+          1781,
+          1783,
+          1789,
+          1795,
+          1801,
+          1807,
+          1813,
+          1819
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 5
+}

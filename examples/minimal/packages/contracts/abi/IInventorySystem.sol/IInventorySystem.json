@@ -1,0 +1,233 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "uint32",
+          "name": "item",
+          "type": "uint32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "itemVariant",
+          "type": "uint32"
+        }
+      ],
+      "name": "pickUp",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "pickUp(uint32,uint32)": "11f348f7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint32\",\"name\":\"item\",\"type\":\"uint32\"},{\"internalType\":\"uint32\",\"name\":\"itemVariant\",\"type\":\"uint32\"}],\"name\":\"pickUp\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/codegen/world/IInventorySystem.sol\":\"IInventorySystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"src/codegen/world/IInventorySystem.sol\":{\"keccak256\":\"0xdccc7349b9832ead7f11d42705eaa71ee268314268e5ebc14584221c5fc9dba4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f3489ac54152b9a2fefbd47d538d123614a010690117d8f882c3fa64bd0412e8\",\"dweb:/ipfs/QmYMAoX8MHUKrKA1MaWejx8GGAjJoKGnUcs4jfgmJXNqdX\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "uint32",
+              "name": "item",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "itemVariant",
+              "type": "uint32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "pickUp"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "@solidstate/=node_modules/@solidstate/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/codegen/world/IInventorySystem.sol": "IInventorySystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/codegen/world/IInventorySystem.sol": {
+        "keccak256": "0xdccc7349b9832ead7f11d42705eaa71ee268314268e5ebc14584221c5fc9dba4",
+        "urls": [
+          "bzz-raw://f3489ac54152b9a2fefbd47d538d123614a010690117d8f882c3fa64bd0412e8",
+          "dweb:/ipfs/QmYMAoX8MHUKrKA1MaWejx8GGAjJoKGnUcs4jfgmJXNqdX"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/codegen/world/IInventorySystem.sol",
+    "id": 41369,
+    "exportedSymbols": {
+      "IInventorySystem": [
+        41368
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:167:94",
+    "nodes": [
+      {
+        "id": 41360,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:94",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 41368,
+        "nodeType": "ContractDefinition",
+        "src": "107:91:94",
+        "nodes": [
+          {
+            "id": 41367,
+            "nodeType": "FunctionDefinition",
+            "src": "138:58:94",
+            "nodes": [],
+            "functionSelector": "11f348f7",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "pickUp",
+            "nameLocation": "147:6:94",
+            "parameters": {
+              "id": 41365,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41362,
+                  "mutability": "mutable",
+                  "name": "item",
+                  "nameLocation": "161:4:94",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41367,
+                  "src": "154:11:94",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 41361,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "154:6:94",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 41364,
+                  "mutability": "mutable",
+                  "name": "itemVariant",
+                  "nameLocation": "174:11:94",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41367,
+                  "src": "167:18:94",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 41363,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "167:6:94",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "153:33:94"
+            },
+            "returnParameters": {
+              "id": 41366,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "195:0:94"
+            },
+            "scope": 41368,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IInventorySystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          41368
+        ],
+        "name": "IInventorySystem",
+        "nameLocation": "117:16:94",
+        "scope": 41369,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 94
+}

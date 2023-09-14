@@ -1,0 +1,845 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract IModule",
+          "name": "module",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "args",
+          "type": "bytes"
+        }
+      ],
+      "name": "installRootModule",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "installRootModule(address,bytes)": "af068c9e"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IModule\",\"name\":\"module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"args\",\"type\":\"bytes\"}],\"name\":\"installRootModule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"installRootModule(address,bytes)\":{\"notice\":\"Install the given root module in the World. Requires the caller to own the root namespace. The module is delegatecalled and installed in the root namespace.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldKernel.sol\":\"IWorldModuleInstallation\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IERC165.sol\":{\"keccak256\":\"0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350\",\"dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModule.sol\":{\"keccak256\":\"0xd7d27038a8533d6cc0bb01da309575fbd606a6d0e7b86cbf259a8fcd0161f24b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a5630666585048073a74e73e41d028d725c7484cf561b8d4f6c85c2ec2b9d101\",\"dweb:/ipfs/QmSKJY47uibSiTX26R6k2LdoxVbi7iVaja8JZa5drMTZpW\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldErrors.sol\":{\"keccak256\":\"0x0f41a5baca70dd636ad412fc7ba1cc1089867969d5c2817a8e1114d4466d959f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4fbdeba68aadb9c210625b7bb43216822bfc5d830279c9efb71c15d0daadfa2c\",\"dweb:/ipfs/QmNSxRf4ifjQP4Gpb9HdMBeYg9watHN6ECQ6EVHw8rBDvW\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldKernel.sol\":{\"keccak256\":\"0xf77cba98f2db8e6007f9e6f49cbec956cfbbff62d737c68e1dd91e2552f9f987\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1b9700e8d26a259347f41dc5405c347ccf30a7b1a02d04d652fb8be397a450bc\",\"dweb:/ipfs/QmduS5eiZg5mVevPaHzwXpTqoTnoFA4qaA8VerkDACKiWn\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "contract IModule",
+              "name": "module",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "args",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "installRootModule"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "installRootModule(address,bytes)": {
+            "notice": "Install the given root module in the World. Requires the caller to own the root namespace. The module is delegatecalled and installed in the root namespace."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldKernel.sol": "IWorldModuleInstallation"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IERC165.sol": {
+        "keccak256": "0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577",
+        "urls": [
+          "bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350",
+          "dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModule.sol": {
+        "keccak256": "0xd7d27038a8533d6cc0bb01da309575fbd606a6d0e7b86cbf259a8fcd0161f24b",
+        "urls": [
+          "bzz-raw://a5630666585048073a74e73e41d028d725c7484cf561b8d4f6c85c2ec2b9d101",
+          "dweb:/ipfs/QmSKJY47uibSiTX26R6k2LdoxVbi7iVaja8JZa5drMTZpW"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldErrors.sol": {
+        "keccak256": "0x0f41a5baca70dd636ad412fc7ba1cc1089867969d5c2817a8e1114d4466d959f",
+        "urls": [
+          "bzz-raw://4fbdeba68aadb9c210625b7bb43216822bfc5d830279c9efb71c15d0daadfa2c",
+          "dweb:/ipfs/QmNSxRf4ifjQP4Gpb9HdMBeYg9watHN6ECQ6EVHw8rBDvW"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldKernel.sol": {
+        "keccak256": "0xf77cba98f2db8e6007f9e6f49cbec956cfbbff62d737c68e1dd91e2552f9f987",
+        "urls": [
+          "bzz-raw://1b9700e8d26a259347f41dc5405c347ccf30a7b1a02d04d652fb8be397a450bc",
+          "dweb:/ipfs/QmduS5eiZg5mVevPaHzwXpTqoTnoFA4qaA8VerkDACKiWn"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldKernel.sol",
+    "id": 23387,
+    "exportedSymbols": {
+      "IModule": [
+        23183
+      ],
+      "IWorldCall": [
+        23363
+      ],
+      "IWorldErrors": [
+        23324
+      ],
+      "IWorldKernel": [
+        23386
+      ],
+      "IWorldModuleInstallation": [
+        23340
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:1744:39",
+    "nodes": [
+      {
+        "id": 23326,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:39",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 23328,
+        "nodeType": "ImportDirective",
+        "src": "58:50:39",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldErrors.sol",
+        "file": "./IWorldErrors.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 23387,
+        "sourceUnit": 23325,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 23327,
+              "name": "IWorldErrors",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 23324,
+              "src": "67:12:39",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 23330,
+        "nodeType": "ImportDirective",
+        "src": "109:40:39",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModule.sol",
+        "file": "./IModule.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 23387,
+        "sourceUnit": 23184,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 23329,
+              "name": "IModule",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 23183,
+              "src": "118:7:39",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 23340,
+        "nodeType": "ContractDefinition",
+        "src": "151:296:39",
+        "nodes": [
+          {
+            "id": 23339,
+            "nodeType": "FunctionDefinition",
+            "src": "374:71:39",
+            "nodes": [],
+            "documentation": {
+              "id": 23331,
+              "nodeType": "StructuredDocumentation",
+              "src": "190:181:39",
+              "text": " Install the given root module in the World.\n Requires the caller to own the root namespace.\n The module is delegatecalled and installed in the root namespace."
+            },
+            "functionSelector": "af068c9e",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "installRootModule",
+            "nameLocation": "383:17:39",
+            "parameters": {
+              "id": 23337,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23334,
+                  "mutability": "mutable",
+                  "name": "module",
+                  "nameLocation": "409:6:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23339,
+                  "src": "401:14:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IModule_$23183",
+                    "typeString": "contract IModule"
+                  },
+                  "typeName": {
+                    "id": 23333,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 23332,
+                      "name": "IModule",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 23183,
+                      "src": "401:7:39"
+                    },
+                    "referencedDeclaration": 23183,
+                    "src": "401:7:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IModule_$23183",
+                      "typeString": "contract IModule"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 23336,
+                  "mutability": "mutable",
+                  "name": "args",
+                  "nameLocation": "430:4:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23339,
+                  "src": "417:17:39",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 23335,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "417:5:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "400:35:39"
+            },
+            "returnParameters": {
+              "id": 23338,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "444:0:39"
+            },
+            "scope": 23340,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IWorldModuleInstallation",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          23340
+        ],
+        "name": "IWorldModuleInstallation",
+        "nameLocation": "161:24:39",
+        "scope": 23387,
+        "usedErrors": []
+      },
+      {
+        "id": 23363,
+        "nodeType": "ContractDefinition",
+        "src": "449:706:39",
+        "nodes": [
+          {
+            "id": 23350,
+            "nodeType": "FunctionDefinition",
+            "src": "660:114:39",
+            "nodes": [],
+            "documentation": {
+              "id": 23341,
+              "nodeType": "StructuredDocumentation",
+              "src": "474:183:39",
+              "text": " Call the system at the given resourceSelector.\n If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector)."
+            },
+            "functionSelector": "3ae7af08",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "call",
+            "nameLocation": "669:4:39",
+            "parameters": {
+              "id": 23346,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23343,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "682:16:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23350,
+                  "src": "674:24:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 23342,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "674:7:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 23345,
+                  "mutability": "mutable",
+                  "name": "funcSelectorAndArgs",
+                  "nameLocation": "713:19:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23350,
+                  "src": "700:32:39",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 23344,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "700:5:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "673:60:39"
+            },
+            "returnParameters": {
+              "id": 23349,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23348,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23350,
+                  "src": "760:12:39",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 23347,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "760:5:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "759:14:39"
+            },
+            "scope": 23363,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 23362,
+            "nodeType": "FunctionDefinition",
+            "src": "1000:153:39",
+            "nodes": [],
+            "documentation": {
+              "id": 23351,
+              "nodeType": "StructuredDocumentation",
+              "src": "778:219:39",
+              "text": " Call the system at the given resourceSelector on behalf of the given delegator.\n If the system is not public, the delegator must have access to the namespace or name (encoded in the resourceSelector)."
+            },
+            "functionSelector": "894ecc58",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "callFrom",
+            "nameLocation": "1009:8:39",
+            "parameters": {
+              "id": 23358,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23353,
+                  "mutability": "mutable",
+                  "name": "delegator",
+                  "nameLocation": "1031:9:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23362,
+                  "src": "1023:17:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 23352,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1023:7:39",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 23355,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "1054:16:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23362,
+                  "src": "1046:24:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 23354,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1046:7:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 23357,
+                  "mutability": "mutable",
+                  "name": "funcSelectorAndArgs",
+                  "nameLocation": "1089:19:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23362,
+                  "src": "1076:32:39",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 23356,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1076:5:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1017:95:39"
+            },
+            "returnParameters": {
+              "id": 23361,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23360,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23362,
+                  "src": "1139:12:39",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 23359,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1139:5:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1138:14:39"
+            },
+            "scope": 23363,
+            "stateMutability": "payable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IWorldCall",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          23363
+        ],
+        "name": "IWorldCall",
+        "nameLocation": "459:10:39",
+        "scope": 23387,
+        "usedErrors": []
+      },
+      {
+        "id": 23386,
+        "nodeType": "ContractDefinition",
+        "src": "1423:352:39",
+        "nodes": [
+          {
+            "id": 23372,
+            "nodeType": "EventDefinition",
+            "src": "1504:19:39",
+            "nodes": [],
+            "anonymous": false,
+            "eventSelector": "7fffb7bdf7d16635144da549e9a4eedff43ed43d64e49e18d7e365f9e5521232",
+            "name": "HelloWorld",
+            "nameLocation": "1510:10:39",
+            "parameters": {
+              "id": 23371,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1520:2:39"
+            }
+          },
+          {
+            "id": 23378,
+            "nodeType": "FunctionDefinition",
+            "src": "1590:51:39",
+            "nodes": [],
+            "documentation": {
+              "id": 23373,
+              "nodeType": "StructuredDocumentation",
+              "src": "1527:60:39",
+              "text": " The immutable original deployer of the World."
+            },
+            "functionSelector": "02d05d3f",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "creator",
+            "nameLocation": "1599:7:39",
+            "parameters": {
+              "id": 23374,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1606:2:39"
+            },
+            "returnParameters": {
+              "id": 23377,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23376,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23378,
+                  "src": "1632:7:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 23375,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1632:7:39",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1631:9:39"
+            },
+            "scope": 23386,
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 23385,
+            "nodeType": "FunctionDefinition",
+            "src": "1724:49:39",
+            "nodes": [],
+            "documentation": {
+              "id": 23379,
+              "nodeType": "StructuredDocumentation",
+              "src": "1645:76:39",
+              "text": " Allows the creator of the World to initialize the World once."
+            },
+            "functionSelector": "c4d66de8",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "initialize",
+            "nameLocation": "1733:10:39",
+            "parameters": {
+              "id": 23383,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 23382,
+                  "mutability": "mutable",
+                  "name": "coreModule",
+                  "nameLocation": "1752:10:39",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 23385,
+                  "src": "1744:18:39",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IModule_$23183",
+                    "typeString": "contract IModule"
+                  },
+                  "typeName": {
+                    "id": 23381,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 23380,
+                      "name": "IModule",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 23183,
+                      "src": "1744:7:39"
+                    },
+                    "referencedDeclaration": 23183,
+                    "src": "1744:7:39",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IModule_$23183",
+                      "typeString": "contract IModule"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1743:20:39"
+            },
+            "returnParameters": {
+              "id": 23384,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1772:0:39"
+            },
+            "scope": 23386,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 23365,
+              "name": "IWorldModuleInstallation",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 23340,
+              "src": "1449:24:39"
+            },
+            "id": 23366,
+            "nodeType": "InheritanceSpecifier",
+            "src": "1449:24:39"
+          },
+          {
+            "baseName": {
+              "id": 23367,
+              "name": "IWorldCall",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 23363,
+              "src": "1475:10:39"
+            },
+            "id": 23368,
+            "nodeType": "InheritanceSpecifier",
+            "src": "1475:10:39"
+          },
+          {
+            "baseName": {
+              "id": 23369,
+              "name": "IWorldErrors",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 23324,
+              "src": "1487:12:39"
+            },
+            "id": 23370,
+            "nodeType": "InheritanceSpecifier",
+            "src": "1487:12:39"
+          }
+        ],
+        "canonicalName": "IWorldKernel",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 23364,
+          "nodeType": "StructuredDocumentation",
+          "src": "1157:265:39",
+          "text": " The IWorldKernel interface includes all methods that are part of the World contract's\n internal bytecode.\n Consumers should use the `IBaseWorld` interface instead, which includes dynamically\n registered functions selectors from the `CoreModule`."
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          23386,
+          23324,
+          23363,
+          23340
+        ],
+        "name": "IWorldKernel",
+        "nameLocation": "1433:12:39",
+        "scope": 23387,
+        "usedErrors": [
+          23275,
+          23279,
+          23283,
+          23289,
+          23293,
+          23297,
+          23301,
+          23305,
+          23311,
+          23317,
+          23323
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 39
+}

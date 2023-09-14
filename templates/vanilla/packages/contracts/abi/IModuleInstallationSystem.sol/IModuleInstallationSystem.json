@@ -1,0 +1,276 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract IModule",
+          "name": "module",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes",
+          "name": "args",
+          "type": "bytes"
+        }
+      ],
+      "name": "installModule",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "installModule(address,bytes)": "8da798da"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"contract IModule\",\"name\":\"module\",\"type\":\"address\"},{\"internalType\":\"bytes\",\"name\":\"args\",\"type\":\"bytes\"}],\"name\":\"installModule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModuleInstallationSystem.sol\":\"IModuleInstallationSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModule.sol\":{\"keccak256\":\"0x0c9f5a12f8b27ae6f02b6ca7ccfd7ab1de349e5c4773f99cfab1fd4721bc4a06\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cafb66fbd4b3587121a2f2ff6fc5e4c32796e6469719899e181c3abac1479178\",\"dweb:/ipfs/QmT6GKskhqmLadhuNVVbgDEgJ92jMsCdyLcfrSaiVQeZYf\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModuleInstallationSystem.sol\":{\"keccak256\":\"0x77b05ecc98755a3b48f0296af3146486890d140eff7b1cc6e95be95a6aab80c0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://684155a7539c00796d2e00c3d67dc8d9c5e707e3fac37089df84a346607efdc2\",\"dweb:/ipfs/QmeAPVzvTmaiHBtvFVw92XNmWmQ63RqWAgzNqBGRYwyzkz\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "contract IModule",
+              "name": "module",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "args",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "installModule"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModuleInstallationSystem.sol": "IModuleInstallationSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModule.sol": {
+        "keccak256": "0x0c9f5a12f8b27ae6f02b6ca7ccfd7ab1de349e5c4773f99cfab1fd4721bc4a06",
+        "urls": [
+          "bzz-raw://cafb66fbd4b3587121a2f2ff6fc5e4c32796e6469719899e181c3abac1479178",
+          "dweb:/ipfs/QmT6GKskhqmLadhuNVVbgDEgJ92jMsCdyLcfrSaiVQeZYf"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModuleInstallationSystem.sol": {
+        "keccak256": "0x77b05ecc98755a3b48f0296af3146486890d140eff7b1cc6e95be95a6aab80c0",
+        "urls": [
+          "bzz-raw://684155a7539c00796d2e00c3d67dc8d9c5e707e3fac37089df84a346607efdc2",
+          "dweb:/ipfs/QmeAPVzvTmaiHBtvFVw92XNmWmQ63RqWAgzNqBGRYwyzkz"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModuleInstallationSystem.sol",
+    "id": 19634,
+    "exportedSymbols": {
+      "IModule": [
+        19620
+      ],
+      "IModuleInstallationSystem": [
+        19633
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:227:26",
+    "nodes": [
+      {
+        "id": 19622,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:26",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 19624,
+        "nodeType": "ImportDirective",
+        "src": "107:40:26",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IModule.sol",
+        "file": "./IModule.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 19634,
+        "sourceUnit": 19621,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 19623,
+              "name": "IModule",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 19620,
+              "src": "116:7:26",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 19633,
+        "nodeType": "ContractDefinition",
+        "src": "149:109:26",
+        "nodes": [
+          {
+            "id": 19632,
+            "nodeType": "FunctionDefinition",
+            "src": "189:67:26",
+            "nodes": [],
+            "functionSelector": "8da798da",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "installModule",
+            "nameLocation": "198:13:26",
+            "parameters": {
+              "id": 19630,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19627,
+                  "mutability": "mutable",
+                  "name": "module",
+                  "nameLocation": "220:6:26",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19632,
+                  "src": "212:14:26",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IModule_$19620",
+                    "typeString": "contract IModule"
+                  },
+                  "typeName": {
+                    "id": 19626,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 19625,
+                      "name": "IModule",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 19620,
+                      "src": "212:7:26"
+                    },
+                    "referencedDeclaration": 19620,
+                    "src": "212:7:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IModule_$19620",
+                      "typeString": "contract IModule"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19629,
+                  "mutability": "mutable",
+                  "name": "args",
+                  "nameLocation": "241:4:26",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19632,
+                  "src": "228:17:26",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 19628,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "228:5:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "211:35:26"
+            },
+            "returnParameters": {
+              "id": 19631,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "255:0:26"
+            },
+            "scope": 19633,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IModuleInstallationSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          19633
+        ],
+        "name": "IModuleInstallationSystem",
+        "nameLocation": "159:25:26",
+        "scope": 19634,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 26
+}

@@ -1,0 +1,427 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "msgSender",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "funcSelectorAndArgs",
+          "type": "bytes"
+        }
+      ],
+      "name": "onAfterCallSystem",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "msgSender",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "funcSelectorAndArgs",
+          "type": "bytes"
+        }
+      ],
+      "name": "onBeforeCallSystem",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "onAfterCallSystem(address,bytes32,bytes)": "973d8f99",
+    "onBeforeCallSystem(address,bytes32,bytes)": "c3323031"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"msgSender\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"funcSelectorAndArgs\",\"type\":\"bytes\"}],\"name\":\"onAfterCallSystem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"msgSender\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"funcSelectorAndArgs\",\"type\":\"bytes\"}],\"name\":\"onBeforeCallSystem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol\":\"ISystemHook\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol\":{\"keccak256\":\"0x67741ad7d2baef33d485973987c22698129bb1fcd549a95eca3ed0a976f26ec8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5f0ed7a6461a77f42a507492c685e1567f5aeba178afbe5befed5e70309b5455\",\"dweb:/ipfs/QmUERibtLGwQvuz9FS8ihsBFRDmpccYLB6wBT5hgwv94c2\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "msgSender",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "funcSelectorAndArgs",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onAfterCallSystem"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "msgSender",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "funcSelectorAndArgs",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "onBeforeCallSystem"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol": "ISystemHook"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol": {
+        "keccak256": "0x67741ad7d2baef33d485973987c22698129bb1fcd549a95eca3ed0a976f26ec8",
+        "urls": [
+          "bzz-raw://5f0ed7a6461a77f42a507492c685e1567f5aeba178afbe5befed5e70309b5455",
+          "dweb:/ipfs/QmUERibtLGwQvuz9FS8ihsBFRDmpccYLB6wBT5hgwv94c2"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol",
+    "id": 19655,
+    "exportedSymbols": {
+      "ISystemHook": [
+        19654
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:290:27",
+    "nodes": [
+      {
+        "id": 19635,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:27",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 19654,
+        "nodeType": "ContractDefinition",
+        "src": "58:263:27",
+        "nodes": [
+          {
+            "id": 19644,
+            "nodeType": "FunctionDefinition",
+            "src": "84:116:27",
+            "nodes": [],
+            "functionSelector": "c3323031",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onBeforeCallSystem",
+            "nameLocation": "93:18:27",
+            "parameters": {
+              "id": 19642,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19637,
+                  "mutability": "mutable",
+                  "name": "msgSender",
+                  "nameLocation": "120:9:27",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19644,
+                  "src": "112:17:27",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19636,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "112:7:27",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19639,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "139:16:27",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19644,
+                  "src": "131:24:27",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 19638,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "131:7:27",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19641,
+                  "mutability": "mutable",
+                  "name": "funcSelectorAndArgs",
+                  "nameLocation": "170:19:27",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19644,
+                  "src": "157:32:27",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 19640,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "157:5:27",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "111:79:27"
+            },
+            "returnParameters": {
+              "id": 19643,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "199:0:27"
+            },
+            "scope": 19654,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 19653,
+            "nodeType": "FunctionDefinition",
+            "src": "204:115:27",
+            "nodes": [],
+            "functionSelector": "973d8f99",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "onAfterCallSystem",
+            "nameLocation": "213:17:27",
+            "parameters": {
+              "id": 19651,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19646,
+                  "mutability": "mutable",
+                  "name": "msgSender",
+                  "nameLocation": "239:9:27",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19653,
+                  "src": "231:17:27",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19645,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "231:7:27",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19648,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "258:16:27",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19653,
+                  "src": "250:24:27",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 19647,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "250:7:27",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19650,
+                  "mutability": "mutable",
+                  "name": "funcSelectorAndArgs",
+                  "nameLocation": "289:19:27",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19653,
+                  "src": "276:32:27",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 19649,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "276:5:27",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "230:79:27"
+            },
+            "returnParameters": {
+              "id": 19652,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "318:0:27"
+            },
+            "scope": 19654,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ISystemHook",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          19654
+        ],
+        "name": "ISystemHook",
+        "nameLocation": "68:11:27",
+        "scope": 19655,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 27
+}

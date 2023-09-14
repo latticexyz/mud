@@ -1,0 +1,20 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint32",
+        "name": "item",
+        "type": "uint32"
+      },
+      {
+        "internalType": "uint32",
+        "name": "itemVariant",
+        "type": "uint32"
+      }
+    ],
+    "name": "pickUp",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

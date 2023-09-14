@@ -1,0 +1,269 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "int32",
+          "name": "x",
+          "type": "int32"
+        },
+        {
+          "internalType": "int32",
+          "name": "y",
+          "type": "int32"
+        },
+        {
+          "internalType": "int32",
+          "name": "z",
+          "type": "int32"
+        }
+      ],
+      "name": "move",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "move(int32,int32,int32)": "6c53eb2a"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"int32\",\"name\":\"x\",\"type\":\"int32\"},{\"internalType\":\"int32\",\"name\":\"y\",\"type\":\"int32\"},{\"internalType\":\"int32\",\"name\":\"z\",\"type\":\"int32\"}],\"name\":\"move\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/codegen/world/IMoveSystem.sol\":\"IMoveSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"src/codegen/world/IMoveSystem.sol\":{\"keccak256\":\"0x8e5b8b0c6cf5ede42f0afa9205926b64ea1c88e8102c75775b147ecfd912068c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e7ea4de011d7bd75b4a16bd5c9c484ec4135b2b2734e9d3e25a4f5b668f4f83d\",\"dweb:/ipfs/QmceuDEZ69J4NVggdthQ2R4XZ5hkHJLjtLSJWjkmWKoNwV\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "int32",
+              "name": "x",
+              "type": "int32"
+            },
+            {
+              "internalType": "int32",
+              "name": "y",
+              "type": "int32"
+            },
+            {
+              "internalType": "int32",
+              "name": "z",
+              "type": "int32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "move"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/codegen/world/IMoveSystem.sol": "IMoveSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/codegen/world/IMoveSystem.sol": {
+        "keccak256": "0x8e5b8b0c6cf5ede42f0afa9205926b64ea1c88e8102c75775b147ecfd912068c",
+        "urls": [
+          "bzz-raw://e7ea4de011d7bd75b4a16bd5c9c484ec4135b2b2734e9d3e25a4f5b668f4f83d",
+          "dweb:/ipfs/QmceuDEZ69J4NVggdthQ2R4XZ5hkHJLjtLSJWjkmWKoNwV"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/codegen/world/IMoveSystem.sol",
+    "id": 29223,
+    "exportedSymbols": {
+      "IMoveSystem": [
+        29222
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:154:69",
+    "nodes": [
+      {
+        "id": 29212,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:69",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 29222,
+        "nodeType": "ContractDefinition",
+        "src": "107:78:69",
+        "nodes": [
+          {
+            "id": 29221,
+            "nodeType": "FunctionDefinition",
+            "src": "133:50:69",
+            "nodes": [],
+            "functionSelector": "6c53eb2a",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "move",
+            "nameLocation": "142:4:69",
+            "parameters": {
+              "id": 29219,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 29214,
+                  "mutability": "mutable",
+                  "name": "x",
+                  "nameLocation": "153:1:69",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 29221,
+                  "src": "147:7:69",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int32",
+                    "typeString": "int32"
+                  },
+                  "typeName": {
+                    "id": 29213,
+                    "name": "int32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "147:5:69",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int32",
+                      "typeString": "int32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 29216,
+                  "mutability": "mutable",
+                  "name": "y",
+                  "nameLocation": "162:1:69",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 29221,
+                  "src": "156:7:69",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int32",
+                    "typeString": "int32"
+                  },
+                  "typeName": {
+                    "id": 29215,
+                    "name": "int32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "156:5:69",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int32",
+                      "typeString": "int32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 29218,
+                  "mutability": "mutable",
+                  "name": "z",
+                  "nameLocation": "171:1:69",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 29221,
+                  "src": "165:7:69",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_int32",
+                    "typeString": "int32"
+                  },
+                  "typeName": {
+                    "id": 29217,
+                    "name": "int32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "165:5:69",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_int32",
+                      "typeString": "int32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "146:27:69"
+            },
+            "returnParameters": {
+              "id": 29220,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "182:0:69"
+            },
+            "scope": 29222,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IMoveSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          29222
+        ],
+        "name": "IMoveSystem",
+        "nameLocation": "117:11:69",
+        "scope": 29223,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 69
+}

@@ -1,0 +1,473 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "grantee",
+          "type": "address"
+        }
+      ],
+      "name": "grantAccess",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "grantee",
+          "type": "address"
+        }
+      ],
+      "name": "revokeAccess",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes16",
+          "name": "namespace",
+          "type": "bytes16"
+        },
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "grantAccess(bytes32,address)": "40554c3a",
+    "revokeAccess(bytes32,address)": "8d53b208",
+    "transferOwnership(bytes16,address)": "25f62210"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"grantee\",\"type\":\"address\"}],\"name\":\"grantAccess\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"grantee\",\"type\":\"address\"}],\"name\":\"revokeAccess\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes16\",\"name\":\"namespace\",\"type\":\"bytes16\"},{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IAccessManagementSystem.sol\":\"IAccessManagementSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IAccessManagementSystem.sol\":{\"keccak256\":\"0xd6504f7e7f9cddbc2badfdd9b09c93101621b712014672caab1ef7502fa36828\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://11a8bcfd52af0560ed49cb2a922bf138c84bd74fa3c8ee84e2c275ea94266b64\",\"dweb:/ipfs/QmNN1qxgXaDmyoB7pKKrJB8Ms3jXVNAgQbUHT1VE24cbGQ\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "grantee",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "grantAccess"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "grantee",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "revokeAccess"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes16",
+              "name": "namespace",
+              "type": "bytes16"
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IAccessManagementSystem.sol": "IAccessManagementSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IAccessManagementSystem.sol": {
+        "keccak256": "0xd6504f7e7f9cddbc2badfdd9b09c93101621b712014672caab1ef7502fa36828",
+        "urls": [
+          "bzz-raw://11a8bcfd52af0560ed49cb2a922bf138c84bd74fa3c8ee84e2c275ea94266b64",
+          "dweb:/ipfs/QmNN1qxgXaDmyoB7pKKrJB8Ms3jXVNAgQbUHT1VE24cbGQ"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IAccessManagementSystem.sol",
+    "id": 19599,
+    "exportedSymbols": {
+      "IAccessManagementSystem": [
+        19598
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:344:23",
+    "nodes": [
+      {
+        "id": 19576,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:23",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 19598,
+        "nodeType": "ContractDefinition",
+        "src": "107:268:23",
+        "nodes": [
+          {
+            "id": 19583,
+            "nodeType": "FunctionDefinition",
+            "src": "145:73:23",
+            "nodes": [],
+            "functionSelector": "40554c3a",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "grantAccess",
+            "nameLocation": "154:11:23",
+            "parameters": {
+              "id": 19581,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19578,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "174:16:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19583,
+                  "src": "166:24:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 19577,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "166:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19580,
+                  "mutability": "mutable",
+                  "name": "grantee",
+                  "nameLocation": "200:7:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19583,
+                  "src": "192:15:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19579,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "192:7:23",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "165:43:23"
+            },
+            "returnParameters": {
+              "id": 19582,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "217:0:23"
+            },
+            "scope": 19598,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 19590,
+            "nodeType": "FunctionDefinition",
+            "src": "222:74:23",
+            "nodes": [],
+            "functionSelector": "8d53b208",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "revokeAccess",
+            "nameLocation": "231:12:23",
+            "parameters": {
+              "id": 19588,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19585,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "252:16:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19590,
+                  "src": "244:24:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 19584,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "244:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19587,
+                  "mutability": "mutable",
+                  "name": "grantee",
+                  "nameLocation": "278:7:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19590,
+                  "src": "270:15:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19586,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "270:7:23",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "243:43:23"
+            },
+            "returnParameters": {
+              "id": 19589,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "295:0:23"
+            },
+            "scope": 19598,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 19597,
+            "nodeType": "FunctionDefinition",
+            "src": "300:73:23",
+            "nodes": [],
+            "functionSelector": "25f62210",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "transferOwnership",
+            "nameLocation": "309:17:23",
+            "parameters": {
+              "id": 19595,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19592,
+                  "mutability": "mutable",
+                  "name": "namespace",
+                  "nameLocation": "335:9:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19597,
+                  "src": "327:17:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes16",
+                    "typeString": "bytes16"
+                  },
+                  "typeName": {
+                    "id": 19591,
+                    "name": "bytes16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "327:7:23",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes16",
+                      "typeString": "bytes16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19594,
+                  "mutability": "mutable",
+                  "name": "newOwner",
+                  "nameLocation": "354:8:23",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19597,
+                  "src": "346:16:23",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19593,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "346:7:23",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "326:37:23"
+            },
+            "returnParameters": {
+              "id": 19596,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "372:0:23"
+            },
+            "scope": 19598,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IAccessManagementSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          19598
+        ],
+        "name": "IAccessManagementSystem",
+        "nameLocation": "117:23:23",
+        "scope": 19599,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 23
+}

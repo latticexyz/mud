@@ -1,0 +1,508 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "TestError1",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "int32",
+              "name": "x",
+              "type": "int32"
+            },
+            {
+              "internalType": "int32",
+              "name": "y",
+              "type": "int32"
+            }
+          ],
+          "internalType": "struct Position",
+          "name": "position",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "flag",
+          "type": "bool"
+        }
+      ],
+      "name": "TestError2",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "arg",
+          "type": "uint256"
+        }
+      ],
+      "name": "stub",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "stub(uint256)": "5f644e3c"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"TestError1\",\"type\":\"error\"},{\"inputs\":[{\"components\":[{\"internalType\":\"int32\",\"name\":\"x\",\"type\":\"int32\"},{\"internalType\":\"int32\",\"name\":\"y\",\"type\":\"int32\"}],\"internalType\":\"struct Position\",\"name\":\"position\",\"type\":\"tuple\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"name\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"flag\",\"type\":\"bool\"}],\"name\":\"TestError2\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"arg\",\"type\":\"uint256\"}],\"name\":\"stub\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/codegen/world/ICustomErrorsSystem.sol\":\"ICustomErrorsSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"src/CustomTypes.sol\":{\"keccak256\":\"0x5c16dbb9b801955260a235c8c4e08fc7933b37a9386720878955fff723146778\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2ccd90de35b1f7ac5d32672fa23c54d22e16f6c84e2957f7835f540521d91825\",\"dweb:/ipfs/QmS1jVNvTexGVMPpf9UdxDnUCUXpXGQeUxSrXb7kzzktFj\"]},\"src/codegen/world/ICustomErrorsSystem.sol\":{\"keccak256\":\"0xaa7555b29792ce50655dc020f1bc92b537fe3ae47cc3f19d249189018035a2f6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c1f45e1e44c5fe1fcf506e8484fee911a242153528934a80c547ebe1cbebdb9e\",\"dweb:/ipfs/QmPeGxxYeK7MtYuGC4EJdfjR4FC9orx3fXpeBs4cJ3orEY\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "TestError1"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct Position",
+              "name": "position",
+              "type": "tuple",
+              "components": [
+                {
+                  "internalType": "int32",
+                  "name": "x",
+                  "type": "int32"
+                },
+                {
+                  "internalType": "int32",
+                  "name": "y",
+                  "type": "int32"
+                }
+              ]
+            },
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "internalType": "bool",
+              "name": "flag",
+              "type": "bool"
+            }
+          ],
+          "type": "error",
+          "name": "TestError2"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "arg",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "stub",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/codegen/world/ICustomErrorsSystem.sol": "ICustomErrorsSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/CustomTypes.sol": {
+        "keccak256": "0x5c16dbb9b801955260a235c8c4e08fc7933b37a9386720878955fff723146778",
+        "urls": [
+          "bzz-raw://2ccd90de35b1f7ac5d32672fa23c54d22e16f6c84e2957f7835f540521d91825",
+          "dweb:/ipfs/QmS1jVNvTexGVMPpf9UdxDnUCUXpXGQeUxSrXb7kzzktFj"
+        ],
+        "license": "MIT"
+      },
+      "src/codegen/world/ICustomErrorsSystem.sol": {
+        "keccak256": "0xaa7555b29792ce50655dc020f1bc92b537fe3ae47cc3f19d249189018035a2f6",
+        "urls": [
+          "bzz-raw://c1f45e1e44c5fe1fcf506e8484fee911a242153528934a80c547ebe1cbebdb9e",
+          "dweb:/ipfs/QmPeGxxYeK7MtYuGC4EJdfjR4FC9orx3fXpeBs4cJ3orEY"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/codegen/world/ICustomErrorsSystem.sol",
+    "id": 37225,
+    "exportedSymbols": {
+      "ICustomErrorsSystem": [
+        37224
+      ],
+      "Position": [
+        32713
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:325:93",
+    "nodes": [
+      {
+        "id": 37201,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:93",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 37203,
+        "nodeType": "ImportDirective",
+        "src": "107:51:93",
+        "nodes": [],
+        "absolutePath": "src/CustomTypes.sol",
+        "file": "./../../CustomTypes.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 37225,
+        "sourceUnit": 32714,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 37202,
+              "name": "Position",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 32713,
+              "src": "116:8:93",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 37224,
+        "nodeType": "ContractDefinition",
+        "src": "160:196:93",
+        "nodes": [
+          {
+            "id": 37205,
+            "nodeType": "ErrorDefinition",
+            "src": "194:19:93",
+            "nodes": [],
+            "errorSelector": "7d5e9ca7",
+            "name": "TestError1",
+            "nameLocation": "200:10:93",
+            "parameters": {
+              "id": 37204,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "210:2:93"
+            }
+          },
+          {
+            "id": 37216,
+            "nodeType": "ErrorDefinition",
+            "src": "216:75:93",
+            "nodes": [],
+            "errorSelector": "b08ea6d0",
+            "name": "TestError2",
+            "nameLocation": "222:10:93",
+            "parameters": {
+              "id": 37215,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 37208,
+                  "mutability": "mutable",
+                  "name": "position",
+                  "nameLocation": "242:8:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 37216,
+                  "src": "233:17:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_Position_$32713_memory_ptr",
+                    "typeString": "struct Position"
+                  },
+                  "typeName": {
+                    "id": 37207,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 37206,
+                      "name": "Position",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 32713,
+                      "src": "233:8:93"
+                    },
+                    "referencedDeclaration": 32713,
+                    "src": "233:8:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_Position_$32713_storage_ptr",
+                      "typeString": "struct Position"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 37210,
+                  "mutability": "mutable",
+                  "name": "value",
+                  "nameLocation": "260:5:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 37216,
+                  "src": "252:13:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 37209,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "252:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 37212,
+                  "mutability": "mutable",
+                  "name": "name",
+                  "nameLocation": "274:4:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 37216,
+                  "src": "267:11:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 37211,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "267:6:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 37214,
+                  "mutability": "mutable",
+                  "name": "flag",
+                  "nameLocation": "285:4:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 37216,
+                  "src": "280:9:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 37213,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "280:4:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "232:58:93"
+            }
+          },
+          {
+            "id": 37223,
+            "nodeType": "FunctionDefinition",
+            "src": "295:59:93",
+            "nodes": [],
+            "functionSelector": "5f644e3c",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "stub",
+            "nameLocation": "304:4:93",
+            "parameters": {
+              "id": 37219,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 37218,
+                  "mutability": "mutable",
+                  "name": "arg",
+                  "nameLocation": "317:3:93",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 37223,
+                  "src": "309:11:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 37217,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "309:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "308:13:93"
+            },
+            "returnParameters": {
+              "id": 37222,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 37221,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 37223,
+                  "src": "345:7:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 37220,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "345:7:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "344:9:93"
+            },
+            "scope": 37224,
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ICustomErrorsSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          37224
+        ],
+        "name": "ICustomErrorsSystem",
+        "nameLocation": "170:19:93",
+        "scope": 37225,
+        "usedErrors": [
+          37205,
+          37216
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 93
+}

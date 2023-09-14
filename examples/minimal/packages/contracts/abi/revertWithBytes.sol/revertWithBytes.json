@@ -1,0 +1,189 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/revertWithBytes.sol",
+    "id": 22748,
+    "exportedSymbols": {
+      "revertWithBytes": [
+        22747
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:367:41",
+    "nodes": [
+      {
+        "id": 22739,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:41",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 22747,
+        "nodeType": "FunctionDefinition",
+        "src": "181:217:41",
+        "nodes": [],
+        "body": {
+          "id": 22746,
+          "nodeType": "Block",
+          "src": "232:166:41",
+          "nodes": [],
+          "statements": [
+            {
+              "AST": {
+                "nodeType": "YulBlock",
+                "src": "245:151:41",
+                "statements": [
+                  {
+                    "expression": {
+                      "arguments": [
+                        {
+                          "arguments": [
+                            {
+                              "name": "reason",
+                              "nodeType": "YulIdentifier",
+                              "src": "363:6:41"
+                            },
+                            {
+                              "kind": "number",
+                              "nodeType": "YulLiteral",
+                              "src": "371:4:41",
+                              "type": "",
+                              "value": "0x20"
+                            }
+                          ],
+                          "functionName": {
+                            "name": "add",
+                            "nodeType": "YulIdentifier",
+                            "src": "359:3:41"
+                          },
+                          "nodeType": "YulFunctionCall",
+                          "src": "359:17:41"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "name": "reason",
+                              "nodeType": "YulIdentifier",
+                              "src": "384:6:41"
+                            }
+                          ],
+                          "functionName": {
+                            "name": "mload",
+                            "nodeType": "YulIdentifier",
+                            "src": "378:5:41"
+                          },
+                          "nodeType": "YulFunctionCall",
+                          "src": "378:13:41"
+                        }
+                      ],
+                      "functionName": {
+                        "name": "revert",
+                        "nodeType": "YulIdentifier",
+                        "src": "352:6:41"
+                      },
+                      "nodeType": "YulFunctionCall",
+                      "src": "352:40:41"
+                    },
+                    "nodeType": "YulExpressionStatement",
+                    "src": "352:40:41"
+                  }
+                ]
+              },
+              "evmVersion": "london",
+              "externalReferences": [
+                {
+                  "declaration": 22742,
+                  "isOffset": false,
+                  "isSlot": false,
+                  "src": "363:6:41",
+                  "valueSize": 1
+                },
+                {
+                  "declaration": 22742,
+                  "isOffset": false,
+                  "isSlot": false,
+                  "src": "384:6:41",
+                  "valueSize": 1
+                }
+              ],
+              "id": 22745,
+              "nodeType": "InlineAssembly",
+              "src": "236:160:41"
+            }
+          ]
+        },
+        "documentation": {
+          "id": 22740,
+          "nodeType": "StructuredDocumentation",
+          "src": "58:122:41",
+          "text": " Utility function to revert with raw bytes (eg. coming from a low level call or from a previously encoded error)"
+        },
+        "implemented": true,
+        "kind": "freeFunction",
+        "modifiers": [],
+        "name": "revertWithBytes",
+        "nameLocation": "190:15:41",
+        "parameters": {
+          "id": 22743,
+          "nodeType": "ParameterList",
+          "parameters": [
+            {
+              "constant": false,
+              "id": 22742,
+              "mutability": "mutable",
+              "name": "reason",
+              "nameLocation": "219:6:41",
+              "nodeType": "VariableDeclaration",
+              "scope": 22747,
+              "src": "206:19:41",
+              "stateVariable": false,
+              "storageLocation": "memory",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bytes_memory_ptr",
+                "typeString": "bytes"
+              },
+              "typeName": {
+                "id": 22741,
+                "name": "bytes",
+                "nodeType": "ElementaryTypeName",
+                "src": "206:5:41",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes_storage_ptr",
+                  "typeString": "bytes"
+                }
+              },
+              "visibility": "internal"
+            }
+          ],
+          "src": "205:21:41"
+        },
+        "returnParameters": {
+          "id": 22744,
+          "nodeType": "ParameterList",
+          "parameters": [],
+          "src": "232:0:41"
+        },
+        "scope": 22748,
+        "stateMutability": "pure",
+        "virtual": false,
+        "visibility": "internal"
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 41
+}

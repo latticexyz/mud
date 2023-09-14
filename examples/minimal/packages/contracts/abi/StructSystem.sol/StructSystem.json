@@ -1,0 +1,1181 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "_msgSender",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "_msgValue",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "_world",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "value",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct BytesStruct[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "dynamicArrayBytesStruct",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "value",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct StringStruct[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "name": "dynamicArrayStringStruct",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "value",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct BytesStruct[1]",
+          "name": "",
+          "type": "tuple[1]"
+        }
+      ],
+      "name": "staticArrayBytesStruct",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "value",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct StringStruct[1]",
+          "name": "",
+          "type": "tuple[1]"
+        }
+      ],
+      "name": "staticArrayStringStruct",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b506106c4806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c806345ec93541161005b57806345ec9354146101035780634ccd0e33146101165780635f04ce6614610124578063e1af802c1461013257600080fd5b806301ffc9a71461008d57806308fc6561146100b5578063119df25f146100c857806312467703146100f5575b600080fd5b6100a061009b366004610260565b61013a565b60405190151581526020015b60405180910390f35b6100c66100c33660046103ea565b50565b005b6100d06101d3565b60405173ffffffffffffffffffffffffffffffffffffffff90911681526020016100ac565b6100c66100c33660046104a8565b604051601f1936013581526020016100ac565b6100c66100c336600461055e565b6100c66100c33660046105ea565b6100d0610205565b60007fffffffff0000000000000000000000000000000000000000000000000000000082167fb42128800000000000000000000000000000000000000000000000000000000014806101cd57507fffffffff0000000000000000000000000000000000000000000000000000000082167f01ffc9a700000000000000000000000000000000000000000000000000000000145b92915050565b7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcc36013560601c806102025750335b90565b600061020f610214565b905090565b7f629a4c26e296b22a8e0856e9f6ecb2d1008d7e00081111962cd175fa7488e1755460009073ffffffffffffffffffffffffffffffffffffffff168061025b573391505090565b919050565b60006020828403121561027257600080fd5b81357fffffffff00000000000000000000000000000000000000000000000000000000811681146102a257600080fd5b9392505050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6040516020810167ffffffffffffffff811182821017156102fb576102fb6102a9565b60405290565b604051601f8201601f1916810167ffffffffffffffff8111828210171561032a5761032a6102a9565b604052919050565b6000602080838503121561034557600080fd5b60405181810167ffffffffffffffff8282108183111715610368576103686102a9565b81604052829450853591508082111561038057600080fd5b818601915086601f83011261039457600080fd5b8135818111156103a6576103a66102a9565b6103b885601f19601f84011601610301565b915080825287858285010111156103ce57600080fd5b8085840186840137600090820190940193909352505292915050565b600060208083850312156103fd57600080fd5b823567ffffffffffffffff8082111561041557600080fd5b818501915085601f83011261042957600080fd5b6104316102d8565b808484018881111561044257600080fd5b845b818110156104765780358581111561045c5760008081fd5b6104688b828901610332565b855250928601928601610444565b509098975050505050505050565b600067ffffffffffffffff82111561049e5761049e6102a9565b5060051b60200190565b600060208083850312156104bb57600080fd5b823567ffffffffffffffff808211156104d357600080fd5b818501915085601f8301126104e757600080fd5b81356104fa6104f582610484565b610301565b81815260059190911b8301840190848101908883111561051957600080fd5b8585015b83811015610551578035858111156105355760008081fd5b6105438b89838a0101610332565b84525091860191860161051d565b5098975050505050505050565b6000602080838503121561057157600080fd5b823567ffffffffffffffff8082111561058957600080fd5b818501915085601f83011261059d57600080fd5b6105a56102d8565b80848401888111156105b657600080fd5b845b81811015610476578035858111156105d05760008081fd5b6105dc8b828901610332565b8552509286019286016105b8565b600060208083850312156105fd57600080fd5b823567ffffffffffffffff8082111561061557600080fd5b818501915085601f83011261062957600080fd5b81356106376104f582610484565b81815260059190911b8301840190848101908883111561065657600080fd5b8585015b83811015610551578035858111156106725760008081fd5b6106808b89838a0101610332565b84525091860191860161065a56fea26469706673582212202562b7d21f1887be1106003ed2e475ddff839b5c7352c736043232ccbe1b6c6e64736f6c634300080d0033",
+    "sourceMap": "230:310:102:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100885760003560e01c806345ec93541161005b57806345ec9354146101035780634ccd0e33146101165780635f04ce6614610124578063e1af802c1461013257600080fd5b806301ffc9a71461008d57806308fc6561146100b5578063119df25f146100c857806312467703146100f5575b600080fd5b6100a061009b366004610260565b61013a565b60405190151581526020015b60405180910390f35b6100c66100c33660046103ea565b50565b005b6100d06101d3565b60405173ffffffffffffffffffffffffffffffffffffffff90911681526020016100ac565b6100c66100c33660046104a8565b604051601f1936013581526020016100ac565b6100c66100c336600461055e565b6100c66100c33660046105ea565b6100d0610205565b60007fffffffff0000000000000000000000000000000000000000000000000000000082167fb42128800000000000000000000000000000000000000000000000000000000014806101cd57507fffffffff0000000000000000000000000000000000000000000000000000000082167f01ffc9a700000000000000000000000000000000000000000000000000000000145b92915050565b7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcc36013560601c806102025750335b90565b600061020f610214565b905090565b7f629a4c26e296b22a8e0856e9f6ecb2d1008d7e00081111962cd175fa7488e1755460009073ffffffffffffffffffffffffffffffffffffffff168061025b573391505090565b919050565b60006020828403121561027257600080fd5b81357fffffffff00000000000000000000000000000000000000000000000000000000811681146102a257600080fd5b9392505050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b6040516020810167ffffffffffffffff811182821017156102fb576102fb6102a9565b60405290565b604051601f8201601f1916810167ffffffffffffffff8111828210171561032a5761032a6102a9565b604052919050565b6000602080838503121561034557600080fd5b60405181810167ffffffffffffffff8282108183111715610368576103686102a9565b81604052829450853591508082111561038057600080fd5b818601915086601f83011261039457600080fd5b8135818111156103a6576103a66102a9565b6103b885601f19601f84011601610301565b915080825287858285010111156103ce57600080fd5b8085840186840137600090820190940193909352505292915050565b600060208083850312156103fd57600080fd5b823567ffffffffffffffff8082111561041557600080fd5b818501915085601f83011261042957600080fd5b6104316102d8565b808484018881111561044257600080fd5b845b818110156104765780358581111561045c5760008081fd5b6104688b828901610332565b855250928601928601610444565b509098975050505050505050565b600067ffffffffffffffff82111561049e5761049e6102a9565b5060051b60200190565b600060208083850312156104bb57600080fd5b823567ffffffffffffffff808211156104d357600080fd5b818501915085601f8301126104e757600080fd5b81356104fa6104f582610484565b610301565b81815260059190911b8301840190848101908883111561051957600080fd5b8585015b83811015610551578035858111156105355760008081fd5b6105438b89838a0101610332565b84525091860191860161051d565b5098975050505050505050565b6000602080838503121561057157600080fd5b823567ffffffffffffffff8082111561058957600080fd5b818501915085601f83011261059d57600080fd5b6105a56102d8565b80848401888111156105b657600080fd5b845b81811015610476578035858111156105d05760008081fd5b6105dc8b828901610332565b8552509286019286016105b8565b600060208083850312156105fd57600080fd5b823567ffffffffffffffff8082111561061557600080fd5b818501915085601f83011261062957600080fd5b81356106376104f582610484565b81815260059190911b8301840190848101908883111561065657600080fd5b8585015b83811015610551578035858111156106725760008081fd5b6106808b89838a0101610332565b84525091860191860161065a56fea26469706673582212202562b7d21f1887be1106003ed2e475ddff839b5c7352c736043232ccbe1b6c6e64736f6c634300080d0033",
+    "sourceMap": "230:310:102:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1638:188:73;;;;;;:::i;:::-;;:::i;:::-;;;516:14:104;;509:22;491:41;;479:2;464:18;1638:188:73;;;;;;;;266:64:102;;;;;;:::i;:::-;;;;;798:379:73;;;:::i;:::-;;;3533:42:104;3521:55;;;3503:74;;3491:2;3476:18;798:379:73;3357:226:104;472:66:102;;;;;;:::i;1247:212:73:-;;;-1:-1:-1;;1429:14:73;1425:23;1412:37;5117:25:104;;5105:2;5090:18;1247:212:73;4971:177:104;402:66:102;;;;;;:::i;334:64::-;;;;;;:::i;1463:95:73:-;;;:::i;1638:188::-;1714:4;1733:50;;;244:152:82;1733:50:73;;:88;;-1:-1:-1;1787:34:73;;;96::78;1787::73;1733:88;1726:95;1638:188;-1:-1:-1;;1638:188:73:o;798:379::-;1080:34;1084:14;1080:34;1067:48;1063:2;1059:57;;1127:45;;-1:-1:-1;1162:10:73;1127:45;798:379;:::o;1463:95::-;1502:7;1524:29;:27;:29::i;:::-;1517:36;;1463:95;:::o;932:227:57:-;463:42;1021:22;982:7;;1021:22;;;1049:106;;1097:10;1090:17;;;932:227;:::o;1049:106::-;1135:13;932:227;-1:-1:-1;932:227:57:o;14:332:104:-;72:6;125:2;113:9;104:7;100:23;96:32;93:52;;;141:1;138;131:12;93:52;180:9;167:23;230:66;223:5;219:78;212:5;209:89;199:117;;312:1;309;302:12;199:117;335:5;14:332;-1:-1:-1;;;14:332:104:o;543:184::-;595:77;592:1;585:88;692:4;689:1;682:15;716:4;713:1;706:15;732:251;804:2;798:9;846:2;834:15;;879:18;864:34;;900:22;;;861:62;858:88;;;926:18;;:::i;:::-;962:2;955:22;732:251;:::o;988:334::-;1059:2;1053:9;1115:2;1105:13;;-1:-1:-1;;1101:86:104;1089:99;;1218:18;1203:34;;1239:22;;;1200:62;1197:88;;;1265:18;;:::i;:::-;1301:2;1294:22;988:334;;-1:-1:-1;988:334:104:o;1327:1017::-;1385:5;1415:4;1456:2;1444:9;1439:3;1435:19;1431:28;1428:48;;;1472:1;1469;1462:12;1428:48;1505:2;1499:9;1547:2;1539:6;1535:15;1569:18;1637:6;1625:10;1622:22;1617:2;1605:10;1602:18;1599:46;1596:72;;;1648:18;;:::i;:::-;1688:10;1684:2;1677:22;1717:6;1708:15;;1759:9;1746:23;1732:37;;1792:2;1784:6;1781:14;1778:34;;;1808:1;1805;1798:12;1778:34;1846:6;1835:9;1831:22;1821:32;;1891:3;1884:4;1880:2;1876:13;1872:23;1862:51;;1909:1;1906;1899:12;1862:51;1945:2;1932:16;1967:2;1963;1960:10;1957:36;;;1973:18;;:::i;:::-;2015:112;2123:2;-1:-1:-1;;2047:4:104;2043:2;2039:13;2035:86;2031:95;2015:112;:::i;:::-;2002:125;;2150:2;2143:5;2136:17;2190:3;2185:2;2180;2176;2172:11;2168:20;2165:29;2162:49;;;2207:1;2204;2197:12;2162:49;2262:2;2257;2253;2249:11;2244:2;2237:5;2233:14;2220:45;2306:1;2285:14;;;2281:23;;;2274:34;;;;-1:-1:-1;2317:21:104;1327:1017;;-1:-1:-1;;1327:1017:104:o;2349:1003::-;2461:6;2492:2;2535;2523:9;2514:7;2510:23;2506:32;2503:52;;;2551:1;2548;2541:12;2503:52;2591:9;2578:23;2620:18;2661:2;2653:6;2650:14;2647:34;;;2677:1;2674;2667:12;2647:34;2715:6;2704:9;2700:22;2690:32;;2760:7;2753:4;2749:2;2745:13;2741:27;2731:55;;2782:1;2779;2772:12;2731:55;2806:22;;:::i;:::-;2850:3;2884:2;2880;2876:11;2910:7;2902:6;2899:19;2896:39;;;2931:1;2928;2921:12;2896:39;2955:2;2966:356;2982:6;2977:3;2974:15;2966:356;;;3068:3;3055:17;3104:2;3091:11;3088:19;3085:109;;;3148:1;3177:2;3173;3166:14;3085:109;3219:60;3271:7;3257:11;3253:2;3249:20;3219:60;:::i;:::-;3207:73;;-1:-1:-1;3300:12:104;;;;2999;;2966:356;;;-1:-1:-1;3341:5:104;;2349:1003;-1:-1:-1;;;;;;;;2349:1003:104:o;3588:195::-;3660:4;3693:18;3685:6;3682:30;3679:56;;;3715:18;;:::i;:::-;-1:-1:-1;3760:1:104;3756:14;3772:4;3752:25;;3588:195::o;3788:1178::-;3903:6;3934:2;3977;3965:9;3956:7;3952:23;3948:32;3945:52;;;3993:1;3990;3983:12;3945:52;4033:9;4020:23;4062:18;4103:2;4095:6;4092:14;4089:34;;;4119:1;4116;4109:12;4089:34;4157:6;4146:9;4142:22;4132:32;;4202:7;4195:4;4191:2;4187:13;4183:27;4173:55;;4224:1;4221;4214:12;4173:55;4260:2;4247:16;4283:72;4299:55;4351:2;4299:55;:::i;:::-;4283:72;:::i;:::-;4389:15;;;4471:1;4467:10;;;;4459:19;;4455:28;;;4420:12;;;;4495:19;;;4492:39;;;4527:1;4524;4517:12;4492:39;4559:2;4555;4551:11;4571:365;4587:6;4582:3;4579:15;4571:365;;;4673:3;4660:17;4709:2;4696:11;4693:19;4690:109;;;4753:1;4782:2;4778;4771:14;4690:109;4824:69;4885:7;4880:2;4866:11;4862:2;4858:20;4854:29;4824:69;:::i;:::-;4812:82;;-1:-1:-1;4914:12:104;;;;4604;;4571:365;;;-1:-1:-1;4955:5:104;3788:1178;-1:-1:-1;;;;;;;;3788:1178:104:o;5153:1004::-;5266:6;5297:2;5340;5328:9;5319:7;5315:23;5311:32;5308:52;;;5356:1;5353;5346:12;5308:52;5396:9;5383:23;5425:18;5466:2;5458:6;5455:14;5452:34;;;5482:1;5479;5472:12;5452:34;5520:6;5509:9;5505:22;5495:32;;5565:7;5558:4;5554:2;5550:13;5546:27;5536:55;;5587:1;5584;5577:12;5536:55;5611:22;;:::i;:::-;5655:3;5689:2;5685;5681:11;5715:7;5707:6;5704:19;5701:39;;;5736:1;5733;5726:12;5701:39;5760:2;5771:356;5787:6;5782:3;5779:15;5771:356;;;5873:3;5860:17;5909:2;5896:11;5893:19;5890:109;;;5953:1;5982:2;5978;5971:14;5890:109;6024:60;6076:7;6062:11;6058:2;6054:20;6024:60;:::i;:::-;6012:73;;-1:-1:-1;6105:12:104;;;;5804;;5771:356;;6162:1177;6276:6;6307:2;6350;6338:9;6329:7;6325:23;6321:32;6318:52;;;6366:1;6363;6356:12;6318:52;6406:9;6393:23;6435:18;6476:2;6468:6;6465:14;6462:34;;;6492:1;6489;6482:12;6462:34;6530:6;6519:9;6515:22;6505:32;;6575:7;6568:4;6564:2;6560:13;6556:27;6546:55;;6597:1;6594;6587:12;6546:55;6633:2;6620:16;6656:72;6672:55;6724:2;6672:55;:::i;6656:72::-;6762:15;;;6844:1;6840:10;;;;6832:19;;6828:28;;;6793:12;;;;6868:19;;;6865:39;;;6900:1;6897;6890:12;6865:39;6932:2;6928;6924:11;6944:365;6960:6;6955:3;6952:15;6944:365;;;7046:3;7033:17;7082:2;7069:11;7066:19;7063:109;;;7126:1;7155:2;7151;7144:14;7063:109;7197:69;7258:7;7253:2;7239:11;7235:2;7231:20;7227:29;7197:69;:::i;:::-;7185:82;;-1:-1:-1;7287:12:104;;;;6977;;6944:365;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "_msgSender()": "119df25f",
+    "_msgValue()": "45ec9354",
+    "_world()": "e1af802c",
+    "dynamicArrayBytesStruct((bytes)[])": "5f04ce66",
+    "dynamicArrayStringStruct((string)[])": "12467703",
+    "staticArrayBytesStruct((bytes)[1])": "08fc6561",
+    "staticArrayStringStruct((string)[1])": "4ccd0e33",
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"_msgSender\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_msgValue\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"_world\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"internalType\":\"struct BytesStruct[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"name\":\"dynamicArrayBytesStruct\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"value\",\"type\":\"string\"}],\"internalType\":\"struct StringStruct[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"name\":\"dynamicArrayStringStruct\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"bytes\",\"name\":\"value\",\"type\":\"bytes\"}],\"internalType\":\"struct BytesStruct[1]\",\"name\":\"\",\"type\":\"tuple[1]\"}],\"name\":\"staticArrayBytesStruct\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"string\",\"name\":\"value\",\"type\":\"string\"}],\"internalType\":\"struct StringStruct[1]\",\"name\":\"\",\"type\":\"tuple[1]\"}],\"name\":\"staticArrayStringStruct\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/systems/StructSystem.sol\":\"StructSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"node_modules/@latticexyz/schema-type/src/solidity/SchemaType.sol\":{\"keccak256\":\"0x7e86f39f7e0d29342d79144af3c48a3f9f103aca38603318e999483f33cbd966\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a7956d2a9b27689d615ae66d0e85f96c86509274fd8f1dc4c4f8dbd204936cea\",\"dweb:/ipfs/QmTgn4tdtbcDEoVcYcgQzS1u8epSbFnefWc9Nbt9eBkjbT\"]},\"node_modules/@latticexyz/store/src/Bytes.sol\":{\"keccak256\":\"0x52bd79fd98b47bddbc4ccae178b9258cf308c15d41ecbbce57ee46beb17e6787\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0a48beb7750a813f1b351299de1b78287e9b8e41e4a35762aaa11fb28679c2d8\",\"dweb:/ipfs/Qmcnm5Tb6mUcSjC22z4Ke6DBV1rkYJmZcU1w442QpgTbff\"]},\"node_modules/@latticexyz/store/src/FieldLayout.sol\":{\"keccak256\":\"0x3c30839b8d37f733085ce33e25e2a3b69bce0841c43062b3cbb031f1f71d26d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e6d067176e7a7269df942620e4f9643ca1cb16390e0be6c1b2b9ab716a1030ef\",\"dweb:/ipfs/QmeH7m1PgjgpcZd2PAeJauZ2BU84qjmrHKhqktir8exiEX\"]},\"node_modules/@latticexyz/store/src/Hook.sol\":{\"keccak256\":\"0x073563c1c8be5047e831adfe5cf70722c83105a1be4ce0e81110a74f43b9568b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://70eb6aecaa0822eb6d97ec2e0d910cdf162a81b1c7faedf7598e8168b5811805\",\"dweb:/ipfs/QmZP4xzJX7wvMDcVwCUKZLMG7nhv1ibWMY4gJZEZkNpRLA\"]},\"node_modules/@latticexyz/store/src/IERC165.sol\":{\"keccak256\":\"0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350\",\"dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu\"]},\"node_modules/@latticexyz/store/src/IStore.sol\":{\"keccak256\":\"0x9077bcbd3a577a4b18ad47652f30e434eeee9eec84ed05232c73ee80c56a1888\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f4a95f2e6d49f791226edafaf1fca102482ad94cab9c8c1a1e804d7cf4778460\",\"dweb:/ipfs/QmRkNZ1Gjq5F91rLzZgVbagwFEirYpFp23nuqub3WzF59K\"]},\"node_modules/@latticexyz/store/src/IStoreErrors.sol\":{\"keccak256\":\"0xdded99e33f1c1c07535f5f18fc0bb3240f2331db3d614731e0244111fc02c282\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63649a5ae00e777ae7952385585113c2977ef3964f6b1049830a90db6cda98c4\",\"dweb:/ipfs/QmaAnucqkHjHuSyEURcn4fTZqyNuGNXaYbJND66yzpdqA9\"]},\"node_modules/@latticexyz/store/src/IStoreHook.sol\":{\"keccak256\":\"0xacdacf30eb020f9418daea73d50524a1e3d34d4dc62c3c4d102292a0fcd7f01d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e3843a425d929b8cb7c33df40957d393ec245814331722c7ea18bec1b67cafa7\",\"dweb:/ipfs/QmWttHYEEjTp7HDsNLmBHLpEyExuFwGQ1D992qpHqFtMFb\"]},\"node_modules/@latticexyz/store/src/Memory.sol\":{\"keccak256\":\"0x1edc427b0d26609d1ce739b82b78fc03ae9f7463c3a81e8f8c608516ca7b0089\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://41cfaaf85af74c83b20ef308daa69ac65101ffbb2690d6888a06cbb55bf37146\",\"dweb:/ipfs/QmQp4Sf98TfifmsSNU5nVeG7UABWobaUf5oVR38Dh1kpw1\"]},\"node_modules/@latticexyz/store/src/PackedCounter.sol\":{\"keccak256\":\"0x0cf30d07e0f687b5bcc7a59c2ec3e97a6aa134350a6511f567be49a610a1383d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://43a13e12172664bfdb720e7d5e1a66367726f7eaacd908c0f3d2cd83befd392b\",\"dweb:/ipfs/Qmdf3AXwckTRtSz7t2HGA63pUD2953TEYpugY5y68P4rxc\"]},\"node_modules/@latticexyz/store/src/Schema.sol\":{\"keccak256\":\"0x24f3a1d8d062c039f929d4f19c2677e13e42c7ffe468fa9c6f677f683f9332f3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7ed053b45824e860327b64b7275e0bdfb4715a07d676912cca07088bb79911b3\",\"dweb:/ipfs/QmWW6dewiPp4K6xcNHBKvYnedeQwsXf93X33DQQoZhejvu\"]},\"node_modules/@latticexyz/store/src/Slice.sol\":{\"keccak256\":\"0x617c3624e15cb755857ac172a49ae11e0db688984c4d16a8de8e3c172a13ef7d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://71916605d89da3be4ac1b434e877dfac95dadea8b61b720a5204efac1ca94487\",\"dweb:/ipfs/QmTeZJRJ8Ev8LFQSCHuc6tYG7Vz6VtkBozbWzZgPWSXtcP\"]},\"node_modules/@latticexyz/store/src/Storage.sol\":{\"keccak256\":\"0xd3319f1bf70094e2a436419a7ed9cb4ea6a46efe2df3ccf64fa1b5b4107b54cc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff7173aa1002730caade98fa7c8b8b8a7ad34b8f40dd405abae28269124aaf51\",\"dweb:/ipfs/QmdRrsS9yf27xHdgRuNwX7JoqttzyKmVGWQSnZeTmiMksm\"]},\"node_modules/@latticexyz/store/src/StoreCore.sol\":{\"keccak256\":\"0xdafd007d9ca999452c1cd480bca82ce11eabb306f27e85bc8dff455f7adb4f07\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://83341405a7ae290623b1130ed97521aba598730b01eb31ffbe4c1968f37b3750\",\"dweb:/ipfs/QmfPKmLBJ6iQmFcQcdiCucHcjbMVrLcrZ6PLu7EeKkXKvj\"]},\"node_modules/@latticexyz/store/src/StoreHook.sol\":{\"keccak256\":\"0x32d7ae39936be4dcf5b1889ba96a6b879840df76c6343880f1a983400760eda9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5276bbac26e0225f7eb826e8bba997c847c683f85d6a6e847577959a11456580\",\"dweb:/ipfs/QmR4jQt6njsAs2XhJ1xb5z32o8ETvra8MQfkPt1QqqvNd6\"]},\"node_modules/@latticexyz/store/src/StoreSwitch.sol\":{\"keccak256\":\"0xd2aa8c20399d65770ce619bc348190899b9bb0e4940bb1e6c67f168f67c2e4ca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://728121b0ac4c07eca98df8ff4f32445c36de3772624b0df76cd948b4890332f1\",\"dweb:/ipfs/QmbyaQtvdhSFLUTVttyPx3h8DKrTtAXSyynWexajzdAff9\"]},\"node_modules/@latticexyz/store/src/Utils.sol\":{\"keccak256\":\"0x50a3bf74a64f0846c3212b599d2ebd6f220ae562a7ddd01584398d05c5206578\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4c44640063d30f054c20dc701b92cbefe64ef4c2cdde686746de4a11c76dfa5c\",\"dweb:/ipfs/QmawdG9zbqoMTCKGJUYfHNuBqeBgdKCdy18BftGd4c9hJA\"]},\"node_modules/@latticexyz/store/src/codegen/Tables.sol\":{\"keccak256\":\"0x9fc7c12af44c104ff032678a69040c72cba34bf43f6f549d962b590a4be0b951\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9e662fa77bf950d38818792d71ca1bee2243b283df3f607cebb937c260dffb64\",\"dweb:/ipfs/QmU9nbWgaTr2GEVCKgKVphom48qVR2Az4B6H6dPvHs8y9Q\"]},\"node_modules/@latticexyz/store/src/codegen/Types.sol\":{\"keccak256\":\"0x23ba2a20a16a4265f122c5e08e5b9881fd827f2cd7a92427740ee1eb3c4e7628\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://01236b9e7ffec2b6468e4b7dbc418453c2e5d73eaa14ebf4f5056619f46ad6b7\",\"dweb:/ipfs/QmSHA9efL43SUYbFtgCGv9ucZPD9ULi8o8ENpURAvDGhdB\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Callbacks.sol\":{\"keccak256\":\"0x98b0441e87b08b4fda782a77b4c6a7bf3bfa2552efd3c7fd7ea8e8697dbb0b81\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://27d6ad03c3dab259c8438b8c26e3dd76a894bec533a478b64052f3d612423adc\",\"dweb:/ipfs/QmbnPpGNpe1PKEEsBVjk8crVUpf5ct2YgtLhGZCc1YvgSb\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Hooks.sol\":{\"keccak256\":\"0x209ee3c0f14f9574e3cd2ea0b78ca30163e76df3dcb173ab6892705790a815d4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7666c7914be33f4cc2d102ff95925b1552f449d1a1af536e8b7a3dcf7956f796\",\"dweb:/ipfs/QmXFmTjncqR3zq2otMcQ5JGhciwJrxix3dkRFzsPRFDfTE\"]},\"node_modules/@latticexyz/store/src/codegen/tables/KeyEncoding.sol\":{\"keccak256\":\"0x33b72026bc7caabe4c9d731d3171cc340fddada7e52cc057a7ccdea5acba5f9c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c393182c7092b3989b94372f2c9805b6252f3370e547181f3ae79f0ff3e2a413\",\"dweb:/ipfs/Qmbe8Lr2d3YWRuzCxRXQ46NQgiy39HRcygfERZ9sN9wGNN\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Mixed.sol\":{\"keccak256\":\"0x2f161f657a2d8cd3e0d061399eac65f1c98e6a183b367941c6d0b170341ad802\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c21874774e9c449e923eaf78998ff4360b6ea0c68786ca51fb48b0cca1ef133e\",\"dweb:/ipfs/Qme2kutYFkfHbLZPRmjVFgNbYUbC6CGAwqbmdMag4mZ3tY\"]},\"node_modules/@latticexyz/store/src/codegen/tables/StoreHooks.sol\":{\"keccak256\":\"0xd0d33c39d52ba0b71740f1a59978e3d99a6056bea185864cb0d2bb36e9acec37\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6d0c94dc5966b2d040a15449ea1732858bc782460560f1d23c291c79fda07944\",\"dweb:/ipfs/QmXvLztep2rfJuhm6RNmwLBdKWVm4ZB21Yao7yN89GfVTi\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Tables.sol\":{\"keccak256\":\"0xcf40a7e121f23687091c4f42eb3f7d07ccd484eaabec05cf4578ba2633c68fe6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9f9cdc1d515d338b0c42b0afffc2d005e2a49189b63da3ed24033023a42fef3\",\"dweb:/ipfs/QmQKiDdsgAmCmvZRHaSNwU2Q6u7HHzKSd2yxoU89dtLu1v\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Vector2.sol\":{\"keccak256\":\"0x5d8fe00822f8854cdef0aef172ec745d491502b9d7abf5aae8352c393f7d3212\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2e260213732d89027c41ed0f32f304236e0ad43e7e23780824c3d62bf7bbad58\",\"dweb:/ipfs/QmNw2jnoMUp6jA14AWF8x66uHFTo1iV1W19pCeT9jXyRdC\"]},\"node_modules/@latticexyz/store/src/constants.sol\":{\"keccak256\":\"0x1614411e0dcfddfcefdf560ca48bbc5567b74193ca873ebd65800251bb6fc9d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://19df1549602ec232516b688b6b6688c092765637f9543072a3730f0c9ef5caad\",\"dweb:/ipfs/Qmc4rYgS2cRjDXiF9E5WCMaVKKFqYzsbPGAiDJvhKR4Cm8\"]},\"node_modules/@latticexyz/store/src/tightcoder/DecodeSlice.sol\":{\"keccak256\":\"0x63fa0cb7b7a2c225d17a3d22c3ba81e543da1388495c8747dfb3e129a3787d66\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0f7bfe7f001bb00d95ad493e12b5220f4fb7d175161c747464e2d59c0a93eb8\",\"dweb:/ipfs/QmZeDyzinRWnfoQme8R9mbMpCu9KiUw1AzjPb1SQzNV5oC\"]},\"node_modules/@latticexyz/store/src/tightcoder/EncodeArray.sol\":{\"keccak256\":\"0xbf4ea9fa659ffb1581d417de93082ec9b4586bf7aeda078c2649bd382f0c54dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6860d8f58c2e8f0dde310a1b1e94d2aa355ad060f3797708fcc978be304faf1e\",\"dweb:/ipfs/QmeypWegTQ89bUHab3yptatH6CA8xirJbCMGHqZ7WcXnzA\"]},\"node_modules/@latticexyz/store/src/tightcoder/TightCoder.sol\":{\"keccak256\":\"0x7ca038834ba84d1fc885148a41705f9deb60eb025389253727e4b97d5d1a3d04\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f4779b321b4eaf5325ce8364c18b5b49c94ca060887d2b77f4be7cb76919eba2\",\"dweb:/ipfs/QmQVxQQ8MgTrfKw81kaJ7VEdjZzqEVbvs2veNspsXY6uCT\"]},\"node_modules/@latticexyz/world/src/System.sol\":{\"keccak256\":\"0xbe5ead16c80dcdd76f8abe717c1b49fd03a5e0391ce5c9d577784783ffa320ca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec596417674e5061ec1318e28cb6ea2236547f29737eb8c2deb6ad2349970ecd\",\"dweb:/ipfs/QmQoD3x9D2mQJ1KME6XsqhhNtwDZ3AQ2eQdkcXKsg759Wh\"]},\"node_modules/@latticexyz/world/src/WorldContext.sol\":{\"keccak256\":\"0x7653c3b0021ef6b36b9ab5197341ebae762e21435b23fa85761db5e219e5f58b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6ae4b7f1f28a5dbb5a747370f5c795c03cd4abf1ee92236259e8c77a2ec960ad\",\"dweb:/ipfs/QmXiMuh7VKFrUx8Vk3xSCbsSWEcyRUpGTVRQ1QqxShxNbJ\"]},\"node_modules/@latticexyz/world/src/interfaces/IERC165.sol\":{\"keccak256\":\"0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350\",\"dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu\"]},\"node_modules/@latticexyz/world/src/interfaces/IWorldContextConsumer.sol\":{\"keccak256\":\"0x28960c19846964f4daf1be00752b68cbd7aff8dcc48a21784c3bd76e97bb67c3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2c4e3d33f3a00f9b5a3e4a51fe1d599795d0340e3d89d0eef7a01c1d443240a5\",\"dweb:/ipfs/QmXmtpohnqiJvLHxBwYMJGomBWuyifFwSfHMBUGBiYRWUM\"]},\"node_modules/@latticexyz/world/src/revertWithBytes.sol\":{\"keccak256\":\"0xde5b4a74ca9bae09a8f0191b92903e312c45976aa15fe0c351aea5e08d016a02\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0a0ac78a80f3cb85d261d3aa429b809538d7a3468f34dfdcaff92526ac40e57a\",\"dweb:/ipfs/QmSN47DMN4rKzCUgbjoAxhxHM94jdndWqdt57KEVC1oH8f\"]},\"src/codegen/Tables.sol\":{\"keccak256\":\"0x3589cac34340a8cb93c9c8798f38f1fdcae262d814276d3cdf0afcb89b32023f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d706192461e0b4aab03bf20089b9718d00f4fdbf8e08392b11f61ba99885beeb\",\"dweb:/ipfs/Qmeev4rn77RLSyF74yrdFZTH3NnXdk9bMPERzuD61HH6C3\"]},\"src/codegen/tables/CounterTable.sol\":{\"keccak256\":\"0xc389fd04b70c973b8e015d7ca4d7110997b1cec0d279648ace7e96b15f5ef6d2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://777d2153978283993a4b9863ea91f5bd2289da1249441f3e85ca46cec747ca9e\",\"dweb:/ipfs/QmZEa4KiSzuCs7pgAeCZQaJyV5CZc1KaNLyf2YYiPxHjFT\"]},\"src/codegen/tables/Inventory.sol\":{\"keccak256\":\"0x4e0d61fbf8f3b82e55830a5cf5b78e7b1ae8cddb6ebf8fad3f917d3adc7f3f0e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://bc636283c251b3ca5ac23c4a01a89455a908f49336fd6404afd99e57210f9423\",\"dweb:/ipfs/QmRLNZ1wjptqydvvSjqbBTHQduFzfsbVpiLME8tNN2hr3f\"]},\"src/codegen/tables/MessageTable.sol\":{\"keccak256\":\"0xf991ac20e45121b3faee00bf446d137772146c99eb975751370bd55798644f99\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://dcd89c175f10239107e133d2429c96c1394dedea94ca08af422a29587f5ed7bf\",\"dweb:/ipfs/QmPeT12TiR3JbMucmfrqF2fQmN3NZUCaKjfxPvZXBVFQiM\"]},\"src/systems/StructSystem.sol\":{\"keccak256\":\"0xe287665094bfb9700292ba2a49bb0af2619b8dc364fdbc82e6188eaa394362c1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fd91993300de600e16664404f8b11dd1952b9b85beff9bcb0ba91cabb7e8c426\",\"dweb:/ipfs/Qmf45Ud2Egp5LDxjXCtNbZcXafDAjmgAGwp986Lh3VCTFc\"]},\"src/systems/structs.sol\":{\"keccak256\":\"0xbbd170db43c22d66597852b5d498f91f3424551f78d1d4bfc7d74ea19ca3f39c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0d423691c5a429457331b210c8f2dbf82ed485f530ed3bec5facb92c8cfd9e9d\",\"dweb:/ipfs/QmUnGzJhkMDDHCCRMmKLjWnajcoPZRnZoF4araGgMbXMqp\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "_msgSender",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "_msgValue",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "_world",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct BytesStruct[]",
+              "name": "",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "bytes",
+                  "name": "value",
+                  "type": "bytes"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "dynamicArrayBytesStruct"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct StringStruct[]",
+              "name": "",
+              "type": "tuple[]",
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "value",
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "dynamicArrayStringStruct"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct BytesStruct[1]",
+              "name": "",
+              "type": "tuple[1]",
+              "components": [
+                {
+                  "internalType": "bytes",
+                  "name": "value",
+                  "type": "bytes"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "staticArrayBytesStruct"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "struct StringStruct[1]",
+              "name": "",
+              "type": "tuple[1]",
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "value",
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "staticArrayStringStruct"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "@solidstate/=node_modules/@solidstate/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/systems/StructSystem.sol": "StructSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "node_modules/@latticexyz/schema-type/src/solidity/SchemaType.sol": {
+        "keccak256": "0x7e86f39f7e0d29342d79144af3c48a3f9f103aca38603318e999483f33cbd966",
+        "urls": [
+          "bzz-raw://a7956d2a9b27689d615ae66d0e85f96c86509274fd8f1dc4c4f8dbd204936cea",
+          "dweb:/ipfs/QmTgn4tdtbcDEoVcYcgQzS1u8epSbFnefWc9Nbt9eBkjbT"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Bytes.sol": {
+        "keccak256": "0x52bd79fd98b47bddbc4ccae178b9258cf308c15d41ecbbce57ee46beb17e6787",
+        "urls": [
+          "bzz-raw://0a48beb7750a813f1b351299de1b78287e9b8e41e4a35762aaa11fb28679c2d8",
+          "dweb:/ipfs/Qmcnm5Tb6mUcSjC22z4Ke6DBV1rkYJmZcU1w442QpgTbff"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/FieldLayout.sol": {
+        "keccak256": "0x3c30839b8d37f733085ce33e25e2a3b69bce0841c43062b3cbb031f1f71d26d0",
+        "urls": [
+          "bzz-raw://e6d067176e7a7269df942620e4f9643ca1cb16390e0be6c1b2b9ab716a1030ef",
+          "dweb:/ipfs/QmeH7m1PgjgpcZd2PAeJauZ2BU84qjmrHKhqktir8exiEX"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Hook.sol": {
+        "keccak256": "0x073563c1c8be5047e831adfe5cf70722c83105a1be4ce0e81110a74f43b9568b",
+        "urls": [
+          "bzz-raw://70eb6aecaa0822eb6d97ec2e0d910cdf162a81b1c7faedf7598e8168b5811805",
+          "dweb:/ipfs/QmZP4xzJX7wvMDcVwCUKZLMG7nhv1ibWMY4gJZEZkNpRLA"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IERC165.sol": {
+        "keccak256": "0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577",
+        "urls": [
+          "bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350",
+          "dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IStore.sol": {
+        "keccak256": "0x9077bcbd3a577a4b18ad47652f30e434eeee9eec84ed05232c73ee80c56a1888",
+        "urls": [
+          "bzz-raw://f4a95f2e6d49f791226edafaf1fca102482ad94cab9c8c1a1e804d7cf4778460",
+          "dweb:/ipfs/QmRkNZ1Gjq5F91rLzZgVbagwFEirYpFp23nuqub3WzF59K"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IStoreErrors.sol": {
+        "keccak256": "0xdded99e33f1c1c07535f5f18fc0bb3240f2331db3d614731e0244111fc02c282",
+        "urls": [
+          "bzz-raw://63649a5ae00e777ae7952385585113c2977ef3964f6b1049830a90db6cda98c4",
+          "dweb:/ipfs/QmaAnucqkHjHuSyEURcn4fTZqyNuGNXaYbJND66yzpdqA9"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IStoreHook.sol": {
+        "keccak256": "0xacdacf30eb020f9418daea73d50524a1e3d34d4dc62c3c4d102292a0fcd7f01d",
+        "urls": [
+          "bzz-raw://e3843a425d929b8cb7c33df40957d393ec245814331722c7ea18bec1b67cafa7",
+          "dweb:/ipfs/QmWttHYEEjTp7HDsNLmBHLpEyExuFwGQ1D992qpHqFtMFb"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Memory.sol": {
+        "keccak256": "0x1edc427b0d26609d1ce739b82b78fc03ae9f7463c3a81e8f8c608516ca7b0089",
+        "urls": [
+          "bzz-raw://41cfaaf85af74c83b20ef308daa69ac65101ffbb2690d6888a06cbb55bf37146",
+          "dweb:/ipfs/QmQp4Sf98TfifmsSNU5nVeG7UABWobaUf5oVR38Dh1kpw1"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/PackedCounter.sol": {
+        "keccak256": "0x0cf30d07e0f687b5bcc7a59c2ec3e97a6aa134350a6511f567be49a610a1383d",
+        "urls": [
+          "bzz-raw://43a13e12172664bfdb720e7d5e1a66367726f7eaacd908c0f3d2cd83befd392b",
+          "dweb:/ipfs/Qmdf3AXwckTRtSz7t2HGA63pUD2953TEYpugY5y68P4rxc"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Schema.sol": {
+        "keccak256": "0x24f3a1d8d062c039f929d4f19c2677e13e42c7ffe468fa9c6f677f683f9332f3",
+        "urls": [
+          "bzz-raw://7ed053b45824e860327b64b7275e0bdfb4715a07d676912cca07088bb79911b3",
+          "dweb:/ipfs/QmWW6dewiPp4K6xcNHBKvYnedeQwsXf93X33DQQoZhejvu"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Slice.sol": {
+        "keccak256": "0x617c3624e15cb755857ac172a49ae11e0db688984c4d16a8de8e3c172a13ef7d",
+        "urls": [
+          "bzz-raw://71916605d89da3be4ac1b434e877dfac95dadea8b61b720a5204efac1ca94487",
+          "dweb:/ipfs/QmTeZJRJ8Ev8LFQSCHuc6tYG7Vz6VtkBozbWzZgPWSXtcP"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Storage.sol": {
+        "keccak256": "0xd3319f1bf70094e2a436419a7ed9cb4ea6a46efe2df3ccf64fa1b5b4107b54cc",
+        "urls": [
+          "bzz-raw://ff7173aa1002730caade98fa7c8b8b8a7ad34b8f40dd405abae28269124aaf51",
+          "dweb:/ipfs/QmdRrsS9yf27xHdgRuNwX7JoqttzyKmVGWQSnZeTmiMksm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/StoreCore.sol": {
+        "keccak256": "0xdafd007d9ca999452c1cd480bca82ce11eabb306f27e85bc8dff455f7adb4f07",
+        "urls": [
+          "bzz-raw://83341405a7ae290623b1130ed97521aba598730b01eb31ffbe4c1968f37b3750",
+          "dweb:/ipfs/QmfPKmLBJ6iQmFcQcdiCucHcjbMVrLcrZ6PLu7EeKkXKvj"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/StoreHook.sol": {
+        "keccak256": "0x32d7ae39936be4dcf5b1889ba96a6b879840df76c6343880f1a983400760eda9",
+        "urls": [
+          "bzz-raw://5276bbac26e0225f7eb826e8bba997c847c683f85d6a6e847577959a11456580",
+          "dweb:/ipfs/QmR4jQt6njsAs2XhJ1xb5z32o8ETvra8MQfkPt1QqqvNd6"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/StoreSwitch.sol": {
+        "keccak256": "0xd2aa8c20399d65770ce619bc348190899b9bb0e4940bb1e6c67f168f67c2e4ca",
+        "urls": [
+          "bzz-raw://728121b0ac4c07eca98df8ff4f32445c36de3772624b0df76cd948b4890332f1",
+          "dweb:/ipfs/QmbyaQtvdhSFLUTVttyPx3h8DKrTtAXSyynWexajzdAff9"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Utils.sol": {
+        "keccak256": "0x50a3bf74a64f0846c3212b599d2ebd6f220ae562a7ddd01584398d05c5206578",
+        "urls": [
+          "bzz-raw://4c44640063d30f054c20dc701b92cbefe64ef4c2cdde686746de4a11c76dfa5c",
+          "dweb:/ipfs/QmawdG9zbqoMTCKGJUYfHNuBqeBgdKCdy18BftGd4c9hJA"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/Tables.sol": {
+        "keccak256": "0x9fc7c12af44c104ff032678a69040c72cba34bf43f6f549d962b590a4be0b951",
+        "urls": [
+          "bzz-raw://9e662fa77bf950d38818792d71ca1bee2243b283df3f607cebb937c260dffb64",
+          "dweb:/ipfs/QmU9nbWgaTr2GEVCKgKVphom48qVR2Az4B6H6dPvHs8y9Q"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/Types.sol": {
+        "keccak256": "0x23ba2a20a16a4265f122c5e08e5b9881fd827f2cd7a92427740ee1eb3c4e7628",
+        "urls": [
+          "bzz-raw://01236b9e7ffec2b6468e4b7dbc418453c2e5d73eaa14ebf4f5056619f46ad6b7",
+          "dweb:/ipfs/QmSHA9efL43SUYbFtgCGv9ucZPD9ULi8o8ENpURAvDGhdB"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Callbacks.sol": {
+        "keccak256": "0x98b0441e87b08b4fda782a77b4c6a7bf3bfa2552efd3c7fd7ea8e8697dbb0b81",
+        "urls": [
+          "bzz-raw://27d6ad03c3dab259c8438b8c26e3dd76a894bec533a478b64052f3d612423adc",
+          "dweb:/ipfs/QmbnPpGNpe1PKEEsBVjk8crVUpf5ct2YgtLhGZCc1YvgSb"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Hooks.sol": {
+        "keccak256": "0x209ee3c0f14f9574e3cd2ea0b78ca30163e76df3dcb173ab6892705790a815d4",
+        "urls": [
+          "bzz-raw://7666c7914be33f4cc2d102ff95925b1552f449d1a1af536e8b7a3dcf7956f796",
+          "dweb:/ipfs/QmXFmTjncqR3zq2otMcQ5JGhciwJrxix3dkRFzsPRFDfTE"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/KeyEncoding.sol": {
+        "keccak256": "0x33b72026bc7caabe4c9d731d3171cc340fddada7e52cc057a7ccdea5acba5f9c",
+        "urls": [
+          "bzz-raw://c393182c7092b3989b94372f2c9805b6252f3370e547181f3ae79f0ff3e2a413",
+          "dweb:/ipfs/Qmbe8Lr2d3YWRuzCxRXQ46NQgiy39HRcygfERZ9sN9wGNN"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Mixed.sol": {
+        "keccak256": "0x2f161f657a2d8cd3e0d061399eac65f1c98e6a183b367941c6d0b170341ad802",
+        "urls": [
+          "bzz-raw://c21874774e9c449e923eaf78998ff4360b6ea0c68786ca51fb48b0cca1ef133e",
+          "dweb:/ipfs/Qme2kutYFkfHbLZPRmjVFgNbYUbC6CGAwqbmdMag4mZ3tY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/StoreHooks.sol": {
+        "keccak256": "0xd0d33c39d52ba0b71740f1a59978e3d99a6056bea185864cb0d2bb36e9acec37",
+        "urls": [
+          "bzz-raw://6d0c94dc5966b2d040a15449ea1732858bc782460560f1d23c291c79fda07944",
+          "dweb:/ipfs/QmXvLztep2rfJuhm6RNmwLBdKWVm4ZB21Yao7yN89GfVTi"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Tables.sol": {
+        "keccak256": "0xcf40a7e121f23687091c4f42eb3f7d07ccd484eaabec05cf4578ba2633c68fe6",
+        "urls": [
+          "bzz-raw://c9f9cdc1d515d338b0c42b0afffc2d005e2a49189b63da3ed24033023a42fef3",
+          "dweb:/ipfs/QmQKiDdsgAmCmvZRHaSNwU2Q6u7HHzKSd2yxoU89dtLu1v"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Vector2.sol": {
+        "keccak256": "0x5d8fe00822f8854cdef0aef172ec745d491502b9d7abf5aae8352c393f7d3212",
+        "urls": [
+          "bzz-raw://2e260213732d89027c41ed0f32f304236e0ad43e7e23780824c3d62bf7bbad58",
+          "dweb:/ipfs/QmNw2jnoMUp6jA14AWF8x66uHFTo1iV1W19pCeT9jXyRdC"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/constants.sol": {
+        "keccak256": "0x1614411e0dcfddfcefdf560ca48bbc5567b74193ca873ebd65800251bb6fc9d0",
+        "urls": [
+          "bzz-raw://19df1549602ec232516b688b6b6688c092765637f9543072a3730f0c9ef5caad",
+          "dweb:/ipfs/Qmc4rYgS2cRjDXiF9E5WCMaVKKFqYzsbPGAiDJvhKR4Cm8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/tightcoder/DecodeSlice.sol": {
+        "keccak256": "0x63fa0cb7b7a2c225d17a3d22c3ba81e543da1388495c8747dfb3e129a3787d66",
+        "urls": [
+          "bzz-raw://a0f7bfe7f001bb00d95ad493e12b5220f4fb7d175161c747464e2d59c0a93eb8",
+          "dweb:/ipfs/QmZeDyzinRWnfoQme8R9mbMpCu9KiUw1AzjPb1SQzNV5oC"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/tightcoder/EncodeArray.sol": {
+        "keccak256": "0xbf4ea9fa659ffb1581d417de93082ec9b4586bf7aeda078c2649bd382f0c54dd",
+        "urls": [
+          "bzz-raw://6860d8f58c2e8f0dde310a1b1e94d2aa355ad060f3797708fcc978be304faf1e",
+          "dweb:/ipfs/QmeypWegTQ89bUHab3yptatH6CA8xirJbCMGHqZ7WcXnzA"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/tightcoder/TightCoder.sol": {
+        "keccak256": "0x7ca038834ba84d1fc885148a41705f9deb60eb025389253727e4b97d5d1a3d04",
+        "urls": [
+          "bzz-raw://f4779b321b4eaf5325ce8364c18b5b49c94ca060887d2b77f4be7cb76919eba2",
+          "dweb:/ipfs/QmQVxQQ8MgTrfKw81kaJ7VEdjZzqEVbvs2veNspsXY6uCT"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/world/src/System.sol": {
+        "keccak256": "0xbe5ead16c80dcdd76f8abe717c1b49fd03a5e0391ce5c9d577784783ffa320ca",
+        "urls": [
+          "bzz-raw://ec596417674e5061ec1318e28cb6ea2236547f29737eb8c2deb6ad2349970ecd",
+          "dweb:/ipfs/QmQoD3x9D2mQJ1KME6XsqhhNtwDZ3AQ2eQdkcXKsg759Wh"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/world/src/WorldContext.sol": {
+        "keccak256": "0x7653c3b0021ef6b36b9ab5197341ebae762e21435b23fa85761db5e219e5f58b",
+        "urls": [
+          "bzz-raw://6ae4b7f1f28a5dbb5a747370f5c795c03cd4abf1ee92236259e8c77a2ec960ad",
+          "dweb:/ipfs/QmXiMuh7VKFrUx8Vk3xSCbsSWEcyRUpGTVRQ1QqxShxNbJ"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/world/src/interfaces/IERC165.sol": {
+        "keccak256": "0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577",
+        "urls": [
+          "bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350",
+          "dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/world/src/interfaces/IWorldContextConsumer.sol": {
+        "keccak256": "0x28960c19846964f4daf1be00752b68cbd7aff8dcc48a21784c3bd76e97bb67c3",
+        "urls": [
+          "bzz-raw://2c4e3d33f3a00f9b5a3e4a51fe1d599795d0340e3d89d0eef7a01c1d443240a5",
+          "dweb:/ipfs/QmXmtpohnqiJvLHxBwYMJGomBWuyifFwSfHMBUGBiYRWUM"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/world/src/revertWithBytes.sol": {
+        "keccak256": "0xde5b4a74ca9bae09a8f0191b92903e312c45976aa15fe0c351aea5e08d016a02",
+        "urls": [
+          "bzz-raw://0a0ac78a80f3cb85d261d3aa429b809538d7a3468f34dfdcaff92526ac40e57a",
+          "dweb:/ipfs/QmSN47DMN4rKzCUgbjoAxhxHM94jdndWqdt57KEVC1oH8f"
+        ],
+        "license": "MIT"
+      },
+      "src/codegen/Tables.sol": {
+        "keccak256": "0x3589cac34340a8cb93c9c8798f38f1fdcae262d814276d3cdf0afcb89b32023f",
+        "urls": [
+          "bzz-raw://d706192461e0b4aab03bf20089b9718d00f4fdbf8e08392b11f61ba99885beeb",
+          "dweb:/ipfs/Qmeev4rn77RLSyF74yrdFZTH3NnXdk9bMPERzuD61HH6C3"
+        ],
+        "license": "MIT"
+      },
+      "src/codegen/tables/CounterTable.sol": {
+        "keccak256": "0xc389fd04b70c973b8e015d7ca4d7110997b1cec0d279648ace7e96b15f5ef6d2",
+        "urls": [
+          "bzz-raw://777d2153978283993a4b9863ea91f5bd2289da1249441f3e85ca46cec747ca9e",
+          "dweb:/ipfs/QmZEa4KiSzuCs7pgAeCZQaJyV5CZc1KaNLyf2YYiPxHjFT"
+        ],
+        "license": "MIT"
+      },
+      "src/codegen/tables/Inventory.sol": {
+        "keccak256": "0x4e0d61fbf8f3b82e55830a5cf5b78e7b1ae8cddb6ebf8fad3f917d3adc7f3f0e",
+        "urls": [
+          "bzz-raw://bc636283c251b3ca5ac23c4a01a89455a908f49336fd6404afd99e57210f9423",
+          "dweb:/ipfs/QmRLNZ1wjptqydvvSjqbBTHQduFzfsbVpiLME8tNN2hr3f"
+        ],
+        "license": "MIT"
+      },
+      "src/codegen/tables/MessageTable.sol": {
+        "keccak256": "0xf991ac20e45121b3faee00bf446d137772146c99eb975751370bd55798644f99",
+        "urls": [
+          "bzz-raw://dcd89c175f10239107e133d2429c96c1394dedea94ca08af422a29587f5ed7bf",
+          "dweb:/ipfs/QmPeT12TiR3JbMucmfrqF2fQmN3NZUCaKjfxPvZXBVFQiM"
+        ],
+        "license": "MIT"
+      },
+      "src/systems/StructSystem.sol": {
+        "keccak256": "0xe287665094bfb9700292ba2a49bb0af2619b8dc364fdbc82e6188eaa394362c1",
+        "urls": [
+          "bzz-raw://fd91993300de600e16664404f8b11dd1952b9b85beff9bcb0ba91cabb7e8c426",
+          "dweb:/ipfs/Qmf45Ud2Egp5LDxjXCtNbZcXafDAjmgAGwp986Lh3VCTFc"
+        ],
+        "license": "MIT"
+      },
+      "src/systems/structs.sol": {
+        "keccak256": "0xbbd170db43c22d66597852b5d498f91f3424551f78d1d4bfc7d74ea19ca3f39c",
+        "urls": [
+          "bzz-raw://0d423691c5a429457331b210c8f2dbf82ed485f530ed3bec5facb92c8cfd9e9d",
+          "dweb:/ipfs/QmUnGzJhkMDDHCCRMmKLjWnajcoPZRnZoF4araGgMbXMqp"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/systems/StructSystem.sol",
+    "id": 41612,
+    "exportedSymbols": {
+      "BytesStruct": [
+        41616
+      ],
+      "CounterTable": [
+        40188
+      ],
+      "StringStruct": [
+        41619
+      ],
+      "StructSystem": [
+        41611
+      ],
+      "System": [
+        31627
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:509:102",
+    "nodes": [
+      {
+        "id": 41567,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:102",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 41569,
+        "nodeType": "ImportDirective",
+        "src": "57:58:102",
+        "nodes": [],
+        "absolutePath": "node_modules/@latticexyz/world/src/System.sol",
+        "file": "@latticexyz/world/src/System.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 41612,
+        "sourceUnit": 31628,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 41568,
+              "name": "System",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 31627,
+              "src": "66:6:102",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 41571,
+        "nodeType": "ImportDirective",
+        "src": "116:53:102",
+        "nodes": [],
+        "absolutePath": "src/codegen/Tables.sol",
+        "file": "../codegen/Tables.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 41612,
+        "sourceUnit": 39735,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 41570,
+              "name": "CounterTable",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 40188,
+              "src": "125:12:102",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 41574,
+        "nodeType": "ImportDirective",
+        "src": "170:58:102",
+        "nodes": [],
+        "absolutePath": "src/systems/structs.sol",
+        "file": "./structs.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 41612,
+        "sourceUnit": 41620,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 41572,
+              "name": "BytesStruct",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 41616,
+              "src": "179:11:102",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          },
+          {
+            "foreign": {
+              "id": 41573,
+              "name": "StringStruct",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 41619,
+              "src": "192:12:102",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 41611,
+        "nodeType": "ContractDefinition",
+        "src": "230:310:102",
+        "nodes": [
+          {
+            "id": 41585,
+            "nodeType": "FunctionDefinition",
+            "src": "266:64:102",
+            "nodes": [],
+            "body": {
+              "id": 41584,
+              "nodeType": "Block",
+              "src": "328:2:102",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "08fc6561",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "staticArrayBytesStruct",
+            "nameLocation": "275:22:102",
+            "parameters": {
+              "id": 41582,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41581,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41585,
+                  "src": "298:21:102",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_BytesStruct_$41616_memory_ptr_$1_memory_ptr",
+                    "typeString": "struct BytesStruct[1]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 41578,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 41577,
+                        "name": "BytesStruct",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 41616,
+                        "src": "298:11:102"
+                      },
+                      "referencedDeclaration": 41616,
+                      "src": "298:11:102",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_BytesStruct_$41616_storage_ptr",
+                        "typeString": "struct BytesStruct"
+                      }
+                    },
+                    "id": 41580,
+                    "length": {
+                      "hexValue": "31",
+                      "id": 41579,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "310:1:102",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "nodeType": "ArrayTypeName",
+                    "src": "298:14:102",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_BytesStruct_$41616_storage_$1_storage_ptr",
+                      "typeString": "struct BytesStruct[1]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "297:23:102"
+            },
+            "returnParameters": {
+              "id": 41583,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "328:0:102"
+            },
+            "scope": 41611,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 41593,
+            "nodeType": "FunctionDefinition",
+            "src": "334:64:102",
+            "nodes": [],
+            "body": {
+              "id": 41592,
+              "nodeType": "Block",
+              "src": "396:2:102",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "5f04ce66",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "dynamicArrayBytesStruct",
+            "nameLocation": "343:23:102",
+            "parameters": {
+              "id": 41590,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41589,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41593,
+                  "src": "367:20:102",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_BytesStruct_$41616_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "struct BytesStruct[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 41587,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 41586,
+                        "name": "BytesStruct",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 41616,
+                        "src": "367:11:102"
+                      },
+                      "referencedDeclaration": 41616,
+                      "src": "367:11:102",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_BytesStruct_$41616_storage_ptr",
+                        "typeString": "struct BytesStruct"
+                      }
+                    },
+                    "id": 41588,
+                    "nodeType": "ArrayTypeName",
+                    "src": "367:13:102",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_BytesStruct_$41616_storage_$dyn_storage_ptr",
+                      "typeString": "struct BytesStruct[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "366:22:102"
+            },
+            "returnParameters": {
+              "id": 41591,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "396:0:102"
+            },
+            "scope": 41611,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 41602,
+            "nodeType": "FunctionDefinition",
+            "src": "402:66:102",
+            "nodes": [],
+            "body": {
+              "id": 41601,
+              "nodeType": "Block",
+              "src": "466:2:102",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "4ccd0e33",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "staticArrayStringStruct",
+            "nameLocation": "411:23:102",
+            "parameters": {
+              "id": 41599,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41598,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41602,
+                  "src": "435:22:102",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_StringStruct_$41619_memory_ptr_$1_memory_ptr",
+                    "typeString": "struct StringStruct[1]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 41595,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 41594,
+                        "name": "StringStruct",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 41619,
+                        "src": "435:12:102"
+                      },
+                      "referencedDeclaration": 41619,
+                      "src": "435:12:102",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_StringStruct_$41619_storage_ptr",
+                        "typeString": "struct StringStruct"
+                      }
+                    },
+                    "id": 41597,
+                    "length": {
+                      "hexValue": "31",
+                      "id": 41596,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "448:1:102",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "nodeType": "ArrayTypeName",
+                    "src": "435:15:102",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_StringStruct_$41619_storage_$1_storage_ptr",
+                      "typeString": "struct StringStruct[1]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "434:24:102"
+            },
+            "returnParameters": {
+              "id": 41600,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "466:0:102"
+            },
+            "scope": 41611,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 41610,
+            "nodeType": "FunctionDefinition",
+            "src": "472:66:102",
+            "nodes": [],
+            "body": {
+              "id": 41609,
+              "nodeType": "Block",
+              "src": "536:2:102",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "12467703",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "dynamicArrayStringStruct",
+            "nameLocation": "481:24:102",
+            "parameters": {
+              "id": 41607,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41606,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41610,
+                  "src": "506:21:102",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_struct$_StringStruct_$41619_memory_ptr_$dyn_memory_ptr",
+                    "typeString": "struct StringStruct[]"
+                  },
+                  "typeName": {
+                    "baseType": {
+                      "id": 41604,
+                      "nodeType": "UserDefinedTypeName",
+                      "pathNode": {
+                        "id": 41603,
+                        "name": "StringStruct",
+                        "nodeType": "IdentifierPath",
+                        "referencedDeclaration": 41619,
+                        "src": "506:12:102"
+                      },
+                      "referencedDeclaration": 41619,
+                      "src": "506:12:102",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_StringStruct_$41619_storage_ptr",
+                        "typeString": "struct StringStruct"
+                      }
+                    },
+                    "id": 41605,
+                    "nodeType": "ArrayTypeName",
+                    "src": "506:14:102",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_array$_t_struct$_StringStruct_$41619_storage_$dyn_storage_ptr",
+                      "typeString": "struct StringStruct[]"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "505:23:102"
+            },
+            "returnParameters": {
+              "id": 41608,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "536:0:102"
+            },
+            "scope": 41611,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 41575,
+              "name": "System",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 31627,
+              "src": "255:6:102"
+            },
+            "id": 41576,
+            "nodeType": "InheritanceSpecifier",
+            "src": "255:6:102"
+          }
+        ],
+        "canonicalName": "StructSystem",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          41611,
+          31627,
+          44937,
+          55584,
+          55546
+        ],
+        "name": "StructSystem",
+        "nameLocation": "239:12:102",
+        "scope": 41612,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 102
+}

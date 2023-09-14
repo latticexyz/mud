@@ -142,7 +142,7 @@ const commandModule: CommandModule<Options, Options> = {
 
       // Generate TS-friendly ABI files
       // We rebuild into a separate dir to have a clean set of ABIs without test/script contracts
-      await forge(["build", "--extra-output-files", "abi", "--out", "abi", "--skip", "test", "script", "MudTest.sol"]);
+      await forge(["build", "--skip", "test", "script"]);
       await execa("mud", ["abi-ts"]);
     }
 

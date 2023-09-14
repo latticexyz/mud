@@ -1,0 +1,1536 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "delegatee",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "delegationControlId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "initFuncSelectorAndArgs",
+          "type": "bytes"
+        }
+      ],
+      "name": "registerDelegation",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "systemFunctionName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "systemFunctionArguments",
+          "type": "string"
+        }
+      ],
+      "name": "registerFunctionSelector",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "worldFunctionSelector",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes16",
+          "name": "namespace",
+          "type": "bytes16"
+        }
+      ],
+      "name": "registerNamespace",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "worldFunctionSelector",
+          "type": "bytes4"
+        },
+        {
+          "internalType": "bytes4",
+          "name": "systemFunctionSelector",
+          "type": "bytes4"
+        }
+      ],
+      "name": "registerRootFunctionSelector",
+      "outputs": [
+        {
+          "internalType": "bytes4",
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "contract WorldContextConsumer",
+          "name": "system",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "publicAccess",
+          "type": "bool"
+        }
+      ],
+      "name": "registerSystem",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "contract ISystemHook",
+          "name": "hookAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint8",
+          "name": "enabledHooksBitmap",
+          "type": "uint8"
+        }
+      ],
+      "name": "registerSystemHook",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "resourceSelector",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "contract ISystemHook",
+          "name": "hookAddress",
+          "type": "address"
+        }
+      ],
+      "name": "unregisterSystemHook",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "registerDelegation(address,bytes32,bytes)": "1d2257ba",
+    "registerFunctionSelector(bytes32,string,string)": "3c03a51c",
+    "registerNamespace(bytes16)": "a886545e",
+    "registerRootFunctionSelector(bytes32,bytes4,bytes4)": "b7a3c756",
+    "registerSystem(bytes32,address,bool)": "3350b6a9",
+    "registerSystemHook(bytes32,address,uint8)": "d5f8337f",
+    "unregisterSystemHook(bytes32,address)": "a92813ad"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"delegatee\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"delegationControlId\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"initFuncSelectorAndArgs\",\"type\":\"bytes\"}],\"name\":\"registerDelegation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"string\",\"name\":\"systemFunctionName\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"systemFunctionArguments\",\"type\":\"string\"}],\"name\":\"registerFunctionSelector\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"worldFunctionSelector\",\"type\":\"bytes4\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes16\",\"name\":\"namespace\",\"type\":\"bytes16\"}],\"name\":\"registerNamespace\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"bytes4\",\"name\":\"worldFunctionSelector\",\"type\":\"bytes4\"},{\"internalType\":\"bytes4\",\"name\":\"systemFunctionSelector\",\"type\":\"bytes4\"}],\"name\":\"registerRootFunctionSelector\",\"outputs\":[{\"internalType\":\"bytes4\",\"name\":\"\",\"type\":\"bytes4\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"contract WorldContextConsumer\",\"name\":\"system\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"publicAccess\",\"type\":\"bool\"}],\"name\":\"registerSystem\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"contract ISystemHook\",\"name\":\"hookAddress\",\"type\":\"address\"},{\"internalType\":\"uint8\",\"name\":\"enabledHooksBitmap\",\"type\":\"uint8\"}],\"name\":\"registerSystemHook\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"resourceSelector\",\"type\":\"bytes32\"},{\"internalType\":\"contract ISystemHook\",\"name\":\"hookAddress\",\"type\":\"address\"}],\"name\":\"unregisterSystemHook\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldRegistrationSystem.sol\":\"IWorldRegistrationSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/WorldContext.sol\":{\"keccak256\":\"0x7653c3b0021ef6b36b9ab5197341ebae762e21435b23fa85761db5e219e5f58b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6ae4b7f1f28a5dbb5a747370f5c795c03cd4abf1ee92236259e8c77a2ec960ad\",\"dweb:/ipfs/QmXiMuh7VKFrUx8Vk3xSCbsSWEcyRUpGTVRQ1QqxShxNbJ\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IERC165.sol\":{\"keccak256\":\"0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350\",\"dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol\":{\"keccak256\":\"0x5729202d9e0284e7c39822ea64dcdcda11587540a0485d83d351c851cde8e12b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c4820133e550b8edf5674e8a22d56ba37d39e1141f36b2878927e13e1fc6effa\",\"dweb:/ipfs/QmagPaiWTxZNX3ZS76CK5ipJqYry3FHWipsyatv6DX6haw\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldContextConsumer.sol\":{\"keccak256\":\"0x28960c19846964f4daf1be00752b68cbd7aff8dcc48a21784c3bd76e97bb67c3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2c4e3d33f3a00f9b5a3e4a51fe1d599795d0340e3d89d0eef7a01c1d443240a5\",\"dweb:/ipfs/QmXmtpohnqiJvLHxBwYMJGomBWuyifFwSfHMBUGBiYRWUM\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldRegistrationSystem.sol\":{\"keccak256\":\"0x62c1e0fefe205dfef6d2c5342d94119ddbe222e67b37bb1a43f5cf0d1f9c7170\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://221403b1ceab786b429bb115baf5555db096ac635bd38fefdb9b6eaeb1f969f4\",\"dweb:/ipfs/QmNti77QaWE9vMQpWDmXcCH4h2DzAPNXTYegLAMcMuJPLZ\"]},\"/Users/kevin/Projects/latticexyz/mud/packages/world/src/revertWithBytes.sol\":{\"keccak256\":\"0xde5b4a74ca9bae09a8f0191b92903e312c45976aa15fe0c351aea5e08d016a02\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0a0ac78a80f3cb85d261d3aa429b809538d7a3468f34dfdcaff92526ac40e57a\",\"dweb:/ipfs/QmSN47DMN4rKzCUgbjoAxhxHM94jdndWqdt57KEVC1oH8f\"]},\"node_modules/@latticexyz/schema-type/src/solidity/SchemaType.sol\":{\"keccak256\":\"0x7e86f39f7e0d29342d79144af3c48a3f9f103aca38603318e999483f33cbd966\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a7956d2a9b27689d615ae66d0e85f96c86509274fd8f1dc4c4f8dbd204936cea\",\"dweb:/ipfs/QmTgn4tdtbcDEoVcYcgQzS1u8epSbFnefWc9Nbt9eBkjbT\"]},\"node_modules/@latticexyz/store/src/Bytes.sol\":{\"keccak256\":\"0x52bd79fd98b47bddbc4ccae178b9258cf308c15d41ecbbce57ee46beb17e6787\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0a48beb7750a813f1b351299de1b78287e9b8e41e4a35762aaa11fb28679c2d8\",\"dweb:/ipfs/Qmcnm5Tb6mUcSjC22z4Ke6DBV1rkYJmZcU1w442QpgTbff\"]},\"node_modules/@latticexyz/store/src/FieldLayout.sol\":{\"keccak256\":\"0x3c30839b8d37f733085ce33e25e2a3b69bce0841c43062b3cbb031f1f71d26d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e6d067176e7a7269df942620e4f9643ca1cb16390e0be6c1b2b9ab716a1030ef\",\"dweb:/ipfs/QmeH7m1PgjgpcZd2PAeJauZ2BU84qjmrHKhqktir8exiEX\"]},\"node_modules/@latticexyz/store/src/Hook.sol\":{\"keccak256\":\"0x073563c1c8be5047e831adfe5cf70722c83105a1be4ce0e81110a74f43b9568b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://70eb6aecaa0822eb6d97ec2e0d910cdf162a81b1c7faedf7598e8168b5811805\",\"dweb:/ipfs/QmZP4xzJX7wvMDcVwCUKZLMG7nhv1ibWMY4gJZEZkNpRLA\"]},\"node_modules/@latticexyz/store/src/IERC165.sol\":{\"keccak256\":\"0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350\",\"dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu\"]},\"node_modules/@latticexyz/store/src/IStore.sol\":{\"keccak256\":\"0x9077bcbd3a577a4b18ad47652f30e434eeee9eec84ed05232c73ee80c56a1888\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f4a95f2e6d49f791226edafaf1fca102482ad94cab9c8c1a1e804d7cf4778460\",\"dweb:/ipfs/QmRkNZ1Gjq5F91rLzZgVbagwFEirYpFp23nuqub3WzF59K\"]},\"node_modules/@latticexyz/store/src/IStoreErrors.sol\":{\"keccak256\":\"0xdded99e33f1c1c07535f5f18fc0bb3240f2331db3d614731e0244111fc02c282\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://63649a5ae00e777ae7952385585113c2977ef3964f6b1049830a90db6cda98c4\",\"dweb:/ipfs/QmaAnucqkHjHuSyEURcn4fTZqyNuGNXaYbJND66yzpdqA9\"]},\"node_modules/@latticexyz/store/src/IStoreHook.sol\":{\"keccak256\":\"0xacdacf30eb020f9418daea73d50524a1e3d34d4dc62c3c4d102292a0fcd7f01d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e3843a425d929b8cb7c33df40957d393ec245814331722c7ea18bec1b67cafa7\",\"dweb:/ipfs/QmWttHYEEjTp7HDsNLmBHLpEyExuFwGQ1D992qpHqFtMFb\"]},\"node_modules/@latticexyz/store/src/Memory.sol\":{\"keccak256\":\"0x1edc427b0d26609d1ce739b82b78fc03ae9f7463c3a81e8f8c608516ca7b0089\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://41cfaaf85af74c83b20ef308daa69ac65101ffbb2690d6888a06cbb55bf37146\",\"dweb:/ipfs/QmQp4Sf98TfifmsSNU5nVeG7UABWobaUf5oVR38Dh1kpw1\"]},\"node_modules/@latticexyz/store/src/PackedCounter.sol\":{\"keccak256\":\"0x0cf30d07e0f687b5bcc7a59c2ec3e97a6aa134350a6511f567be49a610a1383d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://43a13e12172664bfdb720e7d5e1a66367726f7eaacd908c0f3d2cd83befd392b\",\"dweb:/ipfs/Qmdf3AXwckTRtSz7t2HGA63pUD2953TEYpugY5y68P4rxc\"]},\"node_modules/@latticexyz/store/src/Schema.sol\":{\"keccak256\":\"0x24f3a1d8d062c039f929d4f19c2677e13e42c7ffe468fa9c6f677f683f9332f3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7ed053b45824e860327b64b7275e0bdfb4715a07d676912cca07088bb79911b3\",\"dweb:/ipfs/QmWW6dewiPp4K6xcNHBKvYnedeQwsXf93X33DQQoZhejvu\"]},\"node_modules/@latticexyz/store/src/Slice.sol\":{\"keccak256\":\"0x617c3624e15cb755857ac172a49ae11e0db688984c4d16a8de8e3c172a13ef7d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://71916605d89da3be4ac1b434e877dfac95dadea8b61b720a5204efac1ca94487\",\"dweb:/ipfs/QmTeZJRJ8Ev8LFQSCHuc6tYG7Vz6VtkBozbWzZgPWSXtcP\"]},\"node_modules/@latticexyz/store/src/Storage.sol\":{\"keccak256\":\"0xd3319f1bf70094e2a436419a7ed9cb4ea6a46efe2df3ccf64fa1b5b4107b54cc\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ff7173aa1002730caade98fa7c8b8b8a7ad34b8f40dd405abae28269124aaf51\",\"dweb:/ipfs/QmdRrsS9yf27xHdgRuNwX7JoqttzyKmVGWQSnZeTmiMksm\"]},\"node_modules/@latticexyz/store/src/StoreCore.sol\":{\"keccak256\":\"0x2a6ac9379662b3662e7c2b3257d15e369427ff9f432c64e85f2c3e0934642722\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d37656e3cac51203c0ef1483202c89f13484cdfc9cd8f33e63fa95b70d78c480\",\"dweb:/ipfs/QmYrBXREZMvdpqp6nBAzwaYNaC3Eh6ZjFukWTq3PPSF2bX\"]},\"node_modules/@latticexyz/store/src/StoreHook.sol\":{\"keccak256\":\"0x32d7ae39936be4dcf5b1889ba96a6b879840df76c6343880f1a983400760eda9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5276bbac26e0225f7eb826e8bba997c847c683f85d6a6e847577959a11456580\",\"dweb:/ipfs/QmR4jQt6njsAs2XhJ1xb5z32o8ETvra8MQfkPt1QqqvNd6\"]},\"node_modules/@latticexyz/store/src/StoreSwitch.sol\":{\"keccak256\":\"0xd2aa8c20399d65770ce619bc348190899b9bb0e4940bb1e6c67f168f67c2e4ca\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://728121b0ac4c07eca98df8ff4f32445c36de3772624b0df76cd948b4890332f1\",\"dweb:/ipfs/QmbyaQtvdhSFLUTVttyPx3h8DKrTtAXSyynWexajzdAff9\"]},\"node_modules/@latticexyz/store/src/Utils.sol\":{\"keccak256\":\"0x50a3bf74a64f0846c3212b599d2ebd6f220ae562a7ddd01584398d05c5206578\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4c44640063d30f054c20dc701b92cbefe64ef4c2cdde686746de4a11c76dfa5c\",\"dweb:/ipfs/QmawdG9zbqoMTCKGJUYfHNuBqeBgdKCdy18BftGd4c9hJA\"]},\"node_modules/@latticexyz/store/src/codegen/Tables.sol\":{\"keccak256\":\"0x9fc7c12af44c104ff032678a69040c72cba34bf43f6f549d962b590a4be0b951\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9e662fa77bf950d38818792d71ca1bee2243b283df3f607cebb937c260dffb64\",\"dweb:/ipfs/QmU9nbWgaTr2GEVCKgKVphom48qVR2Az4B6H6dPvHs8y9Q\"]},\"node_modules/@latticexyz/store/src/codegen/Types.sol\":{\"keccak256\":\"0x23ba2a20a16a4265f122c5e08e5b9881fd827f2cd7a92427740ee1eb3c4e7628\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://01236b9e7ffec2b6468e4b7dbc418453c2e5d73eaa14ebf4f5056619f46ad6b7\",\"dweb:/ipfs/QmSHA9efL43SUYbFtgCGv9ucZPD9ULi8o8ENpURAvDGhdB\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Callbacks.sol\":{\"keccak256\":\"0x98b0441e87b08b4fda782a77b4c6a7bf3bfa2552efd3c7fd7ea8e8697dbb0b81\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://27d6ad03c3dab259c8438b8c26e3dd76a894bec533a478b64052f3d612423adc\",\"dweb:/ipfs/QmbnPpGNpe1PKEEsBVjk8crVUpf5ct2YgtLhGZCc1YvgSb\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Hooks.sol\":{\"keccak256\":\"0x209ee3c0f14f9574e3cd2ea0b78ca30163e76df3dcb173ab6892705790a815d4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7666c7914be33f4cc2d102ff95925b1552f449d1a1af536e8b7a3dcf7956f796\",\"dweb:/ipfs/QmXFmTjncqR3zq2otMcQ5JGhciwJrxix3dkRFzsPRFDfTE\"]},\"node_modules/@latticexyz/store/src/codegen/tables/KeyEncoding.sol\":{\"keccak256\":\"0x33b72026bc7caabe4c9d731d3171cc340fddada7e52cc057a7ccdea5acba5f9c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c393182c7092b3989b94372f2c9805b6252f3370e547181f3ae79f0ff3e2a413\",\"dweb:/ipfs/Qmbe8Lr2d3YWRuzCxRXQ46NQgiy39HRcygfERZ9sN9wGNN\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Mixed.sol\":{\"keccak256\":\"0x2f161f657a2d8cd3e0d061399eac65f1c98e6a183b367941c6d0b170341ad802\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c21874774e9c449e923eaf78998ff4360b6ea0c68786ca51fb48b0cca1ef133e\",\"dweb:/ipfs/Qme2kutYFkfHbLZPRmjVFgNbYUbC6CGAwqbmdMag4mZ3tY\"]},\"node_modules/@latticexyz/store/src/codegen/tables/StoreHooks.sol\":{\"keccak256\":\"0xd0d33c39d52ba0b71740f1a59978e3d99a6056bea185864cb0d2bb36e9acec37\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6d0c94dc5966b2d040a15449ea1732858bc782460560f1d23c291c79fda07944\",\"dweb:/ipfs/QmXvLztep2rfJuhm6RNmwLBdKWVm4ZB21Yao7yN89GfVTi\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Tables.sol\":{\"keccak256\":\"0xcf40a7e121f23687091c4f42eb3f7d07ccd484eaabec05cf4578ba2633c68fe6\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9f9cdc1d515d338b0c42b0afffc2d005e2a49189b63da3ed24033023a42fef3\",\"dweb:/ipfs/QmQKiDdsgAmCmvZRHaSNwU2Q6u7HHzKSd2yxoU89dtLu1v\"]},\"node_modules/@latticexyz/store/src/codegen/tables/Vector2.sol\":{\"keccak256\":\"0x5d8fe00822f8854cdef0aef172ec745d491502b9d7abf5aae8352c393f7d3212\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2e260213732d89027c41ed0f32f304236e0ad43e7e23780824c3d62bf7bbad58\",\"dweb:/ipfs/QmNw2jnoMUp6jA14AWF8x66uHFTo1iV1W19pCeT9jXyRdC\"]},\"node_modules/@latticexyz/store/src/constants.sol\":{\"keccak256\":\"0x1614411e0dcfddfcefdf560ca48bbc5567b74193ca873ebd65800251bb6fc9d0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://19df1549602ec232516b688b6b6688c092765637f9543072a3730f0c9ef5caad\",\"dweb:/ipfs/Qmc4rYgS2cRjDXiF9E5WCMaVKKFqYzsbPGAiDJvhKR4Cm8\"]},\"node_modules/@latticexyz/store/src/tightcoder/DecodeSlice.sol\":{\"keccak256\":\"0x63fa0cb7b7a2c225d17a3d22c3ba81e543da1388495c8747dfb3e129a3787d66\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0f7bfe7f001bb00d95ad493e12b5220f4fb7d175161c747464e2d59c0a93eb8\",\"dweb:/ipfs/QmZeDyzinRWnfoQme8R9mbMpCu9KiUw1AzjPb1SQzNV5oC\"]},\"node_modules/@latticexyz/store/src/tightcoder/EncodeArray.sol\":{\"keccak256\":\"0xbf4ea9fa659ffb1581d417de93082ec9b4586bf7aeda078c2649bd382f0c54dd\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6860d8f58c2e8f0dde310a1b1e94d2aa355ad060f3797708fcc978be304faf1e\",\"dweb:/ipfs/QmeypWegTQ89bUHab3yptatH6CA8xirJbCMGHqZ7WcXnzA\"]},\"node_modules/@latticexyz/store/src/tightcoder/TightCoder.sol\":{\"keccak256\":\"0x7ca038834ba84d1fc885148a41705f9deb60eb025389253727e4b97d5d1a3d04\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f4779b321b4eaf5325ce8364c18b5b49c94ca060887d2b77f4be7cb76919eba2\",\"dweb:/ipfs/QmQVxQQ8MgTrfKw81kaJ7VEdjZzqEVbvs2veNspsXY6uCT\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "delegatee",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "delegationControlId",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "initFuncSelectorAndArgs",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerDelegation"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "string",
+              "name": "systemFunctionName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "systemFunctionArguments",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerFunctionSelector",
+          "outputs": [
+            {
+              "internalType": "bytes4",
+              "name": "worldFunctionSelector",
+              "type": "bytes4"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes16",
+              "name": "namespace",
+              "type": "bytes16"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerNamespace"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "worldFunctionSelector",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "systemFunctionSelector",
+              "type": "bytes4"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerRootFunctionSelector",
+          "outputs": [
+            {
+              "internalType": "bytes4",
+              "name": "",
+              "type": "bytes4"
+            }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "contract WorldContextConsumer",
+              "name": "system",
+              "type": "address"
+            },
+            {
+              "internalType": "bool",
+              "name": "publicAccess",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerSystem"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "contract ISystemHook",
+              "name": "hookAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "uint8",
+              "name": "enabledHooksBitmap",
+              "type": "uint8"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "registerSystemHook"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "resourceSelector",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "contract ISystemHook",
+              "name": "hookAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "unregisterSystemHook"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldRegistrationSystem.sol": "IWorldRegistrationSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/WorldContext.sol": {
+        "keccak256": "0x7653c3b0021ef6b36b9ab5197341ebae762e21435b23fa85761db5e219e5f58b",
+        "urls": [
+          "bzz-raw://6ae4b7f1f28a5dbb5a747370f5c795c03cd4abf1ee92236259e8c77a2ec960ad",
+          "dweb:/ipfs/QmXiMuh7VKFrUx8Vk3xSCbsSWEcyRUpGTVRQ1QqxShxNbJ"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IERC165.sol": {
+        "keccak256": "0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577",
+        "urls": [
+          "bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350",
+          "dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol": {
+        "keccak256": "0x5729202d9e0284e7c39822ea64dcdcda11587540a0485d83d351c851cde8e12b",
+        "urls": [
+          "bzz-raw://c4820133e550b8edf5674e8a22d56ba37d39e1141f36b2878927e13e1fc6effa",
+          "dweb:/ipfs/QmagPaiWTxZNX3ZS76CK5ipJqYry3FHWipsyatv6DX6haw"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldContextConsumer.sol": {
+        "keccak256": "0x28960c19846964f4daf1be00752b68cbd7aff8dcc48a21784c3bd76e97bb67c3",
+        "urls": [
+          "bzz-raw://2c4e3d33f3a00f9b5a3e4a51fe1d599795d0340e3d89d0eef7a01c1d443240a5",
+          "dweb:/ipfs/QmXmtpohnqiJvLHxBwYMJGomBWuyifFwSfHMBUGBiYRWUM"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldRegistrationSystem.sol": {
+        "keccak256": "0x62c1e0fefe205dfef6d2c5342d94119ddbe222e67b37bb1a43f5cf0d1f9c7170",
+        "urls": [
+          "bzz-raw://221403b1ceab786b429bb115baf5555db096ac635bd38fefdb9b6eaeb1f969f4",
+          "dweb:/ipfs/QmNti77QaWE9vMQpWDmXcCH4h2DzAPNXTYegLAMcMuJPLZ"
+        ],
+        "license": "MIT"
+      },
+      "/Users/kevin/Projects/latticexyz/mud/packages/world/src/revertWithBytes.sol": {
+        "keccak256": "0xde5b4a74ca9bae09a8f0191b92903e312c45976aa15fe0c351aea5e08d016a02",
+        "urls": [
+          "bzz-raw://0a0ac78a80f3cb85d261d3aa429b809538d7a3468f34dfdcaff92526ac40e57a",
+          "dweb:/ipfs/QmSN47DMN4rKzCUgbjoAxhxHM94jdndWqdt57KEVC1oH8f"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/schema-type/src/solidity/SchemaType.sol": {
+        "keccak256": "0x7e86f39f7e0d29342d79144af3c48a3f9f103aca38603318e999483f33cbd966",
+        "urls": [
+          "bzz-raw://a7956d2a9b27689d615ae66d0e85f96c86509274fd8f1dc4c4f8dbd204936cea",
+          "dweb:/ipfs/QmTgn4tdtbcDEoVcYcgQzS1u8epSbFnefWc9Nbt9eBkjbT"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Bytes.sol": {
+        "keccak256": "0x52bd79fd98b47bddbc4ccae178b9258cf308c15d41ecbbce57ee46beb17e6787",
+        "urls": [
+          "bzz-raw://0a48beb7750a813f1b351299de1b78287e9b8e41e4a35762aaa11fb28679c2d8",
+          "dweb:/ipfs/Qmcnm5Tb6mUcSjC22z4Ke6DBV1rkYJmZcU1w442QpgTbff"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/FieldLayout.sol": {
+        "keccak256": "0x3c30839b8d37f733085ce33e25e2a3b69bce0841c43062b3cbb031f1f71d26d0",
+        "urls": [
+          "bzz-raw://e6d067176e7a7269df942620e4f9643ca1cb16390e0be6c1b2b9ab716a1030ef",
+          "dweb:/ipfs/QmeH7m1PgjgpcZd2PAeJauZ2BU84qjmrHKhqktir8exiEX"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Hook.sol": {
+        "keccak256": "0x073563c1c8be5047e831adfe5cf70722c83105a1be4ce0e81110a74f43b9568b",
+        "urls": [
+          "bzz-raw://70eb6aecaa0822eb6d97ec2e0d910cdf162a81b1c7faedf7598e8168b5811805",
+          "dweb:/ipfs/QmZP4xzJX7wvMDcVwCUKZLMG7nhv1ibWMY4gJZEZkNpRLA"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IERC165.sol": {
+        "keccak256": "0x0b78ffc82d76dc96196c4a99f1b68555bf4d1f52cffdb0aeb94c7ff1d96d7577",
+        "urls": [
+          "bzz-raw://d0f93e0b0ee0bb7276fd1fd527603830c884ca827b82ea684fa5127726cc2350",
+          "dweb:/ipfs/QmRRDsLdeVEaDsGpWs9GnhBo8aVaXxyaPPQHhuZHi5nySu"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IStore.sol": {
+        "keccak256": "0x9077bcbd3a577a4b18ad47652f30e434eeee9eec84ed05232c73ee80c56a1888",
+        "urls": [
+          "bzz-raw://f4a95f2e6d49f791226edafaf1fca102482ad94cab9c8c1a1e804d7cf4778460",
+          "dweb:/ipfs/QmRkNZ1Gjq5F91rLzZgVbagwFEirYpFp23nuqub3WzF59K"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IStoreErrors.sol": {
+        "keccak256": "0xdded99e33f1c1c07535f5f18fc0bb3240f2331db3d614731e0244111fc02c282",
+        "urls": [
+          "bzz-raw://63649a5ae00e777ae7952385585113c2977ef3964f6b1049830a90db6cda98c4",
+          "dweb:/ipfs/QmaAnucqkHjHuSyEURcn4fTZqyNuGNXaYbJND66yzpdqA9"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/IStoreHook.sol": {
+        "keccak256": "0xacdacf30eb020f9418daea73d50524a1e3d34d4dc62c3c4d102292a0fcd7f01d",
+        "urls": [
+          "bzz-raw://e3843a425d929b8cb7c33df40957d393ec245814331722c7ea18bec1b67cafa7",
+          "dweb:/ipfs/QmWttHYEEjTp7HDsNLmBHLpEyExuFwGQ1D992qpHqFtMFb"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Memory.sol": {
+        "keccak256": "0x1edc427b0d26609d1ce739b82b78fc03ae9f7463c3a81e8f8c608516ca7b0089",
+        "urls": [
+          "bzz-raw://41cfaaf85af74c83b20ef308daa69ac65101ffbb2690d6888a06cbb55bf37146",
+          "dweb:/ipfs/QmQp4Sf98TfifmsSNU5nVeG7UABWobaUf5oVR38Dh1kpw1"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/PackedCounter.sol": {
+        "keccak256": "0x0cf30d07e0f687b5bcc7a59c2ec3e97a6aa134350a6511f567be49a610a1383d",
+        "urls": [
+          "bzz-raw://43a13e12172664bfdb720e7d5e1a66367726f7eaacd908c0f3d2cd83befd392b",
+          "dweb:/ipfs/Qmdf3AXwckTRtSz7t2HGA63pUD2953TEYpugY5y68P4rxc"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Schema.sol": {
+        "keccak256": "0x24f3a1d8d062c039f929d4f19c2677e13e42c7ffe468fa9c6f677f683f9332f3",
+        "urls": [
+          "bzz-raw://7ed053b45824e860327b64b7275e0bdfb4715a07d676912cca07088bb79911b3",
+          "dweb:/ipfs/QmWW6dewiPp4K6xcNHBKvYnedeQwsXf93X33DQQoZhejvu"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Slice.sol": {
+        "keccak256": "0x617c3624e15cb755857ac172a49ae11e0db688984c4d16a8de8e3c172a13ef7d",
+        "urls": [
+          "bzz-raw://71916605d89da3be4ac1b434e877dfac95dadea8b61b720a5204efac1ca94487",
+          "dweb:/ipfs/QmTeZJRJ8Ev8LFQSCHuc6tYG7Vz6VtkBozbWzZgPWSXtcP"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Storage.sol": {
+        "keccak256": "0xd3319f1bf70094e2a436419a7ed9cb4ea6a46efe2df3ccf64fa1b5b4107b54cc",
+        "urls": [
+          "bzz-raw://ff7173aa1002730caade98fa7c8b8b8a7ad34b8f40dd405abae28269124aaf51",
+          "dweb:/ipfs/QmdRrsS9yf27xHdgRuNwX7JoqttzyKmVGWQSnZeTmiMksm"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/StoreCore.sol": {
+        "keccak256": "0x2a6ac9379662b3662e7c2b3257d15e369427ff9f432c64e85f2c3e0934642722",
+        "urls": [
+          "bzz-raw://d37656e3cac51203c0ef1483202c89f13484cdfc9cd8f33e63fa95b70d78c480",
+          "dweb:/ipfs/QmYrBXREZMvdpqp6nBAzwaYNaC3Eh6ZjFukWTq3PPSF2bX"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/StoreHook.sol": {
+        "keccak256": "0x32d7ae39936be4dcf5b1889ba96a6b879840df76c6343880f1a983400760eda9",
+        "urls": [
+          "bzz-raw://5276bbac26e0225f7eb826e8bba997c847c683f85d6a6e847577959a11456580",
+          "dweb:/ipfs/QmR4jQt6njsAs2XhJ1xb5z32o8ETvra8MQfkPt1QqqvNd6"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/StoreSwitch.sol": {
+        "keccak256": "0xd2aa8c20399d65770ce619bc348190899b9bb0e4940bb1e6c67f168f67c2e4ca",
+        "urls": [
+          "bzz-raw://728121b0ac4c07eca98df8ff4f32445c36de3772624b0df76cd948b4890332f1",
+          "dweb:/ipfs/QmbyaQtvdhSFLUTVttyPx3h8DKrTtAXSyynWexajzdAff9"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/Utils.sol": {
+        "keccak256": "0x50a3bf74a64f0846c3212b599d2ebd6f220ae562a7ddd01584398d05c5206578",
+        "urls": [
+          "bzz-raw://4c44640063d30f054c20dc701b92cbefe64ef4c2cdde686746de4a11c76dfa5c",
+          "dweb:/ipfs/QmawdG9zbqoMTCKGJUYfHNuBqeBgdKCdy18BftGd4c9hJA"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/Tables.sol": {
+        "keccak256": "0x9fc7c12af44c104ff032678a69040c72cba34bf43f6f549d962b590a4be0b951",
+        "urls": [
+          "bzz-raw://9e662fa77bf950d38818792d71ca1bee2243b283df3f607cebb937c260dffb64",
+          "dweb:/ipfs/QmU9nbWgaTr2GEVCKgKVphom48qVR2Az4B6H6dPvHs8y9Q"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/Types.sol": {
+        "keccak256": "0x23ba2a20a16a4265f122c5e08e5b9881fd827f2cd7a92427740ee1eb3c4e7628",
+        "urls": [
+          "bzz-raw://01236b9e7ffec2b6468e4b7dbc418453c2e5d73eaa14ebf4f5056619f46ad6b7",
+          "dweb:/ipfs/QmSHA9efL43SUYbFtgCGv9ucZPD9ULi8o8ENpURAvDGhdB"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Callbacks.sol": {
+        "keccak256": "0x98b0441e87b08b4fda782a77b4c6a7bf3bfa2552efd3c7fd7ea8e8697dbb0b81",
+        "urls": [
+          "bzz-raw://27d6ad03c3dab259c8438b8c26e3dd76a894bec533a478b64052f3d612423adc",
+          "dweb:/ipfs/QmbnPpGNpe1PKEEsBVjk8crVUpf5ct2YgtLhGZCc1YvgSb"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Hooks.sol": {
+        "keccak256": "0x209ee3c0f14f9574e3cd2ea0b78ca30163e76df3dcb173ab6892705790a815d4",
+        "urls": [
+          "bzz-raw://7666c7914be33f4cc2d102ff95925b1552f449d1a1af536e8b7a3dcf7956f796",
+          "dweb:/ipfs/QmXFmTjncqR3zq2otMcQ5JGhciwJrxix3dkRFzsPRFDfTE"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/KeyEncoding.sol": {
+        "keccak256": "0x33b72026bc7caabe4c9d731d3171cc340fddada7e52cc057a7ccdea5acba5f9c",
+        "urls": [
+          "bzz-raw://c393182c7092b3989b94372f2c9805b6252f3370e547181f3ae79f0ff3e2a413",
+          "dweb:/ipfs/Qmbe8Lr2d3YWRuzCxRXQ46NQgiy39HRcygfERZ9sN9wGNN"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Mixed.sol": {
+        "keccak256": "0x2f161f657a2d8cd3e0d061399eac65f1c98e6a183b367941c6d0b170341ad802",
+        "urls": [
+          "bzz-raw://c21874774e9c449e923eaf78998ff4360b6ea0c68786ca51fb48b0cca1ef133e",
+          "dweb:/ipfs/Qme2kutYFkfHbLZPRmjVFgNbYUbC6CGAwqbmdMag4mZ3tY"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/StoreHooks.sol": {
+        "keccak256": "0xd0d33c39d52ba0b71740f1a59978e3d99a6056bea185864cb0d2bb36e9acec37",
+        "urls": [
+          "bzz-raw://6d0c94dc5966b2d040a15449ea1732858bc782460560f1d23c291c79fda07944",
+          "dweb:/ipfs/QmXvLztep2rfJuhm6RNmwLBdKWVm4ZB21Yao7yN89GfVTi"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Tables.sol": {
+        "keccak256": "0xcf40a7e121f23687091c4f42eb3f7d07ccd484eaabec05cf4578ba2633c68fe6",
+        "urls": [
+          "bzz-raw://c9f9cdc1d515d338b0c42b0afffc2d005e2a49189b63da3ed24033023a42fef3",
+          "dweb:/ipfs/QmQKiDdsgAmCmvZRHaSNwU2Q6u7HHzKSd2yxoU89dtLu1v"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/codegen/tables/Vector2.sol": {
+        "keccak256": "0x5d8fe00822f8854cdef0aef172ec745d491502b9d7abf5aae8352c393f7d3212",
+        "urls": [
+          "bzz-raw://2e260213732d89027c41ed0f32f304236e0ad43e7e23780824c3d62bf7bbad58",
+          "dweb:/ipfs/QmNw2jnoMUp6jA14AWF8x66uHFTo1iV1W19pCeT9jXyRdC"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/constants.sol": {
+        "keccak256": "0x1614411e0dcfddfcefdf560ca48bbc5567b74193ca873ebd65800251bb6fc9d0",
+        "urls": [
+          "bzz-raw://19df1549602ec232516b688b6b6688c092765637f9543072a3730f0c9ef5caad",
+          "dweb:/ipfs/Qmc4rYgS2cRjDXiF9E5WCMaVKKFqYzsbPGAiDJvhKR4Cm8"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/tightcoder/DecodeSlice.sol": {
+        "keccak256": "0x63fa0cb7b7a2c225d17a3d22c3ba81e543da1388495c8747dfb3e129a3787d66",
+        "urls": [
+          "bzz-raw://a0f7bfe7f001bb00d95ad493e12b5220f4fb7d175161c747464e2d59c0a93eb8",
+          "dweb:/ipfs/QmZeDyzinRWnfoQme8R9mbMpCu9KiUw1AzjPb1SQzNV5oC"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/tightcoder/EncodeArray.sol": {
+        "keccak256": "0xbf4ea9fa659ffb1581d417de93082ec9b4586bf7aeda078c2649bd382f0c54dd",
+        "urls": [
+          "bzz-raw://6860d8f58c2e8f0dde310a1b1e94d2aa355ad060f3797708fcc978be304faf1e",
+          "dweb:/ipfs/QmeypWegTQ89bUHab3yptatH6CA8xirJbCMGHqZ7WcXnzA"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@latticexyz/store/src/tightcoder/TightCoder.sol": {
+        "keccak256": "0x7ca038834ba84d1fc885148a41705f9deb60eb025389253727e4b97d5d1a3d04",
+        "urls": [
+          "bzz-raw://f4779b321b4eaf5325ce8364c18b5b49c94ca060887d2b77f4be7cb76919eba2",
+          "dweb:/ipfs/QmQVxQQ8MgTrfKw81kaJ7VEdjZzqEVbvs2veNspsXY6uCT"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/IWorldRegistrationSystem.sol",
+    "id": 22722,
+    "exportedSymbols": {
+      "ISystemHook": [
+        22508
+      ],
+      "IWorldRegistrationSystem": [
+        22721
+      ],
+      "WorldContextConsumer": [
+        22196
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:1122:40",
+    "nodes": [
+      {
+        "id": 22652,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:40",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 22654,
+        "nodeType": "ImportDirective",
+        "src": "107:48:40",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/interfaces/ISystemHook.sol",
+        "file": "./ISystemHook.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 22722,
+        "sourceUnit": 22509,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 22653,
+              "name": "ISystemHook",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 22508,
+              "src": "116:11:40",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 22656,
+        "nodeType": "ImportDirective",
+        "src": "156:61:40",
+        "nodes": [],
+        "absolutePath": "/Users/kevin/Projects/latticexyz/mud/packages/world/src/WorldContext.sol",
+        "file": "./../WorldContext.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 22722,
+        "sourceUnit": 22346,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 22655,
+              "name": "WorldContextConsumer",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 22196,
+              "src": "165:20:40",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 22721,
+        "nodeType": "ContractDefinition",
+        "src": "219:934:40",
+        "nodes": [
+          {
+            "id": 22661,
+            "nodeType": "FunctionDefinition",
+            "src": "258:55:40",
+            "nodes": [],
+            "functionSelector": "a886545e",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerNamespace",
+            "nameLocation": "267:17:40",
+            "parameters": {
+              "id": 22659,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22658,
+                  "mutability": "mutable",
+                  "name": "namespace",
+                  "nameLocation": "293:9:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22661,
+                  "src": "285:17:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes16",
+                    "typeString": "bytes16"
+                  },
+                  "typeName": {
+                    "id": 22657,
+                    "name": "bytes16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "285:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes16",
+                      "typeString": "bytes16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "284:19:40"
+            },
+            "returnParameters": {
+              "id": 22660,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "312:0:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 22671,
+            "nodeType": "FunctionDefinition",
+            "src": "317:114:40",
+            "nodes": [],
+            "functionSelector": "d5f8337f",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerSystemHook",
+            "nameLocation": "326:18:40",
+            "parameters": {
+              "id": 22669,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22663,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "353:16:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22671,
+                  "src": "345:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 22662,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "345:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22666,
+                  "mutability": "mutable",
+                  "name": "hookAddress",
+                  "nameLocation": "383:11:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22671,
+                  "src": "371:23:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ISystemHook_$22508",
+                    "typeString": "contract ISystemHook"
+                  },
+                  "typeName": {
+                    "id": 22665,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 22664,
+                      "name": "ISystemHook",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 22508,
+                      "src": "371:11:40"
+                    },
+                    "referencedDeclaration": 22508,
+                    "src": "371:11:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISystemHook_$22508",
+                      "typeString": "contract ISystemHook"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22668,
+                  "mutability": "mutable",
+                  "name": "enabledHooksBitmap",
+                  "nameLocation": "402:18:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22671,
+                  "src": "396:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 22667,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "396:5:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "344:77:40"
+            },
+            "returnParameters": {
+              "id": 22670,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "430:0:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 22679,
+            "nodeType": "FunctionDefinition",
+            "src": "435:90:40",
+            "nodes": [],
+            "functionSelector": "a92813ad",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "unregisterSystemHook",
+            "nameLocation": "444:20:40",
+            "parameters": {
+              "id": 22677,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22673,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "473:16:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22679,
+                  "src": "465:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 22672,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "465:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22676,
+                  "mutability": "mutable",
+                  "name": "hookAddress",
+                  "nameLocation": "503:11:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22679,
+                  "src": "491:23:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_ISystemHook_$22508",
+                    "typeString": "contract ISystemHook"
+                  },
+                  "typeName": {
+                    "id": 22675,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 22674,
+                      "name": "ISystemHook",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 22508,
+                      "src": "491:11:40"
+                    },
+                    "referencedDeclaration": 22508,
+                    "src": "491:11:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_ISystemHook_$22508",
+                      "typeString": "contract ISystemHook"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "464:51:40"
+            },
+            "returnParameters": {
+              "id": 22678,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "524:0:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 22689,
+            "nodeType": "FunctionDefinition",
+            "src": "529:107:40",
+            "nodes": [],
+            "functionSelector": "3350b6a9",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerSystem",
+            "nameLocation": "538:14:40",
+            "parameters": {
+              "id": 22687,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22681,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "561:16:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22689,
+                  "src": "553:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 22680,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "553:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22684,
+                  "mutability": "mutable",
+                  "name": "system",
+                  "nameLocation": "600:6:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22689,
+                  "src": "579:27:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_WorldContextConsumer_$22196",
+                    "typeString": "contract WorldContextConsumer"
+                  },
+                  "typeName": {
+                    "id": 22683,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 22682,
+                      "name": "WorldContextConsumer",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 22196,
+                      "src": "579:20:40"
+                    },
+                    "referencedDeclaration": 22196,
+                    "src": "579:20:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_WorldContextConsumer_$22196",
+                      "typeString": "contract WorldContextConsumer"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22686,
+                  "mutability": "mutable",
+                  "name": "publicAccess",
+                  "nameLocation": "613:12:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22689,
+                  "src": "608:17:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 22685,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "608:4:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "552:74:40"
+            },
+            "returnParameters": {
+              "id": 22688,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "635:0:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 22700,
+            "nodeType": "FunctionDefinition",
+            "src": "640:197:40",
+            "nodes": [],
+            "functionSelector": "3c03a51c",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerFunctionSelector",
+            "nameLocation": "649:24:40",
+            "parameters": {
+              "id": 22696,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22691,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "687:16:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22700,
+                  "src": "679:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 22690,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "679:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22693,
+                  "mutability": "mutable",
+                  "name": "systemFunctionName",
+                  "nameLocation": "723:18:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22700,
+                  "src": "709:32:40",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 22692,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "709:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22695,
+                  "mutability": "mutable",
+                  "name": "systemFunctionArguments",
+                  "nameLocation": "761:23:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22700,
+                  "src": "747:37:40",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 22694,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "747:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "673:115:40"
+            },
+            "returnParameters": {
+              "id": 22699,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22698,
+                  "mutability": "mutable",
+                  "name": "worldFunctionSelector",
+                  "nameLocation": "814:21:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22700,
+                  "src": "807:28:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 22697,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "807:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "806:30:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 22711,
+            "nodeType": "FunctionDefinition",
+            "src": "841:167:40",
+            "nodes": [],
+            "functionSelector": "b7a3c756",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerRootFunctionSelector",
+            "nameLocation": "850:28:40",
+            "parameters": {
+              "id": 22707,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22702,
+                  "mutability": "mutable",
+                  "name": "resourceSelector",
+                  "nameLocation": "892:16:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22711,
+                  "src": "884:24:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 22701,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "884:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22704,
+                  "mutability": "mutable",
+                  "name": "worldFunctionSelector",
+                  "nameLocation": "921:21:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22711,
+                  "src": "914:28:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 22703,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "914:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22706,
+                  "mutability": "mutable",
+                  "name": "systemFunctionSelector",
+                  "nameLocation": "955:22:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22711,
+                  "src": "948:29:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 22705,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "948:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "878:103:40"
+            },
+            "returnParameters": {
+              "id": 22710,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22709,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22711,
+                  "src": "1000:6:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes4",
+                    "typeString": "bytes4"
+                  },
+                  "typeName": {
+                    "id": 22708,
+                    "name": "bytes4",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1000:6:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes4",
+                      "typeString": "bytes4"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "999:8:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 22720,
+            "nodeType": "FunctionDefinition",
+            "src": "1012:139:40",
+            "nodes": [],
+            "functionSelector": "1d2257ba",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "registerDelegation",
+            "nameLocation": "1021:18:40",
+            "parameters": {
+              "id": 22718,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 22713,
+                  "mutability": "mutable",
+                  "name": "delegatee",
+                  "nameLocation": "1053:9:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22720,
+                  "src": "1045:17:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 22712,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1045:7:40",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22715,
+                  "mutability": "mutable",
+                  "name": "delegationControlId",
+                  "nameLocation": "1076:19:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22720,
+                  "src": "1068:27:40",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 22714,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1068:7:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 22717,
+                  "mutability": "mutable",
+                  "name": "initFuncSelectorAndArgs",
+                  "nameLocation": "1114:23:40",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 22720,
+                  "src": "1101:36:40",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 22716,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1101:5:40",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1039:102:40"
+            },
+            "returnParameters": {
+              "id": 22719,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1150:0:40"
+            },
+            "scope": 22721,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IWorldRegistrationSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          22721
+        ],
+        "name": "IWorldRegistrationSystem",
+        "nameLocation": "229:24:40",
+        "scope": 22722,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 40
+}

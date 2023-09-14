@@ -1,0 +1,266 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "MyCustomError",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "increment",
+      "outputs": [
+        {
+          "internalType": "uint32",
+          "name": "",
+          "type": "uint32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "willRevert",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "increment()": "d09de08a",
+    "willRevert()": "73ee93b3"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"MyCustomError\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"increment\",\"outputs\":[{\"internalType\":\"uint32\",\"name\":\"\",\"type\":\"uint32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"willRevert\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/codegen/world/IIncrementSystem.sol\":\"IIncrementSystem\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":3000},\"remappings\":[\":@latticexyz/=node_modules/@latticexyz/\",\":@solidstate/=node_modules/@solidstate/\",\":ds-test/=node_modules/ds-test/src/\",\":forge-std/=node_modules/forge-std/src/\"]},\"sources\":{\"src/codegen/world/IIncrementSystem.sol\":{\"keccak256\":\"0x8bfb4017219b8ecfc2c2e910c9987587a99218851b636f2914546a8c488899c9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ec2d88d7da7f1707c90184296550321382fc77c182b999e9439fdbd958b76543\",\"dweb:/ipfs/QmbNQQTs8YWAZo1ixx1VVMW4GhgFJBk87z78fLVy7Bw6wH\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.13+commit.abaa5c0e"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "type": "error",
+          "name": "MyCustomError"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "increment",
+          "outputs": [
+            {
+              "internalType": "uint32",
+              "name": "",
+              "type": "uint32"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "willRevert"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@latticexyz/=node_modules/@latticexyz/",
+        "@solidstate/=node_modules/@solidstate/",
+        "ds-test/=node_modules/ds-test/src/",
+        "forge-std/=node_modules/forge-std/src/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 3000
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/codegen/world/IIncrementSystem.sol": "IIncrementSystem"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "src/codegen/world/IIncrementSystem.sol": {
+        "keccak256": "0x8bfb4017219b8ecfc2c2e910c9987587a99218851b636f2914546a8c488899c9",
+        "urls": [
+          "bzz-raw://ec2d88d7da7f1707c90184296550321382fc77c182b999e9439fdbd958b76543",
+          "dweb:/ipfs/QmbNQQTs8YWAZo1ixx1VVMW4GhgFJBk87z78fLVy7Bw6wH"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/codegen/world/IIncrementSystem.sol",
+    "id": 41359,
+    "exportedSymbols": {
+      "IIncrementSystem": [
+        41358
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "32:217:93",
+    "nodes": [
+      {
+        "id": 41347,
+        "nodeType": "PragmaDirective",
+        "src": "32:24:93",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 41358,
+        "nodeType": "ContractDefinition",
+        "src": "107:141:93",
+        "nodes": [
+          {
+            "id": 41349,
+            "nodeType": "ErrorDefinition",
+            "src": "138:22:93",
+            "nodes": [],
+            "errorSelector": "4e7254d6",
+            "name": "MyCustomError",
+            "nameLocation": "144:13:93",
+            "parameters": {
+              "id": 41348,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "157:2:93"
+            }
+          },
+          {
+            "id": 41354,
+            "nodeType": "FunctionDefinition",
+            "src": "164:47:93",
+            "nodes": [],
+            "functionSelector": "d09de08a",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "increment",
+            "nameLocation": "173:9:93",
+            "parameters": {
+              "id": 41350,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "182:2:93"
+            },
+            "returnParameters": {
+              "id": 41353,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 41352,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 41354,
+                  "src": "203:6:93",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint32",
+                    "typeString": "uint32"
+                  },
+                  "typeName": {
+                    "id": 41351,
+                    "name": "uint32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "203:6:93",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint32",
+                      "typeString": "uint32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "202:8:93"
+            },
+            "scope": 41358,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "id": 41357,
+            "nodeType": "FunctionDefinition",
+            "src": "215:31:93",
+            "nodes": [],
+            "functionSelector": "73ee93b3",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "willRevert",
+            "nameLocation": "224:10:93",
+            "parameters": {
+              "id": 41355,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "234:2:93"
+            },
+            "returnParameters": {
+              "id": 41356,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "245:0:93"
+            },
+            "scope": 41358,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IIncrementSystem",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          41358
+        ],
+        "name": "IIncrementSystem",
+        "nameLocation": "117:16:93",
+        "scope": 41359,
+        "usedErrors": [
+          41349
+        ]
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 93
+}

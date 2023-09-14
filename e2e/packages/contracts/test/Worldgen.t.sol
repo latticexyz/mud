@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { MudTest } from "@latticexyz/store/src/MudTest.sol";
+import { MudTest } from "@latticexyz/store/test/MudTest.t.sol";
 
 import { ICustomErrorsSystem } from "../src/codegen/world/ICustomErrorsSystem.sol";
 import { Position } from "../src/CustomTypes.sol";
