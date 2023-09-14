@@ -14,7 +14,7 @@ export async function startBrowserAndPage(
 
   // log uncaught errors in the browser page (browser and test consoles are separate)
   page.on("pageerror", (err) => {
-    console.log(chalk.yellow("[browser page error]:"), err.message);
+    console.log(chalk.yellow("[browser page error]:"), err.message, err);
   });
 
   // log browser's console logs
