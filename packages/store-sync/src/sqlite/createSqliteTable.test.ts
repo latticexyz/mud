@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { createSqliteTable } from "./createSqliteTable";
 
 describe("createSqliteTable", () => {
-  it("should create table from schema", async () => {
+  it.only("should create table from schema", async () => {
     const table = createSqliteTable({
       address: "0xffffffffffffffffffffffffffffffffffffffff",
       namespace: "test",
@@ -10,6 +10,8 @@ describe("createSqliteTable", () => {
       keySchema: { x: "uint32", y: "uint32" },
       valueSchema: { name: "string", addr: "address" },
     });
+
+    console.log("table", table);
 
     expect(table).toMatchInlineSnapshot(`
       SQLiteTable {
