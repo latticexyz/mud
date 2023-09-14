@@ -26,20 +26,23 @@ export async function setupNetwork() {
     account: burnerAccount,
   });
 
+  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+    await syncToRecs({
+      world,
+      abi: IWorldAbi,
+      config: mudConfig,
+      address: networkConfig.worldAddress as Hex,
+      publicClient,
+      startBlock: BigInt(networkConfig.initialBlockNumber),
+    });
+
   const worldContract = createContract({
     address: networkConfig.worldAddress as Hex,
     abi: IWorldAbi,
     publicClient,
     walletClient: burnerWalletClient,
-  });
-
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
-    world,
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
-    indexerUrl: networkConfig.indexerUrl ?? undefined,
+    onWrite: (write) => write$.next(write),
+    getResourceSelector,
   });
 
   // Request drip from faucet

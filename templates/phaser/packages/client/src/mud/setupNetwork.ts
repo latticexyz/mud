@@ -56,6 +56,22 @@ export async function setupNetwork() {
   const write$ = new Subject<ContractWrite>();
 
   /*
+   * Sync on-chain state into RECS and keeps our client in sync.
+   * Uses the MUD indexer if available, otherwise falls back
+   * to the viem publicClient to make RPC calls to fetch MUD
+   * events from the chain.
+   */
+  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+    await syncToRecs({
+      world,
+      abi: IWorldAbi,
+      config: mudConfig,
+      address: networkConfig.worldAddress as Hex,
+      publicClient,
+      startBlock: BigInt(networkConfig.initialBlockNumber),
+    });
+
+  /*
    * Create an object for communicating with the deployed World.
    */
   const worldContract = createContract({
@@ -64,20 +80,7 @@ export async function setupNetwork() {
     publicClient,
     walletClient: burnerWalletClient,
     onWrite: (write) => write$.next(write),
-  });
-
-  /*
-   * Sync on-chain state into RECS and keeps our client in sync.
-   * Uses the MUD indexer if available, otherwise falls back
-   * to the viem publicClient to make RPC calls to fetch MUD
-   * events from the chain.
-   */
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
-    world,
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
+    getResourceSelector,
   });
 
   /*
