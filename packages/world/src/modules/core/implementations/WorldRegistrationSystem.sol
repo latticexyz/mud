@@ -151,9 +151,6 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
-    // Require the caller to own the namespace
-    AccessControl.requireOwner(resourceSelector, _msgSender());
-
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(resourceSelector.getNamespace());
     string memory nameString = ResourceSelector.toTrimmedString(resourceSelector.getName());
@@ -182,6 +179,13 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     string[] calldata systemFunctionNames,
     string[] calldata systemFunctionArguments
   ) public {
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(resourceSelector, _msgSender());
+
+    if (systemFunctionNames.length != systemFunctionArguments.length) {
+      revert IWorldErrors.FunctionSelectorsMismatch(resourceSelector.toString());
+    }
+
     for (uint256 i = 0; i < systemFunctionNames.length; i++) {
       registerFunctionSelector(resourceSelector, systemFunctionNames[i], systemFunctionArguments[i]);
     }
@@ -199,9 +203,6 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
-    // Require the caller to own the root namespace
-    AccessControl.requireOwner(ROOT_NAMESPACE, _msgSender());
-
     // Require the function selector to be globally unique
     bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);
 
@@ -219,10 +220,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerRootFunctionSelectors(
     bytes32 resourceSelector,
-    bytes4[] calldata worldFunctionSelectors,
-    bytes4[] calldata systemFunctionSelectors
+    bytes4[] memory worldFunctionSelectors,
+    bytes4[] memory systemFunctionSelectors
   ) public {
-    // Register the function selectors
+    // Require the caller to own the root namespace
+    AccessControl.requireOwner(ROOT_NAMESPACE, _msgSender());
+
+    if (worldFunctionSelectors.length != systemFunctionSelectors.length) {
+      revert IWorldErrors.FunctionSelectorsMismatch(resourceSelector.toString());
+    }
+
     for (uint256 i = 0; i < worldFunctionSelectors.length; i++) {
       registerRootFunctionSelector(resourceSelector, worldFunctionSelectors[i], systemFunctionSelectors[i]);
     }

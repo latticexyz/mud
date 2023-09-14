@@ -82,6 +82,17 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "resource",
+        "type": "string"
+      }
+    ],
+    "name": "FunctionSelectorsMismatch",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "balance",
         "type": "uint256"

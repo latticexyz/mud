@@ -35,8 +35,8 @@ interface IWorldRegistrationSystem {
 
   function registerRootFunctionSelectors(
     bytes32 resourceSelector,
-    bytes4[] calldata worldFunctionSelectors,
-    bytes4[] calldata systemFunctionSelectors
+    bytes4[] memory worldFunctionSelectors,
+    bytes4[] memory systemFunctionSelectors
   ) external;
 
   function registerDelegation(
