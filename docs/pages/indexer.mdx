@@ -290,3 +290,82 @@ pnpm start:sqlite
 ```
 
 Note that in your queries you need to specify the correct chainId for the chain you are indexing.
+
+## Using the indexer with PostgreSQL
+
+To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these steps:
+
+1. Download and install [PostgreSQL](https://www.postgresql.org/download/).
+
+1. To use the default setting (local PostgreSQL, using the `postgres` database, indexing the local `anvil` chain), run:
+
+   ```sh copy
+   pnpm start:postgres:local
+   ```
+
+   Otherwise, set these environment variables:
+
+   | Variable     | Value                                                            |
+   | ------------ | ---------------------------------------------------------------- |
+   | DATABASE_URL | URL for the database, of the form `postgres://<host>/<database>` |
+   | CHAIN_ID     | ChainID for the chain you index                                  |
+
+   And then run:
+
+   ```sh copy
+   pnpm start:postgres
+   ```
+
+### Reading information from PostgreSQL
+
+You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) to view the indexer information.
+
+1. Get the list of schemas to verify `__mud_internal` is there.
+
+   ```sql copy
+   \dn
+   ```
+
+1. Get the list of relations in the schema.
+
+   ```sql copy
+   \dt __mul_internal.*
+   ```
+
+   You should get two tables, `chain` and `tables`.
+
+1. Get the list of chains (there should be just one).
+
+   ```sql copy
+   select * from __mud_internal.chain;
+   ```
+
+1. The `tables` table is a lot bigger, so first get the list of columns within the table.
+
+   ```sql copy
+   \d+ __mud_internal.tables
+   ```
+
+1. Get the list of MUD table names.
+
+   ```sql copy
+   select name from __mud_internal.tables;
+   ```
+
+1. Get the key and value schemas for `Counter`.
+
+   ```sql copy
+   select key_schema, value_schema from __mud_internal.tables where name='Counter';
+   ```
+
+1. Get the list of tables for a specific world (if your world address is different, use that instead of `0x5FbDB2315678afecb367f032d93F642f64180aa3`).
+
+   ```sql copy
+   \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
+   ```
+
+1. Get the value of the counter.
+
+   ```sql copy
+   select * from "0x5FbDB2315678afecb367f032d93F642f64180aa3__"."Counter";
+   ```
