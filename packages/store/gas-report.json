@@ -716,8 +716,8 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: get key schema (warm)",
-    "gasUsed": 9281
+    "name": "StoreCore: get keyTuple schema (warm)",
+    "gasUsed": 9282
   },
   {
     "file": "test/StoreCoreGas.t.sol",
