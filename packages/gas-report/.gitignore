@@ -8,4 +8,3 @@ artifacts
 yarn-error.log
 API
 dist
-types/ethers-contracts

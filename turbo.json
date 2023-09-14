@@ -6,7 +6,6 @@
       "outputs": [
         "dist/**",
         "abi/**",
-        "types/**",
         "build/**",
         "bin/**",
         "protoc/**",
