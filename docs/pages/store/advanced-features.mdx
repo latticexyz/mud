@@ -79,12 +79,12 @@ It is possible to register hooks on tables, allowing additional logic to be exec
 This is an example of a Mirror hook which mirrors a table into another one:
 
 ```solidity
-uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
+bytes32 constant indexerTableId = bytes32("indexer.table");
 
 contract MirrorSubscriber is IStoreHook {
   bytes32 _tableId;
 
-  constructor(uint256 table, Schema keySchema, Schema valueSchema) {
+  constructor(bytes32 tableId, Schema keySchema, Schema valueSchema) {
     IStore(msg.sender).registerSchema(indexerTableId, valueSchema, keySchema);
     _tableId = tableId;
   }
@@ -109,7 +109,7 @@ contract MirrorSubscriber is IStoreHook {
 Registering the hook can be done using the low-level Store API:
 
 ```solidity
-bytes32 tableId = keccak256("table");
+bytes32 tableId = bytes32("table");
 Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
 Schema keySchema = SchemaLib.encode(SchemaType.UINT256);
 MirrorSubscriber subscriber = new MirrorSubscriber(tableId, keySchema, valueSchema);
