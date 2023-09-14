@@ -132,6 +132,7 @@ export function WriteSummary({ write }: Props) {
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
                 const table = hexToTableId((args as any).table);
+                // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
                   <tr key={i}>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">

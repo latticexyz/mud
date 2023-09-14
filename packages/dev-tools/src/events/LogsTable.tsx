@@ -1,5 +1,4 @@
 import { StorageAdapterLog } from "@latticexyz/store-sync";
-import { serialize } from "../serialize";
 import { EventIcon } from "./EventIcon";
 import { hexToTableId } from "@latticexyz/common";
 
@@ -45,8 +44,24 @@ export function LogsTable({ logs }: Props) {
               </td>
               <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
                 {/* TODO: decode these values if we can */}
-                {log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord" ? log.args.data : null}
-                {log.eventName === "StoreSpliceRecord" ? log.args.data : null}
+                {log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord"
+                  ? JSON.stringify({
+                      staticData: log.args.staticData,
+                      encodedLengths: log.args.encodedLengths,
+                      dynamicData: log.args.dynamicData,
+                    })
+                  : null}
+                {log.eventName === "StoreSpliceStaticRecord"
+                  ? JSON.stringify({ start: log.args.start, deleteCount: log.args.deleteCount, data: log.args.data })
+                  : null}
+                {log.eventName === "StoreSpliceDynamicRecord"
+                  ? JSON.stringify({
+                      start: log.args.start,
+                      deleteCount: log.args.deleteCount,
+                      data: log.args.data,
+                      encodedLengths: log.args.encodedLengths,
+                    })
+                  : null}
               </td>
             </tr>
           );
