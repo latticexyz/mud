@@ -265,6 +265,40 @@ library StoreCore {
     }
   }
 
+  function storeStaticField(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset,
+    bytes memory data,
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    FieldLayout fieldLayout
+  ) internal {
+    // Call onBeforeSetField hooks (before modifying the state)
+    bytes21[] memory hooks = StoreHooks.get(tableId);
+
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, key, schemaIndex, data, fieldLayout);
+      }
+    }
+
+    // Emit event to notify indexers
+    emit StoreSetField(tableId, key, schemaIndex, data);
+
+    StoreCoreInternal._storeStaticField(storagePointer, length, offset, data);
+
+    // Call onAfterSetField hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+        IStoreHook(hook.getAddress()).onAfterSetField(tableId, key, schemaIndex, data, fieldLayout);
+      }
+    }
+  }
+
   /**
    * Delete a record for the given tableId, key tuple and value field layout
    */
@@ -602,6 +636,13 @@ library StoreCoreInternal {
 
   function _loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32) {
     return Storage.loadField(storagePointer, length, offset);
+  }
+
+  function _storeStaticField(uint256 storagePointer, uint256 length, uint256 offset, bytes memory data) internal {
+    if (length != data.length) {
+      revert IStoreErrors.StoreCore_InvalidDataLength(length, data.length);
+    }
+    Storage.store(storagePointer, offset, data);
   }
 
   function _setStaticField(
