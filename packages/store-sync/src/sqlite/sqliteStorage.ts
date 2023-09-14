@@ -13,7 +13,7 @@ import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
 import { hexToTableId, tableIdToHex } from "@latticexyz/common";
-import { decodeKey, decodeValueArgs, readHex } from "@latticexyz/protocol-parser";
+import { decodeKey, decodeValueArgs, readHex, spliceHex } from "@latticexyz/protocol-parser";
 import { assertExhaustive } from "@latticexyz/common/utils";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
@@ -143,13 +143,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-          const start = log.args.start;
-          const end = start + log.args.deleteCount;
-          const newStaticData = concatHex([
-            readHex(previousStaticData, 0, start),
-            log.args.data,
-            readHex(previousStaticData, end),
-          ]);
+          const newStaticData = spliceHex(previousStaticData, log.args.start, log.args.deleteCount, log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
             staticData: newStaticData,
             encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
@@ -186,13 +180,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         } else if (log.eventName === "StoreSpliceDynamicRecord") {
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
-          const start = log.args.start;
-          const end = start + log.args.deleteCount;
-          const newDynamicData = concatHex([
-            readHex(previousDynamicData, 0, start),
-            log.args.data,
-            readHex(previousDynamicData, end),
-          ]);
+          const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
           const newValue = decodeValueArgs(table.valueSchema, {
             staticData: (previousValue?.__staticData as Hex) ?? "0x",
             // TODO: handle unchanged encoded lengths

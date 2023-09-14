@@ -4,7 +4,7 @@ import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, s
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
 import { hexToTableId } from "@latticexyz/common";
-import { decodeValueArgs, readHex } from "@latticexyz/protocol-parser";
+import { decodeValueArgs, readHex, spliceHex } from "@latticexyz/protocol-parser";
 import { Hex, concatHex } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
@@ -99,13 +99,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
-        const start = log.args.start;
-        const end = start + log.args.deleteCount;
-        const newStaticData = concatHex([
-          readHex(previousStaticData, 0, start),
-          log.args.data,
-          readHex(previousStaticData, end),
-        ]);
+        const newStaticData = spliceHex(previousStaticData, log.args.start, log.args.deleteCount, log.args.data);
         const newValue = decodeValueArgs(table.valueSchema, {
           staticData: newStaticData,
           encodedLengths: (previousValue?.__encodedLengths as Hex) ?? "0x",
@@ -128,13 +122,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
-        const start = log.args.start;
-        const end = start + log.args.deleteCount;
-        const newDynamicData = concatHex([
-          readHex(previousDynamicData, 0, start),
-          log.args.data,
-          readHex(previousDynamicData, end),
-        ]);
+        const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);
         const newValue = decodeValueArgs(table.valueSchema, {
           staticData: (previousValue?.__staticData as Hex) ?? "0x",
           // TODO: handle unchanged encoded lengths
