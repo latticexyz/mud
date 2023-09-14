@@ -3,7 +3,7 @@
 "@latticexyz/world": major
 ---
 
-Store and World contract ABIs are now exported from `out` directory. You'll need to update your imports like:
+Store and World contract ABIs are now exported from the `out` directory. You'll need to update your imports like:
 
 ```diff
 - import IBaseWorldAbi from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorldAbi.json";
