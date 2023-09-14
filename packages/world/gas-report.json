@@ -39,73 +39,73 @@
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
-    "gasUsed": 1415958
+    "gasUsed": 1416072
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "install keys in table module",
-    "gasUsed": 1415958
+    "gasUsed": 1416072
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallGas",
     "name": "set a record on a table with keysInTableModule installed",
-    "gasUsed": 153445
+    "gasUsed": 153517
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallSingleton",
     "name": "install keys in table module",
-    "gasUsed": 1415958
+    "gasUsed": 1416072
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "install keys in table module",
-    "gasUsed": 1415958
+    "gasUsed": 1416072
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "change a composite record on a table with keysInTableModule installed",
-    "gasUsed": 18938
+    "gasUsed": 18972
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookCompositeGas",
     "name": "delete a composite record on a table with keysInTableModule installed",
-    "gasUsed": 164749
+    "gasUsed": 164995
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "install keys in table module",
-    "gasUsed": 1415958
+    "gasUsed": 1416072
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "change a record on a table with keysInTableModule installed",
-    "gasUsed": 17660
+    "gasUsed": 17695
   },
   {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testSetAndDeleteRecordHookGas",
     "name": "delete a record on a table with keysInTableModule installed",
-    "gasUsed": 85363
+    "gasUsed": 85505
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 654648
+    "gasUsed": 654938
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "Get list of keys with a given value",
-    "gasUsed": 6181
+    "gasUsed": 6182
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -117,37 +117,37 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 654648
+    "gasUsed": 654938
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "set a record on a table with KeysWithValueModule installed",
-    "gasUsed": 132483
+    "gasUsed": 132560
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 654648
+    "gasUsed": 654938
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "change a record on a table with KeysWithValueModule installed",
-    "gasUsed": 101496
+    "gasUsed": 101521
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "delete a record on a table with KeysWithValueModule installed",
-    "gasUsed": 33695
+    "gasUsed": 33800
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 654648
+    "gasUsed": 654938
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -165,25 +165,25 @@
     "file": "test/query.t.sol",
     "test": "testCombinedHasHasValueNotQuery",
     "name": "CombinedHasHasValueNotQuery",
-    "gasUsed": 102556
+    "gasUsed": 102568
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasHasValueQuery",
     "name": "CombinedHasHasValueQuery",
-    "gasUsed": 53502
+    "gasUsed": 53513
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasNotQuery",
     "name": "CombinedHasNotQuery",
-    "gasUsed": 125333
+    "gasUsed": 125324
   },
   {
     "file": "test/query.t.sol",
     "test": "testCombinedHasQuery",
     "name": "CombinedHasQuery",
-    "gasUsed": 79137
+    "gasUsed": 79151
   },
   {
     "file": "test/query.t.sol",
@@ -195,186 +195,186 @@
     "file": "test/query.t.sol",
     "test": "testCombinedHasValueQuery",
     "name": "CombinedHasValueQuery",
-    "gasUsed": 16492
+    "gasUsed": 16499
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery",
     "name": "HasQuery",
-    "gasUsed": 17513
+    "gasUsed": 17515
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery1000Keys",
     "name": "HasQuery with 1000 keys",
-    "gasUsed": 5893051
+    "gasUsed": 5889061
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasQuery100Keys",
     "name": "HasQuery with 100 keys",
-    "gasUsed": 553126
+    "gasUsed": 552736
   },
   {
     "file": "test/query.t.sol",
     "test": "testHasValueQuery",
     "name": "HasValueQuery",
-    "gasUsed": 7923
+    "gasUsed": 7924
   },
   {
     "file": "test/query.t.sol",
     "test": "testNotValueQuery",
     "name": "NotValueQuery",
-    "gasUsed": 47102
+    "gasUsed": 47113
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "register a callbound delegation",
-    "gasUsed": 114525
+    "gasUsed": 114569
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromCallboundDelegation",
     "name": "call a system via a callbound delegation",
-    "gasUsed": 33757
+    "gasUsed": 33728
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "register a timebound delegation",
-    "gasUsed": 109080
+    "gasUsed": 109149
   },
   {
     "file": "test/StandardDelegationsModule.t.sol",
     "test": "testCallFromTimeboundDelegation",
     "name": "call a system via a timebound delegation",
-    "gasUsed": 26396
+    "gasUsed": 26307
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 682471
+    "gasUsed": 682922
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "get a unique entity nonce (non-root module)",
-    "gasUsed": 50623
+    "gasUsed": 50671
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 669152
+    "gasUsed": 669563
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "get a unique entity nonce (root module)",
-    "gasUsed": 50623
+    "gasUsed": 50671
   },
   {
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 12612
+    "gasUsed": 12564
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 48855
+    "gasUsed": 48892
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12976
+    "gasUsed": 12929
   },
   {
     "file": "test/World.t.sol",
     "test": "testDeleteRecord",
     "name": "Delete record",
-    "gasUsed": 9089
+    "gasUsed": 9146
   },
   {
     "file": "test/World.t.sol",
     "test": "testPushToField",
     "name": "Push data to the table",
-    "gasUsed": 87953
+    "gasUsed": 87916
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFallbackSystem",
     "name": "Register a fallback system",
-    "gasUsed": 59161
+    "gasUsed": 59147
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFallbackSystem",
     "name": "Register a root fallback system",
-    "gasUsed": 52437
+    "gasUsed": 52545
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 79755
+    "gasUsed": 79713
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 123244
+    "gasUsed": 123299
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 74355
+    "gasUsed": 74463
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 644364
+    "gasUsed": 644416
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetField",
     "name": "Write data to a table field",
-    "gasUsed": 37103
+    "gasUsed": 37095
   },
   {
     "file": "test/World.t.sol",
     "test": "testSetRecord",
     "name": "Write data to the table",
-    "gasUsed": 34522
+    "gasUsed": 34499
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromField",
     "name": "pop 1 address (cold)",
-    "gasUsed": 25695
+    "gasUsed": 25753
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testPopFromField",
     "name": "pop 1 address (warm)",
-    "gasUsed": 14485
+    "gasUsed": 14543
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testUpdateInField",
     "name": "updateInField 1 item (cold)",
-    "gasUsed": 28291
+    "gasUsed": 28249
   },
   {
     "file": "test/WorldDynamicUpdate.t.sol",
     "test": "testUpdateInField",
     "name": "updateInField 1 item (warm)",
-    "gasUsed": 17496
+    "gasUsed": 17454
   }
 ]

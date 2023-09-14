@@ -57,6 +57,31 @@ declare const abi: [
     type: "event";
   },
   {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "table";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "key";
+        type: "bytes32[]";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      }
+    ];
+    name: "StoreEphemeralRecord";
+    type: "event";
+  },
+  {
     inputs: [];
     name: "_msgSender";
     outputs: [
