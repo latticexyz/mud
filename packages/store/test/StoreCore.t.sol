@@ -382,9 +382,9 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory firstDataPacked = abi.encodePacked(firstDataBytes);
 
-    // Expect a StoreSpliceStaticRecord event to be emitted
+    // Expect a StoreSpliceStaticData event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceStaticRecord(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
+    emit StoreSpliceStaticData(table, key, 0, uint40(firstDataPacked.length), firstDataPacked);
 
     // Set first field
     IStore(this).setField(table, key, 0, firstDataPacked, fieldLayout);
@@ -410,7 +410,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceStaticRecord(
+    emit StoreSpliceStaticData(
       table,
       key,
       uint48(firstDataPacked.length),
@@ -463,7 +463,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       table,
       key,
       uint48(0),
@@ -492,7 +492,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       table,
       key,
       uint48(thirdDataBytes.length),
@@ -525,7 +525,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       table,
       key,
       uint48(thirdDataBytes.length),
@@ -687,9 +687,9 @@ contract StoreCoreTest is Test, StoreMock {
     }
     data.newSecondDataBytes = abi.encodePacked(data.secondDataBytes, data.secondDataToPush);
 
-    // Expect a StoreSpliceDynamicRecord event to be emitted
+    // Expect a StoreSpliceDynamicData event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       data.table,
       data.key,
       uint48(data.secondDataBytes.length),
@@ -732,7 +732,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       data.table,
       data.key,
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
@@ -842,7 +842,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       data.table,
       data.key,
       uint48(4 * 1),
@@ -887,7 +887,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceDynamicRecord(
+    emit StoreSpliceDynamicData(
       data.table,
       data.key,
       uint48(data.newSecondDataBytes.length + 8 * 1),

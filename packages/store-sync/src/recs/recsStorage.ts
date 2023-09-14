@@ -94,7 +94,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           __encodedLengths: log.args.encodedLengths,
           __dynamicData: log.args.dynamicData,
         });
-      } else if (log.eventName === "StoreSpliceStaticRecord") {
+      } else if (log.eventName === "StoreSpliceStaticData") {
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
@@ -117,7 +117,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           ...newValue,
           __staticData: newStaticData,
         });
-      } else if (log.eventName === "StoreSpliceDynamicRecord") {
+      } else if (log.eventName === "StoreSpliceDynamicData") {
         // TODO: add tests that this works when no record had been set before
         const previousValue = getComponentValue(component, entity);
         const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";

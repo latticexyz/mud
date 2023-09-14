@@ -51,8 +51,8 @@ interface IStoreRead {
 interface IStoreWrite {
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
 
-  event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
-  event StoreSpliceDynamicRecord(
+  event StoreSpliceStaticData(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceDynamicData(
     bytes32 table,
     bytes32[] key,
     uint48 start,

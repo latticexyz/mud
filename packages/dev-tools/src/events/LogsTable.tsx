@@ -51,10 +51,10 @@ export function LogsTable({ logs }: Props) {
                       dynamicData: log.args.dynamicData,
                     })
                   : null}
-                {log.eventName === "StoreSpliceStaticRecord"
+                {log.eventName === "StoreSpliceStaticData"
                   ? JSON.stringify({ start: log.args.start, deleteCount: log.args.deleteCount, data: log.args.data })
                   : null}
-                {log.eventName === "StoreSpliceDynamicRecord"
+                {log.eventName === "StoreSpliceDynamicData"
                   ? JSON.stringify({
                       start: log.args.start,
                       deleteCount: log.args.deleteCount,

@@ -138,7 +138,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               },
             })
             .run();
-        } else if (log.eventName === "StoreSpliceStaticRecord") {
+        } else if (log.eventName === "StoreSpliceStaticData") {
           // TODO: verify that this returns what we expect (doesn't error/undefined on no record)
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousStaticData = (previousValue?.__staticData as Hex) ?? "0x";
@@ -176,7 +176,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
               },
             })
             .run();
-        } else if (log.eventName === "StoreSpliceDynamicRecord") {
+        } else if (log.eventName === "StoreSpliceDynamicData") {
           const previousValue = (await tx.select().from(sqlTable).where(eq(sqlTable.__key, uniqueKey)).execute())[0];
           const previousDynamicData = (previousValue?.__dynamicData as Hex) ?? "0x";
           const newDynamicData = spliceHex(previousDynamicData, log.args.start, log.args.deleteCount, log.args.data);

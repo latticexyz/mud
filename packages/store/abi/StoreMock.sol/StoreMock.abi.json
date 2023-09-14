@@ -344,7 +344,7 @@
         "type": "bytes32"
       }
     ],
-    "name": "StoreSpliceDynamicRecord",
+    "name": "StoreSpliceDynamicData",
     "type": "event"
   },
   {
@@ -381,7 +381,7 @@
         "type": "bytes"
       }
     ],
-    "name": "StoreSpliceStaticRecord",
+    "name": "StoreSpliceStaticData",
     "type": "event"
   },
   {

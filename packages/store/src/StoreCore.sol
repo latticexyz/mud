@@ -18,8 +18,8 @@ import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes staticData, bytes32 encodedLengths, bytes dynamicData);
-  event StoreSpliceStaticRecord(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
-  event StoreSpliceDynamicRecord(
+  event StoreSpliceStaticData(bytes32 table, bytes32[] key, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceDynamicData(
     bytes32 table,
     bytes32[] key,
     uint48 start,
@@ -631,7 +631,7 @@ library StoreCoreInternal {
     uint256 deleteCount = fieldLayout.atIndex(schemaIndex);
 
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceStaticRecord(tableId, key, uint48(start), uint40(deleteCount), data);
+    emit StoreCore.StoreSpliceStaticData(tableId, key, uint48(start), uint40(deleteCount), data);
   }
 
   function _setDynamicField(
@@ -667,7 +667,7 @@ library StoreCoreInternal {
     }
     uint256 deleteCount = oldFieldLength;
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicRecord(
+    emit StoreCore.StoreSpliceDynamicData(
       tableId,
       key,
       uint48(start),
@@ -709,7 +709,7 @@ library StoreCoreInternal {
     }
     uint256 deleteCount = 0;
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicRecord(
+    emit StoreCore.StoreSpliceDynamicData(
       tableId,
       key,
       uint48(start),
@@ -754,7 +754,7 @@ library StoreCoreInternal {
     uint256 deleteCount = byteLengthToPop;
 
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicRecord(
+    emit StoreCore.StoreSpliceDynamicData(
       tableId,
       key,
       uint48(start),
@@ -794,7 +794,7 @@ library StoreCoreInternal {
     uint256 deleteCount = dataToSet.length;
 
     // Emit event to notify indexers
-    emit StoreCore.StoreSpliceDynamicRecord(
+    emit StoreCore.StoreSpliceDynamicData(
       tableId,
       key,
       uint48(start),

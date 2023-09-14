@@ -363,7 +363,7 @@ declare const abi: [
         type: "bytes32";
       }
     ];
-    name: "StoreSpliceDynamicRecord";
+    name: "StoreSpliceDynamicData";
     type: "event";
   },
   {
@@ -400,7 +400,7 @@ declare const abi: [
         type: "bytes";
       }
     ];
-    name: "StoreSpliceStaticRecord";
+    name: "StoreSpliceStaticData";
     type: "event";
   },
   {

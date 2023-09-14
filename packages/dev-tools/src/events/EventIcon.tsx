@@ -9,8 +9,8 @@ export function EventIcon({ type }: Props) {
   switch (type) {
     case "StoreSetRecord":
       return <span className="text-green-500 font-bold">=</span>;
-    case "StoreSpliceStaticRecord":
-    case "StoreSpliceDynamicRecord":
+    case "StoreSpliceStaticData":
+    case "StoreSpliceDynamicData":
       return <span className="text-cyan-500 font-bold">+</span>;
     case "StoreDeleteRecord":
       return <span className="text-red-500 font-bold">-</span>;
