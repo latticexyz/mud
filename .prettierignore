@@ -1,5 +1,3 @@
 dist
-**/types/ethers-contracts
 **/.next
 templates/phaser/packages/art
-**/contractComponents.ts
