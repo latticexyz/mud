@@ -89,19 +89,19 @@ contract MirrorSubscriber is IStoreHook {
     _tableId = tableId;
   }
 
-  function onSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) public {
+  function onSetRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory data) public {
     if (_tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setRecord(indexerTableId, key, data);
+    StoreSwitch.setRecord(indexerTableId, keyTuple, data);
   }
 
-  function onSetField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onSetField(bytes32 tableId, bytes32[] memory keyTuple, uint8 schemaIndex, bytes memory data) public {
     if (_tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
+    StoreSwitch.setField(indexerTableId, keyTuple, schemaIndex, data);
   }
 
-  function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
+  function onDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple) public {
     if (_tableId != tableId) revert("invalid tableId");
-    StoreSwitch.deleteRecord(indexerTableId, key);
+    StoreSwitch.deleteRecord(indexerTableId, keyTuple);
   }
 }
 ```

@@ -19,71 +19,71 @@ contract StoreMock is IStore, StoreRead {
   // Set full record (including full dynamic data)
   function setRecord(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.setRecord(tableId, key, data, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
   }
 
   // Set partial data at schema index
   function setField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.setField(tableId, key, schemaIndex, data, fieldLayout);
+    StoreCore.setField(tableId, keyTuple, schemaIndex, data, fieldLayout);
   }
 
   // Push encoded items to the dynamic field at schema index
   function pushToField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, fieldLayout);
+    StoreCore.pushToField(tableId, keyTuple, schemaIndex, dataToPush, fieldLayout);
   }
 
   // Pop byte length from the dynamic field at schema index
   function popFromField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, keyTuple, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
   // Change encoded items within the dynamic field at schema index
   function updateInField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.updateInField(tableId, keyTuple, schemaIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout fieldLayout) public virtual {
-    StoreCore.deleteRecord(tableId, key, fieldLayout);
+  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
+    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
   }
 
   // Emit the ephemeral event without modifying storage
   function emitEphemeralRecord(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.emitEphemeralRecord(tableId, key, data, fieldLayout);
+    StoreCore.emitEphemeralRecord(tableId, keyTuple, data, fieldLayout);
   }
 
   function registerTable(

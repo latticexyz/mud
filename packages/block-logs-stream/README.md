@@ -26,10 +26,10 @@ latestBlockNumber$
       publicClient,
       address,
       events: parseAbi([
-        "event StoreDeleteRecord(bytes32 tableId, bytes32[] key)",
-        "event StoreSetField(bytes32 tableId, bytes32[] key, uint8 schemaIndex, bytes data)",
-        "event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data)",
-        "event StoreEphemeralRecord(bytes32 tableId, bytes32[] key, bytes data)",
+        "event StoreDeleteRecord(bytes32 tableId, bytes32[] keyTuple)",
+        "event StoreSetField(bytes32 tableId, bytes32[] keyTuple, uint8 schemaIndex, bytes data)",
+        "event StoreSetRecord(bytes32 tableId, bytes32[] keyTuple, bytes data)",
+        "event StoreEphemeralRecord(bytes32 tableId, bytes32[] keyTuple, bytes data)",
       ]),
     }),
     mergeMap(({ logs }) => from(groupLogsByBlockNumber(logs)))

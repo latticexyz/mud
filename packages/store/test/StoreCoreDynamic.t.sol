@@ -28,12 +28,12 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   // Expose an external popFromField function for testing purposes of indexers (see testHooks)
   function popFromField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public override {
-    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, keyTuple, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
   function setUp() public {
@@ -46,7 +46,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     );
     StoreCore.registerTable(_tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
-    // Create key
+    // Create keyTuple
     _key = new bytes32[](1);
     _key[0] = bytes32("some.key");
 

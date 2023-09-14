@@ -97,7 +97,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function setRecord(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
@@ -105,7 +105,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, key, data, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
   }
 
   /**
@@ -114,7 +114,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function setField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata data,
     FieldLayout fieldLayout
@@ -123,7 +123,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableId, key, schemaIndex, data, fieldLayout);
+    StoreCore.setField(tableId, keyTuple, schemaIndex, data, fieldLayout);
   }
 
   /**
@@ -132,7 +132,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function pushToField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
@@ -141,7 +141,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, fieldLayout);
+    StoreCore.pushToField(tableId, keyTuple, schemaIndex, dataToPush, fieldLayout);
   }
 
   /**
@@ -150,7 +150,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function popFromField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
@@ -159,7 +159,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, keyTuple, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
   /**
@@ -168,7 +168,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function updateInField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
@@ -178,19 +178,19 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.updateInField(tableId, keyTuple, schemaIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(bytes32 tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, key, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
   }
 
   /************************************************************************

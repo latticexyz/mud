@@ -86,14 +86,14 @@ contract WorldTestSystem is System {
   }
 
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
-    bytes32[] memory key = new bytes32[](0);
+    bytes32[] memory keyTuple = new bytes32[](0);
     bytes32 tableId = ResourceSelector.from(namespace, name);
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, key, abi.encodePacked(data), fieldLayout);
+      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), fieldLayout);
     } else {
-      IBaseWorld(msg.sender).setRecord(tableId, key, abi.encodePacked(data), fieldLayout);
+      IBaseWorld(msg.sender).setRecord(tableId, keyTuple, abi.encodePacked(data), fieldLayout);
     }
   }
 

@@ -1,0 +1,56 @@
+declare const abi: [
+  {
+    anonymous: false;
+    inputs: [
+      {
+        indexed: false;
+        internalType: "bytes32";
+        name: "tableId";
+        type: "bytes32";
+      },
+      {
+        indexed: false;
+        internalType: "bytes32[]";
+        name: "keyTuple";
+        type: "bytes32[]";
+      },
+      {
+        indexed: false;
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      }
+    ];
+    name: "StoreEphemeralRecord";
+    type: "event";
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32";
+        name: "tableId";
+        type: "bytes32";
+      },
+      {
+        internalType: "bytes32[]";
+        name: "keyTuple";
+        type: "bytes32[]";
+      },
+      {
+        internalType: "bytes";
+        name: "data";
+        type: "bytes";
+      },
+      {
+        internalType: "FieldLayout";
+        name: "fieldLayout";
+        type: "bytes32";
+      }
+    ];
+    name: "emitEphemeralRecord";
+    outputs: [];
+    stateMutability: "nonpayable";
+    type: "function";
+  }
+];
+export default abi;
