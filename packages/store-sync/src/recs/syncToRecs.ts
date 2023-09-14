@@ -1,4 +1,6 @@
 import { StoreConfig } from "@latticexyz/store";
+import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
+import { getStaticByteLength } from "@latticexyz/schema-type/deprecated";
 import { World as RecsWorld, getComponentValue, setComponent } from "@latticexyz/recs";
 import { SyncOptions, SyncResult } from "../common";
 import { RecsStorageAdapter, recsStorage } from "./recsStorage";
@@ -7,7 +9,7 @@ import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 import { Abi, getAbiItem, getFunctionSelector, Hex } from "viem";
 import { encodeEntity } from "./encodeEntity";
-import { decodeValue, valueSchemaToHex } from "@latticexyz/protocol-parser";
+import { decodeValue, fieldLayoutToHex, valueSchemaToHex } from "@latticexyz/protocol-parser";
 import { AbiFunction } from "abitype";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
@@ -88,13 +90,25 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
     // If we can't find selectors due to not being synced yet, we can try to read them from the world contract
     if (!selectors) {
-      const encodedValueSchema = valueSchemaToHex(components.FunctionSelectors.metadata.valueSchema);
+      // TODO move to computation after table registration?
+      const schemaTypes = Object.values(components.FunctionSelectors.metadata.valueSchema).map((abiOrUserType) => {
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, config);
+        return schemaType;
+      });
+
+      const schemaTypeLengths = schemaTypes.map((schemaType) => getStaticByteLength(schemaType));
+      const fieldLayout = {
+        staticFieldLengths: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength > 0),
+        numDynamicFields: schemaTypeLengths.filter((schemaTypeLength) => schemaTypeLength === 0).length,
+      };
+
+      const encodedFieldLayout = fieldLayoutToHex(fieldLayout);
 
       const selectorRecord = (await publicClient.readContract({
         address: address as Hex,
         abi,
         functionName: "getRecord",
-        args: [components.FunctionSelectors.id, [entity], encodedValueSchema],
+        args: [components.FunctionSelectors.id, [entity], encodedFieldLayout],
       })) as Hex;
 
       selectors = decodeValue(components.FunctionSelectors.metadata.valueSchema, selectorRecord);

@@ -162,7 +162,6 @@ export function createContract<
             });
             const argsForCallFrom = [walletClient.account.address, resourceSelector, funcSelectorAndArgs]; // TODO replace address with delegator
 
-            console.log({ argsForCallFrom, resourceSelector, funcSelectorAndArgs });
             const request: WriteContractParameters = {
               address,
               abi,
