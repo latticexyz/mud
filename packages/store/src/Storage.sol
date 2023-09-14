@@ -106,8 +106,22 @@ library Storage {
         offset %= 32;
       }
     }
+
+    // NOTE: extra data past length is not masked out
     assembly {
       result := shl(mul(offset, 8), sload(storagePointer))
+    }
+
+    uint256 wordRemainder;
+    // (safe because of `offset %= 32` at the start)
+    unchecked {
+      wordRemainder = 32 - offset;
+    }
+
+    if (length > wordRemainder) {
+      assembly {
+        result := or(result, shr(mul(wordRemainder, 8), sload(add(storagePointer, 1))))
+      }
     }
   }
 
