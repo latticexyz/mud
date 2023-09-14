@@ -71,6 +71,18 @@ library Ephemeral {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -84,6 +96,16 @@ library Ephemeral {
     _keyTuple[0] = key;
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
+  /** Emit the ephemeral event using individual values */
+  function _emitEphemeral(bytes32 key, uint256 value) internal {
+    bytes memory _data = encode(value);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */

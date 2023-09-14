@@ -19,9 +19,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
     if (field.isDynamic) {
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Get ${field.name}${_commentSuffix} */
-        function get${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}get${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -35,9 +35,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Set ${field.name}${_commentSuffix} */
-        function set${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}set${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -51,9 +51,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
     } else {
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Get ${field.name}${_commentSuffix} */
-        function get${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}get${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -68,9 +68,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Set ${field.name}${_commentSuffix} */
-        function set${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}set${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -91,9 +91,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Get the length of ${field.name}${_commentSuffix} */
-        function length${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}length${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -109,12 +109,12 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /**
          * Get an item of ${field.name}${_commentSuffix}
          * (unchecked, returns invalid data if index overflows)
          */
-        function getItem${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}getItem${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -138,9 +138,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
-        function push${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}push${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -154,9 +154,9 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /** Pop ${portionData.title} from ${field.name}${_commentSuffix} */
-        function pop${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}pop${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -169,12 +169,12 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
         /**
          * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
          * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
          */
-        function update${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}update${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,

@@ -49,10 +49,10 @@ contract StoreRegistrationSystem is System, IWorldErrors {
 
     // If the namespace doesn't exist yet, register it
     bytes16 namespace = resourceSelector.getNamespace();
-    if (ResourceType.get(namespace) == Resource.NONE) {
+    if (ResourceType._get(namespace) == Resource.NONE) {
       // We can't call IBaseWorld(this).registerNamespace directly because it would be handled like
       // an external call, so msg.sender would be the address of the World contract
-      (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
+      (address systemAddress, ) = Systems._get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
       WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
         msgValue: 0,
@@ -65,12 +65,12 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     }
 
     // Require no resource to exist at this selector yet
-    if (ResourceType.get(resourceSelector) != Resource.NONE) {
+    if (ResourceType._get(resourceSelector) != Resource.NONE) {
       revert ResourceExists(resourceSelector.toString());
     }
 
     // Store the table resource type
-    ResourceType.set(resourceSelector, Resource.TABLE);
+    ResourceType._set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
     StoreCore.registerTable(resourceSelector, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);

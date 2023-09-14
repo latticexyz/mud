@@ -75,6 +75,18 @@ library Singleton {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -85,6 +97,14 @@ library Singleton {
     bytes32 _keyHash = keccak256(abi.encode());
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
+    return (int256(uint256(bytes32(_blob))));
+  }
+
+  /** Get v1 */
+  function _getV1() internal view returns (int256 v1) {
+    bytes32 _keyHash = keccak256(abi.encode());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
     return (int256(uint256(bytes32(_blob))));
   }
 
@@ -113,6 +133,14 @@ library Singleton {
     );
   }
 
+  /** Set v1 */
+  function _setV1(int256 v1) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(storagePointer, 32, 0, abi.encodePacked((v1)), _tableId, _keyTuple, 0, getFieldLayout());
+  }
+
   /** Set v1 (using the specified store) */
   function setV1(IStore _store, int256 v1) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -126,6 +154,14 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getFieldLayout());
+    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /** Get v2 */
+  function _getV2() internal view returns (uint32[2] memory v2) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 1, getFieldLayout());
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -144,6 +180,13 @@ library Singleton {
     StoreSwitch.setField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)), getFieldLayout());
   }
 
+  /** Set v2 */
+  function _setV2(uint32[2] memory v2) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)), getFieldLayout());
+  }
+
   /** Set v2 (using the specified store) */
   function setV2(IStore _store, uint32[2] memory v2) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -156,6 +199,16 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getFieldLayout());
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /** Get the length of v2 */
+  function _lengthV2() internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 1, getFieldLayout());
     unchecked {
       return _byteLength / 4;
     }
@@ -192,6 +245,26 @@ library Singleton {
   }
 
   /**
+   * Get an item of v2
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemV2(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        1,
+        getFieldLayout(),
+        _index * 4,
+        (_index + 1) * 4
+      );
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
+  }
+
+  /**
    * Get an item of v2 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
@@ -211,6 +284,13 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), getFieldLayout());
   }
 
+  /** Push an element to v2 */
+  function _pushV2(uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.pushToField(_tableId, _keyTuple, 1, abi.encodePacked((_element)), getFieldLayout());
+  }
+
   /** Push an element to v2 (using the specified store) */
   function pushV2(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -223,6 +303,13 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 1, 4, getFieldLayout());
+  }
+
+  /** Pop an element from v2 */
+  function _popV2() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.popFromField(_tableId, _keyTuple, 1, 4, getFieldLayout());
   }
 
   /** Pop an element from v2 (using the specified store) */
@@ -241,6 +328,18 @@ library Singleton {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update an element of v2 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateV2(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 1, _index * 4, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -264,6 +363,14 @@ library Singleton {
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
+  /** Get v3 */
+  function _getV3() internal view returns (uint32[2] memory v3) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
   /** Get v3 (using the specified store) */
   function getV3(IStore _store) internal view returns (uint32[2] memory v3) {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -279,6 +386,13 @@ library Singleton {
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)), getFieldLayout());
   }
 
+  /** Set v3 */
+  function _setV3(uint32[2] memory v3) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)), getFieldLayout());
+  }
+
   /** Set v3 (using the specified store) */
   function setV3(IStore _store, uint32[2] memory v3) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -291,6 +405,16 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /** Get the length of v3 */
+  function _lengthV3() internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
     unchecked {
       return _byteLength / 4;
     }
@@ -327,6 +451,26 @@ library Singleton {
   }
 
   /**
+   * Get an item of v3
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemV3(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        2,
+        getFieldLayout(),
+        _index * 4,
+        (_index + 1) * 4
+      );
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
+  }
+
+  /**
    * Get an item of v3 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
@@ -346,6 +490,13 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), getFieldLayout());
   }
 
+  /** Push an element to v3 */
+  function _pushV3(uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), getFieldLayout());
+  }
+
   /** Push an element to v3 (using the specified store) */
   function pushV3(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -358,6 +509,13 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 4, getFieldLayout());
+  }
+
+  /** Pop an element from v3 */
+  function _popV3() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.popFromField(_tableId, _keyTuple, 2, 4, getFieldLayout());
   }
 
   /** Pop an element from v3 (using the specified store) */
@@ -376,6 +534,18 @@ library Singleton {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update an element of v3 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateV3(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -399,6 +569,14 @@ library Singleton {
     return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
+  /** Get v4 */
+  function _getV4() internal view returns (uint32[1] memory v4) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
   /** Get v4 (using the specified store) */
   function getV4(IStore _store) internal view returns (uint32[1] memory v4) {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -414,6 +592,13 @@ library Singleton {
     StoreSwitch.setField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)), getFieldLayout());
   }
 
+  /** Set v4 */
+  function _setV4(uint32[1] memory v4) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)), getFieldLayout());
+  }
+
   /** Set v4 (using the specified store) */
   function setV4(IStore _store, uint32[1] memory v4) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -426,6 +611,16 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /** Get the length of v4 */
+  function _lengthV4() internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
     unchecked {
       return _byteLength / 4;
     }
@@ -462,6 +657,26 @@ library Singleton {
   }
 
   /**
+   * Get an item of v4
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemV4(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        3,
+        getFieldLayout(),
+        _index * 4,
+        (_index + 1) * 4
+      );
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
+  }
+
+  /**
    * Get an item of v4 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
@@ -481,6 +696,13 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), getFieldLayout());
   }
 
+  /** Push an element to v4 */
+  function _pushV4(uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.pushToField(_tableId, _keyTuple, 3, abi.encodePacked((_element)), getFieldLayout());
+  }
+
   /** Push an element to v4 (using the specified store) */
   function pushV4(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -493,6 +715,13 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 4, getFieldLayout());
+  }
+
+  /** Pop an element from v4 */
+  function _popV4() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.popFromField(_tableId, _keyTuple, 3, 4, getFieldLayout());
   }
 
   /** Pop an element from v4 (using the specified store) */
@@ -511,6 +740,18 @@ library Singleton {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update an element of v4 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateV4(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 4, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -534,6 +775,14 @@ library Singleton {
     return decode(_blob);
   }
 
+  /** Get the full data */
+  function _get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, getFieldLayout());
+    return decode(_blob);
+  }
+
   /** Get the full data (using the specified store) */
   function get(
     IStore _store
@@ -551,6 +800,15 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
+  /** Set the full data using individual values */
+  function _set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
+    bytes memory _data = encode(v1, v2, v3, v4);
+
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -633,6 +891,13 @@ library Singleton {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

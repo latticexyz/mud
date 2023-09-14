@@ -16,8 +16,8 @@ library AccessControl {
   function hasAccess(bytes32 resourceSelector, address caller) internal view returns (bool) {
     return
       address(this) == caller || // First check if the World is calling itself
-      ResourceAccess.get(resourceSelector.getNamespace(), caller) || // Then check access based on the namespace
-      ResourceAccess.get(resourceSelector, caller); // If caller has no namespace access, check access on the name
+      ResourceAccess._get(resourceSelector.getNamespace(), caller) || // Then check access based on the namespace
+      ResourceAccess._get(resourceSelector, caller); // If caller has no namespace access, check access on the name
   }
 
   /**
@@ -36,7 +36,7 @@ library AccessControl {
    * Reverts with AccessDenied if the check fails.
    */
   function requireOwner(bytes32 resourceSelector, address caller) internal view {
-    if (NamespaceOwner.get(resourceSelector.getNamespace()) != caller) {
+    if (NamespaceOwner._get(resourceSelector.getNamespace()) != caller) {
       revert IWorldErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }

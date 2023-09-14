@@ -73,6 +73,18 @@ library ResourceAccess {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -83,6 +95,14 @@ library ResourceAccess {
     bytes32 _keyHash = keccak256(abi.encode(resourceSelector, caller));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 0);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access */
+  function _get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
+    bytes32 _keyHash = keccak256(abi.encode(resourceSelector, caller));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -102,6 +122,25 @@ library ResourceAccess {
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
     StoreSwitch.storeStaticField(
+      storagePointer,
+      1,
+      0,
+      abi.encodePacked((access)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
+  }
+
+  /** Set access */
+  function _set(bytes32 resourceSelector, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(
       storagePointer,
       1,
       0,
@@ -144,6 +183,15 @@ library ResourceAccess {
     _keyTuple[1] = bytes32(uint256(uint160(caller)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 resourceSelector, address caller) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

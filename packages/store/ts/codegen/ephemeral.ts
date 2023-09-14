@@ -7,9 +7,9 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
     /** Emit the ephemeral event using individual values${_commentSuffix} */
-    function emitEphemeral(${renderArguments([
+    function ${_methodNamePrefix}emitEphemeral(${renderArguments([
       _typedStore,
       _typedTableId,
       _typedKeyArgs,
@@ -27,9 +27,9 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Emit the ephemeral event using the data struct${_commentSuffix} */
-      function emitEphemeral(${renderArguments([
+      function ${_methodNamePrefix}emitEphemeral(${renderArguments([
         _typedStore,
         _typedTableId,
         _typedKeyArgs,

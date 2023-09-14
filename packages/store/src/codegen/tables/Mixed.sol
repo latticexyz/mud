@@ -84,6 +84,18 @@ library Mixed {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -94,6 +106,14 @@ library Mixed {
     bytes32 _keyHash = keccak256(abi.encode(key));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 4, 0);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get u32 */
+  function _getU32(bytes32 key) internal view returns (uint32 u32) {
+    bytes32 _keyHash = keccak256(abi.encode(key));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 0);
     return (uint32(bytes4(_blob)));
   }
 
@@ -123,6 +143,15 @@ library Mixed {
     );
   }
 
+  /** Set u32 */
+  function _setU32(bytes32 key, uint32 u32) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(storagePointer, 4, 0, abi.encodePacked((u32)), _tableId, _keyTuple, 0, getFieldLayout());
+  }
+
   /** Set u32 (using the specified store) */
   function setU32(IStore _store, bytes32 key, uint32 u32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -137,6 +166,14 @@ library Mixed {
     bytes32 _keyHash = keccak256(abi.encode(key));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 16, 4);
+    return (uint128(bytes16(_blob)));
+  }
+
+  /** Get u128 */
+  function _getU128(bytes32 key) internal view returns (uint128 u128) {
+    bytes32 _keyHash = keccak256(abi.encode(key));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 16, 4);
     return (uint128(bytes16(_blob)));
   }
 
@@ -166,6 +203,24 @@ library Mixed {
     );
   }
 
+  /** Set u128 */
+  function _setU128(bytes32 key, uint128 u128) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(
+      storagePointer,
+      16,
+      4,
+      abi.encodePacked((u128)),
+      _tableId,
+      _keyTuple,
+      1,
+      getFieldLayout()
+    );
+  }
+
   /** Set u128 (using the specified store) */
   function setU128(IStore _store, bytes32 key, uint128 u128) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -181,6 +236,15 @@ library Mixed {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /** Get a32 */
+  function _getA32(bytes32 key) internal view returns (uint32[] memory a32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 2, getFieldLayout());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -201,6 +265,14 @@ library Mixed {
     StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)), getFieldLayout());
   }
 
+  /** Set a32 */
+  function _setA32(bytes32 key, uint32[] memory a32) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 2, EncodeArray.encode((a32)), getFieldLayout());
+  }
+
   /** Set a32 (using the specified store) */
   function setA32(IStore _store, bytes32 key, uint32[] memory a32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -215,6 +287,17 @@ library Mixed {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /** Get the length of a32 */
+  function _lengthA32(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
     unchecked {
       return _byteLength / 4;
     }
@@ -253,6 +336,27 @@ library Mixed {
   }
 
   /**
+   * Get an item of a32
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemA32(bytes32 key, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        2,
+        getFieldLayout(),
+        _index * 4,
+        (_index + 1) * 4
+      );
+      return (uint32(Bytes.slice4(_blob, 0)));
+    }
+  }
+
+  /**
    * Get an item of a32 (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
@@ -274,6 +378,14 @@ library Mixed {
     StoreSwitch.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), getFieldLayout());
   }
 
+  /** Push an element to a32 */
+  function _pushA32(bytes32 key, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 2, abi.encodePacked((_element)), getFieldLayout());
+  }
+
   /** Push an element to a32 (using the specified store) */
   function pushA32(IStore _store, bytes32 key, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -288,6 +400,14 @@ library Mixed {
     _keyTuple[0] = key;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 2, 4, getFieldLayout());
+  }
+
+  /** Pop an element from a32 */
+  function _popA32(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 2, 4, getFieldLayout());
   }
 
   /** Pop an element from a32 (using the specified store) */
@@ -308,6 +428,19 @@ library Mixed {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update an element of a32 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateA32(bytes32 key, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 2, _index * 4, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -333,6 +466,15 @@ library Mixed {
     return (string(_blob));
   }
 
+  /** Get s */
+  function _getS(bytes32 key) internal view returns (string memory s) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    return (string(_blob));
+  }
+
   /** Get s (using the specified store) */
   function getS(IStore _store, bytes32 key) internal view returns (string memory s) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -350,6 +492,14 @@ library Mixed {
     StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((s)), getFieldLayout());
   }
 
+  /** Set s */
+  function _setS(bytes32 key, string memory s) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 3, bytes((s)), getFieldLayout());
+  }
+
   /** Set s (using the specified store) */
   function setS(IStore _store, bytes32 key, string memory s) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -364,6 +514,17 @@ library Mixed {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /** Get the length of s */
+  function _lengthS(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
     unchecked {
       return _byteLength / 1;
     }
@@ -402,6 +563,27 @@ library Mixed {
   }
 
   /**
+   * Get an item of s
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemS(bytes32 key, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        3,
+        getFieldLayout(),
+        _index * 1,
+        (_index + 1) * 1
+      );
+      return (string(_blob));
+    }
+  }
+
+  /**
    * Get an item of s (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
@@ -423,6 +605,14 @@ library Mixed {
     StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getFieldLayout());
   }
 
+  /** Push a slice to s */
+  function _pushS(bytes32 key, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getFieldLayout());
+  }
+
   /** Push a slice to s (using the specified store) */
   function pushS(IStore _store, bytes32 key, string memory _slice) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -437,6 +627,14 @@ library Mixed {
     _keyTuple[0] = key;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1, getFieldLayout());
+  }
+
+  /** Pop a slice from s */
+  function _popS(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 3, 1, getFieldLayout());
   }
 
   /** Pop a slice from s (using the specified store) */
@@ -457,6 +655,19 @@ library Mixed {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update a slice of s at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateS(bytes32 key, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), getFieldLayout());
     }
   }
 
@@ -482,6 +693,15 @@ library Mixed {
     return decode(_blob);
   }
 
+  /** Get the full data */
+  function _get(bytes32 key) internal view returns (MixedData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, getFieldLayout());
+    return decode(_blob);
+  }
+
   /** Get the full data (using the specified store) */
   function get(IStore _store, bytes32 key) internal view returns (MixedData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -501,6 +721,16 @@ library Mixed {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
+  /** Set the full data using individual values */
+  function _set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
+    bytes memory _data = encode(u32, u128, a32, s);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
     bytes memory _data = encode(u32, u128, a32, s);
@@ -513,6 +743,11 @@ library Mixed {
 
   /** Set the full data using the data struct */
   function set(bytes32 key, MixedData memory _table) internal {
+    set(key, _table.u32, _table.u128, _table.a32, _table.s);
+  }
+
+  /** Set the full data using the data struct */
+  function _set(bytes32 key, MixedData memory _table) internal {
     set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
@@ -576,6 +811,14 @@ library Mixed {
     _keyTuple[0] = key;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

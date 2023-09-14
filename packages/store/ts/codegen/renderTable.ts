@@ -111,9 +111,9 @@ library ${libraryName} {
 
   ${renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
     /** Register the table with its config${_commentSuffix} */
-    function register(${renderArguments([_typedStore, _typedTableId])}) internal {
+    function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
       ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
     }
   `
@@ -148,9 +148,13 @@ library ${libraryName} {
     shouldRenderDelete
       ? renderWithStore(
           storeArgument,
-          (_typedStore, _store, _commentSuffix) => `
+          (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
     /* Delete all data for given keys${_commentSuffix} */
-    function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
+    function ${_methodNamePrefix}deleteRecord(${renderArguments([
+            _typedStore,
+            _typedTableId,
+            _typedKeyArgs,
+          ])}) internal {
       ${_keyTupleDefinition}
       ${_store}.deleteRecord(_tableId, _keyTuple, getFieldLayout());
     }

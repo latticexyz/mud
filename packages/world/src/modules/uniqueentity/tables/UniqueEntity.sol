@@ -66,6 +66,18 @@ library UniqueEntity {
     );
   }
 
+  /** Register the table with its config */
+  function _register(bytes32 _tableId) internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -76,6 +88,14 @@ library UniqueEntity {
     bytes32 _keyHash = keccak256(abi.encode());
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get value */
+  function _get(bytes32 _tableId) internal view returns (uint256 value) {
+    bytes32 _keyHash = keccak256(abi.encode());
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }
 
@@ -93,6 +113,23 @@ library UniqueEntity {
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
     StoreSwitch.storeStaticField(
+      storagePointer,
+      32,
+      0,
+      abi.encodePacked((value)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
+  }
+
+  /** Set value */
+  function _set(bytes32 _tableId, uint256 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(
       storagePointer,
       32,
       0,
@@ -129,6 +166,13 @@ library UniqueEntity {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 _tableId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

@@ -77,6 +77,18 @@ library InstalledModules {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -87,6 +99,14 @@ library InstalledModules {
     bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 20, 0);
+    return (address(bytes20(_blob)));
+  }
+
+  /** Get moduleAddress */
+  function _getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
+    bytes32 _keyHash = keccak256(abi.encode(moduleName, argumentsHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 20, 0);
     return (address(bytes20(_blob)));
   }
 
@@ -110,6 +130,25 @@ library InstalledModules {
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
     StoreSwitch.storeStaticField(
+      storagePointer,
+      20,
+      0,
+      abi.encodePacked((moduleAddress)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
+  }
+
+  /** Set moduleAddress */
+  function _setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(
       storagePointer,
       20,
       0,
@@ -150,6 +189,16 @@ library InstalledModules {
     return decode(_blob);
   }
 
+  /** Get the full data */
+  function _get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (InstalledModulesData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, getFieldLayout());
+    return decode(_blob);
+  }
+
   /** Get the full data (using the specified store) */
   function get(
     IStore _store,
@@ -175,6 +224,17 @@ library InstalledModules {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
+  /** Set the full data using individual values */
+  function _set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
+    bytes memory _data = encode(moduleAddress);
+
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes memory _data = encode(moduleAddress);
@@ -188,6 +248,11 @@ library InstalledModules {
 
   /** Set the full data using the data struct */
   function set(bytes16 moduleName, bytes32 argumentsHash, InstalledModulesData memory _table) internal {
+    set(moduleName, argumentsHash, _table.moduleAddress);
+  }
+
+  /** Set the full data using the data struct */
+  function _set(bytes16 moduleName, bytes32 argumentsHash, InstalledModulesData memory _table) internal {
     set(moduleName, argumentsHash, _table.moduleAddress);
   }
 
@@ -222,6 +287,15 @@ library InstalledModules {
     _keyTuple[1] = argumentsHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

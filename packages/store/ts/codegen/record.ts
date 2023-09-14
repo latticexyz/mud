@@ -1,9 +1,9 @@
 import {
-  renderList,
+  RenderDynamicField,
   renderArguments,
   renderCommonData,
+  renderList,
   renderWithStore,
-  RenderDynamicField,
 } from "@latticexyz/common/codegen";
 import { renderDecodeValueType } from "./field";
 import { RenderTableOptions } from "./types";
@@ -14,9 +14,9 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
     /** Get the full data${_commentSuffix} */
-    function get(${renderArguments([
+    function ${_methodNamePrefix}get(${renderArguments([
       _typedStore,
       _typedTableId,
       _typedKeyArgs,
@@ -30,9 +30,9 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
     /** Set the full data using individual values${_commentSuffix} */
-    function set(${renderArguments([
+    function ${_methodNamePrefix}set(${renderArguments([
       _typedStore,
       _typedTableId,
       _typedKeyArgs,
@@ -50,9 +50,9 @@ export function renderRecordMethods(options: RenderTableOptions) {
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Set the full data using the data struct${_commentSuffix} */
-      function set(${renderArguments([
+      function ${_methodNamePrefix}set(${renderArguments([
         _typedStore,
         _typedTableId,
         _typedKeyArgs,

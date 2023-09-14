@@ -71,6 +71,18 @@ library Balances {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -81,6 +93,14 @@ library Balances {
     bytes32 _keyHash = keccak256(abi.encode(namespace));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 32, 0);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get balance */
+  function _get(bytes16 namespace) internal view returns (uint256 balance) {
+    bytes32 _keyHash = keccak256(abi.encode(namespace));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
     return (uint256(bytes32(_blob)));
   }
 
@@ -99,6 +119,24 @@ library Balances {
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
     StoreSwitch.storeStaticField(
+      storagePointer,
+      32,
+      0,
+      abi.encodePacked((balance)),
+      _tableId,
+      _keyTuple,
+      0,
+      getFieldLayout()
+    );
+  }
+
+  /** Set balance */
+  function _set(bytes16 namespace, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(
       storagePointer,
       32,
       0,
@@ -147,6 +185,14 @@ library Balances {
     _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes16 namespace) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

@@ -75,6 +75,18 @@ library UsedKeysIndex {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -85,6 +97,14 @@ library UsedKeysIndex {
     bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 1, 0);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get has */
+  function _getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
+    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 0);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -115,6 +135,16 @@ library UsedKeysIndex {
     );
   }
 
+  /** Set has */
+  function _setHas(bytes32 sourceTable, bytes32 keysHash, bool has) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = sourceTable;
+    _keyTuple[1] = keysHash;
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(storagePointer, 1, 0, abi.encodePacked((has)), _tableId, _keyTuple, 0, getFieldLayout());
+  }
+
   /** Set has (using the specified store) */
   function setHas(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has) internal {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -130,6 +160,14 @@ library UsedKeysIndex {
     bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
     bytes32 _blob = StoreSwitch.loadStaticField(storagePointer, 5, 1);
+    return (uint40(bytes5(_blob)));
+  }
+
+  /** Get index */
+  function _getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
+    bytes32 _keyHash = keccak256(abi.encode(sourceTable, keysHash));
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
+    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 5, 1);
     return (uint40(bytes5(_blob)));
   }
 
@@ -149,6 +187,25 @@ library UsedKeysIndex {
 
     uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
     StoreSwitch.storeStaticField(
+      storagePointer,
+      5,
+      1,
+      abi.encodePacked((index)),
+      _tableId,
+      _keyTuple,
+      1,
+      getFieldLayout()
+    );
+  }
+
+  /** Set index */
+  function _setIndex(bytes32 sourceTable, bytes32 keysHash, uint40 index) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = sourceTable;
+    _keyTuple[1] = keysHash;
+
+    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyTuple);
+    StoreCore.storeStaticField(
       storagePointer,
       5,
       1,
@@ -180,6 +237,16 @@ library UsedKeysIndex {
     return decode(_blob);
   }
 
+  /** Get the full data */
+  function _get(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = sourceTable;
+    _keyTuple[1] = keysHash;
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, getFieldLayout());
+    return decode(_blob);
+  }
+
   /** Get the full data (using the specified store) */
   function get(IStore _store, bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has, uint40 index) {
     bytes32[] memory _keyTuple = new bytes32[](2);
@@ -199,6 +266,17 @@ library UsedKeysIndex {
     _keyTuple[1] = keysHash;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
+  /** Set the full data using individual values */
+  function _set(bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
+    bytes memory _data = encode(has, index);
+
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = sourceTable;
+    _keyTuple[1] = keysHash;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -240,6 +318,15 @@ library UsedKeysIndex {
     _keyTuple[1] = keysHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 sourceTable, bytes32 keysHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = sourceTable;
+    _keyTuple[1] = keysHash;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

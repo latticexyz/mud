@@ -22,7 +22,7 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(resourceSelector, _msgSender());
 
     // Grant access to the given resource
-    ResourceAccess.set(resourceSelector, grantee, true);
+    ResourceAccess._set(resourceSelector, grantee, true);
   }
 
   /**
@@ -47,12 +47,12 @@ contract AccessManagementSystem is System {
     AccessControl.requireOwner(namespace, _msgSender());
 
     // Set namespace new owner
-    NamespaceOwner.set(namespace, newOwner);
+    NamespaceOwner._set(namespace, newOwner);
 
     // Revoke access from old owner
     ResourceAccess.deleteRecord(namespace, _msgSender());
 
     // Grant access to new owner
-    ResourceAccess.set(namespace, newOwner, true);
+    ResourceAccess._set(namespace, newOwner, true);
   }
 }
