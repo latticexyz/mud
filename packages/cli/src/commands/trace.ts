@@ -7,7 +7,7 @@ import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import IBaseWorldData from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config.js";
 import { tableIdToHex } from "@latticexyz/common";
 import { getChainId, getExistingContracts } from "../utils";

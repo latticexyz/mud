@@ -16,7 +16,7 @@ import { mudFoundry } from "@latticexyz/common/chains";
 import { createContract } from "@latticexyz/common";
 import { storeEventsAbi } from "@latticexyz/store";
 import { privateKeyToAccount } from "viem/accounts";
-import IWorldAbi from "../contracts/abi/IWorld.sol/IWorld.abi.json";
+import IWorldAbi from "../contracts/out/IWorld.sol/IWorld.abi.json";
 
 const logsFilename = path.join(path.dirname(fileURLToPath(import.meta.url)), `../../../test-data/world-logs.json`);
 

@@ -7,7 +7,3 @@ artifacts
 yarn-error.log
 API
 dist
-
-# only check in ABIs
-abi/**/*.json
-!abi/**/*.abi.json

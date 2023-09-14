@@ -1,4 +1,2 @@
 # suppress diffs for codegen in PRs
-**/abi/**/*.json linguist-generated=true
-**/abi/**/*.json.d.ts linguist-generated=true
 **/codegen/**/*.sol linguist-generated=true
