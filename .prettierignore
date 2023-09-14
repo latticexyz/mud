@@ -3,3 +3,4 @@ dist
 **/.next
 templates/phaser/packages/art
 **/contractComponents.ts
+CODEOWNERS
