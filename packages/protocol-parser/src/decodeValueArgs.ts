@@ -3,7 +3,7 @@ import { isStaticAbiType } from "@latticexyz/schema-type";
 import { SchemaToPrimitives, ValueArgs, ValueSchema } from "./common";
 import { decodeValue } from "./decodeValue";
 import { staticDataLength } from "./staticDataLength";
-import { readHex } from "./readHex";
+import { readHex } from "@latticexyz/common";
 
 export function decodeValueArgs<TSchema extends ValueSchema>(
   valueSchema: TSchema,

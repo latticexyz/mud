@@ -3,5 +3,7 @@ export * from "./createContract";
 export * from "./createNonceManager";
 export * from "./getBurnerPrivateKey";
 export * from "./hexToTableId";
+export * from "./readHex";
+export * from "./spliceHex";
 export * from "./tableIdToHex";
 export * from "./transportObserver";

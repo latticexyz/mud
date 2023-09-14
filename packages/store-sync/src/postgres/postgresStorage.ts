@@ -7,14 +7,13 @@ import { debug } from "./debug";
 import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
-import { hexToTableId, tableIdToHex } from "@latticexyz/common";
+import { hexToTableId, spliceHex, tableIdToHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValueArgs, readHex, spliceHex } from "@latticexyz/protocol-parser";
-import { assertExhaustive } from "@latticexyz/common/utils";
+import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 // Currently assumes one DB per chain ID
 
