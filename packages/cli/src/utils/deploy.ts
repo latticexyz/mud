@@ -11,7 +11,7 @@ import { encodeSchema, getStaticByteLength } from "@latticexyz/schema-type/depre
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
-import IBaseWorldData from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import WorldData from "@latticexyz/world/out/World.sol/World.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/out/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
@@ -81,7 +81,7 @@ export async function deploy(
       ? Promise.resolve(worldAddress)
       : worldContractName
       ? deployContractByName(worldContractName, disableTxWait)
-      : deployContract(IBaseWorldData.abi, WorldData.bytecode, disableTxWait, "World"),
+      : deployContract(IBaseWorldAbi, WorldData.bytecode, disableTxWait, "World"),
   };
 
   // Deploy Systems
@@ -129,7 +129,7 @@ export async function deploy(
   const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldData.abi, signer);
+  const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldAbi, signer);
 
   const confirmations = disableTxWait ? 0 : 1;
 
