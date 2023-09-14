@@ -1,6 +1,6 @@
 ---
-"@latticexyz/store": minor
-"@latticexyz/world": minor
+"@latticexyz/store": major
+"@latticexyz/world": major
 ---
 
 Store and World contract ABIs are now exported from `out` directory. You'll need to update your imports like:
