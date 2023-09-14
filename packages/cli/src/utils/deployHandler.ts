@@ -9,6 +9,7 @@ import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId";
 import { getExistingContracts } from "./getExistingContracts";
+import { execa } from "execa";
 
 export type DeployOptions = {
   configPath?: string;
@@ -37,10 +38,17 @@ export async function deployHandler(args: DeployOptions) {
     )
   );
 
-  if (clean) await forge(["clean"], { profile });
+  if (clean) {
+    await forge(["clean"], { profile });
+  }
 
   // Run forge build
-  if (!skipBuild) await forge(["build"], { profile });
+  if (!skipBuild) {
+    await forge(["build", "--extra-output-files", "abi", "--out", "abi", "--skip", "test", "script", "MudTest.sol"], {
+      profile,
+    });
+    await execa("mud", ["abi-ts"]);
+  }
 
   // Get a list of all contract names
   const srcDir = args?.srcDir ?? (await getSrcDirectory());
