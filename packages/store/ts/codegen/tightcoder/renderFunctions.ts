@@ -16,7 +16,7 @@ export function renderTightCoderDecode(element: { internalTypeId: string; static
         _output := _genericArray
       }
     }
-  `.trim();
+  `;
 }
 
 export function renderTightCoderEncode(element: { internalTypeId: string; staticByteLength: number }) {
@@ -32,5 +32,5 @@ export function renderTightCoderEncode(element: { internalTypeId: string; static
         ${getLeftPaddingBits(element)}
       );
     }
-  `.trim();
+  `;
 }

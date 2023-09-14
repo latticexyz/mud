@@ -15,57 +15,57 @@ export function renderRecordMethods(options: RenderTableOptions) {
   let result = renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Get the full data${_commentSuffix} */
-    function get(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal view returns (${renderDecodedRecord(options)}) {
-      ${_keyTupleDefinition}
-      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getFieldLayout());
-      return decode(_blob);
-    }
-  `
+      /** Get the full data${_commentSuffix} */
+      function get(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+      ])}) internal view returns (${renderDecodedRecord(options)}) {
+        ${_keyTupleDefinition}
+        bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getFieldLayout());
+        return decode(_blob);
+      }
+    `
   );
 
   result += renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Set the full data using individual values${_commentSuffix} */
-    function set(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-    ])}) internal {
-      ${renderRecordData(options)}
+      /** Set the full data using individual values${_commentSuffix} */
+      function set(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+      ])}) internal {
+        ${renderRecordData(options)}
 
-      ${_keyTupleDefinition}
+        ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
-    }
-  `
+        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
+      }
+    `
   );
 
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
       (_typedStore, _store, _commentSuffix, _untypedStore) => `
-      /** Set the full data using the data struct${_commentSuffix} */
-      function set(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        `${structName} memory _table`,
-      ])}) internal {
-        set(${renderArguments([
-          _untypedStore,
-          _tableId,
-          _keyArgs,
-          renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-        ])});
-      }
-    `
+        /** Set the full data using the data struct${_commentSuffix} */
+        function set(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          `${structName} memory _table`,
+        ])}) internal {
+          set(${renderArguments([
+            _untypedStore,
+            _tableId,
+            _keyArgs,
+            renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
+          ])});
+        }
+      `
     );
   }
 
@@ -119,63 +119,63 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
     // decode static (optionally) and dynamic data
     return `
-    /**
-     * Decode the tightly packed blob using this table's field layout.
-     * Undefined behaviour for invalid blobs.
-     */
-    function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
-      // ${totalStaticLength} is the total byte length of static data
-      PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
+      /**
+       * Decode the tightly packed blob using this table's field layout.
+       * Undefined behaviour for invalid blobs.
+       */
+      function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
+        // ${totalStaticLength} is the total byte length of static data
+        PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
 
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-        `
-      )}
-      // Store trims the blob if dynamic fields are all empty
-      if (_blob.length > ${totalStaticLength}) {
         ${renderList(
-          dynamicFields,
-          // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
-          // but it's assumed to be valid, and this function is meant to be mostly used internally
-          (field, index) => {
-            if (index === 0) {
-              return `
-              // skip static data length + dynamic lengths word
-              uint256 _start = ${totalStaticLength + 32};
-              uint256 _end;
-              unchecked {
-                _end = ${totalStaticLength + 32} + _encodedLengths.atIndex(${index});
-              }
-              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-              `;
-            } else {
-              return `
-              _start = _end;
-              unchecked {
-                _end += _encodedLengths.atIndex(${index});
-              }
-              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-              `;
-            }
-          }
+          staticFields,
+          (field, index) => `
+            ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
+          `
         )}
+        // Store trims the blob if dynamic fields are all empty
+        if (_blob.length > ${totalStaticLength}) {
+          ${renderList(
+            dynamicFields,
+            // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
+            // but it's assumed to be valid, and this function is meant to be mostly used internally
+            (field, index) => {
+              if (index === 0) {
+                return `
+                  // skip static data length + dynamic lengths word
+                  uint256 _start = ${totalStaticLength + 32};
+                  uint256 _end;
+                  unchecked {
+                    _end = ${totalStaticLength + 32} + _encodedLengths.atIndex(${index});
+                  }
+                  ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+                `;
+              } else {
+                return `
+                  _start = _end;
+                  unchecked {
+                    _end += _encodedLengths.atIndex(${index});
+                  }
+                  ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+                `;
+              }
+            }
+          )}
+        }
       }
-    }
-  `;
+    `;
   } else {
     // decode only static data
     return `
-    /** Decode the tightly packed blob using this table's field layout */
-    function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-        `
-      )}
-    }
+      /** Decode the tightly packed blob using this table's field layout */
+      function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
+        ${renderList(
+          staticFields,
+          (field, index) => `
+          ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
+          `
+        )}
+      }
     `;
   }
 }
