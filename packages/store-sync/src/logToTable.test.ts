@@ -27,7 +27,11 @@ describe("logToTable", () => {
         "namespace": "mudstore",
         "tableId": "0x6d756473746f726500000000000000005461626c657300000000000000000000",
         "valueSchema": {
-          "undefined": "bytes",
+          "abiEncodedFieldNames": "bytes",
+          "abiEncodedKeyNames": "bytes",
+          "fieldLayout": "bytes32",
+          "keySchema": "bytes32",
+          "valueSchema": "bytes32",
         },
       }
     `);

@@ -17,7 +17,6 @@ export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord
     schemasTable.schema,
     concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData])
   );
-  console.log("value", table, value);
 
   const keySchema = hexToSchema(value.keySchema);
   const valueSchema = hexToSchema(value.valueSchema);
