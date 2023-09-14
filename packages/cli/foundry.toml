@@ -10,3 +10,7 @@ allow_paths = ["../../node_modules", "../"]
 src = "contracts/src"
 out = "contracts/out"
 test = "contracts/test"
+extra_output_files = [
+  "abi",
+  "evm.bytecode"
+]

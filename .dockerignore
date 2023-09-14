@@ -8,6 +8,5 @@ dist
 **/cache/
 **/bindings/
 **/artifacts/
-**/abi/
 **/broadcast/
 **/deploys/

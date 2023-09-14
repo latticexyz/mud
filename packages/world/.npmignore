@@ -1,7 +1,10 @@
 *
 
-!abi/**
+!out/**/*.json
+!out/**/*.abi.json
+!out/**/*.abi.json.d.ts
 !src/**
+!test/MudTest.t.sol
 !ts/**
 !package.json
 !README.md

@@ -140,10 +140,11 @@ const commandModule: CommandModule<Options, Options> = {
       // Run worldgen to generate interfaces based on the systems
       await worldgenHandler({ config, clean: true, srcDir: srcDirectory });
 
-      // Generate TS-friendly ABI files
-      // We rebuild into a separate dir to have a clean set of ABIs without test/script contracts
-      await forge(["build", "--extra-output-files", "abi", "--out", "abi", "--skip", "test", "script", "MudTest.sol"]);
-      await execa("mud", ["abi-ts"]);
+      // Build the contracts
+      await forge(["build", "--skip", "test", "script"]);
+
+      // Generate TS type definitions for ABIs
+      await execa("mud", ["abi-ts"], { stdio: "inherit" });
     }
 
     /** Run after codegen if either mud config or contracts changed */
