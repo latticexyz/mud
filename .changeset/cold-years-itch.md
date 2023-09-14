@@ -3,6 +3,7 @@
 "@latticexyz/protocol-parser": major
 "@latticexyz/store-sync": major
 "@latticexyz/store": major
+"create-mud": minor
 ---
 
 Renamed all occurrences of `schema` where it is used as "value schema" to `valueSchema` to clearly distinguish it from "key schema".
