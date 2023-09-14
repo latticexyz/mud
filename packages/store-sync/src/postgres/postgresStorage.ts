@@ -13,10 +13,8 @@ import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { decodeKey, decodeValue, decodeValueArgs, readHex, staticDataLength } from "@latticexyz/protocol-parser";
-import { spliceValueHex } from "../spliceValueHex";
+import { decodeKey, decodeValueArgs, readHex } from "@latticexyz/protocol-parser";
 import { assertExhaustive } from "@latticexyz/common/utils";
-import { isStaticAbiType } from "@latticexyz/schema-type";
 
 // Currently assumes one DB per chain ID
 
