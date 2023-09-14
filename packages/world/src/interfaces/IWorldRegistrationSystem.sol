@@ -23,8 +23,8 @@ interface IWorldRegistrationSystem {
 
   function registerFunctionSelectors(
     bytes32 resourceSelector,
-    string[] calldata systemFunctionNames,
-    string[] calldata systemFunctionArguments
+    string[] memory systemFunctionNames,
+    string[] memory systemFunctionArguments
   ) external;
 
   function registerRootFunctionSelector(

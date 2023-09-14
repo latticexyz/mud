@@ -176,8 +176,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerFunctionSelectors(
     bytes32 resourceSelector,
-    string[] calldata systemFunctionNames,
-    string[] calldata systemFunctionArguments
+    string[] memory systemFunctionNames,
+    string[] memory systemFunctionArguments
   ) public {
     // Require the caller to own the namespace
     AccessControl.requireOwner(resourceSelector, _msgSender());
