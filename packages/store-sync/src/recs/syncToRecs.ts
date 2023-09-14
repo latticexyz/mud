@@ -90,6 +90,9 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
       })) as Hex;
 
       selectors = decodeValue(components.FunctionSelectors.metadata.valueSchema, selectorRecord);
+      console.log(
+        `Received selectors from world contract: resource - ${selectors.resourceSelector}, function - ${selectors.functionSelector}`
+      );
     }
 
     functionSelectorToResourceSelector.set(functionSelector, selectors.resourceSelector as Hex);
