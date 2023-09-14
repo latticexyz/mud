@@ -28,6 +28,8 @@ interface IStoreRead {
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
+  function loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) external view returns (bytes32);
+
   // Get field length at schema index
   function getFieldLength(
     bytes32 table,
@@ -61,6 +63,17 @@ interface IStoreWrite {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data,
+    FieldLayout fieldLayout
+  ) external;
+
+  function storeStaticField(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset,
+    bytes memory data,
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
     FieldLayout fieldLayout
   ) external;
 

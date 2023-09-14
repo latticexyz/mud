@@ -38,6 +38,14 @@ contract StoreRead is IStoreRead {
     data = StoreCore.getField(table, key, schemaIndex, fieldLayout);
   }
 
+  function loadStaticField(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset
+  ) public view virtual returns (bytes32) {
+    return StoreCore.loadStaticField(storagePointer, length, offset);
+  }
+
   function getFieldLength(
     bytes32 tableId,
     bytes32[] memory key,

@@ -131,6 +131,33 @@ library StoreSwitch {
     }
   }
 
+  function storeStaticField(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset,
+    bytes memory data,
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    FieldLayout fieldLayout
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.storeStaticField(storagePointer, length, offset, data, tableId, key, schemaIndex, fieldLayout);
+    } else {
+      IStore(_storeAddress).storeStaticField(
+        storagePointer,
+        length,
+        offset,
+        data,
+        tableId,
+        key,
+        schemaIndex,
+        fieldLayout
+      );
+    }
+  }
+
   function pushToField(
     bytes32 table,
     bytes32[] memory key,
@@ -224,6 +251,15 @@ library StoreSwitch {
       return StoreCore.getField(table, key, fieldIndex, fieldLayout);
     } else {
       return IStore(_storeAddress).getField(table, key, fieldIndex, fieldLayout);
+    }
+  }
+
+  function loadStaticField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.loadStaticField(storagePointer, length, offset);
+    } else {
+      return IStore(_storeAddress).loadStaticField(storagePointer, length, offset);
     }
   }
 

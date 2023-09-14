@@ -37,6 +37,19 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.setField(table, key, schemaIndex, data, fieldLayout);
   }
 
+  function storeStaticField(
+    uint256 storagePointer,
+    uint256 length,
+    uint256 offset,
+    bytes memory data,
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    FieldLayout fieldLayout
+  ) public virtual {
+    StoreCore.storeStaticField(storagePointer, length, offset, data, tableId, key, schemaIndex, fieldLayout);
+  }
+
   // Push encoded items to the dynamic field at schema index
   function pushToField(
     bytes32 table,
