@@ -5,6 +5,7 @@ interface IStoreErrors {
   // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
   error StoreCore_TableAlreadyExists(bytes32 tableId, string tableIdString);
   error StoreCore_TableNotFound(bytes32 tableId, string tableIdString);
+  error StoreCore_TableNotOffchain(bytes32 tableId, string tableIdString);
 
   error StoreCore_NotImplemented();
   error StoreCore_NotDynamicField();

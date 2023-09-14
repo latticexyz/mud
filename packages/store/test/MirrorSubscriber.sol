@@ -17,10 +17,19 @@ contract MirrorSubscriber is StoreHook {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
+    bool offchainOnly,
     string[] memory keyNames,
     string[] memory fieldNames
   ) {
-    IStore(msg.sender).registerTable(indexerTableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+    IStore(msg.sender).registerTable(
+      indexerTableId,
+      fieldLayout,
+      keySchema,
+      valueSchema,
+      offchainOnly,
+      keyNames,
+      fieldNames
+    );
     _table = table;
   }
 

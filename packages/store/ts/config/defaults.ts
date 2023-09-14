@@ -14,5 +14,5 @@ export const TABLE_DEFAULTS = {
   keySchema: { key: "bytes32" },
   tableIdArgument: false,
   storeArgument: true,
-  ephemeral: false,
+  offchainOnly: false,
 } as const;

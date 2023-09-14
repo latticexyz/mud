@@ -44,7 +44,15 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT32_ARRAY
     );
-    StoreCore.registerTable(_table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    StoreCore.registerTable(
+      _table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](3)
+    );
 
     // Create key
     _key = new bytes32[](1);

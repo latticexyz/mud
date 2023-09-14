@@ -61,6 +61,7 @@ library Hooks {
       getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
+      false,
       getKeyNames(),
       getFieldNames()
     );
@@ -68,7 +69,15 @@ library Hooks {
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store, bytes32 _tableId) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      false,
+      getKeyNames(),
+      getFieldNames()
+    );
   }
 
   /** Get value */

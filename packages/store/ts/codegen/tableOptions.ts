@@ -97,9 +97,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         fields,
         staticFields,
         dynamicFields,
-        withFieldMethods: !tableData.ephemeral,
-        withRecordMethods: withRecordMethods && !tableData.ephemeral,
-        withEphemeralMethods: tableData.ephemeral,
+        withFieldMethods: !tableData.offchainOnly,
+        withRecordMethods: withRecordMethods && !tableData.offchainOnly,
+        offchainOnly: tableData.offchainOnly,
         storeArgument: tableData.storeArgument,
       },
     });

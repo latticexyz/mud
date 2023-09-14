@@ -20,7 +20,6 @@ library StoreCore {
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
   event StoreSetField(bytes32 table, bytes32[] key, uint8 fieldIndex, bytes data);
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
-  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   /**
    * Intialize the store address to use in StoreSwitch.
@@ -96,6 +95,7 @@ library StoreCore {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
+    bool offchainOnly,
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
@@ -130,6 +130,7 @@ library StoreCore {
       FieldLayout.unwrap(fieldLayout),
       Schema.unwrap(keySchema),
       Schema.unwrap(valueSchema),
+      offchainOnly,
       abi.encode(keyNames),
       abi.encode(fieldNames)
     );
@@ -443,24 +444,40 @@ library StoreCore {
 
   /************************************************************************
    *
-   *    EPHEMERAL SET DATA
+   *    OFFCHAIN SET DATA
    *
    ************************************************************************/
 
   /**
-   * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
+   * Emit StoreSetRecord without modifying storage for the given tableId and key tuple
    */
-  function emitEphemeralRecord(
+  function emitSetRecord(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     bytes memory data,
     FieldLayout fieldLayout
   ) internal {
+    if (!Tables.getOffchainOnly(tableId)) {
+      revert IStoreErrors.StoreCore_TableNotOffchain(tableId, string(abi.encodePacked(tableId)));
+    }
+
     // Verify static data length + dynamic data length matches the given data
     StoreCoreInternal._validateDataLength(fieldLayout, data);
 
     // Emit event to notify indexers
-    emit StoreEphemeralRecord(tableId, key, data);
+    emit StoreSetRecord(tableId, keyTuple, data);
+  }
+
+  /**
+   * Emit StoreDeleteRecord without modifying storage for the given tableId and key tuple
+   */
+  function emitDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple) internal {
+    if (!Tables.getOffchainOnly(tableId)) {
+      revert IStoreErrors.StoreCore_TableNotOffchain(tableId, string(abi.encodePacked(tableId)));
+    }
+
+    // Emit event to notify indexers
+    emit StoreDeleteRecord(tableId, keyTuple);
   }
 
   /************************************************************************

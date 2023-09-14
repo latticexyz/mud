@@ -26,8 +26,8 @@ export interface RenderTableOptions {
   withFieldMethods: boolean;
   /** Whether to render get/set methods for the whole record */
   withRecordMethods: boolean;
-  /** Whether to render emitEphemeral methods */
-  withEphemeralMethods: boolean;
+  /** Whether to render methods that emit events without modifying the storage */
+  offchainOnly: boolean;
   /** Whether to render additional methods that accept a manual `IStore` argument */
   storeArgument: boolean;
 }

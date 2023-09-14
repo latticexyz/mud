@@ -96,14 +96,23 @@ library StoreSwitch {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
+    bool offchainOnly,
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+      StoreCore.registerTable(table, fieldLayout, keySchema, valueSchema, offchainOnly, keyNames, fieldNames);
     } else {
-      IStore(_storeAddress).registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+      IStore(_storeAddress).registerTable(
+        table,
+        fieldLayout,
+        keySchema,
+        valueSchema,
+        offchainOnly,
+        keyNames,
+        fieldNames
+      );
     }
   }
 
@@ -186,17 +195,26 @@ library StoreSwitch {
     }
   }
 
-  function emitEphemeralRecord(
+  function emitSetRecord(
     bytes32 table,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     bytes memory data,
     FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(table, key, data, fieldLayout);
+      StoreCore.emitSetRecord(table, keyTuple, data, fieldLayout);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(table, key, data, fieldLayout);
+      IStore(_storeAddress).emitSetRecord(table, keyTuple, data, fieldLayout);
+    }
+  }
+
+  function emitDeleteRecord(bytes32 table, bytes32[] memory keyTuple) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.emitDeleteRecord(table, keyTuple);
+    } else {
+      IStore(_storeAddress).emitDeleteRecord(table, keyTuple);
     }
   }
 

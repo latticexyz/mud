@@ -9,7 +9,7 @@ import {
   renderTypeHelpers,
   RenderDynamicField,
 } from "@latticexyz/common/codegen";
-import { renderEphemeralMethods } from "./ephemeral";
+import { renderOffchainMethods } from "./offchain";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
@@ -26,13 +26,13 @@ export function renderTable(options: RenderTableOptions) {
     dynamicFields,
     withFieldMethods,
     withRecordMethods,
-    withEphemeralMethods,
+    offchainOnly,
     storeArgument,
     keyTuple,
   } = options;
 
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
-  const shouldRenderDelete = !withEphemeralMethods;
+  const shouldRenderDelete = !offchainOnly;
 
   return `
     ${renderedSolidityHeader}
@@ -115,7 +115,15 @@ export function renderTable(options: RenderTableOptions) {
         (_typedStore, _store, _commentSuffix) => `
         /** Register the table with its config${_commentSuffix} */
         function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-          ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+          ${_store}.registerTable(
+            _tableId,
+            getFieldLayout(),
+            getKeySchema(),
+            getValueSchema(),
+            ${offchainOnly ? "true" : "false"},
+            getKeyNames(),
+            getFieldNames()
+          );
         }
       `
       )}
@@ -124,7 +132,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${withRecordMethods ? renderRecordMethods(options) : ""}
 
-      ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
+      ${offchainOnly ? renderOffchainMethods(options) : ""}
 
       /** Tightly pack full data using this table's field layout */
       function encode(${renderArguments(

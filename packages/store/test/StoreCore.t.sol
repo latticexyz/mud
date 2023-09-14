@@ -68,11 +68,12 @@ contract StoreCoreTest is Test, StoreMock {
         fieldLayout.unwrap(),
         keySchema.unwrap(),
         valueSchema.unwrap(),
+        false,
         abi.encode(keyNames),
         abi.encode(fieldNames)
       )
     );
-    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, false, keyNames, fieldNames);
 
     assertEq(IStore(this).getFieldLayout(table).unwrap(), fieldLayout.unwrap());
     assertEq(IStore(this).getValueSchema(table).unwrap(), valueSchema.unwrap());
@@ -93,6 +94,7 @@ contract StoreCoreTest is Test, StoreMock {
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
       Schema.wrap(keccak256("random bytes as key schema")),
       Schema.wrap(keccak256("random bytes as schema")),
+      false,
       keyNames,
       fieldNames
     );
@@ -110,7 +112,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, false, keyNames, fieldNames);
 
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
@@ -150,11 +152,11 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Register table with invalid key names
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidKeyNamesLength.selector, 4, 1));
-    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, oneName, oneName);
+    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, false, oneName, oneName);
 
     // Register table with invalid value names
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 4));
-    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, fourNames, fourNames);
+    IStore(this).registerTable(table, fieldLayout, keySchema, valueSchema, false, fourNames, fourNames);
   }
 
   function testSetAndGetDynamicDataLength() public {
@@ -170,7 +172,15 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     // Register table
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](5));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](5)
+    );
 
     // Create some key
     bytes32[] memory key = new bytes32[](1);
@@ -212,7 +222,15 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](4)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -242,7 +260,15 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT16
     );
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](4)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
@@ -259,7 +285,15 @@ contract StoreCoreTest is Test, StoreMock {
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
     bytes32 table = keccak256("some.table");
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](2)
+    );
 
     // Set data
     bytes memory data = abi.encodePacked(
@@ -292,7 +326,15 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT32_ARRAY
     );
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](3)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -368,7 +410,15 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT32_ARRAY
     );
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](4)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -507,7 +557,15 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT32_ARRAY
     );
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](3)
+    );
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -596,6 +654,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout,
       defaultKeySchema,
       valueSchema,
+      false,
       new string[](1),
       new string[](3)
     );
@@ -736,6 +795,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout,
       defaultKeySchema,
       valueSchema,
+      false,
       new string[](1),
       new string[](3)
     );
@@ -843,7 +903,15 @@ contract StoreCoreTest is Test, StoreMock {
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](2)
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -873,7 +941,15 @@ contract StoreCoreTest is Test, StoreMock {
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](1)
+    );
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
@@ -881,6 +957,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout,
       defaultKeySchema,
       valueSchema,
+      false,
       new string[](1),
       new string[](1)
     );
@@ -929,7 +1006,15 @@ contract StoreCoreTest is Test, StoreMock {
     // Register table's schema
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](1)
+    );
 
     // Create a RevertSubscriber and an EchoSubscriber
     RevertSubscriber revertSubscriber = new RevertSubscriber();
@@ -1018,7 +1103,15 @@ contract StoreCoreTest is Test, StoreMock {
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
-    IStore(this).registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
+    IStore(this).registerTable(
+      table,
+      fieldLayout,
+      defaultKeySchema,
+      valueSchema,
+      false,
+      new string[](1),
+      new string[](2)
+    );
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(
@@ -1026,6 +1119,7 @@ contract StoreCoreTest is Test, StoreMock {
       fieldLayout,
       defaultKeySchema,
       valueSchema,
+      false,
       new string[](1),
       new string[](2)
     );

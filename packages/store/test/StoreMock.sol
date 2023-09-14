@@ -76,14 +76,19 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.deleteRecord(table, key, fieldLayout);
   }
 
-  // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(
+  // Emit StoreSetRecord without modifying storage
+  function emitSetRecord(
     bytes32 table,
-    bytes32[] calldata key,
-    bytes calldata data,
+    bytes32[] memory keyTuple,
+    bytes memory data,
     FieldLayout fieldLayout
   ) public virtual {
-    StoreCore.emitEphemeralRecord(table, key, data, fieldLayout);
+    StoreCore.emitSetRecord(table, keyTuple, data, fieldLayout);
+  }
+
+  // Emit StoreDeleteRecord without modifying storage
+  function emitDeleteRecord(bytes32 table, bytes32[] calldata keyTuple) public virtual {
+    StoreCore.emitDeleteRecord(table, keyTuple);
   }
 
   function registerTable(
@@ -91,10 +96,11 @@ contract StoreMock is IStore, StoreRead {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
+    bool offchainOnly,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) public virtual {
-    StoreCore.registerTable(table, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+    StoreCore.registerTable(table, fieldLayout, keySchema, valueSchema, offchainOnly, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted

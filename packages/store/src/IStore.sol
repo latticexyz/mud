@@ -92,20 +92,21 @@ interface IStoreWrite {
     FieldLayout fieldLayout
   ) external;
 
-  // Set full record (including full dynamic data)
+  // Delete full record
   function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
 }
 
-interface IStoreEphemeral {
-  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
-
-  // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(
+interface IStoreOffchain {
+  // Emit StoreSetRecord without modifying storage
+  function emitSetRecord(
     bytes32 table,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) external;
+
+  // Emit StoreDeleteRecord without modifying storage
+  function emitDeleteRecord(bytes32 table, bytes32[] calldata keyTuple) external;
 }
 
 /**
@@ -128,6 +129,7 @@ interface IStoreRegistration {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
+    bool offchainOnly,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) external;
@@ -139,4 +141,4 @@ interface IStoreRegistration {
   function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
+interface IStore is IStoreData, IStoreRegistration, IStoreOffchain, IStoreErrors {}

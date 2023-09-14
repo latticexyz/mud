@@ -85,8 +85,8 @@ export interface TableConfig<
   storeArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
-  /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
-  ephemeral?: boolean;
+  /** Generate only `emitSet` and `emitDelete`, which emit an event without writing to storage. Default is false. */
+  offchainOnly?: boolean;
   /** Table's key schema names mapped to their types. Default is `{ key: "bytes32" }` */
   keySchema?: Record<string, KeySchema<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
@@ -111,7 +111,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       // dataStruct isn't expanded, because its value is conditional on the number of schema fields
       dataStruct: boolean;
       keySchema: typeof TABLE_DEFAULTS.keySchema;
-      ephemeral: typeof TABLE_DEFAULTS.ephemeral;
+      offchainOnly: typeof TABLE_DEFAULTS.offchainOnly;
     }
   > {
   schema: ExpandSchemaConfig<T["schema"]>;
@@ -126,7 +126,7 @@ const zFullTableConfig = z
     dataStruct: z.boolean().optional(),
     keySchema: zKeySchema,
     schema: zSchemaConfig,
-    ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
+    offchainOnly: z.boolean().default(TABLE_DEFAULTS.offchainOnly),
   })
   .transform((arg) => {
     // default dataStruct value depends on schema's length
