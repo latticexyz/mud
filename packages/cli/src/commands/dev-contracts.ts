@@ -141,11 +141,9 @@ const commandModule: CommandModule<Options, Options> = {
       await worldgenHandler({ config, clean: true, srcDir: srcDirectory });
 
       // Build the contracts
-      await forge(["build"]);
-
-      // Generate TS-friendly ABI files
-      // We rebuild into a separate dir to have a clean set of ABIs without test/script contracts
       await forge(["build", "--skip", "test", "script"]);
+
+      // Generate TS type definitions for ABIs
       await execa("mud", ["abi-ts"]);
     }
 
