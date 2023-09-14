@@ -252,8 +252,6 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
             })
             .where(eq(sqlTable.__key, uniqueKey))
             .execute();
-        } else {
-          assertExhaustive(log.eventName);
         }
       }
 

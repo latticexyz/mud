@@ -245,8 +245,6 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
             })
             .where(eq(sqlTable.__key, uniqueKey))
             .run();
-        } else {
-          assertExhaustive(log.eventName);
         }
       }
 

@@ -162,8 +162,6 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
           entity,
         });
         removeComponent(component, entity);
-      } else {
-        assertExhaustive(log.eventName);
       }
     }
   }
