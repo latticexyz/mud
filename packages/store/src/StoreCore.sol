@@ -165,7 +165,7 @@ library StoreCore {
    * Set full data record for the given tableId and key tuple and field layout
    */
   function setRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory data, FieldLayout fieldLayout) internal {
-    // verify the value has the correct length for the tableId (based on the tableId's field layout)
+    // verify the value has the correct length for the table (based on the table's field layout)
     // to prevent invalid data from being stored
 
     // Verify static data length + dynamic data length matches the given data

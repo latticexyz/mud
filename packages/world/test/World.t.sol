@@ -559,17 +559,7 @@ contract WorldTest is Test, GasReporter {
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
 
-    // Write data to the table via its tableId
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(false), fieldLayout);
-
-    // Expect the data to be written
-    assertFalse(Bool.get(world, tableId));
-
-    // Expect an error when trying to write from an address that doesn't have access when calling via the namespace
-    _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
-
-    // Expect an error when trying to write from an address that doesn't have access when calling via the tableId
+    // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
 
@@ -630,7 +620,7 @@ contract WorldTest is Test, GasReporter {
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
-    // Write data to the table via the namespace and expect it to be written
+    // Write data to the table and expect it to be written
     world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
     assertTrue(Bool.get(world, tableId));
 
@@ -641,15 +631,7 @@ contract WorldTest is Test, GasReporter {
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
 
-    // Write data to the table via the namespace and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
-    assertTrue(Bool.get(world, tableId));
-
-    // Delete the record via the tableId and expect it to be deleted
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
-    assertFalse(Bool.get(world, tableId));
-
-    // Write data to the table via the namespace and expect it to be written
+    // Write data to the table and expect it to be written
     world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
     assertTrue(Bool.get(world, tableId));
 

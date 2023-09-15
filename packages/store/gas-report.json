@@ -626,13 +626,13 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHasFieldLayout",
-    "name": "Check for existence of tableId (existent)",
+    "name": "Check for existence of table (existent)",
     "gasUsed": 4465
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHasFieldLayout",
-    "name": "check for existence of tableId (non-existent)",
+    "name": "check for existence of table (non-existent)",
     "gasUsed": 6468
   },
   {
@@ -644,19 +644,19 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
-    "name": "set record on tableId with subscriber",
+    "name": "set record on table with subscriber",
     "gasUsed": 73748
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
-    "name": "set static field on tableId with subscriber",
+    "name": "set static field on table with subscriber",
     "gasUsed": 25441
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
-    "name": "delete record on tableId with subscriber",
+    "name": "delete record on table with subscriber",
     "gasUsed": 21483
   },
   {
@@ -668,20 +668,20 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
-    "name": "set (dynamic) record on tableId with subscriber",
+    "name": "set (dynamic) record on table with subscriber",
     "gasUsed": 167808
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
-    "name": "set (dynamic) field on tableId with subscriber",
+    "name": "set (dynamic) field on table with subscriber",
     "gasUsed": 28269
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
-    "name": "delete (dynamic) record on tableId with subscriber",
-    "gasUsed": 22905
+    "name": "delete (dynamic) record on table with subscriber",
+    "gasUsed": 22901
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -698,7 +698,7 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: register tableId",
+    "name": "StoreCore: Register table",
     "gasUsed": 620356
   },
   {
