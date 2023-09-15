@@ -1,5 +1,5 @@
 export type Table = {
-  schema: Record<string, string>;
+  valueSchema: Record<string, string>;
   keySchema: Record<string, string>;
   directory: string;
   tableIdArgument: boolean;

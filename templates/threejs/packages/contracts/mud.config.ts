@@ -3,7 +3,7 @@ import { mudConfig } from "@latticexyz/world/register";
 export default mudConfig({
   tables: {
     Position: {
-      schema: {
+      valueSchema: {
         x: "int32",
         y: "int32",
         z: "int32",

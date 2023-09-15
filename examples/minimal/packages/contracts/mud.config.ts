@@ -16,14 +16,14 @@ export default mudConfig({
   tables: {
     CounterTable: {
       keySchema: {},
-      schema: {
+      valueSchema: {
         value: "uint32",
       },
       storeArgument: true,
     },
     MessageTable: {
       keySchema: {},
-      schema: {
+      valueSchema: {
         value: "string",
       },
       ephemeral: true,
@@ -34,7 +34,7 @@ export default mudConfig({
         item: "uint32",
         itemVariant: "uint32",
       },
-      schema: { amount: "uint32" },
+      valueSchema: { amount: "uint32" },
     },
   },
   // KeysWithValue doesn't seem to like singleton keys

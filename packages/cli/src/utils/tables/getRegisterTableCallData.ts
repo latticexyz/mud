@@ -7,10 +7,10 @@ import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 import { CallData } from "../utils/types";
 
 export function getRegisterTableCallData(table: Table, storeConfig: StoreConfig): CallData {
-  const { name, schema, keySchema } = table;
+  const { name, valueSchema, keySchema } = table;
   if (!name) throw Error("Table missing name");
 
-  const schemaTypes = Object.values(schema).map((abiOrUserType) => {
+  const schemaTypes = Object.values(valueSchema).map((abiOrUserType) => {
     const { schemaType } = resolveAbiOrUserType(abiOrUserType, storeConfig);
     return schemaType;
   });
@@ -34,7 +34,7 @@ export function getRegisterTableCallData(table: Table, storeConfig: StoreConfig)
       encodeSchema(keyTypes),
       encodeSchema(schemaTypes),
       Object.keys(keySchema),
-      Object.keys(schema),
+      Object.keys(valueSchema),
     ],
   };
 }

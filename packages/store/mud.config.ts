@@ -13,7 +13,7 @@ export default mudConfig({
       keySchema: {
         tableId: "bytes32",
       },
-      schema: {
+      valueSchema: {
         fieldLayout: "bytes32",
         keySchema: "bytes32",
         valueSchema: "bytes32",
@@ -23,12 +23,12 @@ export default mudConfig({
     },
     // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
     Hooks: {
-      schema: "bytes21[]",
+      valueSchema: "bytes21[]",
       tableIdArgument: true,
     },
     // TODO: move these test tables to a separate mud config
     Mixed: {
-      schema: {
+      valueSchema: {
         u32: "uint32",
         u128: "uint128",
         a32: "uint32[]",
@@ -36,7 +36,7 @@ export default mudConfig({
       },
     },
     Vector2: {
-      schema: {
+      valueSchema: {
         x: "uint32",
         y: "uint32",
       },
@@ -50,7 +50,7 @@ export default mudConfig({
         k5: "bool",
         k6: "ExampleEnum",
       },
-      schema: "bool",
+      valueSchema: "bool",
     },
   },
 });

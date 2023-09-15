@@ -126,7 +126,7 @@ export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
   },
 });
@@ -177,10 +177,10 @@ export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
     Dog: {
-      schema: {
+      valueSchema: {
         owner: "address",
         name: "string",
         color: "string",
