@@ -165,8 +165,6 @@ export function createContract<
             const functionSelector = getFunctionSelector(functionSignature);
             if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
 
-            console.log({ functionName, functionSignature, functionSelector });
-
             let request: WriteContractParameters = {
               address,
               abi,
@@ -175,6 +173,13 @@ export function createContract<
               ...options,
             };
             const resourceSelector = await getResourceSelector(functionSelector);
+
+            console.log({
+              functionName,
+              functionSignature: JSON.stringify(functionSignature),
+              functionSelector,
+              resourceSelector,
+            });
             const shouldUseCallFrom = resourceSelector && resourceSelector !== staticAbiTypeToDefaultValue.bytes32;
 
             // if the function is not part of the world contract and needs to be routed
