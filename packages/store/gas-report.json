@@ -254,14 +254,26 @@
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
+    "name": "MUD storage load field (warm, 1 word)",
+    "gasUsed": 245
+  },
+  {
+    "file": "test/GasStorageLoad.t.sol",
+    "test": "testCompareStorageLoadMUD",
     "name": "MUD storage load (warm, 1 word, partial)",
     "gasUsed": 460
   },
   {
     "file": "test/GasStorageLoad.t.sol",
     "test": "testCompareStorageLoadMUD",
+    "name": "MUD storage load field (warm, 1 word, partial)",
+    "gasUsed": 378
+  },
+  {
+    "file": "test/GasStorageLoad.t.sol",
+    "test": "testCompareStorageLoadMUD",
     "name": "MUD storage load (warm, 10 words)",
-    "gasUsed": 1914
+    "gasUsed": 1916
   },
   {
     "file": "test/GasStorageLoad.t.sol",

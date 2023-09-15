@@ -67,6 +67,9 @@ contract GasStorageLoadTest is Test, GasReporter {
     bytes memory encodedPartial = abi.encodePacked(valuePartial);
     bytes memory encoded9Words = abi.encodePacked(value9Words.length, value9Words);
 
+    bytes32 encodedFieldSimple = valueSimple;
+    bytes32 encodedFieldPartial = valuePartial;
+
     startGasReport("MUD storage load (cold, 1 word)");
     encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
     endGasReport();
@@ -85,8 +88,17 @@ contract GasStorageLoadTest is Test, GasReporter {
     encodedSimple = Storage.load(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
     endGasReport();
 
+    startGasReport("MUD storage load field (warm, 1 word)");
+    encodedFieldSimple = Storage.loadField(SolidityStorage.STORAGE_SLOT_SIMPLE, encodedSimple.length, 0);
+    endGasReport();
+
     startGasReport("MUD storage load (warm, 1 word, partial)");
     encodedPartial = Storage.load(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedPartial.length, 16);
+    endGasReport();
+
+    encodedFieldPartial = Storage.loadField(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedSimple.length, 16);
+    startGasReport("MUD storage load field (warm, 1 word, partial)");
+    encodedFieldPartial = Storage.loadField(SolidityStorage.STORAGE_SLOT_PARTIAL, encodedSimple.length, 16);
     endGasReport();
 
     startGasReport("MUD storage load (warm, 10 words)");
