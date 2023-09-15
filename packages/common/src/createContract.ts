@@ -52,6 +52,7 @@ export type CreateContractOptions<
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
   getResourceSelector: (functionSelector: Hex) => Promise<Hex>;
+  isInternalMethod: (functionSelector: Hex) => boolean;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -69,6 +70,7 @@ export function createContract<
   publicClient,
   walletClient,
   onWrite,
+  isInternalMethod,
   getResourceSelector,
 }: CreateContractOptions<
   TTransport,
@@ -162,23 +164,39 @@ export function createContract<
             }) as AbiFunction;
             const functionSelector = getFunctionSelector(functionSignature);
             if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
-            const resourceSelector = await getResourceSelector(functionSelector);
 
-            // TODO figure out how to strongly type Abi
-            const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
-              abi,
-              functionName: functionName,
-              args,
-            });
-            const argsForCallFrom = [walletClient.account.address, resourceSelector, funcSelectorAndArgs]; // TODO replace address with delegator
+            const isInternal = isInternalMethod(functionSelector);
 
-            const request: WriteContractParameters = {
+            let request: WriteContractParameters = {
               address,
               abi,
-              functionName: "callFrom",
-              args: argsForCallFrom,
+              functionName,
+              args,
               ...options,
             };
+
+            // if the function is not part of the world contract and needs to be routed
+            // to other systems, route it through callFrom
+            if (!isInternal) {
+              const resourceSelector = await getResourceSelector(functionSelector);
+
+              // TODO figure out how to strongly type Abi
+              const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
+                abi,
+                functionName: functionName,
+                args,
+              });
+              // delegator, resourceSelector, funcSelectorAndArgs
+              const argsForCallFrom = [walletClient.account.address, resourceSelector, funcSelectorAndArgs]; // TODO replace address with delegator
+
+              request = {
+                address,
+                abi,
+                functionName: "callFrom",
+                args: argsForCallFrom,
+                ...options,
+              };
+            }
 
             const result = write(request);
 
