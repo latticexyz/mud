@@ -39,12 +39,12 @@ interface IWorldCall {
  * registered functions selectors from the `CoreModule`.
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
-  event HelloWorld(bytes32 indexed version);
+  event HelloWorld(bytes32 indexed worldVersion);
 
   /**
    * The version of the World.
    */
-  function version() external view returns (bytes32);
+  function worldVersion() external view returns (bytes32);
 
   /**
    * The immutable original deployer of the World.

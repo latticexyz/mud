@@ -143,7 +143,7 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
-  event HelloWorld(bytes32 indexed version);
+  event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);

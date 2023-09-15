@@ -10,7 +10,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
+import { WORLD_VERSION, ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
@@ -34,14 +34,16 @@ import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
-
-  bytes32 public constant version = "0.0.0";
   address public immutable creator;
+
+  function worldVersion() public pure returns (bytes32) {
+    return WORLD_VERSION;
+  }
 
   constructor() {
     creator = msg.sender;
     StoreCore.initialize();
-    emit HelloWorld(version);
+    emit HelloWorld(WORLD_VERSION);
   }
 
   /**
