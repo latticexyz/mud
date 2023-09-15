@@ -52,7 +52,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules.getModuleAddress(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (InstalledModules.get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
       revert WorldAlreadyInitialized();
     }
 
