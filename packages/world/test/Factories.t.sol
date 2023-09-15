@@ -11,7 +11,7 @@ import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
 import { InstalledModules } from "../src/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
-import { ROOT_NAMESPACE } from "../src/constants.sol";
+import { WORLD_VERSION, ROOT_NAMESPACE } from "../src/constants.sol";
 
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
@@ -58,8 +58,8 @@ contract FactoriesTest is Test {
     address calculatedAddress = calculateAddress(worldFactoryAddress, bytes32(0), type(World).creationCode);
 
     // Check for HelloWorld event from World
-    vm.expectEmit(false, false, false, false);
-    emit HelloWorld("");
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld(WORLD_VERSION);
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);

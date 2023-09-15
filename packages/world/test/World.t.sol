@@ -22,7 +22,7 @@ import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
+import { WORLD_VERSION, ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHookLib, SystemHook } from "../src/SystemHook.sol";
@@ -180,8 +180,8 @@ contract WorldTest is Test, GasReporter {
   function testConstructorAndInitialize() public {
     CoreModule coreModule = new CoreModule();
 
-    vm.expectEmit(false, false, false, false);
-    emit HelloWorld("");
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
 
     // Expect the creator to be the original deployer
