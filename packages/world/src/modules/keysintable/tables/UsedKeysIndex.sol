@@ -26,6 +26,8 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library UsedKeysIndex {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -105,9 +107,15 @@ library UsedKeysIndex {
   function _getHas(bytes32 sourceTable, bytes32 keysHash) internal view returns (bool has) {
     bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 0);
-    return (_toBool(uint8(bytes1(_blob))));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    bool _blob;
+    assembly {
+      _blob := shr(248, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get has (using the specified store) */
@@ -177,9 +185,15 @@ library UsedKeysIndex {
   function _getIndex(bytes32 sourceTable, bytes32 keysHash) internal view returns (uint40 index) {
     bytes32 _keyHash = keccak256(abi.encodePacked(sourceTable, keysHash));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 5, 1);
-    return (uint40(bytes5(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint40 _blob;
+    assembly {
+      _blob := shr(208, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get index (using the specified store) */

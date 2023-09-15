@@ -26,6 +26,8 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library Singleton {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -105,9 +107,15 @@ library Singleton {
   function _getV1() internal view returns (int256 v1) {
     bytes32 _keyHash = keccak256(abi.encodePacked());
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
-    return (int256(uint256(bytes32(_blob))));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    int256 _blob;
+    assembly {
+      _blob := sload(storagePointer)
+    }
+    return _blob;
   }
 
   /** Get v1 (using the specified store) */

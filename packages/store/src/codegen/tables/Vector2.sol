@@ -31,6 +31,8 @@ struct Vector2Data {
 }
 
 library Vector2 {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -108,9 +110,15 @@ library Vector2 {
   function _getX(bytes32 key) internal view returns (uint32 x) {
     bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 0);
-    return (uint32(bytes4(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint32 _blob;
+    assembly {
+      _blob := shr(224, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get x (using the specified store) */
@@ -168,9 +176,15 @@ library Vector2 {
   function _getY(bytes32 key) internal view returns (uint32 y) {
     bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 4);
-    return (uint32(bytes4(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint32 _blob;
+    assembly {
+      _blob := shr(192, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get y (using the specified store) */

@@ -42,6 +42,23 @@ contract Vector2Test is Test, GasReporter, StoreMock {
     Vector2Data memory vector = Vector2.get(key);
     endGasReport();
 
+    startGasReport("get Vector2 x");
+    uint256 x = Vector2.getX(key);
+    endGasReport();
+
+    bytes32 key2 = keccak256("somekey2");
+    startGasReport("_set Vector2 record");
+    Vector2._set({ key: key2, x: 1, y: 2 });
+    endGasReport();
+
+    startGasReport("_get Vector2 record");
+    Vector2Data memory _vector = Vector2._get(key2);
+    endGasReport();
+
+    startGasReport("_get Vector2 x");
+    uint256 x2 = Vector2._getX(key2);
+    endGasReport();
+
     assertEq(vector.x, 1);
     assertEq(vector.y, 2);
   }

@@ -29,6 +29,8 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library ResourceType {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -104,9 +106,15 @@ library ResourceType {
   function _get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
     bytes32 _keyHash = keccak256(abi.encodePacked(resourceSelector));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 0);
-    return Resource(uint8(bytes1(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint8 _blob;
+    assembly {
+      _blob := shr(248, sload(storagePointer))
+    }
+    return Resource(_blob);
   }
 
   /** Get resourceType (using the specified store) */

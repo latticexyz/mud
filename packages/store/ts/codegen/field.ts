@@ -16,6 +16,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
   for (const [schemaIndex, field] of options.fields.entries()) {
     const _typedFieldName = `${field.typeWithLocation} ${field.name}`;
     const dynamicSchemaIndex = schemaIndex - options.staticFields.length;
+    const pointerOffset = Math.floor(offset / 32);
+    const slotOffset = offset % 32;
 
     if (field.isDynamic) {
       result += renderWithStore(
@@ -52,6 +54,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       `
       );
     } else {
+      const remainderBits = (field.staticByteLength + slotOffset - 32) * 8;
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
@@ -62,9 +65,31 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
         ])}) internal view returns (${_typedFieldName}) {
           ${_keyhashDefinition}
+          ${
+            _methodNamePrefix == "_"
+              ? `
+          uint256 storagePointer;
+          unchecked {
+            storagePointer = uint256(_tableId ^ SLOT ^ _keyHash)${pointerOffset ? ` + ${pointerOffset}` : ""};
+          }
+          ${field.internalTypeId} _blob;
+          assembly {
+            _blob := ${
+              remainderBits == 0
+                ? `sload(storagePointer)`
+                : remainderBits < 0
+                ? `shr(${-remainderBits}, sload(storagePointer))`
+                : `or(shl(${remainderBits}, sload(storagePointer), shr(${
+                    256 - remainderBits
+                  }, sload(add(storagePointer, 1)))))`
+            }
+          }
+          return ${field.typeWrap ? `${field.typeWrap}(_blob)` : "_blob"};`
+              : `
           uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
           bytes32 _blob = ${_store}.loadStaticField(storagePointer, ${field.staticByteLength}, ${offset});
-          return ${renderDecodeStaticValueType(field)};
+          return ${renderDecodeStaticValueType(field)};`
+          }
         }
       `
       );

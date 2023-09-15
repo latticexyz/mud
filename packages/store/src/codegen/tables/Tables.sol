@@ -34,6 +34,8 @@ struct TablesData {
 }
 
 library Tables {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -117,9 +119,15 @@ library Tables {
   function _getFieldLayout(bytes32 tableId) internal view returns (bytes32 fieldLayout) {
     bytes32 _keyHash = keccak256(abi.encodePacked(tableId));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
-    return (bytes32(_blob));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    bytes32 _blob;
+    assembly {
+      _blob := sload(storagePointer)
+    }
+    return _blob;
   }
 
   /** Get fieldLayout (using the specified store) */
@@ -204,9 +212,15 @@ library Tables {
   function _getKeySchema(bytes32 tableId) internal view returns (bytes32 keySchema) {
     bytes32 _keyHash = keccak256(abi.encodePacked(tableId));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 32);
-    return (bytes32(_blob));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 1;
+    }
+    bytes32 _blob;
+    assembly {
+      _blob := sload(storagePointer)
+    }
+    return _blob;
   }
 
   /** Get keySchema (using the specified store) */
@@ -291,9 +305,15 @@ library Tables {
   function _getValueSchema(bytes32 tableId) internal view returns (bytes32 valueSchema) {
     bytes32 _keyHash = keccak256(abi.encodePacked(tableId));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 64);
-    return (bytes32(_blob));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 2;
+    }
+    bytes32 _blob;
+    assembly {
+      _blob := sload(storagePointer)
+    }
+    return _blob;
   }
 
   /** Get valueSchema (using the specified store) */

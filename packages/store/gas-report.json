@@ -1077,7 +1077,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 411128
+    "gasUsed": 411139
   },
   {
     "file": "test/Vector2.t.sol",
@@ -1090,5 +1090,29 @@
     "test": "testSetAndGet",
     "name": "get Vector2 record",
     "gasUsed": 2548
+  },
+  {
+    "file": "test/Vector2.t.sol",
+    "test": "testSetAndGet",
+    "name": "get Vector2 x",
+    "gasUsed": 1077
+  },
+  {
+    "file": "test/Vector2.t.sol",
+    "test": "testSetAndGet",
+    "name": "_set Vector2 record",
+    "gasUsed": 29751
+  },
+  {
+    "file": "test/Vector2.t.sol",
+    "test": "testSetAndGet",
+    "name": "_get Vector2 record",
+    "gasUsed": 2263
+  },
+  {
+    "file": "test/Vector2.t.sol",
+    "test": "testSetAndGet",
+    "name": "_get Vector2 x",
+    "gasUsed": 531
   }
 ]

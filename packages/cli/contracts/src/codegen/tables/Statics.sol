@@ -39,6 +39,8 @@ struct StaticsData {
 }
 
 library Statics {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -174,9 +176,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
-    return (uint256(bytes32(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint256 _blob;
+    assembly {
+      _blob := sload(storagePointer)
+    }
+    return _blob;
   }
 
   /** Get v1 (using the specified store) */
@@ -356,9 +364,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 32);
-    return (int32(uint32(bytes4(_blob))));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 1;
+    }
+    int32 _blob;
+    assembly {
+      _blob := shr(224, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get v2 (using the specified store) */
@@ -538,9 +552,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 16, 36);
-    return (bytes16(_blob));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 1;
+    }
+    bytes16 _blob;
+    assembly {
+      _blob := shr(96, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get v3 (using the specified store) */
@@ -729,9 +749,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 20, 52);
-    return (address(bytes20(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 1;
+    }
+    address _blob;
+    assembly {
+      _blob := or(shl(64, sload(storagePointer), shr(192, sload(add(storagePointer, 1)))))
+    }
+    return _blob;
   }
 
   /** Get v4 (using the specified store) */
@@ -920,9 +946,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 72);
-    return (_toBool(uint8(bytes1(_blob))));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 2;
+    }
+    bool _blob;
+    assembly {
+      _blob := shr(184, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get v5 (using the specified store) */
@@ -1102,9 +1134,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 73);
-    return Enum1(uint8(bytes1(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 2;
+    }
+    uint8 _blob;
+    assembly {
+      _blob := shr(176, sload(storagePointer))
+    }
+    return Enum1(_blob);
   }
 
   /** Get v6 (using the specified store) */
@@ -1302,9 +1340,15 @@ library Statics {
       )
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 1, 74);
-    return Enum2(uint8(bytes1(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash) + 2;
+    }
+    uint8 _blob;
+    assembly {
+      _blob := shr(168, sload(storagePointer))
+    }
+    return Enum2(_blob);
   }
 
   /** Get v7 (using the specified store) */

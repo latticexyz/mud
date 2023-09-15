@@ -26,6 +26,8 @@ FieldLayout constant _fieldLayout = FieldLayout.wrap(
 );
 
 library TimeboundDelegations {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -107,9 +109,15 @@ library TimeboundDelegations {
       abi.encodePacked(bytes32(uint256(uint160(delegator))), bytes32(uint256(uint160(delegatee))))
     );
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 32, 0);
-    return (uint256(bytes32(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint256 _blob;
+    assembly {
+      _blob := sload(storagePointer)
+    }
+    return _blob;
   }
 
   /** Get maxTimestamp (using the specified store) */

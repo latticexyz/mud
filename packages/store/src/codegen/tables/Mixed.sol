@@ -33,6 +33,8 @@ struct MixedData {
 }
 
 library Mixed {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -114,9 +116,15 @@ library Mixed {
   function _getU32(bytes32 key) internal view returns (uint32 u32) {
     bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 4, 0);
-    return (uint32(bytes4(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint32 _blob;
+    assembly {
+      _blob := shr(224, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get u32 (using the specified store) */
@@ -183,9 +191,15 @@ library Mixed {
   function _getU128(bytes32 key) internal view returns (uint128 u128) {
     bytes32 _keyHash = keccak256(abi.encodePacked(key));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 16, 4);
-    return (uint128(bytes16(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    uint128 _blob;
+    assembly {
+      _blob := shr(96, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get u128 (using the specified store) */

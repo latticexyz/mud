@@ -30,6 +30,8 @@ struct InstalledModulesData {
 }
 
 library InstalledModules {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
@@ -107,9 +109,15 @@ library InstalledModules {
   function _getModuleAddress(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
     bytes32 _keyHash = keccak256(abi.encodePacked(bytes32(moduleName), argumentsHash));
 
-    uint256 storagePointer = StoreCoreInternal._getStaticDataLocation(_tableId, _keyHash);
-    bytes32 _blob = StoreCore.loadStaticField(storagePointer, 20, 0);
-    return (address(bytes20(_blob)));
+    uint256 storagePointer;
+    unchecked {
+      storagePointer = uint256(_tableId ^ SLOT ^ _keyHash);
+    }
+    address _blob;
+    assembly {
+      _blob := shr(96, sload(storagePointer))
+    }
+    return _blob;
   }
 
   /** Get moduleAddress (using the specified store) */

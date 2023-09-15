@@ -34,6 +34,8 @@ struct KeysInTableData {
 }
 
 library KeysInTable {
+  bytes32 internal constant SLOT = keccak256("mud.store");
+
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     return _fieldLayout;
