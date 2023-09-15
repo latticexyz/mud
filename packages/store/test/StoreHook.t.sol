@@ -25,7 +25,7 @@ contract StoreHookTest is Test, GasReporter {
   bytes private staticData = abi.encodePacked(bytes32(0));
   PackedCounter private encodedLengths = PackedCounter.wrap(bytes32(0));
   bytes private dynamicData = new bytes(0);
-  uint8 private schemaIndex = 1;
+  uint8 private fieldIndex = 1;
   FieldLayout private fieldLayout = FieldLayout.wrap(0);
 
   function testEncodeBitmap() public {

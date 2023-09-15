@@ -33,21 +33,21 @@ contract EchoSubscriber is StoreHook {
   function onBeforeSetField(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, schemaIndex, data, fieldLayout));
+    emit HookCalled(abi.encode(tableId, keyTuple, fieldIndex, data, fieldLayout));
   }
 
   function onAfterSetField(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, schemaIndex, data, fieldLayout));
+    emit HookCalled(abi.encode(tableId, keyTuple, fieldIndex, data, fieldLayout));
   }
 
   function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {

@@ -51,12 +51,12 @@ contract MirrorSubscriber is StoreHook {
   function onBeforeSetField(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
     if (tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setField(indexerTableId, keyTuple, schemaIndex, data, fieldLayout);
+    StoreSwitch.setField(indexerTableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
   function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {

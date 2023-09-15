@@ -25,7 +25,7 @@ interface IStoreRead {
   function getField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
@@ -33,7 +33,7 @@ interface IStoreRead {
   function getFieldLength(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout
   ) external view returns (uint256);
 
@@ -41,7 +41,7 @@ interface IStoreRead {
   function getFieldSlice(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout,
     uint256 start,
     uint256 end
@@ -82,7 +82,7 @@ interface IStoreWrite {
   function setField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) external;
@@ -91,7 +91,7 @@ interface IStoreWrite {
   function pushToField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
   ) external;
@@ -100,7 +100,7 @@ interface IStoreWrite {
   function popFromField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) external;
@@ -109,7 +109,7 @@ interface IStoreWrite {
   function updateInField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
