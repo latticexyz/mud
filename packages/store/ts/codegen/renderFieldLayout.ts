@@ -4,15 +4,16 @@ import { BYTE_TO_BITS, LayoutOffsets, MAX_DYNAMIC_FIELDS, MAX_TOTAL_FIELDS, WORD
 export function renderFieldLayout(fields: RenderType[]) {
   return `FieldLayout constant _fieldLayout = FieldLayout.wrap(${encodeFieldLayout(fields)});`;
 }
+
 // Make sure this logic stays aligned with @latticexyz/store/src/FieldLayout.sol
 export function encodeFieldLayout(fields: RenderType[]) {
   const staticFields = fields.filter(({ isDynamic }) => !isDynamic);
   const numDynamicFields = fields.length - staticFields.length;
-  
+
   let fieldLayout = 0n;
   let totalLength = 0;
   const totalFields = fields.length;
-  
+
   if (totalFields > MAX_TOTAL_FIELDS) throw new Error(`FieldLayout: invalid length ${totalFields}`);
   if (numDynamicFields > MAX_DYNAMIC_FIELDS) throw new Error(`FieldLayout: invalid length ${numDynamicFields}`);
 
