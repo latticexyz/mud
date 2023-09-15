@@ -139,18 +139,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceAccess.set(namespace, address(system), true);
   }
 
-  /**
-   * Register a World function selector for the given namespace, name and system function.
-   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
-   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
-   * (see https://github.com/latticexyz/mud/issues/444)
-   * TODO: replace separate systemFunctionName and systemFunctionArguments with a signature argument
-   */
-  function registerFunctionSelector(
+  function _registerFunctionSelector(
     bytes32 resourceSelector,
     string memory systemFunctionName,
     string memory systemFunctionArguments
-  ) public returns (bytes4 worldFunctionSelector) {
+  ) internal returns (bytes4 worldFunctionSelector) {
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(resourceSelector.getNamespace());
     string memory nameString = ResourceSelector.toTrimmedString(resourceSelector.getName());
@@ -172,6 +165,24 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   }
 
   /**
+   * Register a World function selector for the given namespace, name and system function.
+   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
+   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
+   * (see https://github.com/latticexyz/mud/issues/444)
+   * TODO: replace separate systemFunctionName and systemFunctionArguments with a signature argument
+   */
+  function registerFunctionSelector(
+    bytes32 resourceSelector,
+    string memory systemFunctionName,
+    string memory systemFunctionArguments
+  ) public returns (bytes4 worldFunctionSelector) {
+    // Require the caller to own the namespace
+    AccessControl.requireOwner(resourceSelector, _msgSender());
+
+    return _registerFunctionSelector(resourceSelector, systemFunctionName, systemFunctionArguments);
+  }
+
+  /**
    * Register World function selectors in batch for the given namespace, name and system function.
    */
   function registerFunctionSelectors(
@@ -187,8 +198,24 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     for (uint256 i = 0; i < systemFunctionNames.length; i++) {
-      registerFunctionSelector(resourceSelector, systemFunctionNames[i], systemFunctionArguments[i]);
+      _registerFunctionSelector(resourceSelector, systemFunctionNames[i], systemFunctionArguments[i]);
     }
+  }
+
+  function _registerRootFunctionSelector(
+    bytes32 resourceSelector,
+    bytes4 worldFunctionSelector,
+    bytes4 systemFunctionSelector
+  ) internal returns (bytes4) {
+    // Require the function selector to be globally unique
+    bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);
+
+    if (existingResourceSelector != 0) revert FunctionSelectorExists(worldFunctionSelector);
+
+    // Register the function selector
+    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
+
+    return worldFunctionSelector;
   }
 
   /**
@@ -203,15 +230,10 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
-    // Require the function selector to be globally unique
-    bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);
+    // Require the caller to own the root namespace
+    AccessControl.requireOwner(ROOT_NAMESPACE, _msgSender());
 
-    if (existingResourceSelector != 0) revert FunctionSelectorExists(worldFunctionSelector);
-
-    // Register the function selector
-    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
-
-    return worldFunctionSelector;
+    return _registerRootFunctionSelector(resourceSelector, worldFunctionSelector, systemFunctionSelector);
   }
 
   /**
@@ -231,7 +253,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     for (uint256 i = 0; i < worldFunctionSelectors.length; i++) {
-      registerRootFunctionSelector(resourceSelector, worldFunctionSelectors[i], systemFunctionSelectors[i]);
+      _registerRootFunctionSelector(resourceSelector, worldFunctionSelectors[i], systemFunctionSelectors[i]);
     }
   }
 
