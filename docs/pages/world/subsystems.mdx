@@ -28,11 +28,11 @@ export default mudConfig({
   tables: {
     BalanceTable: {
       keySchema: { owner: "address"},
-      schema: { amount: "uint256" },
+      valueSchema: { amount: "uint256" },
     },
     OwnerTable: {
       keySchema: { token: "uint256" },
-      schema: { owner: "address" },
+      valueSchema: { owner: "address" },
     },
   },
 });

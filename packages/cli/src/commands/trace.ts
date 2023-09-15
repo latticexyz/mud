@@ -10,7 +10,8 @@ import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config.js";
 import { tableIdToHex } from "@latticexyz/common";
-import { getChainId, getExistingContracts } from "../utils";
+import { getExistingContracts } from "../utils/getExistingContracts";
+import { getChainId } from "../utils/utils/getChainId";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = tableIdToHex(worldConfig.namespace, worldConfig.tables.Systems.name);

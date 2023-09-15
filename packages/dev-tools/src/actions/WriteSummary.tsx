@@ -131,7 +131,7 @@ export function WriteSummary({ write }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
-                const table = hexToTableId((args as any).table);
+                const table = hexToTableId((args as any).tableId);
                 return (
                   <tr key={i}>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">

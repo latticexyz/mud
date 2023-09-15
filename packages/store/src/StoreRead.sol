@@ -7,54 +7,54 @@ import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 
 contract StoreRead is IStoreRead {
-  function getFieldLayout(bytes32 table) public view virtual returns (FieldLayout fieldLayout) {
-    fieldLayout = StoreCore.getFieldLayout(table);
+  function getFieldLayout(bytes32 tableId) public view virtual returns (FieldLayout fieldLayout) {
+    fieldLayout = StoreCore.getFieldLayout(tableId);
   }
 
-  function getValueSchema(bytes32 table) public view virtual returns (Schema schema) {
-    schema = StoreCore.getValueSchema(table);
+  function getValueSchema(bytes32 tableId) public view virtual returns (Schema valueSchema) {
+    valueSchema = StoreCore.getValueSchema(tableId);
   }
 
-  function getKeySchema(bytes32 table) public view virtual returns (Schema schema) {
-    schema = StoreCore.getKeySchema(table);
+  function getKeySchema(bytes32 tableId) public view virtual returns (Schema keySchema) {
+    keySchema = StoreCore.getKeySchema(tableId);
   }
 
   // Get full record (static and dynamic data)
   function getRecord(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) public view virtual returns (bytes memory data) {
-    data = StoreCore.getRecord(table, key, fieldLayout);
+    data = StoreCore.getRecord(tableId, keyTuple, fieldLayout);
   }
 
   // Get partial data at schema index
   function getField(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) public view virtual returns (bytes memory data) {
-    data = StoreCore.getField(table, key, schemaIndex, fieldLayout);
+    data = StoreCore.getField(tableId, keyTuple, schemaIndex, fieldLayout);
   }
 
   function getFieldLength(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) public view virtual returns (uint256) {
-    return StoreCore.getFieldLength(tableId, key, schemaIndex, fieldLayout);
+    return StoreCore.getFieldLength(tableId, keyTuple, schemaIndex, fieldLayout);
   }
 
   function getFieldSlice(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout,
     uint256 start,
     uint256 end
   ) public view virtual returns (bytes memory) {
-    return StoreCore.getFieldSlice(tableId, key, schemaIndex, fieldLayout, start, end);
+    return StoreCore.getFieldSlice(tableId, keyTuple, schemaIndex, fieldLayout, start, end);
   }
 }

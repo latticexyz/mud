@@ -18,14 +18,13 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
    * Note: this module only supports up to 5 composite keys.
    */
 
-  Schema schema = StoreSwitch.getKeySchema(tableId);
-
-  uint256 numFields = schema.numFields();
+  Schema keySchema = StoreSwitch.getKeySchema(tableId);
+  uint256 numFields = keySchema.numFields();
   uint256 length = KeysInTable.lengthKeys0(tableId);
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
-    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the schema
+    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the key schema
 
     if (numFields > 0) {
       keyTuples[i][0] = KeysInTable.getItemKeys0(tableId, i);
@@ -53,14 +52,14 @@ function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][]
    * Note: this module only supports up to 5 composite keys.
    */
 
-  Schema schema = store.getKeySchema(tableId);
+  Schema keySchema = store.getKeySchema(tableId);
 
-  uint256 numFields = schema.numFields();
+  uint256 numFields = keySchema.numFields();
   uint256 length = KeysInTable.lengthKeys0(store, tableId);
   keyTuples = new bytes32[][](length);
 
   for (uint256 i; i < length; i++) {
-    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the schema
+    keyTuples[i] = new bytes32[](numFields); // the length of the key tuple depends on the key schema
 
     if (numFields > 0) {
       keyTuples[i][0] = KeysInTable.getItemKeys0(store, tableId, i);

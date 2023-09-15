@@ -13,6 +13,6 @@ export function encodeValue<TSchema extends ValueSchema>(
   // TODO: refactor and move all encodeRecord logic into this method so we can delete encodeRecord
 
   // This currently assumes fields/values are ordered by static, dynamic
-  // TODO: make sure we preserve ordering based on schema definition
+  // TODO: make sure we preserve ordering based on value schema definition
   return encodeRecord({ staticFields, dynamicFields }, Object.values(value));
 }

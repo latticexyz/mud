@@ -9,10 +9,12 @@ import path from "path";
 import { debounce } from "throttle-debounce";
 import { worldgenHandler } from "./worldgen";
 import { WorldConfig } from "@latticexyz/world";
-import { deployHandler, logError, printMUD } from "../utils";
 import { homedir } from "os";
 import { rmSync } from "fs";
 import { execa } from "execa";
+import { logError } from "../utils/errors";
+import { deployHandler } from "../utils/deployHandler";
+import { printMUD } from "../utils/printMUD";
 
 type Options = {
   rpc?: string;
