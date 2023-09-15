@@ -11,6 +11,7 @@ import path from "path";
 
 const REPO_URL = process.env.REPO_URL ?? "https://github.com/latticexyz/mud";
 const CHANGELOG_PATH = process.env.CHANGELOG_PATH ?? "CHANGELOG.md";
+const CHANGELOG_DOCS_PATH = process.env.CHANGELOG_DOCS_PATH ?? "docs/pages/changelog.mdx";
 const VERSION_PATH = process.env.VERSION_PATH ?? path.join(process.cwd(), "packages/world/package.json");
 const INCLUDE_CHANGESETS = (process.env.INCLUDE_CHANGESETS as "diff" | "all") ?? "diff"; // "diff" to only include new changesets, "all" to use all changesets in pre.json
 
@@ -56,13 +57,14 @@ async function appendChangelog() {
   // Append the new changelog at the up
   const newChangelog = await renderChangelog();
   writeFileSync(CHANGELOG_PATH, `${newChangelog}\n${currentChangelog}`);
+  writeFileSync(CHANGELOG_DOCS_PATH, `${newChangelog}\n${currentChangelog}`);
 }
 
 async function renderChangelog() {
   const changes = await getChanges(INCLUDE_CHANGESETS);
   const version = await getVersion();
 
-  return `# Version ${version}
+  return `## Version ${version}
 
 ${await renderChangelogItems("Major changes", changes.major)}
 ${await renderChangelogItems("Minor changes", changes.minor)}
@@ -75,7 +77,7 @@ ${await renderChangelogItems("Patch changes", changes.patch)}
 async function renderChangelogItems(headline: string, changelogItems: (ChangelogItem & GitMetadata)[]) {
   if (changelogItems.length === 0) return "";
 
-  let output = `## ${headline}\n`;
+  let output = `### ${headline}\n`;
 
   for (const changelogItem of changelogItems) {
     output += `**[${changelogItem.title}](${REPO_URL}/commit/${changelogItem.commitHash})** (${changelogItem.packages

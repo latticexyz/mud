@@ -1,8 +1,6 @@
 import { getBurnerPrivateKey } from "@latticexyz/common";
-import worldsJson from "contracts/worlds.json";
+import worlds from "contracts/worlds.json";
 import { supportedChains } from "./supportedChains";
-
-const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
 export async function getNetworkConfig() {
   const params = new URLSearchParams(window.location.search);

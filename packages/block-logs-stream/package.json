@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/block-logs-stream",
-  "version": "2.0.0-next.6",
+  "version": "2.0.0-next.8",
   "description": "Create a stream of EVM block logs for events",
   "repository": {
     "type": "git",
@@ -25,8 +25,6 @@
   },
   "dependencies": {
     "@latticexyz/common": "workspace:*",
-    "@latticexyz/config": "workspace:*",
-    "@latticexyz/schema-type": "workspace:*",
     "abitype": "0.9.3",
     "debug": "^4.3.4",
     "rxjs": "7.5.5",

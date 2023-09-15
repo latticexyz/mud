@@ -1,8 +1,8 @@
 import chalk from "chalk";
 import { TxConfig, deployContract, getContractData } from "./utils";
 
-import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import WorldData from "@latticexyz/world/out/World.sol/World.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 
 export async function deployWorldContract(
   ip: TxConfig & {
@@ -17,7 +17,7 @@ export async function deployWorldContract(
         name: "World",
         ...getContractData(ip.worldContractName, ip.forgeOutDirectory),
       }
-    : { abi: IBaseWorldData.abi, bytecode: WorldData.bytecode, name: "World" };
+    : { abi: IBaseWorldAbi, bytecode: WorldData.bytecode, name: "World" };
   return deployContract({
     ...ip,
     nonce: ip.nonce,

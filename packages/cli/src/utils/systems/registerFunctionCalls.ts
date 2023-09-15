@@ -14,7 +14,10 @@ export function registerFunctionCalls(input: {
   const { systemName, namespace, forgeOutDirectory, system } = input;
 
   if (system.registerFunctionSelectors) {
-    const functionSignatures: FunctionSignature[] = loadFunctionSignatures(systemName, forgeOutDirectory);
+    const baseSystemFunctionNames = loadFunctionSignatures("System", forgeOutDirectory).map((sig) => sig.functionName);
+    const functionSignatures = loadFunctionSignatures(systemName, forgeOutDirectory).filter(
+      (sig) => systemName === "System" || !baseSystemFunctionNames.includes(sig.functionName)
+    );
     const isRoot = namespace === "";
     for (const { functionName, functionArgs } of functionSignatures) {
       callData.push(

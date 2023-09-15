@@ -3,11 +3,12 @@ pragma solidity >=0.8.0;
 
 import { IWorldErrors } from "../../interfaces/IWorldErrors.sol";
 
+import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
+import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
+import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
-import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
-import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
-import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
 
 /**
  * The CoreSystem includes all World functionality that is externalized
@@ -15,11 +16,12 @@ import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.s
  */
 contract CoreSystem is
   IWorldErrors,
-  StoreRegistrationSystem,
-  WorldRegistrationSystem,
-  ModuleInstallationSystem,
   AccessManagementSystem,
-  EphemeralRecordSystem
+  BalanceTransferSystem,
+  EphemeralRecordSystem,
+  ModuleInstallationSystem,
+  StoreRegistrationSystem,
+  WorldRegistrationSystem
 {
 
 }

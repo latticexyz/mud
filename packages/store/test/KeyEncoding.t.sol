@@ -6,14 +6,24 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
 import { ExampleEnum } from "../src/codegen/Types.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract KeyEncodingTest is Test, GasReporter, StoreReadWithStubs {
-  function testRegisterAndGetSchema() public {
-    startGasReport("register KeyEncoding schema");
+contract KeyEncodingTest is Test, GasReporter, StoreMock {
+  function testRegisterAndGetFieldLayout() public {
+    startGasReport("register KeyEncoding table");
     KeyEncoding.register();
     endGasReport();
+
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(KeyEncodingTableId);
+    FieldLayout declaredFieldLayout = KeyEncoding.getFieldLayout();
+
+    assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
+  }
+
+  function testRegisterAndGetSchema() public {
+    KeyEncoding.register();
 
     Schema registeredSchema = StoreCore.getValueSchema(KeyEncodingTableId);
     Schema declaredSchema = KeyEncoding.getValueSchema();

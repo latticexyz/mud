@@ -15,57 +15,57 @@ export function renderRecordMethods(options: RenderTableOptions) {
   let result = renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Get the full data${_commentSuffix} */
-    function get(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal view returns (${renderDecodedRecord(options)}) {
-      ${_keyTupleDefinition}
-      bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getValueSchema());
-      return decode(_blob);
-    }
-  `
+      /** Get the full data${_commentSuffix} */
+      function get(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+      ])}) internal view returns (${renderDecodedRecord(options)}) {
+        ${_keyTupleDefinition}
+        bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getFieldLayout());
+        return decode(_blob);
+      }
+    `
   );
 
   result += renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
-    /** Set the full data using individual values${_commentSuffix} */
-    function set(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-    ])}) internal {
-      bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
+      /** Set the full data using individual values${_commentSuffix} */
+      function set(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+      ])}) internal {
+        bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
 
-      ${_keyTupleDefinition}
+        ${_keyTupleDefinition}
 
-      ${_store}.setRecord(_tableId, _keyTuple, _data, getValueSchema());
-    }
-  `
+        ${_store}.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+      }
+    `
   );
 
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
       (_typedStore, _store, _commentSuffix, _untypedStore) => `
-      /** Set the full data using the data struct${_commentSuffix} */
-      function set(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        `${structName} memory _table`,
-      ])}) internal {
-        set(${renderArguments([
-          _untypedStore,
-          _tableId,
-          _keyArgs,
-          renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-        ])});
-      }
-    `
+        /** Set the full data using the data struct${_commentSuffix} */
+        function set(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          `${structName} memory _table`,
+        ])}) internal {
+          set(${renderArguments([
+            _untypedStore,
+            _tableId,
+            _keyArgs,
+            renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
+          ])});
+        }
+      `
     );
   }
 
@@ -95,7 +95,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     // decode static (optionally) and dynamic data
     return `
     /**
-     * Decode the tightly packed blob using this table's schema.
+     * Decode the tightly packed blob using this table's field layout.
      * Undefined behaviour for invalid blobs.
      */
     function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
@@ -142,7 +142,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
   } else {
     // decode only static data
     return `
-    /** Decode the tightly packed blob using this table's schema */
+    /** Decode the tightly packed blob using this table's field layout */
     function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
       ${renderList(
         staticFields,

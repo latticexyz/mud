@@ -3,19 +3,28 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract MixedTest is Test, GasReporter, StoreReadWithStubs {
+contract MixedTest is Test, GasReporter, StoreMock {
   MixedData private testMixed;
 
-  function testRegisterAndGetSchema() public {
-    startGasReport("register Mixed schema");
+  function testRegisterAndGetFieldLayout() public {
+    startGasReport("register Mixed table");
     Mixed.register();
     endGasReport();
+
+    FieldLayout registeredFieldLayout = StoreCore.getFieldLayout(MixedTableId);
+    FieldLayout declaredFieldLayout = Mixed.getFieldLayout();
+
+    assertEq(keccak256(abi.encode(registeredFieldLayout)), keccak256(abi.encode(declaredFieldLayout)));
+  }
+
+  function testRegisterAndGetSchema() public {
+    Mixed.register();
 
     Schema registeredSchema = StoreCore.getValueSchema(MixedTableId);
     Schema declaredSchema = Mixed.getValueSchema();

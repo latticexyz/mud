@@ -1,0 +1,2 @@
+# suppress diffs for codegen in PRs
+**/codegen/**/*.sol linguist-generated=true

@@ -17,8 +17,8 @@ import {
   getContractData,
   deployContract,
 } from "./utils";
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
-import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import CoreModuleData from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -122,7 +122,7 @@ export async function deploy(
 
   // Wait for world to be deployed
   const deployedWorldAddress = await worldPromise;
-  const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldData.abi);
+  const worldContract = new ethers.Contract(deployedWorldAddress, IBaseWorldAbi);
 
   // If an existing World is passed assume its coreModule is already installed - blocking to install if not
   if (!worldAddress) {
@@ -131,8 +131,8 @@ export async function deploy(
       ...txConfig,
       nonce: nonce++,
       contract: worldContract,
-      func: "installRootModule",
-      args: [await deployedContracts["CoreModule"], "0x"],
+      func: "initialize",
+      args: [await deployedContracts["CoreModule"]],
     });
     console.log(chalk.green("Installed CoreModule"));
   }

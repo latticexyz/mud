@@ -1,5 +1,148 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Major Changes
+
+- [#1458](https://github.com/latticexyz/mud/pull/1458) [`b9e562d8`](https://github.com/latticexyz/mud/commit/b9e562d8f7a6051bb1a7262979b268fd2c83daac) Thanks [@alvrs](https://github.com/alvrs)! - The `World` now performs `ERC165` interface checks to ensure that the `StoreHook`, `SystemHook`, `System`, `DelegationControl` and `Module` contracts to actually implement their respective interfaces before registering them in the World.
+
+  The required `supportsInterface` methods are implemented on the respective base contracts.
+  When creating one of these contracts, the recommended approach is to extend the base contract rather than the interface.
+
+  ```diff
+  - import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
+  + import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
+
+  - contract MyStoreHook is IStoreHook {}
+  + contract MyStoreHook is StoreHook {}
+  ```
+
+  ```diff
+  - import { ISystemHook } from "@latticexyz/world/src/interfaces/ISystemHook.sol";
+  + import { SystemHook } from "@latticexyz/world/src/SystemHook.sol";
+
+  - contract MySystemHook is ISystemHook {}
+  + contract MySystemHook is SystemHook {}
+  ```
+
+  ```diff
+  - import { IDelegationControl } from "@latticexyz/world/src/interfaces/IDelegationControl.sol";
+  + import { DelegationControl } from "@latticexyz/world/src/DelegationControl.sol";
+
+  - contract MyDelegationControl is IDelegationControl {}
+  + contract MyDelegationControl is DelegationControl {}
+  ```
+
+  ```diff
+  - import { IModule } from "@latticexyz/world/src/interfaces/IModule.sol";
+  + import { Module } from "@latticexyz/world/src/Module.sol";
+
+  - contract MyModule is IModule {}
+  + contract MyModule is Module {}
+  ```
+
+### Minor Changes
+
+- [#1422](https://github.com/latticexyz/mud/pull/1422) [`1d60930d`](https://github.com/latticexyz/mud/commit/1d60930d6d4c9a0bda262e5e23a5f719b9dd48c7) Thanks [@alvrs](https://github.com/alvrs)! - It is now possible to unregister Store hooks and System hooks.
+
+  ```solidity
+  interface IStore {
+    function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
+    // ...
+  }
+
+  interface IWorld {
+    function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) external;
+    // ...
+  }
+  ```
+
+- [#1443](https://github.com/latticexyz/mud/pull/1443) [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98) Thanks [@holic](https://github.com/holic)! - Moved `KeySchema`, `ValueSchema`, `SchemaToPrimitives` and `TableRecord` types into `@latticexyz/protocol-parser`
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/config@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Major Changes
+
+- [#1399](https://github.com/latticexyz/mud/pull/1399) [`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15) Thanks [@alvrs](https://github.com/alvrs)! - - The `onSetRecord` hook is split into `onBeforeSetRecord` and `onAfterSetRecord` and the `onDeleteRecord` hook is split into `onBeforeDeleteRecord` and `onAfterDeleteRecord`.
+  The purpose of this change is to allow more fine-grained control over the point in the lifecycle at which hooks are executed.
+
+  The previous hooks were executed before modifying data, so they can be replaced with the respective `onBefore` hooks.
+
+  ```diff
+  - function onSetRecord(
+  + function onBeforeSetRecord(
+      bytes32 table,
+      bytes32[] memory key,
+      bytes memory data,
+      Schema valueSchema
+    ) public;
+
+  - function onDeleteRecord(
+  + function onBeforeDeleteRecord(
+      bytes32 table,
+      bytes32[] memory key,
+      Schema valueSchema
+    ) public;
+  ```
+
+  - It is now possible to specify which methods of a hook contract should be called when registering a hook. The purpose of this change is to save gas by avoiding to call no-op hook methods.
+
+    ```diff
+    function registerStoreHook(
+      bytes32 tableId,
+    - IStoreHook hookAddress
+    + IStoreHook hookAddress,
+    + uint8 enabledHooksBitmap
+    ) public;
+
+    function registerSystemHook(
+      bytes32 systemId,
+    - ISystemHook hookAddress
+    + ISystemHook hookAddress,
+    + uint8 enabledHooksBitmap
+    ) public;
+    ```
+
+    There are `StoreHookLib` and `SystemHookLib` with helper functions to encode the bitmap of enabled hooks.
+
+    ```solidity
+    import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+
+    uint8 storeHookBitmap = StoreBookLib.encodeBitmap({
+      onBeforeSetRecord: true,
+      onAfterSetRecord: true,
+      onBeforeSetField: true,
+      onAfterSetField: true,
+      onBeforeDeleteRecord: true,
+      onAfterDeleteRecord: true
+    });
+    ```
+
+    ```solidity
+    import { SystemHookLib } from "@latticexyz/world/src/SystemHook.sol";
+
+    uint8 systemHookBitmap = SystemHookLib.encodeBitmap({
+      onBeforeCallSystem: true,
+      onAfterCallSystem: true
+    });
+    ```
+
+  - The `onSetRecord` hook call for `emitEphemeralRecord` has been removed to save gas and to more clearly distinguish ephemeral tables as offchain tables.
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+
 ## 2.0.0-next.6
 
 ### Minor Changes

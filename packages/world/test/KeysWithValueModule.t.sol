@@ -8,6 +8,9 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
+
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
@@ -32,16 +35,18 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   bytes32 key2 = keccak256("test2");
   bytes32[] keyTuple2;
 
+  FieldLayout sourceTableFieldLayout;
   Schema sourceTableSchema;
   Schema sourceTableKeySchema;
   bytes32 sourceTableId;
   bytes32 targetTableId;
 
   function setUp() public {
+    sourceTableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
     sourceTableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
@@ -52,7 +57,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
   function _installKeysWithValueModule() internal {
     // Register source table
-    world.registerTable(sourceTableId, sourceTableSchema, sourceTableKeySchema, new string[](1), new string[](1));
+    world.registerTable(
+      sourceTableId,
+      sourceTableFieldLayout,
+      sourceTableKeySchema,
+      sourceTableSchema,
+      new string[](1),
+      new string[](1)
+    );
 
     // Install the index module
     // TODO: add support for installing this via installModule
@@ -68,7 +80,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value = 1;
 
     startGasReport("set a record on a table with KeysWithValueModule installed");
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), sourceTableSchema);
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), sourceTableFieldLayout);
     endGasReport();
 
     // Get the list of entities with this value from the target table
@@ -85,7 +97,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), sourceTableSchema);
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value1), sourceTableFieldLayout);
 
     // Get the list of entities with value1 from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -95,7 +107,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1, "2");
 
     // Set a another key with the same value
-    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), sourceTableSchema);
+    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value1), sourceTableFieldLayout);
 
     // Get the list of entities with value2 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -109,7 +121,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value2 = 2;
 
     startGasReport("change a record on a table with KeysWithValueModule installed");
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value2), sourceTableSchema);
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value2), sourceTableFieldLayout);
     endGasReport();
 
     // Get the list of entities with value1 from the target table
@@ -128,7 +140,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
     // Delete the first key
     startGasReport("delete a record on a table with KeysWithValueModule installed");
-    world.deleteRecord(sourceTableId, keyTuple1, sourceTableSchema);
+    world.deleteRecord(sourceTableId, keyTuple1, sourceTableFieldLayout);
     endGasReport();
 
     // Get the list of entities with value2 from the target table
@@ -145,7 +157,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     uint256 value1 = 1;
 
     startGasReport("set a field on a table with KeysWithValueModule installed");
-    world.setField(sourceTableId, keyTuple1, 0, abi.encodePacked(value1), sourceTableSchema);
+    world.setField(sourceTableId, keyTuple1, 0, abi.encodePacked(value1), sourceTableFieldLayout);
     endGasReport();
 
     // Get the list of entities with value1 from the target table
@@ -159,7 +171,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
     // Change the value using setField
     startGasReport("change a field on a table with KeysWithValueModule installed");
-    world.setField(sourceTableId, keyTuple1, 0, abi.encodePacked(value2), sourceTableSchema);
+    world.setField(sourceTableId, keyTuple1, 0, abi.encodePacked(value2), sourceTableFieldLayout);
     endGasReport();
 
     // Get the list of entities with value1 from the target table
@@ -200,7 +212,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     _installKeysWithValueModule();
 
     // Set a value in the source table
-    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), sourceTableSchema);
+    world.setRecord(sourceTableId, keyTuple1, abi.encodePacked(value), sourceTableFieldLayout);
 
     startGasReport("Get list of keys with a given value");
     bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
@@ -211,7 +223,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
 
     // Set a another key with the same value
-    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value), sourceTableSchema);
+    world.setRecord(sourceTableId, keyTuple2, abi.encodePacked(value), sourceTableFieldLayout);
 
     // Get the list of keys with value from the target table
     keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));

@@ -2,10 +2,11 @@
 pragma solidity >=0.8.0;
 
 import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
@@ -15,33 +16,48 @@ import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
+import { requireInterface } from "./requireInterface.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 import { Delegations } from "./tables/Delegations.sol";
 
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
-import { IModule } from "./interfaces/IModule.sol";
+import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
 import { Systems } from "./modules/core/tables/Systems.sol";
 import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+import { Balances } from "./modules/core/tables/Balances.sol";
+import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
+  address public immutable creator;
 
   constructor() {
-    // Register internal NamespaceOwner table and give ownership of the root
-    // namespace to msg.sender. This is done in the constructor instead of a
-    // module, so that we can use it for access control checks in `installRootModule`.
-    NamespaceOwner.register();
-    NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
-
-    // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
-
+    creator = msg.sender;
+    StoreCore.initialize();
     emit HelloWorld();
+  }
+
+  /**
+   * Allows the creator of the World to initialize the World once.
+   */
+  function initialize(IModule coreModule) public {
+    // Only the initial creator of the World can initialize it
+    if (msg.sender != creator) {
+      revert AccessDenied(ResourceSelector.from(ROOT_NAMESPACE).toString(), msg.sender);
+    }
+
+    // The World can only be initialized once
+    if (InstalledModules.getModuleAddress(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+      revert WorldAlreadyInitialized();
+    }
+
+    // Initialize the World by installing the core module
+    _installRootModule(coreModule, new bytes(0));
   }
 
   /**
@@ -50,12 +66,19 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, msg.sender);
+    AccessControl.requireOwner(ROOT_NAMESPACE, msg.sender);
+    _installRootModule(module, args);
+  }
+
+  function _installRootModule(IModule module, bytes memory args) internal {
+    // Require the provided address to implement the IModule interface
+    requireInterface(address(module), MODULE_INTERFACE_ID);
 
     WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: msg.sender,
+      msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.installRoot.selector, args)
     });
 
     // Register the module in the InstalledModules table
@@ -72,12 +95,17 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Write a record in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
-  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public virtual {
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] calldata key,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, key, data, valueSchema);
+    StoreCore.setRecord(tableId, key, data, fieldLayout);
   }
 
   /**
@@ -89,13 +117,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableId, key, schemaIndex, data, valueSchema);
+    StoreCore.setField(tableId, key, schemaIndex, data, fieldLayout);
   }
 
   /**
@@ -107,13 +135,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, valueSchema);
+    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, fieldLayout);
   }
 
   /**
@@ -125,13 +153,13 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, valueSchema);
+    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
   /**
@@ -144,25 +172,25 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
+    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key, Schema valueSchema) public virtual {
+  function deleteRecord(bytes32 tableId, bytes32[] calldata key, FieldLayout fieldLayout) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, key, valueSchema);
+    StoreCore.deleteRecord(tableId, key, fieldLayout);
   }
 
   /************************************************************************
@@ -191,6 +219,11 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes32 resourceSelector,
     bytes memory funcSelectorAndArgs
   ) external payable virtual returns (bytes memory) {
+    // If the delegator is the caller, call the system directly
+    if (delegator == msg.sender) {
+      return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, funcSelectorAndArgs, msg.value);
+    }
+
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
     Delegation explicitDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: msg.sender }));
 
@@ -216,9 +249,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Allow the World to receive ETH
+   * ETH sent to the World without calldata is added to the root namespace's balance
    */
-  receive() external payable {}
+  receive() external payable {
+    uint256 rootBalance = Balances.get(ROOT_NAMESPACE);
+    Balances.set(ROOT_NAMESPACE, rootBalance + msg.value);
+  }
 
   /**
    * Fallback function to call registered function selectors

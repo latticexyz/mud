@@ -5,8 +5,7 @@
       "dependsOn": ["^build"],
       "outputs": [
         "dist/**",
-        "abi/**",
-        "types/**",
+        "out/**",
         "build/**",
         "bin/**",
         "protoc/**",

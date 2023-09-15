@@ -3,6 +3,7 @@ import { Hex } from "viem";
 import { Schema } from "./common";
 import { staticDataLength } from "./staticDataLength";
 
+/** @deprecated use `keySchemaToHex` or `valueSchemaToHex` instead */
 export function schemaToHex(schema: Schema): Hex {
   const staticSchemaTypes = schema.staticFields.map((abiType) => schemaAbiTypes.indexOf(abiType));
   const dynamicSchemaTypes = schema.dynamicFields.map((abiType) => schemaAbiTypes.indexOf(abiType));

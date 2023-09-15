@@ -1,5 +1,37 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies [[`1d60930d`](https://github.com/latticexyz/mud/commit/1d60930d6d4c9a0bda262e5e23a5f719b9dd48c7), [`b9e562d8`](https://github.com/latticexyz/mud/commit/b9e562d8f7a6051bb1a7262979b268fd2c83daac), [`51914d65`](https://github.com/latticexyz/mud/commit/51914d656d8cd8d851ccc8296d249cf09f53e670), [`2ca75f9b`](https://github.com/latticexyz/mud/commit/2ca75f9b9063ea33524e6c609b87f5494f678fa0), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98)]:
+  - @latticexyz/store@2.0.0-next.8
+  - @latticexyz/world@2.0.0-next.8
+  - @latticexyz/protocol-parser@2.0.0-next.8
+  - @latticexyz/abi-ts@2.0.0-next.8
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/config@2.0.0-next.8
+  - @latticexyz/gas-report@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+  - @latticexyz/services@2.0.0-next.8
+  - @latticexyz/utils@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15), [`2459e15f`](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc), [`18d3aea5`](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/world@2.0.0-next.7
+  - @latticexyz/abi-ts@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/gas-report@2.0.0-next.7
+  - @latticexyz/protocol-parser@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+  - @latticexyz/services@2.0.0-next.7
+  - @latticexyz/utils@2.0.0-next.7
+
 ## 2.0.0-next.6
 
 ### Minor Changes

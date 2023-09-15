@@ -56,6 +56,15 @@ export default mudConfig({
      *    MODULE TABLES
      *
      ************************************************************************/
+    Balances: {
+      directory: "modules/core/tables",
+      keySchema: {
+        namespace: "bytes16",
+      },
+      schema: {
+        balance: "uint256",
+      },
+    },
     Systems: {
       directory: "modules/core/tables",
       keySchema: {
@@ -81,7 +90,7 @@ export default mudConfig({
       keySchema: {
         resourceSelector: "bytes32",
       },
-      schema: "address[]",
+      schema: "bytes21[]",
     },
     ResourceType: {
       directory: "modules/core/tables",

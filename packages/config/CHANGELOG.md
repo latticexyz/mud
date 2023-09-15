@@ -1,5 +1,21 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+
 ## 2.0.0-next.6
 
 ### Patch Changes

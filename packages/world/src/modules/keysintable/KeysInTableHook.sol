@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
@@ -10,7 +10,7 @@ import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 /**
  * Note: if a table with composite keys is used, only the first key is indexed
  */
-contract KeysInTableHook is IStoreHook {
+contract KeysInTableHook is StoreHook {
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
     bytes32 keysHash = keccak256(abi.encode(key));
 
@@ -40,17 +40,23 @@ contract KeysInTableHook is IStoreHook {
     }
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory, Schema) public {
+  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory, FieldLayout) public {
     handleSet(table, key);
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {}
+  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory, FieldLayout) public {
+    // NOOP
+  }
 
-  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, Schema) public {
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
+    // NOOP
+  }
+
+  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory, FieldLayout) public {
     handleSet(table, key);
   }
 
-  function onDeleteRecord(bytes32 tableId, bytes32[] memory key, Schema) public {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout) public {
     bytes32 keysHash = keccak256(abi.encode(key));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
@@ -117,5 +123,9 @@ contract KeysInTableHook is IStoreHook {
         }
       }
     }
+  }
+
+  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+    // NOOP
   }
 }
