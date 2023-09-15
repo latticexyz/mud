@@ -7,6 +7,7 @@ import IStoreAbi from "../out/IStore.sol/IStore.abi.json";
 describe("storeEventsAbi", () => {
   it("should match the store ABI", () => {
     const expectedAbi = IStoreAbi.filter((item) => item.type === "event")
+      .filter((item) => item.name !== "HelloStore")
       .map((item) => ({
         // just return data that abitype cares about
         type: item.type,
