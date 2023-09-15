@@ -122,38 +122,68 @@
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
+    "name": "abi encode (static)",
+    "gasUsed": 133
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
+    "name": "abi encode (dynamic)",
+    "gasUsed": 849
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
     "name": "abi encode",
-    "gasUsed": 949
+    "gasUsed": 943
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "abi decode",
-    "gasUsed": 1738
+    "gasUsed": 1741
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
+    "name": "custom encode (static)",
+    "gasUsed": 191
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
+    "name": "custom encode (length)",
+    "gasUsed": 141
+  },
+  {
+    "file": "test/Gas.t.sol",
+    "test": "testCompareAbiEncodeVsCustom",
+    "name": "custom encode (dynamic)",
+    "gasUsed": 1152
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 2060
+    "gasUsed": 2065
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 1975
+    "gasUsed": 1981
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass abi encoded bytes to external contract",
-    "gasUsed": 6551
+    "gasUsed": 6562
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "pass custom encoded bytes to external contract",
-    "gasUsed": 1445
+    "gasUsed": 1451
   },
   {
     "file": "test/Gas.t.sol",
