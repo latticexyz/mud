@@ -46,6 +46,11 @@ library Number {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get whether the table is offchain only */
+  function getOffchainOnly() internal pure returns (bool) {
+    return false;
+  }
+
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
@@ -65,6 +70,7 @@ library Number {
       getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
+      false,
       getKeyNames(),
       getFieldNames()
     );
@@ -72,7 +78,15 @@ library Number {
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      false,
+      getKeyNames(),
+      getFieldNames()
+    );
   }
 
   /** Get value */

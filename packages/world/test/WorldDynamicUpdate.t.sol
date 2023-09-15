@@ -64,7 +64,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     tableId = ResourceSelector.from(namespace, name);
 
     // Register a new table
-    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, false, new string[](1), new string[](1));
 
     // Create data
     initData = new address[](3);

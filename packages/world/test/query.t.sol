@@ -66,9 +66,33 @@ contract QueryTest is Test, GasReporter {
 
   function _installKeysInTableModule() internal {
     // Register source table
-    world.registerTable(table1, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
-    world.registerTable(table2, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
-    world.registerTable(table3, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
+    world.registerTable(
+      table1,
+      tableFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      false,
+      new string[](1),
+      new string[](1)
+    );
+    world.registerTable(
+      table2,
+      tableFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      false,
+      new string[](1),
+      new string[](1)
+    );
+    world.registerTable(
+      table3,
+      tableFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      false,
+      new string[](1),
+      new string[](1)
+    );
 
     // Install the index module
     // TODO: add support for installing this via installModule

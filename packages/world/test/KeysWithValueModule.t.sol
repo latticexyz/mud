@@ -62,6 +62,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
       sourceTableFieldLayout,
       sourceTableKeySchema,
       sourceTableSchema,
+      false,
       new string[](1),
       new string[](1)
     );

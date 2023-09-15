@@ -45,6 +45,11 @@ library Callbacks {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get whether the table is offchain only */
+  function getOffchainOnly() internal pure returns (bool) {
+    return false;
+  }
+
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);

@@ -41,6 +41,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
+    bool offchainOnly,
     string[] calldata keyNames,
     string[] calldata fieldNames
   ) public virtual {
@@ -73,7 +74,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerTable(resourceSelector, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+    StoreCore.registerTable(resourceSelector, fieldLayout, keySchema, valueSchema, offchainOnly, keyNames, fieldNames);
   }
 
   /**

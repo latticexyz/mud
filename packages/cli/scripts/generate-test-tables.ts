@@ -58,9 +58,9 @@ try {
         },
         dataStruct: false,
       },
-      Ephemeral: {
+      Offchain: {
         schema: "uint256",
-        ephemeral: true,
+        offchainOnly: true,
       },
     },
 

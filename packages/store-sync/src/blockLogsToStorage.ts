@@ -127,7 +127,7 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
           const fieldNames = Object.keys(table.valueSchema);
 
           // TODO: decide if we should split these up into distinct operations so the storage adapter can decide whether to combine or not
-          if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+          if (log.eventName === "StoreSetRecord") {
             const valueTuple = decodeRecord(valueSchema, log.args.data);
             const value = Object.fromEntries(fieldNames.map((name, i) => [name, valueTuple[i]])) as Value<
               TConfig,

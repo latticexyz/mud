@@ -5,7 +5,7 @@ import { IWorldErrors } from "../../interfaces/IWorldErrors.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
+import { OffchainRecordSystem } from "./implementations/OffchainRecordSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -18,7 +18,7 @@ contract CoreSystem is
   IWorldErrors,
   AccessManagementSystem,
   BalanceTransferSystem,
-  EphemeralRecordSystem,
+  OffchainRecordSystem,
   ModuleInstallationSystem,
   StoreRegistrationSystem,
   WorldRegistrationSystem

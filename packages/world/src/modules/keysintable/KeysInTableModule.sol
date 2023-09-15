@@ -57,6 +57,7 @@ contract KeysInTableModule is Module {
             KeysInTable.getFieldLayout(),
             KeysInTable.getKeySchema(),
             KeysInTable.getValueSchema(),
+            KeysInTable.getOffchainOnly(),
             KeysInTable.getKeyNames(),
             KeysInTable.getFieldNames()
           )
@@ -72,6 +73,7 @@ contract KeysInTableModule is Module {
             UsedKeysIndex.getFieldLayout(),
             UsedKeysIndex.getKeySchema(),
             UsedKeysIndex.getValueSchema(),
+            UsedKeysIndex.getOffchainOnly(),
             UsedKeysIndex.getKeyNames(),
             UsedKeysIndex.getFieldNames()
           )

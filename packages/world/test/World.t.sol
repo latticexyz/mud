@@ -331,7 +331,7 @@ contract WorldTest is Test, GasReporter {
     fieldNames[2] = "value3";
 
     startGasReport("Register a new table in the namespace");
-    world.registerTable(tableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(tableSelector, fieldLayout, defaultKeySchema, valueSchema, false, keyNames, fieldNames);
     endGasReport();
 
     // Expect the namespace to be created and owned by the caller
@@ -348,16 +348,16 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableSelector.toString()));
-    world.registerTable(tableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(tableSelector, fieldLayout, defaultKeySchema, valueSchema, false, keyNames, fieldNames);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
     bytes32 otherTableSelector = ResourceSelector.from(namespace, "otherTable");
     _expectAccessDenied(address(0x01), namespace, "");
-    world.registerTable(otherTableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(otherTableSelector, fieldLayout, defaultKeySchema, valueSchema, false, keyNames, fieldNames);
 
     // Expect the World to not be allowed to call registerTable via an external call
     _expectAccessDenied(address(world), namespace, "");
-    world.registerTable(otherTableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(otherTableSelector, fieldLayout, defaultKeySchema, valueSchema, false, keyNames, fieldNames);
   }
 
   function testRegisterSystem() public {
@@ -409,6 +409,7 @@ contract WorldTest is Test, GasReporter {
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
+      false,
       new string[](1),
       new string[](1)
     );
@@ -479,6 +480,7 @@ contract WorldTest is Test, GasReporter {
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
+      false,
       new string[](1),
       new string[](1)
     );
@@ -501,6 +503,7 @@ contract WorldTest is Test, GasReporter {
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
+      false,
       new string[](1),
       new string[](1)
     );
@@ -522,6 +525,7 @@ contract WorldTest is Test, GasReporter {
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
+      false,
       new string[](1),
       new string[](1)
     );
@@ -550,7 +554,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = Bool.getValueSchema();
 
     // Register a new table
-    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, false, new string[](1), new string[](1));
 
     startGasReport("Write data to a table field");
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
@@ -586,7 +590,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = AddressArray.getValueSchema();
 
     // Register a new table
-    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, false, new string[](1), new string[](1));
 
     // Create data
     address[] memory dataToPush = new address[](3);
@@ -628,7 +632,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = Bool.getValueSchema();
 
     // Register a new table
-    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, false, new string[](1), new string[](1));
 
     // Write data to the table via the namespace and expect it to be written
     world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
@@ -822,7 +826,7 @@ contract WorldTest is Test, GasReporter {
     bytes32 tableId = ResourceSelector.from("", "testTable");
 
     // Register a new table
-    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, false, new string[](1), new string[](1));
 
     // Register a new hook
     IStoreHook tableHook = new EchoSubscriber();
@@ -893,7 +897,7 @@ contract WorldTest is Test, GasReporter {
     bytes32 tableId = ResourceSelector.from("", "testTable");
 
     // Register a new table
-    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, false, new string[](1), new string[](1));
 
     // Register a new RevertSubscriber
     IStoreHook revertSubscriber = new RevertSubscriber();
@@ -1065,6 +1069,7 @@ contract WorldTest is Test, GasReporter {
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
+      false,
       new string[](1),
       new string[](1)
     );
@@ -1092,6 +1097,7 @@ contract WorldTest is Test, GasReporter {
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
+      false,
       new string[](1),
       new string[](1)
     );

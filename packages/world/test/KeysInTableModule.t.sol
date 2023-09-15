@@ -68,12 +68,21 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
   function _installKeysInTableModule() internal {
     // Register source table
-    world.registerTable(tableId, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
+    world.registerTable(
+      tableId,
+      tableFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      false,
+      new string[](1),
+      new string[](1)
+    );
     world.registerTable(
       singletonTableId,
       tableFieldLayout,
       singletonKeySchema,
       tableValueSchema,
+      false,
       new string[](0),
       new string[](1)
     );
@@ -82,6 +91,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
       tableFieldLayout,
       compositeKeySchema,
       tableValueSchema,
+      false,
       new string[](3),
       new string[](1)
     );
@@ -182,6 +192,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
       tableFieldLayout,
       tableKeySchema,
       tableValueSchema,
+      false,
       new string[](1),
       new string[](1)
     );

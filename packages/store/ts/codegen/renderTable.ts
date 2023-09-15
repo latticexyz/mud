@@ -98,6 +98,11 @@ export function renderTable(options: RenderTableOptions) {
         return SchemaLib.encode(_schema);
       }
 
+      /** Get whether the table is offchain only */
+      function getOffchainOnly() internal pure returns (bool) {
+        return ${offchainOnly};
+      }
+
       /** Get the table's key names */
       function getKeyNames() internal pure returns (string[] memory keyNames) {
         keyNames = new string[](${keyTuple.length});

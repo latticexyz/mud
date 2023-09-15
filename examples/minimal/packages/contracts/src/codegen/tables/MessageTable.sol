@@ -44,6 +44,11 @@ library MessageTable {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get whether the table is offchain only */
+  function getOffchainOnly() internal pure returns (bool) {
+    return true;
+  }
+
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](0);
@@ -62,6 +67,7 @@ library MessageTable {
       getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
+      true,
       getKeyNames(),
       getFieldNames()
     );
@@ -69,25 +75,47 @@ library MessageTable {
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      true,
+      getKeyNames(),
+      getFieldNames()
+    );
   }
 
-  /** Emit the ephemeral event using individual values */
-  function emitEphemeral(string memory value) internal {
+  /** Emit StoreSetRecord without modifying storage and using individual values */
+  function emitSet(string memory value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.emitSetRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
-  /** Emit the ephemeral event using individual values (using the specified store) */
-  function emitEphemeral(IStore _store, string memory value) internal {
+  /** Emit StoreDeleteRecord without modifying storage */
+  function emitDelete() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.emitDeleteRecord(_tableId, _keyTuple);
+  }
+
+  /** Emit StoreSetRecord without modifying storage and using individual values (using the specified store) */
+  function emitSet(IStore _store, string memory value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.emitSetRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
+  /** Emit StoreDeleteRecord without modifying storage (using the specified store) */
+  function emitDelete(IStore _store) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    _store.emitDeleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack full data using this table's field layout */

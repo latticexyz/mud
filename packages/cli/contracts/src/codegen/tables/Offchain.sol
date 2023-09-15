@@ -18,10 +18,10 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Ephemeral")));
-bytes32 constant EphemeralTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Offchain")));
+bytes32 constant OffchainTableId = _tableId;
 
-library Ephemeral {
+library Offchain {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
     uint256[] memory _fieldLayout = new uint256[](1);
@@ -46,6 +46,11 @@ library Ephemeral {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get whether the table is offchain only */
+  function getOffchainOnly() internal pure returns (bool) {
+    return true;
+  }
+
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
@@ -65,6 +70,7 @@ library Ephemeral {
       getFieldLayout(),
       getKeySchema(),
       getValueSchema(),
+      true,
       getKeyNames(),
       getFieldNames()
     );
@@ -72,27 +78,51 @@ library Ephemeral {
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      true,
+      getKeyNames(),
+      getFieldNames()
+    );
   }
 
-  /** Emit the ephemeral event using individual values */
-  function emitEphemeral(bytes32 key, uint256 value) internal {
+  /** Emit StoreSetRecord without modifying storage and using individual values */
+  function emitSet(bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.emitSetRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
-  /** Emit the ephemeral event using individual values (using the specified store) */
-  function emitEphemeral(IStore _store, bytes32 key, uint256 value) internal {
+  /** Emit StoreDeleteRecord without modifying storage */
+  function emitDelete(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.emitDeleteRecord(_tableId, _keyTuple);
+  }
+
+  /** Emit StoreSetRecord without modifying storage and using individual values (using the specified store) */
+  function emitSet(IStore _store, bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.emitSetRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
+  /** Emit StoreDeleteRecord without modifying storage (using the specified store) */
+  function emitDelete(IStore _store, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.emitDeleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack full data using this table's field layout */

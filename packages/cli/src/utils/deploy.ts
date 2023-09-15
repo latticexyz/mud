@@ -178,6 +178,7 @@ export async function deploy(
           fieldLayoutToHex(fieldLayout),
           encodeSchema(keyTypes),
           encodeSchema(schemaTypes),
+          mudConfig.tables[tableName].offchainOnly,
           Object.keys(keySchema),
           Object.keys(schema),
         ],
