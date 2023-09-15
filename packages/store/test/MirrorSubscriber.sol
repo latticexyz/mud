@@ -7,13 +7,13 @@ import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-bytes32 constant indexerTableId = keccak256("indexer.table");
+bytes32 constant indexerTableId = keccak256("indexer.tableId");
 
 contract MirrorSubscriber is StoreHook {
-  bytes32 _table;
+  bytes32 _tableId;
 
   constructor(
-    bytes32 table,
+    bytes32 tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -30,39 +30,49 @@ contract MirrorSubscriber is StoreHook {
       keyNames,
       fieldNames
     );
-    _table = table;
+    _tableId = tableId;
   }
 
-  function onBeforeSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
-    if (table != table) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, key, data, fieldLayout);
+  function onBeforeSetRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory data,
+    FieldLayout fieldLayout
+  ) public {
+    if (tableId != tableId) revert("invalid tableId");
+    StoreSwitch.setRecord(indexerTableId, keyTuple, data, fieldLayout);
   }
 
-  function onAfterSetRecord(bytes32 table, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) public {
+  function onAfterSetRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory data,
+    FieldLayout fieldLayout
+  ) public {
     // NOOP
   }
 
   function onBeforeSetField(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
-    if (table != table) revert("invalid table");
-    StoreSwitch.setField(indexerTableId, key, schemaIndex, data, fieldLayout);
+    if (tableId != tableId) revert("invalid tableId");
+    StoreSwitch.setField(indexerTableId, keyTuple, schemaIndex, data, fieldLayout);
   }
 
   function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {
     // NOOP
   }
 
-  function onBeforeDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
-    if (table != table) revert("invalid table");
-    StoreSwitch.deleteRecord(indexerTableId, key, fieldLayout);
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
+    if (tableId != tableId) revert("invalid tableId");
+    StoreSwitch.deleteRecord(indexerTableId, keyTuple, fieldLayout);
   }
 
-  function onAfterDeleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) public {
+  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
     // NOOP
   }
 }

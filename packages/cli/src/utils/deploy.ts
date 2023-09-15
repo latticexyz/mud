@@ -147,14 +147,14 @@ export async function deploy(
   const tableIds: { [tableName: string]: Uint8Array } = {};
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, keySchema }]) => {
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, valueSchema, keySchema }]) => {
       console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
 
       // Store the tableId for later use
       tableIds[tableName] = toResourceSelector(namespace, name);
 
       // Register table
-      const schemaTypes = Object.values(schema).map((abiOrUserType) => {
+      const schemaTypes = Object.values(valueSchema).map((abiOrUserType) => {
         const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
       });
@@ -180,7 +180,7 @@ export async function deploy(
           encodeSchema(schemaTypes),
           mudConfig.tables[tableName].offchainOnly,
           Object.keys(keySchema),
-          Object.keys(schema),
+          Object.keys(valueSchema),
         ],
         confirmations
       );

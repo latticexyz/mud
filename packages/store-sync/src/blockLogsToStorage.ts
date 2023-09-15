@@ -36,21 +36,21 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
       .map((log) => {
         try {
           if (log.eventName !== "StoreSetRecord") return;
-          if (log.args.table !== schemasTableId) return;
+          if (log.args.tableId !== schemasTableId) return;
 
           // TODO: refactor encode/decode to use Record<string, SchemaAbiType> schemas
           // TODO: refactor to decode key with protocol-parser utils
 
-          const [tableId, ...otherKeys] = log.args.key;
+          const [tableId, ...otherKeys] = log.args.keyTuple;
           if (otherKeys.length) {
             console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
           }
 
           const table = hexToTableId(tableId);
 
-          const valueTuple = decodeRecord(abiTypesToSchema(Object.values(schemasTable.schema)), log.args.data);
+          const valueTuple = decodeRecord(abiTypesToSchema(Object.values(schemasTable.valueSchema)), log.args.data);
           const value = Object.fromEntries(
-            Object.keys(schemasTable.schema).map((name, i) => [name, valueTuple[i]])
+            Object.keys(schemasTable.valueSchema).map((name, i) => [name, valueTuple[i]])
           ) as ConfigToValuePrimitives<typeof storeConfig, typeof schemasTable.name>;
 
           const keySchema = hexToSchema(value.keySchema);
@@ -87,8 +87,8 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
         block.logs.map((log) =>
           JSON.stringify({
             address: getAddress(log.address),
-            tableId: log.args.table,
-            ...hexToTableId(log.args.table),
+            tableId: log.args.tableId,
+            ...hexToTableId(log.args.tableId),
           })
         )
       )
@@ -106,16 +106,16 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
     const operations = block.logs
       .map((log): StorageOperation<TConfig> | undefined => {
         try {
-          const table = tables[`${getAddress(log.address)}:${log.args.table}`];
+          const table = tables[`${getAddress(log.address)}:${log.args.tableId}`];
           if (!table) {
-            debug("no table found for event, skipping", hexToTableId(log.args.table), log);
+            debug("no table found for event, skipping", hexToTableId(log.args.tableId), log);
             return;
           }
 
           const keyNames = Object.keys(table.keySchema);
           const keyValues = decodeKeyTuple(
             { staticFields: Object.values(table.keySchema), dynamicFields: [] },
-            log.args.key
+            log.args.keyTuple
           );
           const key = Object.fromEntries(keyValues.map((value, i) => [keyNames[i], value])) as Key<
             TConfig,

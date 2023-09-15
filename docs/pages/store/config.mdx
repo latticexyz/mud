@@ -46,7 +46,7 @@ import { mudConfig } from "@latticexyz/store/register";
 export default mudConfig({
   tables: {
     MyTable: {
-      schema: {
+      valueSchema: {
         value: "uint32",
       },
     },
@@ -62,7 +62,7 @@ The table configuration can have these properties:
 
 **`fileSelector` (optional)** _only used with the World framework_: a `string`: where to create the table in the namespace.
 
-**`tableIdArgument` (optional)**: `bool`: whether to create getter and setter functions with the table ID as an argument, this is used to generate a single library to operate on multiple tables with the same schema and key structure.
+**`tableIdArgument` (optional)**: `bool`: whether to create getter and setter functions with the table ID as an argument, this is used to generate a single library to operate on multiple tables with the same key and value structure.
 
 **`storeArgument` (optional)**: `bool`: whether to create getter and setter functions with the store address as an argument, this is used to generate a single library to operate on the same table in multiple stores. This adds new functions to the library, doubling the amount of functions created (each getter/setter will comes in a pair of “with `storeArgument`” and “without `storeArgument`”)
 
@@ -86,7 +86,7 @@ Example:
 ```tsx
 tables: {
   MyTableWithTwoKeys: {
-    schema: {
+    valueSchema: {
       value1: "uint32",
       value2: "uint32",
     },
@@ -98,14 +98,14 @@ tables: {
 }
 ```
 
-**`schema` (required)**: an object with keys being the column name, and value being types from `SchemaType`
+**`valueSchema` (required)**: an object with keys being the column name, and value being types from `SchemaType`
 
 Example:
 
 ```tsx
 tables: {
   MyTableWithFourValues: {
-    schema: {
+    valueSchema: {
       x: "uint32",
       y: "uint32",
       stringField: "string",
@@ -135,7 +135,7 @@ Example:
 ```tsx
 tables: {
   MySingletonTable: {
-    schema: {
+    valueSchema: {
       value1: "uint32",
       value2: "uint32",
     },

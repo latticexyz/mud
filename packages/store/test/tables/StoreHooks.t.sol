@@ -8,7 +8,7 @@ import { StoreHooks } from "../../src/codegen/Tables.sol";
 
 contract StoreHooksTest is Test, GasReporter, StoreMock {
   function testTable() public {
-    // StoreHooks schema is already registered by StoreCore
+    // StoreHooks table is already registered by StoreMock
     bytes32 key = keccak256("somekey");
 
     bytes21[] memory hooks = new bytes21[](1);

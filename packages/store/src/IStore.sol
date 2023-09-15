@@ -7,39 +7,39 @@ import { Schema } from "./Schema.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 
 interface IStoreRead {
-  function getFieldLayout(bytes32 table) external view returns (FieldLayout fieldLayout);
+  function getFieldLayout(bytes32 tableId) external view returns (FieldLayout fieldLayout);
 
-  function getValueSchema(bytes32 table) external view returns (Schema schema);
+  function getValueSchema(bytes32 tableId) external view returns (Schema valueSchema);
 
-  function getKeySchema(bytes32 table) external view returns (Schema schema);
+  function getKeySchema(bytes32 tableId) external view returns (Schema keySchema);
 
   // Get full record (including full array)
   function getRecord(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
   // Get partial data at schema index
   function getField(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
   // Get field length at schema index
   function getFieldLength(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) external view returns (uint256);
 
   // Get start:end slice of the field at schema index
   function getFieldSlice(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout,
     uint256 start,
@@ -48,17 +48,22 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
+  event StoreSetRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
+  event StoreSetField(bytes32 tableId, bytes32[] keyTuple, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, FieldLayout fieldLayout) external;
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) external;
 
   // Set partial data at schema index
   function setField(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata data,
     FieldLayout fieldLayout
@@ -66,8 +71,8 @@ interface IStoreWrite {
 
   // Push encoded items to the dynamic field at schema index
   function pushToField(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
@@ -75,8 +80,8 @@ interface IStoreWrite {
 
   // Pop byte length from the dynamic field at schema index
   function popFromField(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
@@ -84,8 +89,8 @@ interface IStoreWrite {
 
   // Change encoded items within the dynamic field at schema index
   function updateInField(
-    bytes32 table,
-    bytes32[] calldata key,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
@@ -93,20 +98,20 @@ interface IStoreWrite {
   ) external;
 
   // Delete full record
-  function deleteRecord(bytes32 table, bytes32[] memory key, FieldLayout fieldLayout) external;
+  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 }
 
 interface IStoreOffchain {
   // Emit StoreSetRecord without modifying storage
   function emitSetRecord(
-    bytes32 table,
+    bytes32 tableId,
     bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) external;
 
   // Emit StoreDeleteRecord without modifying storage
-  function emitDeleteRecord(bytes32 table, bytes32[] calldata keyTuple) external;
+  function emitDeleteRecord(bytes32 tableId, bytes32[] calldata keyTuple) external;
 }
 
 /**
@@ -125,7 +130,7 @@ interface IStoreData is IStoreRead, IStoreWrite {
  */
 interface IStoreRegistration {
   function registerTable(
-    bytes32 table,
+    bytes32 tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -135,10 +140,10 @@ interface IStoreRegistration {
   ) external;
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
 
   // Unregister a hook for the given tableId
-  function unregisterStoreHook(bytes32 table, IStoreHook hookAddress) external;
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) external;
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreOffchain, IStoreErrors {}

@@ -15,7 +15,7 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
       defineComponent(
         world,
         Object.fromEntries(
-          Object.entries(table.schema).map(([fieldName, schemaAbiType]) => [
+          Object.entries(table.valueSchema).map(([fieldName, schemaAbiType]) => [
             fieldName,
             schemaAbiTypeToRecsType[schemaAbiType as SchemaAbiType],
           ])
@@ -26,7 +26,7 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
             componentName: tableName,
             tableName: `${config.namespace}:${tableName}`,
             keySchema: table.keySchema,
-            valueSchema: table.schema,
+            valueSchema: table.valueSchema,
           },
         }
       ),

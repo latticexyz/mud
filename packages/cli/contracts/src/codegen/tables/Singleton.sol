@@ -32,20 +32,20 @@ library Singleton {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](0);
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](4);
-    _schema[0] = SchemaType.INT256;
-    _schema[1] = SchemaType.UINT32_ARRAY;
-    _schema[2] = SchemaType.UINT32_ARRAY;
-    _schema[3] = SchemaType.UINT32_ARRAY;
+    SchemaType[] memory _valueSchema = new SchemaType[](4);
+    _valueSchema[0] = SchemaType.INT256;
+    _valueSchema[1] = SchemaType.UINT32_ARRAY;
+    _valueSchema[2] = SchemaType.UINT32_ARRAY;
+    _valueSchema[3] = SchemaType.UINT32_ARRAY;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get whether the table is offchain only */

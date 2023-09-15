@@ -16,7 +16,7 @@ We're going to start by defining three new tables:
 
 1. `Player: 'bool'` → determine which entities are players (e.g. distinct wallet addresses)
 2. `Movable: 'bool'` → determine whether or not an entity can move
-3. `Position: { schema: { x: 'uint32', y: 'uint32' } }` → determine which position an entity is located on a 2D grid
+3. `Position: { valueSchema: { x: 'uint32', y: 'uint32' } }` → determine which position an entity is located on a 2D grid
 
 The syntax is as follows:
 
@@ -34,7 +34,7 @@ export default mudConfig({
     Player: "bool",
     Position: {
       dataStruct: false,
-      schema: {
+      valueSchema: {
         x: "uint32",
         y: "uint32",
       },

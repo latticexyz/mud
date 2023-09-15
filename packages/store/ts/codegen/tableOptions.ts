@@ -27,9 +27,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
     // operate on all fields at once; for only 1 field keep them only if struct is also kept
-    const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
+    const withRecordMethods = withStruct || Object.keys(tableData.valueSchema).length > 1;
     // field methods can be simply get/set if there's only 1 field and no record methods
-    const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
+    const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
     // list of any symbols that need to be imported
     const imports: RelativeImportDatum[] = [];
 
@@ -50,8 +50,8 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       return keyTuple;
     });
 
-    const fields = Object.keys(tableData.schema).map((name) => {
-      const abiOrUserType = tableData.schema[name];
+    const fields = Object.keys(tableData.valueSchema).map((name) => {
+      const abiOrUserType = tableData.valueSchema[name];
       const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
 
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);

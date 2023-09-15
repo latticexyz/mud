@@ -51,30 +51,30 @@ library Statics {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](7);
-    _schema[0] = SchemaType.UINT256;
-    _schema[1] = SchemaType.INT32;
-    _schema[2] = SchemaType.BYTES16;
-    _schema[3] = SchemaType.ADDRESS;
-    _schema[4] = SchemaType.BOOL;
-    _schema[5] = SchemaType.UINT8;
-    _schema[6] = SchemaType.UINT8;
+    SchemaType[] memory _keySchema = new SchemaType[](7);
+    _keySchema[0] = SchemaType.UINT256;
+    _keySchema[1] = SchemaType.INT32;
+    _keySchema[2] = SchemaType.BYTES16;
+    _keySchema[3] = SchemaType.ADDRESS;
+    _keySchema[4] = SchemaType.BOOL;
+    _keySchema[5] = SchemaType.UINT8;
+    _keySchema[6] = SchemaType.UINT8;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](7);
-    _schema[0] = SchemaType.UINT256;
-    _schema[1] = SchemaType.INT32;
-    _schema[2] = SchemaType.BYTES16;
-    _schema[3] = SchemaType.ADDRESS;
-    _schema[4] = SchemaType.BOOL;
-    _schema[5] = SchemaType.UINT8;
-    _schema[6] = SchemaType.UINT8;
+    SchemaType[] memory _valueSchema = new SchemaType[](7);
+    _valueSchema[0] = SchemaType.UINT256;
+    _valueSchema[1] = SchemaType.INT32;
+    _valueSchema[2] = SchemaType.BYTES16;
+    _valueSchema[3] = SchemaType.ADDRESS;
+    _valueSchema[4] = SchemaType.BOOL;
+    _valueSchema[5] = SchemaType.UINT8;
+    _valueSchema[6] = SchemaType.UINT8;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get whether the table is offchain only */

@@ -710,7 +710,7 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: get schema (warm)",
+    "name": "StoreCore: get value schema (warm)",
     "gasUsed": 5033
   },
   {

@@ -37,20 +37,20 @@ library Dynamics2 {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](3);
-    _schema[0] = SchemaType.UINT64_ARRAY;
-    _schema[1] = SchemaType.STRING;
-    _schema[2] = SchemaType.BYTES;
+    SchemaType[] memory _valueSchema = new SchemaType[](3);
+    _valueSchema[0] = SchemaType.UINT64_ARRAY;
+    _valueSchema[1] = SchemaType.STRING;
+    _valueSchema[2] = SchemaType.BYTES;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get whether the table is offchain only */

@@ -17,7 +17,7 @@ export default mudConfig({
   tables: {
     CounterSingleton: {
       keySchema: {},
-      schema: "uint256",
+      valueSchema: "uint256",
     },
   },
 });
@@ -48,7 +48,7 @@ import { mudConfig } from "@latticexyz/store/register";
 export default mudConfig({
   tables: {
     TradeExecuted: {
-      schema: {
+      valueSchema: {
         amount: "uint32",
         receiver: "bytes32",
       },
@@ -79,29 +79,29 @@ It is possible to register hooks on tables, allowing additional logic to be exec
 This is an example of a Mirror hook which mirrors a table into another one:
 
 ```solidity
-uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
+bytes32 constant indexerTableId = bytes32("indexer.table");
 
 contract MirrorSubscriber is IStoreHook {
-  uint256 _table;
+  bytes32 _tableId;
 
-  constructor(uint256 table, Schema schema, Schema keySchema) {
-    IStore(msg.sender).registerSchema(indexerTableId, schema, keySchema);
-    _table = table;
+  constructor(bytes32 tableId, Schema keySchema, Schema valueSchema) {
+    IStore(msg.sender).registerSchema(indexerTableId, valueSchema, keySchema);
+    _tableId = tableId;
   }
 
-  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
-    if (_table != table) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, key, data);
+  function onSetRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory data) public {
+    if (_tableId != tableId) revert("invalid tableId");
+    StoreSwitch.setRecord(indexerTableId, keyTuple, data);
   }
 
-  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
-    if (_table != table) revert("invalid table");
-    StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
+  function onSetField(bytes32 tableId, bytes32[] memory keyTuple, uint8 schemaIndex, bytes memory data) public {
+    if (_tableId != tableId) revert("invalid tableId");
+    StoreSwitch.setField(indexerTableId, keyTuple, schemaIndex, data);
   }
 
-  function onDeleteRecord(uint256 table, bytes32[] memory key) public {
-    if (_table != table) revert("invalid table");
-    StoreSwitch.deleteRecord(indexerTableId, key);
+  function onDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple) public {
+    if (_tableId != tableId) revert("invalid tableId");
+    StoreSwitch.deleteRecord(indexerTableId, keyTuple);
   }
 }
 ```
@@ -109,11 +109,11 @@ contract MirrorSubscriber is IStoreHook {
 Registering the hook can be done using the low-level Store API:
 
 ```solidity
-uint256 table = keccak256("table");
-Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
+bytes32 tableId = bytes32("table");
+Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
 Schema keySchema = SchemaLib.encode(SchemaType.UINT256);
-MirrorSubscriber subscriber = new MirrorSubscriber(table, schema, keySchema);
-StoreCore.registerStoreHook(table, subscriber);
+MirrorSubscriber subscriber = new MirrorSubscriber(tableId, keySchema, valueSchema);
+StoreCore.registerStoreHook(tableId, subscriber);
 ```
 
 ### Accessing Store from a `CALL` or `DELEGATECALL` transparently
