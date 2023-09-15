@@ -87,9 +87,16 @@ export interface TableConfig<
   dataStruct?: boolean;
   /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
   ephemeral?: boolean;
-  /** Table's key names mapped to their types. Default is `{ key: "bytes32" }` */
+  /**
+   * Table's key names mapped to their types.
+   * Default is `{ key: "bytes32" }`
+   * Key names' first letter should be lowercase.
+   */
   keySchema?: Record<string, KeySchema<StaticUserTypes>>;
-  /** Table's field names mapped to their types. Table name's 1st letter should be lowercase. */
+  /**
+   * Table's field names mapped to their types.
+   * Field names' first letter should be lowercase.
+   */
   valueSchema: SchemaConfig<UserTypes>;
 }
 

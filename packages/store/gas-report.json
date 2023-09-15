@@ -698,7 +698,7 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: Register table",
+    "name": "StoreCore: register table",
     "gasUsed": 620356
   },
   {
