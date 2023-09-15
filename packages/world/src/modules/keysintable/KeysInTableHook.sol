@@ -8,7 +8,7 @@ import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 
 /**
- * Note: if a tableId with composite keys is used, only the first key is indexed
+ * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysInTableHook is StoreHook {
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
