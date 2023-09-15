@@ -11,7 +11,7 @@ import { MessageTable, MessageTableTableId } from "../src/codegen/Tables.sol";
 import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.sol";
 
 contract ChatNamespacedTest is MudTest {
-  function testEmitEphemeral() public {
+  function testEmitSet() public {
     bytes32[] memory keyTuple;
     vm.expectEmit(true, true, true, true);
     emit StoreCore.StoreSetRecord(MessageTableTableId, keyTuple, MessageTable.encode("test"));
