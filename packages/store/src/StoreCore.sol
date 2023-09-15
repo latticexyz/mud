@@ -787,7 +787,7 @@ library StoreCoreInternal {
    * Compute the storage location based on tableId id and index tuple
    */
   function _getStaticDataLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
-    return uint256(SLOT ^ tableId ^ keccak256(abi.encodePacked(keyTuple)));
+    return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
@@ -813,14 +813,14 @@ library StoreCoreInternal {
     bytes32[] memory keyTuple,
     uint8 schemaIndex
   ) internal pure returns (uint256) {
-    return uint256(DYNMAIC_DATA_SLOT ^ tableId ^ bytes1(schemaIndex) ^ keccak256(abi.encodePacked(keyTuple)));
+    return uint256(DYNMAIC_DATA_SLOT ^ bytes1(schemaIndex) ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
    * Compute the storage location for the length of the dynamic data
    */
   function _getDynamicDataLengthLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
-    return uint256(DYNAMIC_DATA_LENGTH_SLOT ^ tableId ^ keccak256(abi.encodePacked(keyTuple)));
+    return uint256(DYNAMIC_DATA_LENGTH_SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
   /**
