@@ -15,6 +15,7 @@ import {
   getAbiItem,
   getContract,
   getFunctionSelector,
+  trim,
 } from "viem";
 import pRetry from "p-retry";
 import { AbiFunction } from "abitype";
@@ -52,7 +53,6 @@ export type CreateContractOptions<
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
   getResourceSelector: (functionSelector: Hex) => Promise<Hex>;
-  isInternalMethod: (functionSelector: Hex) => boolean;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -70,7 +70,6 @@ export function createContract<
   publicClient,
   walletClient,
   onWrite,
-  isInternalMethod,
   getResourceSelector,
 }: CreateContractOptions<
   TTransport,
@@ -165,9 +164,7 @@ export function createContract<
             const functionSelector = getFunctionSelector(functionSignature);
             if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
 
-            const isInternal = isInternalMethod(functionSelector);
-
-            console.log({ functionName, functionSignature, functionSelector, isInternal });
+            console.log({ functionName, functionSignature, functionSelector });
 
             let request: WriteContractParameters = {
               address,
@@ -176,12 +173,12 @@ export function createContract<
               args,
               ...options,
             };
+            const resourceSelector = await getResourceSelector(functionSelector);
+            const shouldUseCallFrom = resourceSelector && trim(resourceSelector) !== "0x";
 
             // if the function is not part of the world contract and needs to be routed
             // to other systems, route it through callFrom
-            if (!isInternal) {
-              const resourceSelector = await getResourceSelector(functionSelector);
-
+            if (shouldUseCallFrom) {
               // TODO figure out how to strongly type Abi
               const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
                 abi,

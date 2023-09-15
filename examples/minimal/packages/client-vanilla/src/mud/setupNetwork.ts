@@ -29,20 +29,14 @@ export async function setupNetwork() {
 
   const write$ = new Subject<ContractWrite>();
 
-  const {
-    components,
-    latestBlock$,
-    blockStorageOperations$,
-    waitForTransaction,
-    isInternalMethod,
-    getResourceSelector,
-  } = await syncToRecs({
-    world,
-    config: mudConfig,
-    address: networkConfig.worldAddress as Hex,
-    publicClient,
-    startBlock: BigInt(networkConfig.initialBlockNumber),
-  });
+  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+    await syncToRecs({
+      world,
+      config: mudConfig,
+      address: networkConfig.worldAddress as Hex,
+      publicClient,
+      startBlock: BigInt(networkConfig.initialBlockNumber),
+    });
 
   const worldContract = createContract({
     address: networkConfig.worldAddress as Hex,
@@ -50,7 +44,6 @@ export async function setupNetwork() {
     publicClient,
     walletClient: burnerWalletClient,
     onWrite: (write) => write$.next(write),
-    isInternalMethod,
     getResourceSelector,
   });
 
