@@ -18,7 +18,7 @@ contract KeysInTableHook is StoreHook {
     if (!UsedKeysIndex.getHas(tableId, keysHash)) {
       uint40 length = uint40(KeysInTable.lengthKeys0(tableId));
 
-      // Push the keyTuple to the list of keys in this tableId
+      // Push the keyTuple to the list of keys in this table
       if (keyTuple.length > 0) {
         KeysInTable.pushKeys0(tableId, keyTuple[0]);
         if (keyTuple.length > 1) {
@@ -113,7 +113,7 @@ contract KeysInTableHook is StoreHook {
             }
           }
 
-          // Update the index of lastKey after swapping it with the deleted keyTuple
+          // Update the index of lastKeyTuple after swapping it with the deleted keyTuple
           bytes32 lastKeyHash = keccak256(abi.encode(lastKeyTuple));
           UsedKeysIndex.setIndex(tableId, lastKeyHash, index);
         }
