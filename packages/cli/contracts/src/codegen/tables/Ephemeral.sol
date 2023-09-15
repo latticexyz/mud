@@ -21,13 +21,14 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Ephemeral")));
 bytes32 constant EphemeralTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0020010020000000000000000000000000000000000000000000000000000000
+);
+
 library Ephemeral {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -60,19 +61,12 @@ library Ephemeral {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Emit the ephemeral event using individual values */
@@ -82,7 +76,7 @@ library Ephemeral {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, _fieldLayout);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
@@ -92,7 +86,7 @@ library Ephemeral {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, _fieldLayout);
   }
 
   /** Tightly pack full data using this table's field layout */

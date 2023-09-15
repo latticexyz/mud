@@ -24,13 +24,14 @@ import { Resource } from "./../../../Types.sol";
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType")));
 bytes32 constant ResourceTypeTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0001010001000000000000000000000000000000000000000000000000000000
+);
+
 library ResourceType {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 1;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -63,19 +64,12 @@ library ResourceType {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get resourceType */
@@ -83,7 +77,7 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
@@ -92,7 +86,7 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
@@ -101,7 +95,7 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
   }
 
   /** Set resourceType (using the specified store) */
@@ -109,7 +103,7 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
   }
 
   /** Tightly pack full data using this table's field layout */
@@ -130,7 +124,7 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -138,6 +132,6 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
