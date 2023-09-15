@@ -1,6 +1,6 @@
 import { tableIdToHex } from "@latticexyz/common";
-import { CallData } from "../utils";
 import { System } from "./types";
+import { CallData } from "../utils/types";
 
 export async function grantAccess(input: {
   systems: System[];

@@ -1,6 +1,6 @@
 import { StoreConfig } from "@latticexyz/store";
 import { TableIds } from "./types";
-import { toBytes16 } from "../utils";
+import { toBytes16 } from "../utils/toBytes16";
 
 export function getTableIds(storeConfig: StoreConfig): TableIds {
   const tableIds: TableIds = {};

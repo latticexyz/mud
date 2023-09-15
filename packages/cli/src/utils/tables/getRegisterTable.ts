@@ -2,9 +2,9 @@ import { encodeSchema, getStaticByteLength } from "@latticexyz/schema-type/depre
 import { StoreConfig } from "@latticexyz/store";
 import { resolveAbiOrUserType } from "@latticexyz/store/codegen";
 import { tableIdToHex } from "@latticexyz/common";
-import { CallData } from "../utils";
 import { Table } from "./types";
 import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
+import { CallData } from "../utils/types";
 
 export function getRegisterTable(table: Table, storeConfig: StoreConfig): CallData {
   const { name, schema, keySchema } = table;

@@ -4,21 +4,24 @@ import { getOutDirectory, cast } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { deployWorldContract } from "./world";
-import { getTableIds, getRegisterTable } from "./tables";
-import { defaultModules, getUserModules, getModuleCall } from "./modules";
-import { grantAccess, registerFunctionCalls, registerSystemCall } from "./systems";
-import {
-  toBytes16,
-  postDeploy,
-  setInternalFeePerGas,
-  confirmNonce,
-  fastTxExecute,
-  ContractCode,
-  getContractData,
-  deployContract,
-} from "./utils";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
+import { defaultModules } from "./modules/constants";
+import { getModuleCall } from "./modules/getModuleCall";
+import { getUserModules } from "./modules/getUserModules";
+import { grantAccess } from "./systems/grantAccess";
+import { registerFunctionCalls } from "./systems/registerFunctionCalls";
+import { registerSystemCall } from "./systems/registerSystemCall";
+import { getRegisterTable } from "./tables/getRegisterTable";
+import { getTableIds } from "./tables/getTableIds";
+import { confirmNonce } from "./utils/confirmNonce";
+import { deployContract } from "./utils/deployContract";
+import { fastTxExecute } from "./utils/fastTxExecute";
+import { getContractData } from "./utils/getContractData";
+import { postDeploy } from "./utils/postDeploy";
+import { setInternalFeePerGas } from "./utils/setInternalFeePerGas";
+import { toBytes16 } from "./utils/toBytes16";
+import { ContractCode } from "./utils/types";
 
 export interface DeployConfig {
   profile?: string;

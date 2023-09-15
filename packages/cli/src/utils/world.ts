@@ -1,8 +1,10 @@
 import chalk from "chalk";
-import { TxConfig, deployContract, getContractData } from "./utils";
 
 import WorldData from "@latticexyz/world/out/World.sol/World.json" assert { type: "json" };
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
+import { deployContract } from "./utils/deployContract";
+import { getContractData } from "./utils/getContractData";
+import { TxConfig } from "./utils/types";
 
 export async function deployWorldContract(
   ip: TxConfig & {

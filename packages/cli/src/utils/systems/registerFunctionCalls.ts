@@ -1,7 +1,7 @@
 import { tableIdToHex } from "@latticexyz/common";
-import { CallData } from "../utils";
-import { FunctionSignature, System } from "./types";
+import { System } from "./types";
 import { loadFunctionSignatures, toFunctionSelector } from "./utils";
+import { CallData } from "../utils/types";
 
 export function registerFunctionCalls(input: {
   systemName: string;
