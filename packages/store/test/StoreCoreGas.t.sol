@@ -52,7 +52,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     fieldNames[2] = "value3";
     fieldNames[3] = "value4";
 
-    startGasReport("StoreCore: Register table");
+    startGasReport("StoreCore: register table");
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     endGasReport();
 
