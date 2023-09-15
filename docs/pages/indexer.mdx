@@ -276,12 +276,14 @@ To understand the result, it is easiest to look at it inside Node.
 
 To index a different blockchain, you specify these environment variables:
 
-| Variable        | Value                                                                                                    |
-| --------------- | -------------------------------------------------------------------------------------------------------- |
-| RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              |
-| RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
-| START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
-| SQLITE_FILENAME | `<blockchain name>.db`                                                                                   |
+| Variable                | Value                                                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| RPC_HTTP_URL            | The URL to access the blockchain using HTTP                                                              |
+| RPC_WS_URL              | The URL to access the blockchain using WebSocket                                                         |
+| START_BLOCK<sup>1</sup> | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+| SQLITE_FILENAME         | `<blockchain name>.db`                                                                                   |
+
+(1) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed.
 
 After you do that, start the indexer with this command:
 
@@ -305,10 +307,16 @@ To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these 
 
    Otherwise, set these environment variables:
 
-   | Variable     | Value                                                            |
-   | ------------ | ---------------------------------------------------------------- |
-   | DATABASE_URL | URL for the database, of the form `postgres://<host>/<database>` |
-   | CHAIN_ID     | ChainID for the chain you index                                  |
+   | Variable                 | Value                                                                                                    |
+   | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+   | CHAIN_ID                 | ChainID for the chain you index                                                                          |
+   | RPC_HTTP_URL<sup>1</sup> | The URL to access the blockchain using HTTP                                                              |
+   | RPC_WS_URL<sup>1</sup>   | The URL to access the blockchain using WebSocket                                                         |
+   | START_BLOCK<sup>2</sup>  | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+   | DATABASE_URL             | URL for the database, of the form `postgres://<host>/<database>`                                         |
+
+   (1) Not necessary in the case of a Lattice testnet.
+   (2) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed for performance reasons.
 
    And then run:
 
@@ -329,7 +337,7 @@ You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) 
 1. Get the list of relations in the schema.
 
    ```sql copy
-   \dt __mul_internal.*
+   \dt __mud_internal.*
    ```
 
    You should get two tables, `chain` and `tables`.
@@ -364,8 +372,14 @@ You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) 
    \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
    ```
 
+1. Specify that the default schema is the world being indexed.
+
+   ```sql copy
+   set search_path to "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
+   ```
+
 1. Get the value of the counter.
 
    ```sql copy
-   select * from "0x5FbDB2315678afecb367f032d93F642f64180aa3__"."Counter";
+   select * from "Counter";
    ```
