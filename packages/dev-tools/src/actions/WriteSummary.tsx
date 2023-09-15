@@ -56,10 +56,16 @@ export function WriteSummary({ write }: Props) {
           .filter(isDefined)
       : null;
 
-  const functionSelectorAndArgs: Hex = write.request?.args?.length
-    ? (write.request.args[write.request.args.length - 1] as Hex)
-    : `0x`;
-  const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
+  let functionName = write.request.functionName;
+  let functionArgs = write.request.args;
+  if (functionName === "call" || functionName === "callFrom") {
+    const functionSelectorAndArgs: Hex = write.request?.args?.length
+      ? (write.request.args[write.request.args.length - 1] as Hex)
+      : `0x`;
+    const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
+    functionName = functionData.functionName;
+    functionArgs = functionData.args;
+  }
 
   return (
     <details
@@ -78,7 +84,7 @@ export function WriteSummary({ write }: Props) {
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
-          {functionData.functionName}({functionData.args?.map((value) => serialize(value)).join(", ")})
+          {functionName}({functionArgs?.map((value) => serialize(value)).join(", ")})
         </div>
         {transactionReceipt.status === "fulfilled" ? (
           <a
