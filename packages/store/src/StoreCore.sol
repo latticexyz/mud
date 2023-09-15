@@ -54,7 +54,7 @@ library StoreCore {
    * Get the field layout for the given tableId
    */
   function getFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
-    fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(tableId));
+    fieldLayout = FieldLayout.wrap(Tables._getFieldLayout(tableId));
     if (fieldLayout.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
@@ -64,7 +64,7 @@ library StoreCore {
    * Get the key schema for the given tableId
    */
   function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
-    keySchema = Schema.wrap(Tables.getKeySchema(tableId));
+    keySchema = Schema.wrap(Tables._getKeySchema(tableId));
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
     if (!hasTable(tableId)) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
@@ -75,7 +75,7 @@ library StoreCore {
    * Get the schema for the given tableId
    */
   function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
-    valueSchema = Schema.wrap(Tables.getValueSchema(tableId));
+    valueSchema = Schema.wrap(Tables._getValueSchema(tableId));
     if (valueSchema.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
@@ -85,7 +85,7 @@ library StoreCore {
    * Check if a table with the given tableId exists
    */
   function hasTable(bytes32 tableId) internal view returns (bool) {
-    return Tables.getFieldLayout(tableId) != bytes32(0);
+    return Tables._getFieldLayout(tableId) != bytes32(0);
   }
 
   /**
@@ -125,7 +125,7 @@ library StoreCore {
     }
 
     // Register the table metadata
-    Tables.set(
+    Tables._set(
       tableId,
       FieldLayout.unwrap(fieldLayout),
       Schema.unwrap(keySchema),
@@ -175,7 +175,7 @@ library StoreCore {
     emit StoreSetRecord(tableId, keyTuple, data);
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
@@ -242,7 +242,7 @@ library StoreCore {
     emit StoreSetField(tableId, keyTuple, schemaIndex, data);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
@@ -273,7 +273,7 @@ library StoreCore {
     emit StoreDeleteRecord(tableId, keyTuple);
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_DELETE_RECORD))) {
@@ -324,7 +324,7 @@ library StoreCore {
     emit StoreSetField(tableId, keyTuple, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
@@ -368,7 +368,7 @@ library StoreCore {
     emit StoreSetField(tableId, keyTuple, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
@@ -422,7 +422,7 @@ library StoreCore {
     emit StoreSetField(tableId, keyTuple, schemaIndex, fullData);
 
     // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks.get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {

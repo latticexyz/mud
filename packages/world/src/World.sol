@@ -52,7 +52,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules.get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
       revert WorldAlreadyInitialized();
     }
 
@@ -82,7 +82,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(module.getName(), keccak256(args), address(module));
   }
 
   /************************************************************************
@@ -225,7 +225,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    Delegation explicitDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: msg.sender }));
+    Delegation explicitDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }));
 
     if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
       // forward the call as `delegator`
@@ -233,7 +233,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if the delegator has a fallback delegation control set
-    Delegation fallbackDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: address(0) }));
+    Delegation fallbackDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: address(0) }));
     if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
       // forward the call with `from` as `msgSender`
       return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
@@ -252,15 +252,15 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * ETH sent to the World without calldata is added to the root namespace's balance
    */
   receive() external payable {
-    uint256 rootBalance = Balances.get(ROOT_NAMESPACE);
-    Balances.set(ROOT_NAMESPACE, rootBalance + msg.value);
+    uint256 rootBalance = Balances._get(ROOT_NAMESPACE);
+    Balances._set(ROOT_NAMESPACE, rootBalance + msg.value);
   }
 
   /**
    * Fallback function to call registered function selectors
    */
   fallback() external payable {
-    (bytes32 resourceSelector, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
+    (bytes32 resourceSelector, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (resourceSelector == 0) revert FunctionSelectorNotFound(msg.sig);
 

@@ -28,6 +28,6 @@ contract ModuleInstallationSystem is System {
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(module.getName(), keccak256(args), address(module));
   }
 }
