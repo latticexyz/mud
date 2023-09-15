@@ -370,14 +370,14 @@ If you are indexing a different `World`, change the world address and use the na
    select key_schema, value_schema from __mud_internal.tables where name='Counter';
    ```
 
-1. The schema for a `World` is `<address>__`.
+1. The schema for a world is `<address>__`.
    Get the list of tables for a specific world.
 
    ```sql copy
    \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
    ```
 
-1. Specify the `World` schema is the default.
+1. Specify the world schema is the default.
 
    ```sql copy
    set search_path to "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
