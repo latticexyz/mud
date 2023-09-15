@@ -3,108 +3,108 @@
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: uint8",
-    "gasUsed": 124
+    "gasUsed": 126
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: uint32",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: uint256",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: int8",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: int32",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: int256",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: bytes1",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: bytes4",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: bytes32",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: bool",
-    "gasUsed": 123
+    "gasUsed": 125
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: address",
-    "gasUsed": 165
+    "gasUsed": 167
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: uint8[]",
-    "gasUsed": 166
+    "gasUsed": 168
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: uint32[]",
-    "gasUsed": 166
+    "gasUsed": 168
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: uint256[]",
-    "gasUsed": 166
+    "gasUsed": 168
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: int256[]",
-    "gasUsed": 166
+    "gasUsed": 168
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: bytes32[]",
-    "gasUsed": 166
+    "gasUsed": 168
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: bytes",
-    "gasUsed": 166
+    "gasUsed": 168
   },
   {
     "file": "test/solidity/SchemaType.t.sol",
     "test": "testGas",
     "name": "getStaticByteLength: string",
-    "gasUsed": 166
+    "gasUsed": 168
   }
 ]
