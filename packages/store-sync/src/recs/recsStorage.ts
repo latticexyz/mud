@@ -58,7 +58,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     }
 
     for (const log of logs) {
-      const { namespace, name } = hexToTableId(log.args.table);
+      const { namespace, name } = hexToTableId(log.args.tableId);
       const table = getComponentValue(
         components.RegisteredTables,
         getTableEntity({ address: log.address, namespace, name })
@@ -78,7 +78,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
         continue;
       }
 
-      const entity = hexKeyTupleToEntity(log.args.key);
+      const entity = hexKeyTupleToEntity(log.args.keyTuple);
 
       if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
         const value = decodeValueArgs(table.valueSchema, log.args);

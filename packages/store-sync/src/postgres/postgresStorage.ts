@@ -74,7 +74,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
     const tables = await getTables(
       database,
-      logs.map((log) => getTableKey({ address: log.address, tableId: log.args.table }))
+      logs.map((log) => getTableKey({ address: log.address, tableId: log.args.tableId }))
     );
 
     // This is currently parallelized per world (each world has its own database).
@@ -83,7 +83,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
     await database.transaction(async (tx) => {
       const tablesWithOperations = tables.filter((table) =>
-        logs.some((log) => getTableKey({ address: log.address, tableId: log.args.table }) === getTableKey(table))
+        logs.some((log) => getTableKey({ address: log.address, tableId: log.args.tableId }) === getTableKey(table))
       );
       if (tablesWithOperations.length) {
         await tx
@@ -95,17 +95,17 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
       for (const log of logs) {
         const table = tables.find(
-          (table) => getTableKey(table) === getTableKey({ address: log.address, tableId: log.args.table })
+          (table) => getTableKey(table) === getTableKey({ address: log.address, tableId: log.args.tableId })
         );
         if (!table) {
-          const { namespace, name } = hexToTableId(log.args.table);
+          const { namespace, name } = hexToTableId(log.args.tableId);
           debug(`table ${namespace}:${name} not found, skipping log`, log);
           continue;
         }
 
         const sqlTable = buildTable(table);
-        const uniqueKey = concatHex(log.args.key as Hex[]);
-        const key = decodeKey(table.keySchema, log.args.key);
+        const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
+        const key = decodeKey(table.keySchema, log.args.keyTuple);
 
         debug(log.eventName, log);
 

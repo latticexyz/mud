@@ -6,7 +6,7 @@ import { hexToTableId } from "@latticexyz/common";
 // TODO: add tableToLog
 
 export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord" }): Table {
-  const [tableId, ...otherKeys] = log.args.key;
+  const [tableId, ...otherKeys] = log.args.keyTuple;
   if (otherKeys.length) {
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
   }
@@ -14,7 +14,7 @@ export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord
   const table = hexToTableId(tableId);
 
   const value = decodeValue(
-    schemasTable.schema,
+    schemasTable.valueSchema,
     concatHex([log.args.staticData, log.args.encodedLengths, log.args.dynamicData])
   );
 

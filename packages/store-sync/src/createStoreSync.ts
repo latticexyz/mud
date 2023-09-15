@@ -136,8 +136,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
             eventName: "StoreSetRecord",
             address: table.address,
             args: {
-              table: table.tableId,
-              key: encodeKey(table.keySchema, record.key),
+              tableId: table.tableId,
+              keyTuple: encodeKey(table.keySchema, record.key),
               ...encodeValueArgs(table.valueSchema, record.value),
             },
           })

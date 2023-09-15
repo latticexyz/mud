@@ -72,7 +72,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           logs.map((log) =>
             JSON.stringify({
               address: getAddress(log.address),
-              ...hexToTableId(log.args.table),
+              ...hexToTableId(log.args.tableId),
             })
           )
         )
@@ -95,17 +95,17 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
 
       for (const log of logs) {
         const table = tables.find(
-          (table) => table.address === getAddress(log.address) && table.tableId === log.args.table
+          (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId
         );
         if (!table) {
-          const tableId = hexToTableId(log.args.table);
+          const tableId = hexToTableId(log.args.tableId);
           debug(`table ${tableId.namespace}:${tableId.name} not found, skipping log`, log);
           continue;
         }
 
         const sqlTable = buildTable(table);
-        const uniqueKey = concatHex(log.args.key as Hex[]);
-        const key = decodeKey(table.keySchema, log.args.key);
+        const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
+        const key = decodeKey(table.keySchema, log.args.keyTuple);
 
         if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
