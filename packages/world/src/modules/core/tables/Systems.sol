@@ -73,6 +73,18 @@ library Systems {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -84,6 +96,15 @@ library Systems {
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    return (address(Bytes.slice20(_blob, 0)));
+  }
+
+  /** Get system */
+  function _getSystem(bytes32 resourceSelector) internal view returns (address system) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -104,6 +125,14 @@ library Systems {
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), getFieldLayout());
   }
 
+  /** Set system */
+  function _setSystem(bytes32 resourceSelector, address system) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), getFieldLayout());
+  }
+
   /** Set system (using the specified store) */
   function setSystem(IStore _store, bytes32 resourceSelector, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -118,6 +147,15 @@ library Systems {
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getFieldLayout());
+    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  }
+
+  /** Get publicAccess */
+  function _getPublicAccess(bytes32 resourceSelector) internal view returns (bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 1, getFieldLayout());
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
@@ -138,6 +176,14 @@ library Systems {
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), getFieldLayout());
   }
 
+  /** Set publicAccess */
+  function _setPublicAccess(bytes32 resourceSelector, bool publicAccess) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), getFieldLayout());
+  }
+
   /** Set publicAccess (using the specified store) */
   function setPublicAccess(IStore _store, bytes32 resourceSelector, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -152,6 +198,15 @@ library Systems {
     _keyTuple[0] = resourceSelector;
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getFieldLayout());
+    return decode(_blob);
+  }
+
+  /** Get the full data */
+  function _get(bytes32 resourceSelector) internal view returns (address system, bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, getFieldLayout());
     return decode(_blob);
   }
 
@@ -172,6 +227,16 @@ library Systems {
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+  }
+
+  /** Set the full data using individual values */
+  function _set(bytes32 resourceSelector, address system, bool publicAccess) internal {
+    bytes memory _data = encode(system, publicAccess);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -210,6 +275,14 @@ library Systems {
     _keyTuple[0] = resourceSelector;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 resourceSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

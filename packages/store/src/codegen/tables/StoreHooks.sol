@@ -69,6 +69,18 @@ library StoreHooks {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -80,6 +92,15 @@ library StoreHooks {
     _keyTuple[0] = key;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /** Get value */
+  function _get(bytes32 key) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
@@ -100,6 +121,14 @@ library StoreHooks {
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getFieldLayout());
   }
 
+  /** Set value */
+  function _set(bytes32 key, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), getFieldLayout());
+  }
+
   /** Set value (using the specified store) */
   function set(IStore _store, bytes32 key, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -114,6 +143,17 @@ library StoreHooks {
     _keyTuple[0] = key;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    unchecked {
+      return _byteLength / 21;
+    }
+  }
+
+  /** Get the length of value */
+  function _length(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
     unchecked {
       return _byteLength / 21;
     }
@@ -140,6 +180,27 @@ library StoreHooks {
 
     unchecked {
       bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getFieldLayout(),
+        _index * 21,
+        (_index + 1) * 21
+      );
+      return (Bytes.slice21(_blob, 0));
+    }
+  }
+
+  /**
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItem(bytes32 key, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
         _tableId,
         _keyTuple,
         0,
@@ -180,6 +241,14 @@ library StoreHooks {
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
   }
 
+  /** Push an element to value */
+  function _push(bytes32 key, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
+  }
+
   /** Push an element to value (using the specified store) */
   function push(IStore _store, bytes32 key, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -194,6 +263,14 @@ library StoreHooks {
     _keyTuple[0] = key;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 21, getFieldLayout());
+  }
+
+  /** Pop an element from value */
+  function _pop(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 0, 21, getFieldLayout());
   }
 
   /** Pop an element from value (using the specified store) */
@@ -214,6 +291,19 @@ library StoreHooks {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _update(bytes32 key, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -255,6 +345,14 @@ library StoreHooks {
     _keyTuple[0] = key;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

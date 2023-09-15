@@ -72,6 +72,18 @@ library InstalledModules {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -84,6 +96,16 @@ library InstalledModules {
     _keyTuple[1] = argumentsHash;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    return (address(Bytes.slice20(_blob, 0)));
+  }
+
+  /** Get moduleAddress */
+  function _get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (address moduleAddress) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (address(Bytes.slice20(_blob, 0)));
   }
 
@@ -104,6 +126,15 @@ library InstalledModules {
     _keyTuple[1] = argumentsHash;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
+  }
+
+  /** Set moduleAddress */
+  function _set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
   }
 
   /** Set moduleAddress (using the specified store) */
@@ -136,6 +167,15 @@ library InstalledModules {
     _keyTuple[1] = argumentsHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(moduleName);
+    _keyTuple[1] = argumentsHash;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

@@ -72,6 +72,18 @@ library TimeboundDelegations {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -84,6 +96,16 @@ library TimeboundDelegations {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    return (uint256(Bytes.slice32(_blob, 0)));
+  }
+
+  /** Get maxTimestamp */
+  function _get(address delegator, address delegatee) internal view returns (uint256 maxTimestamp) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
@@ -104,6 +126,15 @@ library TimeboundDelegations {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), getFieldLayout());
+  }
+
+  /** Set maxTimestamp */
+  function _set(address delegator, address delegatee, uint256 maxTimestamp) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), getFieldLayout());
   }
 
   /** Set maxTimestamp (using the specified store) */
@@ -136,6 +167,15 @@ library TimeboundDelegations {
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(address delegator, address delegatee) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

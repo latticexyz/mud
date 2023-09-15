@@ -66,6 +66,18 @@ library KeysWithValue {
     );
   }
 
+  /** Register the table with its config */
+  function _register(bytes32 _tableId) internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store, bytes32 _tableId) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -77,6 +89,15 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+  }
+
+  /** Get keysWithValue */
+  function _get(bytes32 _tableId, bytes32 valueHash) internal view returns (bytes32[] memory keysWithValue) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
@@ -101,6 +122,14 @@ library KeysWithValue {
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)), getFieldLayout());
   }
 
+  /** Set keysWithValue */
+  function _set(bytes32 _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((keysWithValue)), getFieldLayout());
+  }
+
   /** Set keysWithValue (using the specified store) */
   function set(IStore _store, bytes32 _tableId, bytes32 valueHash, bytes32[] memory keysWithValue) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -115,6 +144,17 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    unchecked {
+      return _byteLength / 32;
+    }
+  }
+
+  /** Get the length of keysWithValue */
+  function _length(bytes32 _tableId, bytes32 valueHash) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
     unchecked {
       return _byteLength / 32;
     }
@@ -141,6 +181,27 @@ library KeysWithValue {
 
     unchecked {
       bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        getFieldLayout(),
+        _index * 32,
+        (_index + 1) * 32
+      );
+      return (Bytes.slice32(_blob, 0));
+    }
+  }
+
+  /**
+   * Get an item of keysWithValue
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItem(bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
         _tableId,
         _keyTuple,
         0,
@@ -181,6 +242,14 @@ library KeysWithValue {
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
   }
 
+  /** Push an element to keysWithValue */
+  function _push(bytes32 _tableId, bytes32 valueHash, bytes32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
+  }
+
   /** Push an element to keysWithValue (using the specified store) */
   function push(IStore _store, bytes32 _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -195,6 +264,14 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 32, getFieldLayout());
+  }
+
+  /** Pop an element from keysWithValue */
+  function _pop(bytes32 _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 0, 32, getFieldLayout());
   }
 
   /** Pop an element from keysWithValue (using the specified store) */
@@ -215,6 +292,19 @@ library KeysWithValue {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)), getFieldLayout());
+    }
+  }
+
+  /**
+   * Update an element of keysWithValue at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _update(bytes32 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 0, _index * 32, abi.encodePacked((_element)), getFieldLayout());
     }
   }
 
@@ -256,6 +346,14 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */

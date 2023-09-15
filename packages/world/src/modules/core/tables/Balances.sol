@@ -70,6 +70,18 @@ library Balances {
     );
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(
+      _tableId,
+      getFieldLayout(),
+      getKeySchema(),
+      getValueSchema(),
+      getKeyNames(),
+      getFieldNames()
+    );
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -81,6 +93,15 @@ library Balances {
     _keyTuple[0] = bytes32(namespace);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    return (uint256(Bytes.slice32(_blob, 0)));
+  }
+
+  /** Get balance */
+  function _get(bytes16 namespace) internal view returns (uint256 balance) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
@@ -99,6 +120,14 @@ library Balances {
     _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), getFieldLayout());
+  }
+
+  /** Set balance */
+  function _set(bytes16 namespace, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), getFieldLayout());
   }
 
   /** Set balance (using the specified store) */
@@ -128,6 +157,14 @@ library Balances {
     _keyTuple[0] = bytes32(namespace);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes16 namespace) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
   }
 
   /* Delete all data for given keys (using the specified store) */
