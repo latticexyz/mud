@@ -3,12 +3,12 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../../test/StoreMock.sol";
 import { StoreHooks } from "../../src/codegen/Tables.sol";
 
-contract StoreHooksTest is Test, GasReporter, StoreReadWithStubs {
+contract StoreHooksTest is Test, GasReporter, StoreMock {
   function testTable() public {
-    // StoreHooks schema is already registered by StoreCore
+    // StoreHooks table is already registered by StoreMock
     bytes32 key = keccak256("somekey");
 
     bytes21[] memory hooks = new bytes21[](1);

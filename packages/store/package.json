@@ -14,7 +14,7 @@
     "./codegen": "./dist/ts/codegen/index.js",
     "./config": "./dist/ts/config/index.js",
     "./register": "./dist/ts/register/index.js",
-    "./abi/*": "./abi/*",
+    "./out/*": "./out/*",
     "./*": "./dist/*"
   },
   "typesVersions": {
@@ -35,13 +35,13 @@
   },
   "scripts": {
     "build": "pnpm run build:tightcoder && pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run build:js",
-    "build:abi": "forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
+    "build:abi": "forge build --skip test script",
     "build:abi-ts": "abi-ts && prettier --write '**/*.abi.json.d.ts'",
     "build:js": "tsup",
     "build:mud": "tsx ./ts/scripts/tablegen.ts",
     "build:tightcoder": "tsx ./ts/scripts/generate-tightcoder.ts",
     "clean": "pnpm run clean:abi && pnpm run clean:js && pnpm run clean:mud",
-    "clean:abi": "rimraf abi",
+    "clean:abi": "forge clean",
     "clean:js": "rimraf dist",
     "clean:mud": "rimraf src/codegen",
     "dev": "tsup --watch",

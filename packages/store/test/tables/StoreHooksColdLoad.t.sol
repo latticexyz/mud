@@ -3,10 +3,10 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../../test/StoreMock.sol";
 import { StoreHooks } from "../../src/codegen/Tables.sol";
 
-contract StoreHooksColdLoadTest is Test, GasReporter, StoreReadWithStubs {
+contract StoreHooksColdLoadTest is Test, GasReporter, StoreMock {
   bytes21[] hooks;
 
   function setUp() public {

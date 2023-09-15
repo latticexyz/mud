@@ -3,6 +3,6 @@ import { Hex } from "viem";
 import { KeySchema } from "./common";
 import { schemaToHex } from "./schemaToHex";
 
-export function keySchemaToHex(schema: KeySchema): Hex {
-  return schemaToHex({ staticFields: Object.values(schema).filter(isStaticAbiType), dynamicFields: [] });
+export function keySchemaToHex(keySchema: KeySchema): Hex {
+  return schemaToHex({ staticFields: Object.values(keySchema).filter(isStaticAbiType), dynamicFields: [] });
 }

@@ -48,7 +48,7 @@ contract UpdateInFieldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -128,11 +128,7 @@ contract UpdateInFieldTest is Test, GasReporter {
       assertEq(loadedData[i], initData[i]);
     }
 
-    // Expect an error when trying to write from an address that doesn't have access (via namespace/name)
-    _expectAccessDenied(address(0x01), tableId);
-    world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
-
-    // Expect an error when trying to write from an address that doesn't have access (via tableId)
+    // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), tableId);
     world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
 
@@ -170,11 +166,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     initData[1] = dataForUpdate[0];
     assertEq(AddressArray.get(world, tableId, key), initData);
 
-    // Expect an error when trying to write from an address that doesn't have access (via namespace/name)
-    _expectAccessDenied(address(0x01), tableId);
-    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
-
-    // Expect an error when trying to write from an address that doesn't have access (via tableId)
+    // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), tableId);
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
 

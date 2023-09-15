@@ -3,19 +3,18 @@ import { staticAbiTypeToByteLength, staticAbiTypes } from "@latticexyz/schema-ty
 import { renderTightCoderEncode } from "./renderFunctions";
 
 export function renderEncodeArray() {
-  let result = `${renderedSolidityHeader}
+  return `
+    ${renderedSolidityHeader}
     import { TightCoder } from "./TightCoder.sol";
     library EncodeArray {
+      ${staticAbiTypes
+        .map((staticAbiType) =>
+          renderTightCoderEncode({
+            internalTypeId: staticAbiType,
+            staticByteLength: staticAbiTypeToByteLength[staticAbiType],
+          })
+        )
+        .join("\n")}
+      }
   `;
-
-  for (const staticAbiType of staticAbiTypes) {
-    const staticByteLength = staticAbiTypeToByteLength[staticAbiType];
-    result += renderTightCoderEncode({ internalTypeId: staticAbiType, staticByteLength });
-  }
-
-  result += `
-    }
-  `;
-
-  return result;
 }

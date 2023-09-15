@@ -18,7 +18,7 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
    */
   function emitEphemeralRecord(
     bytes32 resourceSelector,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
@@ -26,6 +26,6 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
     AccessControl.requireAccess(resourceSelector, msg.sender);
 
     // Set the record
-    StoreCore.emitEphemeralRecord(resourceSelector, key, data, fieldLayout);
+    StoreCore.emitEphemeralRecord(resourceSelector, keyTuple, data, fieldLayout);
   }
 }

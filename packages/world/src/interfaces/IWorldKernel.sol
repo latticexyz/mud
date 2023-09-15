@@ -40,4 +40,14 @@ interface IWorldCall {
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
   event HelloWorld();
+
+  /**
+   * The immutable original deployer of the World.
+   */
+  function creator() external view returns (address);
+
+  /**
+   * Allows the creator of the World to initialize the World once.
+   */
+  function initialize(IModule coreModule) external;
 }

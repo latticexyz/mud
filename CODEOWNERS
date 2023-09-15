@@ -9,6 +9,17 @@
 # specified, only that owner and not the global owner(s) will be requested
 # for a review.
 
-/packages/services @authcall
-/packages/react @holic
+/packages/abi-ts @holic
+/packages/block-logs-stream @holic
+/packages/cli @alvrs @dk1a
+/packages/config @alvrs @dk1a
 /packages/create-mud @holic
+/packages/dev-tools @holic
+/packages/gas-report @alvrs @holic
+/packages/protocol-parser @holic
+/packages/react @holic
+/packages/store @alvrs @dk1a
+/packages/store-indexer @holic
+/packages/store-sync @holic
+/packages/world @alvrs @dk1a
+/templates @holic

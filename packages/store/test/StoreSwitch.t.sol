@@ -4,11 +4,11 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 
 // Mock Store to call MockSystem
-contract StoreSwitchTestStore is StoreReadWithStubs {
+contract StoreSwitchTestStore is StoreMock {
   MockSystem mockSystem = new MockSystem();
 
   function callViaDelegateCall() public returns (address storeAddress) {

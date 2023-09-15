@@ -18,9 +18,9 @@ export function encodeTestData(testData: Data) {
         return encodeAbiParameters([{ type: keyType }], [keyValue]);
       });
 
-      const encodedValue = encodePacked(Object.values(config.tables[table].schema), Object.values(record.value));
+      const encodedValue = encodePacked(Object.values(config.tables[table].valueSchema), Object.values(record.value));
 
-      const encodedValueSchema = schemaToHex(abiTypesToSchema(Object.values(config.tables[table].schema)));
+      const encodedValueSchema = schemaToHex(abiTypesToSchema(Object.values(config.tables[table].valueSchema)));
 
       return {
         key: encodedKey,
