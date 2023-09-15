@@ -22,6 +22,7 @@ import { AbiFunction } from "abitype";
 import { createNonceManager } from "./createNonceManager";
 import { debug as parentDebug } from "./debug";
 import { UnionOmit } from "./type-utils/common";
+import { staticAbiTypeToDefaultValue } from "@latticexyz/schema-type";
 
 const debug = parentDebug.extend("createContract");
 
@@ -174,7 +175,7 @@ export function createContract<
               ...options,
             };
             const resourceSelector = await getResourceSelector(functionSelector);
-            const shouldUseCallFrom = resourceSelector && trim(resourceSelector) !== "0x";
+            const shouldUseCallFrom = resourceSelector && resourceSelector !== staticAbiTypeToDefaultValue.bytes32;
 
             // if the function is not part of the world contract and needs to be routed
             // to other systems, route it through callFrom
