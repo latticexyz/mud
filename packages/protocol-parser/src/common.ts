@@ -1,7 +1,5 @@
 import { DynamicAbiType, SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
-import { Hex, numberToHex } from "viem";
-
-export const UNCHANGED_PACKED_COUNTER = numberToHex(1, { size: 32 });
+import { Hex } from "viem";
 
 /** @deprecated use `KeySchema` or `ValueSchema` instead */
 export type Schema = {
