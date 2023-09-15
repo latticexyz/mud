@@ -1,4 +1,4 @@
-import { decodeEventLog, AbiEventSignatureNotFoundError } from "viem";
+import { decodeEventLog, AbiEventSignatureNotFoundError, decodeFunctionData, Hex } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -56,6 +56,11 @@ export function WriteSummary({ write }: Props) {
           .filter(isDefined)
       : null;
 
+  const functionSelectorAndArgs: Hex = write.request?.args?.length
+    ? (write.request.args[write.request.args.length - 1] as Hex)
+    : `0x`;
+  const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
+
   return (
     <details
       onToggle={(event) => {
@@ -73,7 +78,7 @@ export function WriteSummary({ write }: Props) {
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
-          {write.request.functionName}({write.request.args?.map((value) => serialize(value)).join(", ")})
+          {functionData.functionName}({functionData.args?.map((value) => serialize(value)).join(", ")})
         </div>
         {transactionReceipt.status === "fulfilled" ? (
           <a
