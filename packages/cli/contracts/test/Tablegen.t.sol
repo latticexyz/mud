@@ -148,6 +148,5 @@ contract TablegenTest is Test, StoreMock {
     Offchain.register();
 
     Offchain.emitSet("key", 123);
-    Offchain.emitSet("key", 123);
   }
 }
