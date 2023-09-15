@@ -1,5 +1,4 @@
 cache
-abi
 out
 docs
 _docs
@@ -8,4 +7,3 @@ artifacts
 yarn-error.log
 API
 dist
-types/ethers-contracts

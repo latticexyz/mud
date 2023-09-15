@@ -5,11 +5,11 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
+import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract MixedTest is Test, GasReporter, StoreReadWithStubs {
+contract MixedTest is Test, GasReporter, StoreMock {
   MixedData private testMixed;
 
   function testRegisterAndGetFieldLayout() public {

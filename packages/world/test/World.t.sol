@@ -157,7 +157,7 @@ contract WorldTest is Test, GasReporter {
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -177,20 +177,49 @@ contract WorldTest is Test, GasReporter {
     );
   }
 
-  function testConstructor() public {
+  function testConstructorAndInitialize() public {
+    CoreModule coreModule = new CoreModule();
+
     vm.expectEmit(true, true, true, true);
     emit HelloWorld();
-    new World();
+    IBaseWorld newWorld = IBaseWorld(address(new World()));
+
+    // Expect the creator to be the original deployer
+    assertEq(newWorld.creator(), address(this));
+
+    // Expect calls to initialize to fail if the caller is not the creator
+    vm.prank(address(0x4242));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.AccessDenied.selector,
+        ResourceSelector.from(ROOT_NAMESPACE).toString(),
+        address(0x4242)
+      )
+    );
+    newWorld.initialize(coreModule);
+
+    // Expect the creator to be able to initialize the World
+    newWorld.initialize(coreModule);
 
     // Should have registered the table data table (fka schema table)
-    assertEq(Tables.getFieldLayout(world, TablesTableId), FieldLayout.unwrap(Tables.getFieldLayout()));
-    assertEq(Tables.getAbiEncodedKeyNames(world, TablesTableId), abi.encode(Tables.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(world, TablesTableId), abi.encode(Tables.getFieldNames()));
+    assertEq(Tables.getFieldLayout(newWorld, TablesTableId), FieldLayout.unwrap(Tables.getFieldLayout()));
+    assertEq(Tables.getAbiEncodedKeyNames(newWorld, TablesTableId), abi.encode(Tables.getKeyNames()));
+    assertEq(Tables.getAbiEncodedFieldNames(newWorld, TablesTableId), abi.encode(Tables.getFieldNames()));
 
     // Should have registered the namespace owner table
-    assertEq(Tables.getFieldLayout(world, NamespaceOwnerTableId), FieldLayout.unwrap(NamespaceOwner.getFieldLayout()));
-    assertEq(Tables.getAbiEncodedKeyNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
-    assertEq(Tables.getAbiEncodedFieldNames(world, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getFieldNames()));
+    assertEq(
+      Tables.getFieldLayout(newWorld, NamespaceOwnerTableId),
+      FieldLayout.unwrap(NamespaceOwner.getFieldLayout())
+    );
+    assertEq(Tables.getAbiEncodedKeyNames(newWorld, NamespaceOwnerTableId), abi.encode(NamespaceOwner.getKeyNames()));
+    assertEq(
+      Tables.getAbiEncodedFieldNames(newWorld, NamespaceOwnerTableId),
+      abi.encode(NamespaceOwner.getFieldNames())
+    );
+
+    // Expect it to not be possible to initialize the World again
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldAlreadyInitialized.selector));
+    newWorld.initialize(coreModule);
   }
 
   function testRegisterModuleRevertInterfaceNotSupported() public {

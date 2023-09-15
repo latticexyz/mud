@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
+import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { World } from "../src/World.sol";
@@ -13,7 +13,7 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 
-contract AccessControlTest is Test, GasReporter, StoreReadWithStubs {
+contract AccessControlTest is Test, GasReporter, StoreMock {
   bytes16 constant namespace = "namespace";
   bytes16 constant name = "name";
   address constant presetCaller = address(0x0123);

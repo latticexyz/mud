@@ -9,6 +9,7 @@ import { Module } from "../../Module.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
@@ -63,6 +64,8 @@ contract CoreModule is Module {
    * Register core tables in the World
    */
   function _registerCoreTables() internal {
+    StoreCore.registerCoreTables();
+    NamespaceOwner.register();
     Balances.register();
     InstalledModules.register();
     Delegations.register();
@@ -73,6 +76,7 @@ contract CoreModule is Module {
     SystemRegistry.register();
     ResourceType.register();
 
+    NamespaceOwner.set(ROOT_NAMESPACE, _msgSender());
     ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
     ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
   }

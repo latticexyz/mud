@@ -22,4 +22,5 @@ export * from "./readHex";
 export * from "./schemaIndexToAbiType";
 export * from "./schemaToHex";
 export * from "./staticDataLength";
+export * from "./valueSchemaToFieldLayoutHex";
 export * from "./valueSchemaToHex";
