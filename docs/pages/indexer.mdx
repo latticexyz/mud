@@ -316,6 +316,7 @@ To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these 
    | DATABASE_URL             | URL for the database, of the form `postgres://<host>/<database>`                                         |
 
    (1) Not necessary in the case of a Lattice testnet.
+
    (2) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed for performance reasons.
 
    And then run:
@@ -327,6 +328,9 @@ To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these 
 ### Reading information from PostgreSQL
 
 You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) to view the indexer information.
+
+Note: This example uses [the template](http://localhost:3000/tutorials/minimal).
+If you are indexing a different `World`, change the world address and use the name of a table you have rather than `Counter`.
 
 1. Get the list of schemas to verify `__mud_internal` is there.
 
@@ -342,7 +346,7 @@ You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) 
 
    You should get two tables, `chain` and `tables`.
 
-1. Get the list of chains (there should be just one).
+1. Get the list of chains being indexed.
 
    ```sql copy
    select * from __mud_internal.chain;
@@ -366,13 +370,14 @@ You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) 
    select key_schema, value_schema from __mud_internal.tables where name='Counter';
    ```
 
-1. Get the list of tables for a specific world (if your world address is different, use that instead of `0x5FbDB2315678afecb367f032d93F642f64180aa3`).
+1. The schema for a `World` is `<address>__`.
+   Get the list of tables for a specific world.
 
    ```sql copy
    \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
    ```
 
-1. Specify that the default schema is the world being indexed.
+1. Specify the `World` schema is the default.
 
    ```sql copy
    set search_path to "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
