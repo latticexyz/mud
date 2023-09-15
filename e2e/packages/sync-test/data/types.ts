@@ -10,7 +10,7 @@ type Key<Table extends keyof (typeof config)["tables"]> = SchemaToPrimitive<
   (typeof config)["tables"][Table]["keySchema"]
 >;
 type Value<Table extends keyof (typeof config)["tables"]> = SchemaToPrimitive<
-  (typeof config)["tables"][Table]["schema"]
+  (typeof config)["tables"][Table]["valueSchema"]
 >;
 
 export type Datum<Table extends keyof (typeof config)["tables"] = keyof (typeof config)["tables"]> = {

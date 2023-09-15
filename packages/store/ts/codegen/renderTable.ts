@@ -85,18 +85,18 @@ export function renderTable(options: RenderTableOptions) {
 
       /** Get the table's key schema */
       function getKeySchema() internal pure returns (Schema) {
-        SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
-        ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+        SchemaType[] memory _keySchema = new SchemaType[](${keyTuple.length});
+        ${renderList(keyTuple, ({ enumName }, index) => `_keySchema[${index}] = SchemaType.${enumName};`)}
 
-        return SchemaLib.encode(_schema);
+        return SchemaLib.encode(_keySchema);
       }
 
       /** Get the table's value schema */
       function getValueSchema() internal pure returns (Schema) {
-        SchemaType[] memory _schema = new SchemaType[](${fields.length});
-        ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+        SchemaType[] memory _valueSchema = new SchemaType[](${fields.length});
+        ${renderList(fields, ({ enumName }, index) => `_valueSchema[${index}] = SchemaType.${enumName};`)}
 
-        return SchemaLib.encode(_schema);
+        return SchemaLib.encode(_valueSchema);
       }
 
       /** Get the table's key names */

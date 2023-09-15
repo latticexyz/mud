@@ -87,17 +87,24 @@ export interface TableConfig<
   dataStruct?: boolean;
   /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
   ephemeral?: boolean;
-  /** Table's key schema names mapped to their types. Default is `{ key: "bytes32" }` */
+  /**
+   * Table's key names mapped to their types.
+   * Default is `{ key: "bytes32" }`
+   * Key names' first letter should be lowercase.
+   */
   keySchema?: Record<string, KeySchema<StaticUserTypes>>;
-  /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
-  schema: SchemaConfig<UserTypes>;
+  /**
+   * Table's field names mapped to their types.
+   * Field names' first letter should be lowercase.
+   */
+  valueSchema: SchemaConfig<UserTypes>;
 }
 
 export type FullTableConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Required<TableConfig<UserTypes, StaticUserTypes>> & {
-  schema: FullSchemaConfig<UserTypes>;
+  valueSchema: FullSchemaConfig<UserTypes>;
 };
 
 export interface ExpandTableConfig<T extends TableConfig<string, string>, TableName extends string>
@@ -108,13 +115,13 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       name: TableName;
       tableIdArgument: typeof TABLE_DEFAULTS.tableIdArgument;
       storeArgument: typeof TABLE_DEFAULTS.storeArgument;
-      // dataStruct isn't expanded, because its value is conditional on the number of schema fields
+      // dataStruct isn't expanded, because its value is conditional on the number of value schema fields
       dataStruct: boolean;
       keySchema: typeof TABLE_DEFAULTS.keySchema;
       ephemeral: typeof TABLE_DEFAULTS.ephemeral;
     }
   > {
-  schema: ExpandSchemaConfig<T["schema"]>;
+  valueSchema: ExpandSchemaConfig<T["valueSchema"]>;
 }
 
 const zFullTableConfig = z
@@ -125,12 +132,12 @@ const zFullTableConfig = z
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
     keySchema: zKeySchema,
-    schema: zSchemaConfig,
+    valueSchema: zSchemaConfig,
     ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
   })
   .transform((arg) => {
-    // default dataStruct value depends on schema's length
-    if (Object.keys(arg.schema).length === 1) {
+    // default dataStruct value depends on value schema's length
+    if (Object.keys(arg.valueSchema).length === 1) {
       arg.dataStruct ??= false;
     } else {
       arg.dataStruct ??= true;
@@ -140,7 +147,7 @@ const zFullTableConfig = z
 
 const zShorthandTableConfig = zFieldData.transform((fieldData) => {
   return zFullTableConfig.parse({
-    schema: {
+    valueSchema: {
       value: fieldData,
     },
   });
@@ -177,7 +184,7 @@ export type FullTablesConfig<
 
 export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
   [TableName in keyof T]: T[TableName] extends FieldData<string>
-    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, TableName extends string ? TableName : never>
+    ? ExpandTableConfig<{ valueSchema: { value: T[TableName] } }, TableName extends string ? TableName : never>
     : T[TableName] extends TableConfig<string, string>
     ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
     : // Weakly typed values get a weakly typed expansion.
@@ -290,7 +297,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   // Local table variables must be unique within the table
   for (const table of Object.values(config.tables)) {
     const keySchemaNames = Object.keys(table.keySchema);
-    const fieldNames = Object.keys(table.schema);
+    const fieldNames = Object.keys(table.valueSchema);
     const duplicateVariableNames = getDuplicates([...keySchemaNames, ...fieldNames]);
     if (duplicateVariableNames.length > 0) {
       ctx.addIssue({
@@ -325,7 +332,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     for (const keySchemaType of Object.values(table.keySchema)) {
       validateStaticAbiOrUserType(staticUserTypeNames, keySchemaType, ctx);
     }
-    for (const fieldType of Object.values(table.schema)) {
+    for (const fieldType of Object.values(table.valueSchema)) {
       validateAbiOrUserType(userTypeNames, staticUserTypeNames, fieldType, ctx);
     }
   }

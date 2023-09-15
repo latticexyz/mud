@@ -18,7 +18,7 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
    */
   function emitEphemeralRecord(
     bytes32 resourceSelector,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
     bytes calldata dynamicData,
@@ -28,6 +28,6 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
     AccessControl.requireAccess(resourceSelector, msg.sender);
 
     // Set the record
-    StoreCore.emitEphemeralRecord(resourceSelector, key, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.emitEphemeralRecord(resourceSelector, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 }

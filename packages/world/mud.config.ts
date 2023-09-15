@@ -15,7 +15,7 @@ export default mudConfig({
       keySchema: {
         namespace: "bytes16",
       },
-      schema: {
+      valueSchema: {
         owner: "address",
       },
     },
@@ -24,7 +24,7 @@ export default mudConfig({
         resourceSelector: "bytes32",
         caller: "address",
       },
-      schema: {
+      valueSchema: {
         access: "bool",
       },
     },
@@ -33,21 +33,16 @@ export default mudConfig({
         moduleName: "bytes16",
         argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
-      schema: {
+      valueSchema: {
         moduleAddress: "address",
       },
-      // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
-      // to allow using the table before it is registered. This is because `getRecord` passes the schema
-      // to store, while `getField` loads it from storage. Remove this once we have support for passing the
-      // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
-      dataStruct: true,
     },
     Delegations: {
       keySchema: {
         delegator: "address",
         delegatee: "address",
       },
-      schema: {
+      valueSchema: {
         delegationControlId: "bytes32",
       },
     },
@@ -61,7 +56,7 @@ export default mudConfig({
       keySchema: {
         namespace: "bytes16",
       },
-      schema: {
+      valueSchema: {
         balance: "uint256",
       },
     },
@@ -70,7 +65,7 @@ export default mudConfig({
       keySchema: {
         resourceSelector: "bytes32",
       },
-      schema: {
+      valueSchema: {
         system: "address",
         publicAccess: "bool",
       },
@@ -81,7 +76,7 @@ export default mudConfig({
       keySchema: {
         system: "address",
       },
-      schema: {
+      valueSchema: {
         resourceSelector: "bytes32",
       },
     },
@@ -90,14 +85,14 @@ export default mudConfig({
       keySchema: {
         resourceSelector: "bytes32",
       },
-      schema: "bytes21[]",
+      valueSchema: "bytes21[]",
     },
     ResourceType: {
       directory: "modules/core/tables",
       keySchema: {
         resourceSelector: "bytes32",
       },
-      schema: {
+      valueSchema: {
         resourceType: "Resource",
       },
     },
@@ -106,7 +101,7 @@ export default mudConfig({
       keySchema: {
         functionSelector: "bytes4",
       },
-      schema: {
+      valueSchema: {
         resourceSelector: "bytes32",
         systemFunctionSelector: "bytes4",
       },
@@ -117,7 +112,7 @@ export default mudConfig({
       keySchema: {
         valueHash: "bytes32",
       },
-      schema: {
+      valueSchema: {
         keysWithValue: "bytes32[]", // For now only supports 1 key per value
       },
       tableIdArgument: true,
@@ -125,7 +120,7 @@ export default mudConfig({
     KeysInTable: {
       directory: "modules/keysintable/tables",
       keySchema: { sourceTable: "bytes32" },
-      schema: {
+      valueSchema: {
         keys0: "bytes32[]",
         keys1: "bytes32[]",
         keys2: "bytes32[]",
@@ -139,13 +134,13 @@ export default mudConfig({
         sourceTable: "bytes32",
         keysHash: "bytes32",
       },
-      schema: { has: "bool", index: "uint40" },
+      valueSchema: { has: "bool", index: "uint40" },
       dataStruct: false,
     },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
       keySchema: {},
-      schema: "uint256",
+      valueSchema: "uint256",
       tableIdArgument: true,
       storeArgument: true,
     },
@@ -157,7 +152,7 @@ export default mudConfig({
         resourceSelector: "bytes32",
         funcSelectorAndArgsHash: "bytes32",
       },
-      schema: {
+      valueSchema: {
         availableCalls: "uint256",
       },
     },
@@ -167,7 +162,7 @@ export default mudConfig({
         delegator: "address",
         delegatee: "address",
       },
-      schema: {
+      valueSchema: {
         maxTimestamp: "uint256",
       },
     },
@@ -179,14 +174,14 @@ export default mudConfig({
     Bool: {
       directory: "../test/tables",
       keySchema: {},
-      schema: {
+      valueSchema: {
         value: "bool",
       },
       tableIdArgument: true,
     },
     AddressArray: {
       directory: "../test/tables",
-      schema: "address[]",
+      valueSchema: "address[]",
       tableIdArgument: true,
     },
   },

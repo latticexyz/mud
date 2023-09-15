@@ -9,7 +9,7 @@ import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
-import { InstalledModules, InstalledModulesData } from "../src/tables/InstalledModules.sol";
+import { InstalledModules } from "../src/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
@@ -70,10 +70,10 @@ contract FactoriesTest is Test {
     StoreSwitch.setStoreAddress(calculatedAddress);
 
     // Retrieve CoreModule address from InstalledModule table
-    InstalledModulesData memory installedModule = InstalledModules.get(bytes16("core.m"), keccak256(new bytes(0)));
+    address installedModule = InstalledModules.get(bytes16("core.m"), keccak256(new bytes(0)));
 
     // Confirm correct Core is installed
-    assertEq(installedModule.moduleAddress, address(coreModule));
+    assertEq(installedModule, address(coreModule));
 
     // Confirm worldCount (which is salt) has incremented
     assertEq(uint256(worldFactory.worldCount()), uint256(1));

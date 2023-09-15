@@ -18,14 +18,14 @@ export type ConfigToRecsComponents<TConfig extends StoreConfig> = {
       __encodedLengths: RecsType.OptionalString;
       __dynamicData: RecsType.OptionalString;
     } & {
-      [fieldName in keyof TConfig["tables"][tableName]["schema"] & string]: RecsType &
-        SchemaAbiTypeToRecsType<SchemaAbiType & TConfig["tables"][tableName]["schema"][fieldName]>;
+      [fieldName in keyof TConfig["tables"][tableName]["valueSchema"] & string]: RecsType &
+        SchemaAbiTypeToRecsType<SchemaAbiType & TConfig["tables"][tableName]["valueSchema"][fieldName]>;
     },
     StoreComponentMetadata & {
       componentName: tableName;
       tableName: `${TConfig["namespace"]}:${tableName}`;
       keySchema: TConfig["tables"][tableName]["keySchema"];
-      valueSchema: TConfig["tables"][tableName]["schema"];
+      valueSchema: TConfig["tables"][tableName]["valueSchema"];
     }
   >;
 };

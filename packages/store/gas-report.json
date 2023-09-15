@@ -645,7 +645,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 76064
+    "gasUsed": 76175
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -669,7 +669,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 169833
+    "gasUsed": 169944
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -710,7 +710,7 @@
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
-    "name": "StoreCore: get schema (warm)",
+    "name": "StoreCore: get value schema (warm)",
     "gasUsed": 5033
   },
   {

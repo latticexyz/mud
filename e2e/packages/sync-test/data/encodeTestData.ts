@@ -12,8 +12,8 @@ export function encodeTestData(testData: Data) {
     const tableConfig = config.tables[table];
     return records.map((record) => {
       const key = encodeKey(tableConfig.keySchema, record.key);
-      const valueArgs = encodeValueArgs(tableConfig.schema, record.value);
-      const fieldLayout = valueSchemaToFieldLayoutHex(tableConfig.schema);
+      const valueArgs = encodeValueArgs(tableConfig.valueSchema, record.value);
+      const fieldLayout = valueSchemaToFieldLayoutHex(tableConfig.valueSchema);
 
       return {
         key,

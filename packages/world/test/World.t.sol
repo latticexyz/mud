@@ -87,14 +87,14 @@ contract WorldTestSystem is System {
   }
 
   function writeData(bytes16 namespace, bytes16 name, bool data) public {
-    bytes32[] memory key = new bytes32[](0);
+    bytes32[] memory keyTuple = new bytes32[](0);
     bytes32 tableId = ResourceSelector.from(namespace, name);
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
       StoreCore.setRecord(
         tableId,
-        key,
+        keyTuple,
         abi.encodePacked(data),
         PackedCounter.wrap(bytes32(0)),
         new bytes(0),
@@ -103,7 +103,7 @@ contract WorldTestSystem is System {
     } else {
       IBaseWorld(msg.sender).setRecord(
         tableId,
-        key,
+        keyTuple,
         abi.encodePacked(data),
         PackedCounter.wrap(bytes32(0)),
         new bytes(0),
@@ -574,17 +574,7 @@ contract WorldTest is Test, GasReporter {
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
 
-    // Write data to the table via its tableId
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(false), fieldLayout);
-
-    // Expect the data to be written
-    assertFalse(Bool.get(world, tableId));
-
-    // Expect an error when trying to write from an address that doesn't have access when calling via the namespace
-    _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
-
-    // Expect an error when trying to write from an address that doesn't have access when calling via the tableId
+    // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
 
@@ -645,7 +635,7 @@ contract WorldTest is Test, GasReporter {
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
-    // Write data to the table via the namespace and expect it to be written
+    // Write data to the table and expect it to be written
     world.setRecord(
       tableId,
       singletonKey,
@@ -663,7 +653,7 @@ contract WorldTest is Test, GasReporter {
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
 
-    // Write data to the table via the namespace and expect it to be written
+    // Write data to the table and expect it to be written
     world.setRecord(
       tableId,
       singletonKey,
@@ -673,20 +663,6 @@ contract WorldTest is Test, GasReporter {
       fieldLayout
     );
     assertTrue(Bool.get(world, tableId));
-
-    // Delete the record via the tableId and expect it to be deleted
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
-    assertFalse(Bool.get(world, tableId));
-
-    // Write data to the table via the namespace and expect it to be written
-    world.setRecord(
-      tableId,
-      singletonKey,
-      abi.encodePacked(true),
-      PackedCounter.wrap(bytes32(0)),
-      new bytes(0),
-      fieldLayout
-    );
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access

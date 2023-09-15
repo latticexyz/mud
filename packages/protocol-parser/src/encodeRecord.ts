@@ -4,18 +4,21 @@ import { encodeField } from "./encodeField";
 import { Schema } from "./common";
 
 /** @deprecated use `encodeValue` instead */
-export function encodeRecord(schema: Schema, values: readonly (StaticPrimitiveType | DynamicPrimitiveType)[]): Hex {
-  const staticValues = values.slice(0, schema.staticFields.length) as readonly StaticPrimitiveType[];
-  const dynamicValues = values.slice(schema.staticFields.length) as readonly DynamicPrimitiveType[];
+export function encodeRecord(
+  valueSchema: Schema,
+  values: readonly (StaticPrimitiveType | DynamicPrimitiveType)[]
+): Hex {
+  const staticValues = values.slice(0, valueSchema.staticFields.length) as readonly StaticPrimitiveType[];
+  const dynamicValues = values.slice(valueSchema.staticFields.length) as readonly DynamicPrimitiveType[];
 
   const staticData = staticValues
-    .map((value, i) => encodeField(schema.staticFields[i], value).replace(/^0x/, ""))
+    .map((value, i) => encodeField(valueSchema.staticFields[i], value).replace(/^0x/, ""))
     .join("");
 
-  if (schema.dynamicFields.length === 0) return `0x${staticData}`;
+  if (valueSchema.dynamicFields.length === 0) return `0x${staticData}`;
 
   const dynamicDataItems = dynamicValues.map((value, i) =>
-    encodeField(schema.dynamicFields[i], value).replace(/^0x/, "")
+    encodeField(valueSchema.dynamicFields[i], value).replace(/^0x/, "")
   );
 
   const dynamicFieldByteLengths = dynamicDataItems.map((value) => value.length / 2).reverse();

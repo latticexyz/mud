@@ -5,7 +5,7 @@ pragma solidity >=0.8.0;
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess, ResourceAccessTableId } from "./tables/ResourceAccess.sol";
-import { InstalledModules, InstalledModulesData, InstalledModulesTableId } from "./tables/InstalledModules.sol";
+import { InstalledModules, InstalledModulesTableId } from "./tables/InstalledModules.sol";
 import { Delegations, DelegationsTableId } from "./tables/Delegations.sol";
 import { Balances, BalancesTableId } from "./modules/core/tables/Balances.sol";
 import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";

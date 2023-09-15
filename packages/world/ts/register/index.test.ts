@@ -8,7 +8,7 @@ test("resolveWorldConfig requires unique table and system names", () => {
       mudConfig({
         tables: {
           Selector: {
-            schema: "uint256",
+            valueSchema: "uint256",
           },
         },
         systems: {

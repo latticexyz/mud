@@ -131,7 +131,7 @@ export function WriteSummary({ write }: Props) {
             </thead>
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
-                const table = hexToTableId((args as any).table);
+                const table = hexToTableId((args as any).tableId);
                 // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
                   <tr key={i}>
@@ -144,7 +144,7 @@ export function WriteSummary({ write }: Props) {
                       {eventName === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                      {hexKeyTupleToEntity((args as any).key)}
+                      {hexKeyTupleToEntity((args as any).keyTuple)}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">{(args as any).data}</td>
                   </tr>
