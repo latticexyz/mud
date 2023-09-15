@@ -36,11 +36,6 @@ export default mudConfig({
       valueSchema: {
         moduleAddress: "address",
       },
-      // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
-      // to allow using the table before it is registered. This is because `getRecord` passes the valueSchema
-      // to store, while `getField` loads it from storage. Remove this once we have support for passing the
-      // valueSchema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
-      dataStruct: true,
     },
     Delegations: {
       keySchema: {
