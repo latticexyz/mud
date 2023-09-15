@@ -1,6 +1,6 @@
 import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
-import { deployHandler, DeployOptions } from "../utils";
+import { DeployOptions, deployHandler } from "../utils/deployHandler";
 
 export const yDeployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
