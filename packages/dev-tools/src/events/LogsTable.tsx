@@ -22,13 +22,13 @@ export function LogsTable({ logs }: Props) {
       </thead>
       <tbody className="font-mono text-xs">
         {logs.map((log) => {
-          const { namespace, name } = hexToTableId(log.args.table);
+          const { namespace, name } = hexToTableId(log.args.tableId);
           return (
             <tr
               key={
                 log.blockHash != null && log.logIndex != null
                   ? `${log.blockHash}:${log.logIndex}`
-                  : `${namespace}:${name}:${log.args.key.join(",")}`
+                  : `${namespace}:${name}:${log.args.keyTuple.join(",")}`
               }
               className="hover:bg-blue-800"
             >
@@ -38,7 +38,7 @@ export function LogsTable({ logs }: Props) {
               <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
                 {namespace}:{name}
               </td>
-              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{log.args.key.join(",")}</td>
+              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{log.args.keyTuple.join(",")}</td>
               <td className="px-1 whitespace-nowrap">
                 <EventIcon type={log.eventName} />
               </td>
