@@ -19,7 +19,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * We can optimize this by adding support for `setIndexOfField` in Store
  * (See https://github.com/latticexyz/mud/issues/444)
  *
- * Note: if a table with composite keys is used, only the first key is indexed
+ * Note: if a table with composite keys is used, only the first key of the tuple is indexed
  */
 contract KeysWithValueHook is StoreHook {
   using ArrayLib for bytes32[];
@@ -31,25 +31,25 @@ contract KeysWithValueHook is StoreHook {
 
   function onBeforeSetRecord(
     bytes32 sourceTableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, fieldLayout));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
 
     // Remove the key from the list of keys with the previous value
-    _removeKeyFromList(targetTableId, key[0], previousValue);
+    _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
 
     // Push the key to the list of keys with the new value
-    KeysWithValue.push(targetTableId, keccak256(data), key[0]);
+    KeysWithValue.push(targetTableId, keccak256(data), keyTuple[0]);
   }
 
   function onAfterSetRecord(
     bytes32 sourceTableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
@@ -58,38 +58,38 @@ contract KeysWithValueHook is StoreHook {
 
   function onBeforeSetField(
     bytes32 sourceTableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8,
     bytes memory,
     FieldLayout fieldLayout
   ) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, fieldLayout));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    _removeKeyFromList(targetTableId, key[0], previousValue);
+    _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
   function onAfterSetField(
     bytes32 sourceTableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8,
     bytes memory,
     FieldLayout fieldLayout
   ) public {
     // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, key, fieldLayout));
+    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    KeysWithValue.push(targetTableId, newValue, key[0]);
+    KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
   }
 
-  function onBeforeDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, FieldLayout fieldLayout) public {
+  function onBeforeDeleteRecord(bytes32 sourceTableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, key, fieldLayout));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    _removeKeyFromList(targetTableId, key[0], previousValue);
+    _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
-  function onAfterDeleteRecord(bytes32 sourceTableId, bytes32[] memory key, FieldLayout fieldLayout) public {
+  function onAfterDeleteRecord(bytes32 sourceTableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
     // NOOP
   }
 

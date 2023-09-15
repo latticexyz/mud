@@ -16,16 +16,21 @@ bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector 
 interface IStoreHook is IERC165 {
   function onBeforeSetRecord(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     bytes memory data,
     FieldLayout fieldLayout
   ) external;
 
-  function onAfterSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) external;
+  function onAfterSetRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory data,
+    FieldLayout fieldLayout
+  ) external;
 
   function onBeforeSetField(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     bytes memory data,
     FieldLayout fieldLayout
@@ -33,13 +38,13 @@ interface IStoreHook is IERC165 {
 
   function onAfterSetField(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) external;
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout fieldLayout) external;
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout fieldLayout) external;
+  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 }

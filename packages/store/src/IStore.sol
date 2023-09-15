@@ -16,14 +16,14 @@ interface IStoreRead {
   // Get full record (including full array)
   function getRecord(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
   // Get partial data at schema index
   function getField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
@@ -31,7 +31,7 @@ interface IStoreRead {
   // Get field length at schema index
   function getFieldLength(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout
   ) external view returns (uint256);
@@ -39,7 +39,7 @@ interface IStoreRead {
   // Get start:end slice of the field at schema index
   function getFieldSlice(
     bytes32 tableId,
-    bytes32[] memory key,
+    bytes32[] memory keyTuple,
     uint8 schemaIndex,
     FieldLayout fieldLayout,
     uint256 start,
@@ -48,17 +48,22 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 tableId, bytes32[] key);
+  event StoreSetRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
+  event StoreSetField(bytes32 tableId, bytes32[] keyTuple, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data, FieldLayout fieldLayout) external;
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    bytes calldata data,
+    FieldLayout fieldLayout
+  ) external;
 
   // Set partial data at schema index
   function setField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata data,
     FieldLayout fieldLayout
@@ -67,7 +72,7 @@ interface IStoreWrite {
   // Push encoded items to the dynamic field at schema index
   function pushToField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
@@ -76,7 +81,7 @@ interface IStoreWrite {
   // Pop byte length from the dynamic field at schema index
   function popFromField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
@@ -85,7 +90,7 @@ interface IStoreWrite {
   // Change encoded items within the dynamic field at schema index
   function updateInField(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
@@ -93,16 +98,16 @@ interface IStoreWrite {
   ) external;
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 tableId, bytes32[] memory key, FieldLayout fieldLayout) external;
+  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 }
 
 interface IStoreEphemeral {
-  event StoreEphemeralRecord(bytes32 tableId, bytes32[] key, bytes data);
+  event StoreEphemeralRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
 
   // Emit the ephemeral event without modifying storage
   function emitEphemeralRecord(
     bytes32 tableId,
-    bytes32[] calldata key,
+    bytes32[] calldata keyTuple,
     bytes calldata data,
     FieldLayout fieldLayout
   ) external;

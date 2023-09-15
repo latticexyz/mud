@@ -297,9 +297,9 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
 
     for (uint256 i; i < 100; i++) {
-      bytes32[] memory key = new bytes32[](1);
-      key[0] = bytes32(i);
-      world.setRecord(table1, key, abi.encode(1), tableFieldLayout);
+      bytes32[] memory keyTuple = new bytes32[](1);
+      keyTuple[0] = bytes32(i);
+      world.setRecord(table1, keyTuple, abi.encode(1), tableFieldLayout);
     }
     world.setRecord(table2, key1, abi.encode(0), tableFieldLayout);
 
@@ -318,9 +318,9 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
 
     for (uint256 i; i < 1000; i++) {
-      bytes32[] memory key = new bytes32[](1);
-      key[0] = bytes32(i);
-      world.setRecord(table1, key, abi.encode(1), tableFieldLayout);
+      bytes32[] memory keyTuple = new bytes32[](1);
+      keyTuple[0] = bytes32(i);
+      world.setRecord(table1, keyTuple, abi.encode(1), tableFieldLayout);
     }
     world.setRecord(table2, key1, abi.encode(0), tableFieldLayout);
 
