@@ -17,7 +17,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _key;
-  bytes32 internal _table = keccak256("some.table");
+  bytes32 internal _tableId = keccak256("some.tableId");
 
   bytes32 internal firstDataBytes;
   uint32[] internal secondData;
@@ -27,13 +27,13 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
   // Expose an external popFromField function for testing purposes of indexers (see testHooks)
   function popFromField(
-    bytes32 table,
+    bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public override {
-    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
   }
 
   function setUp() public {
@@ -44,7 +44,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
       SchemaType.UINT32_ARRAY,
       SchemaType.UINT32_ARRAY
     );
-    StoreCore.registerTable(_table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
+    StoreCore.registerTable(_tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](3));
 
     // Create key
     _key = new bytes32[](1);
@@ -73,14 +73,14 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     thirdDataBytes = EncodeArray.encode(thirdData);
 
     // Set fields
-    StoreCore.setField(_table, _key, 0, abi.encodePacked(firstDataBytes), fieldLayout);
-    StoreCore.setField(_table, _key, 1, secondDataBytes, fieldLayout);
+    StoreCore.setField(_tableId, _key, 0, abi.encodePacked(firstDataBytes), fieldLayout);
+    StoreCore.setField(_tableId, _key, 1, secondDataBytes, fieldLayout);
     // Initialize a field with push
-    StoreCore.pushToField(_table, _key, 2, thirdDataBytes, fieldLayout);
+    StoreCore.pushToField(_tableId, _key, 2, thirdDataBytes, fieldLayout);
   }
 
   function testPopFromSecondField() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_table);
+    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
     bytes memory dataBytes = secondDataBytes;
 
     // Prepare expected data
@@ -92,34 +92,34 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(_table, _key, 1, newDataBytes);
+    emit StoreSetField(_tableId, _key, 1, newDataBytes);
 
     // Pop from second field
     startGasReport("pop from field (cold, 1 slot, 1 uint32 item)");
-    StoreCore.popFromField(_table, _key, 1, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(_tableId, _key, 1, byteLengthToPop, fieldLayout);
     endGasReport();
     // Get second field
-    bytes memory loadedData = StoreCore.getField(_table, _key, 1, fieldLayout);
+    bytes memory loadedData = StoreCore.getField(_tableId, _key, 1, fieldLayout);
     // Verify loaded data is correct
     assertEq(loadedData, newDataBytes);
 
     // Reset the second field and pop again (but warm this time)
-    StoreCore.setField(_table, _key, 1, dataBytes, fieldLayout);
+    StoreCore.setField(_tableId, _key, 1, dataBytes, fieldLayout);
     startGasReport("pop from field (warm, 1 slot, 1 uint32 item)");
-    StoreCore.popFromField(_table, _key, 1, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(_tableId, _key, 1, byteLengthToPop, fieldLayout);
     endGasReport();
     // Get second field
-    loadedData = StoreCore.getField(_table, _key, 1, fieldLayout);
+    loadedData = StoreCore.getField(_tableId, _key, 1, fieldLayout);
     // Verify loaded data is correct
     assertEq(loadedData, newDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(_table, _key, 0, fieldLayout)), firstDataBytes);
-    assertEq(StoreCore.getField(_table, _key, 2, fieldLayout), thirdDataBytes);
+    assertEq(bytes32(StoreCore.getField(_tableId, _key, 0, fieldLayout)), firstDataBytes);
+    assertEq(StoreCore.getField(_tableId, _key, 2, fieldLayout), thirdDataBytes);
   }
 
   function testPopFromThirdField() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_table);
+    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
     bytes memory dataBytes = thirdDataBytes;
 
     // Prepare expected data
@@ -131,74 +131,74 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
     // Expect a StoreSetField event to be emitted after pop
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(_table, _key, 2, dataBytes);
+    emit StoreSetField(_tableId, _key, 2, dataBytes);
 
     // Pop from the field
     startGasReport("pop from field (cold, 2 slots, 10 uint32 items)");
-    StoreCore.popFromField(_table, _key, 2, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(_tableId, _key, 2, byteLengthToPop, fieldLayout);
     endGasReport();
     // Load and verify the field
-    bytes memory loadedData = StoreCore.getField(_table, _key, 2, fieldLayout);
+    bytes memory loadedData = StoreCore.getField(_tableId, _key, 2, fieldLayout);
     assertEq(loadedData, newDataBytes);
 
     // Reset the field and pop again (but warm this time)
-    StoreCore.setField(_table, _key, 2, dataBytes, fieldLayout);
+    StoreCore.setField(_tableId, _key, 2, dataBytes, fieldLayout);
     startGasReport("pop from field (warm, 2 slots, 10 uint32 items)");
-    StoreCore.popFromField(_table, _key, 2, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(_tableId, _key, 2, byteLengthToPop, fieldLayout);
     endGasReport();
     // Load and verify the field
-    loadedData = StoreCore.getField(_table, _key, 2, fieldLayout);
+    loadedData = StoreCore.getField(_tableId, _key, 2, fieldLayout);
     assertEq(loadedData, newDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(_table, _key, 0, fieldLayout)), firstDataBytes);
-    assertEq(StoreCore.getField(_table, _key, 1, fieldLayout), secondDataBytes);
+    assertEq(bytes32(StoreCore.getField(_tableId, _key, 0, fieldLayout)), firstDataBytes);
+    assertEq(StoreCore.getField(_tableId, _key, 1, fieldLayout), secondDataBytes);
   }
 
   function testGetSecondFieldLength() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_table);
+    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
 
     startGasReport("get field length (cold, 1 slot)");
-    uint256 length = StoreCore.getFieldLength(_table, _key, 1, fieldLayout);
+    uint256 length = StoreCore.getFieldLength(_tableId, _key, 1, fieldLayout);
     endGasReport();
     assertEq(length, secondDataBytes.length);
     startGasReport("get field length (warm, 1 slot)");
-    length = StoreCore.getFieldLength(_table, _key, 1, fieldLayout);
+    length = StoreCore.getFieldLength(_tableId, _key, 1, fieldLayout);
     endGasReport();
     assertEq(length, secondDataBytes.length);
   }
 
   function testGetThirdFieldLength() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_table);
+    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
 
     startGasReport("get field length (warm due to , 2 slots)");
-    uint256 length = StoreCore.getFieldLength(_table, _key, 2, fieldLayout);
+    uint256 length = StoreCore.getFieldLength(_tableId, _key, 2, fieldLayout);
     endGasReport();
     assertEq(length, thirdDataBytes.length);
     startGasReport("get field length (warm, 2 slots)");
-    length = StoreCore.getFieldLength(_table, _key, 2, fieldLayout);
+    length = StoreCore.getFieldLength(_tableId, _key, 2, fieldLayout);
     endGasReport();
     assertEq(length, thirdDataBytes.length);
   }
 
   function testGetFieldSlice() public {
-    FieldLayout fieldLayout = StoreCore.getFieldLayout(_table);
+    FieldLayout fieldLayout = StoreCore.getFieldLayout(_tableId);
 
     startGasReport("get field slice (cold, 1 slot)");
-    bytes memory secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, fieldLayout, 0, 4);
+    bytes memory secondFieldSlice = StoreCore.getFieldSlice(_tableId, _key, 1, fieldLayout, 0, 4);
     endGasReport();
     assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 0, 4).toBytes());
     startGasReport("get field slice (warm, 1 slot)");
-    secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, fieldLayout, 4, 8);
+    secondFieldSlice = StoreCore.getFieldSlice(_tableId, _key, 1, fieldLayout, 4, 8);
     endGasReport();
     assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 4, 8).toBytes());
 
     startGasReport("get field slice (semi-cold, 1 slot)");
-    bytes memory thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, fieldLayout, 4, 32);
+    bytes memory thirdFieldSlice = StoreCore.getFieldSlice(_tableId, _key, 2, fieldLayout, 4, 32);
     endGasReport();
     assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 4, 32).toBytes());
     startGasReport("get field slice (warm, 2 slots)");
-    thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, fieldLayout, 8, 40);
+    thirdFieldSlice = StoreCore.getFieldSlice(_tableId, _key, 2, fieldLayout, 8, 40);
     endGasReport();
     assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 8, 40).toBytes());
   }

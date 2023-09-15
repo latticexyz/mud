@@ -17,10 +17,10 @@ import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 fieldIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
-  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 tableId, bytes32[] key, uint8 fieldIndex, bytes data);
+  event StoreDeleteRecord(bytes32 tableId, bytes32[] key);
+  event StoreEphemeralRecord(bytes32 tableId, bytes32[] key, bytes data);
 
   /**
    * Intialize the store address to use in StoreSwitch.
@@ -165,7 +165,7 @@ library StoreCore {
    * Set full data record for the given tableId and key tuple and field layout
    */
   function setRecord(bytes32 tableId, bytes32[] memory key, bytes memory data, FieldLayout fieldLayout) internal {
-    // verify the value has the correct length for the tableId (based on the tableId's field layout)
+    // verify the value has the correct length for the table (based on the table's field layout)
     // to prevent invalid data from being stored
 
     // Verify static data length + dynamic data length matches the given data
