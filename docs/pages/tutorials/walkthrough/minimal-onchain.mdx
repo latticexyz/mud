@@ -29,13 +29,13 @@ export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
     Users: {
       keySchema: {
         user: "address",
       },
-      schema: {
+      valueSchema: {
         score: "uint32",
         name: "string",
       },
@@ -128,18 +128,18 @@ The default namespace is empty.
 
 ```solidity
 library Counter {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT32;
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.UINT32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](0);
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 ```
 

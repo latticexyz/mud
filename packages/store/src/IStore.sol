@@ -9,9 +9,9 @@ import { IStoreHook } from "./IStoreHook.sol";
 interface IStoreRead {
   function getFieldLayout(bytes32 table) external view returns (FieldLayout fieldLayout);
 
-  function getValueSchema(bytes32 table) external view returns (Schema schema);
+  function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
 
-  function getKeySchema(bytes32 table) external view returns (Schema schema);
+  function getKeySchema(bytes32 table) external view returns (Schema keySchema);
 
   // Get full record (including full array)
   function getRecord(

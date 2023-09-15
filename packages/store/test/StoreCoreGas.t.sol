@@ -60,7 +60,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.getFieldLayout(table);
     endGasReport();
 
-    startGasReport("StoreCore: get schema (warm)");
+    startGasReport("StoreCore: get value schema (warm)");
     StoreCore.getValueSchema(table);
     endGasReport();
 
@@ -103,7 +103,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
 
-    // Register schema
+    // Register table
     StoreCore.registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](5));
 
     // Create some key
@@ -127,7 +127,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetStaticData() public {
-    // Register table's schema
+    // Register table
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -154,7 +154,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
-    // Register table's schema
+    // Register table
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
     bytes32 table = keccak256("some.table");
@@ -182,7 +182,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   function testSetAndGetDynamicData() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT128,
@@ -258,7 +258,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   function testSetAndGetField() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT128,
@@ -348,7 +348,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   function testDeleteData() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT128,
@@ -405,7 +405,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   function testPushToField() public {
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT256,
@@ -492,7 +492,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     TestUpdateInFieldData memory data = TestUpdateInFieldData("", "", "", "", "", "", "");
     bytes32 table = keccak256("some.table");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT256,
@@ -602,7 +602,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128);
     StoreCore.registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -654,7 +654,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
-    // Register table's schema
+    // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
     StoreCore.registerTable(table, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));

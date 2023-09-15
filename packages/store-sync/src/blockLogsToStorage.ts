@@ -48,9 +48,9 @@ export function blockLogsToStorage<TConfig extends StoreConfig = StoreConfig>({
 
           const table = hexToTableId(tableId);
 
-          const valueTuple = decodeRecord(abiTypesToSchema(Object.values(schemasTable.schema)), log.args.data);
+          const valueTuple = decodeRecord(abiTypesToSchema(Object.values(schemasTable.valueSchema)), log.args.data);
           const value = Object.fromEntries(
-            Object.keys(schemasTable.schema).map((name, i) => [name, valueTuple[i]])
+            Object.keys(schemasTable.valueSchema).map((name, i) => [name, valueTuple[i]])
           ) as ConfigToValuePrimitives<typeof storeConfig, typeof schemasTable.name>;
 
           const keySchema = hexToSchema(value.keySchema);

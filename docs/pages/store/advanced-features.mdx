@@ -17,7 +17,7 @@ export default mudConfig({
   tables: {
     CounterSingleton: {
       keySchema: {},
-      schema: "uint256",
+      valueSchema: "uint256",
     },
   },
 });
@@ -48,7 +48,7 @@ import { mudConfig } from "@latticexyz/store/register";
 export default mudConfig({
   tables: {
     TradeExecuted: {
-      schema: {
+      valueSchema: {
         amount: "uint32",
         receiver: "bytes32",
       },
@@ -84,8 +84,8 @@ uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
 contract MirrorSubscriber is IStoreHook {
   uint256 _table;
 
-  constructor(uint256 table, Schema schema, Schema keySchema) {
-    IStore(msg.sender).registerSchema(indexerTableId, schema, keySchema);
+  constructor(uint256 table, Schema keySchema, Schema valueSchema) {
+    IStore(msg.sender).registerSchema(indexerTableId, valueSchema, keySchema);
     _table = table;
   }
 
@@ -110,9 +110,9 @@ Registering the hook can be done using the low-level Store API:
 
 ```solidity
 uint256 table = keccak256("table");
-Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
+Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
 Schema keySchema = SchemaLib.encode(SchemaType.UINT256);
-MirrorSubscriber subscriber = new MirrorSubscriber(table, schema, keySchema);
+MirrorSubscriber subscriber = new MirrorSubscriber(table, keySchema, valueSchema);
 StoreCore.registerStoreHook(table, subscriber);
 ```
 

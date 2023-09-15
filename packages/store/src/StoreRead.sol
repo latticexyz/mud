@@ -11,12 +11,12 @@ contract StoreRead is IStoreRead {
     fieldLayout = StoreCore.getFieldLayout(table);
   }
 
-  function getValueSchema(bytes32 table) public view virtual returns (Schema schema) {
-    schema = StoreCore.getValueSchema(table);
+  function getValueSchema(bytes32 table) public view virtual returns (Schema valueSchema) {
+    valueSchema = StoreCore.getValueSchema(table);
   }
 
-  function getKeySchema(bytes32 table) public view virtual returns (Schema schema) {
-    schema = StoreCore.getKeySchema(table);
+  function getKeySchema(bytes32 table) public view virtual returns (Schema keySchema) {
+    keySchema = StoreCore.getKeySchema(table);
   }
 
   // Get full record (static and dynamic data)

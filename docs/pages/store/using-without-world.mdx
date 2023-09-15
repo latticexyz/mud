@@ -42,7 +42,7 @@ import { mudConfig } from "@latticexyz/store/register";
 export default mudConfig({
   tables: {
     MyTable: {
-      schema: {
+      valueSchema: {
         field1: "uint256",
         field2: "uint256",
       },
@@ -78,18 +78,25 @@ contract Contract is Store {
 ```solidity
 import { Store } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 
 contract Contract is Store {
   constructor() {
+    bytes32 tableId = bytes32("MyTable");
+
+    FieldLayout fieldLayout = FieldLayoutLib.encode(32, 32);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT256);
-    Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
-    uint256 table = uint256(keccak256("MyTable"));
-    StoreCore.registerSchema(table, schema, keySchema);
-    // Setting metadata is optional. It helps off-chain actors name columns
+    Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
+
+    string[] memory keyNames = new string[](1);
+    keyNames[0] = "field1";
+
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "field1";
     fieldNames[1] = "field2";
-    StoreSwitch.setMetadata(table, "MyTable", fieldNames);
+
+    StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 }
 ```
