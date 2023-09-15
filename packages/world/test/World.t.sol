@@ -143,7 +143,7 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
-  event HelloWorld();
+  event HelloWorld(bytes32 indexed version);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -180,8 +180,8 @@ contract WorldTest is Test, GasReporter {
   function testConstructorAndInitialize() public {
     CoreModule coreModule = new CoreModule();
 
-    vm.expectEmit(true, true, true, true);
-    emit HelloWorld();
+    vm.expectEmit(false, false, false, false);
+    emit HelloWorld("");
     IBaseWorld newWorld = IBaseWorld(address(new World()));
 
     // Expect the creator to be the original deployer

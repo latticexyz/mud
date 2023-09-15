@@ -34,12 +34,14 @@ import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
+
+  bytes32 public constant version = "0.0.0";
   address public immutable creator;
 
   constructor() {
     creator = msg.sender;
     StoreCore.initialize();
-    emit HelloWorld();
+    emit HelloWorld(version);
   }
 
   /**

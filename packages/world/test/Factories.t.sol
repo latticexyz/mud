@@ -16,7 +16,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
   event WorldDeployed(address indexed newContract);
-  event HelloWorld();
+  event HelloWorld(bytes32 indexed version);
 
   function calculateAddress(
     address deployingAddress,
@@ -58,8 +58,8 @@ contract FactoriesTest is Test {
     address calculatedAddress = calculateAddress(worldFactoryAddress, bytes32(0), type(World).creationCode);
 
     // Check for HelloWorld event from World
-    vm.expectEmit(true, false, false, false);
-    emit HelloWorld();
+    vm.expectEmit(false, false, false, false);
+    emit HelloWorld("");
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
