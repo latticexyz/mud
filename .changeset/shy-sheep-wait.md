@@ -1,4 +1,5 @@
 ---
+"@latticexyz/dev-tools": major
 "@latticexyz/store-sync": major
 "create-mud": minor
 ---
