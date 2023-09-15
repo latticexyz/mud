@@ -1,4 +1,5 @@
 /* Shared constants */
+// Make sure these stay aligned with @latticexyz/store/src/constants.sol
 
 // Total byte length of an EVM word
 export const WORD_SIZE = 32;

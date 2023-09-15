@@ -4,15 +4,19 @@ import { BYTE_TO_BITS, LayoutOffsets, MAX_DYNAMIC_FIELDS, MAX_TOTAL_FIELDS, WORD
 export function renderFieldLayout(fields: RenderType[]) {
   return `FieldLayout constant _fieldLayout = FieldLayout.wrap(${encodeFieldLayout(fields)});`;
 }
-
+// Make sure this logic stays aligned with @latticexyz/store/src/FieldLayout.sol
 export function encodeFieldLayout(fields: RenderType[]) {
-  if (fields.length > MAX_TOTAL_FIELDS) throw new Error(`FieldLayout: invalid length ${fields.length}`);
+  const staticFields = fields.filter(({ isDynamic }) => !isDynamic);
+  const numDynamicFields = fields.length - staticFields.length;
+  
   let fieldLayout = 0n;
   let totalLength = 0;
-  const staticFields = fields.filter(({ isDynamic }) => !isDynamic).length;
-  const dynamicFields = fields.length - staticFields;
+  const totalFields = fields.length;
+  
+  if (totalFields > MAX_TOTAL_FIELDS) throw new Error(`FieldLayout: invalid length ${totalFields}`);
+  if (numDynamicFields > MAX_DYNAMIC_FIELDS) throw new Error(`FieldLayout: invalid length ${numDynamicFields}`);
 
-  for (let i = 0; i < staticFields; i++) {
+  for (let i = 0; i < staticFields.length; i++) {
     const { isDynamic, staticByteLength } = fields[i];
     if (isDynamic) throw new Error(`FieldLayout: static type after dynamic type`);
 
@@ -20,11 +24,9 @@ export function encodeFieldLayout(fields: RenderType[]) {
     fieldLayout |= BigInt(staticByteLength) << BigInt((WORD_LAST_INDEX - 4 - i) * BYTE_TO_BITS);
   }
 
-  if (dynamicFields > MAX_DYNAMIC_FIELDS) throw new Error(`FieldLayout: invalid length ${dynamicFields}`);
-
   fieldLayout |= BigInt(totalLength) << BigInt(LayoutOffsets.TOTAL_LENGTH);
-  fieldLayout |= BigInt(staticFields) << BigInt(LayoutOffsets.NUM_STATIC_FIELDS);
-  fieldLayout |= BigInt(dynamicFields) << BigInt(LayoutOffsets.NUM_DYNAMIC_FIELDS);
+  fieldLayout |= BigInt(staticFields.length) << BigInt(LayoutOffsets.NUM_STATIC_FIELDS);
+  fieldLayout |= BigInt(numDynamicFields) << BigInt(LayoutOffsets.NUM_DYNAMIC_FIELDS);
 
   return `0x${fieldLayout.toString(16).padStart(64, "0")}`;
 }
