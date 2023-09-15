@@ -41,55 +41,55 @@ barArray[0] = 69;
 barArray[1] = 85;
 fooArray[0] = 42;
 // args: keyTuple, foo, bar, fooArray, staticArray
-MyTable.set(keccak256("some.keyTuple"), 45, false, fooArray, barArray);
+MyTable.set("some.key", 45, false, fooArray, barArray);
 ```
 
 **Setting a field**
 
 ```solidity
 // Setting foo
-MyTable.setFoo(keccak256("some.keyTuple"), 33);
+MyTable.setFoo("some.key", 33);
 // Setting bar
-MyTable.setBar(keccak256("some.keyTuple"), false);
+MyTable.setBar("some.key", false);
 // Setting fooArray
 uint256[] memory fooArray = new uint256[](3);
 fooArray[0] = 42;
 fooArray[1] = 15;
 fooArray[2] = 3;
-MyTable.setFooArray(keccak256("some.keyTuple"), fooArray);
+MyTable.setFooArray("some.key", fooArray);
 ```
 
 **Operations on dynamic arrays**
 
 ```solidity
-MyTable.pushFooArray(keccak256("some.keyTuple"), 4242); // adds 4242 at end of fooArray
-MyTable.popFooArray(keccak256("some.keyTuple")); // pop fooArray
-MyTable.setItemFooArray(keccak256("some.keyTuple"), 0, 123); // set fooArray[0] to 123
+MyTable.pushFooArray("some.key", 4242); // adds 4242 at end of fooArray
+MyTable.popFooArray("some.key"); // pop fooArray
+MyTable.setItemFooArray("some.key", 0, 123); // set fooArray[0] to 123
 ```
 
 **Retrieving a record**
 
 ```solidity
 // Retrieving a record
-MyTable.get(keccak256("some.keyTuple"));
+MyTable.get("some.key");
 ```
 
 **Retrieving a field**
 
 ```solidity
 // Retrieve foo
-MyTable.getFoo(keccak256("some.keyTuple"));
+MyTable.getFoo("some.key");
 // Retrieve bar
-MyTable.getBar(keccak256("some.keyTuple"));
+MyTable.getBar("some.key");
 // Retrieve an element of fooArray
-MyTable.getItemFooArray(keccak256("some.keyTuple"), 0); // get fooArray[0]
+MyTable.getItemFooArray("some.key", 0); // get fooArray[0]
 ```
 
 **Deleting a record**
 
 ```solidity
 // Deleting a record
-MyTable.deleteRecord(keccak256("some.keyTuple"));
+MyTable.deleteRecord("some.key");
 ```
 
 ### Access to Store via low-level API
@@ -121,7 +121,7 @@ uint256 tableId = uint256(keccak256("MyTable"));
 uint256 foo = 10;
 uint256 bar = 24;
 bytes32[] memory keyTuple = new bytes32[](1);
-keyTuple[0] = keccak256("some.keyTuple");
+keyTuple[0] = "some.key";
 // Setting a record
 StoreSwitch.setRecord(tableId, keyTuple, abi.encodePacked((foo, bar)));
 ```
@@ -133,7 +133,7 @@ uint256 tableId = uint256(keccak256("MyTable"));
 uint256 foo = 45;
 uint256 foo = 67;
 bytes32[] memory keyTuple = new bytes32[](1);
-keyTuple[0] = keccak256("some.keyTuple");
+keyTuple[0] = "some.key";
 // Setting foo
 StoreSwitch.setField(tableId, keyTuple, 0, abi.encodePacked((foo)));
 // Setting bar
@@ -145,7 +145,7 @@ StoreSwitch.setField(tableId, keyTuple, 1, abi.encodePacked((bar)));
 ```solidity
 uint256 tableId = uint256(keccak256("MyTable"));
 bytes32[] memory keyTuple = new bytes32[](1);
-keyTuple[0] = keccak256("some.keyTuple");
+keyTuple[0] = "some.key";
 // Retrieve a record
 Schema valueSchema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT256);
 bytes memory loadedData = StoreCore.getRecord(tableId, keyTuple, valueSchema);
@@ -158,7 +158,7 @@ uint256 bar = (uint256(Bytes.slice4(loadedData, 32)));
 ```solidity
 uint256 tableId = uint256(keccak256("MyTable"));
 bytes32[] memory keyTuple = new bytes32[](1);
-keyTuple[0] = keccak256("some.keyTuple");
+keyTuple[0] = "some.key";
 // Retrieve foo
 bytes memory loadedDatafoo = StoreCore.getField(tableId, keyTuple, 0);
 int32 foo = (uint32(Bytes.slice4(loadedDatafoo, 0)));
@@ -172,7 +172,7 @@ int32 bar = (uint32(Bytes.slice4(loadedData, 0)));
 ```solidity
 uint256 tableId = uint256(keccak256("MyTable"));
 bytes32[] memory keyTuple = new bytes32[](1);
-keyTuple[0] = keccak256("some.keyTuple");
+keyTuple[0] = "some.key";
 // Deleting a record
 StoreCore.deleteRecord(tableId, keyTuple);
 ```

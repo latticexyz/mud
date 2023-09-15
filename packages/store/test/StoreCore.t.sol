@@ -91,7 +91,7 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerTable(
       keccak256("tableId"),
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
-      Schema.wrap(keccak256("random bytes as keyTuple schema")),
+      Schema.wrap(keccak256("random bytes as key schema")),
       Schema.wrap(keccak256("random bytes as value schema")),
       keyNames,
       fieldNames
@@ -186,7 +186,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create some keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some keyTuple");
+    keyTuple[0] = bytes32("some key");
 
     // Set dynamic data length of dynamic index 0
     StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
@@ -230,7 +230,7 @@ contract StoreCoreTest is Test, StoreMock {
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
 
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
@@ -260,7 +260,7 @@ contract StoreCoreTest is Test, StoreMock {
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
 
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // This should fail because the data is not 6 bytes long
     IStore(this).setRecord(tableId, keyTuple, data, fieldLayout);
@@ -280,7 +280,7 @@ contract StoreCoreTest is Test, StoreMock {
     );
 
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
@@ -340,7 +340,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = bytes32("some key");
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
@@ -386,7 +386,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = bytes32("some key");
 
     bytes memory firstDataPacked = abi.encodePacked(firstDataBytes);
 
@@ -555,7 +555,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = bytes32("some key");
 
     // Set data
     IStore(this).setRecord(tableId, keyTuple, data, fieldLayout);
@@ -614,7 +614,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create keyTuple
     data.keyTuple = new bytes32[](1);
-    data.keyTuple[0] = bytes32("some.keyTuple");
+    data.keyTuple[0] = bytes32("some key");
 
     // Create data
     data.firstDataBytes = keccak256("some data");
@@ -754,7 +754,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create keyTuple
     data.keyTuple = new bytes32[](1);
-    data.keyTuple[0] = bytes32("some.keyTuple");
+    data.keyTuple[0] = bytes32("some key");
 
     // Create data
     data.firstDataBytes = keccak256("some data");
@@ -859,7 +859,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = bytes32("some key");
 
     bytes memory data1 = IStore(this).getRecord(tableId, keyTuple, fieldLayout);
     assertEq(data1.length, fieldLayout.staticDataLength());
@@ -880,7 +880,7 @@ contract StoreCoreTest is Test, StoreMock {
   function testRegisterHook() public {
     bytes32 tableId = keccak256("some.tableId");
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some keyTuple");
+    keyTuple[0] = "some key";
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
@@ -936,7 +936,7 @@ contract StoreCoreTest is Test, StoreMock {
   function testUnregisterHook() public {
     bytes32 tableId = keccak256("some.tableId");
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some keyTuple");
+    keyTuple[0] = "some key";
 
     // Register table's value schema
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 0);
@@ -1025,7 +1025,7 @@ contract StoreCoreTest is Test, StoreMock {
   function testHooksDynamicData() public {
     bytes32 tableId = keccak256("some.tableId");
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some keyTuple");
+    keyTuple[0] = "some key";
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 1);

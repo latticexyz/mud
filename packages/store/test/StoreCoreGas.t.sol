@@ -64,7 +64,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     StoreCore.getValueSchema(tableId);
     endGasReport();
 
-    startGasReport("StoreCore: get keyTuple schema (warm)");
+    startGasReport("StoreCore: get key schema (warm)");
     StoreCore.getKeySchema(tableId);
     endGasReport();
   }
@@ -141,7 +141,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some.keyTuple");
+    keyTuple[0] = "some key";
 
     startGasReport("set static record (1 slot)");
     StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
@@ -167,7 +167,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = keccak256("some.keyTuple");
+    keyTuple[0] = "some key";
 
     startGasReport("set static record (2 slots)");
     StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
@@ -225,7 +225,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // Set data
     startGasReport("set complex record with dynamic data (4 slots)");
@@ -272,7 +272,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = "some key";
 
     bytes memory firstDataPacked = abi.encodePacked(firstDataBytes);
 
@@ -391,7 +391,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // Set data
     StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
@@ -416,7 +416,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // Create data
     bytes32 firstDataBytes = keccak256("some data");
@@ -503,7 +503,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = "some key";
 
     // Create data
     data.firstDataBytes = keccak256("some data");
@@ -574,7 +574,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Create keyTuple
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32("some.keyTuple");
+    keyTuple[0] = "some key";
 
     startGasReport("access non-existing record");
     StoreCore.getRecord(tableId, keyTuple, fieldLayout);
