@@ -1,8 +1,8 @@
-import { tableIdToHex } from "@latticexyz/common";
 import { System } from "./types";
 import { CallData } from "../utils/types";
+import { tableIdToHex } from "@latticexyz/common";
 
-export async function grantAccess(input: {
+export async function getGrantAccessCallData(input: {
   systems: System[];
   systemContracts: Record<string, Promise<string>>;
   namespace: string;
@@ -11,17 +11,17 @@ export async function grantAccess(input: {
   const calls: CallData[] = [];
   for (const { name, accessListAddresses, accessListSystems } of systems) {
     // Grant access to addresses
-    accessListAddresses.map(async (address) => calls.push(grantSystemAccess(name, namespace, address)));
+    accessListAddresses.map(async (address) => calls.push(getGrantSystemAccessCallData(name, namespace, address)));
 
     // Grant access to other systems
     accessListSystems.map(async (granteeSystem) =>
-      calls.push(grantSystemAccess(name, namespace, await systemContracts[granteeSystem]))
+      calls.push(getGrantSystemAccessCallData(name, namespace, await systemContracts[granteeSystem]))
     );
   }
   return calls;
 }
 
-export function grantSystemAccess(name: string, namespace: string, address: string): CallData {
+function getGrantSystemAccessCallData(name: string, namespace: string, address: string): CallData {
   return {
     func: "grantAccess",
     args: [tableIdToHex(namespace, name), address],

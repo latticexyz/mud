@@ -3,7 +3,7 @@ import { System } from "./types";
 import { loadFunctionSignatures, toFunctionSelector } from "./utils";
 import { CallData } from "../utils/types";
 
-export function registerFunctionCalls(input: {
+export function getRegisterFunctionSelectorsCallData(input: {
   systemName: string;
   system: System;
   namespace: string;
@@ -21,14 +21,21 @@ export function registerFunctionCalls(input: {
     const isRoot = namespace === "";
     for (const { functionName, functionArgs } of functionSignatures) {
       callData.push(
-        registerFunctionCall({ namespace, name: system.name, systemName, functionName, functionArgs, isRoot })
+        getRegisterFunctionSelectorCallData({
+          namespace,
+          name: system.name,
+          systemName,
+          functionName,
+          functionArgs,
+          isRoot,
+        })
       );
     }
   }
   return callData;
 }
 
-function registerFunctionCall(input: {
+function getRegisterFunctionSelectorCallData(input: {
   namespace: string;
   name: string;
   systemName: string;

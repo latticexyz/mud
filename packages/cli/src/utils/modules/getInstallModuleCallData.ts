@@ -4,7 +4,7 @@ import { Module } from "./types";
 import { CallData } from "../utils/types";
 import { TableIds } from "../tables/types";
 
-export async function getModuleCall(
+export async function getInstallModuleCallData(
   moduleContracts: Record<string, Promise<string>>,
   module: Module,
   tableIds: TableIds

@@ -4,7 +4,7 @@ import UniqueEntityModuleData from "@latticexyz/world/out/UniqueEntityModule.sol
 import { ContractCode } from "../utils/types";
 
 // These modules are always deployed
-export const defaultModules: ContractCode[] = [
+export const defaultModuleContracts: ContractCode[] = [
   {
     name: "KeysWithValueModule",
     abi: KeysWithValueModuleData.abi,

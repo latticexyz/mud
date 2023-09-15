@@ -2,7 +2,7 @@ import { tableIdToHex } from "@latticexyz/common";
 import { System } from "./types";
 import { CallData } from "../utils/types";
 
-export async function registerSystemCall(input: {
+export async function getRegisterSystemCallData(input: {
   systemContracts: Record<string, Promise<string>>;
   systemName: string;
   system: System;

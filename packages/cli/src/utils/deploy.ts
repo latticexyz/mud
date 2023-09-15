@@ -6,13 +6,13 @@ import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { deployWorldContract } from "./world";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/out/CoreModule.sol/CoreModule.json" assert { type: "json" };
-import { defaultModules } from "./modules/constants";
-import { getModuleCall } from "./modules/getModuleCall";
+import { defaultModuleContracts } from "./modules/constants";
+import { getInstallModuleCallData } from "./modules/getInstallModuleCallData";
 import { getUserModules } from "./modules/getUserModules";
-import { grantAccess } from "./systems/grantAccess";
-import { registerFunctionCalls } from "./systems/registerFunctionCalls";
-import { registerSystemCall } from "./systems/registerSystemCall";
-import { getRegisterTable } from "./tables/getRegisterTable";
+import { getGrantAccessCallData } from "./systems/getGrantAccessCallData";
+import { getRegisterFunctionSelectorsCallData } from "./systems/getRegisterFunctionSelectorsCallData";
+import { getRegisterSystemCallData } from "./systems/getRegisterSystemCallData";
+import { getRegisterTableCallData } from "./tables/getRegisterTableCallData";
 import { getTableIds } from "./tables/getTableIds";
 import { confirmNonce } from "./utils/confirmNonce";
 import { deployContract } from "./utils/deployContract";
@@ -64,7 +64,7 @@ export async function deploy(
   const txConfig = {
     ...txParams,
     signer,
-    debug: !!debug,
+    debug: Boolean(debug),
     disableTxWait,
     confirmations: disableTxWait ? 0 : 1,
   };
@@ -73,7 +73,7 @@ export async function deploy(
   const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
   console.log("Start deployment at block", blockNumber);
 
-  // Deploy all contracts - World, Core, Systems, Module. Non-blocking.
+  // Deploy the World contract. Non-blocking.
   const worldPromise: Promise<string> = worldAddress
     ? Promise.resolve(worldAddress)
     : deployWorldContract({
@@ -84,7 +84,7 @@ export async function deploy(
       });
 
   // Filters any default modules from config
-  const userModules = getUserModules(defaultModules, mudConfig.modules);
+  const userModules = getUserModules(defaultModuleContracts, mudConfig.modules);
   const userModuleContracts = Object.keys(userModules).map((name) => {
     const { abi, bytecode } = getContractData(name, forgeOutDirectory);
     return {
@@ -109,11 +109,12 @@ export async function deploy(
       abi: CoreModuleData.abi,
       bytecode: CoreModuleData.bytecode,
     },
-    ...defaultModules,
+    ...defaultModuleContracts,
     ...userModuleContracts,
     ...systemContracts,
   ];
 
+  // Deploy the System and Module contracts
   const deployedContracts = contracts.reduce<Record<string, Promise<string>>>((acc, contract) => {
     acc[contract.name] = deployContract({
       ...txConfig,
@@ -153,7 +154,7 @@ export async function deploy(
   }
 
   const tableIds = getTableIds(mudConfig);
-  const registerTableCalls = Object.values(mudConfig.tables).map((table) => getRegisterTable(table, mudConfig));
+  const registerTableCalls = Object.values(mudConfig.tables).map((table) => getRegisterTableCallData(table, mudConfig));
 
   console.log(chalk.blue("Registering tables"));
   await Promise.all(
@@ -171,7 +172,7 @@ export async function deploy(
   console.log(chalk.blue("Registering Systems and Functions"));
   const systemCalls = await Promise.all(
     Object.entries(resolvedConfig.systems).map(([systemName, system]) =>
-      registerSystemCall({
+      getRegisterSystemCallData({
         systemContracts: deployedContracts,
         systemName,
         system,
@@ -180,7 +181,7 @@ export async function deploy(
     )
   );
   const functionCalls = Object.entries(resolvedConfig.systems).flatMap(([systemName, system]) =>
-    registerFunctionCalls({
+    getRegisterFunctionSelectorsCallData({
       systemName,
       system,
       namespace: mudConfig.namespace,
@@ -200,7 +201,7 @@ export async function deploy(
   console.log(chalk.green(`Systems and Functions registered`));
 
   // Wait for System access to be granted before installing modules
-  const grantCalls = await grantAccess({
+  const grantCalls = await getGrantAccessCallData({
     systems: Object.values(resolvedConfig.systems),
     systemContracts: deployedContracts,
     namespace: mudConfig.namespace,
@@ -219,7 +220,9 @@ export async function deploy(
   );
   console.log(chalk.green(`Access granted`));
 
-  const moduleCalls = await Promise.all(mudConfig.modules.map((m) => getModuleCall(deployedContracts, m, tableIds)));
+  const moduleCalls = await Promise.all(
+    mudConfig.modules.map((m) => getInstallModuleCallData(deployedContracts, m, tableIds))
+  );
 
   console.log(chalk.blue("Installing User Modules"));
   await Promise.all(

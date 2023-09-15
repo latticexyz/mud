@@ -6,7 +6,7 @@ import { Table } from "./types";
 import { fieldLayoutToHex } from "@latticexyz/protocol-parser";
 import { CallData } from "../utils/types";
 
-export function getRegisterTable(table: Table, storeConfig: StoreConfig): CallData {
+export function getRegisterTableCallData(table: Table, storeConfig: StoreConfig): CallData {
   const { name, schema, keySchema } = table;
   if (!name) throw Error("Table missing name");
 
