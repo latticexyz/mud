@@ -167,6 +167,8 @@ export function createContract<
 
             const isInternal = isInternalMethod(functionSelector);
 
+            console.log({ functionName, functionSignature, functionSelector, isInternal });
+
             let request: WriteContractParameters = {
               address,
               abi,
