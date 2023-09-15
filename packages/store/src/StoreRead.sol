@@ -1,12 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { STORE_VERSION } from "./constants.sol";
 import { IStoreRead } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 
 contract StoreRead is IStoreRead {
+  function storeVersion() public pure returns (bytes32) {
+    return STORE_VERSION;
+  }
+
   function getFieldLayout(bytes32 tableId) public view virtual returns (FieldLayout fieldLayout) {
     fieldLayout = StoreCore.getFieldLayout(tableId);
   }
