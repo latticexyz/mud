@@ -586,6 +586,8 @@ library StoreCore {
 
 library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
+  bytes32 internal constant DYNMAIC_DATA_SLOT = keccak256("mud.store.dynamicData");
+  bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");
 
   /************************************************************************
    *
@@ -811,16 +813,14 @@ library StoreCoreInternal {
     bytes32[] memory keyTuple,
     uint8 schemaIndex
   ) internal pure returns (uint256) {
-    // offset by 1 to avoid collision with static data
-    // assumes schemaIndex < 255
-    return uint256(SLOT ^ tableId ^ bytes1(schemaIndex + 1) ^ keccak256(abi.encodePacked(keyTuple)));
+    return uint256(DYNMAIC_DATA_SLOT ^ tableId ^ bytes1(schemaIndex) ^ keccak256(abi.encodePacked(keyTuple)));
   }
 
   /**
    * Compute the storage location for the length of the dynamic data
    */
   function _getDynamicDataLengthLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
-    return uint256(SLOT ^ tableId ^ bytes32("length") ^ keccak256(abi.encodePacked(keyTuple)));
+    return uint256(DYNAMIC_DATA_LENGTH_SLOT ^ tableId ^ keccak256(abi.encodePacked(keyTuple)));
   }
 
   /**
