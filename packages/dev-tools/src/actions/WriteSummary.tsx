@@ -143,7 +143,7 @@ export function WriteSummary({ write }: Props) {
                       {eventName === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                      {hexKeyTupleToEntity((args as any).key)}
+                      {hexKeyTupleToEntity((args as any).keyTuple)}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">{(args as any).data}</td>
                   </tr>
