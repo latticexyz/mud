@@ -147,6 +147,9 @@ importers:
       '@latticexyz/dev-tools':
         specifier: link:../../../../packages/dev-tools
         version: link:../../../../packages/dev-tools
+      '@latticexyz/faucet':
+        specifier: link:../../../../packages/faucet
+        version: link:../../../../packages/faucet
       '@latticexyz/react':
         specifier: link:../../../../packages/react
         version: link:../../../../packages/react
@@ -305,6 +308,9 @@ importers:
       '@latticexyz/config':
         specifier: link:../../../../packages/config
         version: link:../../../../packages/config
+      '@latticexyz/faucet':
+        specifier: link:../../../../packages/faucet
+        version: link:../../../../packages/faucet
       '@latticexyz/schema-type':
         specifier: link:../../../../packages/schema-type
         version: link:../../../../packages/schema-type

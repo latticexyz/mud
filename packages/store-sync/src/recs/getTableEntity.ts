@@ -1,4 +1,4 @@
-import { Address, Hex, getAddress, stringToHex } from "viem";
+import { stringToHex } from "viem";
 import { Table } from "../common";
 import { Entity } from "@latticexyz/recs";
 import { encodeEntity } from "./encodeEntity";

@@ -21,7 +21,7 @@ if (import.meta.env.DEV) {
     publicClient,
     walletClient,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     worldAddress,
     worldAbi,
     write$,

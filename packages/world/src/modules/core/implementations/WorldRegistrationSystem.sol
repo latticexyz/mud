@@ -39,16 +39,16 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes32 resourceSelector = ResourceSelector.from(namespace);
 
     // Require namespace to not exist yet
-    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
+    if (ResourceType._get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
 
     // Register namespace resource
-    ResourceType.set(namespace, Resource.NAMESPACE);
+    ResourceType._set(namespace, Resource.NAMESPACE);
 
     // Register caller as the namespace owner
-    NamespaceOwner.set(namespace, _msgSender());
+    NamespaceOwner._set(namespace, _msgSender());
 
     // Give caller access to the new namespace
-    ResourceAccess.set(resourceSelector, _msgSender(), true);
+    ResourceAccess._set(resourceSelector, _msgSender(), true);
   }
 
   /**
@@ -97,7 +97,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     if (resourceSelector.getName() == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
     // Require this system to not be registered at a different resource selector yet
-    bytes32 existingResourceSelector = SystemRegistry.get(address(system));
+    bytes32 existingResourceSelector = SystemRegistry._get(address(system));
     if (existingResourceSelector != 0 && existingResourceSelector != resourceSelector) {
       revert SystemExists(address(system));
     }
@@ -105,38 +105,38 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     bytes16 namespace = resourceSelector.getNamespace();
-    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
+    if (ResourceType._get(namespace) == Resource.NONE) registerNamespace(namespace);
     else AccessControl.requireOwner(namespace, _msgSender());
 
     // Require no resource other than a system to exist at this selector yet
-    Resource resourceType = ResourceType.get(resourceSelector);
+    Resource resourceType = ResourceType._get(resourceSelector);
     if (resourceType != Resource.NONE && resourceType != Resource.SYSTEM) {
       revert ResourceExists(resourceSelector.toString());
     }
 
     // Check if a system already exists at this resource selector
-    address existingSystem = Systems.getSystem(resourceSelector);
+    address existingSystem = Systems._getSystem(resourceSelector);
 
     // If there is an existing system with this resource selector, remove it
     if (existingSystem != address(0)) {
       // Remove the existing system from the system registry
-      SystemRegistry.deleteRecord(existingSystem);
+      SystemRegistry._deleteRecord(existingSystem);
 
       // Remove the existing system's access to its namespace
-      ResourceAccess.deleteRecord(namespace, existingSystem);
+      ResourceAccess._deleteRecord(namespace, existingSystem);
     } else {
       // Otherwise, this is a new system, so register its resource type
-      ResourceType.set(resourceSelector, Resource.SYSTEM);
+      ResourceType._set(resourceSelector, Resource.SYSTEM);
     }
 
     // Systems = mapping from resourceSelector to system address and publicAccess
-    Systems.set(resourceSelector, address(system), publicAccess);
+    Systems._set(resourceSelector, address(system), publicAccess);
 
     // SystemRegistry = mapping from system address to resourceSelector
-    SystemRegistry.set(address(system), resourceSelector);
+    SystemRegistry._set(address(system), resourceSelector);
 
     // Grant the system access to its namespace
-    ResourceAccess.set(namespace, address(system), true);
+    ResourceAccess._set(namespace, address(system), true);
   }
 
   /**
@@ -162,7 +162,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     );
 
     // Require the function selector to be globally unique
-    bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);
+    bytes32 existingResourceSelector = FunctionSelectors._getResourceSelector(worldFunctionSelector);
 
     if (existingResourceSelector != 0) revert FunctionSelectorExists(worldFunctionSelector);
 
@@ -171,7 +171,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
       ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
       : bytes4(keccak256(systemFunctionSignature));
-    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
+    FunctionSelectors._set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
   }
 
   /**
@@ -190,12 +190,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     AccessControl.requireOwner(ROOT_NAMESPACE, _msgSender());
 
     // Require the function selector to be globally unique
-    bytes32 existingResourceSelector = FunctionSelectors.getResourceSelector(worldFunctionSelector);
+    bytes32 existingResourceSelector = FunctionSelectors._getResourceSelector(worldFunctionSelector);
 
     if (existingResourceSelector != 0) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors.set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
+    FunctionSelectors._set(worldFunctionSelector, resourceSelector, systemFunctionSelector);
 
     return worldFunctionSelector;
   }
@@ -214,7 +214,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // If the delegation is not unlimited...
     if (delegationControlId != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
-      (address delegationControl, ) = Systems.get(delegationControlId);
+      (address delegationControl, ) = Systems._get(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
 
       // Call the delegation control contract's init function

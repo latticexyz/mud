@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore } from "./IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
@@ -107,12 +108,19 @@ library StoreSwitch {
     }
   }
 
-  function setRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory data, FieldLayout fieldLayout) internal {
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
+      StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     } else {
-      IStore(_storeAddress).setRecord(tableId, keyTuple, data, fieldLayout);
+      IStore(_storeAddress).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     }
   }
 
@@ -189,14 +197,23 @@ library StoreSwitch {
   function emitEphemeralRecord(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    bytes memory data,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(tableId, keyTuple, data, fieldLayout);
+      StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(tableId, keyTuple, data, fieldLayout);
+      IStore(_storeAddress).emitEphemeralRecord(
+        tableId,
+        keyTuple,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
   }
 
@@ -224,6 +241,33 @@ library StoreSwitch {
       return StoreCore.getField(tableId, keyTuple, fieldIndex, fieldLayout);
     } else {
       return IStore(_storeAddress).getField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    } else {
+      return IStore(_storeAddress).getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+    } else {
+      return IStore(_storeAddress).getDynamicField(tableId, keyTuple, dynamicFieldIndex);
     }
   }
 

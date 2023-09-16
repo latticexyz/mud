@@ -24,7 +24,7 @@ jobs:
 
       - name: "Setup"
         uses: ./.github/actions/setup
-        
+
       - name: Clean
         shell: bash
         run: pnpm turbo run clean --force --concurrency 10
@@ -60,3 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  docker:
+    uses: ./.github/workflows/docker.yml
+    needs: version

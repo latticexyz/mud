@@ -7,6 +7,7 @@ import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { ContractWrite, createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
 import { Subject, share } from "rxjs";
 import mudConfig from "contracts/mud.config";
+import { createClient as createFaucetClient } from "@latticexyz/faucet";
 
 export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
@@ -36,7 +37,7 @@ export async function setupNetwork() {
     onWrite: (write) => write$.next(write),
   });
 
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
     world,
     config: mudConfig,
     address: networkConfig.worldAddress as Hex,
@@ -44,28 +45,20 @@ export async function setupNetwork() {
     startBlock: BigInt(networkConfig.initialBlockNumber),
   });
 
-  // Request drip from faucet
-  if (networkConfig.faucetServiceUrl) {
-    const address = burnerAccount.address;
-    console.info("[Dev Faucet]: Player address -> ", address);
+  try {
+    console.log("creating faucet client");
+    const faucet = createFaucetClient({ url: "http://localhost:3002/trpc" });
 
-    const faucet = createFaucetService(networkConfig.faucetServiceUrl);
-
-    const requestDrip = async () => {
-      const balance = await publicClient.getBalance({ address });
-      console.info(`[Dev Faucet]: Player balance -> ${balance}`);
-      const lowBalance = balance < parseEther("1");
-      if (lowBalance) {
-        console.info("[Dev Faucet]: Balance is low, dripping funds to player");
-        // Double drip
-        await faucet.dripDev({ address });
-        await faucet.dripDev({ address });
-      }
+    const drip = async () => {
+      console.log("dripping");
+      const tx = await faucet.drip.mutate({ address: burnerAccount.address });
+      console.log("got drip", tx);
     };
 
-    requestDrip();
-    // Request a drip every 20 seconds
-    setInterval(requestDrip, 20000);
+    drip();
+    setInterval(drip, 20_000);
+  } catch (e) {
+    console.error(e);
   }
 
   return {
@@ -75,7 +68,7 @@ export async function setupNetwork() {
     publicClient,
     walletClient: burnerWalletClient,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
     worldContract,
     write$: write$.asObservable().pipe(share()),
