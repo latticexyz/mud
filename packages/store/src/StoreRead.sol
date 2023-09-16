@@ -19,7 +19,6 @@ contract StoreRead is IStoreRead {
     keySchema = StoreCore.getKeySchema(tableId);
   }
 
-  // Get full record (static and dynamic data)
   function getRecord(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
@@ -28,7 +27,6 @@ contract StoreRead is IStoreRead {
     data = StoreCore.getRecord(tableId, keyTuple, fieldLayout);
   }
 
-  // Get partial data at schema index
   function getField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
@@ -36,6 +34,23 @@ contract StoreRead is IStoreRead {
     FieldLayout fieldLayout
   ) public view virtual returns (bytes memory data) {
     data = StoreCore.getField(tableId, keyTuple, fieldIndex, fieldLayout);
+  }
+
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) public view virtual returns (bytes32 data) {
+    data = StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+  }
+
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex
+  ) public view virtual returns (bytes memory data) {
+    data = StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
   }
 
   function getFieldLength(
