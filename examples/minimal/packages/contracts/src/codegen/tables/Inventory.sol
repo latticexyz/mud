@@ -21,13 +21,14 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Inventory")));
 bytes32 constant InventoryTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0004010004000000000000000000000000000000000000000000000000000000
+);
+
 library Inventory {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 4;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -64,19 +65,12 @@ library Inventory {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get amount */
@@ -86,7 +80,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
@@ -97,7 +91,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
@@ -108,7 +102,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount (using the specified store) */
@@ -118,12 +112,22 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+  }
+
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 amount) internal pure returns (bytes memory) {
+    return abi.encodePacked(amount);
   }
 
   /** Tightly pack full data using this table's field layout */
   function encode(uint32 amount) internal pure returns (bytes memory) {
-    return abi.encodePacked(amount);
+    bytes memory _staticData = encodeStatic(amount);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
@@ -143,7 +147,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -153,6 +157,6 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }

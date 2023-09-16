@@ -16,8 +16,10 @@ export async function setContractData(page: Page, data: Data) {
         // TODO: add support for multiple namespaces after https://github.com/latticexyz/mud/issues/994 is resolved
         tableIdToHex("", table),
         record.key,
-        record.value,
-        record.valueSchema,
+        record.staticData,
+        record.encodedLengths,
+        record.dynamicData,
+        record.fieldLayout,
       ]);
 
       // Wait for transactions to be confirmed

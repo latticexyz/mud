@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { createSqliteTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
+import { buildTable, chainState, getTables } from "@latticexyz/store-sync/sqlite";
 import { QueryAdapter } from "@latticexyz/store-sync/trpc-indexer";
 import { debug } from "../debug";
 
@@ -16,7 +16,7 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
       const tables = getTables(database).filter((table) => table.address === address);
 
       const tablesWithRecords = tables.map((table) => {
-        const sqliteTable = createSqliteTable(table);
+        const sqliteTable = buildTable(table);
         const records = database.select().from(sqliteTable).where(eq(sqliteTable.__isDeleted, false)).all();
         return {
           ...table,

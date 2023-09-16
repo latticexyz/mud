@@ -7,6 +7,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { StoreCore } from "../src/StoreCore.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
+import { PackedCounterLib } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { StoreMock } from "../test/StoreMock.sol";
@@ -29,11 +30,11 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   function popFromField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public override {
-    StoreCore.popFromField(tableId, keyTuple, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
   }
 
   function setUp() public {
@@ -90,9 +91,16 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 2);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 2 - 1);
 
-    // Expect a StoreSetField event to be emitted
+    // Expect a StoreSpliceRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(_tableId, _keyTuple, 1, newDataBytes);
+    emit StoreSpliceDynamicData(
+      _tableId,
+      _keyTuple,
+      uint48(secondDataBytes.length - byteLengthToPop),
+      uint40(byteLengthToPop),
+      new bytes(0),
+      PackedCounterLib.pack(newDataBytes.length, thirdDataBytes.length).unwrap()
+    );
 
     // Pop from second field
     startGasReport("pop from field (cold, 1 slot, 1 uint32 item)");
@@ -129,9 +137,16 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     assertEq(SliceLib.fromBytes(dataBytes).decodeArray_uint32().length, 10);
     assertEq(SliceLib.fromBytes(newDataBytes).decodeArray_uint32().length, 10 - 10);
 
-    // Expect a StoreSetField event to be emitted after pop
+    // Expect a StoreSpliceRecord event to be emitted after pop
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(_tableId, _keyTuple, 2, dataBytes);
+    emit StoreSpliceDynamicData(
+      _tableId,
+      _keyTuple,
+      uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
+      uint40(byteLengthToPop),
+      new bytes(0),
+      PackedCounterLib.pack(secondDataBytes.length, newDataBytes.length).unwrap()
+    );
 
     // Pop from the field
     startGasReport("pop from field (cold, 2 slots, 10 uint32 items)");

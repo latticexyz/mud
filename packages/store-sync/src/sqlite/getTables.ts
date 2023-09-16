@@ -1,9 +1,9 @@
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
 import { inArray } from "drizzle-orm";
 import { Table } from "../common";
-import { TableId } from "@latticexyz/common/deprecated";
 import { getTableName } from "./getTableName";
 import { mudStoreTables } from "./internalTables";
+import { tableIdToHex } from "@latticexyz/common";
 
 export function getTables(
   db: BaseSQLiteDatabase<"sync", void>,
@@ -19,7 +19,7 @@ export function getTables(
     .all();
 
   return tables.map((table) => {
-    const tableId = new TableId(table.namespace, table.name).toHex();
+    const tableId = tableIdToHex(table.namespace, table.name);
     return {
       id: getTableName(table.address, table.namespace, table.name),
       address: table.address,

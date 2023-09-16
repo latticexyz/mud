@@ -8,7 +8,8 @@ interface IStoreErrors {
 
   error StoreCore_NotImplemented();
   error StoreCore_NotDynamicField();
-  error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
+  error StoreCore_InvalidStaticDataLength(uint256 expected, uint256 received);
+  error StoreCore_InvalidDynamicDataLength(uint256 expected, uint256 received);
   error StoreCore_InvalidKeyNamesLength(uint256 expected, uint256 received);
   error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
   error StoreCore_InvalidValueSchemaLength(uint256 expected, uint256 received);

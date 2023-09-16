@@ -32,29 +32,29 @@ contract StoreRead is IStoreRead {
   function getField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout
   ) public view virtual returns (bytes memory data) {
-    data = StoreCore.getField(tableId, keyTuple, schemaIndex, fieldLayout);
+    data = StoreCore.getField(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
   function getFieldLength(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout
   ) public view virtual returns (uint256) {
-    return StoreCore.getFieldLength(tableId, keyTuple, schemaIndex, fieldLayout);
+    return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
   }
 
   function getFieldSlice(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout,
     uint256 start,
     uint256 end
   ) public view virtual returns (bytes memory) {
-    return StoreCore.getFieldSlice(tableId, keyTuple, schemaIndex, fieldLayout, start, end);
+    return StoreCore.getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
   }
 }

@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "../src/IStore.sol";
 import { StoreHook } from "../src/StoreHook.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
@@ -27,17 +28,21 @@ contract MirrorSubscriber is StoreHook {
   function onBeforeSetRecord(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    bytes memory data,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) public {
-    if (tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setRecord(indexerTableId, keyTuple, data, fieldLayout);
+    if (tableId != _tableId) revert("invalid table");
+    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
   function onAfterSetRecord(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    bytes memory data,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) public {
     // NOOP
@@ -46,12 +51,12 @@ contract MirrorSubscriber is StoreHook {
   function onBeforeSetField(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes memory data,
     FieldLayout fieldLayout
   ) public {
     if (tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setField(indexerTableId, keyTuple, schemaIndex, data, fieldLayout);
+    StoreSwitch.setField(indexerTableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
   function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {

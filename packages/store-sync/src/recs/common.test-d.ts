@@ -4,18 +4,27 @@ import storeConfig from "@latticexyz/store/mud.config";
 import { ConfigToRecsComponents } from "./common";
 
 describe("ConfigToRecsComponents", () => {
-  expectTypeOf<ConfigToRecsComponents<typeof storeConfig>["StoreMetadata"]>().toEqualTypeOf<
+  expectTypeOf<ConfigToRecsComponents<typeof storeConfig>["Tables"]>().toEqualTypeOf<
     Component<
       {
-        tableName: RecsType.String;
+        keySchema: RecsType.String;
+        valueSchema: RecsType.String;
+        abiEncodedKeyNames: RecsType.String;
         abiEncodedFieldNames: RecsType.String;
       },
       {
-        componentName: "StoreMetadata";
+        componentName: "Tables";
         // TODO: fix config namespace so it comes back as a const
-        tableName: `${string}:StoreMetadata`;
-        keySchema: { tableId: "bytes32" };
-        valueSchema: { tableName: "string"; abiEncodedFieldNames: "bytes" };
+        tableName: `${string}:Tables`;
+        keySchema: {
+          tableId: "bytes32";
+        };
+        valueSchema: {
+          keySchema: "bytes32";
+          valueSchema: "bytes32";
+          abiEncodedKeyNames: "bytes";
+          abiEncodedFieldNames: "bytes";
+        };
       }
     >
   >();
