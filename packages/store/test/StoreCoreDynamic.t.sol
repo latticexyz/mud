@@ -96,6 +96,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     emit StoreSpliceDynamicData(
       _tableId,
       _keyTuple,
+      _keyTuple,
       uint48(secondDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
       new bytes(0),
@@ -141,6 +142,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceDynamicData(
       _tableId,
+      _keyTuple,
       _keyTuple,
       uint48(secondDataBytes.length + thirdDataBytes.length - byteLengthToPop),
       uint40(byteLengthToPop),
