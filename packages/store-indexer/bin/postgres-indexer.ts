@@ -105,6 +105,8 @@ const { latestBlockNumber$, blockStorageOperations$ } = await createStoreSync({
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
+blockStorageOperations$.subscribe();
+
 combineLatest([latestBlockNumber$, blockStorageOperations$])
   .pipe(
     filter(
