@@ -35,18 +35,18 @@ library ResourceType {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT8;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.UINT8;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -112,9 +112,19 @@ library ResourceType {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(Resource resourceType) internal pure returns (bytes memory) {
+    return abi.encodePacked(resourceType);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(Resource resourceType) internal pure returns (bytes memory) {
-    return abi.encodePacked(resourceType);
+    bytes memory _staticData = encodeStatic(resourceType);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

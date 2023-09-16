@@ -38,22 +38,22 @@ library Multi {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](4);
-    _schema[0] = SchemaType.UINT32;
-    _schema[1] = SchemaType.BOOL;
-    _schema[2] = SchemaType.UINT256;
-    _schema[3] = SchemaType.INT120;
+    SchemaType[] memory _keySchema = new SchemaType[](4);
+    _keySchema[0] = SchemaType.UINT32;
+    _keySchema[1] = SchemaType.BOOL;
+    _keySchema[2] = SchemaType.UINT256;
+    _keySchema[3] = SchemaType.INT120;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.INT256;
-    _schema[1] = SchemaType.BOOL;
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.INT256;
+    _valueSchema[1] = SchemaType.BOOL;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -207,7 +207,10 @@ library Multi {
 
   /** Set the full data using individual values */
   function set(uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
-    bytes memory _data = encode(num, value);
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -215,12 +218,15 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
-    bytes memory _data = encode(num, value);
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -228,7 +234,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using the data struct */
@@ -248,9 +254,19 @@ library Multi {
     _table.value = (_toBool(uint8(Bytes.slice1(_blob, 32))));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(int256 num, bool value) internal pure returns (bytes memory) {
+    return abi.encodePacked(num, value);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(int256 num, bool value) internal pure returns (bytes memory) {
-    return abi.encodePacked(num, value);
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

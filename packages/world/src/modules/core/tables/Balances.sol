@@ -32,18 +32,18 @@ library Balances {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES16;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES16;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT256;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.UINT256;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -109,9 +109,19 @@ library Balances {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint256 balance) internal pure returns (bytes memory) {
+    return abi.encodePacked(balance);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(uint256 balance) internal pure returns (bytes memory) {
-    return abi.encodePacked(balance);
+    bytes memory _staticData = encodeStatic(balance);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

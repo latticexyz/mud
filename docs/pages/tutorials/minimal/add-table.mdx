@@ -22,13 +22,13 @@ For the sake of simplicity, we will implement this in the `increment` function r
      tables: {
        Counter: {
          keySchema: {},
-         schema: "uint32",
+         valueSchema: "uint32",
        },
        History: {
          keySchema: {
            counterValue: "uint32",
          },
-         schema: {
+         valueSchema: {
            blockNumber: "uint256",
            time: "uint256",
          },
@@ -45,7 +45,7 @@ For the sake of simplicity, we will implement this in the `increment` function r
 A MUD table has two schemas:
 
 - `keySchema`, the key used to find entries
-- `schema`, the value in the entry (soon to be renamed to `valueSchema`)
+- `valueSchema`, the value in the entry
 
 Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
 

@@ -32,17 +32,17 @@ library Counter {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](0);
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT32;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.UINT32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -103,9 +103,19 @@ library Counter {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 value) internal pure returns (bytes memory) {
+    return abi.encodePacked(value);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(uint32 value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

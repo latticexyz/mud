@@ -67,14 +67,14 @@ const database = drizzle(postgres(env.DATABASE_URL), {
 
 let startBlock = env.START_BLOCK;
 
-const storageAdapter = await postgresStorage({ database, publicClient });
+const { storageAdapter, internalTables } = await postgresStorage({ database, publicClient });
 
 // Resume from latest block stored in DB. This will throw if the DB doesn't exist yet, so we wrap in a try/catch and ignore the error.
 try {
   const currentChainStates = await database
     .select()
-    .from(storageAdapter.internalTables.chain)
-    .where(eq(storageAdapter.internalTables.chain.chainId, chainId))
+    .from(internalTables.chain)
+    .where(eq(internalTables.chain.chainId, chainId))
     .execute();
   // TODO: replace this type workaround with `noUncheckedIndexedAccess: true` when we can fix all the issues related (https://github.com/latticexyz/mud/issues/1212)
   const currentChainState: (typeof currentChainStates)[number] | undefined = currentChainStates[0];
@@ -98,14 +98,14 @@ try {
   // ignore errors, this is optional
 }
 
-const { latestBlockNumber$, blockStorageOperations$ } = await createStoreSync({
+const { latestBlockNumber$, storedBlockLogs$ } = await createStoreSync({
   storageAdapter,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
-combineLatest([latestBlockNumber$, blockStorageOperations$])
+combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
       ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed

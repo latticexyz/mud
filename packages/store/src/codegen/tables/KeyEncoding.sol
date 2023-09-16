@@ -35,23 +35,23 @@ library KeyEncoding {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](6);
-    _schema[0] = SchemaType.UINT256;
-    _schema[1] = SchemaType.INT32;
-    _schema[2] = SchemaType.BYTES16;
-    _schema[3] = SchemaType.ADDRESS;
-    _schema[4] = SchemaType.BOOL;
-    _schema[5] = SchemaType.UINT8;
+    SchemaType[] memory _keySchema = new SchemaType[](6);
+    _keySchema[0] = SchemaType.UINT256;
+    _keySchema[1] = SchemaType.INT32;
+    _keySchema[2] = SchemaType.BYTES16;
+    _keySchema[3] = SchemaType.ADDRESS;
+    _keySchema[4] = SchemaType.BOOL;
+    _keySchema[5] = SchemaType.UINT8;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BOOL;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.BOOL;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -166,9 +166,19 @@ library KeyEncoding {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bool value) internal pure returns (bytes memory) {
+    return abi.encodePacked(value);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(bool value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

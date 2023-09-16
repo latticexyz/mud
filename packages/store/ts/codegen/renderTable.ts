@@ -8,10 +8,11 @@ import {
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
+  RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
-import { renderRecordMethods } from "./record";
+import { renderRecordData, renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
 
 export function renderTable(options: RenderTableOptions) {
@@ -84,18 +85,18 @@ export function renderTable(options: RenderTableOptions) {
 
       /** Get the table's key schema */
       function getKeySchema() internal pure returns (Schema) {
-        SchemaType[] memory _schema = new SchemaType[](${keyTuple.length});
-        ${renderList(keyTuple, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+        SchemaType[] memory _keySchema = new SchemaType[](${keyTuple.length});
+        ${renderList(keyTuple, ({ enumName }, index) => `_keySchema[${index}] = SchemaType.${enumName};`)}
 
-        return SchemaLib.encode(_schema);
+        return SchemaLib.encode(_keySchema);
       }
 
       /** Get the table's value schema */
       function getValueSchema() internal pure returns (Schema) {
-        SchemaType[] memory _schema = new SchemaType[](${fields.length});
-        ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+        SchemaType[] memory _valueSchema = new SchemaType[](${fields.length});
+        ${renderList(fields, ({ enumName }, index) => `_valueSchema[${index}] = SchemaType.${enumName};`)}
 
-        return SchemaLib.encode(_schema);
+        return SchemaLib.encode(_valueSchema);
       }
 
       /** Get the table's key names */
@@ -113,11 +114,11 @@ export function renderTable(options: RenderTableOptions) {
       ${renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
-        /** Register the table with its config${_commentSuffix} */
-        function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-          ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-        }
-      `
+          /** Register the table with its config${_commentSuffix} */
+          function register(${renderArguments([_typedStore, _typedTableId])}) internal {
+            ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+          }
+        `
       )}
 
       ${withFieldMethods ? renderFieldMethods(options) : ""}
@@ -126,20 +127,19 @@ export function renderTable(options: RenderTableOptions) {
 
       ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
+      ${renderEncodeStatic(staticFields)}
+
+      ${renderEncodedLengths(dynamicFields)}
+
+      ${renderEncodeDynamic(dynamicFields)}
+
       /** Tightly pack full data using this table's field layout */
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
       )}) internal pure returns (bytes memory) {
-        ${renderEncodedLengths(dynamicFields)}
-        return abi.encodePacked(${renderArguments([
-          renderArguments(staticFields.map(({ name }) => name)),
-          ...(dynamicFields.length === 0
-            ? []
-            : [
-                "_encodedLengths.unwrap()",
-                renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field))),
-              ]),
-        ])});
+        ${renderRecordData(options)}
+
+        return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
       }
       
       /** Encode keys as a bytes32 array using this table's field layout */
@@ -168,26 +168,54 @@ export function renderTable(options: RenderTableOptions) {
   `;
 }
 
-function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
-  if (dynamicFields.length > 0) {
-    return `
-    PackedCounter _encodedLengths;
-    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
-    unchecked {
-      _encodedLengths = PackedCounterLib.pack(
-        ${renderArguments(
-          dynamicFields.map(({ name, arrayElement }) => {
-            if (arrayElement) {
-              return `${name}.length * ${arrayElement.staticByteLength}`;
-            } else {
-              return `bytes(${name}).length`;
-            }
-          })
-        )}
-      );
+function renderEncodeStatic(staticFields: RenderStaticField[]) {
+  if (staticFields.length === 0) return "";
+
+  return `
+    /** Tightly pack static data using this table's schema */
+    function encodeStatic(${renderArguments(
+      staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+    )}) internal pure returns (bytes memory) {
+      return abi.encodePacked(${renderArguments(staticFields.map(({ name }) => name))});
     }
-    `;
-  } else {
-    return "";
-  }
+  `;
+}
+
+function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
+  if (dynamicFields.length === 0) return "";
+
+  return `
+    /** Tightly pack dynamic data using this table's schema */
+    function encodeLengths(${renderArguments(
+      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+    )}) internal pure returns (PackedCounter _encodedLengths) {
+      // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+      unchecked {
+        _encodedLengths = PackedCounterLib.pack(
+          ${renderArguments(
+            dynamicFields.map(({ name, arrayElement }) => {
+              if (arrayElement) {
+                return `${name}.length * ${arrayElement.staticByteLength}`;
+              } else {
+                return `bytes(${name}).length`;
+              }
+            })
+          )}
+        );
+      }
+    }
+  `;
+}
+
+function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
+  if (dynamicFields.length === 0) return "";
+
+  return `
+    /** Tightly pack dynamic data using this table's schema */
+    function encodeDynamic(${renderArguments(
+      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+    )}) internal pure returns (bytes memory) {
+      return abi.encodePacked(${renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))});
+    }
+  `;
 }

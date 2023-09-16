@@ -34,7 +34,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
   using ResourceSelector for bytes32;
 
   /**
-   * Register a table with given schema in the given namespace
+   * Register a table with the given config
    */
   function registerTable(
     bytes32 resourceSelector,
@@ -72,7 +72,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     // Store the table resource type
     ResourceType.set(resourceSelector, Resource.TABLE);
 
-    // Register the table's schema
+    // Register the table
     StoreCore.registerTable(resourceSelector, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 

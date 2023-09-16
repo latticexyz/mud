@@ -33,19 +33,19 @@ library Systems {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.ADDRESS;
-    _schema[1] = SchemaType.BOOL;
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.ADDRESS;
+    _valueSchema[1] = SchemaType.BOOL;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -166,22 +166,28 @@ library Systems {
 
   /** Set the full data using individual values */
   function set(bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = encode(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = encode(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Decode the tightly packed blob using this table's field layout */
@@ -191,9 +197,19 @@ library Systems {
     publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(address system, bool publicAccess) internal pure returns (bytes memory) {
+    return abi.encodePacked(system, publicAccess);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(address system, bool publicAccess) internal pure returns (bytes memory) {
-    return abi.encodePacked(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

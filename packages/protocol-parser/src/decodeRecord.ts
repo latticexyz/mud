@@ -10,26 +10,26 @@ import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 import { hexToPackedCounter } from "./hexToPackedCounter";
 import { staticDataLength } from "./staticDataLength";
-import { readHex } from "./readHex";
+import { readHex } from "@latticexyz/common";
 
 /** @deprecated use `decodeValue` instead */
-export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimitiveType | DynamicPrimitiveType)[] {
+export function decodeRecord(valueSchema: Schema, data: Hex): readonly (StaticPrimitiveType | DynamicPrimitiveType)[] {
   const values: (StaticPrimitiveType | DynamicPrimitiveType)[] = [];
 
   let bytesOffset = 0;
-  schema.staticFields.forEach((fieldType) => {
+  valueSchema.staticFields.forEach((fieldType) => {
     const fieldByteLength = staticAbiTypeToByteLength[fieldType];
     const value = decodeStaticField(fieldType, readHex(data, bytesOffset, bytesOffset + fieldByteLength));
     bytesOffset += fieldByteLength;
     values.push(value);
   });
 
-  // Warn user if static data length doesn't match the schema, because data corruption might be possible.
-  const schemaStaticDataLength = staticDataLength(schema.staticFields);
+  // Warn user if static data length doesn't match the value schema, because data corruption might be possible.
+  const schemaStaticDataLength = staticDataLength(valueSchema.staticFields);
   const actualStaticDataLength = bytesOffset;
   if (actualStaticDataLength !== schemaStaticDataLength) {
     console.warn(
-      "Decoded static data length does not match schema's expected static data length. Data may get corrupted. Is `getStaticByteLength` outdated?",
+      "Decoded static data length does not match value schema's expected static data length. Data may get corrupted. Is `getStaticByteLength` outdated?",
       {
         expectedLength: schemaStaticDataLength,
         actualLength: actualStaticDataLength,
@@ -38,11 +38,11 @@ export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimiti
     );
   }
 
-  if (schema.dynamicFields.length > 0) {
+  if (valueSchema.dynamicFields.length > 0) {
     const dataLayout = hexToPackedCounter(readHex(data, bytesOffset, bytesOffset + 32));
     bytesOffset += 32;
 
-    schema.dynamicFields.forEach((fieldType, i) => {
+    valueSchema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = dataLayout.fieldByteLengths[i];
       if (dataLength > 0) {
         const value = decodeDynamicField(fieldType, readHex(data, bytesOffset, bytesOffset + dataLength));
@@ -53,7 +53,7 @@ export function decodeRecord(schema: Schema, data: Hex): readonly (StaticPrimiti
       }
     });
 
-    // Warn user if dynamic data length doesn't match the schema, because data corruption might be possible.
+    // Warn user if dynamic data length doesn't match the dynamic data length, because data corruption might be possible.
     const actualDynamicDataLength = bytesOffset - 32 - actualStaticDataLength;
     // TODO: refactor this so we don't break for bytes offsets >UINT40
     if (BigInt(actualDynamicDataLength) !== dataLayout.totalByteLength) {

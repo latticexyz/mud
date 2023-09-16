@@ -32,20 +32,20 @@ library Singleton {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](0);
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](4);
-    _schema[0] = SchemaType.INT256;
-    _schema[1] = SchemaType.UINT32_ARRAY;
-    _schema[2] = SchemaType.UINT32_ARRAY;
-    _schema[3] = SchemaType.UINT32_ARRAY;
+    SchemaType[] memory _valueSchema = new SchemaType[](4);
+    _valueSchema[0] = SchemaType.INT256;
+    _valueSchema[1] = SchemaType.UINT32_ARRAY;
+    _valueSchema[2] = SchemaType.UINT32_ARRAY;
+    _valueSchema[3] = SchemaType.UINT32_ARRAY;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -534,20 +534,26 @@ library Singleton {
 
   /** Set the full data using individual values */
   function set(int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
-    bytes memory _data = encode(v1, v2, v3, v4);
+    bytes memory _staticData = encodeStatic(v1);
+
+    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
+    bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
-    bytes memory _data = encode(v1, v2, v3, v4);
+    bytes memory _staticData = encodeStatic(v1);
+
+    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
+    bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
 
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /**
@@ -586,6 +592,37 @@ library Singleton {
     }
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(int256 v1) internal pure returns (bytes memory) {
+    return abi.encodePacked(v1);
+  }
+
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
+    uint32[2] memory v2,
+    uint32[2] memory v3,
+    uint32[1] memory v4
+  ) internal pure returns (PackedCounter _encodedLengths) {
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(v2.length * 4, v3.length * 4, v4.length * 4);
+    }
+  }
+
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(
+    uint32[2] memory v2,
+    uint32[2] memory v3,
+    uint32[1] memory v4
+  ) internal pure returns (bytes memory) {
+    return
+      abi.encodePacked(
+        EncodeArray.encode(fromStaticArray_uint32_2(v2)),
+        EncodeArray.encode(fromStaticArray_uint32_2(v3)),
+        EncodeArray.encode(fromStaticArray_uint32_1(v4))
+      );
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(
     int256 v1,
@@ -593,20 +630,12 @@ library Singleton {
     uint32[2] memory v3,
     uint32[1] memory v4
   ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
-    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
-    unchecked {
-      _encodedLengths = PackedCounterLib.pack(v2.length * 4, v3.length * 4, v4.length * 4);
-    }
+    bytes memory _staticData = encodeStatic(v1);
 
-    return
-      abi.encodePacked(
-        v1,
-        _encodedLengths.unwrap(),
-        EncodeArray.encode(fromStaticArray_uint32_2(v2)),
-        EncodeArray.encode(fromStaticArray_uint32_2(v3)),
-        EncodeArray.encode(fromStaticArray_uint32_1(v4))
-      );
+    PackedCounter _encodedLengths = encodeLengths(v2, v3, v4);
+    bytes memory _dynamicData = encodeDynamic(v2, v3, v4);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

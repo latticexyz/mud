@@ -28,18 +28,18 @@ library AddressArray {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.ADDRESS_ARRAY;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.ADDRESS_ARRAY;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -227,15 +227,26 @@ library AddressArray {
     }
   }
 
-  /** Tightly pack full data using this table's field layout */
-  function encode(address[] memory value) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(address[] memory value) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(value.length * 20);
     }
+  }
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(address[] memory value) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((value)));
+  }
+
+  /** Tightly pack full data using this table's field layout */
+  function encode(address[] memory value) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

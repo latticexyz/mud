@@ -1,15 +1,10 @@
 import { Address, Block, Hex, Log, PublicClient } from "viem";
-import { GroupLogsByBlockNumberResult } from "@latticexyz/block-logs-stream";
-import {
-  StoreConfig,
-  ConfigToKeyPrimitives as Key,
-  ConfigToValuePrimitives as Value,
-  StoreEventsAbiItem,
-  StoreEventsAbi,
-} from "@latticexyz/store";
+import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
+import storeConfig from "@latticexyz/store/mud.config";
 import { Observable } from "rxjs";
-import { BlockStorageOperations } from "./blockLogsToStorage";
-import { KeySchema, ValueSchema, TableRecord } from "@latticexyz/protocol-parser";
+import { tableIdToHex } from "@latticexyz/common";
+import { UnionPick } from "@latticexyz/common/type-utils";
+import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
 
 export type ChainId = number;
 export type WorldId = `${ChainId}:${Address}`;
@@ -29,52 +24,7 @@ export type Table = {
 export type TableWithRecords = Table & { records: TableRecord[] };
 
 export type StoreEventsLog = Log<bigint, number, false, StoreEventsAbiItem, true, StoreEventsAbi>;
-export type BlockLogs = GroupLogsByBlockNumberResult<StoreEventsLog>[number];
-
-export type BaseStorageOperation = {
-  log?: StoreEventsLog;
-  address: Hex;
-  namespace: TableNamespace;
-  name: TableName;
-};
-
-export type SetRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
-  type: "SetRecord";
-} & {
-    [TTable in keyof TConfig["tables"]]: {
-      name: TTable & string;
-      key: Key<TConfig, TTable>;
-      value: Value<TConfig, TTable>;
-    };
-  }[keyof TConfig["tables"]];
-
-export type SetFieldOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
-  type: "SetField";
-} & {
-    [TTable in keyof TConfig["tables"]]: {
-      name: TTable & string;
-      key: Key<TConfig, TTable>;
-    } & {
-      [TValue in keyof Value<TConfig, TTable>]: {
-        fieldName: TValue & string;
-        fieldValue: Value<TConfig, TTable>[TValue];
-      };
-    }[keyof Value<TConfig, TTable>];
-  }[keyof TConfig["tables"]];
-
-export type DeleteRecordOperation<TConfig extends StoreConfig> = BaseStorageOperation & {
-  type: "DeleteRecord";
-} & {
-    [TTable in keyof TConfig["tables"]]: {
-      name: TTable & string;
-      key: Key<TConfig, TTable>;
-    };
-  }[keyof TConfig["tables"]];
-
-export type StorageOperation<TConfig extends StoreConfig> =
-  | SetFieldOperation<TConfig>
-  | SetRecordOperation<TConfig>
-  | DeleteRecordOperation<TConfig>;
+export type BlockLogs = { blockNumber: StoreEventsLog["blockNumber"]; logs: StoreEventsLog[] };
 
 export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   /**
@@ -112,22 +62,19 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
   };
 };
 
-export type SyncResult<TConfig extends StoreConfig = StoreConfig> = {
+export type SyncResult = {
   latestBlock$: Observable<Block>;
   latestBlockNumber$: Observable<bigint>;
   blockLogs$: Observable<BlockLogs>;
-  blockStorageOperations$: Observable<BlockStorageOperations<TConfig>>;
+  storedBlockLogs$: Observable<StorageAdapterBlock>;
   waitForTransaction: (tx: Hex) => Promise<void>;
 };
 
-export type StorageAdapter<TConfig extends StoreConfig = StoreConfig> = {
-  registerTables: (opts: { blockNumber: BlockLogs["blockNumber"]; tables: Table[] }) => Promise<void>;
-  getTables: (opts: {
-    blockNumber: BlockLogs["blockNumber"];
-    tables: Pick<Table, "address" | "namespace" | "name">[];
-  }) => Promise<Table[]>;
-  storeOperations: (opts: {
-    blockNumber: BlockLogs["blockNumber"];
-    operations: StorageOperation<TConfig>[];
-  }) => Promise<void>;
-};
+// TODO: add optional, original log to this?
+export type StorageAdapterLog = Partial<StoreEventsLog> & UnionPick<StoreEventsLog, "address" | "eventName" | "args">;
+export type StorageAdapterBlock = { blockNumber: BlockLogs["blockNumber"]; logs: StorageAdapterLog[] };
+export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
+
+// TODO: adjust when we get namespace support (https://github.com/latticexyz/mud/issues/994) and when table has namespace key (https://github.com/latticexyz/mud/issues/1201)
+export const schemasTable = storeConfig.tables.Tables;
+export const schemasTableId = tableIdToHex(storeConfig.namespace, schemasTable.name);

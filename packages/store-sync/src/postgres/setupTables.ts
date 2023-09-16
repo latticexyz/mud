@@ -1,7 +1,6 @@
-import { AnyPgColumn, PgTableWithColumns, PgDatabase } from "drizzle-orm/pg-core";
-import { getTableColumns, getTableName, sql } from "drizzle-orm";
+import { AnyPgColumn, PgTableWithColumns, PgDatabase, getTableConfig } from "drizzle-orm/pg-core";
+import { getTableColumns, sql } from "drizzle-orm";
 import { ColumnDataType } from "kysely";
-import { getSchema } from "./getSchema";
 import { isDefined } from "@latticexyz/common/utils";
 import { debug } from "./debug";
 import { pgDialect } from "./pgDialect";
@@ -13,7 +12,7 @@ export async function setupTables(
   // TODO: add table to internal tables here
   // TODO: look up table schema and check if it matches expected schema, drop if not
 
-  const schemaNames = [...new Set(tables.map(getSchema).filter(isDefined))];
+  const schemaNames = [...new Set(tables.map((table) => getTableConfig(table).schema).filter(isDefined))];
 
   await db.transaction(async (tx) => {
     for (const schemaName of schemaNames) {
@@ -22,12 +21,10 @@ export async function setupTables(
     }
 
     for (const table of tables) {
-      const schemaName = getSchema(table);
-      const scopedDb = schemaName ? pgDialect.withSchema(schemaName) : pgDialect;
+      const tableConfig = getTableConfig(table);
+      const scopedDb = tableConfig.schema ? pgDialect.withSchema(tableConfig.schema) : pgDialect;
 
-      const tableName = getTableName(table);
-
-      let query = scopedDb.schema.createTable(tableName).ifNotExists();
+      let query = scopedDb.schema.createTable(tableConfig.name).ifNotExists();
 
       const columns = Object.values(getTableColumns(table)) as AnyPgColumn[];
       for (const column of columns) {
@@ -44,10 +41,10 @@ export async function setupTables(
 
       const primaryKeys = columns.filter((column) => column.primary).map((column) => column.name);
       if (primaryKeys.length) {
-        query = query.addPrimaryKeyConstraint(`${tableName}__pk`, primaryKeys as any);
+        query = query.addPrimaryKeyConstraint(`${tableConfig.name}__pk`, primaryKeys as any);
       }
 
-      debug(`creating table ${tableName} in namespace ${schemaName}`);
+      debug(`creating table ${tableConfig.name} in namespace ${tableConfig.schema}`);
       await tx.execute(sql.raw(query.compile().sql));
     }
   });

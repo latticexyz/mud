@@ -32,18 +32,18 @@ library SystemRegistry {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.ADDRESS;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.ADDRESS;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -109,9 +109,19 @@ library SystemRegistry {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bytes32 resourceSelector) internal pure returns (bytes memory) {
+    return abi.encodePacked(resourceSelector);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(bytes32 resourceSelector) internal pure returns (bytes memory) {
-    return abi.encodePacked(resourceSelector);
+    bytes memory _staticData = encodeStatic(resourceSelector);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

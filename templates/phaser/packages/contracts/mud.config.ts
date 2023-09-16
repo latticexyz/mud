@@ -4,7 +4,7 @@ export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
   },
 });

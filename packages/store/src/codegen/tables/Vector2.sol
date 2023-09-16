@@ -38,19 +38,19 @@ library Vector2 {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.UINT32;
-    _schema[1] = SchemaType.UINT32;
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.UINT32;
+    _valueSchema[1] = SchemaType.UINT32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -171,22 +171,28 @@ library Vector2 {
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = encode(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = encode(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using the data struct */
@@ -206,9 +212,19 @@ library Vector2 {
     _table.y = (uint32(Bytes.slice4(_blob, 4)));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 x, uint32 y) internal pure returns (bytes memory) {
+    return abi.encodePacked(x, y);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(uint32 x, uint32 y) internal pure returns (bytes memory) {
-    return abi.encodePacked(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

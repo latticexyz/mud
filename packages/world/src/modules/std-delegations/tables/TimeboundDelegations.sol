@@ -32,19 +32,19 @@ library TimeboundDelegations {
 
   /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.ADDRESS;
-    _schema[1] = SchemaType.ADDRESS;
+    SchemaType[] memory _keySchema = new SchemaType[](2);
+    _keySchema[0] = SchemaType.ADDRESS;
+    _keySchema[1] = SchemaType.ADDRESS;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
   /** Get the table's value schema */
   function getValueSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT256;
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.UINT256;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   /** Get the table's key names */
@@ -115,9 +115,19 @@ library TimeboundDelegations {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((maxTimestamp)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint256 maxTimestamp) internal pure returns (bytes memory) {
+    return abi.encodePacked(maxTimestamp);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(uint256 maxTimestamp) internal pure returns (bytes memory) {
-    return abi.encodePacked(maxTimestamp);
+    bytes memory _staticData = encodeStatic(maxTimestamp);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

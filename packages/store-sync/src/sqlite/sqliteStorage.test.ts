@@ -3,12 +3,29 @@ import { sqliteStorage } from "./sqliteStorage";
 import { getTables } from "./getTables";
 import { chainState, mudStoreTables } from "./internalTables";
 import { BaseSQLiteDatabase } from "drizzle-orm/sqlite-core";
-import { createSqliteTable } from "./createSqliteTable";
+import { buildTable } from "./buildTable";
 import initSqlJs from "sql.js";
 import { drizzle } from "drizzle-orm/sql-js";
-import { createPublicClient, http } from "viem";
+import { Hex, RpcLog, createPublicClient, decodeEventLog, formatLog, http } from "viem";
 import { foundry } from "viem/chains";
-import { blockLogsToStorage } from "../blockLogsToStorage";
+import worldRpcLogs from "../../../../test-data/world-logs.json";
+import { storeEventsAbi } from "@latticexyz/store";
+import { StoreEventsLog } from "../common";
+import { groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
+import { eq } from "drizzle-orm";
+
+// TODO: make test-data a proper package and export this
+const blocks = groupLogsByBlockNumber(
+  worldRpcLogs.map((log) => {
+    const { eventName, args } = decodeEventLog({
+      abi: storeEventsAbi,
+      data: log.data as Hex,
+      topics: log.topics as [Hex, ...Hex[]],
+      strict: true,
+    });
+    return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+  })
+);
 
 describe("sqliteStorage", async () => {
   const SqlJs = await initSqlJs();
@@ -38,104 +55,74 @@ describe("sqliteStorage", async () => {
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot("[]");
     expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot("[]");
 
-    await blockLogsToStorage(storageAdapter)({
-      blockNumber: 5448n,
-      logs: [
-        {
-          address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
-          topics: ["0xd01f9f1368f831528fc9fe6442366b2b7d957fbfff3bcf7c24d9ab5fe51f8c46"],
-          data: "0x000000000000000000000000000000005265736f7572636554797065000000000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000496e76656e746f72790000000000000000000000000000000000000000000000000000000000000000000000000000010200000000000000000000000000000000000000000000000000000000000000",
-          blockHash: "0x4ad3752c86f900332e0d2d8903480e7206747d233586574d16f006eebdb5138b",
-          blockNumber: 2n,
-          transactionHash: "0xaa54bf18053cce5d4d2906538a60cb1d9958cc3c10c34b5f9fdc92fe6a6abab4",
-          transactionIndex: 16,
-          logIndex: 54,
-          removed: false,
-          args: {
-            table: "0x000000000000000000000000000000005265736f757263655479706500000000",
-            key: ["0x00000000000000000000000000000000496e76656e746f727900000000000000"],
-            schemaIndex: 0,
-            data: "0x02",
-          },
-          eventName: "StoreSetField",
-        },
-        {
-          address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
-          topics: ["0x912af873e852235aae78a1d25ae9bb28b616a67c36898c53a14fd8184504ee32"],
-          data: "0x6d756473746f726500000000000000005461626c657300000000000000000000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000496e76656e746f72790000000000000000000000000000000000000000000000000000000000000000000000000002800004010004000000000000000000000000000000000000000000000000000000001c030061030300000000000000000000000000000000000000000000000000000401000300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000001600000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000056f776e657200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000046974656d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b6974656d56617269616e740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000006616d6f756e740000000000000000000000000000000000000000000000000000",
-          blockHash: "0x4ad3752c86f900332e0d2d8903480e7206747d233586574d16f006eebdb5138b",
-          blockNumber: 2n,
-          transactionHash: "0xaa54bf18053cce5d4d2906538a60cb1d9958cc3c10c34b5f9fdc92fe6a6abab4",
-          transactionIndex: 16,
-          logIndex: 55,
-          removed: false,
-          args: {
-            table: "0x6d756473746f726500000000000000005461626c657300000000000000000000",
-            key: ["0x00000000000000000000000000000000496e76656e746f727900000000000000"],
-            data: "0x0004010004000000000000000000000000000000000000000000000000000000001c030061030300000000000000000000000000000000000000000000000000000401000300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a000000001600000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000e000000000000000000000000000000000000000000000000000000000000000056f776e657200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000046974656d00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000b6974656d56617269616e740000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000006616d6f756e740000000000000000000000000000000000000000000000000000",
-          },
-          eventName: "StoreSetRecord",
-        },
-      ],
-    });
+    for (const block of blocks) {
+      await storageAdapter(block);
+    }
 
     expect(db.select().from(chainState).all()).toMatchInlineSnapshot(`
       [
         {
           "chainId": 31337,
           "lastError": null,
-          "lastUpdatedBlockNumber": 5448n,
+          "lastUpdatedBlockNumber": 6n,
           "schemaVersion": 1,
         },
       ]
     `);
 
-    expect(db.select().from(mudStoreTables).all()).toMatchInlineSnapshot(`
+    expect(db.select().from(mudStoreTables).where(eq(mudStoreTables.name, "NumberList")).all()).toMatchInlineSnapshot(`
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
-          "keySchema": {
-            "item": "uint32",
-            "itemVariant": "uint32",
-            "owner": "address",
-          },
+          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____NumberList",
+          "keySchema": {},
           "lastError": null,
-          "lastUpdatedBlockNumber": 5448n,
-          "name": "Inventory",
+          "lastUpdatedBlockNumber": 6n,
+          "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
-          "tableId": "0x00000000000000000000000000000000496e76656e746f727900000000000000",
+          "tableId": "0x000000000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
-            "amount": "uint32",
+            "value": "uint32[]",
           },
         },
       ]
     `);
 
-    const tables = getTables(db);
+    const tables = getTables(db).filter((table) => table.name === "NumberList");
     expect(tables).toMatchInlineSnapshot(`
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____Inventory",
-          "keySchema": {
-            "item": "uint32",
-            "itemVariant": "uint32",
-            "owner": "address",
-          },
-          "lastUpdatedBlockNumber": 5448n,
-          "name": "Inventory",
+          "id": "0x5FbDB2315678afecb367f032d93F642f64180aa3____NumberList",
+          "keySchema": {},
+          "lastUpdatedBlockNumber": 6n,
+          "name": "NumberList",
           "namespace": "",
-          "tableId": "0x00000000000000000000000000000000496e76656e746f727900000000000000",
+          "tableId": "0x000000000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
-            "amount": "uint32",
+            "value": "uint32[]",
           },
         },
       ]
     `);
 
-    const sqliteTable = createSqliteTable(tables[0]);
-    expect(db.select().from(sqliteTable).all()).toMatchInlineSnapshot("[]");
+    const sqlTable = buildTable(tables[0]);
+    expect(db.select().from(sqlTable).all()).toMatchInlineSnapshot(`
+      [
+        {
+          "__dynamicData": "0x000001a400000045",
+          "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
+          "__isDeleted": false,
+          "__key": "0x",
+          "__lastUpdatedBlockNumber": 6n,
+          "__staticData": null,
+          "value": [
+            420,
+            69,
+          ],
+        },
+      ]
+    `);
   });
 });

@@ -6,6 +6,8 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { System } from "./System.sol";
@@ -52,7 +54,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules.getModuleAddress(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (InstalledModules.get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
       revert WorldAlreadyInitialized();
     }
 
@@ -97,15 +99,17 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function setRecord(
     bytes32 tableId,
-    bytes32[] calldata key,
-    bytes calldata data,
+    bytes32[] calldata keyTuple,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, key, data, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
   /**
@@ -114,8 +118,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function setField(
     bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
@@ -123,7 +127,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableId, key, schemaIndex, data, fieldLayout);
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
   /**
@@ -132,8 +136,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function pushToField(
     bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
   ) public virtual {
@@ -141,7 +145,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, key, schemaIndex, dataToPush, fieldLayout);
+    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
   }
 
   /**
@@ -150,8 +154,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function popFromField(
     bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public virtual {
@@ -159,7 +163,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, key, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
   }
 
   /**
@@ -168,8 +172,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function updateInField(
     bytes32 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
@@ -178,19 +182,19 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(tableId, key, schemaIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata key, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(bytes32 tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, key, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
   }
 
   /************************************************************************
