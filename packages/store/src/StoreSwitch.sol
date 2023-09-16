@@ -244,6 +244,33 @@ library StoreSwitch {
     }
   }
 
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    } else {
+      return IStore(_storeAddress).getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+    } else {
+      return IStore(_storeAddress).getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+    }
+  }
+
   function getFieldLength(
     bytes32 tableId,
     bytes32[] memory keyTuple,
