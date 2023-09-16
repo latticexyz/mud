@@ -90,8 +90,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get fieldLayout (using the specified store) */
@@ -99,8 +99,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Set fieldLayout */
@@ -124,8 +124,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get keySchema (using the specified store) */
@@ -133,8 +133,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Set keySchema */
@@ -158,8 +158,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get valueSchema (using the specified store) */
@@ -167,8 +167,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Set valueSchema */
@@ -192,7 +192,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (bytes(_blob));
   }
 
@@ -204,7 +204,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (bytes(_blob));
   }
 
@@ -348,7 +348,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
     return (bytes(_blob));
   }
 
@@ -360,7 +360,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 4, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return (bytes(_blob));
   }
 

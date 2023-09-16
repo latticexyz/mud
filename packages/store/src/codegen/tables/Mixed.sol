@@ -87,8 +87,8 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
   }
 
   /** Get u32 (using the specified store) */
@@ -96,8 +96,8 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
   }
 
   /** Set u32 */
@@ -121,8 +121,8 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint128(Bytes.slice16(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint128(bytes16(_blob)));
   }
 
   /** Get u128 (using the specified store) */
@@ -130,8 +130,8 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint128(Bytes.slice16(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint128(bytes16(_blob)));
   }
 
   /** Set u128 */
@@ -155,7 +155,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -164,7 +164,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -223,7 +223,7 @@ library Mixed {
         _index * 4,
         (_index + 1) * 4
       );
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -237,7 +237,7 @@ library Mixed {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 4, (_index + 1) * 4);
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -304,7 +304,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
@@ -313,7 +313,7 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
