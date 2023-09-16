@@ -11,6 +11,7 @@
     "deploy:local": "pnpm run build && mud deploy",
     "deploy:testnet": "pnpm run build && mud deploy --profile=lattice-testnet",
     "dev": "pnpm mud dev-contracts",
+    "faucet": "DEBUG=mud:faucet pnpm faucet-server",
     "lint": "pnpm run prettier && pnpm run solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@latticexyz/cli": "link:../../../../packages/cli",
     "@latticexyz/config": "link:../../../../packages/config",
+    "@latticexyz/faucet": "link:../../../../packages/faucet",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",
     "@latticexyz/store": "link:../../../../packages/store",
     "@latticexyz/world": "link:../../../../packages/world",

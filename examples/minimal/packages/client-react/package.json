@@ -13,6 +13,7 @@
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/common": "link:../../../../packages/common",
     "@latticexyz/dev-tools": "link:../../../../packages/dev-tools",
+    "@latticexyz/faucet": "link:../../../../packages/faucet",
     "@latticexyz/react": "link:../../../../packages/react",
     "@latticexyz/recs": "link:../../../../packages/recs",
     "@latticexyz/schema-type": "link:../../../../packages/schema-type",

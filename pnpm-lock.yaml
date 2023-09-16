@@ -419,6 +419,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
       fastify:
         specifier: ^4.21.0
         version: 4.21.0
