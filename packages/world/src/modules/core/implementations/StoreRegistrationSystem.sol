@@ -57,7 +57,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
         msgSender: _msgSender(),
         msgValue: 0,
         target: systemAddress,
-        funcSelectorAndArgs: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace)
+        callData: abi.encodeWithSelector(WorldRegistrationSystem.registerNamespace.selector, namespace)
       });
     } else {
       // otherwise require caller to own the namespace

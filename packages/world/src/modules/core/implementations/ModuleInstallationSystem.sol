@@ -24,7 +24,7 @@ contract ModuleInstallationSystem is System {
       msgSender: _msgSender(),
       msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
+      callData: abi.encodeWithSelector(IModule.install.selector, args)
     });
 
     // Register the module in the InstalledModules table

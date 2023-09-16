@@ -90,7 +90,7 @@ contract CoreModule is Module {
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreSystem,
-      funcSelectorAndArgs: abi.encodeCall(
+      callData: abi.encodeCall(
         WorldRegistrationSystem.registerSystem,
         (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
       )
@@ -134,7 +134,7 @@ contract CoreModule is Module {
         msgSender: _msgSender(),
         msgValue: 0,
         target: coreSystem,
-        funcSelectorAndArgs: abi.encodeCall(
+        callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
           (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
         )

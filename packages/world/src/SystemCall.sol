@@ -31,7 +31,7 @@ library SystemCall {
     address caller,
     uint256 value,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
     (address systemAddress, bool publicAccess) = Systems._get(resourceSelector);
@@ -55,13 +55,13 @@ library SystemCall {
         msgSender: caller,
         msgValue: value,
         target: systemAddress,
-        funcSelectorAndArgs: funcSelectorAndArgs
+        callData: callData
       })
       : WorldContextProvider.callWithContext({
         msgSender: caller,
         msgValue: value,
         target: systemAddress,
-        funcSelectorAndArgs: funcSelectorAndArgs
+        callData: callData
       });
   }
 
@@ -72,7 +72,7 @@ library SystemCall {
   function callWithHooks(
     address caller,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
+    bytes memory callData,
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
@@ -82,23 +82,18 @@ library SystemCall {
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(SystemHookType.BEFORE_CALL_SYSTEM))) {
-        ISystemHook(hook.getAddress()).onBeforeCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+        ISystemHook(hook.getAddress()).onBeforeCallSystem(caller, resourceSelector, callData);
       }
     }
 
     // Call the system and forward any return data
-    (success, data) = call({
-      caller: caller,
-      value: value,
-      resourceSelector: resourceSelector,
-      funcSelectorAndArgs: funcSelectorAndArgs
-    });
+    (success, data) = call({ caller: caller, value: value, resourceSelector: resourceSelector, callData: callData });
 
     // Call onAfterCallSystem hooks (after calling the system)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(uint8(SystemHookType.AFTER_CALL_SYSTEM))) {
-        ISystemHook(hook.getAddress()).onAfterCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+        ISystemHook(hook.getAddress()).onAfterCallSystem(caller, resourceSelector, callData);
       }
     }
   }
@@ -110,14 +105,14 @@ library SystemCall {
   function callWithHooksOrRevert(
     address caller,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
+    bytes memory callData,
     uint256 value
   ) internal returns (bytes memory data) {
     (bool success, bytes memory returnData) = callWithHooks({
       caller: caller,
       value: value,
       resourceSelector: resourceSelector,
-      funcSelectorAndArgs: funcSelectorAndArgs
+      callData: callData
     });
     if (!success) revertWithBytes(returnData);
     return returnData;

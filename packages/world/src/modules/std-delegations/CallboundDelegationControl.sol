@@ -8,15 +8,15 @@ contract CallboundDelegationControl is DelegationControl {
   /**
    * Verify a delegation by checking if the delegator has any available calls left in the CallboundDelegations table and decrementing the available calls if so.
    */
-  function verify(address delegator, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public returns (bool) {
-    bytes32 funcSelectorAndArgsHash = keccak256(funcSelectorAndArgs);
+  function verify(address delegator, bytes32 resourceSelector, bytes memory callData) public returns (bool) {
+    bytes32 callDataHash = keccak256(callData);
 
-    // Get the number of available calls for the given delegator, resourceSelector and funcSelectorAndArgs
+    // Get the number of available calls for the given delegator, resourceSelector and callData
     uint256 availableCalls = CallboundDelegations.get({
       delegator: delegator,
       delegatee: _msgSender(),
       resourceSelector: resourceSelector,
-      funcSelectorAndArgsHash: funcSelectorAndArgsHash
+      callDataHash: callDataHash
     });
 
     if (availableCalls == 1) {
@@ -25,7 +25,7 @@ contract CallboundDelegationControl is DelegationControl {
         delegator: delegator,
         delegatee: _msgSender(),
         resourceSelector: resourceSelector,
-        funcSelectorAndArgsHash: funcSelectorAndArgsHash
+        callDataHash: callDataHash
       });
       return true;
     }
@@ -39,7 +39,7 @@ contract CallboundDelegationControl is DelegationControl {
         delegator: delegator,
         delegatee: _msgSender(),
         resourceSelector: resourceSelector,
-        funcSelectorAndArgsHash: funcSelectorAndArgsHash,
+        callDataHash: callDataHash,
         availableCalls: availableCalls
       });
       return true;
@@ -51,17 +51,12 @@ contract CallboundDelegationControl is DelegationControl {
   /**
    * Initialize a delegation by setting the number of available calls in the CallboundDelegations table
    */
-  function initDelegation(
-    address delegatee,
-    bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
-    uint256 numCalls
-  ) public {
+  function initDelegation(address delegatee, bytes32 resourceSelector, bytes memory callData, uint256 numCalls) public {
     CallboundDelegations.set({
       delegator: _msgSender(),
       delegatee: delegatee,
       resourceSelector: resourceSelector,
-      funcSelectorAndArgsHash: keccak256(funcSelectorAndArgs),
+      callDataHash: keccak256(callData),
       availableCalls: numCalls
     });
   }
