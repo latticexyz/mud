@@ -309,7 +309,7 @@
     "file": "test/KeyEncoding.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register KeyEncoding table",
-    "gasUsed": 697905
+    "gasUsed": 697846
   },
   {
     "file": "test/Mixed.t.sol",
@@ -1059,7 +1059,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 421491
+    "gasUsed": 421468
   },
   {
     "file": "test/Vector2.t.sol",
