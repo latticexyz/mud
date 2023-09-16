@@ -71,7 +71,7 @@ library AddressArray {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
@@ -80,7 +80,7 @@ library AddressArray {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
@@ -139,7 +139,7 @@ library AddressArray {
         _index * 20,
         (_index + 1) * 20
       );
-      return (address(Bytes.slice20(_blob, 0)));
+      return (address(bytes20(_blob)));
     }
   }
 
@@ -153,7 +153,7 @@ library AddressArray {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 20, (_index + 1) * 20);
-      return (address(Bytes.slice20(_blob, 0)));
+      return (address(bytes20(_blob)));
     }
   }
 

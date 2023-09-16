@@ -90,7 +90,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
@@ -99,7 +99,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
@@ -164,7 +164,7 @@ library Dynamics1 {
         _index * 32,
         (_index + 1) * 32
       );
-      return (Bytes.slice32(_blob, 0));
+      return (bytes32(_blob));
     }
   }
 
@@ -178,7 +178,7 @@ library Dynamics1 {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 32, (_index + 1) * 32);
-      return (Bytes.slice32(_blob, 0));
+      return (bytes32(_blob));
     }
   }
 
@@ -245,7 +245,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
@@ -254,7 +254,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
@@ -313,7 +313,7 @@ library Dynamics1 {
         _index * 4,
         (_index + 1) * 4
       );
-      return (int32(uint32(Bytes.slice4(_blob, 0))));
+      return (int32(uint32(bytes4(_blob))));
     }
   }
 
@@ -327,7 +327,7 @@ library Dynamics1 {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 4, (_index + 1) * 4);
-      return (int32(uint32(Bytes.slice4(_blob, 0))));
+      return (int32(uint32(bytes4(_blob))));
     }
   }
 
@@ -394,7 +394,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
   }
 
@@ -403,7 +403,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 2);
     return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
   }
 
@@ -468,7 +468,7 @@ library Dynamics1 {
         _index * 16,
         (_index + 1) * 16
       );
-      return (uint128(Bytes.slice16(_blob, 0)));
+      return (uint128(bytes16(_blob)));
     }
   }
 
@@ -482,7 +482,7 @@ library Dynamics1 {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 16, (_index + 1) * 16);
-      return (uint128(Bytes.slice16(_blob, 0)));
+      return (uint128(bytes16(_blob)));
     }
   }
 
@@ -549,7 +549,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 3);
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
@@ -558,7 +558,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 3);
     return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
@@ -623,7 +623,7 @@ library Dynamics1 {
         _index * 20,
         (_index + 1) * 20
       );
-      return (address(Bytes.slice20(_blob, 0)));
+      return (address(bytes20(_blob)));
     }
   }
 
@@ -637,7 +637,7 @@ library Dynamics1 {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 20, (_index + 1) * 20);
-      return (address(Bytes.slice20(_blob, 0)));
+      return (address(bytes20(_blob)));
     }
   }
 
@@ -704,7 +704,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 4);
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
@@ -713,7 +713,7 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 4, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 4);
     return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
@@ -772,7 +772,7 @@ library Dynamics1 {
         _index * 1,
         (_index + 1) * 1
       );
-      return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+      return (_toBool(uint8(bytes1(_blob))));
     }
   }
 
@@ -786,7 +786,7 @@ library Dynamics1 {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
-      return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+      return (_toBool(uint8(bytes1(_blob))));
     }
   }
 

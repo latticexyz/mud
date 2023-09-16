@@ -79,8 +79,8 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get has (using the specified store) */
@@ -89,8 +89,8 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set has */
@@ -117,8 +117,8 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint40(Bytes.slice5(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint40(bytes5(_blob)));
   }
 
   /** Get index (using the specified store) */
@@ -127,8 +127,8 @@ library UsedKeysIndex {
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (uint40(Bytes.slice5(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint40(bytes5(_blob)));
   }
 
   /** Set index */

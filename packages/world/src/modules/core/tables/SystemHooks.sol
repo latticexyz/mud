@@ -74,7 +74,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
@@ -83,7 +83,7 @@ library SystemHooks {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
   }
 
@@ -142,7 +142,7 @@ library SystemHooks {
         _index * 21,
         (_index + 1) * 21
       );
-      return (Bytes.slice21(_blob, 0));
+      return (bytes21(_blob));
     }
   }
 
@@ -156,7 +156,7 @@ library SystemHooks {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 21, (_index + 1) * 21);
-      return (Bytes.slice21(_blob, 0));
+      return (bytes21(_blob));
     }
   }
 

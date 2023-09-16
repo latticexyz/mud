@@ -111,8 +111,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Get v1 (using the specified store) */
@@ -133,8 +133,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Set v1 */
@@ -173,8 +173,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /** Get v2 (using the specified store) */
@@ -195,8 +195,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, _fieldLayout);
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /** Set v2 */
@@ -235,8 +235,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (Bytes.slice16(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes16(_blob));
   }
 
   /** Get v3 (using the specified store) */
@@ -257,8 +257,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, _fieldLayout);
-    return (Bytes.slice16(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes16(_blob));
   }
 
   /** Set v3 */
@@ -297,8 +297,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, _fieldLayout);
-    return (address(Bytes.slice20(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (address(bytes20(_blob)));
   }
 
   /** Get v4 (using the specified store) */
@@ -319,8 +319,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, _fieldLayout);
-    return (address(Bytes.slice20(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (address(bytes20(_blob)));
   }
 
   /** Set v4 */
@@ -359,8 +359,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4, _fieldLayout);
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get v5 (using the specified store) */
@@ -381,8 +381,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 4, _fieldLayout);
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set v5 */
@@ -421,8 +421,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 5, _fieldLayout);
-    return Enum1(uint8(Bytes.slice1(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 5, _fieldLayout);
+    return Enum1(uint8(bytes1(_blob)));
   }
 
   /** Get v6 (using the specified store) */
@@ -443,8 +443,8 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 5, _fieldLayout);
-    return Enum1(uint8(Bytes.slice1(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 5, _fieldLayout);
+    return Enum1(uint8(bytes1(_blob)));
   }
 
   /** Set v6 */
