@@ -12,6 +12,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
@@ -92,9 +93,23 @@ contract WorldTestSystem is System {
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), fieldLayout);
+      StoreCore.setRecord(
+        tableId,
+        keyTuple,
+        abi.encodePacked(data),
+        PackedCounter.wrap(bytes32(0)),
+        new bytes(0),
+        fieldLayout
+      );
     } else {
-      IBaseWorld(msg.sender).setRecord(tableId, keyTuple, abi.encodePacked(data), fieldLayout);
+      IBaseWorld(msg.sender).setRecord(
+        tableId,
+        keyTuple,
+        abi.encodePacked(data),
+        PackedCounter.wrap(bytes32(0)),
+        new bytes(0),
+        fieldLayout
+      );
     }
   }
 
@@ -622,7 +637,14 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      fieldLayout
+    );
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
@@ -633,7 +655,15 @@ contract WorldTest is Test, GasReporter {
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      fieldLayout
+    );
+    assertTrue(Bool.get(world, tableId));
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
@@ -823,25 +853,29 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Prepare data to write to the table
-    bytes memory value = abi.encodePacked(true);
+    bytes memory staticData = abi.encodePacked(true);
 
     // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+    );
 
-    world.setRecord(tableId, singletonKey, value, fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Expect the hook to be notified when a field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
 
-    world.setField(tableId, singletonKey, 0, value, fieldLayout);
+    world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
@@ -908,15 +942,15 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Prepare data to write to the table
-    bytes memory value = abi.encodePacked(true);
+    bytes memory staticData = abi.encodePacked(true);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    world.setRecord(tableId, singletonKey, value, fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
     vm.expectRevert(bytes("onBeforeSetField"));
-    world.setField(tableId, singletonKey, 0, value, fieldLayout);
+    world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
@@ -927,21 +961,25 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+    );
 
-    world.setRecord(tableId, singletonKey, value, fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
     // Expect the hook to be notified when a field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
 
-    world.setField(tableId, singletonKey, 0, value, fieldLayout);
+    world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);

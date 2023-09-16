@@ -5,6 +5,7 @@ import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -32,7 +33,9 @@ contract KeysWithValueHook is StoreHook {
   function onBeforeSetRecord(
     bytes32 sourceTableId,
     bytes32[] memory keyTuple,
-    bytes memory data,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
   ) public {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
@@ -44,13 +47,21 @@ contract KeysWithValueHook is StoreHook {
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
 
     // Push the key to the list of keys with the new value
+    bytes memory data;
+    if (dynamicData.length > 0) {
+      data = abi.encodePacked(staticData, encodedLengths, dynamicData);
+    } else {
+      data = staticData;
+    }
     KeysWithValue.push(targetTableId, keccak256(data), keyTuple[0]);
   }
 
   function onAfterSetRecord(
     bytes32 sourceTableId,
     bytes32[] memory keyTuple,
-    bytes memory data,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
   ) public {
     // NOOP

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStoreErrors } from "./IStoreErrors.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { IStoreHook } from "./IStoreHook.sol";
@@ -17,34 +18,65 @@ interface IStoreRead {
 
   function getKeySchema(bytes32 tableId) external view returns (Schema keySchema);
 
-  // Get full record (including full array)
+  /**
+   * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value field layout
+   */
   function getRecord(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
-  // Get partial data at schema index
+  /**
+   * Get a single field from the given tableId and key tuple, with the given value field layout
+   */
   function getField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout
   ) external view returns (bytes memory data);
 
-  // Get field length at schema index
+  /**
+   * Get a single static field from the given tableId and key tuple, with the given value field layout.
+   * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
+   * Consumers are expected to truncate the returned value as needed.
+   */
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) external view returns (bytes32);
+
+  /**
+   * Get a single dynamic field from the given tableId and key tuple at the given dynamic field index.
+   * (Dynamic field index = field index - number of static fields)
+   */
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) external view returns (bytes memory);
+
+  /**
+   * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
+   */
   function getFieldLength(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout
   ) external view returns (uint256);
 
-  // Get start:end slice of the field at schema index
+  /**
+   * Get a byte slice (including start, excluding end) of a single dynamic field from the given tableId and key tuple, with the given value field layout.
+   * The slice is unchecked and will return invalid data if `start`:`end` overflow.
+   */
   function getFieldSlice(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     FieldLayout fieldLayout,
     uint256 start,
     uint256 end
@@ -52,15 +84,32 @@ interface IStoreRead {
 }
 
 interface IStoreWrite {
-  event StoreSetRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
-  event StoreSetField(bytes32 tableId, bytes32[] keyTuple, uint8 schemaIndex, bytes data);
+  event StoreSetRecord(
+    bytes32 tableId,
+    bytes32[] keyTuple,
+    bytes staticData,
+    bytes32 encodedLengths,
+    bytes dynamicData
+  );
+
+  event StoreSpliceStaticData(bytes32 tableId, bytes32[] keyTuple, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes data,
+    bytes32 encodedLengths
+  );
   event StoreDeleteRecord(bytes32 tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
   function setRecord(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    bytes calldata data,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) external;
 
@@ -68,7 +117,7 @@ interface IStoreWrite {
   function setField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) external;
@@ -77,7 +126,7 @@ interface IStoreWrite {
   function pushToField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
   ) external;
@@ -86,7 +135,7 @@ interface IStoreWrite {
   function popFromField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) external;
@@ -95,7 +144,7 @@ interface IStoreWrite {
   function updateInField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
@@ -106,13 +155,21 @@ interface IStoreWrite {
 }
 
 interface IStoreEphemeral {
-  event StoreEphemeralRecord(bytes32 tableId, bytes32[] keyTuple, bytes data);
+  event StoreEphemeralRecord(
+    bytes32 tableId,
+    bytes32[] keyTuple,
+    bytes staticData,
+    bytes32 encodedLengths,
+    bytes dynamicData
+  );
 
   // Emit the ephemeral event without modifying storage
   function emitEphemeralRecord(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    bytes calldata data,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) external;
 }

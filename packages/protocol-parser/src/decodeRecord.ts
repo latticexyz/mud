@@ -10,7 +10,7 @@ import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 import { hexToPackedCounter } from "./hexToPackedCounter";
 import { staticDataLength } from "./staticDataLength";
-import { readHex } from "./readHex";
+import { readHex } from "@latticexyz/common";
 
 /** @deprecated use `decodeValue` instead */
 export function decodeRecord(valueSchema: Schema, data: Hex): readonly (StaticPrimitiveType | DynamicPrimitiveType)[] {

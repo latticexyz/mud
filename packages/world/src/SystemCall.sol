@@ -34,7 +34,7 @@ library SystemCall {
     bytes memory funcSelectorAndArgs
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
-    (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
+    (address systemAddress, bool publicAccess) = Systems._get(resourceSelector);
 
     // Check if the system exists
     if (systemAddress == address(0)) revert IWorldErrors.ResourceNotFound(resourceSelector.toString());
@@ -45,8 +45,8 @@ library SystemCall {
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
       bytes16 namespace = resourceSelector.getNamespace();
-      uint256 currentBalance = Balances.get(namespace);
-      Balances.set(namespace, currentBalance + value);
+      uint256 currentBalance = Balances._get(namespace);
+      Balances._set(namespace, currentBalance + value);
     }
 
     // Call the system and forward any return data
@@ -76,7 +76,7 @@ library SystemCall {
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    bytes21[] memory hooks = SystemHooks.get(resourceSelector);
+    bytes21[] memory hooks = SystemHooks._get(resourceSelector);
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {

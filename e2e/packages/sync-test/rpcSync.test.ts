@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, test } from "vitest";
 import type { ViteDevServer } from "vite";
 import { Browser, Page } from "@playwright/test";
-import { ExecaChildProcess } from "execa";
 import { createAsyncErrorHandler } from "./asyncErrors";
 import { deployContracts, startViteServer, startBrowserAndPage, openClientWithRootAccount } from "./setup";
 import {

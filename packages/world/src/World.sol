@@ -6,6 +6,8 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { WORLD_VERSION } from "./version.sol";
@@ -57,7 +59,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // The World can only be initialized once
-    if (InstalledModules.get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
+    if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
       revert WorldAlreadyInitialized();
     }
 
@@ -87,7 +89,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(module.getName(), keccak256(args), address(module));
   }
 
   /************************************************************************
@@ -103,14 +105,16 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function setRecord(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    bytes calldata data,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) public virtual {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
   /**
@@ -120,7 +124,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function setField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
   ) public virtual {
@@ -128,7 +132,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableId, keyTuple, schemaIndex, data, fieldLayout);
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
   /**
@@ -138,7 +142,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function pushToField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
   ) public virtual {
@@ -146,7 +150,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableId, keyTuple, schemaIndex, dataToPush, fieldLayout);
+    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
   }
 
   /**
@@ -156,7 +160,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function popFromField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
   ) public virtual {
@@ -164,7 +168,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Push to the field
-    StoreCore.popFromField(tableId, keyTuple, schemaIndex, byteLengthToPop, fieldLayout);
+    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
   }
 
   /**
@@ -174,7 +178,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function updateInField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
@@ -183,7 +187,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(tableId, keyTuple, schemaIndex, startByteIndex, dataToSet, fieldLayout);
+    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   /**
@@ -230,7 +234,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
-    Delegation explicitDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: msg.sender }));
+    Delegation explicitDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }));
 
     if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
       // forward the call as `delegator`
@@ -238,7 +242,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     }
 
     // Check if the delegator has a fallback delegation control set
-    Delegation fallbackDelegation = Delegation.wrap(Delegations.get({ delegator: delegator, delegatee: address(0) }));
+    Delegation fallbackDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: address(0) }));
     if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
       // forward the call with `from` as `msgSender`
       return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
@@ -257,15 +261,15 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * ETH sent to the World without calldata is added to the root namespace's balance
    */
   receive() external payable {
-    uint256 rootBalance = Balances.get(ROOT_NAMESPACE);
-    Balances.set(ROOT_NAMESPACE, rootBalance + msg.value);
+    uint256 rootBalance = Balances._get(ROOT_NAMESPACE);
+    Balances._set(ROOT_NAMESPACE, rootBalance + msg.value);
   }
 
   /**
    * Fallback function to call registered function selectors
    */
   fallback() external payable {
-    (bytes32 resourceSelector, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
+    (bytes32 resourceSelector, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (resourceSelector == 0) revert FunctionSelectorNotFound(msg.sig);
 
