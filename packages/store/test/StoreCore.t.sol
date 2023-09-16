@@ -64,7 +64,6 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSetRecord(
       TablesTableId,
       keyTuple,
-      keyTuple,
       Tables.encodeStatic(fieldLayout.unwrap(), keySchema.unwrap(), valueSchema.unwrap()),
       Tables.encodeLengths(abi.encode(keyNames), abi.encode(fieldNames)).unwrap(),
       Tables.encodeDynamic(abi.encode(keyNames), abi.encode(fieldNames))
@@ -231,7 +230,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(tableId, keyTuple, keyTuple, staticData, bytes32(0), new bytes(0));
+    emit StoreSetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
 
     IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
@@ -283,7 +282,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(tableId, keyTuple, keyTuple, staticData, bytes32(0), new bytes(0));
+    emit StoreSetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
 
     IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
@@ -347,7 +346,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(tableId, keyTuple, keyTuple, staticData, encodedDynamicLength.unwrap(), dynamicData);
+    emit StoreSetRecord(tableId, keyTuple, staticData, encodedDynamicLength.unwrap(), dynamicData);
 
     // Set data
     IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
@@ -397,7 +396,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSpliceStaticData event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSpliceStaticData(tableId, keyTuple, keyTuple, 0, uint40(firstDataPacked.length), firstDataPacked);
+    emit StoreSpliceStaticData(tableId, keyTuple, 0, uint40(firstDataPacked.length), firstDataPacked);
 
     // Set first field
     IStore(this).setField(tableId, keyTuple, 0, firstDataPacked, fieldLayout);
@@ -425,7 +424,6 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceStaticData(
       tableId,
-      keyTuple,
       keyTuple,
       uint48(firstDataPacked.length),
       uint40(secondDataPacked.length),
@@ -480,7 +478,6 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSpliceDynamicData(
       tableId,
       keyTuple,
-      keyTuple,
       uint48(0),
       0,
       thirdDataBytes,
@@ -509,7 +506,6 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceDynamicData(
       tableId,
-      keyTuple,
       keyTuple,
       uint48(thirdDataBytes.length),
       0,
@@ -543,7 +539,6 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceDynamicData(
       tableId,
-      keyTuple,
       keyTuple,
       uint48(thirdDataBytes.length),
       uint40(fourthDataBytes.length),
@@ -625,7 +620,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreDeleteRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreDeleteRecord(tableId, keyTuple, keyTuple);
+    emit StoreDeleteRecord(tableId, keyTuple);
 
     // Delete data
     IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
@@ -709,7 +704,6 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSpliceDynamicData(
       data.tableId,
       data.keyTuple,
-      data.keyTuple,
       uint48(data.secondDataBytes.length),
       0,
       data.secondDataToPush,
@@ -752,7 +746,6 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceDynamicData(
       data.tableId,
-      data.keyTuple,
       data.keyTuple,
       uint48(data.newSecondDataBytes.length + data.thirdDataBytes.length),
       0,
@@ -864,7 +857,6 @@ contract StoreCoreTest is Test, StoreMock {
     emit StoreSpliceDynamicData(
       data.tableId,
       data.keyTuple,
-      data.keyTuple,
       uint48(4 * 1),
       4 * 1,
       data.secondDataForUpdate,
@@ -909,7 +901,6 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit StoreSpliceDynamicData(
       data.tableId,
-      data.keyTuple,
       data.keyTuple,
       uint48(data.newSecondDataBytes.length + 8 * 1),
       8 * 4,

@@ -19,7 +19,6 @@ library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreSetRecord(
     bytes32 indexed tableId,
-    bytes32[] indexed indexedKeyTuple,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
@@ -27,7 +26,6 @@ library StoreCore {
   );
   event StoreSpliceStaticData(
     bytes32 indexed tableId,
-    bytes32[] indexed indexedKeyTuple,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -35,17 +33,15 @@ library StoreCore {
   );
   event StoreSpliceDynamicData(
     bytes32 indexed tableId,
-    bytes32[] indexed indexedKeyTuple,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(bytes32 indexed tableId, bytes32[] indexed indexedKeyTuple, bytes32[] keyTuple);
+  event StoreDeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple);
   event StoreEphemeralRecord(
     bytes32 indexed tableId,
-    bytes32[] indexed indexedKeyTuple,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
@@ -211,7 +207,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreSetRecord(tableId, keyTuple, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit StoreSetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks.get(tableId);
@@ -322,7 +318,7 @@ library StoreCore {
    */
   function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
-    emit StoreDeleteRecord(tableId, keyTuple, keyTuple);
+    emit StoreDeleteRecord(tableId, keyTuple);
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks.get(tableId);
@@ -506,7 +502,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreEphemeralRecord(tableId, keyTuple, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit StoreEphemeralRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
   }
 
   /************************************************************************
@@ -658,7 +654,6 @@ library StoreCoreInternal {
     // Emit event to notify indexers
     emit StoreCore.StoreSpliceStaticData({
       tableId: tableId,
-      indexedKeyTuple: keyTuple,
       keyTuple: keyTuple,
       start: uint48(offset),
       deleteCount: uint40(fieldLayout.atIndex(fieldIndex)),
@@ -702,7 +697,6 @@ library StoreCoreInternal {
     // Emit event to notify indexers
     emit StoreCore.StoreSpliceDynamicData({
       tableId: tableId,
-      indexedKeyTuple: keyTuple,
       keyTuple: keyTuple,
       start: uint48(start),
       deleteCount: uint40(oldFieldLength),
@@ -746,7 +740,6 @@ library StoreCoreInternal {
     // Emit event to notify indexers
     emit StoreCore.StoreSpliceDynamicData({
       tableId: tableId,
-      indexedKeyTuple: keyTuple,
       keyTuple: keyTuple,
       start: uint48(start),
       deleteCount: uint40(0),
@@ -791,7 +784,6 @@ library StoreCoreInternal {
     // Emit event to notify indexers
     emit StoreCore.StoreSpliceDynamicData({
       tableId: tableId,
-      indexedKeyTuple: keyTuple,
       keyTuple: keyTuple,
       start: uint48(start),
       deleteCount: uint40(byteLengthToPop),
@@ -831,7 +823,6 @@ library StoreCoreInternal {
     // Emit event to notify indexers
     emit StoreCore.StoreSpliceDynamicData({
       tableId: tableId,
-      indexedKeyTuple: keyTuple,
       keyTuple: keyTuple,
       start: uint48(start),
       deleteCount: uint40(dataToSet.length),
