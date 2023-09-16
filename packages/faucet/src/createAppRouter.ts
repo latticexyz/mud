@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { initTRPC } from "@trpc/server";
-import { Chain, Client, Hex, LocalAccount, Transport, formatEther, isHex } from "viem";
+import { Client, Hex, LocalAccount, formatEther, isHex } from "viem";
 import { sendTransaction } from "viem/actions";
 import { debug } from "./debug";
 
 export type AppContext = {
-  client: Client<Transport, Chain>;
+  client: Client;
   faucetAccount: LocalAccount<string>;
   dripAmount: bigint;
 };
@@ -26,6 +26,7 @@ export function createAppRouter() {
 
         const { address } = opts.input;
         const tx = await sendTransaction(client, {
+          chain: null,
           account: faucetAccount,
           to: address,
           value: dripAmount,

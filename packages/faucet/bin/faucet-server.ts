@@ -26,24 +26,8 @@ const env = z
     }),
   });
 
-const clientOptions = {
-  transport: http(env.RPC_HTTP_URL),
-} as const satisfies ClientConfig;
-
-const chainId = await getChainId(createClient(clientOptions));
 const client = createClient({
-  ...clientOptions,
-  // TODO: since we have the RPC URL defined in the transport, and the chain ID, why do we need to specify a chain here?
-  chain: {
-    id: chainId,
-    name: "unknown",
-    network: "unknown",
-    nativeCurrency: { decimals: 18, name: "Ether", symbol: "ETH" },
-    rpcUrls: {
-      default: { http: [env.RPC_HTTP_URL] },
-      public: { http: [env.RPC_HTTP_URL] },
-    },
-  },
+  transport: http(env.RPC_HTTP_URL),
 });
 
 const faucetAccount = privateKeyToAccount(env.FAUCET_PRIVATE_KEY);
