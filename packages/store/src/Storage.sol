@@ -209,4 +209,39 @@ library Storage {
       }
     }
   }
+
+  /**
+   * Load up to 32 bytes from storage at the given storagePointer and offset.
+   * The return value is left-aligned, the bytes beyond the length are not zeroed out,
+   * and the caller is expected to truncate as needed.
+   * Since fields are tightly packed, they can span more than one slot.
+   * Since the they're max 32 bytes, they can span at most 2 slots.
+   */
+  function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
+    if (offset >= 32) {
+      unchecked {
+        storagePointer += offset / 32;
+        offset %= 32;
+      }
+    }
+
+    // Extra data past length is not truncated
+    // This assumes that the caller will handle the overflow bits appropriately
+    assembly {
+      result := shl(mul(offset, 8), sload(storagePointer))
+    }
+
+    uint256 wordRemainder;
+    // (safe because of `offset %= 32` at the start)
+    unchecked {
+      wordRemainder = 32 - offset;
+    }
+
+    // Read from the next slot if field spans 2 slots
+    if (length > wordRemainder) {
+      assembly {
+        result := or(result, shr(mul(wordRemainder, 8), sload(add(storagePointer, 1))))
+      }
+    }
+  }
 }
