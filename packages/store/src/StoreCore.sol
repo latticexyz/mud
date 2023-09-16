@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { STORE_VERSION } from "./version.sol";
 import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
@@ -16,7 +17,7 @@ import { Hook, HookLib } from "./Hook.sol";
 import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 
 library StoreCore {
-  // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
+  event HelloStore(bytes32 indexed version);
   event StoreSetRecord(
     bytes32 indexed tableId,
     bytes32[] keyTuple,
@@ -53,6 +54,8 @@ library StoreCore {
    * Consumers must call this function in their constructor.
    */
   function initialize() internal {
+    emit HelloStore(STORE_VERSION);
+
     // StoreSwitch uses the storeAddress to decide where to write data to.
     // If StoreSwitch is called in the context of a Store contract (storeAddress == address(this)),
     // StoreSwitch uses internal methods to write data instead of external calls.

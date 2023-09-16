@@ -10,6 +10,7 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
+import { WORLD_VERSION } from "./version.sol";
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
@@ -38,10 +39,14 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
   address public immutable creator;
 
+  function worldVersion() public pure returns (bytes32) {
+    return WORLD_VERSION;
+  }
+
   constructor() {
     creator = msg.sender;
     StoreCore.initialize();
-    emit HelloWorld();
+    emit HelloWorld(WORLD_VERSION);
   }
 
   /**

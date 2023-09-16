@@ -20,6 +20,7 @@ import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
 import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 
+import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
@@ -158,7 +159,7 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
-  event HelloWorld();
+  event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -196,7 +197,7 @@ contract WorldTest is Test, GasReporter {
     CoreModule coreModule = new CoreModule();
 
     vm.expectEmit(true, true, true, true);
-    emit HelloWorld();
+    emit HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
 
     // Expect the creator to be the original deployer

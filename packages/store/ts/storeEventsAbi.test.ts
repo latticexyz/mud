@@ -7,7 +7,10 @@ import { AbiEvent } from "abitype";
 
 describe("storeEventsAbi", () => {
   it("should match the store ABI", () => {
-    const expectedEvents = IStoreAbi.filter((item) => item.type === "event") as readonly AbiEvent[];
+    const expectedEvents = IStoreAbi.filter((item) => item.type === "event").filter(
+      (item) => item.name !== "HelloStore"
+    ) as readonly AbiEvent[];
+
     const expectedAbi = expectedEvents
       .map((item) => ({
         // return data in a shape that matches abitype's parseAbi

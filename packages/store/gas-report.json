@@ -699,7 +699,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 16415
+    "gasUsed": 16438
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -723,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 17400
+    "gasUsed": 17423
   },
   {
     "file": "test/StoreCoreGas.t.sol",

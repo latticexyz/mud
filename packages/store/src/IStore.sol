@@ -8,6 +8,10 @@ import { Schema } from "./Schema.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 
 interface IStoreRead {
+  event HelloStore(bytes32 indexed storeVersion);
+
+  function storeVersion() external view returns (bytes32);
+
   function getFieldLayout(bytes32 tableId) external view returns (FieldLayout fieldLayout);
 
   function getValueSchema(bytes32 tableId) external view returns (Schema valueSchema);
