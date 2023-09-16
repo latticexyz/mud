@@ -1,7 +1,7 @@
 ---
 "@latticexyz/cli": patch
-"@latticexyz/common": feat
-"@latticexyz/store": feat
+"@latticexyz/common": minor
+"@latticexyz/store": minor
 "@latticexyz/world": patch
 ---
 
