@@ -7,7 +7,7 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Emit the ephemeral event using individual values${_commentSuffix} */
       function ${_methodNamePrefix}emitEphemeral(${renderArguments([
       _typedStore,

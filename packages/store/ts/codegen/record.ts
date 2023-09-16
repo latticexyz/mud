@@ -14,7 +14,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Get the full data${_commentSuffix} */
       function ${_methodNamePrefix}get(${renderArguments([
       _typedStore,
@@ -30,7 +30,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Set the full data using individual values${_commentSuffix} */
       function ${_methodNamePrefix}set(${renderArguments([
       _typedStore,

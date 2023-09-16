@@ -112,7 +112,7 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Register the table with its config${_commentSuffix} */
         function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
           ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -152,7 +152,7 @@ export function renderTable(options: RenderTableOptions) {
         shouldRenderDelete
           ? renderWithStore(
               storeArgument,
-              (_typedStore, _store, _commentSuffix, _, _methodNamePrefix) => `
+              (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
                 /* Delete all data for given keys${_commentSuffix} */
                 function ${_methodNamePrefix}deleteRecord(${renderArguments([
                 _typedStore,
