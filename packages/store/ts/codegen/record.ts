@@ -14,13 +14,13 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Get the full data${_commentSuffix} */
-      function get(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-      ])}) internal view returns (${renderDecodedRecord(options)}) {
+      function ${_methodNamePrefix}get(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+    ])}) internal view returns (${renderDecodedRecord(options)}) {
         ${_keyTupleDefinition}
         bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
         return decode(_blob);
@@ -30,14 +30,14 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Set the full data using individual values${_commentSuffix} */
-      function set(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-      ])}) internal {
+      function ${_methodNamePrefix}set(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+    ])}) internal {
         ${renderRecordData(options)}
 
         ${_keyTupleDefinition}
@@ -50,14 +50,14 @@ export function renderRecordMethods(options: RenderTableOptions) {
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Set the full data using the data struct${_commentSuffix} */
-        function set(${renderArguments([
-          _typedStore,
-          _typedTableId,
-          _typedKeyArgs,
-          `${structName} memory _table`,
-        ])}) internal {
+        function ${_methodNamePrefix}set(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        `${structName} memory _table`,
+      ])}) internal {
           set(${renderArguments([
             _untypedStore,
             _tableId,

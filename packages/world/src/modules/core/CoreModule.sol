@@ -76,9 +76,9 @@ contract CoreModule is Module {
     SystemRegistry.register();
     ResourceType.register();
 
-    NamespaceOwner.set(ROOT_NAMESPACE, _msgSender());
-    ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
-    ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    NamespaceOwner._set(ROOT_NAMESPACE, _msgSender());
+    ResourceAccess._set(ROOT_NAMESPACE, _msgSender(), true);
+    ResourceType._set(ROOT_NAMESPACE, Resource.NAMESPACE);
   }
 
   /**

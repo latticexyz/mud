@@ -21,7 +21,7 @@ library HookLib {
    * Filter the given hook from the hook list at the given key in the given hook table
    */
   function filterListByAddress(bytes32 hookTableId, bytes32 key, address hookAddressToRemove) internal {
-    bytes21[] memory currentHooks = Hooks.get(hookTableId, key);
+    bytes21[] memory currentHooks = Hooks._get(hookTableId, key);
 
     // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
     bytes21[] memory newHooks = new bytes21[](currentHooks.length);
@@ -44,7 +44,7 @@ library HookLib {
     }
 
     // Set the new hooks table
-    Hooks.set(hookTableId, key, newHooks);
+    Hooks._set(hookTableId, key, newHooks);
   }
 }
 

@@ -62,6 +62,11 @@ library NumberList {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -72,6 +77,14 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
+  /** Get value */
+  function _get() internal view returns (uint32[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -90,6 +103,13 @@ library NumberList {
     StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), _fieldLayout);
   }
 
+  /** Set value */
+  function _set(uint32[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), _fieldLayout);
+  }
+
   /** Set value (using the specified store) */
   function set(IStore _store, uint32[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -102,6 +122,16 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
+    unchecked {
+      return _byteLength / 4;
+    }
+  }
+
+  /** Get the length of value */
+  function _length() internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
     unchecked {
       return _byteLength / 4;
     }
@@ -138,6 +168,19 @@ library NumberList {
   }
 
   /**
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItem(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 4, (_index + 1) * 4);
+      return (uint32(bytes4(_blob)));
+    }
+  }
+
+  /**
    * Get an item of value (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
@@ -157,6 +200,13 @@ library NumberList {
     StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
   }
 
+  /** Push an element to value */
+  function _push(uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+  }
+
   /** Push an element to value (using the specified store) */
   function push(IStore _store, uint32 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
@@ -169,6 +219,13 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.popFromField(_tableId, _keyTuple, 0, 4, _fieldLayout);
+  }
+
+  /** Pop an element from value */
+  function _pop() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.popFromField(_tableId, _keyTuple, 0, 4, _fieldLayout);
   }
 
   /** Pop an element from value (using the specified store) */
@@ -187,6 +244,18 @@ library NumberList {
 
     unchecked {
       StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)), _fieldLayout);
+    }
+  }
+
+  /**
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _update(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 0, _index * 4, abi.encodePacked((_element)), _fieldLayout);
     }
   }
 
@@ -236,6 +305,13 @@ library NumberList {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */

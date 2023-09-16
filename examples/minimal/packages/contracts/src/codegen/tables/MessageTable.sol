@@ -62,6 +62,11 @@ library MessageTable {
     StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
@@ -76,6 +81,17 @@ library MessageTable {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
     StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /** Emit the ephemeral event using individual values */
+  function _emitEphemeral(string memory value) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(value);
+    bytes memory _dynamicData = encodeDynamic(value);
+
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
