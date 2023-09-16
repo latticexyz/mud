@@ -214,7 +214,8 @@ library Storage {
    * Load up to 32 bytes from storage at the given storagePointer and offset.
    * The return value is left-aligned, the bytes beyond the length are not zeroed out,
    * and the caller is expected to truncate as needed.
-   * The field can span up to two storage slots.
+   * Since fields are tightly packed, they can span more than one slot.
+   * Since the they're max 32 bytes, they can span at most 2 slots.
    */
   function loadField(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes32 result) {
     if (offset >= 32) {
