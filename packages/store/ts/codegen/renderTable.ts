@@ -1,4 +1,5 @@
 import {
+  RenderDynamicField,
   renderArguments,
   renderCommonData,
   renderList,
@@ -7,7 +8,6 @@ import {
   renderTypeHelpers,
   renderWithStore,
   renderedSolidityHeader,
-  RenderDynamicField,
   RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
@@ -113,9 +113,9 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
           /** Register the table with its config${_commentSuffix} */
-          function register(${renderArguments([_typedStore, _typedTableId])}) internal {
+          function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
             ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
           }
         `
@@ -152,9 +152,13 @@ export function renderTable(options: RenderTableOptions) {
         shouldRenderDelete
           ? renderWithStore(
               storeArgument,
-              (_typedStore, _store, _commentSuffix) => `
+              (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
                 /* Delete all data for given keys${_commentSuffix} */
-                function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
+                function ${_methodNamePrefix}deleteRecord(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+              ])}) internal {
                   ${_keyTupleDefinition}
                   ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
                 }
