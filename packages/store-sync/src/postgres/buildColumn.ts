@@ -1,9 +1,10 @@
-import { AnyPgColumnBuilder, boolean, text } from "drizzle-orm/pg-core";
+import { boolean, text } from "drizzle-orm/pg-core";
 import { SchemaAbiType } from "@latticexyz/schema-type";
 import { assertExhaustive } from "@latticexyz/common/utils";
 import { asAddress, asBigInt, asHex, asJson, asNumber } from "./columnTypes";
 
-export function buildColumn(name: string, schemaAbiType: SchemaAbiType): AnyPgColumnBuilder {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export function buildColumn(name: string, schemaAbiType: SchemaAbiType) {
   switch (schemaAbiType) {
     case "bool":
       return boolean(name);

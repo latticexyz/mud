@@ -24,7 +24,7 @@ setup().then(async (result) => {
       publicClient: result.network.publicClient,
       walletClient: result.network.walletClient,
       latestBlock$: result.network.latestBlock$,
-      blockStorageOperations$: result.network.blockStorageOperations$,
+      storedBlockLogs$: result.network.storedBlockLogs$,
       worldAddress: result.network.worldContract.address,
       worldAbi: result.network.worldContract.abi,
       write$: result.network.write$,

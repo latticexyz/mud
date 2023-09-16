@@ -1,6 +1,13 @@
-import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
+import { StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
-import { SetRecordOperation, StorageAdapter, SyncOptions, SyncResult, TableWithRecords } from "./common";
+import {
+  StorageAdapter,
+  StorageAdapterBlock,
+  StorageAdapterLog,
+  SyncOptions,
+  SyncResult,
+  TableWithRecords,
+} from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
@@ -20,16 +27,16 @@ import {
   scan,
   identity,
 } from "rxjs";
-import { BlockStorageOperations, blockLogsToStorage } from "./blockLogsToStorage";
 import { debug as parentDebug } from "./debug";
 import { createIndexerClient } from "./trpc-indexer";
 import { SyncStep } from "./SyncStep";
 import { chunk, isDefined } from "@latticexyz/common/utils";
+import { encodeKey, encodeValueArgs } from "@latticexyz/protocol-parser";
 
 const debug = parentDebug.extend("createStoreSync");
 
 type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
-  storageAdapter: StorageAdapter<TConfig>;
+  storageAdapter: StorageAdapter;
   onProgress?: (opts: {
     step: SyncStep;
     percentage: number;
@@ -38,8 +45,6 @@ type CreateStoreSyncOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpt
     message: string;
   }) => void;
 };
-
-type CreateStoreSyncResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig>;
 
 export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>({
   storageAdapter,
@@ -50,7 +55,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   maxBlockRange,
   initialState,
   indexerUrl,
-}: CreateStoreSyncOptions<TConfig>): Promise<CreateStoreSyncResult<TConfig>> {
+}: CreateStoreSyncOptions<TConfig>): Promise<SyncResult> {
   const initialState$ = defer(
     async (): Promise<
       | {
@@ -109,7 +114,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     tap((startBlock) => debug("starting sync from block", startBlock))
   );
 
-  const initialStorageOperations$ = initialState$.pipe(
+  const initialLogs$ = initialState$.pipe(
     filter(
       (initialState): initialState is { blockNumber: bigint; tables: TableWithRecords[] } =>
         initialState != null && initialState.blockNumber != null && initialState.tables.length > 0
@@ -125,27 +130,28 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         message: "Hydrating from snapshot",
       });
 
-      await storageAdapter.registerTables({ blockNumber, tables });
-
-      const operations: SetRecordOperation<TConfig>[] = tables.flatMap((table) =>
-        table.records.map((record) => ({
-          type: "SetRecord",
-          address: table.address,
-          namespace: table.namespace,
-          name: table.name,
-          key: record.key as ConfigToKeyPrimitives<TConfig, typeof table.name>,
-          value: record.value as ConfigToValuePrimitives<TConfig, typeof table.name>,
-        }))
+      const logs: StorageAdapterLog[] = tables.flatMap((table) =>
+        table.records.map(
+          (record): StorageAdapterLog => ({
+            eventName: "StoreSetRecord",
+            address: table.address,
+            args: {
+              tableId: table.tableId,
+              keyTuple: encodeKey(table.keySchema, record.key),
+              ...encodeValueArgs(table.valueSchema, record.value),
+            },
+          })
+        )
       );
 
       // Split snapshot operations into chunks so we can update the progress callback (and ultimately render visual progress for the user).
       // This isn't ideal if we want to e.g. batch load these into a DB in a single DB tx, but we'll take it.
       //
       // Split into 50 equal chunks (for better `onProgress` updates) but only if we have 100+ items per chunk
-      const chunkSize = Math.max(100, Math.floor(operations.length / 50));
-      const chunks = Array.from(chunk(operations, chunkSize));
+      const chunkSize = Math.max(100, Math.floor(logs.length / 50));
+      const chunks = Array.from(chunk(logs, chunkSize));
       for (const [i, chunk] of chunks.entries()) {
-        await storageAdapter.storeOperations({ blockNumber, operations: chunk });
+        await storageAdapter({ blockNumber, logs: chunk });
         onProgress?.({
           step: SyncStep.SNAPSHOT,
           percentage: (i + chunk.length) / chunks.length,
@@ -163,7 +169,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
         message: "Hydrated from snapshot",
       });
 
-      return { blockNumber, operations };
+      return { blockNumber, logs };
     }),
     shareReplay(1)
   );
@@ -196,12 +202,15 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   );
 
   let lastBlockNumberProcessed: bigint | null = null;
-  const blockStorageOperations$ = concat(
-    initialStorageOperations$,
+  const storedBlockLogs$ = concat(
+    initialLogs$,
     blockLogs$.pipe(
-      concatMap(blockLogsToStorage(storageAdapter)),
-      tap(({ blockNumber, operations }) => {
-        debug("stored", operations.length, "operations for block", blockNumber);
+      concatMap(async (block) => {
+        await storageAdapter(block);
+        return block;
+      }),
+      tap(({ blockNumber, logs }) => {
+        debug("stored", logs.length, "logs for block", blockNumber);
         lastBlockNumberProcessed = blockNumber;
 
         if (startBlock != null && endBlock != null) {
@@ -232,8 +241,8 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   // keep 10 blocks worth processed transactions in memory
   const recentBlocksWindow = 10;
   // most recent block first, for ease of pulling the first one off the array
-  const recentBlocks$ = blockStorageOperations$.pipe(
-    scan<BlockStorageOperations, BlockStorageOperations[]>(
+  const recentBlocks$ = storedBlockLogs$.pipe(
+    scan<StorageAdapterBlock, StorageAdapterBlock[]>(
       (recentBlocks, block) => [block, ...recentBlocks].slice(0, recentBlocksWindow),
       []
     ),
@@ -249,7 +258,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     // We could potentially speed this up a tiny bit by racing to see if 1) tx exists in processed block or 2) fetch tx receipt for latest block processed
     const hasTransaction$ = recentBlocks$.pipe(
       concatMap(async (blocks) => {
-        const txs = blocks.flatMap((block) => block.operations.map((op) => op.log?.transactionHash).filter(isDefined));
+        const txs = blocks.flatMap((block) => block.logs.map((op) => op.transactionHash).filter(isDefined));
         if (txs.includes(tx)) return true;
 
         try {
@@ -274,7 +283,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
     latestBlock$,
     latestBlockNumber$,
     blockLogs$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
   };
 }

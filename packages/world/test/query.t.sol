@@ -8,6 +8,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
@@ -22,29 +23,29 @@ import { query, QueryFragment, QueryType } from "../src/modules/keysintable/quer
 
 contract QueryTest is Test, GasReporter {
   using ResourceSelector for bytes32;
-  IBaseWorld world;
-  KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
-  KeysWithValueModule keysWithValueModule = new KeysWithValueModule();
+  IBaseWorld private world;
+  KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
+  KeysWithValueModule private keysWithValueModule = new KeysWithValueModule();
 
-  bytes16 namespace = ROOT_NAMESPACE;
-  bytes16 name1 = bytes16("source1");
-  bytes16 name2 = bytes16("source2");
-  bytes16 name3 = bytes16("source3");
+  bytes16 private namespace = ROOT_NAMESPACE;
+  bytes16 private name1 = bytes16("source1");
+  bytes16 private name2 = bytes16("source2");
+  bytes16 private name3 = bytes16("source3");
 
-  FieldLayout tableFieldLayout;
-  Schema tableKeySchema;
-  Schema tableValueSchema;
-  bytes32 table1 = ResourceSelector.from(namespace, name1);
-  bytes32 table2 = ResourceSelector.from(namespace, name2);
-  bytes32 table3 = ResourceSelector.from(namespace, name3);
+  FieldLayout private tableFieldLayout;
+  Schema private tableKeySchema;
+  Schema private tableValueSchema;
+  bytes32 private table1 = ResourceSelector.from(namespace, name1);
+  bytes32 private table2 = ResourceSelector.from(namespace, name2);
+  bytes32 private table3 = ResourceSelector.from(namespace, name3);
 
-  uint256 value = 1;
-  bytes32[] key1 = new bytes32[](1);
-  bytes32[] key2 = new bytes32[](1);
-  bytes32[] key3 = new bytes32[](1);
-  bytes32[] key4 = new bytes32[](1);
-  QueryFragment[] fragmentsHasHas;
-  QueryFragment[] fragmentsHasNot;
+  uint256 private value = 1;
+  bytes32[] private key1 = new bytes32[](1);
+  bytes32[] private key2 = new bytes32[](1);
+  bytes32[] private key3 = new bytes32[](1);
+  bytes32[] private key4 = new bytes32[](1);
+  QueryFragment[] private fragmentsHasHas;
+  QueryFragment[] private fragmentsHasNot;
 
   function setUp() public {
     tableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
@@ -90,9 +91,9 @@ contract QueryTest is Test, GasReporter {
   function testHasQuery() public {
     _installKeysInTableModule();
 
-    world.setRecord(table1, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key1, abi.encode(0), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(0), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all keys in table1
     QueryFragment[] memory fragments = new QueryFragment[](1);
@@ -111,9 +112,9 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
     _installKeysWithValueModule();
 
-    world.setRecord(table1, key1, abi.encode(2), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
     // Query should return all keys in table1 with value 1
     QueryFragment[] memory fragments = new QueryFragment[](1);
     fragments[0] = QueryFragment(QueryType.HasValue, table1, abi.encode(1));
@@ -129,12 +130,12 @@ contract QueryTest is Test, GasReporter {
   function testCombinedHasQuery() public {
     _installKeysInTableModule();
 
-    world.setRecord(table1, key1, abi.encode(2), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table3, key1, abi.encode(1), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table3, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities that have table1 and table2
     QueryFragment[] memory fragments = new QueryFragment[](2);
@@ -153,12 +154,12 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
     _installKeysWithValueModule();
 
-    world.setRecord(table1, key1, abi.encode(2), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(2), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table3, key1, abi.encode(1), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table3, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities that have table1 and table2
     QueryFragment[] memory fragments = new QueryFragment[](2);
@@ -176,13 +177,13 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
     _installKeysWithValueModule();
 
-    world.setRecord(table1, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key2, abi.encode(2), tableFieldLayout);
-    world.setRecord(table2, key3, abi.encode(2), tableFieldLayout);
-    world.setRecord(table2, key4, abi.encode(2), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key2, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key3, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key4, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities that have table1 and table2
     QueryFragment[] memory fragments = new QueryFragment[](2);
@@ -200,13 +201,13 @@ contract QueryTest is Test, GasReporter {
   function testCombinedHasNotQuery() public {
     _installKeysInTableModule();
 
-    world.setRecord(table1, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key2, abi.encode(2), tableFieldLayout);
-    world.setRecord(table2, key3, abi.encode(2), tableFieldLayout);
-    world.setRecord(table2, key4, abi.encode(2), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key2, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key3, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key4, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities that have table1 and table2
     QueryFragment[] memory fragments = new QueryFragment[](2);
@@ -224,13 +225,13 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
     _installKeysWithValueModule();
 
-    world.setRecord(table1, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key2, abi.encode(2), tableFieldLayout);
-    world.setRecord(table2, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key4, abi.encode(1), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key2, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key4, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities that have table1 and table2
     QueryFragment[] memory fragments = new QueryFragment[](2);
@@ -248,16 +249,16 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
     _installKeysWithValueModule();
 
-    world.setRecord(table1, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key1, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key2, abi.encode(2), tableFieldLayout);
-    world.setRecord(table2, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table2, key4, abi.encode(1), tableFieldLayout);
-    world.setRecord(table3, key2, abi.encode(1), tableFieldLayout);
-    world.setRecord(table3, key3, abi.encode(1), tableFieldLayout);
-    world.setRecord(table3, key4, abi.encode(1), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key2, abi.encode(2), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table2, key4, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table3, key2, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table3, key3, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table3, key4, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities that have table2 and not table1
     QueryFragment[] memory fragments = new QueryFragment[](3);
@@ -276,9 +277,9 @@ contract QueryTest is Test, GasReporter {
     _installKeysInTableModule();
     _installKeysWithValueModule();
 
-    world.setRecord(table1, key1, abi.encode(4), tableFieldLayout);
-    world.setRecord(table1, key2, abi.encode(5), tableFieldLayout);
-    world.setRecord(table1, key3, abi.encode(6), tableFieldLayout);
+    world.setRecord(table1, key1, abi.encode(4), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key2, abi.encode(5), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
+    world.setRecord(table1, key3, abi.encode(6), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all entities with table1 except value 6
     QueryFragment[] memory fragments = new QueryFragment[](2);
@@ -299,9 +300,9 @@ contract QueryTest is Test, GasReporter {
     for (uint256 i; i < 100; i++) {
       bytes32[] memory keyTuple = new bytes32[](1);
       keyTuple[0] = bytes32(i);
-      world.setRecord(table1, keyTuple, abi.encode(1), tableFieldLayout);
+      world.setRecord(table1, keyTuple, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
     }
-    world.setRecord(table2, key1, abi.encode(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(0), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all keys in table1
     QueryFragment[] memory fragments = new QueryFragment[](1);
@@ -320,9 +321,9 @@ contract QueryTest is Test, GasReporter {
     for (uint256 i; i < 1000; i++) {
       bytes32[] memory keyTuple = new bytes32[](1);
       keyTuple[0] = bytes32(i);
-      world.setRecord(table1, keyTuple, abi.encode(1), tableFieldLayout);
+      world.setRecord(table1, keyTuple, abi.encode(1), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
     }
-    world.setRecord(table2, key1, abi.encode(0), tableFieldLayout);
+    world.setRecord(table2, key1, abi.encode(0), PackedCounter.wrap(bytes32(0)), new bytes(0), tableFieldLayout);
 
     // Query should return all keys in table1
     QueryFragment[] memory fragments = new QueryFragment[](1);

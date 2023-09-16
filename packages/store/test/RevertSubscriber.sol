@@ -1,15 +1,30 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreHook } from "../src/StoreHook.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 
 contract RevertSubscriber is StoreHook {
-  function onBeforeSetRecord(bytes32, bytes32[] memory, bytes memory, FieldLayout) public pure {
+  function onBeforeSetRecord(
+    bytes32,
+    bytes32[] memory,
+    bytes memory,
+    PackedCounter,
+    bytes memory,
+    FieldLayout
+  ) public pure {
     revert("onBeforeSetRecord");
   }
 
-  function onAfterSetRecord(bytes32, bytes32[] memory, bytes memory, FieldLayout) public pure {
+  function onAfterSetRecord(
+    bytes32,
+    bytes32[] memory,
+    bytes memory,
+    PackedCounter,
+    bytes memory,
+    FieldLayout
+  ) public pure {
     revert("onAfterSetRecord");
   }
 
