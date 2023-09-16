@@ -47,11 +47,11 @@ export async function setupNetwork() {
 
   try {
     console.log("creating faucet client");
-    const faucetClient = createFaucetClient({ url: "http://localhost:3002/trpc" });
+    const faucet = createFaucetClient({ url: "http://localhost:3002/trpc" });
 
     const drip = async () => {
       console.log("dripping");
-      const tx = await faucetClient.drip.mutate({ address: burnerAccount.address });
+      const tx = await faucet.drip.mutate({ address: burnerAccount.address });
       console.log("got drip", tx);
     };
 
