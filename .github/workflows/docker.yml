@@ -1,13 +1,7 @@
 name: Docker
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      # only target a single package tag to avoid running this task for every package on a version release
-      # in the metadata step, we parse out the specific version used in the tag (e.g. `2.0.0-next.5` and `next`)
-      - "@latticexyz/common@*"
+  workflow_call:
   workflow_dispatch:
 
 jobs:
@@ -37,6 +31,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
+          # If this doesn't tag properly within the context of `workflow_call`, try `context: git`
           images: ${{ matrix.image }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
