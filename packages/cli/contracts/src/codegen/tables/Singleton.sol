@@ -77,16 +77,16 @@ library Singleton {
   function getV1() internal view returns (int256 v1) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int256(uint256(Bytes.slice32(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (int256(uint256(bytes32(_blob))));
   }
 
   /** Get v1 (using the specified store) */
   function getV1(IStore _store) internal view returns (int256 v1) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (int256(uint256(Bytes.slice32(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (int256(uint256(bytes32(_blob))));
   }
 
   /** Set v1 */
@@ -107,7 +107,7 @@ library Singleton {
   function getV2() internal view returns (uint32[2] memory v2) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -115,7 +115,7 @@ library Singleton {
   function getV2(IStore _store) internal view returns (uint32[2] memory v2) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -169,7 +169,7 @@ library Singleton {
         _index * 4,
         (_index + 1) * 4
       );
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -182,7 +182,7 @@ library Singleton {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 4, (_index + 1) * 4);
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -242,7 +242,7 @@ library Singleton {
   function getV3() internal view returns (uint32[2] memory v3) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -250,7 +250,7 @@ library Singleton {
   function getV3(IStore _store) internal view returns (uint32[2] memory v3) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -304,7 +304,7 @@ library Singleton {
         _index * 4,
         (_index + 1) * 4
       );
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -317,7 +317,7 @@ library Singleton {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 4, (_index + 1) * 4);
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -377,7 +377,7 @@ library Singleton {
   function getV4() internal view returns (uint32[1] memory v4) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
     return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -385,7 +385,7 @@ library Singleton {
   function getV4(IStore _store) internal view returns (uint32[1] memory v4) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, _fieldLayout);
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 2);
     return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
@@ -439,7 +439,7 @@ library Singleton {
         _index * 4,
         (_index + 1) * 4
       );
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 
@@ -452,7 +452,7 @@ library Singleton {
 
     unchecked {
       bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 4, (_index + 1) * 4);
-      return (uint32(Bytes.slice4(_blob, 0)));
+      return (uint32(bytes4(_blob)));
     }
   }
 

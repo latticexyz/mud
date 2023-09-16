@@ -358,7 +358,7 @@ library StoreCore {
 
     // TODO add push-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData = abi.encodePacked(
-      StoreCoreInternal._getDynamicField(tableId, keyTuple, fieldIndex, fieldLayout),
+      getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields())),
       dataToPush
     );
 
@@ -399,7 +399,7 @@ library StoreCore {
     // TODO add pop-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData;
     {
-      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, keyTuple, fieldIndex, fieldLayout);
+      bytes memory oldData = getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
       fullData = SliceLib.getSubslice(oldData, 0, oldData.length - byteLengthToPop).toBytes();
     }
 
@@ -447,7 +447,7 @@ library StoreCore {
     // TODO add setItem-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData;
     {
-      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, keyTuple, fieldIndex, fieldLayout);
+      bytes memory oldData = getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
       fullData = abi.encodePacked(
         SliceLib.getSubslice(oldData, 0, startByteIndex).toBytes(),
         dataToSet,
@@ -572,10 +572,49 @@ library StoreCore {
     FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     if (fieldIndex < fieldLayout.numStaticFields()) {
-      return StoreCoreInternal._getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+      return StoreCoreInternal._getStaticFieldBytes(tableId, keyTuple, fieldIndex, fieldLayout);
     } else {
-      return StoreCoreInternal._getDynamicField(tableId, keyTuple, fieldIndex, fieldLayout);
+      return getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
     }
+  }
+
+  /**
+   * Get a single static field from the given tableId and key tuple, with the given value field layout.
+   * Note: the field value is left-aligned in the returned bytes32, the rest of the word is not zeroed out.
+   * Consumers are expected to truncate the returned value as needed.
+   */
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32) {
+    // Get the length, storage location and offset of the static field
+    // and load the data from storage
+    return
+      Storage.loadField({
+        storagePointer: StoreCoreInternal._getStaticDataLocation(tableId, keyTuple),
+        length: fieldLayout.atIndex(fieldIndex),
+        offset: StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)
+      });
+  }
+
+  /**
+   * Get a single dynamic field from the given tableId and key tuple, with the given value field layout
+   */
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (bytes memory) {
+    // Get the storage location of the dynamic field
+    // and load the data from storage
+    return
+      Storage.load({
+        storagePointer: StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex),
+        length: StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex),
+        offset: 0
+      });
   }
 
   /**
@@ -848,38 +887,23 @@ library StoreCoreInternal {
   }
 
   /**
-   * Get a single static field from the given tableId and key tuple, with the given value field layout
+   * Get a single static field from the given tableId and key tuple, with the given value field layout.
+   * Returns dynamic bytes memory in the size of the field.
    */
-  function _getStaticField(
+  function _getStaticFieldBytes(
     bytes32 tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     // Get the length, storage location and offset of the static field
-    uint256 staticByteLength = fieldLayout.atIndex(fieldIndex);
-    uint256 location = _getStaticDataLocation(tableId, keyTuple);
-    uint256 offset = _getStaticDataOffset(fieldLayout, fieldIndex);
-
-    // Load the data from storage
-    return Storage.load({ storagePointer: location, length: staticByteLength, offset: offset });
-  }
-
-  /**
-   * Get a single dynamic field from the given tableId and key tuple, with the given value field layout
-   */
-  function _getDynamicField(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    FieldLayout fieldLayout
-  ) internal view returns (bytes memory) {
-    // Get the length and storage location of the dynamic field
-    uint8 dynamicSchemaIndex = fieldIndex - uint8(fieldLayout.numStaticFields());
-    uint256 location = _getDynamicDataLocation(tableId, keyTuple, dynamicSchemaIndex);
-    uint256 dataLength = _loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicSchemaIndex);
-
-    return Storage.load({ storagePointer: location, length: dataLength, offset: 0 });
+    // and load the data from storage
+    return
+      Storage.load({
+        storagePointer: StoreCoreInternal._getStaticDataLocation(tableId, keyTuple),
+        length: fieldLayout.atIndex(fieldIndex),
+        offset: StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)
+      });
   }
 
   /************************************************************************

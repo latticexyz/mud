@@ -77,8 +77,8 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return Resource(uint8(Bytes.slice1(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return Resource(uint8(bytes1(_blob)));
   }
 
   /** Get resourceType (using the specified store) */
@@ -86,8 +86,8 @@ library ResourceType {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return Resource(uint8(Bytes.slice1(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return Resource(uint8(bytes1(_blob)));
   }
 
   /** Set resourceType */

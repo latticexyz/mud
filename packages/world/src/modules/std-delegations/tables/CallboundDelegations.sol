@@ -88,8 +88,8 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Get availableCalls (using the specified store) */
@@ -106,8 +106,8 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Set availableCalls */
