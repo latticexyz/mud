@@ -1,9 +1,9 @@
 import {
-  renderList,
+  RenderDynamicField,
   renderArguments,
   renderCommonData,
+  renderList,
   renderWithStore,
-  RenderDynamicField,
 } from "@latticexyz/common/codegen";
 import { renderDecodeValueType } from "./field";
 import { RenderTableOptions } from "./types";
@@ -22,7 +22,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
         _typedKeyArgs,
       ])}) internal view returns (${renderDecodedRecord(options)}) {
         ${_keyTupleDefinition}
-        bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getFieldLayout());
+        bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
         return decode(_blob);
       }
     `
@@ -42,7 +42,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
         ${_keyTupleDefinition}
 
-        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
+        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
       }
     `
   );

@@ -2,17 +2,18 @@ import {
   renderArguments,
   renderCommonData,
   renderList,
-  renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
-  renderWithStore,
   renderTypeHelpers,
+  renderWithStore,
+  renderedSolidityHeader,
   RenderDynamicField,
   RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
 import { renderRecordData, renderRecordMethods } from "./record";
+import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
 
 export function renderTable(options: RenderTableOptions) {
@@ -64,6 +65,8 @@ export function renderTable(options: RenderTableOptions) {
 
     ${staticResourceData ? renderTableId(staticResourceData).tableIdDefinition : ""}
 
+    ${renderFieldLayout(fields)}
+
     ${
       !structName
         ? ""
@@ -77,10 +80,7 @@ export function renderTable(options: RenderTableOptions) {
     library ${libraryName} {
       /** Get the table values' field layout */
       function getFieldLayout() internal pure returns (FieldLayout) {
-        uint256[] memory _fieldLayout = new uint256[](${staticFields.length});
-        ${renderList(staticFields, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
-
-        return FieldLayoutLib.encode(_fieldLayout, ${dynamicFields.length});
+        return _fieldLayout;
       }
 
       /** Get the table's key schema */
@@ -116,7 +116,7 @@ export function renderTable(options: RenderTableOptions) {
         (_typedStore, _store, _commentSuffix) => `
           /** Register the table with its config${_commentSuffix} */
           function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-            ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+            ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
           }
         `
       )}
@@ -156,7 +156,7 @@ export function renderTable(options: RenderTableOptions) {
                 /* Delete all data for given keys${_commentSuffix} */
                 function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
                   ${_keyTupleDefinition}
-                  ${_store}.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+                  ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
                 }
               `
             )

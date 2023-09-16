@@ -21,13 +21,14 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("CallboundDelegat")));
 bytes32 constant CallboundDelegationsTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0020010020000000000000000000000000000000000000000000000000000000
+);
+
 library CallboundDelegations {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -66,19 +67,12 @@ library CallboundDelegations {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get availableCalls */
@@ -94,7 +88,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
@@ -112,7 +106,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(Bytes.slice32(_blob, 0)));
   }
 
@@ -130,7 +124,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls (using the specified store) */
@@ -148,7 +142,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -195,7 +189,7 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -212,6 +206,6 @@ library CallboundDelegations {
     _keyTuple[2] = resourceSelector;
     _keyTuple[3] = funcSelectorAndArgsHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
