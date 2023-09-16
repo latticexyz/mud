@@ -115,9 +115,19 @@ library InstalledModules {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((moduleAddress)), getFieldLayout());
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(address moduleAddress) internal pure returns (bytes memory) {
+    return abi.encodePacked(moduleAddress);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(address moduleAddress) internal pure returns (bytes memory) {
-    return abi.encodePacked(moduleAddress);
+    bytes memory _staticData = encodeStatic(moduleAddress);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

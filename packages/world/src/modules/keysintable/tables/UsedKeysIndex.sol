@@ -178,24 +178,30 @@ library UsedKeysIndex {
 
   /** Set the full data using individual values */
   function set(bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
-    bytes memory _data = encode(has, index);
+    bytes memory _staticData = encodeStatic(has, index);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 sourceTable, bytes32 keysHash, bool has, uint40 index) internal {
-    bytes memory _data = encode(has, index);
+    bytes memory _staticData = encodeStatic(has, index);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = sourceTable;
     _keyTuple[1] = keysHash;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Decode the tightly packed blob using this table's field layout */
@@ -205,9 +211,19 @@ library UsedKeysIndex {
     index = (uint40(Bytes.slice5(_blob, 1)));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bool has, uint40 index) internal pure returns (bytes memory) {
+    return abi.encodePacked(has, index);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(bool has, uint40 index) internal pure returns (bytes memory) {
-    return abi.encodePacked(has, index);
+    bytes memory _staticData = encodeStatic(has, index);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

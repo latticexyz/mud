@@ -207,7 +207,10 @@ library Multi {
 
   /** Set the full data using individual values */
   function set(uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
-    bytes memory _data = encode(num, value);
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -215,12 +218,15 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, uint32 a, bool b, uint256 c, int120 d, int256 num, bool value) internal {
-    bytes memory _data = encode(num, value);
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(a));
@@ -228,7 +234,7 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using the data struct */
@@ -248,9 +254,19 @@ library Multi {
     _table.value = (_toBool(uint8(Bytes.slice1(_blob, 32))));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(int256 num, bool value) internal pure returns (bytes memory) {
+    return abi.encodePacked(num, value);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(int256 num, bool value) internal pure returns (bytes memory) {
-    return abi.encodePacked(num, value);
+    bytes memory _staticData = encodeStatic(num, value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

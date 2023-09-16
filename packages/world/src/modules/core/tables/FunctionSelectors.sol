@@ -177,12 +177,15 @@ library FunctionSelectors {
 
   /** Set the full data using individual values */
   function set(bytes4 functionSelector, bytes32 resourceSelector, bytes4 systemFunctionSelector) internal {
-    bytes memory _data = encode(resourceSelector, systemFunctionSelector);
+    bytes memory _staticData = encodeStatic(resourceSelector, systemFunctionSelector);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -192,12 +195,15 @@ library FunctionSelectors {
     bytes32 resourceSelector,
     bytes4 systemFunctionSelector
   ) internal {
-    bytes memory _data = encode(resourceSelector, systemFunctionSelector);
+    bytes memory _staticData = encodeStatic(resourceSelector, systemFunctionSelector);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Decode the tightly packed blob using this table's field layout */
@@ -207,9 +213,19 @@ library FunctionSelectors {
     systemFunctionSelector = (Bytes.slice4(_blob, 32));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bytes32 resourceSelector, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
+    return abi.encodePacked(resourceSelector, systemFunctionSelector);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(bytes32 resourceSelector, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
-    return abi.encodePacked(resourceSelector, systemFunctionSelector);
+    bytes memory _staticData = encodeStatic(resourceSelector, systemFunctionSelector);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

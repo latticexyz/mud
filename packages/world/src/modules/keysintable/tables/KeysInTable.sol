@@ -897,12 +897,14 @@ library KeysInTable {
     bytes32[] memory keys3,
     bytes32[] memory keys4
   ) internal {
-    bytes memory _data = encode(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -915,12 +917,14 @@ library KeysInTable {
     bytes32[] memory keys3,
     bytes32[] memory keys4
   ) internal {
-    bytes memory _data = encode(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = sourceTable;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, getFieldLayout());
   }
 
   /** Set the full data using the data struct */
@@ -977,15 +981,14 @@ library KeysInTable {
     }
   }
 
-  /** Tightly pack full data using this table's field layout */
-  function encode(
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
     bytes32[] memory keys0,
     bytes32[] memory keys1,
     bytes32[] memory keys2,
     bytes32[] memory keys3,
     bytes32[] memory keys4
-  ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(
@@ -996,16 +999,39 @@ library KeysInTable {
         keys4.length * 32
       );
     }
+  }
 
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(
+    bytes32[] memory keys0,
+    bytes32[] memory keys1,
+    bytes32[] memory keys2,
+    bytes32[] memory keys3,
+    bytes32[] memory keys4
+  ) internal pure returns (bytes memory) {
     return
       abi.encodePacked(
-        _encodedLengths.unwrap(),
         EncodeArray.encode((keys0)),
         EncodeArray.encode((keys1)),
         EncodeArray.encode((keys2)),
         EncodeArray.encode((keys3)),
         EncodeArray.encode((keys4))
       );
+  }
+
+  /** Tightly pack full data using this table's field layout */
+  function encode(
+    bytes32[] memory keys0,
+    bytes32[] memory keys1,
+    bytes32[] memory keys2,
+    bytes32[] memory keys3,
+    bytes32[] memory keys4
+  ) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(keys0, keys1, keys2, keys3, keys4);
+    bytes memory _dynamicData = encodeDynamic(keys0, keys1, keys2, keys3, keys4);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
