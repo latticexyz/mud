@@ -11,7 +11,6 @@ This saves gas for use cases where the functionality to dynamically determine wh
 We decided to continue to always generate a set of functions that dynamically decide which `Store` to use, so that the generated table libraries can still be imported by non-root systems.
 
 ```solidity
-
 library Counter {
   // Dynamically determine which store to write to based on the context
   function set(uint32 value) internal;
@@ -21,5 +20,4 @@ library Counter {
 
   // ... equivalent functions for all other Store methods
 }
-
 ```

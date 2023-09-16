@@ -18,24 +18,30 @@ import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreSetRecord(
-    bytes32 tableId,
+    bytes32 indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
     bytes dynamicData
   );
-  event StoreSpliceStaticData(bytes32 tableId, bytes32[] keyTuple, uint48 start, uint40 deleteCount, bytes data);
+  event StoreSpliceStaticData(
+    bytes32 indexed tableId,
+    bytes32[] keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes data
+  );
   event StoreSpliceDynamicData(
-    bytes32 tableId,
+    bytes32 indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(bytes32 tableId, bytes32[] keyTuple);
+  event StoreDeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple);
   event StoreEphemeralRecord(
-    bytes32 tableId,
+    bytes32 indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
