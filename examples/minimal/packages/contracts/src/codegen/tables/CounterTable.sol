@@ -21,13 +21,14 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("CounterTable")));
 bytes32 constant CounterTableTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0004010004000000000000000000000000000000000000000000000000000000
+);
+
 library CounterTable {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 4;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -58,54 +59,77 @@ library CounterTable {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get value */
   function get() internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (uint32(Bytes.slice4(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get value */
+  function _get() internal view returns (uint32 value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (uint32(Bytes.slice4(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
   }
 
   /** Set value */
   function set(uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value */
+  function _set(uint32 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value (using the specified store) */
   function set(IStore _store, uint32 value) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 value) internal pure returns (bytes memory) {
+    return abi.encodePacked(value);
   }
 
   /** Tightly pack full data using this table's field layout */
   function encode(uint32 value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
@@ -119,13 +143,20 @@ library CounterTable {
   function deleteRecord() internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord() internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }

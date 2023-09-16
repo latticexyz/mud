@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { blockLogsToStorage } from "../blockLogsToStorage";
 import { recsStorage } from "./recsStorage";
 import { createWorld, getComponentEntities, getComponentValue } from "@latticexyz/recs";
 import mudConfig from "../../../../e2e/packages/contracts/mud.config";
@@ -10,15 +9,18 @@ import { singletonEntity } from "./singletonEntity";
 import { RpcLog, formatLog, decodeEventLog, Hex } from "viem";
 import { storeEventsAbi } from "@latticexyz/store";
 
-const worldLogs = worldRpcLogs.map((log) => {
-  const { eventName, args } = decodeEventLog({
-    abi: storeEventsAbi,
-    data: log.data as Hex,
-    topics: log.topics as [Hex, ...Hex[]],
-    strict: true,
-  });
-  return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
-});
+// TODO: make test-data a proper package and export this
+const blocks = groupLogsByBlockNumber(
+  worldRpcLogs.map((log) => {
+    const { eventName, args } = decodeEventLog({
+      abi: storeEventsAbi,
+      data: log.data as Hex,
+      topics: log.topics as [Hex, ...Hex[]],
+      strict: true,
+    });
+    return formatLog(log as any as RpcLog, { args, eventName: eventName as string }) as StoreEventsLog;
+  })
+);
 
 describe("recsStorage", () => {
   it("creates components", async () => {
@@ -33,8 +35,9 @@ describe("recsStorage", () => {
     const world = createWorld();
     const { storageAdapter, components } = recsStorage({ world, config: mudConfig });
 
-    const blocks = groupLogsByBlockNumber(worldLogs);
-    await Promise.all(blocks.map(async (block) => await blockLogsToStorage(storageAdapter)(block)));
+    for (const block of blocks) {
+      await storageAdapter(block);
+    }
 
     expect(Array.from(getComponentEntities(components.NumberList))).toMatchInlineSnapshot(`
       [
@@ -44,6 +47,9 @@ describe("recsStorage", () => {
 
     expect(getComponentValue(components.NumberList, singletonEntity)).toMatchInlineSnapshot(`
       {
+        "__dynamicData": "0x000001a400000045",
+        "__encodedLengths": "0x0000000000000000000000000000000000000000000000000800000000000008",
+        "__staticData": undefined,
         "value": [
           420,
           69,

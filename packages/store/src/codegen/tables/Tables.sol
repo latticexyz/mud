@@ -21,6 +21,10 @@ import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Tables")));
 bytes32 constant TablesTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0060030220202000000000000000000000000000000000000000000000000000
+);
+
 struct TablesData {
   bytes32 fieldLayout;
   bytes32 keySchema;
@@ -32,12 +36,7 @@ struct TablesData {
 library Tables {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](3);
-    _fieldLayout[0] = 32;
-    _fieldLayout[1] = 32;
-    _fieldLayout[2] = 32;
-
-    return FieldLayoutLib.encode(_fieldLayout, 2);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -78,31 +77,17 @@ library Tables {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config */
   function _register() internal {
-    StoreCore.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get fieldLayout */
@@ -110,8 +95,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get fieldLayout */
@@ -119,8 +104,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get fieldLayout (using the specified store) */
@@ -128,8 +113,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Set fieldLayout */
@@ -137,7 +122,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), _fieldLayout);
   }
 
   /** Set fieldLayout */
@@ -145,7 +130,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), getFieldLayout());
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), _fieldLayout);
   }
 
   /** Set fieldLayout (using the specified store) */
@@ -153,7 +138,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((fieldLayout)), _fieldLayout);
   }
 
   /** Get keySchema */
@@ -161,8 +146,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get keySchema */
@@ -170,8 +155,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 1, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get keySchema (using the specified store) */
@@ -179,8 +164,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Set keySchema */
@@ -188,7 +173,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), _fieldLayout);
   }
 
   /** Set keySchema */
@@ -196,7 +181,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), getFieldLayout());
+    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), _fieldLayout);
   }
 
   /** Set keySchema (using the specified store) */
@@ -204,7 +189,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((keySchema)), _fieldLayout);
   }
 
   /** Get valueSchema */
@@ -212,8 +197,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get valueSchema */
@@ -221,8 +206,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 2, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Get valueSchema (using the specified store) */
@@ -230,8 +215,8 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getFieldLayout());
-    return (Bytes.slice32(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes32(_blob));
   }
 
   /** Set valueSchema */
@@ -239,7 +224,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), _fieldLayout);
   }
 
   /** Set valueSchema */
@@ -247,7 +232,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), getFieldLayout());
+    StoreCore.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), _fieldLayout);
   }
 
   /** Set valueSchema (using the specified store) */
@@ -255,7 +240,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((valueSchema)), _fieldLayout);
   }
 
   /** Get abiEncodedKeyNames */
@@ -263,7 +248,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
     return (bytes(_blob));
   }
 
@@ -272,7 +257,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (bytes(_blob));
   }
 
@@ -284,7 +269,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, getFieldLayout());
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (bytes(_blob));
   }
 
@@ -293,7 +278,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((abiEncodedKeyNames)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes((abiEncodedKeyNames)), _fieldLayout);
   }
 
   /** Set abiEncodedKeyNames */
@@ -301,7 +286,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.setField(_tableId, _keyTuple, 3, bytes((abiEncodedKeyNames)), getFieldLayout());
+    StoreCore.setField(_tableId, _keyTuple, 3, bytes((abiEncodedKeyNames)), _fieldLayout);
   }
 
   /** Set abiEncodedKeyNames (using the specified store) */
@@ -309,7 +294,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 3, bytes((abiEncodedKeyNames)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 3, bytes((abiEncodedKeyNames)), _fieldLayout);
   }
 
   /** Get the length of abiEncodedKeyNames */
@@ -317,7 +302,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 3, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -328,7 +313,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 3, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -339,7 +324,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, getFieldLayout());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 3, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -358,7 +343,7 @@ library Tables {
         _tableId,
         _keyTuple,
         3,
-        getFieldLayout(),
+        _fieldLayout,
         _index * 1,
         (_index + 1) * 1
       );
@@ -375,14 +360,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        3,
-        getFieldLayout(),
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -400,7 +378,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, getFieldLayout(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 3, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -410,7 +388,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getFieldLayout());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
   }
 
   /** Push a slice to abiEncodedKeyNames */
@@ -418,7 +396,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getFieldLayout());
+    StoreCore.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
   }
 
   /** Push a slice to abiEncodedKeyNames (using the specified store) */
@@ -426,7 +404,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), getFieldLayout());
+    _store.pushToField(_tableId, _keyTuple, 3, bytes((_slice)), _fieldLayout);
   }
 
   /** Pop a slice from abiEncodedKeyNames */
@@ -434,7 +412,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1, getFieldLayout());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
   }
 
   /** Pop a slice from abiEncodedKeyNames */
@@ -442,7 +420,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 3, 1, getFieldLayout());
+    StoreCore.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
   }
 
   /** Pop a slice from abiEncodedKeyNames (using the specified store) */
@@ -450,7 +428,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.popFromField(_tableId, _keyTuple, 3, 1, getFieldLayout());
+    _store.popFromField(_tableId, _keyTuple, 3, 1, _fieldLayout);
   }
 
   /**
@@ -462,7 +440,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), getFieldLayout());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -475,7 +453,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), getFieldLayout());
+      StoreCore.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -488,7 +466,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), getFieldLayout());
+      _store.updateInField(_tableId, _keyTuple, 3, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -497,7 +475,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
     return (bytes(_blob));
   }
 
@@ -506,7 +484,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 4, getFieldLayout());
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
     return (bytes(_blob));
   }
 
@@ -518,7 +496,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 4, getFieldLayout());
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return (bytes(_blob));
   }
 
@@ -527,7 +505,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 4, bytes((abiEncodedFieldNames)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 4, bytes((abiEncodedFieldNames)), _fieldLayout);
   }
 
   /** Set abiEncodedFieldNames */
@@ -535,7 +513,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.setField(_tableId, _keyTuple, 4, bytes((abiEncodedFieldNames)), getFieldLayout());
+    StoreCore.setField(_tableId, _keyTuple, 4, bytes((abiEncodedFieldNames)), _fieldLayout);
   }
 
   /** Set abiEncodedFieldNames (using the specified store) */
@@ -543,7 +521,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setField(_tableId, _keyTuple, 4, bytes((abiEncodedFieldNames)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 4, bytes((abiEncodedFieldNames)), _fieldLayout);
   }
 
   /** Get the length of abiEncodedFieldNames */
@@ -551,7 +529,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 4, getFieldLayout());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 4, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -562,7 +540,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 4, getFieldLayout());
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 4, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -573,7 +551,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 4, getFieldLayout());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 4, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -592,7 +570,7 @@ library Tables {
         _tableId,
         _keyTuple,
         4,
-        getFieldLayout(),
+        _fieldLayout,
         _index * 1,
         (_index + 1) * 1
       );
@@ -609,14 +587,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = StoreCore.getFieldSlice(
-        _tableId,
-        _keyTuple,
-        4,
-        getFieldLayout(),
-        _index * 1,
-        (_index + 1) * 1
-      );
+      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -634,7 +605,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, getFieldLayout(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 4, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -644,7 +615,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), getFieldLayout());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), _fieldLayout);
   }
 
   /** Push a slice to abiEncodedFieldNames */
@@ -652,7 +623,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), getFieldLayout());
+    StoreCore.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), _fieldLayout);
   }
 
   /** Push a slice to abiEncodedFieldNames (using the specified store) */
@@ -660,7 +631,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), getFieldLayout());
+    _store.pushToField(_tableId, _keyTuple, 4, bytes((_slice)), _fieldLayout);
   }
 
   /** Pop a slice from abiEncodedFieldNames */
@@ -668,7 +639,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 4, 1, getFieldLayout());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
   }
 
   /** Pop a slice from abiEncodedFieldNames */
@@ -676,7 +647,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.popFromField(_tableId, _keyTuple, 4, 1, getFieldLayout());
+    StoreCore.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
   }
 
   /** Pop a slice from abiEncodedFieldNames (using the specified store) */
@@ -684,7 +655,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.popFromField(_tableId, _keyTuple, 4, 1, getFieldLayout());
+    _store.popFromField(_tableId, _keyTuple, 4, 1, _fieldLayout);
   }
 
   /**
@@ -696,7 +667,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), getFieldLayout());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -709,7 +680,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      StoreCore.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), getFieldLayout());
+      StoreCore.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -722,7 +693,7 @@ library Tables {
     _keyTuple[0] = tableId;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), getFieldLayout());
+      _store.updateInField(_tableId, _keyTuple, 4, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -731,7 +702,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
@@ -740,7 +711,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, getFieldLayout());
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
@@ -749,7 +720,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getFieldLayout());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
@@ -762,12 +733,15 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(fieldLayout, keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values */
@@ -779,12 +753,15 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(fieldLayout, keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -797,12 +774,15 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal {
-    bytes memory _data = encode(fieldLayout, keySchema, valueSchema, abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
@@ -874,6 +854,34 @@ library Tables {
     }
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(
+    bytes32 fieldLayout,
+    bytes32 keySchema,
+    bytes32 valueSchema
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(fieldLayout, keySchema, valueSchema);
+  }
+
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
+    bytes memory abiEncodedKeyNames,
+    bytes memory abiEncodedFieldNames
+  ) internal pure returns (PackedCounter _encodedLengths) {
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = PackedCounterLib.pack(bytes(abiEncodedKeyNames).length, bytes(abiEncodedFieldNames).length);
+    }
+  }
+
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(
+    bytes memory abiEncodedKeyNames,
+    bytes memory abiEncodedFieldNames
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((abiEncodedKeyNames)), bytes((abiEncodedFieldNames)));
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(
     bytes32 fieldLayout,
@@ -882,21 +890,12 @@ library Tables {
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
   ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
-    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
-    unchecked {
-      _encodedLengths = PackedCounterLib.pack(bytes(abiEncodedKeyNames).length, bytes(abiEncodedFieldNames).length);
-    }
+    bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
 
-    return
-      abi.encodePacked(
-        fieldLayout,
-        keySchema,
-        valueSchema,
-        _encodedLengths.unwrap(),
-        bytes((abiEncodedKeyNames)),
-        bytes((abiEncodedFieldNames))
-      );
+    PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
@@ -912,7 +911,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys */
@@ -920,7 +919,7 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -928,6 +927,6 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }

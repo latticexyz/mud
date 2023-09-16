@@ -24,13 +24,14 @@ import { ExampleEnum } from "./../Types.sol";
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("KeyEncoding")));
 bytes32 constant KeyEncodingTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0001010001000000000000000000000000000000000000000000000000000000
+);
+
 library KeyEncoding {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](1);
-    _fieldLayout[0] = 1;
-
-    return FieldLayoutLib.encode(_fieldLayout, 0);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -73,31 +74,17 @@ library KeyEncoding {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config */
   function _register() internal {
-    StoreCore.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get value */
@@ -117,8 +104,8 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get value */
@@ -138,8 +125,8 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreCore.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get value (using the specified store) */
@@ -160,8 +147,8 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set value */
@@ -174,7 +161,7 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value */
@@ -187,7 +174,7 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value (using the specified store) */
@@ -209,12 +196,22 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bool value) internal pure returns (bytes memory) {
+    return abi.encodePacked(value);
   }
 
   /** Tightly pack full data using this table's field layout */
   function encode(bool value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
@@ -247,7 +244,7 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys */
@@ -260,7 +257,7 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    StoreCore.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -273,7 +270,7 @@ library KeyEncoding {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
 
