@@ -2,7 +2,7 @@ import { Hex } from "viem";
 import { decodeStaticField } from "./decodeStaticField";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { InvalidHexLengthForPackedCounterError, PackedCounterLengthMismatchError } from "./errors";
-import { readHex } from "./readHex";
+import { readHex } from "@latticexyz/common";
 
 // Keep this logic in sync with PackedCounter.sol
 

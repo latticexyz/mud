@@ -546,22 +546,26 @@ library Dynamics2 {
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
-    bytes memory _data = encode(u64, str, b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
-    bytes memory _data = encode(u64, str, b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
@@ -606,15 +610,30 @@ library Dynamics2 {
     }
   }
 
-  /** Tightly pack full data using this table's field layout */
-  function encode(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
+    uint64[] memory u64,
+    string memory str,
+    bytes memory b
+  ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(u64.length * 8, bytes(str).length, bytes(b).length);
     }
+  }
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((u64)), bytes((str)), bytes((b)));
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((u64)), bytes((str)), bytes((b)));
+  }
+
+  /** Tightly pack full data using this table's field layout */
+  function encode(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

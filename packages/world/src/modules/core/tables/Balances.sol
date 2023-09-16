@@ -103,9 +103,19 @@ library Balances {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint256 balance) internal pure returns (bytes memory) {
+    return abi.encodePacked(balance);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(uint256 balance) internal pure returns (bytes memory) {
-    return abi.encodePacked(balance);
+    bytes memory _staticData = encodeStatic(balance);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

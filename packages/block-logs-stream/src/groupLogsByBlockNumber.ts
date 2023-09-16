@@ -4,7 +4,7 @@ import { bigIntSort, isDefined } from "@latticexyz/common/utils";
 type PartialLog = { blockNumber: bigint; logIndex: number };
 
 export type GroupLogsByBlockNumberResult<TLog extends PartialLog> = {
-  blockNumber: BlockNumber;
+  blockNumber: TLog["blockNumber"];
   logs: TLog[];
 }[];
 

@@ -71,27 +71,43 @@ library Ephemeral {
 
   /** Emit the ephemeral event using individual values */
   function emitEphemeral(bytes32 key, uint256 value) internal {
-    bytes memory _data = encode(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    StoreSwitch.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
   function emitEphemeral(IStore _store, bytes32 key, uint256 value) internal {
-    bytes memory _data = encode(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.emitEphemeralRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    _store.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint256 value) internal pure returns (bytes memory) {
+    return abi.encodePacked(value);
   }
 
   /** Tightly pack full data using this table's field layout */
   function encode(uint256 value) internal pure returns (bytes memory) {
-    return abi.encodePacked(value);
+    bytes memory _staticData = encodeStatic(value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

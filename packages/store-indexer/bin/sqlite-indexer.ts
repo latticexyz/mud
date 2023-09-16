@@ -90,14 +90,14 @@ try {
   // ignore errors, this is optional
 }
 
-const { latestBlockNumber$, blockStorageOperations$ } = await syncToSqlite({
+const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   database,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
-combineLatest([latestBlockNumber$, blockStorageOperations$])
+combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
       ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed

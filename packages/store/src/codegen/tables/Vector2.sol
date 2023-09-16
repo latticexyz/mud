@@ -164,22 +164,28 @@ library Vector2 {
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = encode(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = encode(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
@@ -199,9 +205,19 @@ library Vector2 {
     _table.y = (uint32(Bytes.slice4(_blob, 4)));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(uint32 x, uint32 y) internal pure returns (bytes memory) {
+    return abi.encodePacked(x, y);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(uint32 x, uint32 y) internal pure returns (bytes memory) {
-    return abi.encodePacked(x, y);
+    bytes memory _staticData = encodeStatic(x, y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

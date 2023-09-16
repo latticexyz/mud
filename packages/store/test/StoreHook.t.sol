@@ -11,6 +11,7 @@ import { Hook } from "../src/Hook.sol";
 import { StoreHookType } from "../src/StoreHook.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { IStoreHook } from "../src/IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 
 contract StoreHookTest is Test, GasReporter {
@@ -21,7 +22,10 @@ contract StoreHookTest is Test, GasReporter {
   RevertSubscriber private revertSubscriber = new RevertSubscriber();
   bytes32 private tableId = "table";
   bytes32[] private key = new bytes32[](1);
-  bytes private data = "data";
+  bytes private staticData = abi.encodePacked(bytes32(0));
+  PackedCounter private encodedLengths = PackedCounter.wrap(bytes32(0));
+  bytes private dynamicData = new bytes(0);
+  uint8 private fieldIndex = 1;
   FieldLayout private fieldLayout = FieldLayout.wrap(0);
 
   function testEncodeBitmap() public {
@@ -278,11 +282,21 @@ contract StoreHookTest is Test, GasReporter {
       })
     );
 
+    // TODO temporary variable until https://github.com/foundry-rs/foundry/issues/5811 is fixed
+    bytes memory emptyDynamicData = new bytes(0);
+
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, data, fieldLayout));
+    emit HookCalled(abi.encode(tableId, key, staticData, encodedLengths, emptyDynamicData, fieldLayout));
     startGasReport("call an enabled hook");
     if (storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
-      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(tableId, key, data, fieldLayout);
+      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(
+        tableId,
+        key,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
     endGasReport();
 
@@ -301,7 +315,14 @@ contract StoreHookTest is Test, GasReporter {
     // Expect the to not be called - otherwise the test will fail with a revert
     startGasReport("call a disabled hook");
     if (revertHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
-      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(tableId, key, data, fieldLayout);
+      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(
+        tableId,
+        key,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
     endGasReport();
   }

@@ -875,12 +875,14 @@ library Dynamics1 {
     address[4] memory staticAddrs,
     bool[5] memory staticBools
   ) internal {
-    bytes memory _data = encode(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -893,12 +895,14 @@ library Dynamics1 {
     address[4] memory staticAddrs,
     bool[5] memory staticBools
   ) internal {
-    bytes memory _data = encode(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
@@ -955,15 +959,14 @@ library Dynamics1 {
     }
   }
 
-  /** Tightly pack full data using this table's field layout */
-  function encode(
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
     bytes32[1] memory staticB32,
     int32[2] memory staticI32,
     uint128[3] memory staticU128,
     address[4] memory staticAddrs,
     bool[5] memory staticBools
-  ) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(
@@ -974,16 +977,39 @@ library Dynamics1 {
         staticBools.length * 1
       );
     }
+  }
 
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(
+    bytes32[1] memory staticB32,
+    int32[2] memory staticI32,
+    uint128[3] memory staticU128,
+    address[4] memory staticAddrs,
+    bool[5] memory staticBools
+  ) internal pure returns (bytes memory) {
     return
       abi.encodePacked(
-        _encodedLengths.unwrap(),
         EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)),
         EncodeArray.encode(fromStaticArray_int32_2(staticI32)),
         EncodeArray.encode(fromStaticArray_uint128_3(staticU128)),
         EncodeArray.encode(fromStaticArray_address_4(staticAddrs)),
         EncodeArray.encode(fromStaticArray_bool_5(staticBools))
       );
+  }
+
+  /** Tightly pack full data using this table's field layout */
+  function encode(
+    bytes32[1] memory staticB32,
+    int32[2] memory staticI32,
+    uint128[3] memory staticU128,
+    address[4] memory staticAddrs,
+    bool[5] memory staticBools
+  ) internal pure returns (bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

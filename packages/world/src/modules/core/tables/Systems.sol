@@ -159,22 +159,28 @@ library Systems {
 
   /** Set the full data using individual values */
   function set(bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = encode(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = encode(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setRecord(_tableId, _keyTuple, _data, _fieldLayout);
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Decode the tightly packed blob using this table's field layout */
@@ -184,9 +190,19 @@ library Systems {
     publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(address system, bool publicAccess) internal pure returns (bytes memory) {
+    return abi.encodePacked(system, publicAccess);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(address system, bool publicAccess) internal pure returns (bytes memory) {
-    return abi.encodePacked(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

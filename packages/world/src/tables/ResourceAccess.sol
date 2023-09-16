@@ -109,9 +109,19 @@ library ResourceAccess {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(bool access) internal pure returns (bytes memory) {
+    return abi.encodePacked(access);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(bool access) internal pure returns (bytes memory) {
-    return abi.encodePacked(access);
+    bytes memory _staticData = encodeStatic(access);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

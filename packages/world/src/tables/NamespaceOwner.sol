@@ -103,9 +103,19 @@ library NamespaceOwner {
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((owner)), _fieldLayout);
   }
 
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(address owner) internal pure returns (bytes memory) {
+    return abi.encodePacked(owner);
+  }
+
   /** Tightly pack full data using this table's field layout */
   function encode(address owner) internal pure returns (bytes memory) {
-    return abi.encodePacked(owner);
+    bytes memory _staticData = encodeStatic(owner);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
