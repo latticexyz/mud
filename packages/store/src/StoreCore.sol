@@ -608,11 +608,13 @@ library StoreCore {
     uint8 dynamicFieldIndex
   ) internal view returns (bytes memory) {
     // Get the storage location of the dynamic field
-    uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
-    uint256 dataLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex);
-
-    // Load the data from storage
-    return Storage.load({ storagePointer: location, length: dataLength, offset: 0 });
+    // and load the data from storage
+    return
+      Storage.load({
+        storagePointer: StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex),
+        length: StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple).atIndex(dynamicFieldIndex),
+        offset: 0
+      });
   }
 
   /**
