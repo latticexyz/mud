@@ -85,7 +85,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.installRoot.selector, args)
+      callData: abi.encodeWithSelector(IModule.installRoot.selector, args)
     });
 
     // Register the module in the InstalledModules table
@@ -212,11 +212,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Call the system at the given resourceSelector.
    * If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector).
    */
-  function call(
-    bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs
-  ) external payable virtual returns (bytes memory) {
-    return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, funcSelectorAndArgs, msg.value);
+  function call(bytes32 resourceSelector, bytes memory callData) external payable virtual returns (bytes memory) {
+    return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
   }
 
   /**
@@ -226,26 +223,26 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function callFrom(
     address delegator,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) external payable virtual returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
-      return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, funcSelectorAndArgs, msg.value);
+      return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
     Delegation explicitDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }));
 
-    if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
+    if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, callData)) {
       // forward the call as `delegator`
-      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
+      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, callData, msg.value);
     }
 
     // Check if the delegator has a fallback delegation control set
     Delegation fallbackDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: address(0) }));
-    if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, funcSelectorAndArgs)) {
+    if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, callData)) {
       // forward the call with `from` as `msgSender`
-      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, funcSelectorAndArgs, msg.value);
+      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, callData, msg.value);
     }
 
     revert DelegationNotFound(delegator, msg.sender);

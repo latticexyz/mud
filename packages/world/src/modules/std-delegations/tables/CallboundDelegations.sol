@@ -56,7 +56,7 @@ library CallboundDelegations {
     keyNames[0] = "delegator";
     keyNames[1] = "delegatee";
     keyNames[2] = "resourceSelector";
-    keyNames[3] = "funcSelectorAndArgsHash";
+    keyNames[3] = "callDataHash";
   }
 
   /** Get the table's field names */
@@ -85,13 +85,13 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
+    bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -102,13 +102,13 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
+    bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -120,13 +120,13 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
+    bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -137,14 +137,14 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash,
+    bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
@@ -154,14 +154,14 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash,
+    bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
@@ -172,14 +172,14 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash,
+    bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
@@ -204,29 +204,24 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
+    bytes32 callDataHash
   ) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     return _keyTuple;
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(
-    address delegator,
-    address delegatee,
-    bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
-  ) internal {
+  function deleteRecord(address delegator, address delegatee, bytes32 resourceSelector, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -236,13 +231,13 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
+    bytes32 callDataHash
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -253,13 +248,13 @@ library CallboundDelegations {
     address delegator,
     address delegatee,
     bytes32 resourceSelector,
-    bytes32 funcSelectorAndArgsHash
+    bytes32 callDataHash
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
     _keyTuple[2] = resourceSelector;
-    _keyTuple[3] = funcSelectorAndArgsHash;
+    _keyTuple[3] = callDataHash;
 
     _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }

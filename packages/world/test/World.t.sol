@@ -136,12 +136,12 @@ contract PayableFallbackSystem is System {
 contract EchoSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, funcSelectorAndArgs));
+  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory callData) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, callData));
   }
 
-  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, funcSelectorAndArgs));
+  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory callData) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, callData));
   }
 }
 
@@ -738,7 +738,7 @@ contract WorldTest is Test, GasReporter {
         WorldTestSystem.delegateCallSubSystem.selector, // Function in system
         address(subSystem), // Address of subsystem
         WorldContextProvider.appendContext({
-          funcSelectorAndArgs: abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
+          callData: abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
           msgSender: address(this),
           msgValue: uint256(0)
         })
@@ -1005,20 +1005,20 @@ contract WorldTest is Test, GasReporter {
     ISystemHook systemHook = new EchoSystemHook();
     world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
-    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+    bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect the hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, callData));
 
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("fallback");
 
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, callData));
 
     // Call a system fallback function without arguments via the World
-    world.call(systemId, funcSelectorAndArgs);
+    world.call(systemId, callData);
   }
 
   function testUnregisterSystemHook() public {
@@ -1036,27 +1036,27 @@ contract WorldTest is Test, GasReporter {
     ISystemHook echoSystemHook = new EchoSystemHook();
     world.registerSystemHook(systemId, echoSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
-    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+    bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect calls to fail while the RevertSystemHook is registered
     vm.expectRevert(bytes("onBeforeCallSystem"));
-    world.call(systemId, funcSelectorAndArgs);
+    world.call(systemId, callData);
 
     // Unregister the RevertSystemHook
     world.unregisterSystemHook(systemId, revertSystemHook);
 
     // Expect the echo hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, callData));
 
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("fallback");
 
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, callData));
 
     // Call a system fallback function without arguments via the World
-    world.call(systemId, funcSelectorAndArgs);
+    world.call(systemId, callData);
   }
 
   function testWriteRootSystem() public {
