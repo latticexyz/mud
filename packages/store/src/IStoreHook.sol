@@ -8,8 +8,10 @@ import { PackedCounter } from "./PackedCounter.sol";
 // ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
 bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector ^
   IStoreHook.onAfterSetRecord.selector ^
-  IStoreHook.onBeforeSetField.selector ^
-  IStoreHook.onAfterSetField.selector ^
+  IStoreHook.onBeforeSpliceStaticData.selector ^
+  IStoreHook.onAfterSpliceStaticData.selector ^
+  IStoreHook.onBeforeSpliceDynamicData.selector ^
+  IStoreHook.onAfterSpliceDynamicData.selector ^
   IStoreHook.onBeforeDeleteRecord.selector ^
   IStoreHook.onAfterDeleteRecord.selector ^
   ERC165_INTERFACE_ID;
@@ -17,7 +19,7 @@ bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector 
 interface IStoreHook is IERC165 {
   function onBeforeSetRecord(
     bytes32 tableId,
-    bytes32[] memory keyTuple,
+    bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
     bytes calldata dynamicData,
@@ -26,27 +28,45 @@ interface IStoreHook is IERC165 {
 
   function onAfterSetRecord(
     bytes32 tableId,
-    bytes32[] memory keyTuple,
+    bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
     bytes calldata dynamicData,
     FieldLayout fieldLayout
   ) external;
 
-  function onBeforeSetField(
+  function onBeforeSpliceStaticData(
     bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
   ) external;
 
-  function onAfterSetField(
+  function onAfterSpliceStaticData(
     bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
+  ) external;
+
+  function onBeforeSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data,
+    bytes32 encodedLengths
+  ) external;
+
+  function onAfterSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data,
+    bytes32 encodedLengths
   ) external;
 
   function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;

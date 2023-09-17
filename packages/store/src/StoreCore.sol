@@ -14,7 +14,7 @@ import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
 
 library StoreCore {
   event HelloStore(bytes32 indexed version);
@@ -292,27 +292,10 @@ library StoreCore {
     bytes memory data,
     FieldLayout fieldLayout
   ) internal {
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, data, fieldLayout);
-      }
-    }
-
     if (fieldIndex < fieldLayout.numStaticFields()) {
       StoreCoreInternal._setStaticField(tableId, keyTuple, fieldLayout, fieldIndex, data);
     } else {
       StoreCoreInternal._setDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, data);
-    }
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, data, fieldLayout);
-      }
     }
   }
 
@@ -365,30 +348,7 @@ library StoreCore {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
-    // TODO add push-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
-    bytes memory fullData = abi.encodePacked(
-      getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields())),
-      dataToPush
-    );
-
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-
     StoreCoreInternal._pushToDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, dataToPush);
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
   }
 
   /**
@@ -405,31 +365,7 @@ library StoreCore {
       revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
-    // TODO add pop-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
-    bytes memory fullData;
-    {
-      bytes memory oldData = getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
-      fullData = SliceLib.getSubslice(oldData, 0, oldData.length - byteLengthToPop).toBytes();
-    }
-
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-
     StoreCoreInternal._popFromDynamicField(tableId, keyTuple, fieldLayout, fieldIndex, byteLengthToPop);
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
   }
 
   /**
@@ -453,35 +389,7 @@ library StoreCore {
       revert IStoreErrors.StoreCore_DataIndexOverflow(type(uint40).max, startByteIndex);
     }
 
-    // TODO add setItem-specific hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
-    bytes memory fullData;
-    {
-      bytes memory oldData = getDynamicField(tableId, keyTuple, fieldIndex - uint8(fieldLayout.numStaticFields()));
-      fullData = abi.encodePacked(
-        SliceLib.getSubslice(oldData, 0, startByteIndex).toBytes(),
-        dataToSet,
-        SliceLib.getSubslice(oldData, startByteIndex + dataToSet.length, oldData.length).toBytes()
-      );
-    }
-
-    // Call onBeforeSetField hooks (before modifying the state)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(BEFORE_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
-
     StoreCoreInternal._setDynamicFieldItem(tableId, keyTuple, fieldLayout, fieldIndex, startByteIndex, dataToSet);
-
-    // Call onAfterSetField hooks (after modifying the state)
-    for (uint256 i; i < hooks.length; i++) {
-      Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(AFTER_SET_FIELD)) {
-        IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
-      }
-    }
   }
 
   /************************************************************************
@@ -690,15 +598,46 @@ library StoreCoreInternal {
   ) internal {
     uint256 location = _getStaticDataLocation(tableId, keyTuple);
     uint256 offset = _getStaticDataOffset(fieldLayout, fieldIndex);
+    uint40 deleteCount = uint40(fieldLayout.atIndex(fieldIndex));
 
+    // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceStaticData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(offset),
+          deleteCount: deleteCount,
+          data: data
+        });
+      }
+    }
+
+    // Store the provided value in storage
     Storage.store({ storagePointer: location, offset: offset, data: data });
 
-    // Emit event to notify indexers
+    // Call onAfterSpliceStaticData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_STATIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceStaticData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(offset),
+          deleteCount: deleteCount,
+          data: data
+        });
+      }
+    }
+
+    // Emit event to notify offchain indexers
     emit StoreCore.StoreSpliceStaticData({
       tableId: tableId,
       keyTuple: keyTuple,
       start: uint48(offset),
-      deleteCount: uint40(fieldLayout.atIndex(fieldIndex)),
+      deleteCount: deleteCount,
       data: data
     });
   }
@@ -720,14 +659,7 @@ library StoreCoreInternal {
     uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
     encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, data.length);
 
-    // Set the new lengths
-    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
-
-    // Store the provided value in storage
-    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicSchemaIndex);
-    Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: data });
-
-    // Compute start index for the splice event
+    // Compute start index for the splice
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
@@ -736,7 +668,45 @@ library StoreCoreInternal {
       }
     }
 
-    // Emit event to notify indexers
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(oldFieldLength),
+          data: data,
+          encodedLengths: encodedLengths.unwrap()
+        });
+      }
+    }
+
+    // Store the new lengths in storage
+    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
+
+    // Store the provided value in storage
+    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicSchemaIndex);
+    Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: data });
+
+    // Call onAfterSpliceDynamicData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(oldFieldLength),
+          data: data,
+          encodedLengths: encodedLengths.unwrap()
+        });
+      }
+    }
+
+    // Emit event to offchain notify indexers
     emit StoreCore.StoreSpliceDynamicData({
       tableId: tableId,
       keyTuple: keyTuple,
@@ -764,18 +734,49 @@ library StoreCoreInternal {
     uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
     encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength + dataToPush.length);
 
+    // Compute start index for the splice
+    uint256 start = oldFieldLength;
+    unchecked {
+      // (safe because it's a few uint40 values, which can't overflow uint48)
+      for (uint8 i; i < dynamicSchemaIndex; i++) {
+        start += encodedLengths.atIndex(i);
+      }
+    }
+
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(0),
+          data: dataToPush,
+          encodedLengths: encodedLengths.unwrap()
+        });
+      }
+    }
+
     // Set the new length
     Storage.store({ storagePointer: dynamicDataLengthSlot, data: encodedLengths.unwrap() });
 
     // Append `dataToPush` to the end of the data in storage
     _setPartialDynamicData(tableId, keyTuple, dynamicSchemaIndex, oldFieldLength, dataToPush);
 
-    // Compute start index for the splice event
-    uint256 start = oldFieldLength;
-    unchecked {
-      // (safe because it's a few uint40 values, which can't overflow uint48)
-      for (uint8 i; i < dynamicSchemaIndex; i++) {
-        start += encodedLengths.atIndex(i);
+    // Call onAfterSpliceDynamicData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(0),
+          data: dataToPush,
+          encodedLengths: encodedLengths.unwrap()
+        });
       }
     }
 
@@ -807,12 +808,7 @@ library StoreCoreInternal {
     uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
     encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength - byteLengthToPop);
 
-    // Set the new length
-    Storage.store({ storagePointer: dynamicDataLengthSlot, data: encodedLengths.unwrap() });
-
-    // Data can be left unchanged, push/set do not assume storage to be 0s
-
-    // Compute start index for the splice event
+    // Compute start index for the splice
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
@@ -821,6 +817,42 @@ library StoreCoreInternal {
         start += encodedLengths.atIndex(i);
       }
       start -= byteLengthToPop;
+    }
+
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(byteLengthToPop),
+          data: new bytes(0),
+          encodedLengths: encodedLengths.unwrap()
+        });
+      }
+    }
+
+    // Set the new length
+    Storage.store({ storagePointer: dynamicDataLengthSlot, data: encodedLengths.unwrap() });
+
+    // Data can be left unchanged, push/set do not assume storage to be 0s
+
+    // Call onAfterSpliceDynamicData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(byteLengthToPop),
+          data: new bytes(0),
+          encodedLengths: encodedLengths.unwrap()
+        });
+      }
     }
 
     // Emit event to notify indexers
@@ -849,16 +881,47 @@ library StoreCoreInternal {
     uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
     PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
 
-    // Set `dataToSet` at the given index
-    _setPartialDynamicData(tableId, keyTuple, dynamicSchemaIndex, startByteIndex, dataToSet);
-
-    // Compute start index for the splice event
+    // Compute start index for the splice
     uint256 start;
     unchecked {
       // (safe because it's a few uint40 values, which can't overflow uint48)
       start = startByteIndex;
       for (uint8 i; i < dynamicSchemaIndex; i++) {
         start += encodedLengths.atIndex(i);
+      }
+    }
+
+    // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    bytes21[] memory hooks = StoreHooks._get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(dataToSet.length),
+          data: dataToSet,
+          encodedLengths: encodedLengths.unwrap()
+        });
+      }
+    }
+
+    // Set `dataToSet` at the given index
+    _setPartialDynamicData(tableId, keyTuple, dynamicSchemaIndex, startByteIndex, dataToSet);
+
+    // Call onAfterSpliceDynamicData hooks
+    for (uint256 i; i < hooks.length; i++) {
+      Hook hook = Hook.wrap(hooks[i]);
+      if (hook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA)) {
+        IStoreHook(hook.getAddress()).onAfterSpliceDynamicData({
+          tableId: tableId,
+          keyTuple: keyTuple,
+          start: uint48(start),
+          deleteCount: uint40(dataToSet.length),
+          data: dataToSet,
+          encodedLengths: encodedLengths.unwrap()
+        });
       }
     }
 
