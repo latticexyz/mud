@@ -188,8 +188,12 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -197,8 +201,12 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -206,8 +214,12 @@ library Vector2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -264,11 +276,26 @@ library Vector2 {
     set(_store, key, _table.x, _table.y);
   }
 
-  /** Decode the tightly packed blob using this table's field layout */
-  function decode(bytes memory _blob) internal pure returns (Vector2Data memory _table) {
-    _table.x = (uint32(Bytes.slice4(_blob, 0)));
+  /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeStatic(bytes memory _blob) internal pure returns (uint32 x, uint32 y) {
+    x = (uint32(Bytes.slice4(_blob, 0)));
 
-    _table.y = (uint32(Bytes.slice4(_blob, 4)));
+    y = (uint32(Bytes.slice4(_blob, 4)));
+  }
+
+  /**
+   * Decode the tightly packed blob using this table's field layout.
+   * Undefined behaviour for invalid blobs.
+   */
+  function decode(
+    bytes memory _staticData,
+    PackedCounter,
+    bytes memory
+  ) internal pure returns (Vector2Data memory _table) {
+    (_table.x, _table.y) = decodeStatic(_staticData);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -277,13 +304,13 @@ library Vector2 {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(uint32 x, uint32 y) internal pure returns (bytes memory) {
+  function encode(uint32 x, uint32 y) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(x, y);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

@@ -702,8 +702,12 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -711,8 +715,12 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -720,8 +728,12 @@ library Tables {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = tableId;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -823,35 +835,53 @@ library Tables {
   }
 
   /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeStatic(
+    bytes memory _blob
+  ) internal pure returns (bytes32 fieldLayout, bytes32 keySchema, bytes32 valueSchema) {
+    fieldLayout = (Bytes.slice32(_blob, 0));
+
+    keySchema = (Bytes.slice32(_blob, 32));
+
+    valueSchema = (Bytes.slice32(_blob, 64));
+  }
+
+  /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (bytes memory abiEncodedKeyNames, bytes memory abiEncodedFieldNames) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    abiEncodedKeyNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
    * Decode the tightly packed blob using this table's field layout.
    * Undefined behaviour for invalid blobs.
    */
-  function decode(bytes memory _blob) internal pure returns (TablesData memory _table) {
-    // 96 is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 96));
+  function decode(
+    bytes memory _staticData,
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
+  ) internal pure returns (TablesData memory _table) {
+    (_table.fieldLayout, _table.keySchema, _table.valueSchema) = decodeStatic(_staticData);
 
-    _table.fieldLayout = (Bytes.slice32(_blob, 0));
-
-    _table.keySchema = (Bytes.slice32(_blob, 32));
-
-    _table.valueSchema = (Bytes.slice32(_blob, 64));
-
-    // Store trims the blob if dynamic fields are all empty
-    if (_blob.length > 96) {
-      // skip static data length + dynamic lengths word
-      uint256 _start = 128;
-      uint256 _end;
-      unchecked {
-        _end = 128 + _encodedLengths.atIndex(0);
-      }
-      _table.abiEncodedKeyNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(1);
-      }
-      _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-    }
+    (_table.abiEncodedKeyNames, _table.abiEncodedFieldNames) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -889,13 +919,13 @@ library Tables {
     bytes32 valueSchema,
     bytes memory abiEncodedKeyNames,
     bytes memory abiEncodedFieldNames
-  ) internal pure returns (bytes memory) {
+  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(fieldLayout, keySchema, valueSchema);
 
     PackedCounter _encodedLengths = encodeLengths(abiEncodedKeyNames, abiEncodedFieldNames);
     bytes memory _dynamicData = encodeDynamic(abiEncodedKeyNames, abiEncodedFieldNames);
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
