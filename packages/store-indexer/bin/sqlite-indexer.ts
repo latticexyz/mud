@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+import "dotenv/config";
 import fs from "node:fs";
 import { z } from "zod";
 import { eq } from "drizzle-orm";

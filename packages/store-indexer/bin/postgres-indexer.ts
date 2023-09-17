@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+import "dotenv/config";
 import { z } from "zod";
 import { DefaultLogger, eq } from "drizzle-orm";
 import { createPublicClient, fallback, webSocket, http, Transport } from "viem";
