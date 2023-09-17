@@ -1,5 +1,47 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.5
+
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/utils@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Patch Changes

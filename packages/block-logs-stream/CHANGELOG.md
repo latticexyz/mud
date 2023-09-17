@@ -1,5 +1,59 @@
 # @latticexyz/block-logs-stream
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/config@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/schema-type@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/config@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/config@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/config@2.0.0-next.4
+  - @latticexyz/schema-type@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- Updated dependencies [[`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)]:
+  - @latticexyz/common@2.0.0-next.3
+  - @latticexyz/config@2.0.0-next.3
+  - @latticexyz/schema-type@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Major Changes

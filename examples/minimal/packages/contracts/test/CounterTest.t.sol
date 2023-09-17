@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { MudTest } from "@latticexyz/store/src/MudTest.sol";
+import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
@@ -36,9 +36,10 @@ contract CounterTest is MudTest {
     assertEq(counter, 2);
   }
 
-  function testKeysWithValue() public {
-    uint32 counter = CounterTable.get();
-    bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
-    assertEq(keysWithValue.length, 1);
-  }
+  // TODO: re-enable the KeysWithValueModule in mud.config.ts once it supports singleton keys
+  // function testKeysWithValue() public {
+  //   uint32 counter = CounterTable.get();
+  //   bytes32[] memory keysWithValue = getKeysWithValue(CounterTableTableId, CounterTable.encode(counter));
+  //   assertEq(keysWithValue.length, 1);
+  // }
 }

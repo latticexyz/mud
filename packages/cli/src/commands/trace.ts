@@ -7,11 +7,11 @@ import { MUDError } from "@latticexyz/common/errors";
 import { cast, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config.js";
 import { tableIdToHex } from "@latticexyz/common";
-import { getChainId, getExistingContracts } from "../utils";
+import { getExistingContracts } from "../utils/getExistingContracts";
+import { getChainId } from "../utils/utils/getChainId";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
 const systemsTableId = tableIdToHex(worldConfig.namespace, worldConfig.tables.Systems.name);
@@ -66,19 +66,19 @@ const commandModule: CommandModule<Options, Options> = {
 
     // Create World contract instance from deployed address
     const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
-    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldData.abi, provider) as IBaseWorld;
+    const WorldContract = new ethers.Contract(worldAddress, IBaseWorldAbi, provider);
 
     // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
     const namespace = mudConfig.namespace;
     const names = Object.values(resolvedConfig.systems).map(({ name }) => name);
 
-    // Fetch system table schema from chain
-    const systemTableSchema = await WorldContract.getSchema(systemsTableId);
+    // Fetch system table field layout from chain
+    const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
       const systemSelector = tableIdToHex(namespace, name);
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
-      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableSchema);
+      const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
       labels.push({ name, address });
     }
 

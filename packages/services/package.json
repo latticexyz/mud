@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/services",
-  "version": "2.0.0-next.2",
+  "version": "2.0.0-next.8",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "repository": {
     "type": "git",
@@ -42,6 +42,7 @@
     "build:protobuf": "make protoc-ts && prettier --write protobuf/ts/**/*.ts",
     "dev": "tsup --watch",
     "test": "pnpm run test:go",
+    "test:ci": "pnpm run test",
     "test:go": "go test -v ./..."
   },
   "dependencies": {

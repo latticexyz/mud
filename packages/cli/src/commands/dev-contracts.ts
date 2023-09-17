@@ -9,9 +9,12 @@ import path from "path";
 import { debounce } from "throttle-debounce";
 import { worldgenHandler } from "./worldgen";
 import { WorldConfig } from "@latticexyz/world";
-import { deployHandler, logError, printMUD, worldtypes } from "../utils";
 import { homedir } from "os";
 import { rmSync } from "fs";
+import { execa } from "execa";
+import { logError } from "../utils/errors";
+import { deployHandler } from "../utils/deployHandler";
+import { printMUD } from "../utils/printMUD";
 
 type Options = {
   rpc?: string;
@@ -140,10 +143,10 @@ const commandModule: CommandModule<Options, Options> = {
       await worldgenHandler({ config, clean: true, srcDir: srcDirectory });
 
       // Build the contracts
-      await forge(["build"]);
+      await forge(["build", "--skip", "test", "script"]);
 
-      // Run typechain to rebuild typescript types for the contracts
-      await worldtypes();
+      // Generate TS type definitions for ABIs
+      await execa("mud", ["abi-ts"], { stdio: "inherit" });
     }
 
     /** Run after codegen if either mud config or contracts changed */

@@ -7,20 +7,28 @@ export default mudConfig({
     ExampleEnum: ["None", "First", "Second", "Third"],
   },
   tables: {
-    Hooks: "address[]",
+    StoreHooks: "bytes21[]",
     Callbacks: "bytes24[]",
-    StoreMetadata: {
+    Tables: {
       keySchema: {
         tableId: "bytes32",
       },
-      schema: {
-        tableName: "string",
+      valueSchema: {
+        fieldLayout: "bytes32",
+        keySchema: "bytes32",
+        valueSchema: "bytes32",
+        abiEncodedKeyNames: "bytes",
         abiEncodedFieldNames: "bytes",
       },
     },
+    // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
+    Hooks: {
+      valueSchema: "bytes21[]",
+      tableIdArgument: true,
+    },
     // TODO: move these test tables to a separate mud config
     Mixed: {
-      schema: {
+      valueSchema: {
         u32: "uint32",
         u128: "uint128",
         a32: "uint32[]",
@@ -28,7 +36,7 @@ export default mudConfig({
       },
     },
     Vector2: {
-      schema: {
+      valueSchema: {
         x: "uint32",
         y: "uint32",
       },
@@ -42,7 +50,7 @@ export default mudConfig({
         k5: "bool",
         k6: "ExampleEnum",
       },
-      schema: "bool",
+      valueSchema: "bool",
     },
   },
 });

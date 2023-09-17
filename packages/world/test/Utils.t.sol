@@ -21,17 +21,22 @@ contract UtilsTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld internal world;
 
+  error SomeError(uint256 someValue, string someString);
+
   function setUp() public {
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
   }
 
   function _registerAndGetNamespace(bytes16 namespace) internal returns (bytes16 returnedNamespace) {
     UtilsTestSystem testSystem = new UtilsTestSystem();
     bytes16 name = "testSystem";
-    world.registerSystem(namespace, name, testSystem, true);
+    world.registerSystem(ResourceSelector.from(namespace, name), testSystem, true);
 
-    bytes memory data = world.call(namespace, name, abi.encodeWithSelector(UtilsTestSystem.systemNamespace.selector));
+    bytes memory data = world.call(
+      ResourceSelector.from(namespace, name),
+      abi.encodeWithSelector(UtilsTestSystem.systemNamespace.selector)
+    );
     returnedNamespace = abi.decode(data, (bytes16));
   }
 

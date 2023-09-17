@@ -6,7 +6,7 @@ export default mudConfig({
       keySchema: {
         key: "uint32",
       },
-      schema: {
+      valueSchema: {
         value: "uint32",
       },
     },
@@ -14,14 +14,14 @@ export default mudConfig({
       keySchema: {
         key: "uint32",
       },
-      schema: {
+      valueSchema: {
         x: "int32",
         y: "int32",
       },
     },
     NumberList: {
       keySchema: {},
-      schema: {
+      valueSchema: {
         value: "uint32[]",
       },
     },
@@ -32,7 +32,7 @@ export default mudConfig({
         c: "uint256",
         d: "int120",
       },
-      schema: {
+      valueSchema: {
         num: "int256",
         value: "bool",
       },

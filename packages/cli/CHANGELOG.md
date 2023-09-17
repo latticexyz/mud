@@ -1,5 +1,183 @@
 # Change Log
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies [[`1d60930d`](https://github.com/latticexyz/mud/commit/1d60930d6d4c9a0bda262e5e23a5f719b9dd48c7), [`b9e562d8`](https://github.com/latticexyz/mud/commit/b9e562d8f7a6051bb1a7262979b268fd2c83daac), [`51914d65`](https://github.com/latticexyz/mud/commit/51914d656d8cd8d851ccc8296d249cf09f53e670), [`2ca75f9b`](https://github.com/latticexyz/mud/commit/2ca75f9b9063ea33524e6c609b87f5494f678fa0), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98)]:
+  - @latticexyz/store@2.0.0-next.8
+  - @latticexyz/world@2.0.0-next.8
+  - @latticexyz/protocol-parser@2.0.0-next.8
+  - @latticexyz/abi-ts@2.0.0-next.8
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/config@2.0.0-next.8
+  - @latticexyz/gas-report@2.0.0-next.8
+  - @latticexyz/schema-type@2.0.0-next.8
+  - @latticexyz/services@2.0.0-next.8
+  - @latticexyz/utils@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15), [`2459e15f`](https://github.com/latticexyz/mud/commit/2459e15fc9bf49fff2d769b9efba07b99635f2cc), [`18d3aea5`](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/world@2.0.0-next.7
+  - @latticexyz/abi-ts@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/config@2.0.0-next.7
+  - @latticexyz/gas-report@2.0.0-next.7
+  - @latticexyz/protocol-parser@2.0.0-next.7
+  - @latticexyz/schema-type@2.0.0-next.7
+  - @latticexyz/services@2.0.0-next.7
+  - @latticexyz/utils@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Minor Changes
+
+- [#1413](https://github.com/latticexyz/mud/pull/1413) [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561) Thanks [@holic](https://github.com/holic)! - Added a new `@latticexyz/abi-ts` package to generate TS type declaration files (`.d.ts`) for each ABI JSON file.
+
+  This allows you to import your JSON ABI and use it directly with libraries like [viem](https://npmjs.com/package/viem) and [abitype](https://npmjs.com/package/abitype).
+
+  ```
+  pnpm add @latticexyz/abi-ts
+  pnpm abi-ts
+  ```
+
+  By default, `abi-ts` looks for files with the glob `**/*.abi.json`, but you can customize this glob with the `--input` argument, e.g.
+
+  ```console
+  pnpm abi-ts --input 'abi/IWorld.sol/IWorld.abi.json'
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561), [`9af542d3`](https://github.com/latticexyz/mud/commit/9af542d3e29e2699144534dec3430e19294077d4), [`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/abi-ts@2.0.0-next.6
+  - @latticexyz/gas-report@2.0.0-next.6
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/world@2.0.0-next.6
+  - @latticexyz/schema-type@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/config@2.0.0-next.6
+  - @latticexyz/protocol-parser@2.0.0-next.6
+  - @latticexyz/services@2.0.0-next.6
+  - @latticexyz/utils@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- [#1371](https://github.com/latticexyz/mud/pull/1371) [`dc258e68`](https://github.com/latticexyz/mud/commit/dc258e6860196ad34bf1d4ac7fce382f70e2c0c8) Thanks [@alvrs](https://github.com/alvrs)! - The `mud test` cli now exits with code 1 on test failure. It used to exit with code 0, which meant that CIs didn't notice test failures.
+
+- Updated dependencies [[`ce97426c`](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b), [`33f50f8a`](https://github.com/latticexyz/mud/commit/33f50f8a473398dcc19b17d10a17a552a82678c7), [`80a26419`](https://github.com/latticexyz/mud/commit/80a26419f15177333b523bac5d09767487b4ffef), [`1ca35e9a`](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed), [`9d0f492a`](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe), [`c583f3cd`](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b)]:
+  - @latticexyz/world@2.0.0-next.5
+  - @latticexyz/services@2.0.0-next.5
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/config@2.0.0-next.5
+  - @latticexyz/gas-report@2.0.0-next.5
+  - @latticexyz/protocol-parser@2.0.0-next.5
+  - @latticexyz/schema-type@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+  - @latticexyz/utils@2.0.0-next.5
+
+## 2.0.0-next.4
+
+### Patch Changes
+
+- [#1341](https://github.com/latticexyz/mud/pull/1341) [`c32c8e8f`](https://github.com/latticexyz/mud/commit/c32c8e8f2ccac02c4242f715f296bffd5465bd71) Thanks [@holic](https://github.com/holic)! - Removes `std-contracts` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+- [#1340](https://github.com/latticexyz/mud/pull/1340) [`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64) Thanks [@holic](https://github.com/holic)! - Removes `solecs` package. These were v1 contracts, now entirely replaced by our v2 tooling. See the [MUD docs](https://mud.dev/) for building with v2 or create a new project from our v2 templates with `pnpm create mud@next your-app-name`.
+
+- Updated dependencies []:
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/config@2.0.0-next.4
+  - @latticexyz/gas-report@2.0.0-next.4
+  - @latticexyz/protocol-parser@2.0.0-next.4
+  - @latticexyz/schema-type@2.0.0-next.4
+  - @latticexyz/services@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+  - @latticexyz/utils@2.0.0-next.4
+  - @latticexyz/world@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Major Changes
+
+- [#1174](https://github.com/latticexyz/mud/pull/1174) [`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57) Thanks [@alvrs](https://github.com/alvrs)! - All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
+  This decreases gas cost and removes circular dependencies of the Schema table (where it was not possible to write to the Schema table before the Schema table was registered).
+
+  ```diff
+    function setRecord(
+      bytes32 table,
+      bytes32[] calldata key,
+      bytes calldata data,
+  +   Schema valueSchema
+    ) external;
+  ```
+
+  The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
+
+  This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
+  so downstream projects only need to regenerate their table libraries after updating MUD.
+
+- [#1208](https://github.com/latticexyz/mud/pull/1208) [`c32a9269`](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c) Thanks [@alvrs](https://github.com/alvrs)! - - All `World` function selectors that previously had `bytes16 namespace, bytes16 name` arguments now use `bytes32 resourceSelector` instead.
+  This includes `setRecord`, `setField`, `pushToField`, `popFromField`, `updateInField`, `deleteRecord`, `call`, `grantAccess`, `revokeAccess`, `registerTable`,
+  `registerStoreHook`, `registerSystemHook`, `registerFunctionSelector`, `registerSystem` and `registerRootFunctionSelector`.
+  This change aligns the `World` function selectors with the `Store` function selectors, reduces clutter, reduces gas cost and reduces the `World`'s contract size.
+
+  - The `World`'s `registerHook` function is removed. Use `registerStoreHook` or `registerSystemHook` instead.
+
+  - The `deploy` script is updated to integrate the World interface changes
+
+- [#1182](https://github.com/latticexyz/mud/pull/1182) [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab) Thanks [@alvrs](https://github.com/alvrs)! - - `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+
+  - `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+    ```diff
+    -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+    -
+    -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+    +  function registerTable(
+    +    bytes32 table,
+    +    Schema keySchema,
+    +    Schema valueSchema,
+    +    string[] calldata keyNames,
+    +    string[] calldata fieldNames
+    +  ) external;
+    ```
+
+  - `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+  - The `getSchema` method is renamed to `getValueSchema` on all interfaces
+    ```diff
+    - function getSchema(bytes32 table) external view returns (Schema schema);
+    + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+    ```
+  - The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+### Patch Changes
+
+- [#1231](https://github.com/latticexyz/mud/pull/1231) [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db) Thanks [@dk1a](https://github.com/dk1a)! - Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- Updated dependencies [[`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57), [`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e), [`c32a9269`](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1), [`d5b73b12`](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd), [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db), [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1), [`0d12db8c`](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)]:
+  - @latticexyz/store@2.0.0-next.3
+  - @latticexyz/world@2.0.0-next.3
+  - @latticexyz/common@2.0.0-next.3
+  - @latticexyz/protocol-parser@2.0.0-next.3
+  - @latticexyz/services@2.0.0-next.3
+  - @latticexyz/config@2.0.0-next.3
+  - @latticexyz/gas-report@2.0.0-next.3
+  - @latticexyz/schema-type@2.0.0-next.3
+  - @latticexyz/solecs@2.0.0-next.3
+  - @latticexyz/std-contracts@2.0.0-next.3
+  - @latticexyz/utils@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Major Changes

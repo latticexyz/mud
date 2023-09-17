@@ -1,5 +1,38 @@
 # Change Log
 
+## 2.0.0-next.8
+
+## 2.0.0-next.7
+
+## 2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- [#1377](https://github.com/latticexyz/mud/pull/1377) [`33f50f8a`](https://github.com/latticexyz/mud/commit/33f50f8a473398dcc19b17d10a17a552a82678c7) Thanks [@alvrs](https://github.com/alvrs)! - Fixed an issue where the TypeScript types for createFaucetService were not exported correctly from the @latticexyz/services package
+
+- [#1219](https://github.com/latticexyz/mud/pull/1219) [`80a26419`](https://github.com/latticexyz/mud/commit/80a26419f15177333b523bac5d09767487b4ffef) Thanks [@ludns](https://github.com/ludns)! - The build phase of services now works on machines with older protobuf compilers
+
+## 2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Major Changes
+
+- [#1231](https://github.com/latticexyz/mud/pull/1231) [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db) Thanks [@dk1a](https://github.com/dk1a)! - Reverse PackedCounter encoding, to optimize gas for bitshifts.
+  Ints are right-aligned, shifting using an index is straightforward if they are indexed right-to-left.
+
+  - Previous encoding: (7 bytes | accumulator),(5 bytes | counter 1),...,(5 bytes | counter 5)
+  - New encoding: (5 bytes | counter 5),...,(5 bytes | counter 1),(7 bytes | accumulator)
+
+- [#1311](https://github.com/latticexyz/mud/pull/1311) [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1) Thanks [@alvrs](https://github.com/alvrs)! - Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.
+
+  ```diff
+  - import { createFaucetService } from "@latticexyz/network";
+  + import { createFaucetService } from "@latticexyz/services/faucet";
+  ```
+
 ## 2.0.0-next.2
 
 ## 2.0.0-next.1

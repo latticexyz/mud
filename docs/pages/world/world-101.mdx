@@ -19,7 +19,7 @@ When building with the MUD World framework, the first decision you need to make 
 A World contains resources. Currently, there exists three types of resources. More of them can be added by the root user of the World (if there is one), and future versions of MUD might include new default resources.
 
 1. **Namespace**: a namespace is like a folder in a file system. They are used to group resources together for the purpose of making access-control less verbose. Currently, nested namespaces are not available in World framework. The filesystem is thus flat.
-2. **Table**: a [Store](store) table. Used to store and retrieve data.
+2. **Table**: a [Store](/store) table. Used to store and retrieve data.
 3. **System**: a piece of logic, stored as EVM bytecode. Systems have no state, and instead read and write to Tables.
 
 Each resource is contained within a namespace (possibly the ROOT one, where you use an empty string for the namespace). You can think of the resources within a World as a filesystem:
@@ -59,6 +59,7 @@ In most basic cases, you don’t need to worry about namespaces and access contr
 
 Systems are stateless pieces of logic executed on the World, represented as a resource within a namespace.
 They are written in Solidity and compile to the EVM like regular smart contracts. You can think of them as SQL functions acting your SQL database (Store in this case).
+
 Systems read and store their state on the World's Store. These storage access are abstracted via the libraries generated with `tablegen`. You can learn more about `tablegen` in the [Store doc](/store/reading-and-writing).
 
 **Reading and writing to the state in a system:**
@@ -125,7 +126,7 @@ export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
   },
 });
@@ -135,7 +136,7 @@ Let’s break it down:
 
 First, notice there is no `namespace` key: all our resources will be installed in the `ROOT` namespace, and our systems' functions will be registered as-is on the World.
 
-Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
+Secondly, there is one singleton table named “Counter”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](/store).
 
 Lastly, this project has one system at `IncrementSystem.sol`, but it does not need to be in the config. Any file that ends in `*System.sol` is considered a system and deployed by default.
 
@@ -176,10 +177,10 @@ export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
     Dog: {
-      schema: {
+      valueSchema: {
         owner: "address",
         name: "string",
         color: "string",

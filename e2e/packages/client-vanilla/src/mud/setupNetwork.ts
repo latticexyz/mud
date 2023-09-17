@@ -3,7 +3,7 @@ import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
-import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { createBurnerAccount, createContract, transportObserver } from "@latticexyz/common";
 import mudConfig from "contracts/mud.config";
 
@@ -28,12 +28,12 @@ export async function setupNetwork() {
 
   const worldContract = createContract({
     address: networkConfig.worldAddress as Hex,
-    abi: IWorld__factory.abi,
+    abi: IWorldAbi,
     publicClient,
     walletClient: burnerWalletClient,
   });
 
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
     world,
     config: mudConfig,
     address: networkConfig.worldAddress as Hex,
@@ -74,7 +74,7 @@ export async function setupNetwork() {
     walletClient: burnerWalletClient,
     worldContract,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
   };
 }

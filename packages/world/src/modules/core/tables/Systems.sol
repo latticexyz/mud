@@ -14,57 +14,66 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Systems")));
 bytes32 constant SystemsTableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0015020014010000000000000000000000000000000000000000000000000000
+);
+
 library Systems {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](2);
-    _schema[0] = SchemaType.ADDRESS;
-    _schema[1] = SchemaType.BOOL;
-
-    return SchemaLib.encode(_schema);
+  /** Get the table values' field layout */
+  function getFieldLayout() internal pure returns (FieldLayout) {
+    return _fieldLayout;
   }
 
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _keySchema = new SchemaType[](1);
+    _keySchema[0] = SchemaType.BYTES32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](2);
-    _fieldNames[0] = "system";
-    _fieldNames[1] = "publicAccess";
-    return ("Systems", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _valueSchema = new SchemaType[](2);
+    _valueSchema[0] = SchemaType.ADDRESS;
+    _valueSchema[1] = SchemaType.BOOL;
+
+    return SchemaLib.encode(_valueSchema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](1);
+    keyNames[0] = "resourceSelector";
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](2);
+    fieldNames[0] = "system";
+    fieldNames[1] = "publicAccess";
   }
 
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table with its config */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
+  /** Register the table with its config (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get system */
@@ -72,8 +81,17 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
-    return (address(Bytes.slice20(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /** Get system */
+  function _getSystem(bytes32 resourceSelector) internal view returns (address system) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
   }
 
   /** Get system (using the specified store) */
@@ -81,8 +99,8 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
-    return (address(Bytes.slice20(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (address(bytes20(_blob)));
   }
 
   /** Set system */
@@ -90,7 +108,15 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
+  }
+
+  /** Set system */
+  function _setSystem(bytes32 resourceSelector, address system) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /** Set system (using the specified store) */
@@ -98,7 +124,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), getSchema());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((system)), _fieldLayout);
   }
 
   /** Get publicAccess */
@@ -106,8 +132,17 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get publicAccess */
+  function _getPublicAccess(bytes32 resourceSelector) internal view returns (bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get publicAccess (using the specified store) */
@@ -115,8 +150,8 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set publicAccess */
@@ -124,7 +159,15 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
+  }
+
+  /** Set publicAccess */
+  function _setPublicAccess(bytes32 resourceSelector, bool publicAccess) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /** Set publicAccess (using the specified store) */
@@ -132,7 +175,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), getSchema());
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((publicAccess)), _fieldLayout);
   }
 
   /** Get the full data */
@@ -140,7 +183,16 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
+    return decode(_blob);
+  }
+
+  /** Get the full data */
+  function _get(bytes32 resourceSelector) internal view returns (address system, bool publicAccess) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
@@ -149,43 +201,72 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
   /** Set the full data using individual values */
   function set(bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = encode(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /** Set the full data using individual values */
+  function _set(bytes32 resourceSelector, address system, bool publicAccess) internal {
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = encode(system, publicAccess);
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /** Decode the tightly packed blob using this table's field layout */
   function decode(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
     system = (address(Bytes.slice20(_blob, 0)));
 
     publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
   }
 
-  /** Tightly pack full data using this table's schema */
-  function encode(address system, bool publicAccess) internal pure returns (bytes memory) {
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(address system, bool publicAccess) internal pure returns (bytes memory) {
     return abi.encodePacked(system, publicAccess);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /** Tightly pack full data using this table's field layout */
+  function encode(address system, bool publicAccess) internal pure returns (bytes memory) {
+    bytes memory _staticData = encodeStatic(system, publicAccess);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
@@ -198,7 +279,15 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 resourceSelector) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = resourceSelector;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -206,7 +295,7 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    _store.deleteRecord(_tableId, _keyTuple, getSchema());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
 

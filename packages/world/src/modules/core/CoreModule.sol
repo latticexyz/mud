@@ -1,20 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Call } from "../../Call.sol";
+import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { WorldContext } from "../../WorldContext.sol";
 import { Resource } from "../../Types.sol";
+import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
-import { IModule } from "../../interfaces/IModule.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
-import { IWorldEphemeral } from "../../interfaces/IWorldEphemeral.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
+import { Delegations } from "../../tables/Delegations.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
@@ -24,21 +25,23 @@ import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
+import { Balances } from "./tables/Balances.sol";
 
-import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
-import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
-import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
+import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
+import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
+import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
 
 /**
  * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
 
  * Note:
- * This module is required to be delegatecalled (via `World.registerRootSystem`),
+ * This module only supports `installRoot` (via `World.registerRootSystem`),
  * because it needs to install root tables, systems and function selectors.
  */
-contract CoreModule is IModule, WorldContext {
+contract CoreModule is Module {
   // Since the CoreSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable coreSystem = address(new CoreSystem());
@@ -47,40 +50,35 @@ contract CoreModule is IModule, WorldContext {
     return CORE_MODULE_NAME;
   }
 
-  function install(bytes memory) public override {
+  function installRoot(bytes memory) public override {
     _registerCoreTables();
     _registerCoreSystem();
     _registerFunctionSelectors();
+  }
+
+  function install(bytes memory) public pure {
+    revert NonRootInstallNotSupported();
   }
 
   /**
    * Register core tables in the World
    */
   function _registerCoreTables() internal {
-    NamespaceOwner.setMetadata();
+    StoreCore.registerCoreTables();
+    NamespaceOwner.register();
+    Balances.register();
+    InstalledModules.register();
+    Delegations.register();
+    ResourceAccess.register();
+    Systems.register();
+    FunctionSelectors.register();
+    SystemHooks.register();
+    SystemRegistry.register();
+    ResourceType.register();
 
-    InstalledModules.registerSchema();
-    InstalledModules.setMetadata();
-
-    ResourceAccess.registerSchema();
-    ResourceAccess.setMetadata();
-    ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
-
-    Systems.registerSchema();
-    Systems.setMetadata();
-
-    FunctionSelectors.registerSchema();
-    FunctionSelectors.setMetadata();
-
-    SystemHooks.registerSchema();
-    SystemHooks.setMetadata();
-
-    SystemRegistry.registerSchema();
-    SystemRegistry.setMetadata();
-
-    ResourceType.registerSchema();
-    ResourceType.setMetadata();
-    ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    NamespaceOwner._set(ROOT_NAMESPACE, _msgSender());
+    ResourceAccess._set(ROOT_NAMESPACE, _msgSender(), true);
+    ResourceType._set(ROOT_NAMESPACE, Resource.NAMESPACE);
   }
 
   /**
@@ -88,17 +86,13 @@ contract CoreModule is IModule, WorldContext {
    */
   function _registerCoreSystem() internal {
     // Use the CoreSystem's `registerSystem` implementation to register itself on the World.
-    Call.withSender({
+    WorldContextProvider.delegatecallWithContextOrRevert({
       msgSender: _msgSender(),
+      msgValue: 0,
       target: coreSystem,
-      delegate: true,
-      value: 0,
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        WorldRegistrationSystem.registerSystem.selector,
-        ROOT_NAMESPACE,
-        CORE_SYSTEM_NAME,
-        coreSystem,
-        true
+      funcSelectorAndArgs: abi.encodeCall(
+        WorldRegistrationSystem.registerSystem,
+        (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
       )
     });
   }
@@ -108,44 +102,41 @@ contract CoreModule is IModule, WorldContext {
    */
   function _registerFunctionSelectors() internal {
     bytes4[17] memory functionSelectors = [
-      // --- WorldRegistrationSystem ---
-      WorldRegistrationSystem.registerNamespace.selector,
-      WorldRegistrationSystem.registerTable.selector,
-      WorldRegistrationSystem.setMetadata.selector,
-      WorldRegistrationSystem.registerHook.selector,
-      WorldRegistrationSystem.registerTableHook.selector,
-      WorldRegistrationSystem.registerSystemHook.selector,
-      WorldRegistrationSystem.registerSystem.selector,
-      WorldRegistrationSystem.registerFunctionSelector.selector,
-      WorldRegistrationSystem.registerRootFunctionSelector.selector,
-      // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerSchema.selector,
-      StoreRegistrationSystem.setMetadata.selector,
-      StoreRegistrationSystem.registerStoreHook.selector,
-      // --- ModuleInstallationSystem ---
-      ModuleInstallationSystem.installModule.selector,
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
+      AccessManagementSystem.transferOwnership.selector,
+      // --- BalanceTransferSystem ---
+      BalanceTransferSystem.transferBalanceToNamespace.selector,
+      BalanceTransferSystem.transferBalanceToAddress.selector,
       // --- EphemeralRecordSystem ---
       IStoreEphemeral.emitEphemeralRecord.selector,
-      IWorldEphemeral.emitEphemeralRecord.selector
+      // --- ModuleInstallationSystem ---
+      ModuleInstallationSystem.installModule.selector,
+      // --- StoreRegistrationSystem ---
+      StoreRegistrationSystem.registerTable.selector,
+      StoreRegistrationSystem.registerStoreHook.selector,
+      StoreRegistrationSystem.unregisterStoreHook.selector,
+      // --- WorldRegistrationSystem ---
+      WorldRegistrationSystem.registerNamespace.selector,
+      WorldRegistrationSystem.registerSystemHook.selector,
+      WorldRegistrationSystem.unregisterSystemHook.selector,
+      WorldRegistrationSystem.registerSystem.selector,
+      WorldRegistrationSystem.registerFunctionSelector.selector,
+      WorldRegistrationSystem.registerRootFunctionSelector.selector,
+      WorldRegistrationSystem.registerDelegation.selector
     ];
 
     for (uint256 i = 0; i < functionSelectors.length; i++) {
       // Use the CoreSystem's `registerRootFunctionSelector` to register the
       // root function selectors in the World.
-      Call.withSender({
+      WorldContextProvider.delegatecallWithContextOrRevert({
         msgSender: _msgSender(),
+        msgValue: 0,
         target: coreSystem,
-        delegate: true,
-        value: 0,
-        funcSelectorAndArgs: abi.encodeWithSelector(
-          WorldRegistrationSystem.registerRootFunctionSelector.selector,
-          ROOT_NAMESPACE,
-          CORE_SYSTEM_NAME,
-          functionSelectors[i],
-          functionSelectors[i]
+        funcSelectorAndArgs: abi.encodeCall(
+          WorldRegistrationSystem.registerRootFunctionSelector,
+          (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
         )
       });
     }

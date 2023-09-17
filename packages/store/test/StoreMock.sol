@@ -2,84 +2,113 @@
 pragma solidity >=0.8.0;
 
 import { IStore, IStoreHook } from "../src/IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
+import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreRead } from "../src/StoreRead.sol";
 
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
  */
 contract StoreMock is IStore, StoreRead {
+  constructor() {
+    StoreCore.initialize();
+    StoreCore.registerCoreTables();
+  }
+
   // Set full record (including full dynamic data)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
-    StoreCore.setRecord(table, key, data, valueSchema);
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
+    FieldLayout fieldLayout
+  ) public {
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
   // Set partial data at schema index
   function setField(
-    bytes32 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata data,
-    Schema valueSchema
-  ) public {
-    StoreCore.setField(table, key, schemaIndex, data, valueSchema);
+    FieldLayout fieldLayout
+  ) public virtual {
+    StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
   // Push encoded items to the dynamic field at schema index
   function pushToField(
-    bytes32 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     bytes calldata dataToPush,
-    Schema valueSchema
-  ) public {
-    StoreCore.pushToField(table, key, schemaIndex, dataToPush, valueSchema);
+    FieldLayout fieldLayout
+  ) public virtual {
+    StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
   }
 
   // Pop byte length from the dynamic field at schema index
   function popFromField(
-    bytes32 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint256 byteLengthToPop,
-    Schema valueSchema
-  ) public {
-    StoreCore.popFromField(table, key, schemaIndex, byteLengthToPop, valueSchema);
+    FieldLayout fieldLayout
+  ) public virtual {
+    StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
   }
 
   // Change encoded items within the dynamic field at schema index
   function updateInField(
-    bytes32 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 fieldIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet,
-    Schema valueSchema
-  ) public {
-    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet, valueSchema);
+    FieldLayout fieldLayout
+  ) public virtual {
+    StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) public {
-    StoreCore.deleteRecord(table, key, valueSchema);
+  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
+    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
   }
 
   // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data, Schema valueSchema) public {
-    StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
+  function emitEphemeralRecord(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    bytes calldata staticData,
+    PackedCounter encodedLengths,
+    bytes calldata dynamicData,
+    FieldLayout fieldLayout
+  ) public {
+    StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) public {
-    StoreCore.registerSchema(table, schema, keySchema);
-  }
-
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) public {
-    StoreCore.setMetadata(table, tableName, fieldNames);
+  function registerTable(
+    bytes32 tableId,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] calldata keyNames,
+    string[] calldata fieldNames
+  ) public virtual {
+    StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
   }
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hook) public {
-    StoreCore.registerStoreHook(table, hook);
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+    StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
+  }
+
+  // Unregister hook to be called when a record or field is set or deleted
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) public virtual {
+    StoreCore.unregisterStoreHook(tableId, hookAddress);
   }
 }

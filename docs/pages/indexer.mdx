@@ -28,17 +28,31 @@ They are written under the assumption you are using `anvil` for your test chain,
 1. Run a test world.
    The easiest way to do this is to follow [these directions](tutorials/minimal#getting-the-initial-version) in a separate command line window.
 
+   **Note**: While MUD v2 is in alpha, there might be breaking changes between pre-release versions.
+   To ensure your World is compatible with your indexer, make sure both are running the same MUD version.
+   To create a project with the MUD version on the `main` branch, use `mud@main` instead of ~`mud@next`~.
+
+   ```sh copy
+   pnpm create mud@main project-name
+   ```
+
 1. Start the indexer.
 
    ```sh copy
    cd packages/store-indexer
-   pnpm start:local
+   pnpm start:sqlite:local
    ```
 
-1. Run this command as a sanity check to verify the indexer is working correctly:
+   Note: If you have already ran the MUD indexer, and then restarted the blockchain, make sure to delete the old database:
 
    ```sh copy
-   curl 'http://localhost:3001/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
+   rm anvil.db
+   ```
+
+1. Run this command (in a separate command line window) as a sanity check to verify the indexer is working correctly:
+
+   ```sh copy
+   curl 'http://localhost:3001/trpc/findAll?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22chainId%22%3A31337%2C%22address%22%3A%220x5FbDB2315678afecb367f032d93F642f64180aa3%22%7D%7D%7D' | jq
    ```
 
    The result should be nicely formatted (and long) JSON output.
@@ -89,11 +103,11 @@ The actual value: 2
 ```ts
 import { createIndexerClient } from "@latticexyz/store-sync/trpc-indexer";
 const indexer = createIndexerClient({
-  url: "http://localhost:3001",
+  url: "http://127.0.0.1:3001/trpc",
 });
 ```
 
-Create an indexer client. The URL, `http://localhost/3001`, is the one for the indexer you run on the local computer.
+Create an indexer client. The URL, `http://127.0.0.1/3001/trpc`, is the one for the indexer you run on the local computer.
 If the indexer is elsewhere, modify the URL as appropriate.
 
 ```ts
@@ -261,3 +275,26 @@ To understand the result, it is easiest to look at it inside Node.
    ```javascript copy
    counterTable.records[0].value.value;
    ```
+
+## Debugging
+
+[See here](/reference#mud-server-components).
+
+## Indexing other blockchains
+
+To index a different blockchain, you specify these environment variables:
+
+| Variable        | Value                                                                                                    |
+| --------------- | -------------------------------------------------------------------------------------------------------- |
+| RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              |
+| RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
+| START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+| SQLITE_FILENAME | `<blockchain name>.db`                                                                                   |
+
+After you do that, start the indexer with this command:
+
+```sh copy
+pnpm start:sqlite
+```
+
+Note that in your queries you need to specify the correct chainId for the chain you are indexing.

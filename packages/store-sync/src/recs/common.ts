@@ -1,9 +1,10 @@
-import { KeySchema, StoreConfig, ValueSchema } from "@latticexyz/store";
-import { Component as RecsComponent, Type as RecsType } from "@latticexyz/recs";
+import { StoreConfig } from "@latticexyz/store";
+import { Component as RecsComponent, Metadata as RecsMetadata, Type as RecsType } from "@latticexyz/recs";
 import { SchemaAbiTypeToRecsType } from "./schemaAbiTypeToRecsType";
 import { SchemaAbiType } from "@latticexyz/schema-type";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
-export type StoreComponentMetadata = {
+export type StoreComponentMetadata = RecsMetadata & {
   componentName: string;
   tableName: string;
   keySchema: KeySchema;
@@ -13,14 +14,18 @@ export type StoreComponentMetadata = {
 export type ConfigToRecsComponents<TConfig extends StoreConfig> = {
   [tableName in keyof TConfig["tables"] & string]: RecsComponent<
     {
-      [fieldName in keyof TConfig["tables"][tableName]["schema"] & string]: RecsType &
-        SchemaAbiTypeToRecsType<SchemaAbiType & TConfig["tables"][tableName]["schema"][fieldName]>;
+      __staticData: RecsType.OptionalString;
+      __encodedLengths: RecsType.OptionalString;
+      __dynamicData: RecsType.OptionalString;
+    } & {
+      [fieldName in keyof TConfig["tables"][tableName]["valueSchema"] & string]: RecsType &
+        SchemaAbiTypeToRecsType<SchemaAbiType & TConfig["tables"][tableName]["valueSchema"][fieldName]>;
     },
     StoreComponentMetadata & {
       componentName: tableName;
       tableName: `${TConfig["namespace"]}:${tableName}`;
       keySchema: TConfig["tables"][tableName]["keySchema"];
-      valueSchema: TConfig["tables"][tableName]["schema"];
+      valueSchema: TConfig["tables"][tableName]["valueSchema"];
     }
   >;
 };

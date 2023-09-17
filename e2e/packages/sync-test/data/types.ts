@@ -10,7 +10,7 @@ type Key<Table extends keyof (typeof config)["tables"]> = SchemaToPrimitive<
   (typeof config)["tables"][Table]["keySchema"]
 >;
 type Value<Table extends keyof (typeof config)["tables"]> = SchemaToPrimitive<
-  (typeof config)["tables"][Table]["schema"]
+  (typeof config)["tables"][Table]["valueSchema"]
 >;
 
 export type Datum<Table extends keyof (typeof config)["tables"] = keyof (typeof config)["tables"]> = {
@@ -20,5 +20,5 @@ export type Datum<Table extends keyof (typeof config)["tables"] = keyof (typeof 
 export type Data = { [Table in keyof (typeof config)["tables"]]?: Array<Datum<Table>> };
 
 export type EncodedData<T extends Data = Data> = {
-  [Table in keyof T]: Array<{ key: Hex[]; value: Hex; valueSchema: Hex }>;
+  [Table in keyof T]: Array<{ key: Hex[]; staticData: Hex; encodedLengths: Hex; dynamicData: Hex; fieldLayout: Hex }>;
 };

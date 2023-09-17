@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook } from "./IStore.sol";
+import { IStore } from "./IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
+import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
+import { FieldLayout } from "./FieldLayout.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -44,189 +47,257 @@ library StoreSwitch {
     _layout().storeAddress = _storeAddress;
   }
 
-  function registerStoreHook(bytes32 table, IStoreHook hook) internal {
+  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerStoreHook(table, hook);
+      StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
     } else {
-      IStore(_storeAddress).registerStoreHook(table, hook);
+      IStore(_storeAddress).registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
     }
   }
 
-  function getSchema(bytes32 table) internal view returns (Schema schema) {
+  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      schema = StoreCore.getSchema(table);
+      StoreCore.unregisterStoreHook(tableId, hookAddress);
     } else {
-      schema = IStore(_storeAddress).getSchema(table);
+      IStore(_storeAddress).unregisterStoreHook(tableId, hookAddress);
     }
   }
 
-  function getKeySchema(bytes32 table) internal view returns (Schema keySchema) {
+  function getFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      keySchema = StoreCore.getKeySchema(table);
+      fieldLayout = StoreCore.getFieldLayout(tableId);
     } else {
-      keySchema = IStore(_storeAddress).getKeySchema(table);
+      fieldLayout = IStore(_storeAddress).getFieldLayout(tableId);
     }
   }
 
-  function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
+  function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setMetadata(table, tableName, fieldNames);
+      valueSchema = StoreCore.getValueSchema(tableId);
     } else {
-      IStore(_storeAddress).setMetadata(table, tableName, fieldNames);
+      valueSchema = IStore(_storeAddress).getValueSchema(tableId);
     }
   }
 
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) internal {
+  function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.registerSchema(table, schema, keySchema);
+      keySchema = StoreCore.getKeySchema(tableId);
     } else {
-      IStore(_storeAddress).registerSchema(table, schema, keySchema);
+      keySchema = IStore(_storeAddress).getKeySchema(tableId);
     }
   }
 
-  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+  function registerTable(
+    bytes32 tableId,
+    FieldLayout fieldLayout,
+    Schema keySchema,
+    Schema valueSchema,
+    string[] memory keyNames,
+    string[] memory fieldNames
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(table, key, data, valueSchema);
+      StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
     } else {
-      IStore(_storeAddress).setRecord(table, key, data, valueSchema);
+      IStore(_storeAddress).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+    }
+  }
+
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    } else {
+      IStore(_storeAddress).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     }
   }
 
   function setField(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory data,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setField(table, key, fieldIndex, data, valueSchema);
+      StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
     } else {
-      IStore(_storeAddress).setField(table, key, fieldIndex, data, valueSchema);
+      IStore(_storeAddress).setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
     }
   }
 
   function pushToField(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory dataToPush,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.pushToField(table, key, fieldIndex, dataToPush, valueSchema);
+      StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
     } else {
-      IStore(_storeAddress).pushToField(table, key, fieldIndex, dataToPush, valueSchema);
+      IStore(_storeAddress).pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
     }
   }
 
   function popFromField(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop, valueSchema);
+      StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
     } else {
-      IStore(_storeAddress).popFromField(table, key, fieldIndex, byteLengthToPop, valueSchema);
+      IStore(_storeAddress).popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
     }
   }
 
   function updateInField(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
     bytes memory dataToSet,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueSchema);
+      StoreCore.updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
     } else {
-      IStore(_storeAddress).updateInField(table, key, fieldIndex, startByteIndex, dataToSet, valueSchema);
+      IStore(_storeAddress).updateInField(tableId, keyTuple, fieldIndex, startByteIndex, dataToSet, fieldLayout);
     }
   }
 
-  function deleteRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal {
+  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.deleteRecord(table, key, valueSchema);
+      StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
     } else {
-      IStore(_storeAddress).deleteRecord(table, key, valueSchema);
+      IStore(_storeAddress).deleteRecord(tableId, keyTuple, fieldLayout);
     }
   }
 
-  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data, Schema valueSchema) internal {
+  function emitEphemeralRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(table, key, data, valueSchema);
+      StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(table, key, data, valueSchema);
+      IStore(_storeAddress).emitEphemeralRecord(
+        tableId,
+        keyTuple,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
   }
 
-  function getRecord(bytes32 table, bytes32[] memory key, Schema valueSchema) internal view returns (bytes memory) {
+  function getRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getRecord(table, key, valueSchema);
+      return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
     } else {
-      return IStore(_storeAddress).getRecord(table, key, valueSchema);
+      return IStore(_storeAddress).getRecord(tableId, keyTuple, fieldLayout);
     }
   }
 
   function getField(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
-    Schema valueSchema
+    FieldLayout fieldLayout
   ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getField(table, key, fieldIndex, valueSchema);
+      return StoreCore.getField(tableId, keyTuple, fieldIndex, fieldLayout);
     } else {
-      return IStore(_storeAddress).getField(table, key, fieldIndex, valueSchema);
+      return IStore(_storeAddress).getField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    } else {
+      return IStore(_storeAddress).getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+    } else {
+      return IStore(_storeAddress).getDynamicField(tableId, keyTuple, dynamicFieldIndex);
     }
   }
 
   function getFieldLength(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
-    Schema schema
+    FieldLayout fieldLayout
   ) internal view returns (uint256) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getFieldLength(table, key, fieldIndex, schema);
+      return StoreCore.getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
     } else {
-      return IStore(_storeAddress).getFieldLength(table, key, fieldIndex, schema);
+      return IStore(_storeAddress).getFieldLength(tableId, keyTuple, fieldIndex, fieldLayout);
     }
   }
 
   function getFieldSlice(
-    bytes32 table,
-    bytes32[] memory key,
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
     uint8 fieldIndex,
-    Schema schema,
+    FieldLayout fieldLayout,
     uint256 start,
     uint256 end
   ) internal view returns (bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      return StoreCore.getFieldSlice(table, key, fieldIndex, schema, start, end);
+      return StoreCore.getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
     } else {
-      return IStore(_storeAddress).getFieldSlice(table, key, fieldIndex, schema, start, end);
+      return IStore(_storeAddress).getFieldSlice(tableId, keyTuple, fieldIndex, fieldLayout, start, end);
     }
   }
 }

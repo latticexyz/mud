@@ -1,12 +1,11 @@
 import path from "path";
-import { StoreConfig } from "@latticexyz/store";
 import { tablegen } from "@latticexyz/store/codegen";
 import { mudConfig } from "@latticexyz/world/register";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { logError } from "../src/utils/errors";
 
 // This config is used only for tests.
-// Aside from avoiding `mud.config.mts` in cli package (could cause issues),
+// Aside from avoiding `mud.config.ts` in cli package (could cause issues),
 // this also tests that mudConfig and tablegen can work as standalone functions
 let config;
 try {
@@ -19,21 +18,19 @@ try {
           k3: "bytes16",
           k4: "address",
           k5: "bool",
-          k6: "Enum1",
-          k7: "Enum2",
+          k6: "Enum2",
         },
-        schema: {
+        valueSchema: {
           v1: "uint256",
           v2: "int32",
           v3: "bytes16",
           v4: "address",
           v5: "bool",
           v6: "Enum1",
-          v7: "Enum2",
         },
       },
       Dynamics1: {
-        schema: {
+        valueSchema: {
           staticB32: "bytes32[1]",
           staticI32: "int32[2]",
           staticU128: "uint128[3]",
@@ -42,7 +39,7 @@ try {
         },
       },
       Dynamics2: {
-        schema: {
+        valueSchema: {
           u64: "uint64[]",
           str: "string",
           b: "bytes",
@@ -50,7 +47,7 @@ try {
       },
       Singleton: {
         keySchema: {},
-        schema: {
+        valueSchema: {
           v1: "int256",
           v2: "uint32[2]",
           v3: "uint32[2]",
@@ -59,7 +56,7 @@ try {
         dataStruct: false,
       },
       Ephemeral: {
-        schema: "uint256",
+        valueSchema: "uint256",
         ephemeral: true,
       },
     },

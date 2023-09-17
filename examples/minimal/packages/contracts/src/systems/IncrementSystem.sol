@@ -16,7 +16,7 @@ contract IncrementSystem is System {
 
   function willRevert() public {
     // revert("I told you it would revert");
-    CounterTable.registerSchema();
+    CounterTable.register();
     // revert MyCustomError();
   }
 }

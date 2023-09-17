@@ -1,9 +1,10 @@
 *
 
-!abi/**
+!out/**/*.json
+!out/**/*.abi.json
+!out/**/*.abi.json.d.ts
 !src/**
 !ts/**
-!types/**
 !package.json
 !README.md
 !dist/**

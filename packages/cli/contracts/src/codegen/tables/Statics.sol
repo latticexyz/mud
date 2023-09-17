@@ -14,14 +14,19 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Enum1, Enum2 } from "./../Types.sol";
+import { Enum2, Enum1 } from "./../Types.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Statics")));
 bytes32 constant StaticsTableId = _tableId;
+
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x004a060020041014010100000000000000000000000000000000000000000000
+);
 
 struct StaticsData {
   uint256 v1;
@@ -30,93 +35,103 @@ struct StaticsData {
   address v4;
   bool v5;
   Enum1 v6;
-  Enum2 v7;
 }
 
 library Statics {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](7);
-    _schema[0] = SchemaType.UINT256;
-    _schema[1] = SchemaType.INT32;
-    _schema[2] = SchemaType.BYTES16;
-    _schema[3] = SchemaType.ADDRESS;
-    _schema[4] = SchemaType.BOOL;
-    _schema[5] = SchemaType.UINT8;
-    _schema[6] = SchemaType.UINT8;
-
-    return SchemaLib.encode(_schema);
+  /** Get the table values' field layout */
+  function getFieldLayout() internal pure returns (FieldLayout) {
+    return _fieldLayout;
   }
 
+  /** Get the table's key schema */
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](7);
-    _schema[0] = SchemaType.UINT256;
-    _schema[1] = SchemaType.INT32;
-    _schema[2] = SchemaType.BYTES16;
-    _schema[3] = SchemaType.ADDRESS;
-    _schema[4] = SchemaType.BOOL;
-    _schema[5] = SchemaType.UINT8;
-    _schema[6] = SchemaType.UINT8;
+    SchemaType[] memory _keySchema = new SchemaType[](6);
+    _keySchema[0] = SchemaType.UINT256;
+    _keySchema[1] = SchemaType.INT32;
+    _keySchema[2] = SchemaType.BYTES16;
+    _keySchema[3] = SchemaType.ADDRESS;
+    _keySchema[4] = SchemaType.BOOL;
+    _keySchema[5] = SchemaType.UINT8;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 
-  /** Get the table's metadata */
-  function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](7);
-    _fieldNames[0] = "v1";
-    _fieldNames[1] = "v2";
-    _fieldNames[2] = "v3";
-    _fieldNames[3] = "v4";
-    _fieldNames[4] = "v5";
-    _fieldNames[5] = "v6";
-    _fieldNames[6] = "v7";
-    return ("Statics", _fieldNames);
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _valueSchema = new SchemaType[](6);
+    _valueSchema[0] = SchemaType.UINT256;
+    _valueSchema[1] = SchemaType.INT32;
+    _valueSchema[2] = SchemaType.BYTES16;
+    _valueSchema[3] = SchemaType.ADDRESS;
+    _valueSchema[4] = SchemaType.BOOL;
+    _valueSchema[5] = SchemaType.UINT8;
+
+    return SchemaLib.encode(_valueSchema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's key names */
+  function getKeyNames() internal pure returns (string[] memory keyNames) {
+    keyNames = new string[](6);
+    keyNames[0] = "k1";
+    keyNames[1] = "k2";
+    keyNames[2] = "k3";
+    keyNames[3] = "k4";
+    keyNames[4] = "k5";
+    keyNames[5] = "k6";
   }
 
-  /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  /** Get the table's field names */
+  function getFieldNames() internal pure returns (string[] memory fieldNames) {
+    fieldNames = new string[](6);
+    fieldNames[0] = "v1";
+    fieldNames[1] = "v2";
+    fieldNames[2] = "v3";
+    fieldNames[3] = "v4";
+    fieldNames[4] = "v5";
+    fieldNames[5] = "v6";
   }
 
-  /** Set the table's metadata */
-  function setMetadata() internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table with its config */
+  function register() internal {
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
+  /** Register the table with its config (using the specified store) */
+  function register(IStore _store) internal {
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get v1 */
-  function getV1(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (uint256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function getV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (uint256 v1) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getSchema());
-    return (uint256(Bytes.slice32(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get v1 */
+  function _getV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (uint256 v1) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Get v1 (using the specified store) */
@@ -127,81 +142,85 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (uint256 v1) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getSchema());
-    return (uint256(Bytes.slice32(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
   }
 
   /** Set v1 */
-  function setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, uint256 v1) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, uint256 v1) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
+  }
+
+  /** Set v1 */
+  function _setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, uint256 v1) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /** Set v1 (using the specified store) */
-  function setV1(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    uint256 v1
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV1(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, uint256 v1) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), getSchema());
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((v1)), _fieldLayout);
   }
 
   /** Get v2 */
-  function getV2(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (int32 v2) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function getV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (int32 v2) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getSchema());
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (int32(uint32(bytes4(_blob))));
+  }
+
+  /** Get v2 */
+  function _getV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (int32 v2) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /** Get v2 (using the specified store) */
@@ -212,81 +231,85 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (int32 v2) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getSchema());
-    return (int32(uint32(Bytes.slice4(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (int32(uint32(bytes4(_blob))));
   }
 
   /** Set v2 */
-  function setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, int32 v2) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, int32 v2) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
+  }
+
+  /** Set v2 */
+  function _setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, int32 v2) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
   /** Set v2 (using the specified store) */
-  function setV2(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    int32 v2
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV2(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, int32 v2) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), getSchema());
+    _store.setField(_tableId, _keyTuple, 1, abi.encodePacked((v2)), _fieldLayout);
   }
 
   /** Get v3 */
-  function getV3(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (bytes16 v3) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function getV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bytes16 v3) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getSchema());
-    return (Bytes.slice16(_blob, 0));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes16(_blob));
+  }
+
+  /** Get v3 */
+  function _getV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bytes16 v3) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes16(_blob));
   }
 
   /** Get v3 (using the specified store) */
@@ -297,81 +320,85 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (bytes16 v3) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getSchema());
-    return (Bytes.slice16(_blob, 0));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (bytes16(_blob));
   }
 
   /** Set v3 */
-  function setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, bytes16 v3) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bytes16 v3) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
+  }
+
+  /** Set v3 */
+  function _setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bytes16 v3) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
   /** Set v3 (using the specified store) */
-  function setV3(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    bytes16 v3
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV3(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bytes16 v3) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), getSchema());
+    _store.setField(_tableId, _keyTuple, 2, abi.encodePacked((v3)), _fieldLayout);
   }
 
   /** Get v4 */
-  function getV4(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (address v4) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function getV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (address v4) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3, getSchema());
-    return (address(Bytes.slice20(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (address(bytes20(_blob)));
+  }
+
+  /** Get v4 */
+  function _getV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (address v4) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (address(bytes20(_blob)));
   }
 
   /** Get v4 (using the specified store) */
@@ -382,81 +409,85 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (address v4) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 3, getSchema());
-    return (address(Bytes.slice20(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (address(bytes20(_blob)));
   }
 
   /** Set v4 */
-  function setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, address v4) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, address v4) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
+  }
+
+  /** Set v4 */
+  function _setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, address v4) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
   /** Set v4 (using the specified store) */
-  function setV4(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    address v4
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV4(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, address v4) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), getSchema());
+    _store.setField(_tableId, _keyTuple, 3, abi.encodePacked((v4)), _fieldLayout);
   }
 
   /** Get v5 */
-  function getV5(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (bool v5) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function getV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bool v5) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 4, getSchema());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get v5 */
+  function _getV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (bool v5) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Get v5 (using the specified store) */
@@ -467,81 +498,85 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (bool v5) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 4, getSchema());
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
   }
 
   /** Set v5 */
-  function setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, bool v5) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bool v5) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
+  }
+
+  /** Set v5 */
+  function _setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bool v5) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
   /** Set v5 (using the specified store) */
-  function setV5(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    bool v5
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV5(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, bool v5) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), getSchema());
+    _store.setField(_tableId, _keyTuple, 4, abi.encodePacked((v5)), _fieldLayout);
   }
 
   /** Get v6 */
-  function getV6(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (Enum1 v6) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function getV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (Enum1 v6) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 5, getSchema());
-    return Enum1(uint8(Bytes.slice1(_blob, 0)));
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 5, _fieldLayout);
+    return Enum1(uint8(bytes1(_blob)));
+  }
+
+  /** Get v6 */
+  function _getV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal view returns (Enum1 v6) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 5, _fieldLayout);
+    return Enum1(uint8(bytes1(_blob)));
   }
 
   /** Get v6 (using the specified store) */
@@ -552,143 +587,57 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (Enum1 v6) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 5, getSchema());
-    return Enum1(uint8(Bytes.slice1(_blob, 0)));
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 5, _fieldLayout);
+    return Enum1(uint8(bytes1(_blob)));
   }
 
   /** Set v6 */
-  function setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, Enum1 v6) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, Enum1 v6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), getSchema());
+    StoreSwitch.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
+  }
+
+  /** Set v6 */
+  function _setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, Enum1 v6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
   /** Set v6 (using the specified store) */
-  function setV6(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    Enum1 v6
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function setV6(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, Enum1 v6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), getSchema());
-  }
-
-  /** Get v7 */
-  function getV7(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (Enum2 v7) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 6, getSchema());
-    return Enum2(uint8(Bytes.slice1(_blob, 0)));
-  }
-
-  /** Get v7 (using the specified store) */
-  function getV7(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal view returns (Enum2 v7) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 6, getSchema());
-    return Enum2(uint8(Bytes.slice1(_blob, 0)));
-  }
-
-  /** Set v7 */
-  function setV7(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, Enum2 v7) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    StoreSwitch.setField(_tableId, _keyTuple, 6, abi.encodePacked(uint8(v7)), getSchema());
-  }
-
-  /** Set v7 (using the specified store) */
-  function setV7(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    Enum2 v7
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
-
-    _store.setField(_tableId, _keyTuple, 6, abi.encodePacked(uint8(v7)), getSchema());
+    _store.setField(_tableId, _keyTuple, 5, abi.encodePacked(uint8(v6)), _fieldLayout);
   }
 
   /** Get the full data */
@@ -698,19 +647,38 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (StaticsData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
+    return decode(_blob);
+  }
+
+  /** Get the full data */
+  function _get(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum2 k6
+  ) internal view returns (StaticsData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
@@ -722,19 +690,17 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal view returns (StaticsData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getSchema());
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
     return decode(_blob);
   }
 
@@ -745,28 +711,59 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7,
+    Enum2 k6,
     uint256 v1,
     int32 v2,
     bytes16 v3,
     address v4,
     bool v5,
-    Enum1 v6,
-    Enum2 v7
+    Enum1 v6
   ) internal {
-    bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6);
 
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getSchema());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /** Set the full data using individual values */
+  function _set(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum2 k6,
+    uint256 v1,
+    int32 v2,
+    bytes16 v3,
+    address v4,
+    bool v5,
+    Enum1 v6
+  ) internal {
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
@@ -777,42 +774,38 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7,
+    Enum2 k6,
     uint256 v1,
     int32 v2,
     bytes16 v3,
     address v4,
     bool v5,
-    Enum1 v6,
-    Enum2 v7
+    Enum1 v6
   ) internal {
-    bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6);
 
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.setRecord(_tableId, _keyTuple, _data, getSchema());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
-  function set(
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7,
-    StaticsData memory _table
-  ) internal {
-    set(k1, k2, k3, k4, k5, k6, k7, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6, _table.v7);
+  function set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, StaticsData memory _table) internal {
+    set(k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+  }
+
+  /** Set the full data using the data struct */
+  function _set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, StaticsData memory _table) internal {
+    set(k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
   }
 
   /** Set the full data using the data struct (using the specified store) */
@@ -823,30 +816,13 @@ library Statics {
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7,
+    Enum2 k6,
     StaticsData memory _table
   ) internal {
-    set(
-      _store,
-      k1,
-      k2,
-      k3,
-      k4,
-      k5,
-      k6,
-      k7,
-      _table.v1,
-      _table.v2,
-      _table.v3,
-      _table.v4,
-      _table.v5,
-      _table.v6,
-      _table.v7
-    );
+    set(_store, k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /** Decode the tightly packed blob using this table's field layout */
   function decode(bytes memory _blob) internal pure returns (StaticsData memory _table) {
     _table.v1 = (uint256(Bytes.slice32(_blob, 0)));
 
@@ -859,80 +835,94 @@ library Statics {
     _table.v5 = (_toBool(uint8(Bytes.slice1(_blob, 72))));
 
     _table.v6 = Enum1(uint8(Bytes.slice1(_blob, 73)));
-
-    _table.v7 = Enum2(uint8(Bytes.slice1(_blob, 74)));
   }
 
-  /** Tightly pack full data using this table's schema */
+  /** Tightly pack static data using this table's schema */
+  function encodeStatic(
+    uint256 v1,
+    int32 v2,
+    bytes16 v3,
+    address v4,
+    bool v5,
+    Enum1 v6
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(v1, v2, v3, v4, v5, v6);
+  }
+
+  /** Tightly pack full data using this table's field layout */
   function encode(
     uint256 v1,
     int32 v2,
     bytes16 v3,
     address v4,
     bool v5,
-    Enum1 v6,
-    Enum2 v7
+    Enum1 v6
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
   }
 
-  /** Encode keys as a bytes32 array using this table's schema */
+  /** Encode keys as a bytes32 array using this table's field layout */
   function encodeKeyTuple(
     uint256 k1,
     int32 k2,
     bytes16 k3,
     address k4,
     bool k5,
-    Enum1 k6,
-    Enum2 k7
+    Enum2 k6
   ) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
     return _keyTuple;
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getSchema());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(
-    IStore _store,
-    uint256 k1,
-    int32 k2,
-    bytes16 k3,
-    address k4,
-    bool k5,
-    Enum1 k6,
-    Enum2 k7
-  ) internal {
-    bytes32[] memory _keyTuple = new bytes32[](7);
+  function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
     _keyTuple[0] = bytes32(uint256(k1));
     _keyTuple[1] = bytes32(uint256(int256(k2)));
     _keyTuple[2] = bytes32(k3);
     _keyTuple[3] = bytes32(uint256(uint160(k4)));
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
-    _keyTuple[6] = bytes32(uint256(uint8(k7)));
 
-    _store.deleteRecord(_tableId, _keyTuple, getSchema());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
 

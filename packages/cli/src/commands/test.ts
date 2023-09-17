@@ -3,7 +3,7 @@ import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";
 import { yDeployOptions } from "./deploy";
-import { deployHandler, DeployOptions } from "../utils";
+import { DeployOptions, deployHandler } from "../utils/deployHandler";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
 
@@ -59,10 +59,11 @@ const commandModule: CommandModule<Options, Options> = {
       console.log(testResult);
     } catch (e) {
       console.error(e);
+      rmSync(WORLD_ADDRESS_FILE);
+      process.exit(1);
     }
 
     rmSync(WORLD_ADDRESS_FILE);
-
     process.exit(0);
   },
 };

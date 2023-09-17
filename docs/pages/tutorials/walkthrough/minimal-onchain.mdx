@@ -1,6 +1,6 @@
-# The onchain components of getting started
+# The onchain components of the template
 
-You [installed the getting started code](/quick-start), and now you can increment the counter with the best of them.
+You [installed the template code](/quick-start), and now you can increment the counter with the best of them.
 Unfortunately, when you tried to figure out what is happening, it is as clear as mud.
 Have no fear, in this tutorial you learn how to understand the onchain components of the minimal template.
 
@@ -22,20 +22,20 @@ The data schema is declared in `packages/contracts/mud.config.ts`.
 The data schema provided in the example is extremely simple (one singleton).
 To see more of how it works, lets add a second table:
 
-```ts
+```ts filename="mud.config.ts" copy
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   tables: {
     Counter: {
       keySchema: {},
-      schema: "uint32",
+      valueSchema: "uint32",
     },
     Users: {
       keySchema: {
         user: "address",
       },
-      schema: {
+      valueSchema: {
         score: "uint32",
         name: "string",
       },
@@ -62,7 +62,7 @@ contract Example {
 If you are running `pnpm dev` the data schema is updated automatically.
 Otherwise, the command to apply changes to the data schema is
 
-```sh
+```sh copy
 pnpm mud tablegen
 ```
 
@@ -79,7 +79,7 @@ Click below for an explanation of these files.
   
 #### `Tables.sol`
 
-```solidity
+```solidity filename="Tables.sol"
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
@@ -128,18 +128,18 @@ The default namespace is empty.
 
 ```solidity
 library Counter {
-  /** Get the table's schema */
-  function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT32;
+  /** Get the table's value schema */
+  function getValueSchema() internal pure returns (Schema) {
+    SchemaType[] memory _valueSchema = new SchemaType[](1);
+    _valueSchema[0] = SchemaType.UINT32;
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_valueSchema);
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](0);
+    SchemaType[] memory _keySchema = new SchemaType[](0);
 
-    return SchemaLib.encode(_schema);
+    return SchemaLib.encode(_keySchema);
   }
 ```
 

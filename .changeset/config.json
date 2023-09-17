@@ -13,4 +13,3 @@
     "prereleaseTemplate": "{tag}-{commit}"
   }
 }
-

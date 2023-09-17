@@ -8,3 +8,7 @@ verbosity = 2
 allow_paths = ["../../node_modules"]
 src = "contracts"
 out = "out"
+extra_output_files = [
+  "abi",
+  "evm.bytecode"
+]

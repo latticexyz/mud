@@ -1,6 +1,0 @@
-memmove/=node_modules/memmove/src/
-ds-test/=node_modules/ds-test/src/
-forge-std/=node_modules/forge-std/src/
-solmate/=node_modules/solmate/src
-solecs/=node_modules/@latticexyz/solecs/src/
-@solidstate/=node_modules/@solidstate/

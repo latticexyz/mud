@@ -14,7 +14,6 @@ export function renderWorld(options: RenderWorldOptions) {
       ? [
           { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
           { symbol: "IWorldKernel", path: `${worldImportPath}interfaces/IWorldKernel.sol` },
-          { symbol: "IWorldEphemeral", path: `${worldImportPath}interfaces/IWorldEphemeral.sol` },
         ]
       : [
           {
@@ -24,19 +23,18 @@ export function renderWorld(options: RenderWorldOptions) {
         ];
   const importSymbols = [...baseImports, ...imports].map(({ symbol }) => symbol);
 
-  return `${renderedSolidityHeader}
+  return `
+    ${renderedSolidityHeader}
 
-${renderAbsoluteImports(baseImports)}
+    ${renderAbsoluteImports(baseImports)}
 
-${renderRelativeImports(imports)}
+    ${renderRelativeImports(imports)}
 
-/**
- * The ${interfaceName} interface includes all systems dynamically added to the World
- * during the deploy process.
- */
-interface ${interfaceName} is ${renderArguments(importSymbols)} {
-
-}
-
-`;
+    /**
+     * The ${interfaceName} interface includes all systems dynamically added to the World
+     * during the deploy process.
+     */
+    interface ${interfaceName} is ${renderArguments(importSymbols)} {
+    }
+  `;
 }

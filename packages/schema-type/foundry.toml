@@ -9,3 +9,7 @@ allow_paths = ["../../node_modules"]
 src = "src/solidity"
 out = "out/solidity"
 test = "test/solidity"
+extra_output_files = [
+  "abi",
+  "evm.bytecode"
+]

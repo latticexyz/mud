@@ -12,12 +12,12 @@ describe("mudConfig", () => {
             keySchema: {
               a: "Enum1";
             };
-            schema: {
+            valueSchema: {
               b: "Enum2";
             };
           };
           Table2: {
-            schema: {
+            valueSchema: {
               a: "uint32";
             };
           };
@@ -38,12 +38,12 @@ describe("mudConfig", () => {
         keySchema: {
           a: "Enum1";
         };
-        schema: {
+        valueSchema: {
           b: "Enum2";
         };
       };
       Table2: {
-        schema: {
+        valueSchema: {
           a: "uint32";
         };
       };

@@ -1,5 +1,83 @@
 # @latticexyz/dev-tools
 
+## 2.0.0-next.8
+
+### Patch Changes
+
+- Updated dependencies [[`1d60930d`](https://github.com/latticexyz/mud/commit/1d60930d6d4c9a0bda262e5e23a5f719b9dd48c7), [`b9e562d8`](https://github.com/latticexyz/mud/commit/b9e562d8f7a6051bb1a7262979b268fd2c83daac), [`51914d65`](https://github.com/latticexyz/mud/commit/51914d656d8cd8d851ccc8296d249cf09f53e670), [`2ca75f9b`](https://github.com/latticexyz/mud/commit/2ca75f9b9063ea33524e6c609b87f5494f678fa0), [`5e71e1cb`](https://github.com/latticexyz/mud/commit/5e71e1cb541b0a18ee414e18dd80f1dd24a92b98)]:
+  - @latticexyz/store@2.0.0-next.8
+  - @latticexyz/world@2.0.0-next.8
+  - @latticexyz/react@2.0.0-next.8
+  - @latticexyz/store-sync@2.0.0-next.8
+  - @latticexyz/common@2.0.0-next.8
+  - @latticexyz/recs@2.0.0-next.8
+  - @latticexyz/utils@2.0.0-next.8
+
+## 2.0.0-next.7
+
+### Patch Changes
+
+- Updated dependencies [[`c4d5eb4e`](https://github.com/latticexyz/mud/commit/c4d5eb4e4e4737112b981a795a9c347e3578cb15), [`18d3aea5`](https://github.com/latticexyz/mud/commit/18d3aea55b1d7f4b442c21343795c299a56fc481)]:
+  - @latticexyz/store@2.0.0-next.7
+  - @latticexyz/world@2.0.0-next.7
+  - @latticexyz/react@2.0.0-next.7
+  - @latticexyz/store-sync@2.0.0-next.7
+  - @latticexyz/common@2.0.0-next.7
+  - @latticexyz/recs@2.0.0-next.7
+  - @latticexyz/utils@2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Patch Changes
+
+- Updated dependencies [[`8025c350`](https://github.com/latticexyz/mud/commit/8025c3505a7411d8539b1cfd72265aed27e04561)]:
+  - @latticexyz/store@2.0.0-next.6
+  - @latticexyz/world@2.0.0-next.6
+  - @latticexyz/react@2.0.0-next.6
+  - @latticexyz/store-sync@2.0.0-next.6
+  - @latticexyz/common@2.0.0-next.6
+  - @latticexyz/recs@2.0.0-next.6
+  - @latticexyz/utils@2.0.0-next.6
+
+## 2.0.0-next.5
+
+### Patch Changes
+
+- Updated dependencies [[`ce97426c`](https://github.com/latticexyz/mud/commit/ce97426c0d70832e5efdb8bad83207a9d840302b), [`1ca35e9a`](https://github.com/latticexyz/mud/commit/1ca35e9a1630a51dfd1e082c26399f76f2cd06ed), [`9d0f492a`](https://github.com/latticexyz/mud/commit/9d0f492a90e5d94c6b38ad732e78fd4b13b2adbe), [`c583f3cd`](https://github.com/latticexyz/mud/commit/c583f3cd08767575ce9df39725ec51195b5feb5b)]:
+  - @latticexyz/world@2.0.0-next.5
+  - @latticexyz/store-sync@2.0.0-next.5
+  - @latticexyz/common@2.0.0-next.5
+  - @latticexyz/react@2.0.0-next.5
+  - @latticexyz/recs@2.0.0-next.5
+  - @latticexyz/store@2.0.0-next.5
+  - @latticexyz/utils@2.0.0-next.5
+
+## 2.0.0-next.4
+
+### Patch Changes
+
+- Updated dependencies [[`ce7125a1`](https://github.com/latticexyz/mud/commit/ce7125a1b97efd3db47c5ea1593d5a37ba143f64), [`c14f8bf1`](https://github.com/latticexyz/mud/commit/c14f8bf1ec8c199902c12899853ac144aa69bb9c), [`e3de1a33`](https://github.com/latticexyz/mud/commit/e3de1a338fe110ac33ba9fb833366541e4cf4cf1)]:
+  - @latticexyz/recs@2.0.0-next.4
+  - @latticexyz/react@2.0.0-next.4
+  - @latticexyz/store-sync@2.0.0-next.4
+  - @latticexyz/common@2.0.0-next.4
+  - @latticexyz/store@2.0.0-next.4
+  - @latticexyz/utils@2.0.0-next.4
+  - @latticexyz/world@2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- Updated dependencies [[`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57), [`bb6ada74`](https://github.com/latticexyz/mud/commit/bb6ada74016bdd5fdf83c930008c694f2f62505e), [`c32a9269`](https://github.com/latticexyz/mud/commit/c32a9269a30c1898932ebbf7e3b60e25d1bd884c), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1), [`d5b73b12`](https://github.com/latticexyz/mud/commit/d5b73b12666699c442d182ee904fa8747b78fefd), [`433078c5`](https://github.com/latticexyz/mud/commit/433078c54c22fa1b4e32d7204fb41bd5f79ca1db), [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab), [`3e024fcf`](https://github.com/latticexyz/mud/commit/3e024fcf395a1c1b38d12362fc98472290eb7cf1), [`0d12db8c`](https://github.com/latticexyz/mud/commit/0d12db8c2170905f5116111e6bc417b6dca8eb61), [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1)]:
+  - @latticexyz/store@2.0.0-next.3
+  - @latticexyz/world@2.0.0-next.3
+  - @latticexyz/common@2.0.0-next.3
+  - @latticexyz/store-sync@2.0.0-next.3
+  - @latticexyz/react@2.0.0-next.3
+  - @latticexyz/recs@2.0.0-next.3
+  - @latticexyz/utils@2.0.0-next.3
+
 ## 2.0.0-next.2
 
 ### Major Changes

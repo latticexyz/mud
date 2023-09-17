@@ -8,8 +8,8 @@ There also exists tooling for [Unity](https://github.com/emergenceland/unimud) f
 
 ## Representing state in the browser
 
-Currently the way to query the [Store](/Store) and react to changes is `recs`.
-This package is designed to represent and query ECS data from a [`Store`](/Store).
+Currently the way to query the [Store](/store) and react to changes is `recs`.
+This package is designed to represent and query ECS data from a [`Store`](/store).
 If your MUD tables are set up with a single `bytes32` key (see the [ECS modelling guide](/ecs)), and you plan to represent an entity and its associated components as the same `bytes32` key on multiple tables, then `recs` will let you query your data in a natural way.
 
 To read data and react to changes with `recs`, there exists two APIs:
@@ -24,7 +24,7 @@ const config = mudConfig({
   tables: {
     NameComponent: "string",
     PlayerComponent: "bool",
-    PositionComponent: { schema: { x: "int32", y: "int32" } },
+    PositionComponent: { valueSchema: { x: "int32", y: "int32" } },
   },
 });
 ```

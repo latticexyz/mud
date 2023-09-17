@@ -12,10 +12,6 @@ It adds critical tables and systems to the World, which are externalized to keep
 
 See [World internals](/world/internals) for table and system details.
 
-2. **`RegistrationModule`**
-
-The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
-
 #### **`UniqueEntityModule`**
 
 The [`UniqueEntityModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/uniqueentity/UniqueEntityModule.sol) installs a system that always returns a unique `bytes32` key. It is designed for tables that have one key (eg: ECS components).
@@ -52,7 +48,7 @@ For example, it can be used to fetch all keys in the "Position" table (if the ta
 It offers two methods:
 
 - `getKeysInTable(bytes32 tableId)` returns all keys in a table
-- `hasKey(bytes32 tableId, bytes32[] memory key)` returns whether a given key is in a table (with O(1) gas)
+- `hasKey(bytes32 tableId, bytes32[] memory keyTuple)` returns whether a given keyTuple is in a table (with O(1) gas)
 
 Using `getKeysInTable` to retrieve all keys in the Player table:
 
@@ -66,7 +62,7 @@ import { Player, PlayerTableId } from "../codegen/tables/Player.sol";
 bytes32[][] memory players = getKeysInTable(world, PlayerTableId);
 ```
 
-Using `hasKey` to check if a key is in the Player table:
+Using `hasKey` to check if a keyTuple is in the Player table:
 
 ```solidity
 // assumes a boolean flag indicates a player:
@@ -83,7 +79,7 @@ bool memory isPlayer = hasKey(world, PlayerTableId, keyTuple);
 Internally, it works by installing a [hook](https://v2.mud.dev/store/advanced-features#storage-hooks) that maintains:
 
 - an array of all keys in the table
-- an index or "**reverse mapping**" of whether a given key is in the table
+- an index or "**reverse mapping**" of whether a given keyTuple is in the table
 
 #### **`KeysWithValueModule`**
 
@@ -100,7 +96,7 @@ Using `getKeysWithValue` to retrieve all NFTs owned by a specific address:
 ```solidity
 // assumes this ownership table:
 // Owners: {
-//   schema: "address",
+//   valueSchema: "address",
 //   keySchema: { nftId: "uint256" }
 // }
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
@@ -161,7 +157,7 @@ import { resolveTableId } from "@latticexyz/config";
 export default mudConfig({
   tables: {
     MyTable: {
-      schema: "uint32",
+      valueSchema: "uint32",
     },
   },
   modules: [

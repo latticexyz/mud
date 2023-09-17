@@ -1,10 +1,10 @@
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { address, json } from "./columnTypes";
-import { DynamicAbiType, StaticAbiType } from "@latticexyz/schema-type";
+import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 export const chainState = sqliteTable("__chainState", {
   schemaVersion: integer("schema_version").notNull().primaryKey(),
-  chainId: integer("chainId").notNull().primaryKey(),
+  chainId: integer("chain_id").notNull().primaryKey(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
   // TODO: last block hash?
   lastError: text("last_error"),
@@ -17,8 +17,8 @@ export const mudStoreTables = sqliteTable("__mudStoreTables", {
   tableId: text("table_id").notNull(),
   namespace: text("namespace").notNull(),
   name: text("name").notNull(),
-  keySchema: json<Record<string, StaticAbiType>>("key_schema").notNull(),
-  valueSchema: json<Record<string, StaticAbiType | DynamicAbiType>>("value_schema").notNull(),
+  keySchema: json<KeySchema>("key_schema").notNull(),
+  valueSchema: json<ValueSchema>("value_schema").notNull(),
   lastUpdatedBlockNumber: blob("last_updated_block_number", { mode: "bigint" }),
   // TODO: last block hash?
   lastError: text("last_error"),

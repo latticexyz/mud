@@ -1,5 +1,120 @@
 # Change Log
 
+## 2.0.0-next.8
+
+## 2.0.0-next.7
+
+## 2.0.0-next.6
+
+### Minor Changes
+
+- [#1403](https://github.com/latticexyz/mud/pull/1403) [`55377ffe`](https://github.com/latticexyz/mud/commit/55377ffe6bfab13e0e834fadc07df4ef75122295) Thanks [@holic](https://github.com/holic)! - We now use `@latticexyz/abi-ts` to generate TS type declaration files (`.d.ts`) for each ABI JSON file. This replaces our usage TypeChain everywhere.
+
+  If you have a MUD project created from an older template, you can replace TypeChain with `abi-ts` by first updating your contracts' `package.json`:
+
+  ```diff
+  -"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
+  +"build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
+  -"build:abi": "forge clean && forge build",
+  +"build:abi": "rimraf abi && forge build --extra-output-files abi --out abi --skip test script MudTest.sol",
+  +"build:abi-ts": "mud abi-ts --input 'abi/IWorld.sol/IWorld.abi.json' && prettier --write '**/*.abi.json.d.ts'",
+   "build:mud": "mud tablegen && mud worldgen",
+  -"build:typechain": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json",
+  ```
+
+  And update your client's `setupNetwork.ts` with:
+
+  ```diff
+  -import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+  +import IWorldAbi from "contracts/abi/IWorld.sol/IWorld.abi.json";
+
+   const worldContract = createContract({
+     address: networkConfig.worldAddress as Hex,
+  -  abi: IWorld__factory.abi,
+  +  abi: IWorldAbi,
+  ```
+
+## 2.0.0-next.5
+
+## 2.0.0-next.4
+
+## 2.0.0-next.3
+
+### Patch Changes
+
+- [#1174](https://github.com/latticexyz/mud/pull/1174) [`952cd534`](https://github.com/latticexyz/mud/commit/952cd534447d08e6231ab147ed1cc24fb49bbb57) Thanks [@alvrs](https://github.com/alvrs)! - All `Store` methods now require the table's value schema to be passed in as an argument instead of loading it from storage.
+  This decreases gas cost and removes circular dependencies of the Schema table (where it was not possible to write to the Schema table before the Schema table was registered).
+
+  ```diff
+    function setRecord(
+      bytes32 table,
+      bytes32[] calldata key,
+      bytes calldata data,
+  +   Schema valueSchema
+    ) external;
+  ```
+
+  The same diff applies to `getRecord`, `getField`, `setField`, `pushToField`, `popFromField`, `updateInField`, and `deleteRecord`.
+
+  This change only requires changes in downstream projects if the `Store` methods were accessed directly. In most cases it is fully abstracted in the generated table libraries,
+  so downstream projects only need to regenerate their table libraries after updating MUD.
+
+- [#1182](https://github.com/latticexyz/mud/pull/1182) [`afaf2f5f`](https://github.com/latticexyz/mud/commit/afaf2f5ffb36fe389a3aba8da2f6d8c84bdb26ab) Thanks [@alvrs](https://github.com/alvrs)! - - `Store`'s internal schema table is now a normal table instead of using special code paths. It is renamed to Tables, and the table ID changed from `mudstore:schema` to `mudstore:Tables`
+
+  - `Store`'s `registerSchema` and `setMetadata` are combined into a single `registerTable` method. This means metadata (key names, field names) is immutable and indexers can create tables with this metadata when a new table is registered on-chain.
+
+    ```diff
+    -  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+    -
+    -  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+    +  function registerTable(
+    +    bytes32 table,
+    +    Schema keySchema,
+    +    Schema valueSchema,
+    +    string[] calldata keyNames,
+    +    string[] calldata fieldNames
+    +  ) external;
+    ```
+
+  - `World`'s `registerTable` method is updated to match the `Store` interface, `setMetadata` is removed
+  - The `getSchema` method is renamed to `getValueSchema` on all interfaces
+    ```diff
+    - function getSchema(bytes32 table) external view returns (Schema schema);
+    + function getValueSchema(bytes32 table) external view returns (Schema valueSchema);
+    ```
+  - The `store-sync` and `cli` packages are updated to integrate the breaking protocol changes. Downstream projects only need to manually integrate these changes if they access low level `Store` or `World` functions. Otherwise, a fresh deploy with the latest MUD will get you these changes.
+
+- [#1311](https://github.com/latticexyz/mud/pull/1311) [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1) Thanks [@alvrs](https://github.com/alvrs)! - Move `createFaucetService` from `@latticexyz/network` to `@latticexyz/services/faucet`.
+
+  ```diff
+  - import { createFaucetService } from "@latticexyz/network";
+  + import { createFaucetService } from "@latticexyz/services/faucet";
+  ```
+
+- [#1311](https://github.com/latticexyz/mud/pull/1311) [`331f0d63`](https://github.com/latticexyz/mud/commit/331f0d636f6f327824307570a63fb301d9b897d1) Thanks [@alvrs](https://github.com/alvrs)! - Deprecate `@latticexyz/std-client` and remove v1 network dependencies.
+
+  - `getBurnerWallet` is replaced by `getBurnerPrivateKey` from `@latticexyz/common`. It now returns a `Hex` string instead of an `rxjs` `BehaviorSubject`.
+
+    ```
+    - import { getBurnerWallet } from "@latticexyz/std-client";
+    + import { getBurnerPrivateKey } from "@latticexyz/common";
+
+    - const privateKey = getBurnerWallet().value;
+    - const privateKey = getBurnerPrivateKey();
+    ```
+
+  - All functions from `std-client` that depended on v1 network code are removed (most notably `setupMUDNetwork` and `setupMUDV2Network`). Consumers should upgrade to v2 networking code from `@latticexyz/store-sync`.
+
+  - The following functions are removed from `std-client` because they are very use-case specific and depend on deprecated code: `getCurrentTurn`, `getTurnAtTime`, `getGameConfig`, `isUntraversable`, `getPlayerEntity`, `resolveRelationshipChain`, `findEntityWithComponentInRelationshipChain`, `findInRelationshipChain`. Consumers should vendor these functions if they are still needed.
+
+  - Remaining exports from `std-client` are moved to `/deprecated`. The package will be removed in a future release (once there are replacements for the deprecated exports).
+
+    ```diff
+    - import { ... } from "@latticexyz/std-client";
+    + import { ... } from "@latticexyz/std-client/deprecated";
+    ```
+
 ## 2.0.0-next.2
 
 ### Major Changes

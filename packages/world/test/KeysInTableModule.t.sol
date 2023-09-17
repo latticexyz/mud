@@ -4,7 +4,10 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
+import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
+import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
@@ -20,41 +23,42 @@ import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test, GasReporter {
   using ResourceSelector for bytes32;
-  IBaseWorld world;
-  KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
+  IBaseWorld private world;
+  KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
 
-  bytes16 namespace = ROOT_NAMESPACE;
-  bytes16 name = bytes16("source");
-  bytes16 singletonName = bytes16("singleton");
-  bytes16 compositeName = bytes16("composite");
-  bytes32 key1 = keccak256("test");
-  bytes32[] keyTuple1;
-  bytes32 key2 = keccak256("test2");
-  bytes32[] keyTuple2;
-  bytes32 key3 = keccak256("test3");
-  bytes32[] keyTuple3;
+  bytes16 private namespace = ROOT_NAMESPACE;
+  bytes16 private name = bytes16("source");
+  bytes16 private singletonName = bytes16("singleton");
+  bytes16 private compositeName = bytes16("composite");
+  bytes32 private key1 = keccak256("test");
+  bytes32[] private keyTuple1;
+  bytes32 private key2 = keccak256("test2");
+  bytes32[] private keyTuple2;
+  bytes32 private key3 = keccak256("test3");
+  bytes32[] private keyTuple3;
 
-  Schema tableSchema;
-  Schema tableKeySchema;
-  Schema singletonKeySchema;
-  Schema compositeKeySchema;
-  bytes32 tableId;
-  bytes32 singletonTableId;
-  bytes32 compositeTableId;
+  FieldLayout private tableFieldLayout;
+  Schema private tableValueSchema;
+  Schema private tableKeySchema;
+  Schema private singletonKeySchema;
+  Schema private compositeKeySchema;
+  bytes32 private tableId = ResourceSelector.from(namespace, name);
+  bytes32 private singletonTableId = ResourceSelector.from(namespace, singletonName);
+  bytes32 private compositeTableId = ResourceSelector.from(namespace, compositeName);
 
-  uint256 val1 = 123;
-  uint256 val2 = 42;
+  uint256 private val1 = 123;
+  uint256 private val2 = 42;
 
   function setUp() public {
-    tableSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
+    tableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
+
+    tableValueSchema = SchemaEncodeHelper.encode(SchemaType.UINT256);
     tableKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
     compositeKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32, SchemaType.BYTES32, SchemaType.BYTES32);
-
-    SchemaType[] memory _schema = new SchemaType[](0);
-    singletonKeySchema = SchemaLib.encode(_schema);
+    singletonKeySchema = SchemaLib.encode(new SchemaType[](0));
 
     world = IBaseWorld(address(new World()));
-    world.installRootModule(new CoreModule(), new bytes(0));
+    world.initialize(new CoreModule());
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
@@ -65,9 +69,23 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
   function _installKeysInTableModule() internal {
     // Register source table
-    tableId = world.registerTable(namespace, name, tableSchema, tableKeySchema);
-    singletonTableId = world.registerTable(namespace, singletonName, tableSchema, singletonKeySchema);
-    compositeTableId = world.registerTable(namespace, compositeName, tableSchema, compositeKeySchema);
+    world.registerTable(tableId, tableFieldLayout, tableKeySchema, tableValueSchema, new string[](1), new string[](1));
+    world.registerTable(
+      singletonTableId,
+      tableFieldLayout,
+      singletonKeySchema,
+      tableValueSchema,
+      new string[](0),
+      new string[](1)
+    );
+    world.registerTable(
+      compositeTableId,
+      tableFieldLayout,
+      compositeKeySchema,
+      tableValueSchema,
+      new string[](3),
+      new string[](1)
+    );
 
     // Install the index module
     // TODO: add support for installing this via installModule
@@ -86,7 +104,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     bytes32[] memory keyTuple = new bytes32[](0);
 
-    world.setRecord(namespace, singletonName, keyTuple, abi.encodePacked(val1), tableSchema);
+    world.setRecord(
+      singletonTableId,
+      keyTuple,
+      abi.encodePacked(val1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in this target table
     bytes32[][] memory keysInTable = getKeysInTable(world, singletonTableId);
@@ -103,7 +128,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     keyTuple[1] = "two";
     keyTuple[2] = "three";
 
-    world.setRecord(namespace, compositeName, keyTuple, abi.encodePacked(val1), tableSchema);
+    world.setRecord(
+      compositeTableId,
+      keyTuple,
+      abi.encodePacked(val1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in this target table
     bytes32[][] memory keysInTable = getKeysInTable(world, compositeTableId);
@@ -128,7 +160,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     _installKeysInTableModule();
     // Set a value in the source table
     startGasReport("set a record on a table with keysInTableModule installed");
-    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple1,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
     endGasReport();
 
     // Get the list of keys in this target table
@@ -147,7 +186,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Set a value in the source table
     startGasReport("set a record on a table with keysInTableModule installed (first)");
-    world.setRecord(namespace, name, keyTuple, abi.encodePacked(value1), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
     endGasReport();
 
     // Get the list of keys in the first target table
@@ -159,7 +205,15 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Install the hook on the second table
     bytes16 sourceFile2 = bytes16("source2");
-    bytes32 sourceTableId2 = world.registerTable(namespace, sourceFile2, tableSchema, tableKeySchema);
+    bytes32 sourceTableId2 = ResourceSelector.from(namespace, sourceFile2);
+    world.registerTable(
+      sourceTableId2,
+      tableFieldLayout,
+      tableKeySchema,
+      tableValueSchema,
+      new string[](1),
+      new string[](1)
+    );
     world.installRootModule(keysInTableModule, abi.encode(sourceTableId2));
 
     keyTuple = new bytes32[](1);
@@ -167,7 +221,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Set a value in the source table
     startGasReport("set a record on a table with keysInTableModule installed (second)");
-    world.setRecord(namespace, sourceFile2, keyTuple, abi.encodePacked(value2), tableSchema);
+    world.setRecord(
+      sourceTableId2,
+      keyTuple,
+      abi.encodePacked(value2),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
     endGasReport();
 
     // Get the list of keys in the second target table
@@ -187,7 +248,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     _installKeysInTableModule();
 
     // Set a value in the source table
-    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value1), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple1,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in the target table
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
@@ -197,7 +265,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     assertEq(keysInTable[0][0], key1, "2");
 
     // Set another key with the same value
-    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value1), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple2,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, tableId);
@@ -209,7 +284,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Change the value of the first key
     startGasReport("change a record on a table with keysInTableModule installed");
-    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value2), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple1,
+      abi.encodePacked(value2),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
     endGasReport();
 
     // Get the list of keys in the target table
@@ -222,7 +304,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Delete the first key
     startGasReport("delete a record on a table with keysInTableModule installed");
-    world.deleteRecord(namespace, name, keyTuple1, tableSchema);
+    world.deleteRecord(tableId, keyTuple1, tableFieldLayout);
     endGasReport();
 
     // Get the list of keys in the target table
@@ -252,7 +334,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     keyTupleB[2] = "charlie";
 
     // Set a value in the source table
-    world.setRecord(namespace, compositeName, keyTupleA, abi.encodePacked(value1), tableSchema);
+    world.setRecord(
+      compositeTableId,
+      keyTupleA,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in the target table
     bytes32[][] memory keysInTable = getKeysInTable(world, compositeTableId);
@@ -264,7 +353,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     }
 
     // Set another key with the same value
-    world.setRecord(namespace, compositeName, keyTupleB, abi.encodePacked(value1), tableSchema);
+    world.setRecord(
+      compositeTableId,
+      keyTupleB,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, compositeTableId);
@@ -280,7 +376,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Change the value of the first key
     startGasReport("change a composite record on a table with keysInTableModule installed");
-    world.setRecord(namespace, compositeName, keyTupleA, abi.encodePacked(value2), tableSchema);
+    world.setRecord(
+      compositeTableId,
+      keyTupleA,
+      abi.encodePacked(value2),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
     endGasReport();
 
     // Get the list of keys in the target table
@@ -297,7 +400,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Delete the first key
     startGasReport("delete a composite record on a table with keysInTableModule installed");
-    world.deleteRecord(namespace, compositeName, keyTupleA, tableSchema);
+    world.deleteRecord(compositeTableId, keyTupleA, tableFieldLayout);
     endGasReport();
 
     // Get the list of keys in the target table
@@ -315,7 +418,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Set a value in the source table
     startGasReport("set a field on a table with keysInTableModule installed");
-    world.setField(namespace, name, keyTuple1, 0, abi.encodePacked(value1), tableSchema);
+    world.setField(tableId, keyTuple1, 0, abi.encodePacked(value1), tableFieldLayout);
     endGasReport();
 
     // Get the list of keys in the target table
@@ -327,7 +430,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Change the value using setField
     startGasReport("change a field on a table with keysInTableModule installed");
-    world.setField(namespace, name, keyTuple1, 0, abi.encodePacked(value2), tableSchema);
+    world.setField(tableId, keyTuple1, 0, abi.encodePacked(value2), tableFieldLayout);
     endGasReport();
 
     // Get the list of keys in the target table
@@ -342,7 +445,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     _installKeysInTableModule();
 
     // Set a value in the source table
-    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value1), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple1,
+      abi.encodePacked(value1),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     startGasReport("Get list of keys in a given table");
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
@@ -353,7 +463,14 @@ contract KeysInTableModuleTest is Test, GasReporter {
     assertEq(keysInTable[0][0], key1);
 
     // Set another key with a different value
-    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value2), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple2,
+      abi.encodePacked(value2),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, tableId);
@@ -368,14 +485,35 @@ contract KeysInTableModuleTest is Test, GasReporter {
     _installKeysInTableModule();
 
     // Add 3 values
-    world.setRecord(namespace, name, keyTuple1, abi.encodePacked(value), tableSchema);
-    world.setRecord(namespace, name, keyTuple2, abi.encodePacked(value), tableSchema);
-    world.setRecord(namespace, name, keyTuple3, abi.encodePacked(value), tableSchema);
+    world.setRecord(
+      tableId,
+      keyTuple1,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
+    world.setRecord(
+      tableId,
+      keyTuple2,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
+    world.setRecord(
+      tableId,
+      keyTuple3,
+      abi.encodePacked(value),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      tableFieldLayout
+    );
 
     // Remove 2, starting from the middle
     // This tests that KeysInTable correctly tracks swaps indexes
-    world.deleteRecord(namespace, name, keyTuple2, tableSchema);
-    world.deleteRecord(namespace, name, keyTuple3, tableSchema);
+    world.deleteRecord(tableId, keyTuple2, tableFieldLayout);
+    world.deleteRecord(tableId, keyTuple3, tableFieldLayout);
 
     // Get the list of keys in the target table
     bytes32[][] memory keysInTable = getKeysInTable(world, tableId);
