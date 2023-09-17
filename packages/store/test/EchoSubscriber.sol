@@ -30,24 +30,46 @@ contract EchoSubscriber is StoreHook {
     emit HookCalled(abi.encode(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout));
   }
 
-  function onBeforeSetField(
+  function onBeforeSpliceStaticData(
     bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
   ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldIndex, data, fieldLayout));
+    emit HookCalled(abi.encode(tableId, keyTuple, start, deleteCount, data));
   }
 
-  function onAfterSetField(
+  function onAfterSpliceStaticData(
     bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
   ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldIndex, data, fieldLayout));
+    emit HookCalled(abi.encode(tableId, keyTuple, start, deleteCount, data));
+  }
+
+  function onBeforeSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data,
+    PackedCounter encodedLengths
+  ) public {
+    emit HookCalled(abi.encode(tableId, keyTuple, start, deleteCount, data, encodedLengths.unwrap()));
+  }
+
+  function onAfterSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data,
+    PackedCounter encodedLengths
+  ) public {
+    emit HookCalled(abi.encode(tableId, keyTuple, start, deleteCount, data, encodedLengths.unwrap()));
   }
 
   function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {

@@ -18,7 +18,7 @@ import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -612,7 +612,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     startGasReport("register subscriber");
-    StoreCore.registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    StoreCore.registerStoreHook(
+      tableId,
+      subscriber,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
     endGasReport();
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
@@ -654,7 +658,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     );
 
     startGasReport("register subscriber");
-    StoreCore.registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    StoreCore.registerStoreHook(
+      tableId,
+      subscriber,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
     endGasReport();
 
     uint32[] memory arrayData = new uint32[](1);

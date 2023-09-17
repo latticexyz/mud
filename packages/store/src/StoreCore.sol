@@ -679,7 +679,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(oldFieldLength),
           data: data,
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -701,7 +701,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(oldFieldLength),
           data: data,
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -754,7 +754,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(0),
           data: dataToPush,
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -775,7 +775,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(0),
           data: dataToPush,
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -830,7 +830,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(byteLengthToPop),
           data: new bytes(0),
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -850,7 +850,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(byteLengthToPop),
           data: new bytes(0),
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -902,7 +902,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(dataToSet.length),
           data: dataToSet,
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }
@@ -920,7 +920,7 @@ library StoreCoreInternal {
           start: uint48(start),
           deleteCount: uint40(dataToSet.length),
           data: dataToSet,
-          encodedLengths: encodedLengths.unwrap()
+          encodedLengths: encodedLengths
         });
       }
     }

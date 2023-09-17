@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2021",
+    "types": [
+      "node"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "outDir": "./dist",
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "emitDeclarationOnly": false,
+    "incremental": true,
+    "tsBuildInfoFile": "/Users/flomllr/git/latticexyz/mud/node_modules/.pnpm/vitest@0.31.4_jsdom@22.1.0/node_modules/vitest/dist/tsconfig.tmp.tsbuildinfo"
+  },
+  "include": [
+    "ts"
+  ],
+  "exclude": [
+    "dist"
+  ]
+}

@@ -16,7 +16,7 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
@@ -977,7 +977,11 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](1)
     );
 
-    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    IStore(this).registerStoreHook(
+      tableId,
+      subscriber,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -1022,8 +1026,10 @@ contract StoreCoreTest is Test, StoreMock {
       revertSubscriber,
       BEFORE_SET_RECORD |
         AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
         BEFORE_DELETE_RECORD |
         AFTER_DELETE_RECORD
     );
@@ -1033,8 +1039,10 @@ contract StoreCoreTest is Test, StoreMock {
       echoSubscriber,
       BEFORE_SET_RECORD |
         AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
         BEFORE_DELETE_RECORD |
         AFTER_DELETE_RECORD
     );
@@ -1107,7 +1115,11 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](2)
     );
 
-    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
+    IStore(this).registerStoreHook(
+      tableId,
+      subscriber,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD
+    );
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
