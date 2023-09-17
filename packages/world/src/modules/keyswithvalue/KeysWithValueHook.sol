@@ -6,6 +6,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { Tables } from "@latticexyz/store/src/codegen/tables/Tables.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -65,6 +66,66 @@ contract KeysWithValueHook is StoreHook {
     FieldLayout fieldLayout
   ) public {
     // NOOP
+  }
+
+  function onBeforeSpliceStaticData(
+    bytes32 sourceTableId,
+    bytes32[] calldata keyTuple,
+    uint48,
+    uint40,
+    bytes calldata
+  ) public {
+    // Remove the key from the list of keys with the previous value
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
+  }
+
+  function onAfterSpliceStaticData(
+    bytes32 sourceTableId,
+    bytes32[] calldata keyTuple,
+    uint48,
+    uint40,
+    bytes calldata
+  ) public {
+    // Add the key to the list of keys with the new value
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
+  }
+
+  function onBeforeSpliceDynamicData(
+    bytes32 sourceTableId,
+    bytes32[] calldata keyTuple,
+    uint8,
+    uint40,
+    uint40,
+    bytes calldata,
+    PackedCounter
+  ) public {
+    // Remove the key from the list of keys with the previous value
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
+  }
+
+  function onAfterSpliceDynamicData(
+    bytes32 sourceTableId,
+    bytes32[] calldata keyTuple,
+    uint8,
+    uint40,
+    uint40,
+    bytes calldata,
+    PackedCounter
+  ) public {
+    // Add the key to the list of keys with the new value
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
   }
 
   function onBeforeSetField(

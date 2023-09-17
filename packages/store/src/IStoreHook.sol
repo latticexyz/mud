@@ -54,7 +54,8 @@ interface IStoreHook is IERC165 {
   function onBeforeSpliceDynamicData(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint48 start,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
     uint40 deleteCount,
     bytes calldata data,
     PackedCounter encodedLengths
@@ -63,7 +64,8 @@ interface IStoreHook is IERC165 {
   function onAfterSpliceDynamicData(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
-    uint48 start,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
     uint40 deleteCount,
     bytes calldata data,
     PackedCounter encodedLengths

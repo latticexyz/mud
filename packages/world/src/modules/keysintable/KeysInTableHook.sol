@@ -63,11 +63,41 @@ contract KeysInTableHook is StoreHook {
     // NOOP
   }
 
-  function onBeforeSetField(bytes32 tableId, bytes32[] memory keyTuple, uint8, bytes memory, FieldLayout) public {
+  function onBeforeSpliceStaticData(bytes32, bytes32[] calldata, uint48, uint40, bytes calldata) public pure {
     // NOOP
   }
 
-  function onAfterSetField(bytes32 tableId, bytes32[] memory keyTuple, uint8, bytes memory, FieldLayout) public {
+  function onAfterSpliceStaticData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48,
+    uint40,
+    bytes calldata
+  ) public pure {
+    handleSet(tableId, keyTuple);
+  }
+
+  function onBeforeSpliceDynamicData(
+    bytes32,
+    bytes32[] calldata,
+    uint8,
+    uint40,
+    uint40,
+    bytes calldata,
+    PackedCounter
+  ) public pure {
+    // NOOP
+  }
+
+  function onAfterSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8,
+    uint40,
+    uint40,
+    bytes calldata,
+    PackedCounter
+  ) public pure {
     handleSet(tableId, keyTuple);
   }
 

@@ -48,19 +48,51 @@ contract MirrorSubscriber is StoreHook {
     // NOOP
   }
 
-  function onBeforeSetField(
+  function onBeforeSpliceStaticData(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
   ) public {
-    if (tableId != tableId) revert("invalid tableId");
-    StoreSwitch.setField(indexerTableId, keyTuple, fieldIndex, data, fieldLayout);
+    if (tableId != _tableId) revert("invalid tableId");
+    StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, deleteCount, data);
   }
 
-  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public {
+  function onAfterSpliceStaticData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
+  ) public {
     // NOOP
+  }
+
+  function onBeforeSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data,
+    PackedCounter
+  ) public {
+    if (tableId != _tableId) revert("invalid tableId");
+    StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+  }
+
+  function onAfterSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data,
+    PackedCounter
+  ) public {
+    if (tableId != _tableId) revert("invalid tableId");
+    StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
   function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {

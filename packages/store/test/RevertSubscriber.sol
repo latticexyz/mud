@@ -28,12 +28,36 @@ contract RevertSubscriber is StoreHook {
     revert("onAfterSetRecord");
   }
 
-  function onBeforeSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public pure {
-    revert("onBeforeSetField");
+  function onBeforeSpliceStaticData(bytes32, bytes32[] calldata, uint48, uint40, bytes calldata) public pure {
+    revert("onBeforeSpliceStaticData");
   }
 
-  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public pure {
-    revert("onAfterSetField");
+  function onAfterSpliceStaticData(bytes32, bytes32[] calldata, uint48, uint40, bytes calldata) public pure {
+    revert("onAfterSpliceStaticData");
+  }
+
+  function onBeforeSpliceDynamicData(
+    bytes32,
+    bytes32[] calldata,
+    uint8,
+    uint40,
+    uint40,
+    bytes calldata,
+    PackedCounter
+  ) public pure {
+    revert("onBeforeSpliceDynamicData");
+  }
+
+  function onAfterSpliceDynamicData(
+    bytes32,
+    bytes32[] calldata,
+    uint8,
+    uint40,
+    uint40,
+    bytes calldata,
+    PackedCounter
+  ) public pure {
+    revert("onAfterSpliceDynamicData");
   }
 
   function onBeforeDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure {

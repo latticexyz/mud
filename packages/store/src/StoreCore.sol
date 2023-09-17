@@ -743,7 +743,8 @@ library StoreCoreInternal {
         IStoreHook(hook.getAddress()).onBeforeSpliceDynamicData({
           tableId: tableId,
           keyTuple: keyTuple,
-          start: uint48(start),
+          dynamicFieldIndex: dynamicFieldIndex,
+          startWithinField: startWithinField,
           deleteCount: deleteCount,
           data: data,
           encodedLengths: newEncodedLengths
@@ -758,8 +759,10 @@ library StoreCoreInternal {
     }
 
     // Store the provided value in storage
-    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
-    Storage.store({ storagePointer: dynamicDataLocation, offset: start, data: data });
+    {
+      uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
+      Storage.store({ storagePointer: dynamicDataLocation, offset: start, data: data });
+    }
 
     // Call onAfterSpliceDynamicData hooks
     for (uint256 i; i < hooks.length; i++) {
@@ -768,7 +771,8 @@ library StoreCoreInternal {
         IStoreHook(hook.getAddress()).onAfterSpliceDynamicData({
           tableId: tableId,
           keyTuple: keyTuple,
-          start: uint48(start),
+          dynamicFieldIndex: dynamicFieldIndex,
+          startWithinField: startWithinField,
           deleteCount: deleteCount,
           data: data,
           encodedLengths: newEncodedLengths

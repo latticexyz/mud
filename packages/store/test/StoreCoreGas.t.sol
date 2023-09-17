@@ -19,6 +19,7 @@ import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber } from "./MirrorSubscriber.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
+import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -112,17 +113,17 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Set dynamic data length of dynamic index 0
     startGasReport("set dynamic length of dynamic index 0");
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
     endGasReport();
 
     // Set dynamic data length of dynamic index 1
     startGasReport("set dynamic length of dynamic index 1");
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
     endGasReport();
 
     // Reduce dynamic data length of dynamic index 0 again
     startGasReport("reduce dynamic length of dynamic index 0");
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
     endGasReport();
   }
 

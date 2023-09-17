@@ -22,6 +22,7 @@ import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
+import { setDynamicDataLengthAtIndex } from "./setDynamicDataLengthAtIndex.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -185,7 +186,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = bytes32("some key");
 
     // Set dynamic data length of dynamic index 0
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 10);
 
     PackedCounter encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 10);
@@ -193,7 +194,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(encodedLength.total(), 10);
 
     // Set dynamic data length of dynamic index 1
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 1, 99);
 
     encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 10);
@@ -201,7 +202,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(encodedLength.total(), 109);
 
     // Reduce dynamic data length of dynamic index 0 again
-    StoreCoreInternal._setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
+    setDynamicDataLengthAtIndex(tableId, keyTuple, 0, 5);
 
     encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
     assertEq(encodedLength.atIndex(0), 5);
