@@ -42,12 +42,9 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     world.registerDelegation(
       delegatee,
       CALLBOUND_DELEGATION,
-      abi.encodeWithSelector(
-        CallboundDelegationControl.initDelegation.selector,
-        delegatee,
-        systemResourceSelector,
-        abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
-        1
+      abi.encodeCall(
+        CallboundDelegationControl.initDelegation,
+        (delegatee, systemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()), 1)
       )
     );
     endGasReport();
@@ -58,7 +55,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     bytes memory returnData = world.callFrom(
       delegator,
       systemResourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+      abi.encodeCall(WorldTestSystem.msgSender, ())
     );
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
@@ -69,7 +66,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     // Expect the delegation to have been used up
     vm.prank(delegatee);
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
-    world.callFrom(delegator, systemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.callFrom(delegator, systemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
   function testCallFromTimeboundDelegation() public {
@@ -84,7 +81,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     world.registerDelegation(
       delegatee,
       TIMEBOUND_DELEGATION,
-      abi.encodeWithSelector(TimeboundDelegationControl.initDelegation.selector, delegatee, maxTimestamp)
+      abi.encodeCall(TimeboundDelegationControl.initDelegation, (delegatee, maxTimestamp))
     );
     endGasReport();
 
@@ -94,7 +91,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     bytes memory returnData = world.callFrom(
       delegator,
       systemResourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+      abi.encodeCall(WorldTestSystem.msgSender, ())
     );
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
@@ -105,13 +102,13 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     // Set the timestamp to maxTimestamp and expect the delegation to still be valid
     vm.warp(maxTimestamp);
     vm.prank(delegatee);
-    world.callFrom(delegator, systemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.callFrom(delegator, systemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Set the timestamp to maxTimestamp+1 and expect the delegation to be expired
     vm.warp(maxTimestamp + 1);
     vm.prank(delegatee);
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
-    world.callFrom(delegator, systemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.callFrom(delegator, systemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
   function testRegisterDelegationRevertInterfaceNotSupported() public {

@@ -276,10 +276,7 @@ contract WorldTest is Test, GasReporter {
     bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
 
     world.registerSystem(resourceSelector, system, false);
-    bytes memory result = world.call(
-      resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector)
-    );
+    bytes memory result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
 
     assertEq(abi.decode(result, (address)), address(world));
   }
@@ -684,17 +681,14 @@ contract WorldTest is Test, GasReporter {
 
     // Call a system function without arguments via the World
     startGasReport("call a system via the World");
-    bytes memory result = world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    bytes memory result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
     endGasReport();
 
     // Expect the system to have received the caller's address
     assertEq(address(uint160(uint256(bytes32(result)))), address(this));
 
     // Call a system function with arguments via the World
-    result = world.call(
-      resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.echo.selector, bytes32(uint256(0x123)))
-    );
+    result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.echo, (bytes32(uint256(0x123)))));
 
     // Expect the return data to be decodeable as a tuple
     (address returnedAddress, bytes32 returnedBytes32) = abi.decode(result, (address, bytes32));
@@ -708,15 +702,15 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to call a private system from an address that doesn't have access
     _expectAccessDenied(address(0x01), "namespace", "testSystem");
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.err.selector, "test error"));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.err, ("test error")));
 
     // Register another system in the same namespace
     WorldTestSystem subSystem = new WorldTestSystem();
@@ -725,7 +719,7 @@ contract WorldTest is Test, GasReporter {
 
     // Call the subsystem via the World (with access to the base route)
     returnedAddress = abi.decode(
-      world.call(subsystemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector)),
+      world.call(subsystemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ())),
       (address)
     );
     assertEq(returnedAddress, address(this));
@@ -734,14 +728,16 @@ contract WorldTest is Test, GasReporter {
     // (Note: just for testing purposes, in reality systems can call subsystems directly instead of via two indirections like here)
     bytes memory nestedReturndata = world.call(
       resourceSelector,
-      abi.encodeWithSelector(
-        WorldTestSystem.delegateCallSubSystem.selector, // Function in system
-        address(subSystem), // Address of subsystem
-        WorldContextProvider.appendContext({
-          callData: abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
-          msgSender: address(this),
-          msgValue: uint256(0)
-        })
+      abi.encodeCall(
+        WorldTestSystem.delegateCallSubSystem, // Function in system
+        (
+          address(subSystem), // Address of subsystem
+          WorldContextProvider.appendContext({
+            callData: abi.encodeCall(WorldTestSystem.msgSender, ()),
+            msgSender: address(this),
+            msgValue: uint256(0)
+          })
+        )
       )
     );
 
@@ -759,11 +755,7 @@ contract WorldTest is Test, GasReporter {
 
     // Call a system via callFrom with the own address
     vm.prank(caller);
-    bytes memory returnData = world.callFrom(
-      caller,
-      resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
-    );
+    bytes memory returnData = world.callFrom(caller, resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
     address returnedAddress = abi.decode(returnData, (address));
 
     // Expect the system to have received the delegator's address
@@ -790,7 +782,7 @@ contract WorldTest is Test, GasReporter {
     bytes memory returnData = world.callFrom(
       delegator,
       resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+      abi.encodeCall(WorldTestSystem.msgSender, ())
     );
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
@@ -814,7 +806,7 @@ contract WorldTest is Test, GasReporter {
       )
     );
     vm.prank(address(1));
-    world.callFrom(address(2), resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.callFrom(address(2), resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
   function testCallFromLimitedDelegation() public {
@@ -1079,7 +1071,7 @@ contract WorldTest is Test, GasReporter {
     // Call a system function that writes data to the World
     world.call(
       rootSystemId,
-      abi.encodeWithSelector(WorldTestSystem.writeData.selector, bytes16("namespace"), bytes16("testTable"), true)
+      abi.encodeCall(WorldTestSystem.writeData, (bytes16("namespace"), bytes16("testTable"), true))
     );
 
     // Expect the data to be written
@@ -1104,10 +1096,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, false);
 
     // Call a system function that writes data to the World
-    world.call(
-      systemId,
-      abi.encodeWithSelector(WorldTestSystem.writeData.selector, bytes16("namespace"), bytes16("testTable"), true)
-    );
+    world.call(systemId, abi.encodeCall(WorldTestSystem.writeData, (bytes16("namespace"), bytes16("testTable"), true)));
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
@@ -1122,7 +1111,7 @@ contract WorldTest is Test, GasReporter {
     // Call the root sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("delegatecall");
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.emitCallType, ()));
   }
 
   function testCallAutonomousSystem() public {
@@ -1134,7 +1123,7 @@ contract WorldTest is Test, GasReporter {
     // Call the sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("call");
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.emitCallType, ()));
   }
 
   function testRegisterFunctionSelector() public {
@@ -1291,9 +1280,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's receiveEther function via the World
-    (bool success, ) = address(world).call{ value: 0.5 ether }(
-      abi.encodeWithSelector(WorldTestSystem.receiveEther.selector)
-    );
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeCall(WorldTestSystem.receiveEther, ()));
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
@@ -1323,9 +1310,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's msgSender function (non-payable) via the World
-    (bool success, ) = address(world).call{ value: 0.5 ether }(
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
-    );
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeCall(WorldTestSystem.msgSender, ()));
     // The call should succeed because the value is not forwarded to the system
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
@@ -1416,9 +1401,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's receiveEther function via the World
-    (bool success, ) = address(world).call{ value: 0.5 ether }(
-      abi.encodeWithSelector(WorldTestSystem.receiveEther.selector)
-    );
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeCall(WorldTestSystem.receiveEther, ()));
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");

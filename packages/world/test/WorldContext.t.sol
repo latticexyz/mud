@@ -34,7 +34,7 @@ contract WorldContextTest is Test, GasReporter {
       msgSender: msgSender,
       msgValue: msgValue,
       target: address(consumer),
-      callData: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
+      callData: abi.encodeCall(TestContextConsumer.emitContext, (args))
     });
   }
 
@@ -47,7 +47,7 @@ contract WorldContextTest is Test, GasReporter {
       msgSender: msgSender,
       msgValue: msgValue,
       target: address(consumer),
-      callData: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
+      callData: abi.encodeCall(TestContextConsumer.emitContext, (args))
     });
   }
 }

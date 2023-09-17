@@ -85,7 +85,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeWithSelector(IModule.installRoot.selector, args)
+      callData: abi.encodeCall(IModule.installRoot, (args))
     });
 
     // Register the module in the InstalledModules table

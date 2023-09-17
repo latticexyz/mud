@@ -35,7 +35,7 @@ contract UtilsTest is Test {
 
     bytes memory data = world.call(
       ResourceSelector.from(namespace, name),
-      abi.encodeWithSelector(UtilsTestSystem.systemNamespace.selector)
+      abi.encodeCall(UtilsTestSystem.systemNamespace, ())
     );
     returnedNamespace = abi.decode(data, (bytes16));
   }
