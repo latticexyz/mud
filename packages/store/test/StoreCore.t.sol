@@ -14,7 +14,7 @@ import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
+import { Tables, TablesTableId } from "../src/codegen/index.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { StoreHookLib } from "../src/StoreHook.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";

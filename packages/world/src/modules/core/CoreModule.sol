@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { Resource } from "../../Types.sol";
+import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";

@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 
 import { ResourceType } from "../core/tables/ResourceType.sol";
-import { Resource } from "../../Types.sol";
+import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";

@@ -261,7 +261,7 @@ export type MUDUserConfig<
     namespace?: string;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
-    /** Filename where common user types will be generated and imported from. Default is "types.sol" */
+    /** Filename where common user types will be generated and imported from. Default is "common.sol" */
     userTypesFilename?: string;
     /** Path to the directory where generated files will be placed. (Default is "codegen") */
     codegenDirectory?: string;

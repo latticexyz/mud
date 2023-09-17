@@ -50,7 +50,7 @@ describe("mudConfig", () => {
     };
     namespace: "";
     storeImportPath: "@latticexyz/store/src/";
-    userTypesFilename: "types.sol";
+    userTypesFilename: "common.sol";
     codegenDirectory: "codegen";
     codegenIndexFilename: "index.sol";
   }>();

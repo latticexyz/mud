@@ -19,7 +19,7 @@ import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
 // Import user types
-import { ExampleEnum } from "./../Types.sol";
+import { ExampleEnum } from "./../common.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("KeyEncoding")));
 bytes32 constant KeyEncodingTableId = _tableId;

@@ -14,7 +14,7 @@ import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncod
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
+import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
@@ -25,7 +25,7 @@ import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
-import { Resource } from "../src/Types.sol";
+import { Resource } from "../src/common.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHookLib, SystemHook } from "../src/SystemHook.sol";
 import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";

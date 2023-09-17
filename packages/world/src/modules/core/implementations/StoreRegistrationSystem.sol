@@ -8,7 +8,7 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { Resource } from "../../../Types.sol";
+import { Resource } from "../../../common.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
