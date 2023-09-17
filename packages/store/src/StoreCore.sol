@@ -14,7 +14,7 @@ import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
-import { StoreHookLib, StoreHookType } from "./StoreHook.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
 
 library StoreCore {
   event HelloStore(bytes32 indexed version);
@@ -176,7 +176,7 @@ library StoreCore {
    * Register hooks to be called when a record or field is set or deleted
    */
   function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
-    StoreHooks.push(tableId, Hook.unwrap(StoreHookLib.encode(hookAddress, enabledHooksBitmap)));
+    StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
@@ -216,7 +216,7 @@ library StoreCore {
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
+      if (hook.isEnabled(BEFORE_SET_RECORD)) {
         IStoreHook(hook.getAddress()).onBeforeSetRecord(
           tableId,
           keyTuple,
@@ -269,7 +269,7 @@ library StoreCore {
     // Call onAfterSetRecord hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_RECORD))) {
+      if (hook.isEnabled(AFTER_SET_RECORD)) {
         IStoreHook(hook.getAddress()).onAfterSetRecord(
           tableId,
           keyTuple,
@@ -296,7 +296,7 @@ library StoreCore {
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+      if (hook.isEnabled(BEFORE_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, data, fieldLayout);
       }
     }
@@ -310,7 +310,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+      if (hook.isEnabled(AFTER_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, data, fieldLayout);
       }
     }
@@ -327,7 +327,7 @@ library StoreCore {
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.BEFORE_DELETE_RECORD))) {
+      if (hook.isEnabled(BEFORE_DELETE_RECORD)) {
         IStoreHook(hook.getAddress()).onBeforeDeleteRecord(tableId, keyTuple, fieldLayout);
       }
     }
@@ -345,7 +345,7 @@ library StoreCore {
     // Call onAfterDeleteRecord hooks
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.AFTER_DELETE_RECORD))) {
+      if (hook.isEnabled(AFTER_DELETE_RECORD)) {
         IStoreHook(hook.getAddress()).onAfterDeleteRecord(tableId, keyTuple, fieldLayout);
       }
     }
@@ -375,7 +375,7 @@ library StoreCore {
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+      if (hook.isEnabled(BEFORE_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
       }
     }
@@ -385,7 +385,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+      if (hook.isEnabled(AFTER_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
       }
     }
@@ -416,7 +416,7 @@ library StoreCore {
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+      if (hook.isEnabled(BEFORE_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
       }
     }
@@ -426,7 +426,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+      if (hook.isEnabled(AFTER_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
       }
     }
@@ -468,7 +468,7 @@ library StoreCore {
     bytes21[] memory hooks = StoreHooks._get(tableId);
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD))) {
+      if (hook.isEnabled(BEFORE_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onBeforeSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
       }
     }
@@ -478,7 +478,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD))) {
+      if (hook.isEnabled(AFTER_SET_FIELD)) {
         IStoreHook(hook.getAddress()).onAfterSetField(tableId, keyTuple, fieldIndex, fullData, fieldLayout);
       }
     }

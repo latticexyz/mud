@@ -16,7 +16,7 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
-import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
 import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 
@@ -27,7 +27,8 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { Resource } from "../src/Types.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
-import { SystemHookLib, SystemHook } from "../src/SystemHook.sol";
+import { SystemHook } from "../src/SystemHook.sol";
+import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
@@ -842,14 +843,12 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(
       tableId,
       tableHook,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SET_FIELD |
+        AFTER_SET_FIELD |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD
     );
 
     // Prepare data to write to the table
@@ -893,14 +892,12 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(
       tableId,
       IStoreHook(address(world)), // the World contract does not implement the store hook interface
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SET_FIELD |
+        AFTER_SET_FIELD |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD
     );
   }
 
@@ -917,28 +914,24 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(
       tableId,
       revertSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SET_FIELD |
+        AFTER_SET_FIELD |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD
     );
     // Register a new EchoSubscriber
     IStoreHook echoSubscriber = new EchoSubscriber();
     world.registerStoreHook(
       tableId,
       echoSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SET_FIELD |
+        AFTER_SET_FIELD |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD
     );
 
     // Prepare data to write to the table
@@ -1005,16 +998,12 @@ contract WorldTest is Test, GasReporter {
     world.registerSystemHook(
       systemId,
       ISystemHook(address(world)), // the World contract does not implement the system hook interface
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+      BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM
     );
 
     // Register a new hook
     ISystemHook systemHook = new EchoSystemHook();
-    world.registerSystemHook(
-      systemId,
-      systemHook,
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
-    );
+    world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
     bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
@@ -1041,19 +1030,11 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new RevertSystemHook
     ISystemHook revertSystemHook = new RevertSystemHook();
-    world.registerSystemHook(
-      systemId,
-      revertSystemHook,
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
-    );
+    world.registerSystemHook(systemId, revertSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
     // Register a new EchoSystemHook
     ISystemHook echoSystemHook = new EchoSystemHook();
-    world.registerSystemHook(
-      systemId,
-      echoSystemHook,
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
-    );
+    world.registerSystemHook(systemId, echoSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
     bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 

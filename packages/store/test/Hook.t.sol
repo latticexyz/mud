@@ -6,15 +6,15 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { Hook, HookLib } from "../src/Hook.sol";
 
 contract HookTest is Test, GasReporter {
-  uint8 public NONE = 0x00; // 0b00000000
-  uint8 public FIRST = 0x01; // 0b00000001
-  uint8 public SECOND = 0x02; // 0b00000010
-  uint8 public THIRD = 0x04; // 0b00000100
-  uint8 public FOURTH = 0x08; // 0b00001000
-  uint8 public FIFTH = 0x10; // 0b00010000
-  uint8 public SIXTH = 0x20; // 0b00100000
-  uint8 public SEVENTH = 0x40; // 0b01000000
-  uint8 public EIGHTH = 0x80; // 0b10000000
+  uint8 public constant NONE = 0; // 0b00000000
+  uint8 public constant FIRST = 1 << 0; // 0b00000001
+  uint8 public constant SECOND = 1 << 1; // 0b00000010
+  uint8 public constant THIRD = 1 << 2; // 0b00000100
+  uint8 public constant FOURTH = 1 << 3; // 0b00001000
+  uint8 public constant FIFTH = 1 << 4; // 0b00010000
+  uint8 public constant SIXTH = 1 << 5; // 0b00100000
+  uint8 public constant SEVENTH = 1 << 6; // 0b01000000
+  uint8 public constant EIGHTH = 1 << 7; // 0b10000000
 
   function testFuzzEncode(address hookAddress, uint8 encodedHooks) public {
     assertEq(
@@ -24,20 +24,20 @@ contract HookTest is Test, GasReporter {
   }
 
   function testIsEnabled() public {
-    Hook hook = HookLib.encode(address(0), THIRD);
+    Hook hook = HookLib.encode(address(0), THIRD | FIFTH);
 
     startGasReport("check if hook is enabled");
-    hook.isEnabled(0);
+    hook.isEnabled(EIGHTH);
     endGasReport();
 
-    assertFalse(hook.isEnabled(0));
-    assertFalse(hook.isEnabled(1));
-    assertTrue(hook.isEnabled(2));
-    assertFalse(hook.isEnabled(3));
-    assertFalse(hook.isEnabled(4));
-    assertFalse(hook.isEnabled(5));
-    assertFalse(hook.isEnabled(6));
-    assertFalse(hook.isEnabled(7));
+    assertFalse(hook.isEnabled(FIRST), "FIRST");
+    assertFalse(hook.isEnabled(SECOND), "SECOND");
+    assertTrue(hook.isEnabled(THIRD), "THIRD");
+    assertFalse(hook.isEnabled(FOURTH), "FOURTH");
+    assertTrue(hook.isEnabled(FIFTH), "FIFTH");
+    assertFalse(hook.isEnabled(SIXTH), "SIXTH");
+    assertFalse(hook.isEnabled(SEVENTH), "SEVENTH");
+    assertFalse(hook.isEnabled(EIGHTH), "EIGHTH");
   }
 
   function testFuzzIsEnabled(
@@ -51,7 +51,7 @@ contract HookTest is Test, GasReporter {
     bool seventh,
     bool eighth
   ) public {
-    uint8 encodedHooks = 0x00;
+    uint8 encodedHooks = 0;
     if (first) encodedHooks |= FIRST;
     if (second) encodedHooks |= SECOND;
     if (third) encodedHooks |= THIRD;
@@ -63,14 +63,14 @@ contract HookTest is Test, GasReporter {
 
     Hook hook = HookLib.encode(hookAddress, encodedHooks);
 
-    assertEq(hook.isEnabled(0), first);
-    assertEq(hook.isEnabled(1), second);
-    assertEq(hook.isEnabled(2), third);
-    assertEq(hook.isEnabled(3), fourth);
-    assertEq(hook.isEnabled(4), fifth);
-    assertEq(hook.isEnabled(5), sixth);
-    assertEq(hook.isEnabled(6), seventh);
-    assertEq(hook.isEnabled(7), eighth);
+    assertEq(hook.isEnabled(FIRST), first, "FIRST");
+    assertEq(hook.isEnabled(SECOND), second, "SECOND");
+    assertEq(hook.isEnabled(THIRD), third, "THIRD");
+    assertEq(hook.isEnabled(FOURTH), fourth, "FOURTH");
+    assertEq(hook.isEnabled(FIFTH), fifth, "FIFTH");
+    assertEq(hook.isEnabled(SIXTH), sixth, "SIXTH");
+    assertEq(hook.isEnabled(SEVENTH), seventh, "SEVENTH");
+    assertEq(hook.isEnabled(EIGHTH), eighth, "EIGHTH");
   }
 
   function testFuzzGetAddressAndBitmap(address hookAddress, uint8 encodedHooks) public {
