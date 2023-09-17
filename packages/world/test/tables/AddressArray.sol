@@ -312,12 +312,12 @@ library AddressArray {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(address[] memory value) internal pure returns (bytes memory) {
+  function encode(address[] memory value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(value);
     bytes memory _dynamicData = encodeDynamic(value);
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
