@@ -345,7 +345,7 @@
     "file": "test/Hook.t.sol",
     "test": "testIsEnabled",
     "name": "check if hook is enabled",
-    "gasUsed": 114
+    "gasUsed": 108
   },
   {
     "file": "test/KeyEncoding.t.sol",
@@ -681,49 +681,49 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "register subscriber",
-    "gasUsed": 60413
+    "gasUsed": 60150
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 71044
+    "gasUsed": 71004
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 20820
+    "gasUsed": 20780
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 16438
+    "gasUsed": 16398
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "register subscriber",
-    "gasUsed": 60413
+    "gasUsed": 60150
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 164166
+    "gasUsed": 164126
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 24020
+    "gasUsed": 23980
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 17423
+    "gasUsed": 17383
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -891,13 +891,13 @@
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call an enabled hook",
-    "gasUsed": 14598
+    "gasUsed": 14588
   },
   {
     "file": "test/StoreHook.t.sol",
     "test": "testCallHook",
     "name": "call a disabled hook",
-    "gasUsed": 133
+    "gasUsed": 123
   },
   {
     "file": "test/StoreHook.t.sol",
@@ -907,15 +907,9 @@
   },
   {
     "file": "test/StoreHook.t.sol",
-    "test": "testGetBitmap",
-    "name": "get store hook bitmap",
-    "gasUsed": 1
-  },
-  {
-    "file": "test/StoreHook.t.sol",
     "test": "testIsEnabled",
     "name": "check if store hook is enabled",
-    "gasUsed": 129
+    "gasUsed": 108
   },
   {
     "file": "test/StoreSwitch.t.sol",

@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: ["src/index.ts", "bin/postgres-indexer.ts", "bin/sqlite-indexer.ts"],
   target: "esnext",
   format: ["esm"],
   dts: false,

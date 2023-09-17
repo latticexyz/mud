@@ -16,7 +16,7 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { Tables, TablesTableId } from "../src/codegen/index.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
-import { StoreHookLib } from "../src/StoreHook.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
 import { MirrorSubscriber, indexerTableId } from "./MirrorSubscriber.sol";
@@ -977,18 +977,7 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](1)
     );
 
-    IStore(this).registerStoreHook(
-      tableId,
-      subscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: false,
-        onBeforeSetField: true,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: false
-      })
-    );
+    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -1031,27 +1020,23 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).registerStoreHook(
       tableId,
       revertSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SET_FIELD |
+        AFTER_SET_FIELD |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD
     );
     // Register both subscribers
     IStore(this).registerStoreHook(
       tableId,
       echoSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SET_FIELD |
+        AFTER_SET_FIELD |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD
     );
 
     bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
@@ -1122,18 +1107,7 @@ contract StoreCoreTest is Test, StoreMock {
       new string[](2)
     );
 
-    IStore(this).registerStoreHook(
-      tableId,
-      subscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: false,
-        onBeforeSetField: true,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: false
-      })
-    );
+    IStore(this).registerStoreHook(tableId, subscriber, BEFORE_SET_RECORD | BEFORE_SET_FIELD | BEFORE_DELETE_RECORD);
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;

@@ -52,9 +52,8 @@ library HookInstance {
   /**
    * Check if the given hook type is enabled in the hook
    */
-  function isEnabled(Hook self, uint8 hookType) internal pure returns (bool) {
-    // Pick the bitmap encoded in the rightmost byte from the hook and check if the bit at the given hook type is set
-    return (getBitmap(self) & (1 << uint8(hookType))) != 0;
+  function isEnabled(Hook self, uint8 hookTypes) internal pure returns (bool) {
+    return (getBitmap(self) & hookTypes) == hookTypes;
   }
 
   /**
