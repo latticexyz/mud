@@ -73,7 +73,7 @@ contract KeysInTableHook is StoreHook {
     uint48,
     uint40,
     bytes calldata
-  ) public pure {
+  ) public {
     handleSet(tableId, keyTuple);
   }
 
@@ -97,7 +97,7 @@ contract KeysInTableHook is StoreHook {
     uint40,
     bytes calldata,
     PackedCounter
-  ) public pure {
+  ) public {
     handleSet(tableId, keyTuple);
   }
 
