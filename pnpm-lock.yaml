@@ -827,6 +827,9 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
       drizzle-orm:
         specifier: ^0.28.5
         version: 0.28.5(@types/better-sqlite3@7.6.4)(better-sqlite3@8.6.0)(postgres@3.3.5)
