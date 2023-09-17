@@ -29,6 +29,29 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
+  // Splice data in the static part of the record
+  function spliceStaticData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual {
+    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+  }
+
+  // Splice data in the dynamic part of the record
+  function spliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual {
+    StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+  }
+
   // Set partial data at schema index
   function setField(
     bytes32 tableId,
