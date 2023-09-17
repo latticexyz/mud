@@ -19,7 +19,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Resource } from "./../../../Types.sol";
+import { Resource } from "./../../../common.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType")));
 bytes32 constant ResourceTypeTableId = _tableId;

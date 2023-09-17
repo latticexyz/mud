@@ -6,7 +6,7 @@ import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 import { System } from "../../../System.sol";
 import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { Resource } from "../../../Types.sol";
+import { Resource } from "../../../common.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";

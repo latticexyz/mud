@@ -19,7 +19,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Enum2, Enum1 } from "./../Types.sol";
+import { Enum2, Enum1 } from "./../common.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Statics")));
 bytes32 constant StaticsTableId = _tableId;

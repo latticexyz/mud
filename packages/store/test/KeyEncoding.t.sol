@@ -3,8 +3,8 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/Tables.sol";
-import { ExampleEnum } from "../src/codegen/Types.sol";
+import { KeyEncoding, KeyEncodingTableId } from "../src/codegen/index.sol";
+import { ExampleEnum } from "../src/codegen/common.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";

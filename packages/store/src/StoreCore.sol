@@ -9,7 +9,7 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/Tables.sol";
+import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";

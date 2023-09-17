@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { BEFORE_SET_RECORD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 
 import { ResourceType } from "../core/tables/ResourceType.sol";
-import { Resource } from "../../Types.sol";
+import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";

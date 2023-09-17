@@ -14,7 +14,7 @@ import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
+import { Tables, TablesTableId } from "../src/codegen/index.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
