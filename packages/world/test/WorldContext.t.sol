@@ -18,10 +18,10 @@ contract WorldContextTest is Test, GasReporter {
 
   TestContextConsumer public consumer = new TestContextConsumer();
 
-  function testFuzzAppendContext(bytes memory funcSelectorAndArgs, address msgSender, uint256 msgValue) public {
+  function testFuzzAppendContext(bytes memory callData, address msgSender, uint256 msgValue) public {
     assertEq(
-      keccak256(abi.encodePacked(funcSelectorAndArgs, msgSender, msgValue)),
-      keccak256(WorldContextProvider.appendContext(funcSelectorAndArgs, msgSender, msgValue))
+      keccak256(abi.encodePacked(callData, msgSender, msgValue)),
+      keccak256(WorldContextProvider.appendContext(callData, msgSender, msgValue))
     );
   }
 
@@ -34,7 +34,7 @@ contract WorldContextTest is Test, GasReporter {
       msgSender: msgSender,
       msgValue: msgValue,
       target: address(consumer),
-      funcSelectorAndArgs: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
+      callData: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
     });
   }
 
@@ -47,7 +47,7 @@ contract WorldContextTest is Test, GasReporter {
       msgSender: msgSender,
       msgValue: msgValue,
       target: address(consumer),
-      funcSelectorAndArgs: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
+      callData: abi.encodeWithSelector(TestContextConsumer.emitContext.selector, args)
     });
   }
 }

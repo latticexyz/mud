@@ -202,16 +202,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   /**
    * Register a delegation from the caller to the given delegatee.
    */
-  function registerDelegation(
-    address delegatee,
-    bytes32 delegationControlId,
-    bytes memory initFuncSelectorAndArgs
-  ) public {
+  function registerDelegation(address delegatee, bytes32 delegationControlId, bytes memory initCallData) public {
     // Store the delegation control contract address
     Delegations.set({ delegator: _msgSender(), delegatee: delegatee, delegationControlId: delegationControlId });
 
     // If the delegation is not unlimited...
-    if (delegationControlId != UNLIMITED_DELEGATION && initFuncSelectorAndArgs.length > 0) {
+    if (delegationControlId != UNLIMITED_DELEGATION && initCallData.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
       (address delegationControl, ) = Systems._get(delegationControlId);
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);
@@ -220,7 +216,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       SystemCall.call({
         caller: _msgSender(),
         resourceSelector: delegationControlId,
-        funcSelectorAndArgs: initFuncSelectorAndArgs,
+        callData: initCallData,
         value: 0
       });
     }

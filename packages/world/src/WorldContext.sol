@@ -46,21 +46,21 @@ abstract contract WorldContextConsumer is IWorldContextConsumer {
  */
 library WorldContextProvider {
   function appendContext(
-    bytes memory funcSelectorAndArgs,
+    bytes memory callData,
     address msgSender,
     uint256 msgValue
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(funcSelectorAndArgs, msgSender, msgValue);
+    return abi.encodePacked(callData, msgSender, msgValue);
   }
 
   function callWithContext(
     address msgSender,
     uint256 msgValue,
     address target,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     (success, data) = target.call{ value: 0 }(
-      appendContext({ funcSelectorAndArgs: funcSelectorAndArgs, msgSender: msgSender, msgValue: msgValue })
+      appendContext({ callData: callData, msgSender: msgSender, msgValue: msgValue })
     );
   }
 
@@ -68,10 +68,10 @@ library WorldContextProvider {
     address msgSender,
     uint256 msgValue,
     address target,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     (success, data) = target.delegatecall(
-      appendContext({ funcSelectorAndArgs: funcSelectorAndArgs, msgSender: msgSender, msgValue: msgValue })
+      appendContext({ callData: callData, msgSender: msgSender, msgValue: msgValue })
     );
   }
 
@@ -79,13 +79,13 @@ library WorldContextProvider {
     address msgSender,
     uint256 msgValue,
     address target,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bytes memory data) {
     (bool success, bytes memory _data) = callWithContext({
       msgSender: msgSender,
       msgValue: msgValue,
       target: target,
-      funcSelectorAndArgs: funcSelectorAndArgs
+      callData: callData
     });
     if (!success) revertWithBytes(_data);
     return _data;
@@ -95,13 +95,13 @@ library WorldContextProvider {
     address msgSender,
     uint256 msgValue,
     address target,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bytes memory data) {
     (bool success, bytes memory _data) = delegatecallWithContext({
       msgSender: msgSender,
       msgValue: msgValue,
       target: target,
-      funcSelectorAndArgs: funcSelectorAndArgs
+      callData: callData
     });
     if (!success) revertWithBytes(_data);
     return _data;

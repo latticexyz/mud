@@ -7,7 +7,7 @@ import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
 contract TimeboundDelegationControl is DelegationControl {
   /**
    * Verify a delegation by checking if the current block timestamp is not larger than the max valid timestamp for the delegation.
-   * Note: the delegation control check ignores the resourceSelector and funcSelectorAndArgs parameters.
+   * Note: the delegation control check ignores the resourceSelector and callData parameters.
    */
   function verify(address delegator, bytes32, bytes memory) public view returns (bool) {
     // Get the max valid timestamp for the given delegator

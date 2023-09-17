@@ -32,7 +32,7 @@ library DelegationInstance {
     address delegator,
     address delegatee,
     bytes32 systemId,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bool) {
     // Early return if there is an unlimited delegation
     if (isUnlimited(self)) return true;
@@ -44,12 +44,7 @@ library DelegationInstance {
     (bool success, bytes memory data) = SystemCall.call({
       caller: delegatee,
       resourceSelector: Delegation.unwrap(self),
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        IDelegationControl.verify.selector,
-        delegator,
-        systemId,
-        funcSelectorAndArgs
-      ),
+      callData: abi.encodeWithSelector(IDelegationControl.verify.selector, delegator, systemId, callData),
       value: 0
     });
 
