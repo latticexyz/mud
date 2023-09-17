@@ -10,7 +10,7 @@ import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
-import { SystemHookType } from "./SystemHook.sol";
+import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
@@ -81,7 +81,7 @@ library SystemCall {
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(SystemHookType.BEFORE_CALL_SYSTEM))) {
+      if (hook.isEnabled(BEFORE_CALL_SYSTEM)) {
         ISystemHook(hook.getAddress()).onBeforeCallSystem(caller, resourceSelector, funcSelectorAndArgs);
       }
     }
@@ -97,7 +97,7 @@ library SystemCall {
     // Call onAfterCallSystem hooks (after calling the system)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(SystemHookType.AFTER_CALL_SYSTEM))) {
+      if (hook.isEnabled(AFTER_CALL_SYSTEM)) {
         ISystemHook(hook.getAddress()).onAfterCallSystem(caller, resourceSelector, funcSelectorAndArgs);
       }
     }
