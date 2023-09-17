@@ -29,15 +29,10 @@ contract StoreHookTest is Test, GasReporter {
 
   function testEncodeBitmap() public {
     assertEq(BEFORE_SET_RECORD, uint8(0x01), "0b00000001");
-
     assertEq(AFTER_SET_RECORD, uint8(0x02), "0b00000010");
-
     assertEq(BEFORE_SET_FIELD, uint8(0x04), "0b00000100");
-
     assertEq(AFTER_SET_FIELD, uint8(0x08), "0b00001000");
-
     assertEq(BEFORE_DELETE_RECORD, uint8(0x10), "0b00010000");
-
     assertEq(AFTER_DELETE_RECORD, uint8(0x20), "0b00100000");
 
     assertEq(
@@ -69,6 +64,29 @@ contract StoreHookTest is Test, GasReporter {
     );
   }
 
+  function testFuzzEncode(
+    address hookAddress,
+    bool enableBeforeSetRecord,
+    bool enableAfterSetRecord,
+    bool enableBeforeSetField,
+    bool enableAfterSetField,
+    bool enableBeforeDeleteRecord,
+    bool enableAfterDeleteRecord
+  ) public {
+    uint8 enabledHooks = 0;
+    if (enableBeforeSetRecord) enabledHooks |= BEFORE_SET_RECORD;
+    if (enableAfterSetRecord) enabledHooks |= AFTER_SET_RECORD;
+    if (enableBeforeSetField) enabledHooks |= BEFORE_SET_FIELD;
+    if (enableAfterSetField) enabledHooks |= AFTER_SET_FIELD;
+    if (enableBeforeDeleteRecord) enabledHooks |= BEFORE_DELETE_RECORD;
+    if (enableAfterDeleteRecord) enabledHooks |= AFTER_DELETE_RECORD;
+
+    assertEq(
+      Hook.unwrap(HookLib.encode(hookAddress, enabledHooks)),
+      bytes21(abi.encodePacked(hookAddress, enabledHooks))
+    );
+  }
+
   function testIsEnabled() public {
     Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SET_FIELD | AFTER_DELETE_RECORD);
 
@@ -82,6 +100,33 @@ contract StoreHookTest is Test, GasReporter {
     assertFalse(storeHook.isEnabled(AFTER_SET_FIELD), "AFTER_SET_FIELD");
     assertFalse(storeHook.isEnabled(BEFORE_DELETE_RECORD), "BEFORE_DELETE_RECORD");
     assertTrue(storeHook.isEnabled(AFTER_DELETE_RECORD), "AFTER_DELETE_RECORD");
+  }
+
+  function testFuzzIsEnabled(
+    address hookAddress,
+    bool enableBeforeSetRecord,
+    bool enableAfterSetRecord,
+    bool enableBeforeSetField,
+    bool enableAfterSetField,
+    bool enableBeforeDeleteRecord,
+    bool enableAfterDeleteRecord
+  ) public {
+    uint8 enabledHooks = 0;
+    if (enableBeforeSetRecord) enabledHooks |= BEFORE_SET_RECORD;
+    if (enableAfterSetRecord) enabledHooks |= AFTER_SET_RECORD;
+    if (enableBeforeSetField) enabledHooks |= BEFORE_SET_FIELD;
+    if (enableAfterSetField) enabledHooks |= AFTER_SET_FIELD;
+    if (enableBeforeDeleteRecord) enabledHooks |= BEFORE_DELETE_RECORD;
+    if (enableAfterDeleteRecord) enabledHooks |= AFTER_DELETE_RECORD;
+
+    Hook storeHook = HookLib.encode(hookAddress, enabledHooks);
+
+    assertEq(storeHook.isEnabled(BEFORE_SET_RECORD), enableBeforeSetRecord);
+    assertEq(storeHook.isEnabled(AFTER_SET_RECORD), enableAfterSetRecord);
+    assertEq(storeHook.isEnabled(BEFORE_SET_FIELD), enableBeforeSetField);
+    assertEq(storeHook.isEnabled(AFTER_SET_FIELD), enableAfterSetField);
+    assertEq(storeHook.isEnabled(BEFORE_DELETE_RECORD), enableBeforeDeleteRecord);
+    assertEq(storeHook.isEnabled(AFTER_DELETE_RECORD), enableAfterDeleteRecord);
   }
 
   function testGetAddress() public {
