@@ -761,7 +761,7 @@ library StoreCoreInternal {
     // Store the provided value in storage
     {
       uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, keyTuple, dynamicFieldIndex);
-      Storage.store({ storagePointer: dynamicDataLocation, offset: start, data: data });
+      Storage.store({ storagePointer: dynamicDataLocation, offset: startWithinField, data: data });
     }
 
     // Call onAfterSpliceDynamicData hooks

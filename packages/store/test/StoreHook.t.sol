@@ -108,7 +108,7 @@ contract StoreHookTest is Test, GasReporter {
     assertFalse(storeHook.isEnabled(AFTER_SET_RECORD), "AFTER_SET_RECORD");
     assertTrue(storeHook.isEnabled(BEFORE_SPLICE_STATIC_DATA), "BEFORE_SPLICE_STATIC_DATA");
     assertFalse(storeHook.isEnabled(AFTER_SPLICE_STATIC_DATA), "AFTER_SPLICE_STATIC_DATA");
-    assertTrue(storeHook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA), "BEFORE_SPLICE_DYNAMIC_DATA");
+    assertFalse(storeHook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA), "BEFORE_SPLICE_DYNAMIC_DATA");
     assertFalse(storeHook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA), "AFTER_SPLICE_DYNAMIC_DATA");
     assertFalse(storeHook.isEnabled(BEFORE_DELETE_RECORD), "BEFORE_DELETE_RECORD");
     assertTrue(storeHook.isEnabled(AFTER_DELETE_RECORD), "AFTER_DELETE_RECORD");
@@ -164,7 +164,12 @@ contract StoreHookTest is Test, GasReporter {
     bytes memory emptyDynamicData = new bytes(0);
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, staticData, encodedLengths, emptyDynamicData, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        echoSubscriber.onBeforeSetRecord,
+        (tableId, key, staticData, encodedLengths, emptyDynamicData, fieldLayout)
+      )
+    );
     startGasReport("call an enabled hook");
     if (storeHook.isEnabled(BEFORE_SET_RECORD)) {
       IStoreHook(storeHook.getAddress()).onBeforeSetRecord(
