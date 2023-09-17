@@ -13,7 +13,7 @@ export default mudConfig({
   /** Filename where common user types will be generated and imported from. */
   userTypesFilename: "common.sol",
   /** Filename where codegen index will be generated. */
-  codegenIndexFilename: "index.sol"
+  codegenIndexFilename: "index.sol",
 });
 ```
 
