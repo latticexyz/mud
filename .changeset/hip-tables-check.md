@@ -8,6 +8,6 @@ Store's `getRecord` has been updated to return `staticData`, `encodedLengths`, a
 If you use codegenerated libraries, you will only need to update `encode` calls.
 
 ```diff
-- bytes memory data = Mixed.encode(mixed.u32, mixed.u128, mixed.a32, mixed.s);
-+ (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = Mixed.encode(mixed.u32, mixed.u128, mixed.a32, mixed.s);
+- bytes memory data = Position.encode(x, y);
++ (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = Position.encode(x, y);
 ```
