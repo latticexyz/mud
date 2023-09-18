@@ -60,6 +60,18 @@
     "gasUsed": 47158
   },
   {
+    "file": "test/BatchCallRootModule.t.sol",
+    "test": "testInstallRoot",
+    "name": "installRoot batch call root module",
+    "gasUsed": 1030959
+  },
+  {
+    "file": "test/BatchCallRootModule.t.sol",
+    "test": "testInstallRoot",
+    "name": "batch calling root (root module)",
+    "gasUsed": 41382
+  },
+  {
     "file": "test/KeysInTableModule.t.sol",
     "test": "testInstallComposite",
     "name": "install keys in table module",
