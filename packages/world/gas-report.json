@@ -36,22 +36,16 @@
     "gasUsed": 153
   },
   {
-    "file": "test/BatchCallModule.t.sol",
-    "test": "testInstall",
-    "name": "batch calling",
-    "gasUsed": 60251
-  },
-  {
     "file": "test/BatchCallRootModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot batch call root module",
-    "gasUsed": 1030959
+    "gasUsed": 1030961
   },
   {
     "file": "test/BatchCallRootModule.t.sol",
     "test": "testInstallRoot",
     "name": "batch calling root",
-    "gasUsed": 41382
+    "gasUsed": 41387
   },
   {
     "file": "test/KeysInTableModule.t.sol",
@@ -297,19 +291,19 @@
     "file": "test/World.t.sol",
     "test": "testCall",
     "name": "call a system via the World",
-    "gasUsed": 12380
+    "gasUsed": 12333
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "register an unlimited delegation",
-    "gasUsed": 50260
+    "gasUsed": 50259
   },
   {
     "file": "test/World.t.sol",
     "test": "testCallFromUnlimitedDelegation",
     "name": "call a system via an unlimited delegation",
-    "gasUsed": 12729
+    "gasUsed": 12682
   },
   {
     "file": "test/World.t.sol",
@@ -327,37 +321,37 @@
     "file": "test/World.t.sol",
     "test": "testRegisterFallbackSystem",
     "name": "Register a fallback system",
-    "gasUsed": 58889
+    "gasUsed": 58888
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFallbackSystem",
     "name": "Register a root fallback system",
-    "gasUsed": 52206
+    "gasUsed": 52205
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterFunctionSelector",
     "name": "Register a function selector",
-    "gasUsed": 79483
+    "gasUsed": 79482
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 122753
+    "gasUsed": 122752
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterRootFunctionSelector",
     "name": "Register a root function selector",
-    "gasUsed": 74124
+    "gasUsed": 74123
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 641613
+    "gasUsed": 641673
   },
   {
     "file": "test/World.t.sol",
