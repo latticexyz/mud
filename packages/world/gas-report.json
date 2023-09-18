@@ -38,26 +38,8 @@
   {
     "file": "test/BatchCallModule.t.sol",
     "test": "testInstall",
-    "name": "install batch call module",
-    "gasUsed": 393054
-  },
-  {
-    "file": "test/BatchCallModule.t.sol",
-    "test": "testInstall",
-    "name": "batch calling (non-root module)",
-    "gasUsed": 47158
-  },
-  {
-    "file": "test/BatchCallModule.t.sol",
-    "test": "testInstallRoot",
-    "name": "installRoot batch call module",
-    "gasUsed": 383113
-  },
-  {
-    "file": "test/BatchCallModule.t.sol",
-    "test": "testInstallRoot",
-    "name": "batch calling (root module)",
-    "gasUsed": 47158
+    "name": "batch calling",
+    "gasUsed": 60251
   },
   {
     "file": "test/BatchCallRootModule.t.sol",
@@ -68,7 +50,7 @@
   {
     "file": "test/BatchCallRootModule.t.sol",
     "test": "testInstallRoot",
-    "name": "batch calling root (root module)",
+    "name": "batch calling root",
     "gasUsed": 41382
   },
   {
