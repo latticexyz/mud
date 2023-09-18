@@ -1,4 +1,4 @@
-import { decodeEventLog, AbiEventSignatureNotFoundError, decodeFunctionData, Hex } from "viem";
+import { decodeEventLog, AbiEventSignatureNotFoundError } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -56,17 +56,6 @@ export function WriteSummary({ write }: Props) {
           .filter(isDefined)
       : null;
 
-  let functionName = write.request.functionName;
-  let functionArgs = write.request.args;
-  if (functionName === "call" || functionName === "callFrom") {
-    const functionSelectorAndArgs: Hex = write.request?.args?.length
-      ? (write.request.args[write.request.args.length - 1] as Hex)
-      : `0x`;
-    const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
-    functionName = functionData.functionName;
-    functionArgs = functionData.args;
-  }
-
   return (
     <details
       onToggle={(event) => {
@@ -84,10 +73,7 @@ export function WriteSummary({ write }: Props) {
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
-          {functionName}({functionArgs?.map((value) => serialize(value)).join(", ")}){" "}
-          {write.request.functionName !== functionName ? (
-            <span className="text-xs text-white/40">via {write.request.functionName}</span>
-          ) : null}
+          {write.request.functionName}({write.request.args?.map((value) => serialize(value)).join(", ")})
         </div>
         {transactionReceipt.status === "fulfilled" ? (
           <a
