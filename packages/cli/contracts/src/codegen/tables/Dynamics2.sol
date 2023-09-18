@@ -821,17 +821,38 @@ library Dynamics2 {
 
   /** Set the full data using the data struct */
   function set(bytes32 key, Dynamics2Data memory _table) internal {
-    set(key, _table.u64, _table.str, _table.b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
+    bytes memory _dynamicData = encodeDynamic(_table.u64, _table.str, _table.b);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(bytes32 key, Dynamics2Data memory _table) internal {
-    set(key, _table.u64, _table.str, _table.b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
+    bytes memory _dynamicData = encodeDynamic(_table.u64, _table.str, _table.b);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, bytes32 key, Dynamics2Data memory _table) internal {
-    set(_store, key, _table.u64, _table.str, _table.b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(_table.u64, _table.str, _table.b);
+    bytes memory _dynamicData = encodeDynamic(_table.u64, _table.str, _table.b);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**

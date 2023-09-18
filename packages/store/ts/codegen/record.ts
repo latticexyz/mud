@@ -10,7 +10,7 @@ import { RenderTableOptions } from "./types";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
-  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
   let result = renderWithStore(
     storeArgument,
@@ -43,7 +43,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
       renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
     ])}) internal {
-        ${renderRecordData(options)}
+        ${renderRecordData(options, "")}
 
         ${_keyTupleDefinition}
 
@@ -63,12 +63,11 @@ export function renderRecordMethods(options: RenderTableOptions) {
         _typedKeyArgs,
         `${structName} memory _table`,
       ])}) internal {
-          set(${renderArguments([
-            _untypedStore,
-            _tableId,
-            _keyArgs,
-            renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-          ])});
+          ${renderRecordData(options, "_table.")}
+
+          ${_keyTupleDefinition}
+
+          ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
         }
       `
     );
@@ -79,11 +78,13 @@ export function renderRecordMethods(options: RenderTableOptions) {
   return result;
 }
 
-export function renderRecordData(options: RenderTableOptions) {
+export function renderRecordData(options: RenderTableOptions, namePrefix: string) {
   let result = "";
   if (options.staticFields.length > 0) {
     result += `
-      bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+      bytes memory _staticData = encodeStatic(
+        ${renderArguments(options.staticFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
     `;
   } else {
     result += `bytes memory _staticData;`;
@@ -91,8 +92,12 @@ export function renderRecordData(options: RenderTableOptions) {
 
   if (options.dynamicFields.length > 0) {
     result += `
-      PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
-      bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+      PackedCounter _encodedLengths = encodeLengths(
+        ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
+      bytes memory _dynamicData = encodeDynamic(
+        ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
     `;
   } else {
     result += `

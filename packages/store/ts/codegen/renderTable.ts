@@ -137,7 +137,7 @@ export function renderTable(options: RenderTableOptions) {
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
       )}) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-        ${renderRecordData(options)}
+        ${renderRecordData(options, "")}
 
         return (_staticData, _encodedLengths, _dynamicData);
       }
