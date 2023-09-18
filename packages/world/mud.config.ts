@@ -195,7 +195,6 @@ export default mudConfig({
     // TODO: Move optional modules into a separate package
     // (see https://github.com/latticexyz/mud/pull/584)
     "UniqueEntitySystem",
-    "BatchCallSystem",
 
     // Worldgen currently does not support systems inheriting logic
     // from other contracts, so all parts of CoreSystem are named
