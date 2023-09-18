@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^8.0.1",
-    "@types/react": "^18.2.6",
+    "@types/react": "18.2.22",
     "@vitejs/plugin-react": "^4.0.0",
     "eslint-plugin-react": "7.31.11",
     "eslint-plugin-react-hooks": "4.6.0",
