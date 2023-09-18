@@ -84,7 +84,10 @@ export function WriteSummary({ write }: Props) {
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
-          {functionName}({functionArgs?.map((value) => serialize(value)).join(", ")})
+          {functionName}({functionArgs?.map((value) => serialize(value)).join(", ")}){" "}
+          {write.request.functionName !== functionName ? (
+            <span className="text-xs text-white/40">via {write.request.functionName}</span>
+          ) : null}
         </div>
         {transactionReceipt.status === "fulfilled" ? (
           <a
