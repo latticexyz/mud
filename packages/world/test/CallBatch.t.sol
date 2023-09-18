@@ -13,6 +13,8 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 
 import { WorldTestSystem } from "./World.t.sol";
 
+address constant caller = address(0x01);
+
 contract CallBatchTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
@@ -24,22 +26,29 @@ contract CallBatchTest is Test, GasReporter {
   }
 
   function testCallBatch() public {
+    bytes16 namespace = "namespace";
+    bytes16 name = "testSystem";
+    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    world.registerSystem(resourceSelector, system, true);
 
-    world.registerSystem(resourceSelector, system, false);
-
+    // Batch call functions on the system
     bytes32[] memory resourceSelectors = new bytes32[](2);
     bytes[] memory callDatas = new bytes[](2);
 
     resourceSelectors[0] = resourceSelector;
-    callDatas[0] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
+    callDatas[0] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
     resourceSelectors[1] = resourceSelector;
-    callDatas[1] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
+    callDatas[1] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
 
+    vm.prank(caller);
     startGasReport("call systems with callBatch");
-    world.callBatch(resourceSelectors, callDatas);
+    bytes[] memory datas = world.callBatch(resourceSelectors, callDatas);
     endGasReport();
+
+    assertEq(abi.decode(datas[0], (address)), caller, "wrong address returned");
+    assertEq(abi.decode(datas[1], (address)), address(world), "wrong store returned");
   }
 }
