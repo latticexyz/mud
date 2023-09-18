@@ -1,6 +1,6 @@
 ---
 "@latticexyz/store": major
-"@latticexyz/world": patch
+"@latticexyz/world": major
 ---
 
 Store's `getRecord` has been updated to return `staticData`, `encodedLengths`, and `dynamicData` instead of a single `data` blob, to match the new behaviour of Store setter methods.
