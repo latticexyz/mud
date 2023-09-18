@@ -10,8 +10,7 @@ import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { ResourceAccess, NamespaceOwner } from "../src/codegen/index.sol";
 
 contract AccessControlTest is Test, GasReporter, StoreMock {
   bytes16 constant namespace = "namespace";

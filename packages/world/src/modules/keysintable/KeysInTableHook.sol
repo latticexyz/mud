@@ -5,8 +5,7 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 
-import { KeysInTable } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
+import { KeysInTable, UsedKeysIndex } from "../../codegen/index.sol";
 
 /**
  * Note: if a table with composite keys is used, only the first five keys of the tuple are indexed

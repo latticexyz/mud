@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 import { IUniqueEntitySystem } from "../../interfaces/IUniqueEntitySystem.sol";
 
 /**

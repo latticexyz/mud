@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { System } from "../../System.sol";
 
-import { UniqueEntity } from "./tables/UniqueEntity.sol";
+import { UniqueEntity } from "../../codegen/index.sol";
 
 import { NAMESPACE, TABLE_NAME } from "./constants.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";

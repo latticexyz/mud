@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DelegationControl } from "../../DelegationControl.sol";
-import { CallboundDelegations } from "./tables/CallboundDelegations.sol";
+import { CallboundDelegations } from "../../codegen/index.sol";
 
 contract CallboundDelegationControl is DelegationControl {
   /**

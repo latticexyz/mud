@@ -5,11 +5,11 @@ import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { Balances } from "../src/modules/core/tables/Balances.sol";
+import { Balances } from "../src/codegen/index.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 using ResourceSelector for bytes32;

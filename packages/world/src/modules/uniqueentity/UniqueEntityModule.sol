@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { UniqueEntity } from "./tables/UniqueEntity.sol";
+import { UniqueEntity } from "../../codegen/index.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
 
 import { NAMESPACE, MODULE_NAME, SYSTEM_NAME, TABLE_NAME } from "./constants.sol";

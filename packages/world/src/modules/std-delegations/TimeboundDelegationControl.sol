@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DelegationControl } from "../../DelegationControl.sol";
-import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
+import { TimeboundDelegations } from "../../codegen/index.sol";
 
 contract TimeboundDelegationControl is DelegationControl {
   /**

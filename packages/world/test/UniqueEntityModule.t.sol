@@ -5,12 +5,12 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { World } from "../src/World.sol";
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
-import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
+import { UniqueEntity } from "../src/codegen/index.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
 
 import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";

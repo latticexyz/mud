@@ -8,20 +8,13 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "../../../System.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { Resource } from "../../../common.sol";
+import { Resource } from "../../../codegen/common.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { WorldContextProvider } from "../../../WorldContext.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
+import { NamespaceOwner, ResourceAccess, ResourceType, SystemHooks, SystemRegistry, Systems, FunctionSelectors } from "../../../codegen/index.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
-
-import { ResourceType } from "../tables/ResourceType.sol";
-import { SystemHooks } from "../tables/SystemHooks.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
 import { CORE_SYSTEM_NAME } from "../constants.sol";
 

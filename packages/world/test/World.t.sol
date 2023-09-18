@@ -25,26 +25,20 @@ import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
-import { Resource } from "../src/common.sol";
+import { Resource } from "../src/codegen/common.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 
-import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
+import { NamespaceOwner, NamespaceOwnerTableId, ResourceAccess, Bool, AddressArray } from "../src/codegen/index.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { Systems } from "../src/modules/core/tables/Systems.sol";
-import { SystemRegistry } from "../src/modules/core/tables/SystemRegistry.sol";
-import { ResourceType } from "../src/modules/core/tables/ResourceType.sol";
+import { Systems, SystemRegistry, ResourceType } from "../src/codegen/index.sol";
 
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
-
-import { Bool } from "./tables/Bool.sol";
-import { AddressArray } from "./tables/AddressArray.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;

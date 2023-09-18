@@ -6,12 +6,12 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
-import { KeysWithValue } from "./tables/KeysWithValue.sol";
+import { KeysWithValue } from "../../codegen/index.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 

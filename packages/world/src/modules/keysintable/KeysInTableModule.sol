@@ -3,18 +3,16 @@ pragma solidity >=0.8.0;
 
 import { BEFORE_SET_RECORD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 
-import { ResourceType } from "../core/tables/ResourceType.sol";
-import { Resource } from "../../common.sol";
+import { ResourceType, KeysInTable, KeysInTableTableId, UsedKeysIndex, UsedKeysIndexTableId } from "../../codegen/index.sol";
+import { Resource } from "../../codegen/common.sol";
 import { Module } from "../../Module.sol";
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
-import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`

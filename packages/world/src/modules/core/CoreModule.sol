@@ -3,29 +3,19 @@ pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { Resource } from "../../common.sol";
+import { Resource } from "../../codegen/common.sol";
 import { Module } from "../../Module.sol";
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../tables/InstalledModules.sol";
-import { Delegations } from "../../tables/Delegations.sol";
+import { NamespaceOwner, ResourceAccess, InstalledModules, Delegations, Systems, FunctionSelectors, ResourceType, SystemHooks, SystemRegistry, Balances } from "../../codegen/index.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
 import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
-
-import { Systems } from "./tables/Systems.sol";
-import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
-import { ResourceType } from "./tables/ResourceType.sol";
-import { SystemHooks } from "./tables/SystemHooks.sol";
-import { SystemRegistry } from "./tables/SystemRegistry.sol";
-import { Balances } from "./tables/Balances.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";

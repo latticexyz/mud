@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
+import { UsedKeysIndex } from "../../codegen/index.sol";
 
 /**
  * Get whether the keyTuple is in the given table.

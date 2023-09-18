@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
@@ -12,8 +12,7 @@ import { CallboundDelegationControl } from "./CallboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "./TimeboundDelegationControl.sol";
 import { MODULE_NAME, CALLBOUND_DELEGATION, TIMEBOUND_DELEGATION } from "./constants.sol";
 
-import { CallboundDelegations } from "./tables/CallboundDelegations.sol";
-import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
+import { CallboundDelegations, TimeboundDelegations } from "../../codegen/index.sol";
 
 /**
  * This module registers tables and delegation control systems required for standard delegations

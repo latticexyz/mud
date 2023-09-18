@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { Create2 } from "./Create2.sol";
 import { World } from "../World.sol";
 import { IWorldFactory } from "./IWorldFactory.sol";
-import { IBaseWorld } from "../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../codegen/interfaces/IBaseWorld.sol";
 import { IModule } from "../interfaces/IModule.sol";
 import { ROOT_NAMESPACE } from "../constants.sol";
 

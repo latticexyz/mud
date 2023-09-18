@@ -1,10 +1,9 @@
 import { mudConfig } from "./ts/register";
 
 export default mudConfig({
-  worldImportPath: "../",
+  worldImportPath: "../../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
-  codegenDirectory: "",
   tables: {
     /************************************************************************
      *
@@ -172,7 +171,7 @@ export default mudConfig({
      *
      ************************************************************************/
     Bool: {
-      directory: "../test/tables",
+      directory: "test/tables",
       keySchema: {},
       valueSchema: {
         value: "bool",
@@ -180,7 +179,7 @@ export default mudConfig({
       tableIdArgument: true,
     },
     AddressArray: {
-      directory: "../test/tables",
+      directory: "test/tables",
       valueSchema: "address[]",
       tableIdArgument: true,
     },

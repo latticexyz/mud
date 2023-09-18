@@ -4,8 +4,7 @@ pragma solidity >=0.8.0;
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 
-import { ResourceAccess } from "./tables/ResourceAccess.sol";
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceAccess, NamespaceOwner } from "./codegen/index.sol";
 
 library AccessControl {
   using ResourceSelector for bytes32;

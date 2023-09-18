@@ -18,13 +18,11 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { World } from "../src/World.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { AddressArray } from "./tables/AddressArray.sol";
+import { NamespaceOwner, ResourceAccess, AddressArray } from "../src/codegen/index.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 contract UpdateInFieldTest is Test, GasReporter {

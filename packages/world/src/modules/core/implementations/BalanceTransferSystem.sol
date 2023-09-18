@@ -7,7 +7,7 @@ import { ResourceSelector } from "../../../ResourceSelector.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
-import { Balances } from "../tables/Balances.sol";
+import { Balances } from "../../../codegen/index.sol";
 
 contract BalanceTransferSystem is System, IWorldErrors {
   using ResourceSelector for bytes32;

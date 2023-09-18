@@ -5,7 +5,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
-import { KeysWithValue } from "./tables/KeysWithValue.sol";
+import { KeysWithValue } from "../../codegen/index.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**

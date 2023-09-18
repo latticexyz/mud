@@ -6,23 +6,15 @@ import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
 import { System } from "../../../System.sol";
 import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { Resource } from "../../../common.sol";
+import { Resource } from "../../../codegen/common.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { Delegations } from "../../../tables/Delegations.sol";
+import { NamespaceOwner, ResourceAccess, Delegations, ResourceType, SystemHooks, SystemHooksTableId, SystemRegistry, Systems, FunctionSelectors } from "../../../codegen/index.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISystemHook.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
-
-import { ResourceType } from "../tables/ResourceType.sol";
-import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
 /**
  * Functions related to registering resources other than tables in the World.

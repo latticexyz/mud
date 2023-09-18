@@ -10,8 +10,7 @@ import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
-import { InstalledModules } from "../src/tables/InstalledModules.sol";
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { InstalledModules, NamespaceOwner } from "../src/codegen/index.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 contract FactoriesTest is Test {

@@ -6,7 +6,7 @@ import { Test } from "forge-std/Test.sol";
 import { Utils } from "../src/Utils.sol";
 import { System } from "../src/System.sol";
 import { World } from "../src/World.sol";
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";

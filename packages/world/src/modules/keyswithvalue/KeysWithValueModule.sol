@@ -5,7 +5,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { BEFORE_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { Module } from "../../Module.sol";
 
-import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../codegen/interfaces/IBaseWorld.sol";
 
 import { WorldContextConsumer } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -13,7 +13,7 @@ import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValueHook } from "./KeysWithValueHook.sol";
-import { KeysWithValue } from "./tables/KeysWithValue.sol";
+import { KeysWithValue } from "../../codegen/index.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**

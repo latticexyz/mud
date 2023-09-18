@@ -21,18 +21,11 @@ import { revertWithBytes } from "./revertWithBytes.sol";
 import { Delegation } from "./Delegation.sol";
 import { requireInterface } from "./requireInterface.sol";
 
-import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
-import { InstalledModules } from "./tables/InstalledModules.sol";
-import { Delegations } from "./tables/Delegations.sol";
-
 import { IModule, MODULE_INTERFACE_ID } from "./interfaces/IModule.sol";
 import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 
-import { Systems } from "./modules/core/tables/Systems.sol";
-import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
-import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
-import { Balances } from "./modules/core/tables/Balances.sol";
+import { NamespaceOwner, InstalledModules, Delegations, Systems, SystemHooks, FunctionSelectors, Balances } from "./codegen/index.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {

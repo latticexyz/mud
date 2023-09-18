@@ -6,12 +6,12 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { World } from "../src/World.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
-import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../src/codegen/interfaces/IBaseWorld.sol";
 import { System } from "../src/System.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { DELEGATION_CONTROL_INTERFACE_ID } from "../src/interfaces/IDelegationControl.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { Systems } from "../src/modules/core/tables/Systems.sol";
+import { Systems } from "../src/codegen/index.sol";
 import { StandardDelegationsModule } from "../src/modules/std-delegations/StandardDelegationsModule.sol";
 import { CallboundDelegationControl } from "../src/modules/std-delegations/CallboundDelegationControl.sol";
 import { TimeboundDelegationControl } from "../src/modules/std-delegations/TimeboundDelegationControl.sol";

@@ -5,9 +5,7 @@ import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { ResourceSelector } from "../../../ResourceSelector.sol";
-import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
-import { InstalledModules } from "../../../tables/InstalledModules.sol";
-import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
+import { ResourceAccess, InstalledModules, NamespaceOwner } from "../../../codegen/index.sol";
 
 /**
  * Granting and revoking access from/to resources.

@@ -5,7 +5,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { KeysInTable } from "./tables/KeysInTable.sol";
+import { KeysInTable } from "../../codegen/index.sol";
 
 /**
  * Get a list of keys in the given table.

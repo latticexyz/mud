@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
-import { SystemRegistry } from "./Tables.sol";
+import { SystemRegistry } from "./codegen/index.sol";
 
 library Utils {
   /**
