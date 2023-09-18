@@ -38,7 +38,7 @@
   {
     "file": "test/CallBatch.t.sol",
     "test": "testCallBatch",
-    "name": "batch calling root",
+    "name": "call systems with callBatch",
     "gasUsed": 45672
   },
   {

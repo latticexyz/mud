@@ -38,7 +38,7 @@ contract CallBatchTest is Test, GasReporter {
     resourceSelectors[1] = resourceSelector;
     callDatas[1] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
 
-    startGasReport("batch calling root");
+    startGasReport("call systems with callBatch");
     world.callBatch(resourceSelectors, callDatas);
     endGasReport();
   }
