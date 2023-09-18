@@ -4,10 +4,10 @@ import { System } from "../../../System.sol";
 import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
 
-/**
- * Call multiple systems at the given resourceSelectors, on behalf of _msgSender().
- */
 contract CallBatchSystem is System {
+  /**
+   * Call multiple systems at the given resourceSelectors, on behalf of _msgSender().
+   */
   function callBatch(
     bytes32[] memory resourceSelectors,
     bytes[] memory callDatas
