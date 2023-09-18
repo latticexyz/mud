@@ -4,16 +4,12 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { ROOT_NAMESPACE, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { BatchCallRootModule } from "../src/modules/batchcallroot/BatchCallRootModule.sol";
-import { IBatchCallRootSystem } from "../src/interfaces/IBatchCallRootSystem.sol";
 
-import { NAMESPACE } from "../src/modules/batchcall/constants.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
 import { WorldTestSystem } from "./World.t.sol";
@@ -47,7 +43,7 @@ contract BatchCallRootModuleTest is Test, GasReporter {
     resourceSelectors[1] = resourceSelector;
     callDatas[1] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
 
-    startGasReport("batch calling root (root module)");
+    startGasReport("batch calling root");
     world.batchCall(resourceSelectors, callDatas);
     endGasReport();
   }
