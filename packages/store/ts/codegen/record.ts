@@ -83,7 +83,7 @@ export function renderRecordData(options: RenderTableOptions) {
   let result = "";
   if (options.staticFields.length > 0) {
     result += `
-    bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+      bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
     `;
   } else {
     result += `bytes memory _staticData;`;
@@ -91,13 +91,13 @@ export function renderRecordData(options: RenderTableOptions) {
 
   if (options.dynamicFields.length > 0) {
     result += `
-    PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
-    bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+      PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+      bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
     `;
   } else {
     result += `
-    PackedCounter _encodedLengths;
-    bytes memory _dynamicData;
+      PackedCounter _encodedLengths;
+      bytes memory _dynamicData;
     `;
   }
 
@@ -124,88 +124,88 @@ function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields
 
   if (staticFields.length > 0) {
     result += `
-    /**
-     * Decode the tightly packed blob of static data using this table's field layout
-     * Undefined behaviour for invalid blobs
-     */
-    function decodeStatic(bytes memory _blob) internal pure returns (${renderArguments(
-      staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-    )}) {
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        ${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-        `
-      )}
-    }
+      /**
+       * Decode the tightly packed blob of static data using this table's field layout
+       * Undefined behaviour for invalid blobs
+       */
+      function decodeStatic(bytes memory _blob) internal pure returns (${renderArguments(
+        staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      )}) {
+        ${renderList(
+          staticFields,
+          (field, index) => `
+          ${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
+          `
+        )}
+      }
     `;
   }
 
   if (dynamicFields.length > 0) {
     result += `
-    /**
-     * Decode the tightly packed blob of static data using this table's field layout
-     * Undefined behaviour for invalid blobs
-     */
-    function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
-      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-    )}) {
-      ${renderList(
-        dynamicFields,
-        // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
-        // but it's assumed to be valid, and this function is meant to be mostly used internally
-        (field, index) => {
-          if (index === 0) {
-            return `
-              uint256 _start;
-              uint256 _end;
-              unchecked {
-                _end = _encodedLengths.atIndex(${index});
-              }
-              ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-            `;
-          } else {
-            return `
-              _start = _end;
-              unchecked {
-                _end += _encodedLengths.atIndex(${index});
-              }
-              ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-            `;
+      /**
+       * Decode the tightly packed blob of static data using this table's field layout
+       * Undefined behaviour for invalid blobs
+       */
+      function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
+        dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      )}) {
+        ${renderList(
+          dynamicFields,
+          // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
+          // but it's assumed to be valid, and this function is meant to be mostly used internally
+          (field, index) => {
+            if (index === 0) {
+              return `
+                uint256 _start;
+                uint256 _end;
+                unchecked {
+                  _end = _encodedLengths.atIndex(${index});
+                }
+                ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+              `;
+            } else {
+              return `
+                _start = _end;
+                unchecked {
+                  _end += _encodedLengths.atIndex(${index});
+                }
+                ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+              `;
+            }
           }
-        }
-      )}
-    }
+        )}
+      }
     `;
   }
 
   result += `
-  /**
-   * Decode the tightly packed blob using this table's field layout.
-   * Undefined behaviour for invalid blobs.
-   */
-  function decode(
-    bytes memory ${staticFields.length > 0 ? "_staticData" : ""},
-    PackedCounter ${dynamicFields.length > 0 ? "_encodedLengths" : ""},
-    bytes memory ${dynamicFields.length > 0 ? "_dynamicData" : ""}
-  ) internal pure returns (${renderedDecodedRecord}) {
+    /**
+     * Decode the tightly packed blob using this table's field layout.
+     * Undefined behaviour for invalid blobs.
+     */
+    function decode(
+      bytes memory ${staticFields.length > 0 ? "_staticData" : ""},
+      PackedCounter ${dynamicFields.length > 0 ? "_encodedLengths" : ""},
+      bytes memory ${dynamicFields.length > 0 ? "_dynamicData" : ""}
+    ) internal pure returns (${renderedDecodedRecord}) {
   `;
 
   if (staticFields.length > 0) {
     result += `
-    (${renderArguments(staticFields.map((field) => `${fieldNamePrefix}${field.name}`))}) = decodeStatic(_staticData);
+      (${renderArguments(staticFields.map((field) => `${fieldNamePrefix}${field.name}`))}) = decodeStatic(_staticData);
     `;
   }
   if (dynamicFields.length > 0) {
     result += `
-    (${renderArguments(
-      dynamicFields.map((field) => `${fieldNamePrefix}${field.name}`)
-    )}) = decodeDynamic(_encodedLengths, _dynamicData);
+      (${renderArguments(
+        dynamicFields.map((field) => `${fieldNamePrefix}${field.name}`)
+      )}) = decodeDynamic(_encodedLengths, _dynamicData);
     `;
   }
 
   result += `
-  }
+    }
   `;
 
   return result;
