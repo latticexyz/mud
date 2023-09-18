@@ -17,6 +17,8 @@ bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector 
   ERC165_INTERFACE_ID;
 
 interface IStoreHook is IERC165 {
+  error StoreHook_NotImplemented();
+
   function onBeforeSetRecord(
     bytes32 tableId,
     bytes32[] memory keyTuple,

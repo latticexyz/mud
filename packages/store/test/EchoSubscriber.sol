@@ -15,7 +15,7 @@ contract EchoSubscriber is StoreHook {
     PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
-  ) public {
+  ) public override {
     emit HookCalled(
       abi.encodeCall(this.onBeforeSetRecord, (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout))
     );
@@ -28,7 +28,7 @@ contract EchoSubscriber is StoreHook {
     PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
-  ) public {
+  ) public override {
     emit HookCalled(
       abi.encodeCall(this.onAfterSetRecord, (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout))
     );
@@ -40,7 +40,7 @@ contract EchoSubscriber is StoreHook {
     uint48 start,
     uint40 deleteCount,
     bytes memory data
-  ) public {
+  ) public override {
     emit HookCalled(abi.encodeCall(this.onBeforeSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
   }
 
@@ -50,7 +50,7 @@ contract EchoSubscriber is StoreHook {
     uint48 start,
     uint40 deleteCount,
     bytes memory data
-  ) public {
+  ) public override {
     emit HookCalled(abi.encodeCall(this.onAfterSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
   }
 
@@ -62,7 +62,7 @@ contract EchoSubscriber is StoreHook {
     uint40 deleteCount,
     bytes memory data,
     PackedCounter encodedLengths
-  ) public {
+  ) public override {
     emit HookCalled(
       abi.encodeCall(
         this.onBeforeSpliceDynamicData,
@@ -79,7 +79,7 @@ contract EchoSubscriber is StoreHook {
     uint40 deleteCount,
     bytes memory data,
     PackedCounter encodedLengths
-  ) public {
+  ) public override {
     emit HookCalled(
       abi.encodeCall(
         this.onAfterSpliceDynamicData,
@@ -88,11 +88,11 @@ contract EchoSubscriber is StoreHook {
     );
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
     emit HookCalled(abi.encodeCall(this.onBeforeDeleteRecord, (tableId, keyTuple, fieldLayout)));
   }
 
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
+  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
     emit HookCalled(abi.encodeCall(this.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
   }
 }

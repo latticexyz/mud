@@ -11,7 +11,7 @@ import { Schema } from "../src/Schema.sol";
 bytes32 constant indexerTableId = keccak256("indexer.tableId");
 
 contract MirrorSubscriber is StoreHook {
-  bytes32 _tableId;
+  bytes32 public _tableId;
 
   constructor(
     bytes32 tableId,
@@ -28,24 +28,13 @@ contract MirrorSubscriber is StoreHook {
   function onBeforeSetRecord(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    bytes calldata staticData,
+    bytes memory staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
-  ) public {
+  ) public override {
     if (tableId != _tableId) revert("invalid table");
     StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
-  }
-
-  function onAfterSetRecord(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) public {
-    // NOOP
   }
 
   function onBeforeSpliceStaticData(
@@ -54,19 +43,9 @@ contract MirrorSubscriber is StoreHook {
     uint48 start,
     uint40 deleteCount,
     bytes memory data
-  ) public {
+  ) public override {
     if (tableId != _tableId) revert("invalid tableId");
     StoreSwitch.spliceStaticData(indexerTableId, keyTuple, start, deleteCount, data);
-  }
-
-  function onAfterSpliceStaticData(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    uint48 start,
-    uint40 deleteCount,
-    bytes memory data
-  ) public {
-    // NOOP
   }
 
   function onBeforeSpliceDynamicData(
@@ -77,7 +56,7 @@ contract MirrorSubscriber is StoreHook {
     uint40 deleteCount,
     bytes memory data,
     PackedCounter
-  ) public {
+  ) public override {
     if (tableId != _tableId) revert("invalid tableId");
     StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
@@ -90,17 +69,13 @@ contract MirrorSubscriber is StoreHook {
     uint40 deleteCount,
     bytes memory data,
     PackedCounter
-  ) public {
+  ) public override {
     if (tableId != _tableId) revert("invalid tableId");
     StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public overide {
     if (tableId != tableId) revert("invalid tableId");
     StoreSwitch.deleteRecord(indexerTableId, keyTuple, fieldLayout);
-  }
-
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    // NOOP
   }
 }

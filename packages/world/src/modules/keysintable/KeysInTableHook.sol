@@ -48,60 +48,33 @@ contract KeysInTableHook is StoreHook {
     PackedCounter,
     bytes memory,
     FieldLayout
-  ) public {
+  ) public override {
     handleSet(tableId, keyTuple);
-  }
-
-  function onAfterSetRecord(
-    bytes32 tableId,
-    bytes32[] memory keyTuple,
-    bytes memory,
-    PackedCounter,
-    bytes memory,
-    FieldLayout
-  ) public {
-    // NOOP
-  }
-
-  function onBeforeSpliceStaticData(bytes32, bytes32[] calldata, uint48, uint40, bytes calldata) public pure {
-    // NOOP
   }
 
   function onAfterSpliceStaticData(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
+    bytes32[] memory keyTuple,
     uint48,
     uint40,
-    bytes calldata
-  ) public {
+    bytes memory
+  ) public override {
     handleSet(tableId, keyTuple);
-  }
-
-  function onBeforeSpliceDynamicData(
-    bytes32,
-    bytes32[] calldata,
-    uint8,
-    uint40,
-    uint40,
-    bytes calldata,
-    PackedCounter
-  ) public pure {
-    // NOOP
   }
 
   function onAfterSpliceDynamicData(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
+    bytes32[] memory keyTuple,
     uint8,
     uint40,
     uint40,
-    bytes calldata,
+    bytes memory,
     PackedCounter
-  ) public {
+  ) public override {
     handleSet(tableId, keyTuple);
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout) public {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout) public override {
     bytes32 keysHash = keccak256(abi.encode(keyTuple));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
@@ -164,9 +137,5 @@ contract KeysInTableHook is StoreHook {
         }
       }
     }
-  }
-
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    // NOOP
   }
 }
