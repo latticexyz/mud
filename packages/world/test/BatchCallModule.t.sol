@@ -40,22 +40,26 @@ contract BatchCallModuleTest is Test, GasReporter {
 
     world.registerSystem(resourceSelector, system, false);
 
-    bytes32[] memory resourceSelectors = new bytes32[](1);
-    bytes[] memory funcSelectorAndArgss = new bytes[](1);
+    bytes32[] memory resourceSelectors = new bytes32[](2);
+    bytes[] memory callDatas = new bytes[](2);
 
     resourceSelectors[0] = resourceSelector;
-    funcSelectorAndArgss[0] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
+    callDatas[0] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
+    resourceSelectors[1] = resourceSelector;
+    callDatas[1] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
 
     // TODO: do not hardcode this
     address delegatee = 0x104fBc016F4bb334D775a19E8A6510109AC63E00;
 
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, address(this), delegatee));
-    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, funcSelectorAndArgss);
+    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, callDatas);
 
     // Register an unlimited delegation
     world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
 
-    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, funcSelectorAndArgss);
+    startGasReport("batch calling (non-root module)");
+    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, callDatas);
+    endGasReport();
   }
 
   function testInstallRoot() public {
@@ -69,21 +73,25 @@ contract BatchCallModuleTest is Test, GasReporter {
 
     world.registerSystem(resourceSelector, system, false);
 
-    bytes32[] memory resourceSelectors = new bytes32[](1);
-    bytes[] memory funcSelectorAndArgss = new bytes[](1);
+    bytes32[] memory resourceSelectors = new bytes32[](2);
+    bytes[] memory callDatas = new bytes[](2);
 
     resourceSelectors[0] = resourceSelector;
-    funcSelectorAndArgss[0] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
+    callDatas[0] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
+    resourceSelectors[1] = resourceSelector;
+    callDatas[1] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
 
     // TODO: do not hardcode this
     address delegatee = 0x104fBc016F4bb334D775a19E8A6510109AC63E00;
 
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, address(this), delegatee));
-    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, funcSelectorAndArgss);
+    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, callDatas);
 
     // Register an unlimited delegation
     world.registerDelegation(delegatee, UNLIMITED_DELEGATION, new bytes(0));
 
-    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, funcSelectorAndArgss);
+    startGasReport("batch calling (root module)");
+    IBatchCallSystem(address(world)).batchCall_system_batchCall(resourceSelectors, callDatas);
+    endGasReport();
   }
 }
