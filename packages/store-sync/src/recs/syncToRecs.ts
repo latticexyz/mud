@@ -8,7 +8,7 @@ import { SyncStep } from "../SyncStep";
 import { Hex } from "viem";
 import { encodeEntity } from "./encodeEntity";
 import { KeySchema, ValueSchema, decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
-import IStoreAbi from "@latticexyz/store/out/IStore.sol/IStore.abi.json";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
   world: RecsWorld;
@@ -64,13 +64,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
 
   world.registerDisposer(stopSync);
 
-  const functionSelectorToResourceSelector = new Map<Hex, Hex>();
-
   const getResourceSelector = async (functionSelector: Hex): Promise<Hex> => {
-    if (functionSelectorToResourceSelector.has(functionSelector)) {
-      return functionSelectorToResourceSelector.get(functionSelector) as Hex;
-    }
-
     const entity = encodeEntity<KeySchema>(components.FunctionSelectors.metadata.keySchema, {
       functionSelector,
     });
@@ -82,23 +76,23 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
       // TODO make fieldLayout a table metadata field
       const encodedFieldLayout = valueSchemaToFieldLayoutHex(components.FunctionSelectors.metadata.valueSchema);
 
-      const selectorRecord = (await publicClient.readContract({
+      const selectorRecord: Hex = await publicClient.readContract({
         address: address as Hex,
-        abi: IStoreAbi,
+        abi: IBaseWorldAbi,
         functionName: "getRecord",
         args: [components.FunctionSelectors.id as Hex, [entity as Hex], encodedFieldLayout],
-      })) as Hex;
+      });
 
-      const decodedSelectors = decodeValue<ValueSchema>(
-        components.FunctionSelectors.metadata.valueSchema,
-        selectorRecord
-      );
+      const decodedSelectors = decodeValue<
+        ValueSchema & {
+          resourceSelector: "bytes32";
+          systemFunctionSelector: "bytes4";
+        }
+      >(components.FunctionSelectors.metadata.valueSchema, selectorRecord);
 
-      functionSelectorToResourceSelector.set(functionSelector, decodedSelectors.resourceSelector as Hex);
-      return decodedSelectors.resourceSelector as Hex;
+      return decodedSelectors.resourceSelector;
     }
 
-    functionSelectorToResourceSelector.set(functionSelector, selectors.resourceSelector as Hex);
     return selectors.resourceSelector as Hex;
   };
 

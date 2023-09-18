@@ -53,7 +53,7 @@ export type CreateContractOptions<
   TPublicClient extends PublicClient<TTransport, TChain>,
   TWalletClient extends WalletClient<TTransport, TChain, TAccount>
 > = Required<GetContractParameters<TTransport, TChain, TAccount, TAbi, TPublicClient, TWalletClient, TAddress>> & {
-  getResourceSelector: (functionSelector: Hex) => Promise<Hex>;
+  getResourceSelector?: (functionSelector: Hex) => Promise<Hex>;
   onWrite?: (write: ContractWrite) => void;
 };
 
@@ -87,6 +87,7 @@ export function createContract<
     publicClient,
     walletClient,
   }) as unknown as GetContractReturnType<Abi, PublicClient, WalletClient>;
+  const functionSelectorToResourceSelector = new Map<Hex, Hex>();
 
   if (contract.write) {
     let nextWriteId = 0;
@@ -162,8 +163,9 @@ export function createContract<
               abi,
               name: functionName,
             }) as AbiFunction;
-            const functionSelector = getFunctionSelector(functionSignature);
             if (!functionSignature) throw new Error(`Unable to get function signature for ${functionName}`);
+
+            const functionSelector = getFunctionSelector(functionSignature);
 
             let request: WriteContractParameters = {
               address,
@@ -172,12 +174,15 @@ export function createContract<
               args,
               ...options,
             };
-            const resourceSelector = await getResourceSelector(functionSelector);
+            const resourceSelector = functionSelectorToResourceSelector.has(functionSelector)
+              ? functionSelectorToResourceSelector.get(functionSelector)
+              : await getResourceSelector?.(functionSelector);
             const shouldUseCallFrom = resourceSelector && resourceSelector !== staticAbiTypeToDefaultValue.bytes32;
 
             // if the function is not part of the world contract and needs to be routed
             // to other systems, route it through callFrom
             if (shouldUseCallFrom) {
+              functionSelectorToResourceSelector.set(functionSelector, resourceSelector);
               // TODO figure out how to strongly type Abi
               const funcSelectorAndArgs = encodeFunctionData<Abi, string>({
                 abi,
@@ -196,6 +201,9 @@ export function createContract<
               };
             }
 
+            // We intentionally don't use `await` here so we can pass the `result` promise
+            // immediately to the `onWrite` call and consumers (i.e. dev tools) can use the
+            // write request before it hits the RPC.
             const result = write(request);
 
             onWrite?.({ id, request, result });
