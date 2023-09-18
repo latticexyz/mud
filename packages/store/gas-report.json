@@ -165,13 +165,13 @@
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom encode",
-    "gasUsed": 2065
+    "gasUsed": 1571
   },
   {
     "file": "test/Gas.t.sol",
     "test": "testCompareAbiEncodeVsCustom",
     "name": "custom decode",
-    "gasUsed": 1981
+    "gasUsed": 2020
   },
   {
     "file": "test/Gas.t.sol",
@@ -375,7 +375,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testSetAndGet",
     "name": "get record from Mixed",
-    "gasUsed": 7168
+    "gasUsed": 7015
   },
   {
     "file": "test/PackedCounter.t.sol",
@@ -633,7 +633,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testAccessEmptyData",
     "name": "access non-existing record",
-    "gasUsed": 6185
+    "gasUsed": 7041
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -645,7 +645,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testAccessEmptyData",
     "name": "access dynamic field of non-existing record",
-    "gasUsed": 2032
+    "gasUsed": 2033
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -657,7 +657,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testAccessEmptyData",
     "name": "access slice of dynamic field of non-existing record",
-    "gasUsed": 1484
+    "gasUsed": 1483
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -771,7 +771,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetDynamicData",
     "name": "get complex record with dynamic data (4 slots)",
-    "gasUsed": 4456
+    "gasUsed": 4203
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -861,7 +861,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticData",
     "name": "get static record (1 slot)",
-    "gasUsed": 1608
+    "gasUsed": 1524
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -873,7 +873,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testSetAndGetStaticDataSpanningWords",
     "name": "get static record (2 slots)",
-    "gasUsed": 1796
+    "gasUsed": 1709
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1107,6 +1107,6 @@
     "file": "test/Vector2.t.sol",
     "test": "testSetAndGet",
     "name": "get Vector2 record",
-    "gasUsed": 2530
+    "gasUsed": 2505
   }
 ]

@@ -6,6 +6,7 @@ import { IStoreRead } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 contract StoreRead is IStoreRead {
   function storeVersion() public pure returns (bytes32) {
@@ -28,8 +29,8 @@ contract StoreRead is IStoreRead {
     bytes32 tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
-  ) public view virtual returns (bytes memory data) {
-    data = StoreCore.getRecord(tableId, keyTuple, fieldLayout);
+  ) public view virtual returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
+    return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
   }
 
   function getField(

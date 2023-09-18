@@ -19,7 +19,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Resource } from "./../../../Types.sol";
+import { Resource } from "./../../../common.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType")));
 bytes32 constant ResourceTypeTableId = _tableId;
@@ -134,13 +134,13 @@ library ResourceType {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(Resource resourceType) internal pure returns (bytes memory) {
+  function encode(Resource resourceType) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(resourceType);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

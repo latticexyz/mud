@@ -19,7 +19,7 @@ import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
 // Import user types
-import { ExampleEnum } from "./../Types.sol";
+import { ExampleEnum } from "./../common.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("KeyEncoding")));
 bytes32 constant KeyEncodingTableId = _tableId;
@@ -205,13 +205,13 @@ library KeyEncoding {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(bool value) internal pure returns (bytes memory) {
+  function encode(bool value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

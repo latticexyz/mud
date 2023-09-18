@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { System } from "@latticexyz/world/src/System.sol";
-import { NumberList, NumberListTableId } from "../codegen/Tables.sol";
+import { NumberList, NumberListTableId } from "../codegen/index.sol";
 
 contract NumberListSystem is System {
   function set(uint32[] memory list) public {

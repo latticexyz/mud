@@ -24,12 +24,12 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
 
   // write types to file
   if (Object.keys(config.enums).length > 0) {
-    const fullOutputPath = path.join(outputBaseDirectory, `${config.userTypesPath}.sol`);
+    const fullOutputPath = path.join(outputBaseDirectory, config.userTypesFilename);
     const output = renderTypesFromConfig(config);
     await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
 
-  const fullOutputPath = path.join(outputBaseDirectory, `Tables.sol`);
+  const fullOutputPath = path.join(outputBaseDirectory, config.codegenIndexFilename);
   const output = renderTableIndex(allTableOptions);
   await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
 }

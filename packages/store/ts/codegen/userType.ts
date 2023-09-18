@@ -61,7 +61,7 @@ export function importForAbiOrUserType(
   // user types
   return {
     symbol: abiOrUserType,
-    fromPath: config.userTypesPath + ".sol",
+    fromPath: config.userTypesFilename,
     usedInPath: usedInDirectory,
   };
 }

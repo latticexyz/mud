@@ -9,7 +9,7 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/Tables.sol";
+import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
@@ -545,54 +545,31 @@ library StoreCore {
     bytes32 tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
     // Get the static data length
     uint256 staticLength = fieldLayout.staticDataLength();
-    uint256 outputLength = staticLength;
-
-    // Load the dynamic data length if there are dynamic fields
-    PackedCounter dynamicDataLength;
-    uint256 numDynamicFields = fieldLayout.numDynamicFields();
-    if (numDynamicFields > 0) {
-      dynamicDataLength = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
-      // TODO should total output include dynamic data length even if it's 0?
-      if (dynamicDataLength.total() > 0) {
-        outputLength += 32 + dynamicDataLength.total(); // encoded length + data
-      }
-    }
-
-    // Allocate length for the full packed data (static and dynamic)
-    bytes memory data = new bytes(outputLength);
-    uint256 memoryPointer = Memory.dataPointer(data);
 
     // Load the static data from storage
-    StoreCoreInternal._getStaticData(tableId, keyTuple, staticLength, memoryPointer);
+    staticData = StoreCoreInternal._getStaticData(tableId, keyTuple, staticLength);
 
-    // Early return if there are no dynamic fields
-    if (dynamicDataLength.total() == 0) return data;
+    // Load the dynamic data if there are dynamic fields
+    uint256 numDynamicFields = fieldLayout.numDynamicFields();
+    if (numDynamicFields > 0) {
+      // Load the encoded dynamic data length
+      encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(tableId, keyTuple);
 
-    // Advance memoryPointer to the dynamic data section
-    memoryPointer += staticLength;
+      // Append dynamic data
+      dynamicData = new bytes(encodedLengths.total());
+      uint256 memoryPointer = Memory.dataPointer(dynamicData);
 
-    // Append the encoded dynamic length
-    assembly {
-      mstore(memoryPointer, dynamicDataLength)
+      for (uint8 i; i < numDynamicFields; i++) {
+        uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, i);
+        uint256 length = encodedLengths.atIndex(i);
+        Storage.load({ storagePointer: dynamicDataLocation, length: length, offset: 0, memoryPointer: memoryPointer });
+        // Advance memoryPointer by the length of this dynamic field
+        memoryPointer += length;
+      }
     }
-    // Advance memoryPointer by the length of `dynamicDataLength` (1 word)
-    memoryPointer += 0x20;
-
-    // Append dynamic data
-    for (uint8 i; i < numDynamicFields; i++) {
-      uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(tableId, keyTuple, i);
-      uint256 length = dynamicDataLength.atIndex(i);
-      Storage.load({ storagePointer: dynamicDataLocation, length: length, offset: 0, memoryPointer: memoryPointer });
-
-      // Advance memoryPointer by the length of this dynamic field
-      memoryPointer += length;
-    }
-
-    // Return the packed data
-    return data;
   }
 
   /**
@@ -872,14 +849,13 @@ library StoreCoreInternal {
   function _getStaticData(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint256 length,
-    uint256 memoryPointer
-  ) internal view {
-    if (length == 0) return;
+    uint256 length
+  ) internal view returns (bytes memory) {
+    if (length == 0) return "";
 
     // Load the data from storage
     uint256 location = _getStaticDataLocation(tableId, keyTuple);
-    Storage.load({ storagePointer: location, length: length, offset: 0, memoryPointer: memoryPointer });
+    return Storage.load({ storagePointer: location, length: length, offset: 0 });
   }
 
   /**

@@ -233,8 +233,12 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -245,8 +249,12 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -257,8 +265,12 @@ library Multi {
     _keyTuple[2] = bytes32(uint256(c));
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -324,11 +336,26 @@ library Multi {
     set(_store, a, b, c, d, _table.num, _table.value);
   }
 
-  /** Decode the tightly packed blob using this table's field layout */
-  function decode(bytes memory _blob) internal pure returns (MultiData memory _table) {
-    _table.num = (int256(uint256(Bytes.slice32(_blob, 0))));
+  /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeStatic(bytes memory _blob) internal pure returns (int256 num, bool value) {
+    num = (int256(uint256(Bytes.slice32(_blob, 0))));
 
-    _table.value = (_toBool(uint8(Bytes.slice1(_blob, 32))));
+    value = (_toBool(uint8(Bytes.slice1(_blob, 32))));
+  }
+
+  /**
+   * Decode the tightly packed blob using this table's field layout.
+   * Undefined behaviour for invalid blobs.
+   */
+  function decode(
+    bytes memory _staticData,
+    PackedCounter,
+    bytes memory
+  ) internal pure returns (MultiData memory _table) {
+    (_table.num, _table.value) = decodeStatic(_staticData);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -337,13 +364,13 @@ library Multi {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(int256 num, bool value) internal pure returns (bytes memory) {
+  function encode(int256 num, bool value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(num, value);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

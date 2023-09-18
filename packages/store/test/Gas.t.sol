@@ -7,7 +7,7 @@ import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { Storage } from "../src/Storage.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
-import { Mixed, MixedData } from "../src/codegen/Tables.sol";
+import { Mixed, MixedData } from "../src/codegen/index.sol";
 
 contract SomeContract {
   function doSomethingWithBytes(bytes memory data) public {}
@@ -52,11 +52,14 @@ contract GasTest is Test, GasReporter {
     endGasReport();
 
     startGasReport("custom encode");
-    bytes memory customEncoded = Mixed.encode(mixed.u32, mixed.u128, mixed.a32, mixed.s);
+    (bytes memory customEncodedStatic2, PackedCounter customEncodedLengths, bytes memory customEncodedDynamic2) = Mixed
+      .encode(mixed.u32, mixed.u128, mixed.a32, mixed.s);
     endGasReport();
 
+    bytes memory customEncoded = abi.encodePacked(customEncodedStatic2, customEncodedLengths, customEncodedDynamic2);
+
     startGasReport("custom decode");
-    MixedData memory customDecoded = Mixed.decode(customEncoded);
+    MixedData memory customDecoded = Mixed.decode(customEncodedStatic2, customEncodedLengths, customEncodedDynamic2);
     endGasReport();
 
     console.log("Length comparison: abi encode %s, custom %s", abiEncoded.length, customEncoded.length);
