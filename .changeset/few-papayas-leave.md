@@ -33,7 +33,7 @@
   +   uint40 deleteCount,
   +   bytes memory data
   + ) external;
-  
+
   + function onAfterSpliceStaticData(
   +   bytes32 tableId,
   +   bytes32[] memory keyTuple,
@@ -41,7 +41,7 @@
   +   uint40 deleteCount,
   +   bytes memory data
   + ) external;
-  
+
   + function onBeforeSpliceDynamicData(
   +   bytes32 tableId,
   +   bytes32[] memory keyTuple,
@@ -51,7 +51,7 @@
   +   bytes memory data,
   +   PackedCounter encodedLengths
   + ) external;
-  
+
   + function onAfterSpliceDynamicData(
   +   bytes32 tableId,
   +   bytes32[] memory keyTuple,
@@ -63,7 +63,7 @@
   + ) external;
   }
   ```
-  
+
 - All `calldata` parameters on the `IStoreHook` interface were changed to `memory`, since the functions are called with `memory` from the `World`.
 
 - `IStore` exposes two new functions: `spliceStaticData` and `spliceDynamicData`.
@@ -75,7 +75,7 @@
 
   ```solidity
   interface IStore {
-      // Splice data in the static part of the record
+    // Splice data in the static part of the record
     function spliceStaticData(
       bytes32 tableId,
       bytes32[] calldata keyTuple,
@@ -83,7 +83,7 @@
       uint40 deleteCount,
       bytes calldata data
     ) external;
-  
+
     // Splice data in the dynamic part of the record
     function spliceDynamicData(
       bytes32 tableId,
@@ -95,4 +95,3 @@
     ) external;
   }
   ```
-  
