@@ -16,7 +16,7 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SET_FIELD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
 import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 
@@ -845,8 +845,10 @@ contract WorldTest is Test, GasReporter {
       tableHook,
       BEFORE_SET_RECORD |
         AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
         BEFORE_DELETE_RECORD |
         AFTER_DELETE_RECORD
     );
@@ -857,31 +859,47 @@ contract WorldTest is Test, GasReporter {
     // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
-      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      abi.encodeCall(
+        IStoreHook.onBeforeSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
     );
 
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
-      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      abi.encodeCall(
+        IStoreHook.onAfterSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
     );
 
     world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
-    // Expect the hook to be notified when a field is written (once before and once after the field is written)
+    // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     world.deleteRecord(tableId, singletonKey, fieldLayout);
 
@@ -894,8 +912,10 @@ contract WorldTest is Test, GasReporter {
       IStoreHook(address(world)), // the World contract does not implement the store hook interface
       BEFORE_SET_RECORD |
         AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
         BEFORE_DELETE_RECORD |
         AFTER_DELETE_RECORD
     );
@@ -916,8 +936,10 @@ contract WorldTest is Test, GasReporter {
       revertSubscriber,
       BEFORE_SET_RECORD |
         AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
         BEFORE_DELETE_RECORD |
         AFTER_DELETE_RECORD
     );
@@ -928,8 +950,10 @@ contract WorldTest is Test, GasReporter {
       echoSubscriber,
       BEFORE_SET_RECORD |
         AFTER_SET_RECORD |
-        BEFORE_SET_FIELD |
-        AFTER_SET_FIELD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
         BEFORE_DELETE_RECORD |
         AFTER_DELETE_RECORD
     );
@@ -941,8 +965,8 @@ contract WorldTest is Test, GasReporter {
     vm.expectRevert(bytes("onBeforeSetRecord"));
     world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
-    // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
-    vm.expectRevert(bytes("onBeforeSetField"));
+    // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
+    vm.expectRevert(bytes("onBeforeSpliceStaticData"));
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
@@ -955,31 +979,47 @@ contract WorldTest is Test, GasReporter {
     // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
-      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      abi.encodeCall(
+        IStoreHook.onBeforeSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
     );
 
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
-      abi.encode(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      abi.encodeCall(
+        IStoreHook.onAfterSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
     );
 
     world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
-    // Expect the hook to be notified when a field is written (once before and once after the field is written)
+    // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), staticData, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
     world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     world.deleteRecord(tableId, singletonKey, fieldLayout);
   }

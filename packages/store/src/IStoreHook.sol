@@ -19,55 +19,55 @@ bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector 
 interface IStoreHook is IERC165 {
   function onBeforeSetRecord(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
 
   function onAfterSetRecord(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
   ) external;
 
   function onBeforeSpliceStaticData(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
+    bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
-    bytes calldata data
+    bytes memory data
   ) external;
 
   function onAfterSpliceStaticData(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
+    bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
-    bytes calldata data
+    bytes memory data
   ) external;
 
   function onBeforeSpliceDynamicData(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
+    bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes calldata data,
+    bytes memory data,
     PackedCounter encodedLengths
   ) external;
 
   function onAfterSpliceDynamicData(
     bytes32 tableId,
-    bytes32[] calldata keyTuple,
+    bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
     uint40 deleteCount,
-    bytes calldata data,
+    bytes memory data,
     PackedCounter encodedLengths
   ) external;
 

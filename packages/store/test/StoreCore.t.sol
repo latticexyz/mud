@@ -14,6 +14,7 @@ import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
+import { IStoreHook } from "../src/IStoreHook.sol";
 import { Tables, TablesTableId } from "../src/codegen/Tables.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
@@ -1113,7 +1114,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
       abi.encodeCall(
-        echoSubscriber.onBeforeSetRecord,
+        IStoreHook.onBeforeSetRecord,
         (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout)
       )
     );
@@ -1122,7 +1123,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
       abi.encodeCall(
-        echoSubscriber.onAfterSetRecord,
+        IStoreHook.onAfterSetRecord,
         (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout)
       )
     );
@@ -1132,19 +1133,13 @@ contract StoreCoreTest is Test, StoreMock {
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
-      abi.encodeCall(
-        echoSubscriber.onBeforeSpliceStaticData,
-        (tableId, keyTuple, 0, uint40(staticData.length), staticData)
-      )
+      abi.encodeCall(IStoreHook.onBeforeSpliceStaticData, (tableId, keyTuple, 0, uint40(staticData.length), staticData))
     );
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
-      abi.encodeCall(
-        echoSubscriber.onAfterSpliceStaticData,
-        (tableId, keyTuple, 0, uint40(staticData.length), staticData)
-      )
+      abi.encodeCall(IStoreHook.onAfterSpliceStaticData, (tableId, keyTuple, 0, uint40(staticData.length), staticData))
     );
 
     IStore(this).setField(tableId, keyTuple, 0, staticData, fieldLayout);
@@ -1153,7 +1148,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
       abi.encodeCall(
-        echoSubscriber.onBeforeSpliceDynamicData,
+        IStoreHook.onBeforeSpliceDynamicData,
         (tableId, keyTuple, 0, 0, uint40(dynamicData.length), dynamicData, encodedLengths)
       )
     );
@@ -1162,7 +1157,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
       abi.encodeCall(
-        echoSubscriber.onAfterSpliceDynamicData,
+        IStoreHook.onAfterSpliceDynamicData,
         (tableId, keyTuple, 0, 0, uint40(dynamicData.length), dynamicData, encodedLengths)
       )
     );
@@ -1173,11 +1168,11 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeDeleteRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encodeCall(echoSubscriber.onBeforeDeleteRecord, (tableId, keyTuple, fieldLayout)));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeDeleteRecord, (tableId, keyTuple, fieldLayout)));
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onAfterDeleteRecord hook is called
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encodeCall(echoSubscriber.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
 
     IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
   }
