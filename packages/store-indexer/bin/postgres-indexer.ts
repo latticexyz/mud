@@ -13,30 +13,13 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { cleanDatabase, postgresStorage, schemaVersion } from "@latticexyz/store-sync/postgres";
 import { createStoreSync } from "@latticexyz/store-sync";
+import { parseEnv } from "./parseEnv";
 
-const env = z
-  .intersection(
-    z.object({
-      HOST: z.string().default("0.0.0.0"),
-      PORT: z.coerce.number().positive().default(3001),
-      DATABASE_URL: z.string(),
-      START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
-      MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
-      POLLING_INTERVAL: z.coerce.number().positive().default(1000),
-    }),
-    z
-      .object({
-        RPC_HTTP_URL: z.string(),
-        RPC_WS_URL: z.string(),
-      })
-      .partial()
-      .refine((values) => Object.values(values).some(isDefined))
-  )
-  .parse(process.env, {
-    errorMap: (issue) => ({
-      message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
-    }),
-  });
+const env = parseEnv(
+  z.object({
+    DATABASE_URL: z.string(),
+  })
+);
 
 const transports: Transport[] = [
   // prefer WS when specified
