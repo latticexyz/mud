@@ -1240,8 +1240,12 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -1249,8 +1253,12 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -1258,8 +1266,12 @@ library Dynamics1 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -1336,47 +1348,68 @@ library Dynamics1 {
   }
 
   /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  )
+    internal
+    pure
+    returns (
+      bytes32[1] memory staticB32,
+      int32[2] memory staticI32,
+      uint128[3] memory staticU128,
+      address[4] memory staticAddrs,
+      bool[5] memory staticBools
+    )
+  {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    staticB32 = toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    staticI32 = toStaticArray_int32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_int32());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(2);
+    }
+    staticU128 = toStaticArray_uint128_3(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint128());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(3);
+    }
+    staticAddrs = toStaticArray_address_4(SliceLib.getSubslice(_blob, _start, _end).decodeArray_address());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(4);
+    }
+    staticBools = toStaticArray_bool_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bool());
+  }
+
+  /**
    * Decode the tightly packed blob using this table's field layout.
    * Undefined behaviour for invalid blobs.
    */
-  function decode(bytes memory _blob) internal pure returns (Dynamics1Data memory _table) {
-    // 0 is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
-
-    // Store trims the blob if dynamic fields are all empty
-    if (_blob.length > 0) {
-      // skip static data length + dynamic lengths word
-      uint256 _start = 32;
-      uint256 _end;
-      unchecked {
-        _end = 32 + _encodedLengths.atIndex(0);
-      }
-      _table.staticB32 = toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(1);
-      }
-      _table.staticI32 = toStaticArray_int32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_int32());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(2);
-      }
-      _table.staticU128 = toStaticArray_uint128_3(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint128());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(3);
-      }
-      _table.staticAddrs = toStaticArray_address_4(SliceLib.getSubslice(_blob, _start, _end).decodeArray_address());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(4);
-      }
-      _table.staticBools = toStaticArray_bool_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bool());
-    }
+  function decode(
+    bytes memory,
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
+  ) internal pure returns (Dynamics1Data memory _table) {
+    (_table.staticB32, _table.staticI32, _table.staticU128, _table.staticAddrs, _table.staticBools) = decodeDynamic(
+      _encodedLengths,
+      _dynamicData
+    );
   }
 
   /** Tightly pack dynamic data using this table's schema */
@@ -1424,12 +1457,12 @@ library Dynamics1 {
     uint128[3] memory staticU128,
     address[4] memory staticAddrs,
     bool[5] memory staticBools
-  ) internal pure returns (bytes memory) {
+  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(staticB32, staticI32, staticU128, staticAddrs, staticBools);
     bytes memory _dynamicData = encodeDynamic(staticB32, staticI32, staticU128, staticAddrs, staticBools);
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

@@ -136,10 +136,10 @@ export function renderTable(options: RenderTableOptions) {
       /** Tightly pack full data using this table's field layout */
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-      )}) internal pure returns (bytes memory) {
+      )}) internal pure returns (bytes memory, PackedCounter, bytes memory) {
         ${renderRecordData(options)}
 
-        return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+        return (_staticData, _encodedLengths, _dynamicData);
       }
       
       /** Encode keys as a bytes32 array using this table's field layout */
