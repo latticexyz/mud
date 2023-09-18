@@ -1,9 +1,9 @@
-import { customType, SQLiteCustomColumnBuilder } from "drizzle-orm/sqlite-core";
-import { ColumnBuilderBaseConfig } from "drizzle-orm";
+import { customType } from "drizzle-orm/sqlite-core";
 import superjson from "superjson";
 import { Address, getAddress } from "viem";
 
-export const json = <TData>(name: string): SQLiteCustomColumnBuilder<ColumnBuilderBaseConfig & { data: TData }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const json = <TData>(name: string) =>
   customType<{ data: TData; driverData: string }>({
     dataType() {
       return "text";
@@ -16,7 +16,8 @@ export const json = <TData>(name: string): SQLiteCustomColumnBuilder<ColumnBuild
     },
   })(name);
 
-export const address = (name: string): SQLiteCustomColumnBuilder<ColumnBuilderBaseConfig & { data: Address }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const address = (name: string) =>
   customType<{ data: Address; driverData: string }>({
     dataType() {
       return "text";

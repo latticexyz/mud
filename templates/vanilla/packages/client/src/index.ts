@@ -28,7 +28,7 @@ if (import.meta.env.DEV) {
     publicClient: network.publicClient,
     walletClient: network.walletClient,
     latestBlock$: network.latestBlock$,
-    blockStorageOperations$: network.blockStorageOperations$,
+    storedBlockLogs$: network.storedBlockLogs$,
     worldAddress: network.worldContract.address,
     worldAbi: network.worldContract.abi,
     write$: network.write$,

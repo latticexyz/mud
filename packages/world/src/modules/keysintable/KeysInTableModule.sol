@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_FIELD, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 
 import { ResourceType } from "../core/tables/ResourceType.sol";
-import { Resource } from "../../Types.sol";
+import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -95,18 +95,7 @@ contract KeysInTableModule is Module {
     (success, returnData) = address(world).delegatecall(
       abi.encodeCall(
         world.registerStoreHook,
-        (
-          sourceTableId,
-          hook,
-          StoreHookLib.encodeBitmap({
-            onBeforeSetRecord: true,
-            onAfterSetRecord: false,
-            onBeforeSetField: false,
-            onAfterSetField: true,
-            onBeforeDeleteRecord: true,
-            onAfterDeleteRecord: false
-          })
-        )
+        (sourceTableId, hook, BEFORE_SET_RECORD | AFTER_SET_FIELD | BEFORE_DELETE_RECORD)
       )
     );
   }

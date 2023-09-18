@@ -1,11 +1,9 @@
-import { customType, PgCustomColumnBuilder } from "drizzle-orm/pg-core";
-import { ColumnBuilderBaseConfig } from "drizzle-orm";
+import { customType } from "drizzle-orm/pg-core";
 import superjson from "superjson";
 import { Address, ByteArray, bytesToHex, getAddress, Hex, hexToBytes } from "viem";
 
-export const asJson = <TData>(
-  name: string
-): PgCustomColumnBuilder<ColumnBuilderBaseConfig & { data: TData; driverParam: string }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asJson = <TData>(name: string) =>
   customType<{ data: TData; driverData: string }>({
     dataType() {
       // TODO: move to json column type? if we do, we'll prob wanna choose something other than superjson since it adds one level of depth (json/meta keys)
@@ -19,10 +17,8 @@ export const asJson = <TData>(
     },
   })(name);
 
-export const asNumber = (
-  name: string,
-  columnType: string
-): PgCustomColumnBuilder<ColumnBuilderBaseConfig & { data: number; driverParam: string }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asNumber = (name: string, columnType: string) =>
   customType<{ data: number; driverData: string }>({
     dataType() {
       return columnType;
@@ -35,10 +31,8 @@ export const asNumber = (
     },
   })(name);
 
-export const asBigInt = (
-  name: string,
-  columnType: string
-): PgCustomColumnBuilder<ColumnBuilderBaseConfig & { data: bigint; driverParam: string }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asBigInt = (name: string, columnType: string) =>
   customType<{ data: bigint; driverData: string }>({
     dataType() {
       return columnType;
@@ -51,9 +45,8 @@ export const asBigInt = (
     },
   })(name);
 
-export const asHex = (
-  name: string
-): PgCustomColumnBuilder<ColumnBuilderBaseConfig & { data: Hex; driverParam: ByteArray }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asHex = (name: string) =>
   customType<{ data: Hex; driverData: ByteArray }>({
     dataType() {
       return "bytea";
@@ -66,9 +59,8 @@ export const asHex = (
     },
   })(name);
 
-export const asAddress = (
-  name: string
-): PgCustomColumnBuilder<ColumnBuilderBaseConfig & { data: Address; driverParam: ByteArray }> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asAddress = (name: string) =>
   customType<{ data: Address; driverData: ByteArray }>({
     dataType() {
       return "bytea";

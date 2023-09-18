@@ -14,14 +14,14 @@ type SyncToSqliteOptions<TConfig extends StoreConfig = StoreConfig> = SyncOption
   startSync?: boolean;
 };
 
-type SyncToSqliteResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
+type SyncToSqliteResult = SyncResult & {
   stopSync: () => void;
 };
 
 /**
  * Creates an indexer to process and store blockchain events.
  *
- * @param {CreateIndexerOptions} options See `CreateIndexerOptions`.
+ * @param {SyncToSqliteOptions} options See `SyncToSqliteOptions`.
  * @returns A function to unsubscribe from the block stream, effectively stopping the indexer.
  */
 export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
@@ -34,7 +34,7 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
   indexerUrl,
   initialState,
   startSync = true,
-}: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult<TConfig>> {
+}: SyncToSqliteOptions<TConfig>): Promise<SyncToSqliteResult> {
   const storeSync = await createStoreSync({
     storageAdapter: await sqliteStorage({ database, publicClient, config }),
     config,
@@ -46,7 +46,7 @@ export async function syncToSqlite<TConfig extends StoreConfig = StoreConfig>({
     initialState,
   });
 
-  const sub = startSync ? storeSync.blockStorageOperations$.subscribe() : null;
+  const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
   const stopSync = (): void => {
     sub?.unsubscribe();
   };

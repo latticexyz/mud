@@ -18,7 +18,7 @@ interface IWorldCall {
    * Call the system at the given resourceSelector.
    * If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector).
    */
-  function call(bytes32 resourceSelector, bytes memory funcSelectorAndArgs) external payable returns (bytes memory);
+  function call(bytes32 resourceSelector, bytes memory callData) external payable returns (bytes memory);
 
   /**
    * Call the system at the given resourceSelector on behalf of the given delegator.
@@ -27,7 +27,7 @@ interface IWorldCall {
   function callFrom(
     address delegator,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) external payable returns (bytes memory);
 }
 
@@ -39,7 +39,12 @@ interface IWorldCall {
  * registered functions selectors from the `CoreModule`.
  */
 interface IWorldKernel is IWorldModuleInstallation, IWorldCall, IWorldErrors {
-  event HelloWorld();
+  event HelloWorld(bytes32 indexed worldVersion);
+
+  /**
+   * The version of the World.
+   */
+  function worldVersion() external view returns (bytes32);
 
   /**
    * The immutable original deployer of the World.

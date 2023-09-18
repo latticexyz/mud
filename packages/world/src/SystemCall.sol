@@ -10,7 +10,7 @@ import { ResourceSelector } from "./ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
-import { SystemHookType } from "./SystemHook.sol";
+import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "./systemHookTypes.sol";
 
 import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 import { ISystemHook } from "./interfaces/ISystemHook.sol";
@@ -31,10 +31,10 @@ library SystemCall {
     address caller,
     uint256 value,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs
+    bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
-    (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
+    (address systemAddress, bool publicAccess) = Systems._get(resourceSelector);
 
     // Check if the system exists
     if (systemAddress == address(0)) revert IWorldErrors.ResourceNotFound(resourceSelector.toString());
@@ -45,8 +45,8 @@ library SystemCall {
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
       bytes16 namespace = resourceSelector.getNamespace();
-      uint256 currentBalance = Balances.get(namespace);
-      Balances.set(namespace, currentBalance + value);
+      uint256 currentBalance = Balances._get(namespace);
+      Balances._set(namespace, currentBalance + value);
     }
 
     // Call the system and forward any return data
@@ -55,13 +55,13 @@ library SystemCall {
         msgSender: caller,
         msgValue: value,
         target: systemAddress,
-        funcSelectorAndArgs: funcSelectorAndArgs
+        callData: callData
       })
       : WorldContextProvider.callWithContext({
         msgSender: caller,
         msgValue: value,
         target: systemAddress,
-        funcSelectorAndArgs: funcSelectorAndArgs
+        callData: callData
       });
   }
 
@@ -72,33 +72,28 @@ library SystemCall {
   function callWithHooks(
     address caller,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
+    bytes memory callData,
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    bytes21[] memory hooks = SystemHooks.get(resourceSelector);
+    bytes21[] memory hooks = SystemHooks._get(resourceSelector);
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(SystemHookType.BEFORE_CALL_SYSTEM))) {
-        ISystemHook(hook.getAddress()).onBeforeCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+      if (hook.isEnabled(BEFORE_CALL_SYSTEM)) {
+        ISystemHook(hook.getAddress()).onBeforeCallSystem(caller, resourceSelector, callData);
       }
     }
 
     // Call the system and forward any return data
-    (success, data) = call({
-      caller: caller,
-      value: value,
-      resourceSelector: resourceSelector,
-      funcSelectorAndArgs: funcSelectorAndArgs
-    });
+    (success, data) = call({ caller: caller, value: value, resourceSelector: resourceSelector, callData: callData });
 
     // Call onAfterCallSystem hooks (after calling the system)
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
-      if (hook.isEnabled(uint8(SystemHookType.AFTER_CALL_SYSTEM))) {
-        ISystemHook(hook.getAddress()).onAfterCallSystem(caller, resourceSelector, funcSelectorAndArgs);
+      if (hook.isEnabled(AFTER_CALL_SYSTEM)) {
+        ISystemHook(hook.getAddress()).onAfterCallSystem(caller, resourceSelector, callData);
       }
     }
   }
@@ -110,14 +105,14 @@ library SystemCall {
   function callWithHooksOrRevert(
     address caller,
     bytes32 resourceSelector,
-    bytes memory funcSelectorAndArgs,
+    bytes memory callData,
     uint256 value
   ) internal returns (bytes memory data) {
     (bool success, bytes memory returnData) = callWithHooks({
       caller: caller,
       value: value,
       resourceSelector: resourceSelector,
-      funcSelectorAndArgs: funcSelectorAndArgs
+      callData: callData
     });
     if (!success) revertWithBytes(returnData);
     return returnData;

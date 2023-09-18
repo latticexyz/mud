@@ -6,7 +6,7 @@ import { console } from "forge-std/console.sol";
 import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
-import { MessageTable, MessageTableTableId } from "../src/codegen/Tables.sol";
+import { MessageTable, MessageTableTableId } from "../src/codegen/index.sol";
 import { ChatNamespacedSystem } from "../src/systems/ChatNamespacedSystem.sol";
 
 contract PostDeploy is Script {
