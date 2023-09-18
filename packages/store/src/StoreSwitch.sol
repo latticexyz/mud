@@ -7,6 +7,7 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { FieldLayout } from "./FieldLayout.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -221,7 +222,7 @@ library StoreSwitch {
     bytes32 tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory, PackedCounter, bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
