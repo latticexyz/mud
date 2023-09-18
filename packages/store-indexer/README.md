@@ -1,6 +1,6 @@
 # store-indexer
 
-A minimal Typescript indexer for Store events (built on [store-sync](https://npmjs.com/package/@latticexyz/store-sync))
+A minimal Typescript indexer for [MUD Store](https://mud.dev/store) events (built on [store-sync](https://npmjs.com/package/@latticexyz/store-sync))
 
 ## Usage
 
