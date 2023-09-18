@@ -75,4 +75,22 @@ contract StorageTest is Test, GasReporter {
     Storage.store({ storagePointer: uint256(storagePointer), offset: offset, data: data });
     assertEq(Storage.load({ storagePointer: uint256(storagePointer), length: data.length, offset: offset }), data);
   }
+
+  function testStoreLoadFieldBytes32Fuzzy(bytes32 data, uint256 storagePointer, uint256 offset) public {
+    vm.assume(offset < type(uint256).max);
+    vm.assume(storagePointer > 0);
+    vm.assume(storagePointer < type(uint256).max - offset);
+
+    Storage.store({ storagePointer: storagePointer, offset: offset, data: abi.encodePacked((data)) });
+    assertEq(Storage.loadField({ storagePointer: storagePointer, length: 32, offset: offset }), data);
+  }
+
+  function testStoreLoadFieldBytes16Fuzzy(bytes16 data, uint256 storagePointer, uint256 offset) public {
+    vm.assume(offset < type(uint256).max);
+    vm.assume(storagePointer > 0);
+    vm.assume(storagePointer < type(uint256).max - offset);
+
+    Storage.store({ storagePointer: storagePointer, offset: offset, data: abi.encodePacked((data)) });
+    assertEq(bytes16(Storage.loadField({ storagePointer: storagePointer, length: 16, offset: offset })), data);
+  }
 }

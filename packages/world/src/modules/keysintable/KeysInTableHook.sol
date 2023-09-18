@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 
@@ -40,11 +41,25 @@ contract KeysInTableHook is StoreHook {
     }
   }
 
-  function onBeforeSetRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory, FieldLayout) public {
+  function onBeforeSetRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory,
+    PackedCounter,
+    bytes memory,
+    FieldLayout
+  ) public {
     handleSet(tableId, keyTuple);
   }
 
-  function onAfterSetRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory, FieldLayout) public {
+  function onAfterSetRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory,
+    PackedCounter,
+    bytes memory,
+    FieldLayout
+  ) public {
     // NOOP
   }
 

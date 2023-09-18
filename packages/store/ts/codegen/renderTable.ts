@@ -1,17 +1,19 @@
 import {
+  RenderDynamicField,
   renderArguments,
   renderCommonData,
   renderList,
-  renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
-  renderWithStore,
   renderTypeHelpers,
-  RenderDynamicField,
+  renderWithStore,
+  renderedSolidityHeader,
+  RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeFieldSingle, renderFieldMethods } from "./field";
-import { renderRecordMethods } from "./record";
+import { renderRecordData, renderRecordMethods } from "./record";
+import { renderFieldLayout } from "./renderFieldLayout";
 import { RenderTableOptions } from "./types";
 
 export function renderTable(options: RenderTableOptions) {
@@ -63,6 +65,8 @@ export function renderTable(options: RenderTableOptions) {
 
     ${staticResourceData ? renderTableId(staticResourceData).tableIdDefinition : ""}
 
+    ${renderFieldLayout(fields)}
+
     ${
       !structName
         ? ""
@@ -76,10 +80,7 @@ export function renderTable(options: RenderTableOptions) {
     library ${libraryName} {
       /** Get the table values' field layout */
       function getFieldLayout() internal pure returns (FieldLayout) {
-        uint256[] memory _fieldLayout = new uint256[](${staticFields.length});
-        ${renderList(staticFields, ({ staticByteLength }, index) => `_fieldLayout[${index}] = ${staticByteLength};`)}
-
-        return FieldLayoutLib.encode(_fieldLayout, ${dynamicFields.length});
+        return _fieldLayout;
       }
 
       /** Get the table's key schema */
@@ -112,12 +113,12 @@ export function renderTable(options: RenderTableOptions) {
 
       ${renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
-        /** Register the table with its config${_commentSuffix} */
-        function register(${renderArguments([_typedStore, _typedTableId])}) internal {
-          ${_store}.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
-        }
-      `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+          /** Register the table with its config${_commentSuffix} */
+          function ${_methodNamePrefix}register(${renderArguments([_typedStore, _typedTableId])}) internal {
+            ${_store}.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+          }
+        `
       )}
 
       ${withFieldMethods ? renderFieldMethods(options) : ""}
@@ -126,20 +127,19 @@ export function renderTable(options: RenderTableOptions) {
 
       ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
+      ${renderEncodeStatic(staticFields)}
+
+      ${renderEncodedLengths(dynamicFields)}
+
+      ${renderEncodeDynamic(dynamicFields)}
+
       /** Tightly pack full data using this table's field layout */
       function encode(${renderArguments(
         options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
       )}) internal pure returns (bytes memory) {
-        ${renderEncodedLengths(dynamicFields)}
-        return abi.encodePacked(${renderArguments([
-          renderArguments(staticFields.map(({ name }) => name)),
-          ...(dynamicFields.length === 0
-            ? []
-            : [
-                "_encodedLengths.unwrap()",
-                renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field))),
-              ]),
-        ])});
+        ${renderRecordData(options)}
+
+        return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
       }
       
       /** Encode keys as a bytes32 array using this table's field layout */
@@ -152,11 +152,15 @@ export function renderTable(options: RenderTableOptions) {
         shouldRenderDelete
           ? renderWithStore(
               storeArgument,
-              (_typedStore, _store, _commentSuffix) => `
+              (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
                 /* Delete all data for given keys${_commentSuffix} */
-                function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
+                function ${_methodNamePrefix}deleteRecord(${renderArguments([
+                _typedStore,
+                _typedTableId,
+                _typedKeyArgs,
+              ])}) internal {
                   ${_keyTupleDefinition}
-                  ${_store}.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+                  ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
                 }
               `
             )
@@ -168,26 +172,54 @@ export function renderTable(options: RenderTableOptions) {
   `;
 }
 
-function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
-  if (dynamicFields.length > 0) {
-    return `
-    PackedCounter _encodedLengths;
-    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
-    unchecked {
-      _encodedLengths = PackedCounterLib.pack(
-        ${renderArguments(
-          dynamicFields.map(({ name, arrayElement }) => {
-            if (arrayElement) {
-              return `${name}.length * ${arrayElement.staticByteLength}`;
-            } else {
-              return `bytes(${name}).length`;
-            }
-          })
-        )}
-      );
+function renderEncodeStatic(staticFields: RenderStaticField[]) {
+  if (staticFields.length === 0) return "";
+
+  return `
+    /** Tightly pack static data using this table's schema */
+    function encodeStatic(${renderArguments(
+      staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+    )}) internal pure returns (bytes memory) {
+      return abi.encodePacked(${renderArguments(staticFields.map(({ name }) => name))});
     }
-    `;
-  } else {
-    return "";
-  }
+  `;
+}
+
+function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
+  if (dynamicFields.length === 0) return "";
+
+  return `
+    /** Tightly pack dynamic data using this table's schema */
+    function encodeLengths(${renderArguments(
+      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+    )}) internal pure returns (PackedCounter _encodedLengths) {
+      // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+      unchecked {
+        _encodedLengths = PackedCounterLib.pack(
+          ${renderArguments(
+            dynamicFields.map(({ name, arrayElement }) => {
+              if (arrayElement) {
+                return `${name}.length * ${arrayElement.staticByteLength}`;
+              } else {
+                return `bytes(${name}).length`;
+              }
+            })
+          )}
+        );
+      }
+    }
+  `;
+}
+
+function renderEncodeDynamic(dynamicFields: RenderDynamicField[]) {
+  if (dynamicFields.length === 0) return "";
+
+  return `
+    /** Tightly pack dynamic data using this table's schema */
+    function encodeDynamic(${renderArguments(
+      dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+    )}) internal pure returns (bytes memory) {
+      return abi.encodePacked(${renderArguments(dynamicFields.map((field) => renderEncodeFieldSingle(field)))});
+    }
+  `;
 }

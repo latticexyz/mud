@@ -13,19 +13,34 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
   let result = "";
   for (const [schemaIndex, field] of options.fields.entries()) {
+    // For dynamic fields, compute the field index relative to the end of the static fields
+
     const _typedFieldName = `${field.typeWithLocation} ${field.name}`;
 
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Get ${field.name}${_commentSuffix} */
-      function get${field.methodNameSuffix}(${renderArguments([
+      function ${_methodNamePrefix}get${field.methodNameSuffix}(${renderArguments([
         _typedStore,
         _typedTableId,
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
         ${_keyTupleDefinition}
-        bytes memory _blob = ${_store}.getField(_tableId, _keyTuple, ${schemaIndex}, getFieldLayout());
+        ${
+          field.isDynamic
+            ? `bytes memory _blob = ${_store}.getDynamicField(
+                _tableId,
+                _keyTuple,
+                ${schemaIndex - options.staticFields.length}
+              );`
+            : `bytes32 _blob = ${_store}.getStaticField(
+                _tableId,
+                _keyTuple,
+                ${schemaIndex},
+                _fieldLayout
+              );`
+        }
         return ${renderDecodeFieldSingle(field)};
       }
     `
@@ -33,16 +48,16 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Set ${field.name}${_commentSuffix} */
-      function set${field.methodNameSuffix}(${renderArguments([
+      function ${_methodNamePrefix}set${field.methodNameSuffix}(${renderArguments([
         _typedStore,
         _typedTableId,
         _typedKeyArgs,
         _typedFieldName,
       ])}) internal {
         ${_keyTupleDefinition}
-        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, getFieldLayout());
+        ${_store}.setField(_tableId, _keyTuple, ${schemaIndex}, ${renderEncodeFieldSingle(field)}, _fieldLayout);
       }
     `
     );
@@ -52,15 +67,15 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Get the length of ${field.name}${_commentSuffix} */
-        function length${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}length${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
         ])}) internal view returns (uint256) {
           ${_keyTupleDefinition}
-          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, getFieldLayout());
+          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _keyTuple, ${schemaIndex}, _fieldLayout);
           unchecked {
             return _byteLength / ${portionData.elementLength};
           }
@@ -70,12 +85,12 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /**
          * Get an item of ${field.name}${_commentSuffix}
          * (unchecked, returns invalid data if index overflows)
          */
-        function getItem${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}getItem${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -87,7 +102,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               _tableId,
               _keyTuple,
               ${schemaIndex},
-              getFieldLayout(),
+              _fieldLayout,
               _index * ${portionData.elementLength},
               (_index + 1) * ${portionData.elementLength}
             );
@@ -99,43 +114,43 @@ export function renderFieldMethods(options: RenderTableOptions) {
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
-        function push${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}push${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, getFieldLayout());
+          ${_store}.pushToField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.encoded}, _fieldLayout);
         }
       `
       );
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Pop ${portionData.title} from ${field.name}${_commentSuffix} */
-        function pop${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}pop${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
         ])}) internal {
           ${_keyTupleDefinition}
-          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, getFieldLayout());
+          ${_store}.popFromField(_tableId, _keyTuple, ${schemaIndex}, ${portionData.elementLength}, _fieldLayout);
         }
       `
       );
 
       result += renderWithStore(
         storeArgument,
-        (_typedStore, _store, _commentSuffix) => `
+        (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /**
          * Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\`
          * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
          */
-        function update${field.methodNameSuffix}(${renderArguments([
+        function ${_methodNamePrefix}update${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
           _typedKeyArgs,
@@ -150,7 +165,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
               ${schemaIndex},
               _index * ${portionData.elementLength},
               ${portionData.encoded},
-              getFieldLayout()
+              _fieldLayout
             );
           }
         }
@@ -174,20 +189,26 @@ export function renderEncodeFieldSingle(field: RenderField) {
 }
 
 export function renderDecodeValueType(field: RenderType, offset: number) {
-  const { staticByteLength, internalTypeId } = field;
+  const { staticByteLength } = field;
 
   const innerSlice = `Bytes.slice${staticByteLength}(_blob, ${offset})`;
+
+  return renderCastStaticBytesToType(field, innerSlice);
+}
+
+function renderCastStaticBytesToType(field: RenderType, staticBytes: string) {
+  const { staticByteLength, internalTypeId } = field;
   const bits = staticByteLength * 8;
 
   let result;
   if (internalTypeId.match(/^uint\d{1,3}$/) || internalTypeId === "address") {
-    result = `${internalTypeId}(${innerSlice})`;
+    result = `${internalTypeId}(${staticBytes})`;
   } else if (internalTypeId.match(/^int\d{1,3}$/)) {
-    result = `${internalTypeId}(uint${bits}(${innerSlice}))`;
+    result = `${internalTypeId}(uint${bits}(${staticBytes}))`;
   } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
-    result = innerSlice;
+    result = staticBytes;
   } else if (internalTypeId === "bool") {
-    result = `_toBool(uint8(${innerSlice}))`;
+    result = `_toBool(uint8(${staticBytes}))`;
   } else {
     throw new Error(`Unknown value type id ${internalTypeId}`);
   }
@@ -233,6 +254,6 @@ function renderDecodeFieldSingle(field: RenderField) {
     // bytes/string
     return `${field.typeWrap}(${field.internalTypeId}(_blob))`;
   } else {
-    return renderDecodeValueType(field, 0);
+    return renderCastStaticBytesToType(field, `bytes${field.staticByteLength}(_blob)`);
   }
 }

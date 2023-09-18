@@ -1,5 +1,5 @@
+import { SchemaToPrimitives, ValueSchema } from "@latticexyz/protocol-parser";
 import { schemaAbiTypeToDefaultValue } from "@latticexyz/schema-type";
-import { ValueSchema, SchemaToPrimitives } from "@latticexyz/protocol-parser";
 
 export function schemaToDefaults<TSchema extends ValueSchema>(valueSchema: TSchema): SchemaToPrimitives<TSchema> {
   return Object.fromEntries(

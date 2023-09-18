@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
-import { Resource } from "../../Types.sol";
+import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -76,9 +76,9 @@ contract CoreModule is Module {
     SystemRegistry.register();
     ResourceType.register();
 
-    NamespaceOwner.set(ROOT_NAMESPACE, _msgSender());
-    ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
-    ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    NamespaceOwner._set(ROOT_NAMESPACE, _msgSender());
+    ResourceAccess._set(ROOT_NAMESPACE, _msgSender(), true);
+    ResourceType._set(ROOT_NAMESPACE, Resource.NAMESPACE);
   }
 
   /**
@@ -90,7 +90,7 @@ contract CoreModule is Module {
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreSystem,
-      funcSelectorAndArgs: abi.encodeCall(
+      callData: abi.encodeCall(
         WorldRegistrationSystem.registerSystem,
         (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
       )
@@ -134,7 +134,7 @@ contract CoreModule is Module {
         msgSender: _msgSender(),
         msgValue: 0,
         target: coreSystem,
-        funcSelectorAndArgs: abi.encodeCall(
+        callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
           (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
         )

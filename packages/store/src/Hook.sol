@@ -21,7 +21,7 @@ library HookLib {
    * Filter the given hook from the hook list at the given key in the given hook table
    */
   function filterListByAddress(bytes32 hookTableId, bytes32 key, address hookAddressToRemove) internal {
-    bytes21[] memory currentHooks = Hooks.get(hookTableId, key);
+    bytes21[] memory currentHooks = Hooks._get(hookTableId, key);
 
     // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
     bytes21[] memory newHooks = new bytes21[](currentHooks.length);
@@ -44,7 +44,7 @@ library HookLib {
     }
 
     // Set the new hooks table
-    Hooks.set(hookTableId, key, newHooks);
+    Hooks._set(hookTableId, key, newHooks);
   }
 }
 
@@ -52,9 +52,8 @@ library HookInstance {
   /**
    * Check if the given hook type is enabled in the hook
    */
-  function isEnabled(Hook self, uint8 hookType) internal pure returns (bool) {
-    // Pick the bitmap encoded in the rightmost byte from the hook and check if the bit at the given hook type is set
-    return (getBitmap(self) & (1 << uint8(hookType))) != 0;
+  function isEnabled(Hook self, uint8 hookTypes) internal pure returns (bool) {
+    return (getBitmap(self) & hookTypes) == hookTypes;
   }
 
   /**

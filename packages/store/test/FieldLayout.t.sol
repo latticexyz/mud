@@ -204,4 +204,35 @@ contract FieldLayoutTest is Test, GasReporter {
 
     assertFalse(empty);
   }
+
+  function testHex() public {
+    uint256[] memory _fieldLayout = new uint256[](24);
+    _fieldLayout[0] = 1;
+    _fieldLayout[1] = 2;
+    _fieldLayout[2] = 3;
+    _fieldLayout[3] = 4;
+    _fieldLayout[4] = 5;
+    _fieldLayout[5] = 6;
+    _fieldLayout[6] = 7;
+    _fieldLayout[7] = 8;
+    _fieldLayout[8] = 9;
+    _fieldLayout[9] = 10;
+    _fieldLayout[10] = 11;
+    _fieldLayout[11] = 12;
+    _fieldLayout[12] = 13;
+    _fieldLayout[13] = 14;
+    _fieldLayout[14] = 15;
+    _fieldLayout[15] = 16;
+    _fieldLayout[16] = 17;
+    _fieldLayout[17] = 18;
+    _fieldLayout[18] = 19;
+    _fieldLayout[19] = 20;
+    _fieldLayout[20] = 21;
+    _fieldLayout[21] = 22;
+    _fieldLayout[22] = 23;
+    _fieldLayout[23] = 32;
+
+    FieldLayout encodedFieldLayout = FieldLayoutLib.encode(_fieldLayout, 4);
+    assertEq(encodedFieldLayout.unwrap(), hex"013418040102030405060708090a0b0c0d0e0f10111213141516172000000000");
+  }
 }

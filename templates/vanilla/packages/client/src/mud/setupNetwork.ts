@@ -63,7 +63,7 @@ export async function setupNetwork() {
    * to the viem publicClient to make RPC calls to fetch MUD
    * events from the chain.
    */
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } =
     await syncToRecs({
       world,
       config: mudConfig,
@@ -83,6 +83,7 @@ export async function setupNetwork() {
     onWrite: (write) => write$.next(write),
     getResourceSelector,
   });
+
   /*
    * If there is a faucet, request (test) ETH if you have
    * less than 1 ETH. Repeat every 20 seconds to ensure you don't
@@ -118,7 +119,7 @@ export async function setupNetwork() {
     publicClient,
     walletClient: burnerWalletClient,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
     worldContract,
     write$: write$.asObservable().pipe(share()),

@@ -29,7 +29,7 @@ export async function setupNetwork() {
 
   const write$ = new Subject<ContractWrite>();
 
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } =
     await syncToRecs({
       world,
       config: mudConfig,
@@ -78,7 +78,7 @@ export async function setupNetwork() {
     publicClient,
     walletClient: burnerWalletClient,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
     worldContract,
     write$: write$.asObservable().pipe(share()),

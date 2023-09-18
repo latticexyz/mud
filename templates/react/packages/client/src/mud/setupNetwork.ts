@@ -63,7 +63,7 @@ export async function setupNetwork() {
    * to the viem publicClient to make RPC calls to fetch MUD
    * events from the chain.
    */
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction, getResourceSelector } =
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } =
     await syncToRecs({
       world,
       config: mudConfig,
@@ -119,7 +119,7 @@ export async function setupNetwork() {
     publicClient,
     walletClient: burnerWalletClient,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
     worldContract,
     write$: write$.asObservable().pipe(share()),

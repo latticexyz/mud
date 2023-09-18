@@ -1,17 +1,21 @@
-import { AnySQLiteColumnBuilder, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
-import { buildSqliteColumn } from "./buildSqliteColumn";
+import { SQLiteColumnBuilderBase, SQLiteTableWithColumns, sqliteTable } from "drizzle-orm/sqlite-core";
+import { buildColumn } from "./buildColumn";
 import { Address } from "viem";
 import { getTableName } from "./getTableName";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 export const metaColumns = {
-  __key: buildSqliteColumn("__key", "bytes").notNull().primaryKey(),
-  __lastUpdatedBlockNumber: buildSqliteColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
+  __key: buildColumn("__key", "bytes").primaryKey(),
+  __staticData: buildColumn("__staticData", "bytes"),
+  __encodedLengths: buildColumn("__encodedLengths", "bytes"),
+  __dynamicData: buildColumn("__dynamicData", "bytes"),
+  __lastUpdatedBlockNumber: buildColumn("__lastUpdatedBlockNumber", "uint256").notNull(),
   // TODO: last updated block hash?
-  __isDeleted: buildSqliteColumn("__isDeleted", "bool").notNull(),
-} as const satisfies Record<string, AnySQLiteColumnBuilder>;
+  __isDeleted: buildColumn("__isDeleted", "bool").notNull(),
+} as const satisfies Record<string, SQLiteColumnBuilderBase>;
 
 type SQLiteTableFromSchema<TKeySchema extends KeySchema, TValueSchema extends ValueSchema> = SQLiteTableWithColumns<{
+  dialect: "sqlite";
   name: string;
   schema: string | undefined;
   columns: {
@@ -39,7 +43,7 @@ type CreateSqliteTableResult<TKeySchema extends KeySchema, TValueSchema extends 
   TValueSchema
 >;
 
-export function createSqliteTable<TKeySchema extends KeySchema, TValueSchema extends ValueSchema>({
+export function buildTable<TKeySchema extends KeySchema, TValueSchema extends ValueSchema>({
   address,
   namespace,
   name,
@@ -49,11 +53,11 @@ export function createSqliteTable<TKeySchema extends KeySchema, TValueSchema ext
   const tableName = getTableName(address, namespace, name);
 
   const keyColumns = Object.fromEntries(
-    Object.entries(keySchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull()])
+    Object.entries(keySchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
   );
 
   const valueColumns = Object.fromEntries(
-    Object.entries(valueSchema).map(([name, type]) => [name, buildSqliteColumn(name, type).notNull()])
+    Object.entries(valueSchema).map(([name, type]) => [name, buildColumn(name, type).notNull()])
   );
 
   // TODO: unique constraint on key columns?

@@ -1,12 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { DevToolsOptions } from "./common";
 import { ContractWrite } from "@latticexyz/common";
-import { StorageOperation } from "@latticexyz/store-sync";
-import { StoreConfig } from "@latticexyz/store";
+import { StorageAdapterLog } from "@latticexyz/store-sync";
 
 type DevToolsContextValue = DevToolsOptions & {
   writes: ContractWrite[];
-  storageOperations: StorageOperation<StoreConfig>[];
+  storedLogs: StorageAdapterLog[];
 };
 
 const DevToolsContext = createContext<DevToolsContextValue | null>(null);
@@ -28,20 +27,20 @@ export const DevToolsProvider = ({ children, value }: Props) => {
     return () => sub.unsubscribe();
   }, [value.write$]);
 
-  const [storageOperations, setStorageOperations] = useState<StorageOperation<StoreConfig>[]>([]);
+  const [storedLogs, setStoredLogs] = useState<StorageAdapterLog[]>([]);
   useEffect(() => {
-    const sub = value.blockStorageOperations$.subscribe(({ operations }) => {
-      setStorageOperations((val) => [...val, ...operations]);
+    const sub = value.storedBlockLogs$.subscribe(({ logs }) => {
+      setStoredLogs((val) => [...val, ...logs]);
     });
     return () => sub.unsubscribe();
-  }, [value.blockStorageOperations$]);
+  }, [value.storedBlockLogs$]);
 
   return (
     <DevToolsContext.Provider
       value={{
         ...value,
         writes,
-        storageOperations,
+        storedLogs,
       }}
     >
       {children}

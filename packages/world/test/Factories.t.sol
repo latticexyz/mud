@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { Test, console } from "forge-std/Test.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
@@ -16,7 +17,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
   event WorldDeployed(address indexed newContract);
-  event HelloWorld();
+  event HelloWorld(bytes32 indexed version);
 
   function calculateAddress(
     address deployingAddress,
@@ -58,8 +59,8 @@ contract FactoriesTest is Test {
     address calculatedAddress = calculateAddress(worldFactoryAddress, bytes32(0), type(World).creationCode);
 
     // Check for HelloWorld event from World
-    vm.expectEmit(true, false, false, false);
-    emit HelloWorld();
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld(WORLD_VERSION);
 
     // Check for WorldDeployed event from Factory
     vm.expectEmit(true, false, false, false);
