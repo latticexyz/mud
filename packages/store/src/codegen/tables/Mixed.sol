@@ -634,8 +634,12 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -643,8 +647,12 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -652,8 +660,12 @@ library Mixed {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -711,33 +723,49 @@ library Mixed {
   }
 
   /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeStatic(bytes memory _blob) internal pure returns (uint32 u32, uint128 u128) {
+    u32 = (uint32(Bytes.slice4(_blob, 0)));
+
+    u128 = (uint128(Bytes.slice16(_blob, 4)));
+  }
+
+  /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (uint32[] memory a32, string memory s) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
    * Decode the tightly packed blob using this table's field layout.
    * Undefined behaviour for invalid blobs.
    */
-  function decode(bytes memory _blob) internal pure returns (MixedData memory _table) {
-    // 20 is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
+  function decode(
+    bytes memory _staticData,
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
+  ) internal pure returns (MixedData memory _table) {
+    (_table.u32, _table.u128) = decodeStatic(_staticData);
 
-    _table.u32 = (uint32(Bytes.slice4(_blob, 0)));
-
-    _table.u128 = (uint128(Bytes.slice16(_blob, 4)));
-
-    // Store trims the blob if dynamic fields are all empty
-    if (_blob.length > 20) {
-      // skip static data length + dynamic lengths word
-      uint256 _start = 52;
-      uint256 _end;
-      unchecked {
-        _end = 52 + _encodedLengths.atIndex(0);
-      }
-      _table.a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(1);
-      }
-      _table.s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-    }
+    (_table.a32, _table.s) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -759,13 +787,18 @@ library Mixed {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
+  function encode(
+    uint32 u32,
+    uint128 u128,
+    uint32[] memory a32,
+    string memory s
+  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(u32, u128);
 
     PackedCounter _encodedLengths = encodeLengths(a32, s);
     bytes memory _dynamicData = encodeDynamic(a32, s);
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

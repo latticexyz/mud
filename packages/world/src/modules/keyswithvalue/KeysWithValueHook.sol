@@ -41,7 +41,7 @@ contract KeysWithValueHook is StoreHook {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 previousValue = _getRecordValue(sourceTableId, keyTuple, fieldLayout);
 
     // Remove the key from the list of keys with the previous value
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
@@ -75,7 +75,7 @@ contract KeysWithValueHook is StoreHook {
     FieldLayout fieldLayout
   ) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 previousValue = _getRecordValue(sourceTableId, keyTuple, fieldLayout);
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
@@ -88,20 +88,37 @@ contract KeysWithValueHook is StoreHook {
     FieldLayout fieldLayout
   ) public {
     // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 newValue = _getRecordValue(sourceTableId, keyTuple, fieldLayout);
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
   }
 
   function onBeforeDeleteRecord(bytes32 sourceTableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 previousValue = _getRecordValue(sourceTableId, keyTuple, fieldLayout);
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
   function onAfterDeleteRecord(bytes32 sourceTableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
     // NOOP
+  }
+
+  function _getRecordValue(
+    bytes32 sourceTableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32 previousValue) {
+    (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = _world().getRecord(
+      sourceTableId,
+      keyTuple,
+      fieldLayout
+    );
+    if (dynamicData.length > 0) {
+      return keccak256(abi.encodePacked(staticData, encodedLengths, dynamicData));
+    } else {
+      return keccak256(staticData);
+    }
   }
 
   function _removeKeyFromList(bytes32 targetTableId, bytes32 key, bytes32 valueHash) internal {
