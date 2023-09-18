@@ -25,7 +25,7 @@ interface IStoreRead {
     bytes32 tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
-  ) external view returns (bytes memory data);
+  ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
 
   /**
    * Get a single field from the given tableId and key tuple, with the given value field layout

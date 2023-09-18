@@ -123,13 +123,13 @@ library CounterTable {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(uint32 value) internal pure returns (bytes memory) {
+  function encode(uint32 value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

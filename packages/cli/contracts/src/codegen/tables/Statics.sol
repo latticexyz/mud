@@ -657,8 +657,12 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -678,8 +682,12 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -700,8 +708,12 @@ library Statics {
     _keyTuple[4] = _boolToBytes32(k5);
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -822,19 +834,36 @@ library Statics {
     set(_store, k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
   }
 
-  /** Decode the tightly packed blob using this table's field layout */
-  function decode(bytes memory _blob) internal pure returns (StaticsData memory _table) {
-    _table.v1 = (uint256(Bytes.slice32(_blob, 0)));
+  /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeStatic(
+    bytes memory _blob
+  ) internal pure returns (uint256 v1, int32 v2, bytes16 v3, address v4, bool v5, Enum1 v6) {
+    v1 = (uint256(Bytes.slice32(_blob, 0)));
 
-    _table.v2 = (int32(uint32(Bytes.slice4(_blob, 32))));
+    v2 = (int32(uint32(Bytes.slice4(_blob, 32))));
 
-    _table.v3 = (Bytes.slice16(_blob, 36));
+    v3 = (Bytes.slice16(_blob, 36));
 
-    _table.v4 = (address(Bytes.slice20(_blob, 52)));
+    v4 = (address(Bytes.slice20(_blob, 52)));
 
-    _table.v5 = (_toBool(uint8(Bytes.slice1(_blob, 72))));
+    v5 = (_toBool(uint8(Bytes.slice1(_blob, 72))));
 
-    _table.v6 = Enum1(uint8(Bytes.slice1(_blob, 73)));
+    v6 = Enum1(uint8(Bytes.slice1(_blob, 73)));
+  }
+
+  /**
+   * Decode the tightly packed blob using this table's field layout.
+   * Undefined behaviour for invalid blobs.
+   */
+  function decode(
+    bytes memory _staticData,
+    PackedCounter,
+    bytes memory
+  ) internal pure returns (StaticsData memory _table) {
+    (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6) = decodeStatic(_staticData);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -857,13 +886,13 @@ library Statics {
     address v4,
     bool v5,
     Enum1 v6
-  ) internal pure returns (bytes memory) {
+  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(v1, v2, v3, v4, v5, v6);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
