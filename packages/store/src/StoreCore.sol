@@ -16,10 +16,6 @@ import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
 
-// TODO: use dynamicFieldIndex for methods acting on dynamic fields
-// TODO: add the new methods (setStaticData, setDynamicData) to IStore
-// TODO: add code comments for all methods to World and StoreCore
-
 /**
  * StoreCore includes implementations for all IStore methods.
  * StoreCoreInternal includes helper methods used by multiple StoreCore methods.
