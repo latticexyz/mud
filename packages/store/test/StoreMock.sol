@@ -52,7 +52,7 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
-  // Set partial data at schema index
+  // Set partial data at field index
   function setField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
@@ -63,7 +63,7 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.setField(tableId, keyTuple, fieldIndex, data, fieldLayout);
   }
 
-  // Push encoded items to the dynamic field at schema index
+  // Push encoded items to the dynamic field at field index
   function pushToField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
@@ -74,7 +74,7 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.pushToField(tableId, keyTuple, fieldIndex, dataToPush, fieldLayout);
   }
 
-  // Pop byte length from the dynamic field at schema index
+  // Pop byte length from the dynamic field at field index
   function popFromField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,
@@ -85,7 +85,7 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.popFromField(tableId, keyTuple, fieldIndex, byteLengthToPop, fieldLayout);
   }
 
-  // Change encoded items within the dynamic field at schema index
+  // Change encoded items within the dynamic field at field index
   function updateInField(
     bytes32 tableId,
     bytes32[] calldata keyTuple,

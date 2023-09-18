@@ -16,7 +16,7 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
 import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 
@@ -840,18 +840,7 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new hook
     IStoreHook tableHook = new EchoSubscriber();
-    world.registerStoreHook(
-      tableId,
-      tableHook,
-      BEFORE_SET_RECORD |
-        AFTER_SET_RECORD |
-        BEFORE_SPLICE_STATIC_DATA |
-        AFTER_SPLICE_STATIC_DATA |
-        BEFORE_SPLICE_DYNAMIC_DATA |
-        AFTER_SPLICE_DYNAMIC_DATA |
-        BEFORE_DELETE_RECORD |
-        AFTER_DELETE_RECORD
-    );
+    world.registerStoreHook(tableId, tableHook, ALL);
 
     // Prepare data to write to the table
     bytes memory staticData = abi.encodePacked(true);
@@ -910,14 +899,7 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(
       tableId,
       IStoreHook(address(world)), // the World contract does not implement the store hook interface
-      BEFORE_SET_RECORD |
-        AFTER_SET_RECORD |
-        BEFORE_SPLICE_STATIC_DATA |
-        AFTER_SPLICE_STATIC_DATA |
-        BEFORE_SPLICE_DYNAMIC_DATA |
-        AFTER_SPLICE_DYNAMIC_DATA |
-        BEFORE_DELETE_RECORD |
-        AFTER_DELETE_RECORD
+      ALL
     );
   }
 
@@ -931,32 +913,10 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new RevertSubscriber
     IStoreHook revertSubscriber = new RevertSubscriber();
-    world.registerStoreHook(
-      tableId,
-      revertSubscriber,
-      BEFORE_SET_RECORD |
-        AFTER_SET_RECORD |
-        BEFORE_SPLICE_STATIC_DATA |
-        AFTER_SPLICE_STATIC_DATA |
-        BEFORE_SPLICE_DYNAMIC_DATA |
-        AFTER_SPLICE_DYNAMIC_DATA |
-        BEFORE_DELETE_RECORD |
-        AFTER_DELETE_RECORD
-    );
+    world.registerStoreHook(tableId, revertSubscriber, ALL);
     // Register a new EchoSubscriber
     IStoreHook echoSubscriber = new EchoSubscriber();
-    world.registerStoreHook(
-      tableId,
-      echoSubscriber,
-      BEFORE_SET_RECORD |
-        AFTER_SET_RECORD |
-        BEFORE_SPLICE_STATIC_DATA |
-        AFTER_SPLICE_STATIC_DATA |
-        BEFORE_SPLICE_DYNAMIC_DATA |
-        AFTER_SPLICE_DYNAMIC_DATA |
-        BEFORE_DELETE_RECORD |
-        AFTER_DELETE_RECORD
-    );
+    world.registerStoreHook(tableId, echoSubscriber, ALL);
 
     // Prepare data to write to the table
     bytes memory staticData = abi.encodePacked(true);

@@ -11,7 +11,7 @@ import { Hook, HookLib } from "../src/Hook.sol";
 import { IStoreHook } from "../src/IStore.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
-import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "../src/storeHookTypes.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 
 contract StoreHookTest is Test, GasReporter {
   event HookCalled(bytes);
@@ -67,6 +67,33 @@ contract StoreHookTest is Test, GasReporter {
         )
       ),
       bytes21(abi.encodePacked(echoSubscriber, uint8(0xff)))
+    );
+  }
+
+  function testShorthands() public {
+    assertEq(
+      ALL,
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD,
+      "0b11111111"
+    );
+
+    assertEq(
+      BEFORE_ALL,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD,
+      "0b01010101"
+    );
+
+    assertEq(
+      AFTER_ALL,
+      AFTER_SET_RECORD | AFTER_SPLICE_STATIC_DATA | AFTER_SPLICE_DYNAMIC_DATA | AFTER_DELETE_RECORD,
+      "0b10101010"
     );
   }
 

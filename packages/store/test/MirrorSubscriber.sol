@@ -74,7 +74,7 @@ contract MirrorSubscriber is StoreHook {
     StoreSwitch.spliceDynamicData(indexerTableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public overide {
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
     if (tableId != tableId) revert("invalid tableId");
     StoreSwitch.deleteRecord(indexerTableId, keyTuple, fieldLayout);
   }
