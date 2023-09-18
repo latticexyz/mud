@@ -8,13 +8,12 @@ import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { BatchCallRootModule } from "../src/modules/batchcallroot/BatchCallRootModule.sol";
 
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
 import { WorldTestSystem } from "./World.t.sol";
 
-contract BatchCallRootModuleTest is Test, GasReporter {
+contract CallBatchTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
   IBaseWorld world;
@@ -24,11 +23,7 @@ contract BatchCallRootModuleTest is Test, GasReporter {
     world.initialize(new CoreModule());
   }
 
-  function testInstallRoot() public {
-    startGasReport("installRoot batch call root module");
-    world.installRootModule(new BatchCallRootModule(), new bytes(0));
-    endGasReport();
-
+  function testCallBatch() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
     bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
@@ -44,7 +39,7 @@ contract BatchCallRootModuleTest is Test, GasReporter {
     callDatas[1] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
 
     startGasReport("batch calling root");
-    world.batchCall(resourceSelectors, callDatas);
+    world.callBatch(resourceSelectors, callDatas);
     endGasReport();
   }
 }
