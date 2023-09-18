@@ -26,15 +26,14 @@ export async function setupNetwork() {
     account: burnerAccount,
   });
 
-  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } =
-    await syncToRecs({
-      world,
-      config: mudConfig,
-      address: networkConfig.worldAddress as Hex,
-      publicClient,
-      startBlock: BigInt(networkConfig.initialBlockNumber),
-      indexerUrl: networkConfig.indexerUrl ?? undefined,
-    });
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } = await syncToRecs({
+    world,
+    config: mudConfig,
+    address: networkConfig.worldAddress as Hex,
+    publicClient,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
+    indexerUrl: networkConfig.indexerUrl ?? undefined,
+  });
 
   const worldContract = createContract({
     address: networkConfig.worldAddress as Hex,

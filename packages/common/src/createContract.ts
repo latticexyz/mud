@@ -173,13 +173,6 @@ export function createContract<
               ...options,
             };
             const resourceSelector = await getResourceSelector(functionSelector);
-
-            console.log({
-              functionName,
-              functionSignature: JSON.stringify(functionSignature),
-              functionSelector,
-              resourceSelector,
-            });
             const shouldUseCallFrom = resourceSelector && resourceSelector !== staticAbiTypeToDefaultValue.bytes32;
 
             // if the function is not part of the world contract and needs to be routed

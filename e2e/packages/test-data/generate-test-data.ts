@@ -68,6 +68,7 @@ const worldContract = createContract({
   abi: IWorldAbi,
   publicClient,
   walletClient,
+  getResourceSelector: async (selector) => selector,
 });
 
 console.log("calling set");

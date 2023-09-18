@@ -29,14 +29,13 @@ export async function setupNetwork() {
 
   const write$ = new Subject<ContractWrite>();
 
-  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } =
-    await syncToRecs({
-      world,
-      config: mudConfig,
-      address: networkConfig.worldAddress as Hex,
-      publicClient,
-      startBlock: BigInt(networkConfig.initialBlockNumber),
-    });
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction, getResourceSelector } = await syncToRecs({
+    world,
+    config: mudConfig,
+    address: networkConfig.worldAddress as Hex,
+    publicClient,
+    startBlock: BigInt(networkConfig.initialBlockNumber),
+  });
 
   const worldContract = createContract({
     address: networkConfig.worldAddress as Hex,
