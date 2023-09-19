@@ -6,7 +6,7 @@ import { revertWithBytes } from "../../../revertWithBytes.sol";
 
 contract CallBatchSystem is System {
   /**
-   * Call multiple systems at the given resourceSelectors, on behalf of _msgSender().
+   * Call multiple systems at the given resourceSelectors and return the array of return data.
    */
   function callBatch(
     bytes32[] memory resourceSelectors,
