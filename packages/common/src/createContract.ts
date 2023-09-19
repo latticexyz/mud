@@ -86,6 +86,7 @@ export function createContract<
       publicClient: publicClient as PublicClient,
       address: walletClient.account.address,
     });
+    contract.nonceManager = nonceManager;
 
     // Replace write calls with our own proxy. Implemented ~the same as viem, but adds better handling of nonces (via queue + retries).
     contract.write = new Proxy(
