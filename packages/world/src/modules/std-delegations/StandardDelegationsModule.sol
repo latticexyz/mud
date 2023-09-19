@@ -5,7 +5,6 @@ import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
-import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { CallboundDelegationControl } from "./CallboundDelegationControl.sol";

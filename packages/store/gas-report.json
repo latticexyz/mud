@@ -411,19 +411,19 @@
     "file": "test/ResourceId.t.sol",
     "test": "testEncode",
     "name": "encode table ID with name and type",
-    "gasUsed": 4
+    "gasUsed": 264
   },
   {
     "file": "test/ResourceId.t.sol",
     "test": "testGetType",
-    "name": "get tyjpe from a table ID",
-    "gasUsed": 33
+    "name": "get type from a table ID",
+    "gasUsed": 221
   },
   {
     "file": "test/ResourceId.t.sol",
     "test": "testIsType",
     "name": "check if a table ID is of type tb",
-    "gasUsed": 16
+    "gasUsed": 420
   },
   {
     "file": "test/Schema.t.sol",
@@ -705,19 +705,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 71066
+    "gasUsed": 71265
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set static field on table with subscriber",
-    "gasUsed": 20548
+    "gasUsed": 20746
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 16538
+    "gasUsed": 16736
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -729,19 +729,19 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 164188
+    "gasUsed": 164386
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) field on table with subscriber",
-    "gasUsed": 24315
+    "gasUsed": 24513
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 17523
+    "gasUsed": 17721
   },
   {
     "file": "test/StoreCoreGas.t.sol",

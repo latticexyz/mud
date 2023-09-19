@@ -2,11 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { System } from "../../System.sol";
-
-import { UniqueEntity } from "./tables/UniqueEntity.sol";
-
 import { TABLE_ID } from "./constants.sol";
-import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
+import { UniqueEntity } from "./tables/UniqueEntity.sol";
 
 contract UniqueEntitySystem is System {
   /**

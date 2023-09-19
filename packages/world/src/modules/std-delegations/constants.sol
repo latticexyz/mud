@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
+import { ResourceId } from "../../WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
 

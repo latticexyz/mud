@@ -15,17 +15,17 @@ contract ResourceIdTest is Test, GasReporter {
     ResourceId tableId = ResourceIdLib.encode("name", RESOURCE_TABLE);
     endGasReport();
 
-    assertEq(tableId.unwrap(), bytes32(abi.encodePacked(bytes30("name"), RESOURCE_TABLE)));
+    assertEq(ResourceId.unwrap(tableId), bytes32(abi.encodePacked(bytes30("name"), RESOURCE_TABLE)));
   }
 
   function testGetType() public {
-    ResourceId tableId = ResourceIdLib.encode("name", "tb");
+    ResourceId tableId = ResourceIdLib.encode("name", RESOURCE_TABLE);
 
-    startGasReport("get tyjpe from a table ID");
+    startGasReport("get type from a table ID");
     bytes2 resourceType = tableId.getType();
     endGasReport();
 
-    assertEq(resourceType, "tb");
+    assertEq(resourceType, RESOURCE_TABLE);
   }
 
   function testIsType() public {

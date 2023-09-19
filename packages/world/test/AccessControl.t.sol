@@ -9,7 +9,7 @@ import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
-import { RESOURCE_TABLE, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";

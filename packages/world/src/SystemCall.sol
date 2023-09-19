@@ -6,7 +6,6 @@ import { Hook } from "@latticexyz/store/src/Hook.sol";
 import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { AccessControl } from "./AccessControl.sol";
-import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";

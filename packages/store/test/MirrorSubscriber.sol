@@ -8,8 +8,11 @@ import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { ResourceId } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 
-ResourceId constant indexerTableId = ResourceId.wrap(keccak256("indexer.tableId"));
+ResourceId constant indexerTableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(bytes14("mirror"), bytes16("indexer"), RESOURCE_TABLE))
+);
 
 contract MirrorSubscriber is StoreHook {
   bytes32 public _tableId;

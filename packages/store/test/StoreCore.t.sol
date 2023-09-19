@@ -64,7 +64,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a StoreSetRecord event to be emitted
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = tableId.unwrap();
+    keyTuple[0] = ResourceId.unwrap(tableId);
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(
       TablesTableId,
@@ -79,10 +79,10 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getValueSchema(tableId).unwrap(), valueSchema.unwrap());
     assertEq(IStore(this).getKeySchema(tableId).unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId.unwrap());
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), ResourceId.unwrap(tableId));
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId.unwrap());
+    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), ResourceId.unwrap(tableId));
     assertEq(loadedFieldNames, abi.encode(fieldNames));
   }
 
@@ -124,7 +124,7 @@ contract StoreCoreTest is Test, StoreMock {
       abi.encodeWithSelector(
         IStoreErrors.StoreCore_TableNotFound.selector,
         tableId2,
-        string(abi.encodePacked(tableId2.unwrap()))
+        string(abi.encodePacked(ResourceId.unwrap(tableId2)))
       )
     );
     IStore(this).getFieldLayout(tableId2);

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
+
+import { ResourceId, WorldResourceIdInstance, NAME_BYTES } from "../../WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../../worldResourceTypes.sol";
+
+uint256 constant MODULE_NAMESPACE_BYTES = 7;
+uint256 constant TABLE_NAMESPACE_BYTES = 7;
+uint256 constant TABLE_NAME_BYTES = 16;
+uint256 constant BYTES_TO_BITS = 8;
 
 /**
  * Get a deterministic selector for the reverse mapping table for the given source table.
@@ -18,8 +24,8 @@ function getTargetTableId(bytes7 moduleNamespace, ResourceId sourceTableId) pure
   return
     ResourceId.wrap(
       bytes32(moduleNamespace) |
-        (bytes32(sourceTableNamespace) >> (7 * 8)) |
-        (bytes32(tableName) >> (14 * 8)) |
-        (bytes32(RESOURCE_TABLE) >> (30 * 8))
+        (bytes32(sourceTableNamespace) >> (MODULE_NAMESPACE_BYTES * BYTES_TO_BITS)) |
+        (bytes32(tableName) >> ((MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES) * BYTES_TO_BITS)) |
+        (bytes32(RESOURCE_TABLE) >> ((MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
     );
 }

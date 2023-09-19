@@ -17,8 +17,8 @@ describe("storeEventsAbi", () => {
         type: item.type,
         name: item.name,
         inputs: item.inputs.map((input) => ({
-          name: input.name,
           type: input.type,
+          name: input.name,
           ...(input.indexed ? { indexed: true } : null),
         })),
       }))

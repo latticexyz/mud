@@ -15,7 +15,7 @@ import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncod
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BYTES, TYPE_BYTES } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
@@ -24,7 +24,7 @@ import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueM
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
-import { getTargetTableId } from "../src/modules/keyswithvalue/getTargetTableId.sol";
+import { getTargetTableId, MODULE_NAMESPACE_BYTES, TABLE_NAMESPACE_BYTES } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
   using ResourceIdInstance for ResourceId;
@@ -77,6 +77,10 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     startGasReport("install keys with value module");
     world.installRootModule(keysWithValueModule, abi.encode(sourceTableId));
     endGasReport();
+  }
+
+  function testMatchingByteSizes() public {
+    assertEq(MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES + NAME_BYTES + TYPE_BYTES, 32);
   }
 
   function testInstall() public {
@@ -230,7 +234,11 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(bytes7(ResourceId.unwrap(_targetTableId)), MODULE_NAMESPACE, "module namespace does not match");
 
     // followed by the first 7 bytes of the source table namespace
-    assertEq(bytes7(ResourceId.unwrap(_targetTableId) << (7 * 8)), bytes7(namespace), "table namespace does not match");
+    assertEq(
+      bytes7(ResourceId.unwrap(_targetTableId) << (MODULE_NAMESPACE_BYTES * 8)),
+      bytes7(namespace),
+      "table namespace does not match"
+    );
 
     // The next 16 bytes are the source name
     assertEq(_targetTableId.getName(), sourceName, "table name does not match");

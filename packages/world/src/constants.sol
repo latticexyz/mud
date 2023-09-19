@@ -5,8 +5,9 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 
-bytes14 constant ROOT_NAMESPACE = 0;
-bytes16 constant ROOT_NAME = 0;
+bytes14 constant ROOT_NAMESPACE = "";
+bytes16 constant ROOT_NAME = "";
+
 ResourceId constant ROOT_NAMESPACE_ID = ResourceId.wrap(
   bytes32(abi.encodePacked(ROOT_NAMESPACE, ROOT_NAME, RESOURCE_NAMESPACE))
 );

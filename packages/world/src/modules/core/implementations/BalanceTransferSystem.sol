@@ -9,9 +9,6 @@ import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { Balances } from "../tables/Balances.sol";
 
-// TODO: use namespace ID for balance table (bytes32 instead of bytes14)
-// TODO: could even use resource ID for balance table, so systems can have their own balance in the table
-
 contract BalanceTransferSystem is System, IWorldErrors {
   using WorldResourceIdInstance for ResourceId;
 

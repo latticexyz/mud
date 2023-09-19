@@ -5,7 +5,7 @@ import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { ResourceId, ResourceIdLib, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
 
-import { WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance, NAMESPACE_BYTES, NAME_BYTES, TYPE_BYTES } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 contract WorldResourceIdTest is Test, GasReporter {
@@ -39,7 +39,7 @@ contract WorldResourceIdTest is Test, GasReporter {
     bytes2 resourceType = resourceId.getType();
     endGasReport();
 
-    assertEq(resourceType, "sy");
+    assertEq(resourceType, RESOURCE_SYSTEM);
   }
 
   function testIsType() public {
@@ -61,7 +61,13 @@ contract WorldResourceIdTest is Test, GasReporter {
     );
   }
 
+  function testMatchingByteSizes() public {
+    assertEq(NAMESPACE_BYTES + NAME_BYTES + TYPE_BYTES, 32);
+  }
+
   function testFuzz(bytes14 namespace, bytes16 name, bytes2 resourceType) public {
+    bytes2 NOT_TYPE = bytes2("xx");
+    vm.assume(resourceType != NOT_TYPE);
     ResourceId resourceId = WorldResourceIdLib.encode(namespace, name, resourceType);
     assertEq(resourceId.getNamespace(), namespace);
     assertEq(
@@ -71,5 +77,7 @@ contract WorldResourceIdTest is Test, GasReporter {
     assertEq(resourceId.getNamespaceId().getNamespace(), namespace);
     assertEq(resourceId.getName(), name);
     assertEq(resourceId.getType(), resourceType);
+    assertTrue(resourceId.isType(resourceType));
+    assertFalse(resourceId.isType(NOT_TYPE));
   }
 }
