@@ -8,6 +8,7 @@ import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { SystemCall } from "../src/modules/core/implementations/SystemCall.sol";
 
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 
@@ -35,17 +36,14 @@ contract CallBatchTest is Test, GasReporter {
     world.registerSystem(resourceSelector, system, true);
 
     // Batch call functions on the system
-    bytes32[] memory resourceSelectors = new bytes32[](2);
-    bytes[] memory callDatas = new bytes[](2);
+    SystemCall[] memory systemCalls = new SystemCall[](2);
 
-    resourceSelectors[0] = resourceSelector;
-    callDatas[0] = abi.encodeWithSelector(WorldTestSystem.msgSender.selector);
-    resourceSelectors[1] = resourceSelector;
-    callDatas[1] = abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector);
+    systemCalls[0] = SystemCall(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    systemCalls[1] = SystemCall(resourceSelector, abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector));
 
     vm.prank(caller);
     startGasReport("call systems with callBatch");
-    bytes[] memory datas = world.callBatch(resourceSelectors, callDatas);
+    bytes[] memory datas = world.callBatch(systemCalls);
     endGasReport();
 
     assertEq(abi.decode(datas[0], (address)), caller, "wrong address returned");
