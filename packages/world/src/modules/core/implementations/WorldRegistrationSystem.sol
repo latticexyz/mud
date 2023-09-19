@@ -38,7 +38,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
     // Require namespace to not exist yet
-    if (ResourceType._get(namespaceId) != Resource.NONE) revert ResourceExists(namespaceId.toString());
+    if (ResourceType._get(ResourceId.unwrap(namespaceId)) != Resource.NONE)
+      revert ResourceExists(namespaceId.toString());
 
     // Register namespace resource
     ResourceType._set(ResourceId.unwrap(namespaceId), Resource.NAMESPACE);
@@ -96,19 +97,19 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // Require this system to not be registered at a different system ID yet
     bytes32 existingSystemId = SystemRegistry._get(address(system));
-    if (existingSystemId != 0 && existingSystemId != systemId) {
+    if (existingSystemId != 0 && existingSystemId != ResourceId.unwrap(systemId)) {
       revert SystemExists(address(system));
     }
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     ResourceId namespaceId = systemId.getNamespaceId();
-    if (ResourceType._get(namespaceId) == Resource.NONE) registerNamespace(systemId.getNamespace());
+    if (ResourceType._get(ResourceId.unwrap(namespaceId)) == Resource.NONE) registerNamespace(systemId.getNamespace());
     else AccessControl.requireOwner(namespaceId, _msgSender());
 
     // TODO: this check is unnecessary with resource types, need to replace with a requirement that the system type is encoded correctly
     // Require no resource other than a system to exist at this selector yet
-    Resource resourceType = ResourceType._get(systemId);
+    Resource resourceType = ResourceType._get(ResourceId.unwrap(systemId));
     if (resourceType != Resource.NONE && resourceType != Resource.SYSTEM) {
       revert ResourceExists(systemId.toString());
     }
@@ -211,7 +212,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     });
 
     // If the delegation is not unlimited...
-    if (delegationControlId != UNLIMITED_DELEGATION && initCallData.length > 0) {
+    if (ResourceId.unwrap(delegationControlId) != ResourceId.unwrap(UNLIMITED_DELEGATION) && initCallData.length > 0) {
       // Require the delegationControl contract to implement the IDelegationControl interface
       (address delegationControl, ) = Systems._get(ResourceId.unwrap(delegationControlId));
       requireInterface(delegationControl, DELEGATION_CONTROL_INTERFACE_ID);

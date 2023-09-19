@@ -16,7 +16,7 @@ library DelegationInstance {
   }
 
   function isUnlimited(Delegation self) internal pure returns (bool) {
-    return Delegation.unwrap(self) == UNLIMITED_DELEGATION;
+    return Delegation.unwrap(self) == ResourceId.unwrap(UNLIMITED_DELEGATION);
   }
 
   function isLimited(Delegation self) internal pure returns (bool) {
@@ -44,7 +44,7 @@ library DelegationInstance {
     // Call the delegation control contract to check if the delegator has granted access to the delegatee
     (bool success, bytes memory data) = SystemCall.call({
       caller: delegatee,
-      systemId: Delegation.unwrap(self),
+      systemId: ResourceId.wrap(Delegation.unwrap(self)),
       callData: abi.encodeCall(IDelegationControl.verify, (delegator, systemId, callData)),
       value: 0
     });

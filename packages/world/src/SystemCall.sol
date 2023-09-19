@@ -34,7 +34,7 @@ library SystemCall {
     bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
-    (address systemAddress, bool publicAccess) = Systems._get(systemId);
+    (address systemAddress, bool publicAccess) = Systems._get(ResourceId.unwrap(systemId));
 
     // Check if the system exists
     if (systemAddress == address(0)) revert IWorldErrors.ResourceNotFound(systemId.toString());
@@ -76,7 +76,7 @@ library SystemCall {
     uint256 value
   ) internal returns (bool success, bytes memory data) {
     // Get system hooks
-    bytes21[] memory hooks = SystemHooks._get(systemId);
+    bytes21[] memory hooks = SystemHooks._get(ResourceId.unwrap(systemId));
 
     // Call onBeforeCallSystem hooks (before calling the system)
     for (uint256 i; i < hooks.length; i++) {

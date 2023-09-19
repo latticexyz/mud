@@ -295,7 +295,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Fallback function to call registered function selectors
    */
   fallback() external payable {
-    (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
+    (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);
 
@@ -303,7 +303,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
     // Call the function and forward the call data
-    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(
+      msg.sender,
+      ResourceId.wrap(systemId),
+      callData,
+      msg.value
+    );
 
     // If the call was successful, return the return data
     assembly {

@@ -149,11 +149,11 @@ contract EchoSystemHook is SystemHook {
 contract RevertSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address, bytes32, bytes memory) public pure {
+  function onBeforeCallSystem(address, ResourceId, bytes memory) public pure {
     revert("onBeforeCallSystem");
   }
 
-  function onAfterCallSystem(address, bytes32, bytes memory) public pure {
+  function onAfterCallSystem(address, ResourceId, bytes memory) public pure {
     revert("onAfterCallSystem");
   }
 }

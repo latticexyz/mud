@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DelegationControl } from "../../DelegationControl.sol";
+import { ResourceId } from "../../WorldResourceId.sol";
 import { TimeboundDelegations } from "./tables/TimeboundDelegations.sol";
 
 contract TimeboundDelegationControl is DelegationControl {
@@ -9,7 +10,7 @@ contract TimeboundDelegationControl is DelegationControl {
    * Verify a delegation by checking if the current block timestamp is not larger than the max valid timestamp for the delegation.
    * Note: the delegation control check ignores the systemId and callData parameters.
    */
-  function verify(address delegator, bytes32, bytes memory) public view returns (bool) {
+  function verify(address delegator, ResourceId, bytes memory) public view returns (bool) {
     // Get the max valid timestamp for the given delegator
     uint256 maxTimestamp = TimeboundDelegations.get({ delegator: delegator, delegatee: _msgSender() });
 
