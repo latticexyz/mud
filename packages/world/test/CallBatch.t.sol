@@ -44,6 +44,9 @@ contract CallBatchTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
   IBaseWorld world;
+  bytes16 namespace = "namespace";
+  bytes16 name = "testSystem";
+  bytes32 resourceSelector = ResourceSelector.from(namespace, name);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -51,10 +54,6 @@ contract CallBatchTest is Test, GasReporter {
   }
 
   function testCallBatch() public {
-    bytes16 namespace = "namespace";
-    bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-
     // Register a new system
     TestSystem system = new TestSystem();
     world.registerSystem(resourceSelector, system, true);
@@ -63,7 +62,7 @@ contract CallBatchTest is Test, GasReporter {
     SystemCall[] memory systemCalls = new SystemCall[](1);
     systemCalls[0] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
 
-    vm.expectRevert("sender is incorrect");
+    vm.expectRevert("sender is not admin");
     world.callBatch(systemCalls);
 
     // Set the admin and increment the counter twice
@@ -72,7 +71,7 @@ contract CallBatchTest is Test, GasReporter {
     systemCalls[1] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
     systemCalls[2] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
 
-    vm.expectRevert("sender is incorrect");
+    vm.expectRevert("sender is not admin");
     world.callBatch(systemCalls);
 
     vm.prank(caller);
@@ -91,10 +90,6 @@ contract CallBatchTest is Test, GasReporter {
   }
 
   function testCallBatchReturnData() public {
-    bytes16 namespace = "namespace";
-    bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-
     // Register a new system
     TestSystem system = new TestSystem();
     world.registerSystem(resourceSelector, system, true);
