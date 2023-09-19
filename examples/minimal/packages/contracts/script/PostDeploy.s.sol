@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { ResourceId } from "@latticexyz/world/src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
@@ -20,7 +20,7 @@ contract PostDeploy is Script {
 
     // Manually deploy a system with another namespace
     ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "ChatNamespaced", RESOURCE_SYSTEM);
+    ResourceId systemId = WorldResourceIdLib.encode("namespace", "ChatNamespaced", RESOURCE_SYSTEM);
     IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
     IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage", "(string)");
     // Grant this system access to MessageTable

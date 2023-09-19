@@ -408,6 +408,18 @@
     "gasUsed": 286
   },
   {
+    "file": "test/ResourceType.t.sol",
+    "test": "testEncode",
+    "name": "encode table ID with name and type",
+    "gasUsed": 4
+  },
+  {
+    "file": "test/ResourceType.t.sol",
+    "test": "testIsType",
+    "name": "check if a table ID is of type tb",
+    "gasUsed": 4
+  },
+  {
     "file": "test/Schema.t.sol",
     "test": "testEncodeDecodeSchema",
     "name": "initialize schema array with 6 entries",

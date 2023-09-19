@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { ResourceType } from "@latticexyz/store/src/ResourceType.sol";
+import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_NAMESPACE, MASK_RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 
 bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
@@ -14,7 +14,7 @@ bytes32 constant NAMESPACE_MASK = bytes32(~bytes14(""));
 // TODO: should resource id be a user type to avoid type errors of eg passing a namespace (bytes14) instead of a namespace id (bytes32)
 // (I ran into a bunch of runtime errors while refactoring this where bytes14 was automatically casted to bytes32)
 
-library ResourceId {
+library WorldResourceIdLib {
   /**
    * Create a 32-byte resource ID from a namespace, name and type.
    *
@@ -39,35 +39,37 @@ library ResourceId {
   function encodeNamespace(bytes14 resourceNamespace) internal pure returns (bytes32) {
     return bytes32(resourceNamespace) | (bytes32(RESOURCE_NAMESPACE) >> (30 * 8));
   }
+}
 
+library WorldResourceIdInstance {
   /**
    * Get the namespace of a resource ID.
    */
-  function getNamespace(bytes32 resourceId) internal pure returns (bytes14) {
-    return bytes14(resourceId);
+  function getNamespace(ResourceId resourceId) internal pure returns (bytes14) {
+    return bytes14(ResourceId.unwrap(resourceId));
   }
 
   /**
    * Get the namespace resource ID corresponding to the namespace of a resource ID.
    */
-  function getNamespaceId(bytes32 resourceId) internal pure returns (bytes32) {
-    return (resourceId & NAMESPACE_MASK) | MASK_RESOURCE_NAMESPACE;
+  function getNamespaceId(ResourceId resourceId) internal pure returns (ResourceId) {
+    return ResourceId.wrap((ResourceId.unwrap(resourceId) & NAMESPACE_MASK) | MASK_RESOURCE_NAMESPACE);
   }
 
   /**
    * Get the name of a resource ID.
    */
-  function getName(bytes32 resourceId) internal pure returns (bytes16) {
-    return bytes16(resourceId << (14 * 8));
+  function getName(ResourceId resourceId) internal pure returns (bytes16) {
+    return bytes16(ResourceId.unwrap(resourceId) << (14 * 8));
   }
 
   /**
    * Convert a resource ID to a string for more readable logs
    */
-  function toString(bytes32 resourceId) internal pure returns (string memory) {
+  function toString(ResourceId resourceId) internal pure returns (string memory) {
     bytes14 resourceNamespace = getNamespace(resourceId);
     bytes16 resourceName = getName(resourceId);
-    bytes2 resourceType = ResourceType.getType(resourceId);
+    bytes2 resourceType = ResourceId.getType(resourceId);
     return
       string(
         abi.encodePacked(
