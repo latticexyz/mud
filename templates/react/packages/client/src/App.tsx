@@ -1,3 +1,6 @@
+import "@rainbow-me/rainbowkit/styles.css";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useWalletClient } from "wagmi";
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
@@ -7,6 +10,7 @@ export const App = () => {
     components: { Counter },
     systemCalls: { increment },
   } = useMUD();
+  const walletClient = useWalletClient();
 
   const counter = useComponentValue(Counter, singletonEntity);
 
@@ -24,6 +28,7 @@ export const App = () => {
       >
         Increment
       </button>
+      <ConnectButton />
     </>
   );
 };

@@ -15,7 +15,6 @@ import {
   getAbiItem,
   getContract,
   getFunctionSelector,
-  trim,
 } from "viem";
 import pRetry from "p-retry";
 import { AbiFunction } from "abitype";

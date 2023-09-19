@@ -6,10 +6,13 @@
 import { createPublicClient, fallback, webSocket, http, createWalletClient, Hex, parseEther, ClientConfig } from "viem";
 import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
+import { createConfig } from "wagmi";
+import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+
 import { createBurnerAccount, createContract, transportObserver, ContractWrite } from "@latticexyz/common";
 
 import { Subject, share } from "rxjs";
@@ -49,6 +52,18 @@ export async function setupNetwork() {
   const burnerWalletClient = createWalletClient({
     ...clientOptions,
     account: burnerAccount,
+  });
+
+  const { connectors } = getDefaultWallets({
+    appName: "MUD",
+    projectId: "MUD",
+    chains: [networkConfig.chain],
+  });
+
+  const wagmiConfig = createConfig({
+    autoConnect: true,
+    connectors,
+    publicClient,
   });
 
   /*
@@ -117,6 +132,8 @@ export async function setupNetwork() {
     playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     publicClient,
     walletClient: burnerWalletClient,
+    wagmiConfig,
+    chain: networkConfig.chain,
     latestBlock$,
     storedBlockLogs$,
     waitForTransaction,
