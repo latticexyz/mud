@@ -1,24 +1,16 @@
+import { isHex, parseEther } from "viem";
 import { z, ZodError, ZodIntersection, ZodTypeAny } from "zod";
 
-const commonSchema = z.intersection(
-  z.object({
-    HOST: z.string().default("0.0.0.0"),
-    PORT: z.coerce.number().positive().default(3001),
-    START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
-    MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
-    POLLING_INTERVAL: z.coerce.number().positive().default(1000),
-  }),
-  z.union([
-    z.object({
-      RPC_HTTP_URL: z.string(),
-      RPC_WS_URL: z.string().optional(),
-    }),
-    z.object({
-      RPC_HTTP_URL: z.string().optional(),
-      RPC_WS_URL: z.string(),
-    }),
-  ])
-);
+const commonSchema = z.object({
+  HOST: z.string().default("0.0.0.0"),
+  PORT: z.coerce.number().positive().default(3002),
+  RPC_HTTP_URL: z.string(),
+  FAUCET_PRIVATE_KEY: z.string().refine(isHex),
+  DRIP_AMOUNT_ETHER: z
+    .string()
+    .default("1")
+    .transform((ether) => parseEther(ether)),
+});
 
 export function parseEnv<TSchema extends ZodTypeAny | undefined = undefined>(
   schema?: TSchema
