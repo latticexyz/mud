@@ -11,24 +11,50 @@
 
 Most projects in MUD are started by running `pnpm create mud <project name>`, but for this tutorial we've included some initial code to get you up and running quicker. This includes React components and base TailwindCSS styles.
 
-To get started you can fork or clone from the [Emojimon starter kit repo](https://github.com/latticexyz/emojimon) or use the command below.
+1. Clone the repository.
 
-```bash copy
-git clone https://github.com/latticexyz/emojimon.git
-```
+   ```bash copy
+   git clone https://github.com/latticexyz/emojimon.git
+   ```
 
-Afterwards, run the following commands to install the dependencies and start up MUD's services (anvil node, contracts deployer, and client):
+1. Install the dependencies and start up MUD's services (anvil node, contracts deployer, and client).
 
-```bash copy
-cd emojimon && pnpm install
-```
+   ```bash copy
+   cd emojimon && pnpm install
+   ```
 
-```bash copy
-pnpm run dev
-```
+1. Run the game.
 
-If all went well you should see this in your command line.
+   ```bash copy
+   pnpm run dev
+   ```
 
-![A successful MUD deployment](../../quick-start-mud-cli.png)
+   When the application is ready, you should see this on the command line:
 
-After deployment is successful, pop over to [http://localhost:3000](http://localhost:3000) and checkout your live app. At this point you can open up your code editor and get started!
+   ```
+    [contracts]
+    [contracts] Deployment completed in 13.305 seconds
+    [contracts]
+    [contracts]  Deployment result (written to ./worlds.json and deploys/31337):
+    [contracts]
+    [contracts] {
+    [contracts]   worldAddress: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+    [contracts]   blockNumber: 12
+    [contracts] }
+    [contracts]
+    [contracts] .------..------..------.
+    [contracts] |M.--. ||U.--. ||D.--. |
+    [contracts] | (\/) || (\/) || :/\: |
+    [contracts] | :\/: || :\/: || (__) |
+    [contracts] | '--'M|| '--'U|| '--'D|
+    [contracts] '------''------''------'
+    [contracts]
+    [contracts] MUD watching for changes...
+   ```
+
+1. After deployment is successful, browse to [http://localhost:3000](http://localhost:3000) and see the application.
+
+   1. Click anywhere on the map to place your character (`🤠`).
+   1. Move your character using the arrow keys.
+      Note that you can only make one move per block (every second).
+   1. When you meet a wild creature you can _Throw_ to catch it, or _Run_ to stop the encounter.
