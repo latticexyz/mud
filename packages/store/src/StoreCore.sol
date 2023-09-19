@@ -753,7 +753,7 @@ library StoreCoreInternal {
       }
     }
 
-    // Emit event to offchain notify indexers
+    // Emit event to notify offchain indexers
     emit StoreCore.StoreSpliceDynamicData({
       tableId: tableId,
       keyTuple: keyTuple,
