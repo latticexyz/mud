@@ -9,6 +9,7 @@ import {
   validateSingleLevelRoute,
   validateUncapitalizedName,
   validateSelector,
+  validateNamespace,
 } from "./validation";
 
 /** Capitalized names of objects, like tables and systems */
@@ -30,5 +31,8 @@ export const zBaseRoute = z.string().superRefine(validateBaseRoute);
 /** A valid Ethereum address */
 export const zEthereumAddress = z.string().superRefine(validateEthereumAddress);
 
-/** A selector for namespace/file/resource */
+/** A selector for file/resource */
 export const zSelector = z.string().superRefine(validateSelector);
+
+/** A namespace */
+export const zNamespace = z.string().superRefine(validateNamespace);

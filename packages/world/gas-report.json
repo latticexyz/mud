@@ -399,6 +399,6 @@
     "file": "test/WorldResourceId.t.sol",
     "test": "testIsType",
     "name": "check if a resource ID has a given type",
-    "gasUsed": 4
+    "gasUsed": 16
   }
 ]

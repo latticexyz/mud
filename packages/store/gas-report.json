@@ -415,9 +415,15 @@
   },
   {
     "file": "test/ResourceId.t.sol",
+    "test": "testGetType",
+    "name": "get tyjpe from a table ID",
+    "gasUsed": 33
+  },
+  {
+    "file": "test/ResourceId.t.sol",
     "test": "testIsType",
     "name": "check if a table ID is of type tb",
-    "gasUsed": 4
+    "gasUsed": 16
   },
   {
     "file": "test/Schema.t.sol",

@@ -19,6 +19,7 @@ import {
   zSelector,
   zUserEnum,
   zValueName,
+  zNamespace,
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 
@@ -271,7 +272,7 @@ export type MUDUserConfig<
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: zSelector.default(DEFAULTS.namespace),
+    namespace: zNamespace.default(DEFAULTS.namespace),
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
     userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),
