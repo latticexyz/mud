@@ -13,7 +13,7 @@ contract RevertSubscriber is StoreHook {
     PackedCounter,
     bytes memory,
     FieldLayout
-  ) public pure {
+  ) public pure override {
     revert("onBeforeSetRecord");
   }
 
@@ -24,23 +24,47 @@ contract RevertSubscriber is StoreHook {
     PackedCounter,
     bytes memory,
     FieldLayout
-  ) public pure {
+  ) public pure override {
     revert("onAfterSetRecord");
   }
 
-  function onBeforeSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public pure {
-    revert("onBeforeSetField");
+  function onBeforeSpliceStaticData(bytes32, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+    revert("onBeforeSpliceStaticData");
   }
 
-  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory, FieldLayout) public pure {
-    revert("onAfterSetField");
+  function onAfterSpliceStaticData(bytes32, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+    revert("onAfterSpliceStaticData");
   }
 
-  function onBeforeDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure {
+  function onBeforeSpliceDynamicData(
+    bytes32,
+    bytes32[] memory,
+    uint8,
+    uint40,
+    uint40,
+    bytes memory,
+    PackedCounter
+  ) public pure override {
+    revert("onBeforeSpliceDynamicData");
+  }
+
+  function onAfterSpliceDynamicData(
+    bytes32,
+    bytes32[] memory,
+    uint8,
+    uint40,
+    uint40,
+    bytes memory,
+    PackedCounter
+  ) public pure override {
+    revert("onAfterSpliceDynamicData");
+  }
+
+  function onBeforeDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure override {
     revert("onBeforeDeleteRecord");
   }
 
-  function onAfterDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure {
+  function onAfterDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure override {
     revert("onAfterDeleteRecord");
   }
 }
