@@ -34,7 +34,7 @@ contract TestSystem is System {
   }
 
   function increment() public {
-    require(_msgSender() == admin, "sender is incorrect");
+    require(_msgSender() == admin, "sender is not admin");
 
     counter++;
   }
