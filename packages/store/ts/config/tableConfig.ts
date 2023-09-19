@@ -8,6 +8,15 @@ export type ValueSchema = Readonly<Record<string, SchemaAbiType>>;
 
 export type TableType = "table" | "offchainTable";
 
+// type Narrow<TType> =
+//   | (unknown extends TType ? unknown : never)
+//   // eslint-disable-next-line @typescript-eslint/ban-types
+//   | (TType extends Function ? TType : never)
+//   | (TType extends bigint | boolean | number | string ? TType : never)
+//   | (TType extends [] ? [] : never)
+//   | { [K in keyof TType]: Narrow<TType[K]> };
+export type Pretty<T> = { [K in keyof T]: T[K] } & unknown;
+
 // export type TableConfig = Readonly<{
 //   type: TableType;
 //   namespace: string;
@@ -38,36 +47,42 @@ type ConfigInput = Readonly<{
 
 const defaultKeySchema = { key: "bytes32" } as const;
 
+// type GenericTableOutput = Readonly<{
+//   type: "table" | "offchainTable";
+//   namespace: string;
+//   name: string;
+//   tableId: `0x${string}`;
+//   keySchema: KeySchema;
+//   valueSchema: ValueSchema;
+// }>;
+
 type TableOutput<
   defaultNamespace extends string,
   tableName extends string,
   input extends TableInput
 > = input extends SchemaAbiType
   ? // TODO: some shared output type so we can ensure each branch of the conditional are complete
-    Readonly<{
-      type: "table";
-      namespace: defaultNamespace;
-      name: tableName;
-      tableId: `0x${string}`;
-      keySchema: typeof defaultKeySchema;
-      valueSchema: Readonly<{ value: input }>;
-    }>
+    // Readonly<{
+    //   type: "table";
+    //   namespace: defaultNamespace;
+    //   name: tableName;
+    //   tableId: `0x${string}`;
+    //   keySchema: typeof defaultKeySchema;
+    //   valueSchema: Readonly<{ value: input }>;
+    // }>
+    TableOutput<defaultNamespace, tableName, { valueSchema: input }>
   : input extends TableInputShape
   ? Readonly<{
       type: input["offchainOnly"] extends true ? "offchainTable" : "table";
       namespace: input["namespace"] extends string ? input["namespace"] : defaultNamespace;
       name: tableName;
       tableId: `0x${string}`;
-      keySchema: input["keySchema"] extends KeySchema
-        ? input["keySchema"]
-        : input["keySchema"] extends undefined
-        ? typeof defaultKeySchema
-        : never;
+      keySchema: input["keySchema"] extends KeySchema ? input["keySchema"] : typeof defaultKeySchema;
       valueSchema: input["valueSchema"] extends ValueSchema
         ? input["valueSchema"]
         : input["valueSchema"] extends SchemaAbiType
         ? Readonly<{ value: input["valueSchema"] }>
-        : never;
+        : input["valueSchema"];
     }>
   : never;
 
@@ -80,6 +95,8 @@ type ConfigOutput<input extends ConfigInput> = {
     >;
   }>;
 };
+
+type Table = TableOutput<string, string, TableInput>;
 
 function isTable(table: SchemaAbiType | TableInputShape): table is TableInputShape {
   return !isSchemaAbiType(table);
@@ -103,14 +120,17 @@ function parseTableInput<defaultNamespace extends string, name extends string, i
   }
 
   if (isTable(input)) {
+    const namespace = input.namespace ?? defaultNamespace;
     // TODO: figure out how to do this without casting
     //       or at least so casting does some enforcement of the object
     return {
-      ...(input as TableInputShape),
-      namespace: input.namespace ?? defaultNamespace,
-      name,
-      tableId: tableIdToHex(input.namespace ?? defaultNamespace, name),
-    } as TableOutput<defaultNamespace, name, input>;
+      type: input.offchainOnly === true ? "offchainTable" : "table",
+      namespace,
+      name: name,
+      tableId: tableIdToHex(namespace, name),
+      keySchema: input.keySchema ?? defaultKeySchema,
+      valueSchema: isSchemaAbiType(input.valueSchema) ? ({ value: input.valueSchema } as const) : input.valueSchema,
+    } as Table;
   }
 
   assertExhaustive(input);
