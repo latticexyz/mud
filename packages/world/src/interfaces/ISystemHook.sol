@@ -9,7 +9,7 @@ bytes4 constant SYSTEM_HOOK_INTERFACE_ID = ISystemHook.onBeforeCallSystem.select
   ERC165_INTERFACE_ID;
 
 interface ISystemHook is IERC165 {
-  function onBeforeCallSystem(address msgSender, bytes32 systemId, bytes memory callData) external;
+  function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external;
 
-  function onAfterCallSystem(address msgSender, bytes32 systemId, bytes memory callData) external;
+  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes memory callData) external;
 }

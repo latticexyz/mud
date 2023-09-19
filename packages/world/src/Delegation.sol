@@ -31,7 +31,7 @@ library DelegationInstance {
     Delegation self,
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData
   ) internal returns (bool) {
     // Early return if there is an unlimited delegation

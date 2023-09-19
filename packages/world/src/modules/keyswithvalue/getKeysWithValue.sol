@@ -15,7 +15,7 @@ import { getTargetTableId } from "./getTargetTableId.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function getKeysWithValue(
-  bytes32 tableId,
+  ResourceId tableId,
   bytes memory staticData,
   PackedCounter encodedLengths,
   bytes memory dynamicData
@@ -38,7 +38,7 @@ function getKeysWithValue(
  */
 function getKeysWithValue(
   IStore store,
-  bytes32 tableId,
+  ResourceId tableId,
   bytes memory staticData,
   PackedCounter encodedLengths,
   bytes memory dynamicData

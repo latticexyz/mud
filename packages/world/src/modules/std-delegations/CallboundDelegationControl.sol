@@ -8,7 +8,7 @@ contract CallboundDelegationControl is DelegationControl {
   /**
    * Verify a delegation by checking if the delegator has any available calls left in the CallboundDelegations table and decrementing the available calls if so.
    */
-  function verify(address delegator, bytes32 systemId, bytes memory callData) public returns (bool) {
+  function verify(address delegator, ResourceId systemId, bytes memory callData) public returns (bool) {
     bytes32 callDataHash = keccak256(callData);
 
     // Get the number of available calls for the given delegator, systemId and callData
@@ -51,7 +51,7 @@ contract CallboundDelegationControl is DelegationControl {
   /**
    * Initialize a delegation by setting the number of available calls in the CallboundDelegations table
    */
-  function initDelegation(address delegatee, bytes32 systemId, bytes memory callData, uint256 numCalls) public {
+  function initDelegation(address delegatee, ResourceId systemId, bytes memory callData, uint256 numCalls) public {
     CallboundDelegations.set({
       delegator: _msgSender(),
       delegatee: delegatee,

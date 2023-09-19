@@ -12,7 +12,7 @@ import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
  * Note: if a table with composite keys is used, only the first five keys of the tuple are indexed
  */
 contract KeysInTableHook is StoreHook {
-  function handleSet(bytes32 tableId, bytes32[] memory keyTuple) internal {
+  function handleSet(ResourceId tableId, bytes32[] memory keyTuple) internal {
     bytes32 keysHash = keccak256(abi.encode(keyTuple));
 
     // If the keyTuple has not yet been set in the table...
@@ -42,7 +42,7 @@ contract KeysInTableHook is StoreHook {
   }
 
   function onBeforeSetRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory,
     PackedCounter,
@@ -53,7 +53,7 @@ contract KeysInTableHook is StoreHook {
   }
 
   function onAfterSpliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48,
     uint40,
@@ -63,7 +63,7 @@ contract KeysInTableHook is StoreHook {
   }
 
   function onAfterSpliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8,
     uint40,
@@ -74,7 +74,7 @@ contract KeysInTableHook is StoreHook {
     handleSet(tableId, keyTuple);
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout) public override {
+  function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) public override {
     bytes32 keysHash = keccak256(abi.encode(keyTuple));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 

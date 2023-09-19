@@ -6,23 +6,24 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { Schema } from "./Schema.sol";
 import { IStoreHook } from "./IStoreHook.sol";
+import { ResourceId } from "./ResourceId.sol";
 
 interface IStoreRead {
   event HelloStore(bytes32 indexed storeVersion);
 
   function storeVersion() external view returns (bytes32);
 
-  function getFieldLayout(bytes32 tableId) external view returns (FieldLayout fieldLayout);
+  function getFieldLayout(ResourceId tableId) external view returns (FieldLayout fieldLayout);
 
-  function getValueSchema(bytes32 tableId) external view returns (Schema valueSchema);
+  function getValueSchema(ResourceId tableId) external view returns (Schema valueSchema);
 
-  function getKeySchema(bytes32 tableId) external view returns (Schema keySchema);
+  function getKeySchema(ResourceId tableId) external view returns (Schema keySchema);
 
   /**
    * Get full record (all fields, static and dynamic data) for the given tableId and key tuple, with the given value field layout
    */
   function getRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     FieldLayout fieldLayout
   ) external view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData);
@@ -31,7 +32,7 @@ interface IStoreRead {
    * Get a single field from the given tableId and key tuple, with the given value field layout
    */
   function getField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -43,7 +44,7 @@ interface IStoreRead {
    * Consumers are expected to truncate the returned value as needed.
    */
   function getStaticField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -54,7 +55,7 @@ interface IStoreRead {
    * (Dynamic field index = field index - number of static fields)
    */
   function getDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex
   ) external view returns (bytes memory);
@@ -63,7 +64,7 @@ interface IStoreRead {
    * Get the byte length of a single field from the given tableId and key tuple, with the given value field layout
    */
   function getFieldLength(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -74,7 +75,7 @@ interface IStoreRead {
    * The slice is unchecked and will return invalid data if `start`:`end` overflow.
    */
   function getFieldSlice(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout,
@@ -85,32 +86,32 @@ interface IStoreRead {
 
 interface IStoreWrite {
   event StoreSetRecord(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
     bytes dynamicData
   );
   event StoreSpliceStaticData(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data
   );
   event StoreSpliceDynamicData(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple);
+  event StoreDeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
@@ -120,7 +121,7 @@ interface IStoreWrite {
 
   // Splice data in the static part of the record
   function spliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -129,7 +130,7 @@ interface IStoreWrite {
 
   // Splice data in the dynamic part of the record
   function spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -139,7 +140,7 @@ interface IStoreWrite {
 
   // Set partial data at field index
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata data,
@@ -148,7 +149,7 @@ interface IStoreWrite {
 
   // Push encoded items to the dynamic field at field index
   function pushToField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata dataToPush,
@@ -157,7 +158,7 @@ interface IStoreWrite {
 
   // Pop byte length from the dynamic field at field index
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
@@ -166,7 +167,7 @@ interface IStoreWrite {
 
   // Change encoded items within the dynamic field at field index
   function updateInField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
@@ -175,7 +176,7 @@ interface IStoreWrite {
   ) external;
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 }
 
 interface IStoreEphemeral {
@@ -189,7 +190,7 @@ interface IStoreEphemeral {
 
   // Emit the ephemeral event without modifying storage
   function emitEphemeralRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
@@ -214,7 +215,7 @@ interface IStoreData is IStoreRead, IStoreWrite {
  */
 interface IStoreRegistration {
   function registerTable(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -223,10 +224,10 @@ interface IStoreRegistration {
   ) external;
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) external;
 
   // Unregister a hook for the given tableId
-  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) external;
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
 }
 
 interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}

@@ -30,7 +30,7 @@ library SystemCall {
   function call(
     address caller,
     uint256 value,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData
   ) internal returns (bool success, bytes memory data) {
     // Load the system data
@@ -71,7 +71,7 @@ library SystemCall {
    */
   function callWithHooks(
     address caller,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData,
     uint256 value
   ) internal returns (bool success, bytes memory data) {
@@ -104,7 +104,7 @@ library SystemCall {
    */
   function callWithHooksOrRevert(
     address caller,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData,
     uint256 value
   ) internal returns (bytes memory data) {

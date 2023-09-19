@@ -17,7 +17,7 @@ library Utils {
     if (StoreSwitch.getStoreAddress() == address(this)) {
       return "";
     } else {
-      bytes32 systemId = SystemRegistry.get(address(this));
+      ResourceId systemId = SystemRegistry.get(address(this));
       return ResourceId.getNamespace(systemId);
     }
   }

@@ -35,7 +35,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * Register a new namespace
    */
   function registerNamespace(bytes14 namespace) public virtual {
-    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+    ResourceId namespaceId = ResourceId.encodeNamespace(namespace);
 
     // Require namespace to not exist yet
     if (ResourceType._get(namespaceId) != Resource.NONE) revert ResourceExists(namespaceId.toString());
@@ -53,7 +53,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   /**
    * Register a hook for the system at the given system ID
    */
-  function registerSystemHook(bytes32 systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require the provided address to implement the ISystemHook interface
     requireInterface(address(hookAddress), SYSTEM_HOOK_INTERFACE_ID);
 
@@ -67,7 +67,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   /**
    * Unregister the given hook for the system at the given system ID
    */
-  function unregisterSystemHook(bytes32 systemId, ISystemHook hookAddress) public virtual {
+  function unregisterSystemHook(ResourceId systemId, ISystemHook hookAddress) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwner(systemId, _msgSender());
 
@@ -84,7 +84,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * Note: this function doesn't check whether a system already exists at the given selector,
    * making it possible to upgrade systems.
    */
-  function registerSystem(bytes32 systemId, WorldContextConsumer system, bool publicAccess) public virtual {
+  function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
     // Require the provided address to implement the WorldContextConsumer interface
     requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
 
@@ -99,7 +99,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
-    bytes32 namespaceId = systemId.getNamespaceId();
+    ResourceId namespaceId = systemId.getNamespaceId();
     if (ResourceType._get(namespaceId) == Resource.NONE) registerNamespace(systemId.getNamespace());
     else AccessControl.requireOwner(namespaceId, _msgSender());
 
@@ -143,7 +143,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * TODO: replace separate systemFunctionName and systemFunctionArguments with a signature argument
    */
   function registerFunctionSelector(
-    bytes32 systemId,
+    ResourceId systemId,
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
@@ -178,7 +178,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function registerRootFunctionSelector(
-    bytes32 systemId,
+    ResourceId systemId,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {

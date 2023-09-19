@@ -22,7 +22,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  bytes32 tableId = ResourceId.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE);
+  ResourceId tableId = ResourceId.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));

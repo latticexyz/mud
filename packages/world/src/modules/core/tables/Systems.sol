@@ -77,7 +77,7 @@ library Systems {
   }
 
   /** Get system */
-  function getSystem(bytes32 systemId) internal view returns (address system) {
+  function getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -86,7 +86,7 @@ library Systems {
   }
 
   /** Get system */
-  function _getSystem(bytes32 systemId) internal view returns (address system) {
+  function _getSystem(ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -95,7 +95,7 @@ library Systems {
   }
 
   /** Get system (using the specified store) */
-  function getSystem(IStore _store, bytes32 systemId) internal view returns (address system) {
+  function getSystem(IStore _store, ResourceId systemId) internal view returns (address system) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -104,7 +104,7 @@ library Systems {
   }
 
   /** Set system */
-  function setSystem(bytes32 systemId, address system) internal {
+  function setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -112,7 +112,7 @@ library Systems {
   }
 
   /** Set system */
-  function _setSystem(bytes32 systemId, address system) internal {
+  function _setSystem(ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -120,7 +120,7 @@ library Systems {
   }
 
   /** Set system (using the specified store) */
-  function setSystem(IStore _store, bytes32 systemId, address system) internal {
+  function setSystem(IStore _store, ResourceId systemId, address system) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -128,7 +128,7 @@ library Systems {
   }
 
   /** Get publicAccess */
-  function getPublicAccess(bytes32 systemId) internal view returns (bool publicAccess) {
+  function getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -137,7 +137,7 @@ library Systems {
   }
 
   /** Get publicAccess */
-  function _getPublicAccess(bytes32 systemId) internal view returns (bool publicAccess) {
+  function _getPublicAccess(ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -146,7 +146,7 @@ library Systems {
   }
 
   /** Get publicAccess (using the specified store) */
-  function getPublicAccess(IStore _store, bytes32 systemId) internal view returns (bool publicAccess) {
+  function getPublicAccess(IStore _store, ResourceId systemId) internal view returns (bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -155,7 +155,7 @@ library Systems {
   }
 
   /** Set publicAccess */
-  function setPublicAccess(bytes32 systemId, bool publicAccess) internal {
+  function setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -163,7 +163,7 @@ library Systems {
   }
 
   /** Set publicAccess */
-  function _setPublicAccess(bytes32 systemId, bool publicAccess) internal {
+  function _setPublicAccess(ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -171,7 +171,7 @@ library Systems {
   }
 
   /** Set publicAccess (using the specified store) */
-  function setPublicAccess(IStore _store, bytes32 systemId, bool publicAccess) internal {
+  function setPublicAccess(IStore _store, ResourceId systemId, bool publicAccess) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -179,7 +179,7 @@ library Systems {
   }
 
   /** Get the full data */
-  function get(bytes32 systemId) internal view returns (address system, bool publicAccess) {
+  function get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -192,7 +192,7 @@ library Systems {
   }
 
   /** Get the full data */
-  function _get(bytes32 systemId) internal view returns (address system, bool publicAccess) {
+  function _get(ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -205,7 +205,7 @@ library Systems {
   }
 
   /** Get the full data (using the specified store) */
-  function get(IStore _store, bytes32 systemId) internal view returns (address system, bool publicAccess) {
+  function get(IStore _store, ResourceId systemId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -218,7 +218,7 @@ library Systems {
   }
 
   /** Set the full data using individual values */
-  function set(bytes32 systemId, address system, bool publicAccess) internal {
+  function set(ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
@@ -231,7 +231,7 @@ library Systems {
   }
 
   /** Set the full data using individual values */
-  function _set(bytes32 systemId, address system, bool publicAccess) internal {
+  function _set(ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
@@ -244,7 +244,7 @@ library Systems {
   }
 
   /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, bytes32 systemId, address system, bool publicAccess) internal {
+  function set(IStore _store, ResourceId systemId, address system, bool publicAccess) internal {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
@@ -294,7 +294,7 @@ library Systems {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 systemId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -302,7 +302,7 @@ library Systems {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 systemId) internal {
+  function deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -310,7 +310,7 @@ library Systems {
   }
 
   /* Delete all data for given keys */
-  function _deleteRecord(bytes32 systemId) internal {
+  function _deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -318,7 +318,7 @@ library Systems {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 systemId) internal {
+  function deleteRecord(IStore _store, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 

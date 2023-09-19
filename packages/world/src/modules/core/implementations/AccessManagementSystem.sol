@@ -43,7 +43,7 @@ contract AccessManagementSystem is System {
    * Requires the caller to own the namespace.
    */
   function transferOwnership(bytes14 namespace, address newOwner) public virtual {
-    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+    ResourceId namespaceId = ResourceId.encodeNamespace(namespace);
 
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());

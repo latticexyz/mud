@@ -84,7 +84,7 @@ library CallboundDelegations {
   function get(
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -101,7 +101,7 @@ library CallboundDelegations {
   function _get(
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -119,7 +119,7 @@ library CallboundDelegations {
     IStore _store,
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -136,7 +136,7 @@ library CallboundDelegations {
   function set(
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
@@ -153,7 +153,7 @@ library CallboundDelegations {
   function _set(
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
@@ -171,7 +171,7 @@ library CallboundDelegations {
     IStore _store,
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
@@ -203,7 +203,7 @@ library CallboundDelegations {
   function encodeKeyTuple(
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash
   ) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -216,7 +216,7 @@ library CallboundDelegations {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(address delegator, address delegatee, bytes32 systemId, bytes32 callDataHash) internal {
+  function deleteRecord(address delegator, address delegatee, ResourceId systemId, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
@@ -227,7 +227,7 @@ library CallboundDelegations {
   }
 
   /* Delete all data for given keys */
-  function _deleteRecord(address delegator, address delegatee, bytes32 systemId, bytes32 callDataHash) internal {
+  function _deleteRecord(address delegator, address delegatee, ResourceId systemId, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
@@ -242,7 +242,7 @@ library CallboundDelegations {
     IStore _store,
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes32 callDataHash
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);

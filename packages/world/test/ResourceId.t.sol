@@ -26,7 +26,7 @@ contract ResourceIdTest is Test, GasReporter {
     bytes32 resourceId = ResourceId.encode("namespace", "name", RESOURCE_SYSTEM);
 
     startGasReport("get namespace ID from a resource ID");
-    bytes32 namespaceId = resourceId.getNamespaceId();
+    ResourceId namespaceId = resourceId.getNamespaceId();
     endGasReport();
 
     assertEq(namespaceId, ResourceId.encodeNamespace("namespace"));

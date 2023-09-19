@@ -17,7 +17,7 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
    * Requires the caller to have access to the namespace or name (encoded in the table ID)
    */
   function emitEphemeralRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,

@@ -77,7 +77,7 @@ library FunctionSelectors {
   }
 
   /** Get systemId */
-  function getSystemId(bytes4 functionSelector) internal view returns (bytes32 systemId) {
+  function getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -86,7 +86,7 @@ library FunctionSelectors {
   }
 
   /** Get systemId */
-  function _getSystemId(bytes4 functionSelector) internal view returns (bytes32 systemId) {
+  function _getSystemId(bytes4 functionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -95,7 +95,7 @@ library FunctionSelectors {
   }
 
   /** Get systemId (using the specified store) */
-  function getSystemId(IStore _store, bytes4 functionSelector) internal view returns (bytes32 systemId) {
+  function getSystemId(IStore _store, bytes4 functionSelector) internal view returns (ResourceId systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -104,7 +104,7 @@ library FunctionSelectors {
   }
 
   /** Set systemId */
-  function setSystemId(bytes4 functionSelector, bytes32 systemId) internal {
+  function setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -112,7 +112,7 @@ library FunctionSelectors {
   }
 
   /** Set systemId */
-  function _setSystemId(bytes4 functionSelector, bytes32 systemId) internal {
+  function _setSystemId(bytes4 functionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -120,7 +120,7 @@ library FunctionSelectors {
   }
 
   /** Set systemId (using the specified store) */
-  function setSystemId(IStore _store, bytes4 functionSelector, bytes32 systemId) internal {
+  function setSystemId(IStore _store, bytes4 functionSelector, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -182,7 +182,7 @@ library FunctionSelectors {
   }
 
   /** Get the full data */
-  function get(bytes4 functionSelector) internal view returns (bytes32 systemId, bytes4 systemFunctionSelector) {
+  function get(bytes4 functionSelector) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -195,7 +195,7 @@ library FunctionSelectors {
   }
 
   /** Get the full data */
-  function _get(bytes4 functionSelector) internal view returns (bytes32 systemId, bytes4 systemFunctionSelector) {
+  function _get(bytes4 functionSelector) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -211,7 +211,7 @@ library FunctionSelectors {
   function get(
     IStore _store,
     bytes4 functionSelector
-  ) internal view returns (bytes32 systemId, bytes4 systemFunctionSelector) {
+  ) internal view returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(functionSelector);
 
@@ -224,7 +224,7 @@ library FunctionSelectors {
   }
 
   /** Set the full data using individual values */
-  function set(bytes4 functionSelector, bytes32 systemId, bytes4 systemFunctionSelector) internal {
+  function set(bytes4 functionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
     PackedCounter _encodedLengths;
@@ -237,7 +237,7 @@ library FunctionSelectors {
   }
 
   /** Set the full data using individual values */
-  function _set(bytes4 functionSelector, bytes32 systemId, bytes4 systemFunctionSelector) internal {
+  function _set(bytes4 functionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
     PackedCounter _encodedLengths;
@@ -250,7 +250,7 @@ library FunctionSelectors {
   }
 
   /** Set the full data using individual values (using the specified store) */
-  function set(IStore _store, bytes4 functionSelector, bytes32 systemId, bytes4 systemFunctionSelector) internal {
+  function set(IStore _store, bytes4 functionSelector, ResourceId systemId, bytes4 systemFunctionSelector) internal {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);
 
     PackedCounter _encodedLengths;
@@ -266,7 +266,7 @@ library FunctionSelectors {
    * Decode the tightly packed blob of static data using this table's field layout
    * Undefined behaviour for invalid blobs
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (bytes32 systemId, bytes4 systemFunctionSelector) {
+  function decodeStatic(bytes memory _blob) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     systemId = (Bytes.slice32(_blob, 0));
 
     systemFunctionSelector = (Bytes.slice4(_blob, 32));
@@ -280,18 +280,18 @@ library FunctionSelectors {
     bytes memory _staticData,
     PackedCounter,
     bytes memory
-  ) internal pure returns (bytes32 systemId, bytes4 systemFunctionSelector) {
+  ) internal pure returns (ResourceId systemId, bytes4 systemFunctionSelector) {
     (systemId, systemFunctionSelector) = decodeStatic(_staticData);
   }
 
   /** Tightly pack static data using this table's schema */
-  function encodeStatic(bytes32 systemId, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
+  function encodeStatic(ResourceId systemId, bytes4 systemFunctionSelector) internal pure returns (bytes memory) {
     return abi.encodePacked(systemId, systemFunctionSelector);
   }
 
   /** Tightly pack full data using this table's field layout */
   function encode(
-    bytes32 systemId,
+    ResourceId systemId,
     bytes4 systemFunctionSelector
   ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(systemId, systemFunctionSelector);

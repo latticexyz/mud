@@ -38,7 +38,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * Register a table with the given config
    */
   function registerTable(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -49,7 +49,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     if (tableId.getName() == ROOT_NAME) revert InvalidSelector(tableId.toString());
 
     // If the namespace doesn't exist yet, register it
-    bytes32 namespaceId = tableId.getNamespaceId();
+    ResourceId namespaceId = tableId.getNamespaceId();
     if (ResourceType._get(namespaceId) == Resource.NONE) {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
@@ -78,7 +78,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * Register a hook for the given tableId.
    * Requires the caller to own the namespace.
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     // Require the hook to implement the store hook interface
     requireInterface(address(hookAddress), STORE_HOOK_INTERFACE_ID);
 
@@ -93,7 +93,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
    * Unregister a hook for the given tableId.
    * Requires the caller to own the namespace.
    */
-  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) public virtual {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual {
     // Require caller to own the namespace
     AccessControl.requireOwner(tableId, _msgSender());
 

@@ -11,6 +11,7 @@ import { PackedCounterLib } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { StoreMock } from "../test/StoreMock.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
@@ -18,7 +19,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _keyTuple;
-  bytes32 internal _tableId = keccak256("some.tableId");
+  ResourceId internal _tableId = ResourceId.wrap(keccak256("some.tableId"));
 
   bytes32 internal firstDataBytes;
   uint32[] internal secondData;
@@ -28,7 +29,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
   // Expose an external popFromField function for testing purposes of indexers (see testHooks)
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,

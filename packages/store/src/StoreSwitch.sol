@@ -8,6 +8,7 @@ import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { FieldLayout } from "./FieldLayout.sol";
 import { PackedCounter } from "./PackedCounter.sol";
+import { ResourceId } from "./ResourceId.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -48,7 +49,7 @@ library StoreSwitch {
     _layout().storeAddress = _storeAddress;
   }
 
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
@@ -57,7 +58,7 @@ library StoreSwitch {
     }
   }
 
-  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) internal {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.unregisterStoreHook(tableId, hookAddress);
@@ -66,7 +67,7 @@ library StoreSwitch {
     }
   }
 
-  function getFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
+  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       fieldLayout = StoreCore.getFieldLayout(tableId);
@@ -75,7 +76,7 @@ library StoreSwitch {
     }
   }
 
-  function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
+  function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       valueSchema = StoreCore.getValueSchema(tableId);
@@ -84,7 +85,7 @@ library StoreSwitch {
     }
   }
 
-  function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
+  function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       keySchema = StoreCore.getKeySchema(tableId);
@@ -94,7 +95,7 @@ library StoreSwitch {
   }
 
   function registerTable(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -110,7 +111,7 @@ library StoreSwitch {
   }
 
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -126,7 +127,7 @@ library StoreSwitch {
   }
 
   function spliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -141,7 +142,7 @@ library StoreSwitch {
   }
 
   function spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -164,7 +165,7 @@ library StoreSwitch {
   }
 
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory data,
@@ -179,7 +180,7 @@ library StoreSwitch {
   }
 
   function pushToField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory dataToPush,
@@ -194,7 +195,7 @@ library StoreSwitch {
   }
 
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
@@ -209,7 +210,7 @@ library StoreSwitch {
   }
 
   function updateInField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
@@ -224,7 +225,7 @@ library StoreSwitch {
     }
   }
 
-  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
@@ -234,7 +235,7 @@ library StoreSwitch {
   }
 
   function emitEphemeralRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -257,7 +258,7 @@ library StoreSwitch {
   }
 
   function getRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) internal view returns (bytes memory, PackedCounter, bytes memory) {
@@ -270,7 +271,7 @@ library StoreSwitch {
   }
 
   function getField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -284,7 +285,7 @@ library StoreSwitch {
   }
 
   function getStaticField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -298,7 +299,7 @@ library StoreSwitch {
   }
 
   function getDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex
   ) internal view returns (bytes memory) {
@@ -311,7 +312,7 @@ library StoreSwitch {
   }
 
   function getFieldLength(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -325,7 +326,7 @@ library StoreSwitch {
   }
 
   function getFieldSlice(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout,

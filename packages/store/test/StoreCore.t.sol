@@ -16,6 +16,7 @@ import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
 import { Tables, TablesTableId } from "../src/codegen/index.sol";
+import { ResourceId, ResourceIdInstance } from "../src/ResourceId.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
@@ -32,6 +33,8 @@ struct TestStruct {
 }
 
 contract StoreCoreTest is Test, StoreMock {
+  using ResourceIdInstance for ResourceId;
+
   TestStruct private testStruct;
   event HookCalled(bytes);
 
@@ -57,11 +60,11 @@ contract StoreCoreTest is Test, StoreMock {
     fieldNames[2] = "value3";
     fieldNames[3] = "value4";
 
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     // Expect a StoreSetRecord event to be emitted
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32(tableId);
+    keyTuple[0] = tableId.unwrap();
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(
       TablesTableId,
@@ -76,10 +79,10 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getValueSchema(tableId).unwrap(), valueSchema.unwrap());
     assertEq(IStore(this).getKeySchema(tableId).unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId);
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId.unwrap());
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId);
+    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId.unwrap());
     assertEq(loadedFieldNames, abi.encode(fieldNames));
   }
 
@@ -87,7 +90,7 @@ contract StoreCoreTest is Test, StoreMock {
     string[] memory keyNames = new string[](2);
     string[] memory fieldNames = new string[](4);
     IStore(this).registerTable(
-      keccak256("tableId"),
+      ResourceId.wrap(keccak256("tableId")),
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
       Schema.wrap(keccak256("random bytes as key schema")),
       Schema.wrap(keccak256("random bytes as value schema")),
@@ -106,8 +109,8 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT8,
       SchemaType.UINT16
     );
-    bytes32 tableId = keccak256("some.tableId");
-    bytes32 tableId2 = keccak256("other.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId2 = ResourceId.wrap(keccak256("other.tableId"));
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     assertTrue(StoreCore.hasTable(tableId));
@@ -121,7 +124,7 @@ contract StoreCoreTest is Test, StoreMock {
       abi.encodeWithSelector(
         IStoreErrors.StoreCore_TableNotFound.selector,
         tableId2,
-        string(abi.encodePacked(tableId2))
+        string(abi.encodePacked(tableId2.unwrap()))
       )
     );
     IStore(this).getFieldLayout(tableId2);
@@ -146,7 +149,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testRegisterTableRevertNames() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
     Schema keySchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -168,7 +171,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetDynamicDataLength() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -221,7 +224,7 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT16
     );
 
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -257,7 +260,7 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT8,
       SchemaType.UINT16
     );
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -273,7 +276,7 @@ contract StoreCoreTest is Test, StoreMock {
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
-    bytes32 tableId = keccak256("some.table");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.table"));
     {
       Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
       IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
@@ -307,7 +310,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -382,7 +385,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct SetAndGetData {
-    bytes32 tableId;
+    ResourceId tableId;
     FieldLayout fieldLayout;
     bytes16 firstDataBytes;
     bytes firstDataPacked;
@@ -394,7 +397,7 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testSetAndGetField() public {
     SetAndGetData memory _data;
-    _data.tableId = keccak256("some.tableId");
+    _data.tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     // Register table
     _data.fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
@@ -608,7 +611,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testDeleteData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -687,7 +690,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct TestPushToFieldData {
-    bytes32 tableId;
+    ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
     bytes secondDataBytes;
@@ -700,9 +703,20 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testPushToField() public {
-    TestPushToFieldData memory data = TestPushToFieldData(0, new bytes32[](0), 0, "", "", "", "", "", "", "");
+    TestPushToFieldData memory data = TestPushToFieldData(
+      ResourceId.wrap(bytes32(0)),
+      new bytes32[](0),
+      0,
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    );
 
-    data.tableId = keccak256("some.tableId");
+    data.tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -826,7 +840,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct TestUpdateInFieldData {
-    bytes32 tableId;
+    ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
     uint32[] secondData;
@@ -842,7 +856,7 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testUpdateInField() public {
     TestUpdateInFieldData memory data = TestUpdateInFieldData(
-      0,
+      ResourceId.wrap(bytes32(0)),
       new bytes32[](0),
       0,
       new uint32[](0),
@@ -856,7 +870,7 @@ contract StoreCoreTest is Test, StoreMock {
       ""
     );
 
-    data.tableId = keccak256("some.tableId");
+    data.tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -987,7 +1001,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testAccessEmptyData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
@@ -1014,7 +1028,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testRegisterHook() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
@@ -1059,7 +1073,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testUnregisterHook() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
@@ -1174,7 +1188,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testHooksDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 

@@ -78,7 +78,7 @@ library ResourceType {
   }
 
   /** Get resourceType */
-  function get(bytes32 systemId) internal view returns (Resource resourceType) {
+  function get(ResourceId systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -87,7 +87,7 @@ library ResourceType {
   }
 
   /** Get resourceType */
-  function _get(bytes32 systemId) internal view returns (Resource resourceType) {
+  function _get(ResourceId systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -96,7 +96,7 @@ library ResourceType {
   }
 
   /** Get resourceType (using the specified store) */
-  function get(IStore _store, bytes32 systemId) internal view returns (Resource resourceType) {
+  function get(IStore _store, ResourceId systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -105,7 +105,7 @@ library ResourceType {
   }
 
   /** Set resourceType */
-  function set(bytes32 systemId, Resource resourceType) internal {
+  function set(ResourceId systemId, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -113,7 +113,7 @@ library ResourceType {
   }
 
   /** Set resourceType */
-  function _set(bytes32 systemId, Resource resourceType) internal {
+  function _set(ResourceId systemId, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -121,7 +121,7 @@ library ResourceType {
   }
 
   /** Set resourceType (using the specified store) */
-  function set(IStore _store, bytes32 systemId, Resource resourceType) internal {
+  function set(IStore _store, ResourceId systemId, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -144,7 +144,7 @@ library ResourceType {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 systemId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -152,7 +152,7 @@ library ResourceType {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 systemId) internal {
+  function deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -160,7 +160,7 @@ library ResourceType {
   }
 
   /* Delete all data for given keys */
-  function _deleteRecord(bytes32 systemId) internal {
+  function _deleteRecord(ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -168,7 +168,7 @@ library ResourceType {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 systemId) internal {
+  function deleteRecord(IStore _store, ResourceId systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 

@@ -103,7 +103,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
@@ -118,7 +118,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   function spliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -132,7 +132,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   function spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -151,7 +151,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata data,
@@ -169,7 +169,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function pushToField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata dataToPush,
@@ -187,7 +187,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
@@ -205,7 +205,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function updateInField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
@@ -223,7 +223,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -241,7 +241,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Call the system at the given system ID.
    * If the system is not public, the caller must have access to the namespace or name (encoded in the system ID).
    */
-  function call(bytes32 systemId, bytes memory callData) external payable virtual returns (bytes memory) {
+  function call(ResourceId systemId, bytes memory callData) external payable virtual returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
@@ -251,7 +251,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function callFrom(
     address delegator,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData
   ) external payable virtual returns (bytes memory) {
     // If the delegator is the caller, call the system directly
@@ -295,7 +295,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Fallback function to call registered function selectors
    */
   fallback() external payable {
-    (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
+    (ResourceId systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);
 

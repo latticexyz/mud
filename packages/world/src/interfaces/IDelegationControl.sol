@@ -8,5 +8,5 @@ bytes4 constant DELEGATION_CONTROL_INTERFACE_ID = IDelegationControl.verify.sele
   WORLD_CONTEXT_CONSUMER_INTERFACE_ID;
 
 interface IDelegationControl is IWorldContextConsumer {
-  function verify(address delegator, bytes32 systemId, bytes memory callData) external returns (bool);
+  function verify(address delegator, ResourceId systemId, bytes memory callData) external returns (bool);
 }

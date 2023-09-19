@@ -17,7 +17,7 @@ enum QueryType {
 
 struct QueryFragment {
   QueryType queryType;
-  bytes32 tableId;
+  ResourceId tableId;
   bytes value;
 }
 

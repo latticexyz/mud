@@ -91,7 +91,7 @@ contract WorldTestSystem is System {
 
   function writeData(bytes14 namespace, bytes16 name, bool data) public {
     bytes32[] memory keyTuple = new bytes32[](0);
-    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
@@ -137,11 +137,11 @@ contract PayableFallbackSystem is System {
 contract EchoSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address msgSender, bytes32 systemId, bytes memory callData) public {
+  function onBeforeCallSystem(address msgSender, ResourceId systemId, bytes memory callData) public {
     emit SystemHookCalled(abi.encode("before", msgSender, systemId, callData));
   }
 
-  function onAfterCallSystem(address msgSender, bytes32 systemId, bytes memory callData) public {
+  function onAfterCallSystem(address msgSender, ResourceId systemId, bytes memory callData) public {
     emit SystemHookCalled(abi.encode("after", msgSender, systemId, callData));
   }
 }
@@ -274,7 +274,7 @@ contract WorldTest is Test, GasReporter {
   function testStoreAddress() public {
     // Register a system and use it to get storeAddress
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
 
     world.registerSystem(systemId, system, false);
     bytes memory result = world.call(systemId, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
@@ -307,7 +307,7 @@ contract WorldTest is Test, GasReporter {
 
   function testTransferNamespace() public {
     bytes14 namespace = "testTransfer";
-    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+    ResourceId namespaceId = ResourceId.encodeNamespace(namespace);
 
     world.registerNamespace(namespace);
 
@@ -347,7 +347,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
     bytes14 namespace = "testNamespace";
     bytes16 tableName = "testTable";
-    bytes32 tableId = ResourceId.encode(namespace, tableName, RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode(namespace, tableName, RESOURCE_TABLE);
     string[] memory keyNames = new string[](1);
     keyNames[0] = "key1";
     string[] memory fieldNames = new string[](3);
@@ -388,9 +388,9 @@ contract WorldTest is Test, GasReporter {
   function testRegisterSystem() public {
     System system = new System();
     bytes14 namespace = "";
-    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+    ResourceId namespaceId = ResourceId.encodeNamespace(namespace);
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // !gasrepot Register a new system
     world.registerSystem(systemId, system, false);
@@ -429,7 +429,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when registering a system at an existing resource ID of a different type
     System newSystem = new System();
-    bytes32 tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
     world.registerTable(
       tableId,
       Bool.getFieldLayout(),
@@ -467,9 +467,9 @@ contract WorldTest is Test, GasReporter {
 
   function testUpgradeSystem() public {
     bytes14 namespace = "testNamespace";
-    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+    ResourceId namespaceId = ResourceId.encodeNamespace(namespace);
     bytes16 systemName = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, systemName, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, systemName, RESOURCE_SYSTEM);
 
     // Register a system
     System oldSystem = new System();
@@ -510,7 +510,7 @@ contract WorldTest is Test, GasReporter {
 
   function testDuplicateSelectors() public {
     // Register a new table
-    bytes32 tableId = ResourceId.encode("namespace", "name", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("namespace", "name", RESOURCE_TABLE);
     world.registerTable(
       tableId,
       Bool.getFieldLayout(),
@@ -528,7 +528,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(tableId, system, false);
 
     // Register a new system
-    bytes32 systemId = ResourceId.encode("namespace2", "name", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace2", "name", RESOURCE_SYSTEM);
     world.registerSystem(systemId, new System(), false);
 
     // Expect an error when trying to register a table at the same selector
@@ -552,7 +552,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testSetRecord() public {
-    bytes32 tableId = ResourceId.encode("testSetRecord", "testTable", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("testSetRecord", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
       tableId,
@@ -582,7 +582,7 @@ contract WorldTest is Test, GasReporter {
   function testSetField() public {
     bytes14 namespace = "testSetField";
     bytes16 name = "testTable";
-    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
 
@@ -608,7 +608,7 @@ contract WorldTest is Test, GasReporter {
   function testPushToField() public {
     bytes14 namespace = "testPushField";
     bytes16 name = "testTable";
-    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = AddressArray.getFieldLayout();
     Schema valueSchema = AddressArray.getValueSchema();
 
@@ -650,7 +650,7 @@ contract WorldTest is Test, GasReporter {
   function testDeleteRecord() public {
     bytes14 namespace = "testDeleteReco";
     bytes16 name = "testTable";
-    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
 
@@ -699,7 +699,7 @@ contract WorldTest is Test, GasReporter {
   function testCall() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, false);
 
     // Call a system function without arguments via the World
@@ -768,7 +768,7 @@ contract WorldTest is Test, GasReporter {
   function testCallFromSelf() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
 
     address caller = address(1);
@@ -785,7 +785,7 @@ contract WorldTest is Test, GasReporter {
   function testCallFromUnlimitedDelegation() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
 
     // Register an unlimited delegation
@@ -810,7 +810,7 @@ contract WorldTest is Test, GasReporter {
   function testCallFromFailDelegationNotFound() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
 
     // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
@@ -828,7 +828,7 @@ contract WorldTest is Test, GasReporter {
   function testCallFromLimitedDelegation() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
 
     // Register a limited delegation
@@ -841,7 +841,7 @@ contract WorldTest is Test, GasReporter {
   function testRegisterStoreHook() public {
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
-    bytes32 tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -914,7 +914,7 @@ contract WorldTest is Test, GasReporter {
   function testUnregisterStoreHook() public {
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
-    bytes32 tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -993,7 +993,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterSystemHook() public {
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -1030,7 +1030,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testUnregisterSystemHook() public {
-    bytes32 systemId = ResourceId.encode("namespace", "testTable", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testTable", RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -1068,7 +1068,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testWriteRootSystem() public {
-    bytes32 tableId = ResourceId.encode("namespace", "testTable", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("namespace", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
       tableId,
@@ -1092,7 +1092,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testWriteAutonomousSystem() public {
-    bytes32 tableId = ResourceId.encode("namespace", "testTable", RESOURCE_TABLE);
+    ResourceId tableId = ResourceId.encode("namespace", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
       tableId,
@@ -1104,7 +1104,7 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Register a new system
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_TABLE);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_TABLE);
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
 
@@ -1116,7 +1116,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testDelegatecallRootSystem() public {
-    bytes32 systemId = ResourceId.encode("", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("", "testSystem", RESOURCE_SYSTEM);
     // Register a new root system
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
@@ -1128,7 +1128,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testCallAutonomousSystem() public {
-    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     // Register a new non-root system
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
@@ -1142,7 +1142,7 @@ contract WorldTest is Test, GasReporter {
   function testRegisterFunctionSelector() public {
     bytes14 namespace = "testNamespace";
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -1173,7 +1173,7 @@ contract WorldTest is Test, GasReporter {
   function testRegisterRootFunctionSelector() public {
     bytes14 namespace = "testNamespace";
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -1217,7 +1217,7 @@ contract WorldTest is Test, GasReporter {
   function testRegisterFallbackSystem() public {
     bytes14 namespace = "testNamespace";
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -1274,7 +1274,7 @@ contract WorldTest is Test, GasReporter {
     WorldTestSystem system = new WorldTestSystem();
     bytes14 namespace = "noroot";
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(
@@ -1305,7 +1305,7 @@ contract WorldTest is Test, GasReporter {
     WorldTestSystem system = new WorldTestSystem();
     bytes14 namespace = "noroot";
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(
       systemId,
@@ -1336,7 +1336,7 @@ contract WorldTest is Test, GasReporter {
     WorldTestSystem system = new WorldTestSystem();
     bytes14 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(systemId, bytes4(abi.encodeWithSignature("systemFallback()")), bytes4(""));
 
@@ -1362,7 +1362,7 @@ contract WorldTest is Test, GasReporter {
     PayableFallbackSystem system = new PayableFallbackSystem();
     bytes14 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(systemId, bytes4(abi.encodeWithSignature("systemFallback()")), bytes4(""));
 
@@ -1388,7 +1388,7 @@ contract WorldTest is Test, GasReporter {
     WorldTestSystem system = new WorldTestSystem();
     bytes14 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
-    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
     world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(
       systemId,

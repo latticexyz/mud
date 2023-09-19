@@ -13,7 +13,7 @@ import { KeysInTable } from "./tables/KeysInTable.sol";
  * Note: this util can only be called within the context of a Store (e.g. from a System or Module).
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
-function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTuples) {
+function getKeysInTable(ResourceId tableId) view returns (bytes32[][] memory keyTuples) {
   /**
    * Note: this module only supports up to 5 composite keys.
    */
@@ -47,7 +47,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
 /**
  * Get a list of keys in the given table for the given store.
  */
-function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][] memory keyTuples) {
+function getKeysInTable(IStore store, ResourceId tableId) view returns (bytes32[][] memory keyTuples) {
   /**
    * Note: this module only supports up to 5 composite keys.
    */
