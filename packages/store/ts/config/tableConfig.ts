@@ -1,6 +1,6 @@
 import { tableIdToHex } from "@latticexyz/common";
-import { SchemaAbiType, StaticAbiType, schemaAbiTypes, staticAbiTypes } from "@latticexyz/schema-type";
-import { ZodAny, ZodTypeAny, z } from "zod";
+import { assertExhaustive } from "@latticexyz/common/utils";
+import { SchemaAbiType, StaticAbiType, isSchemaAbiType } from "@latticexyz/schema-type";
 
 // TODO: combine with protocol-parser def and move up to schema-type?
 export type KeySchema = Readonly<Record<string, StaticAbiType>>;
@@ -8,97 +8,122 @@ export type ValueSchema = Readonly<Record<string, SchemaAbiType>>;
 
 export type TableType = "table" | "offchainTable";
 
-export type TableConfig = Readonly<{
-  type: TableType;
-  namespace: string;
-  name: string;
-  tableId: `0x${string}`;
-  keySchema: KeySchema;
-  valueSchema: ValueSchema;
-  codegen: {
-    outputDirectory: string;
-    tableIdArgument: boolean;
-    storeArgument: boolean;
-    dataStruct: boolean;
-  };
+// export type TableConfig = Readonly<{
+//   type: TableType;
+//   namespace: string;
+//   name: string;
+//   tableId: `0x${string}`;
+//   keySchema: KeySchema;
+//   valueSchema: ValueSchema;
+//   codegen: {
+//     outputDirectory: string;
+//     tableIdArgument: boolean;
+//     storeArgument: boolean;
+//     dataStruct: boolean;
+//   };
+// }>;
+
+type TableInput = SchemaAbiType | TableInputShape;
+type TableInputShape = Readonly<{
+  namespace?: string;
+  keySchema?: KeySchema;
+  valueSchema: SchemaAbiType | ValueSchema;
+  offchainOnly?: boolean;
 }>;
 
-const configSchema = z.object({
-  namespace: z.string().default(""),
-  // TODO: refine/validate table names
-  tables: z
-    .record(
-      z.string(),
-      z.object({
-        type: z.enum(["table", "offchainTable"]).default("table"),
-        namespace: z.string().optional(),
-        // TODO: refine/validate key/field names
-        keySchema: z.record(z.enum(staticAbiTypes)).default({ key: "bytes32" } as const),
-        valueSchema: z.record(z.enum(schemaAbiTypes)),
-        // TODO: codegen
-      })
-    )
-    .default({}),
-  // TODO: codegen
-});
+type ConfigInput = Readonly<{
+  namespace?: string;
+  tables?: Record<string, TableInput>;
+}>;
 
-type ConfigInput = z.input<typeof configSchema>;
-type ConfigInputParsed = z.output<typeof configSchema>;
+const defaultKeySchema = { key: "bytes32" } as const;
 
-type TableInput = ConfigInputParsed["tables"][string];
-type TableInputParsed = ConfigInputParsed["tables"][string];
-type TableOutput<defaultNamespace extends string, tableName extends string, table extends TableInput> = table & {
-  namespace: table["namespace"] extends string ? table["namespace"] : defaultNamespace;
-  name: tableName;
-  tableId: `0x${string}`;
-};
+type TableOutput<
+  defaultNamespace extends string,
+  tableName extends string,
+  input extends TableInput
+> = input extends SchemaAbiType
+  ? // TODO: some shared output type so we can ensure each branch of the conditional are complete
+    Readonly<{
+      type: "table";
+      namespace: defaultNamespace;
+      name: tableName;
+      tableId: `0x${string}`;
+      keySchema: typeof defaultKeySchema;
+      valueSchema: Readonly<{ value: input }>;
+    }>
+  : input extends TableInputShape
+  ? Readonly<{
+      type: input["offchainOnly"] extends true ? "offchainTable" : "table";
+      namespace: input["namespace"] extends string ? input["namespace"] : defaultNamespace;
+      name: tableName;
+      tableId: `0x${string}`;
+      keySchema: input["keySchema"] extends KeySchema
+        ? input["keySchema"]
+        : input["keySchema"] extends undefined
+        ? typeof defaultKeySchema
+        : never;
+      valueSchema: input["valueSchema"] extends ValueSchema
+        ? input["valueSchema"]
+        : input["valueSchema"] extends SchemaAbiType
+        ? Readonly<{ value: input["valueSchema"] }>
+        : never;
+    }>
+  : never;
 
-type ConfigOutput<input extends ConfigInput, parsed extends ConfigInputParsed> = {
-  tables: {
+type ConfigOutput<input extends ConfigInput> = {
+  tables: Readonly<{
     [tableName in keyof NonNullable<input["tables"]> & string]: TableOutput<
       input["namespace"] extends string ? input["namespace"] : "",
       tableName,
       NonNullable<input["tables"]>[tableName]
     >;
-  };
+  }>;
 };
 
-type ExpandedConfig<
-  schema extends ZodTypeAny,
-  input extends z.input<schema> = z.input<schema>,
-  output extends z.output<schema> = z.output<schema>
-> = {
-  tables: {
-    [tableName in keyof output["tables"] & string]: output["tables"][tableName] & {
-      namespace: output["tables"][tableName]["namespace"] extends string
-        ? output["tables"][tableName]["namespace"]
-        : output["namespace"];
-    };
-  };
-};
-
-function transformTable<namespace extends string, tableName extends string, table extends TableInputParsed>(
-  namespace: namespace,
-  tableName: tableName,
-  table: table
-): TableOutput<namespace, tableName, table> {
-  return {
-    ...table,
-    namespace,
-    name: tableName,
-    tableId: tableIdToHex(namespace, tableName),
-  };
+function isTable(table: SchemaAbiType | TableInputShape): table is TableInputShape {
+  return !isSchemaAbiType(table);
 }
 
-function storeConfig<TConfig extends ConfigInput>(config: TConfig): ConfigOutput<TConfig> {
-  const parsedConfig = configSchema.parse(config);
+function parseTableInput<defaultNamespace extends string, name extends string, input extends TableInput>(
+  defaultNamespace: defaultNamespace,
+  name: name,
+  input: input
+): TableOutput<defaultNamespace, name, input> {
+  if (isSchemaAbiType(input)) {
+    // TODO: figure out how to do this without casting
+    //       or at least so casting does some enforcement of the object
+    return {
+      namespace: defaultNamespace,
+      name,
+      tableId: tableIdToHex(defaultNamespace, name),
+      keySchema: defaultKeySchema,
+      valueSchema: { value: input },
+    } as TableOutput<defaultNamespace, name, input>;
+  }
 
+  if (isTable(input)) {
+    // TODO: figure out how to do this without casting
+    //       or at least so casting does some enforcement of the object
+    return {
+      ...(input as TableInputShape),
+      namespace: input.namespace ?? defaultNamespace,
+      name,
+      tableId: tableIdToHex(input.namespace ?? defaultNamespace, name),
+    } as TableOutput<defaultNamespace, name, input>;
+  }
+
+  assertExhaustive(input);
+}
+
+function storeConfig<input extends ConfigInput>(input: input): ConfigOutput<input> {
+  const namespace = input.namespace ?? "";
   const tables = Object.fromEntries(
-    Object.entries(parsedConfig.tables).map(([tableName, table]) => [
+    Object.entries(input.tables ?? {}).map(([tableName, table]) => [
       tableName,
-      transformTable(table.namespace ?? parsedConfig.namespace, tableName, table),
+      parseTableInput(namespace, tableName, table),
     ])
-  ) as ConfigOutput<TConfig>["tables"];
+  ) as ConfigOutput<input>["tables"];
 
   return {
     tables,
@@ -123,6 +148,10 @@ const config = storeConfig({
         dead: "bool",
       },
     },
+    SimpleSchema: {
+      valueSchema: "bytes32",
+    },
+    JustValue: "uint256",
   },
 } as const);
 
@@ -132,5 +161,15 @@ config.tables.Position.name;
 //                      ^?
 config.tables.Position.tableId;
 //                      ^?
+config.tables.Entity.namespace;
+//                      ^?
 config.tables.Entity.keySchema;
 //                      ^?
+config.tables.Entity.valueSchema;
+//                      ^?
+config.tables.SimpleSchema.valueSchema;
+//                           ^?
+config.tables.JustValue.keySchema;
+//                       ^?
+config.tables.JustValue.valueSchema;
+//                       ^?
