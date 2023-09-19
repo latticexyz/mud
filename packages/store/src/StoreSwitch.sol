@@ -125,6 +125,44 @@ library StoreSwitch {
     }
   }
 
+  function spliceStaticData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    } else {
+      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    }
+  }
+
+  function spliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+    } else {
+      IStore(_storeAddress).spliceDynamicData(
+        tableId,
+        keyTuple,
+        dynamicFieldIndex,
+        startWithinField,
+        deleteCount,
+        data
+      );
+    }
+  }
+
   function setField(
     bytes32 tableId,
     bytes32[] memory keyTuple,

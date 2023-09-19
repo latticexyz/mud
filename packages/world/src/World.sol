@@ -85,7 +85,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
       msgSender: msg.sender,
       msgValue: 0,
       target: address(module),
-      callData: abi.encodeWithSelector(IModule.installRoot.selector, args)
+      callData: abi.encodeCall(IModule.installRoot, (args))
     });
 
     // Register the module in the InstalledModules table
@@ -115,6 +115,35 @@ contract World is StoreRead, IStoreData, IWorldKernel {
 
     // Set the record
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+  }
+
+  function spliceStaticData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual {
+    // Require access to the namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Splice the static data
+    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+  }
+
+  function spliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual {
+    // Require access to the namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Splice the dynamic data
+    StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
   }
 
   /**
