@@ -357,7 +357,7 @@ If you are indexing a different `World`, change the world address and use the na
 1. Get the list of chains being indexed.
 
    ```sql copy
-   select * from __mud_internal.chain;
+   SELECT * FROM __mud_internal.chain;
    ```
 
 1. The `tables` table is a lot bigger, so first get the list of columns within the table.
@@ -369,13 +369,13 @@ If you are indexing a different `World`, change the world address and use the na
 1. Get the list of MUD table names.
 
    ```sql copy
-   select name from __mud_internal.tables;
+   SELECT name FROM __mud_internal.tables;
    ```
 
 1. Get the key and value schemas for `Counter`.
 
    ```sql copy
-   select key_schema, value_schema from __mud_internal.tables where name='Counter';
+   SELECT key_schema, value_schema FROM __mud_internal.tables WHERE name='Counter';
    ```
 
 1. The schema for a world is `<address>__`.
@@ -388,11 +388,22 @@ If you are indexing a different `World`, change the world address and use the na
 1. Specify the world schema is the default.
 
    ```sql copy
-   set search_path to "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
+   SET search_path TO "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
    ```
 
 1. Get the value of the counter.
 
    ```sql copy
-   select * from "Counter";
+   SELECT * FROM "Counter";
    ```
+
+### Deleting the PostgreSQL data
+
+PostgreSQL is a persistent data storage.
+This means that if you restart the blockchain without manually deleting the data, your indexer will use old data and provide incorrect results.
+
+To avoid this, enter `psql` and run this command:
+
+```sql copy
+DROP OWNED BY <your user name>;
+```
