@@ -3,12 +3,10 @@ import "dotenv/config";
 import { z } from "zod";
 import fastify from "fastify";
 import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
-import { ClientConfig, http, parseEther, isHex, createClient } from "viem";
+import { http, parseEther, isHex, createClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { AppRouter, createAppRouter } from "../src/createAppRouter";
-import { getChainId } from "viem/actions";
 
-// TODO: refine zod type to be either CHAIN_ID or RPC_HTTP_URL/RPC_WS_URL
 const env = z
   .object({
     HOST: z.string().default("0.0.0.0"),
