@@ -65,11 +65,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
   world.registerDisposer(stopSync);
 
   const getResourceSelector = async (functionSelector: Hex): Promise<Hex> => {
-    const entity = encodeEntity<
-      KeySchema & {
-        functionSelector: "bytes4";
-      }
-    >(components.FunctionSelectors.metadata.keySchema, {
+    const entity = encodeEntity(components.FunctionSelectors.metadata.keySchema, {
       functionSelector,
     });
 
@@ -80,19 +76,14 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
       // TODO make fieldLayout a table metadata field
       const encodedFieldLayout = valueSchemaToFieldLayoutHex(components.FunctionSelectors.metadata.valueSchema);
 
-      const [selectorRecord, encodedLengths, dynamicData] = await publicClient.readContract({
+      const [selectorRecord, ,] = await publicClient.readContract<IBaseWorldAbi, string>({
         address: address as Hex,
         abi: IBaseWorldAbi,
         functionName: "getRecord",
         args: [components.FunctionSelectors.id as Hex, [entity as Hex], encodedFieldLayout],
       });
 
-      const decodedSelectors = decodeValue<
-        ValueSchema & {
-          resourceSelector: "bytes32";
-          systemFunctionSelector: "bytes4";
-        }
-      >(components.FunctionSelectors.metadata.valueSchema, selectorRecord);
+      const decodedSelectors = decodeValue(components.FunctionSelectors.metadata.valueSchema, selectorRecord as Hex);
 
       return decodedSelectors.resourceSelector;
     }
