@@ -11,7 +11,6 @@ import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
-import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
 import { createBurnerAccount, createContract, transportObserver, ContractWrite } from "@latticexyz/common";
 
@@ -87,18 +86,6 @@ export async function setupNetwork() {
   });
 
   /*
-   * Create an object for communicating with the deployed World.
-   */
-  const worldContract = createContract({
-    address: networkConfig.worldAddress as Hex,
-    abi: IWorldAbi,
-    publicClient,
-    walletClient: burnerWalletClient,
-    onWrite: (write) => write$.next(write),
-    getResourceSelector,
-  });
-
-  /*
    * If there is a faucet, request (test) ETH if you have
    * less than 1 ETH. Repeat every 20 seconds to ensure you don't
    * run out.
@@ -128,6 +115,7 @@ export async function setupNetwork() {
 
   return {
     world,
+    worldAddress: networkConfig.worldAddress,
     components,
     playerEntity: encodeEntity({ address: "address" }, { address: burnerWalletClient.account.address }),
     publicClient,
@@ -137,7 +125,7 @@ export async function setupNetwork() {
     latestBlock$,
     storedBlockLogs$,
     waitForTransaction,
-    worldContract,
+    getResourceSelector,
     write$: write$.asObservable().pipe(share()),
   };
 }
