@@ -13,8 +13,9 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
@@ -22,12 +23,12 @@ import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueM
 import { query, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
 
 contract QueryTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
   IBaseWorld private world;
   KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
   KeysWithValueModule private keysWithValueModule = new KeysWithValueModule();
 
-  bytes16 private namespace = ROOT_NAMESPACE;
+  bytes14 private namespace = ROOT_NAMESPACE;
   bytes16 private name1 = bytes16("source1");
   bytes16 private name2 = bytes16("source2");
   bytes16 private name3 = bytes16("source3");
@@ -35,9 +36,9 @@ contract QueryTest is Test, GasReporter {
   FieldLayout private tableFieldLayout;
   Schema private tableKeySchema;
   Schema private tableValueSchema;
-  bytes32 private table1 = ResourceSelector.from(namespace, name1);
-  bytes32 private table2 = ResourceSelector.from(namespace, name2);
-  bytes32 private table3 = ResourceSelector.from(namespace, name3);
+  bytes32 private table1 = ResourceId.encode(namespace, name1, RESOURCE_TABLE);
+  bytes32 private table2 = ResourceId.encode(namespace, name2, RESOURCE_TABLE);
+  bytes32 private table3 = ResourceId.encode(namespace, name3, RESOURCE_TABLE);
 
   uint256 private value = 1;
   bytes32[] private key1 = new bytes32[](1);

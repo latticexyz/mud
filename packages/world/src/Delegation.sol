@@ -43,7 +43,7 @@ library DelegationInstance {
     // Call the delegation control contract to check if the delegator has granted access to the delegatee
     (bool success, bytes memory data) = SystemCall.call({
       caller: delegatee,
-      resourceSelector: Delegation.unwrap(self),
+      systemId: Delegation.unwrap(self),
       callData: abi.encodeCall(IDelegationControl.verify, (delegator, systemId, callData)),
       value: 0
     });

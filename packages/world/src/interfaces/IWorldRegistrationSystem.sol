@@ -7,22 +7,22 @@ import { ISystemHook } from "./ISystemHook.sol";
 import { WorldContextConsumer } from "./../WorldContext.sol";
 
 interface IWorldRegistrationSystem {
-  function registerNamespace(bytes16 namespace) external;
+  function registerNamespace(bytes14 namespace) external;
 
-  function registerSystemHook(bytes32 resourceSelector, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
+  function registerSystemHook(bytes32 systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
 
-  function unregisterSystemHook(bytes32 resourceSelector, ISystemHook hookAddress) external;
+  function unregisterSystemHook(bytes32 systemId, ISystemHook hookAddress) external;
 
-  function registerSystem(bytes32 resourceSelector, WorldContextConsumer system, bool publicAccess) external;
+  function registerSystem(bytes32 systemId, WorldContextConsumer system, bool publicAccess) external;
 
   function registerFunctionSelector(
-    bytes32 resourceSelector,
+    bytes32 systemId,
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerRootFunctionSelector(
-    bytes32 resourceSelector,
+    bytes32 systemId,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) external returns (bytes4);

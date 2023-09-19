@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Test } from "forge-std/Test.sol";
+import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -23,8 +23,9 @@ import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
+import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
 import { Resource } from "../src/common.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
@@ -88,9 +89,9 @@ contract WorldTestSystem is System {
     return returndata;
   }
 
-  function writeData(bytes16 namespace, bytes16 name, bool data) public {
+  function writeData(bytes14 namespace, bytes16 name, bool data) public {
     bytes32[] memory keyTuple = new bytes32[](0);
-    bytes32 tableId = ResourceSelector.from(namespace, name);
+    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
@@ -136,12 +137,12 @@ contract PayableFallbackSystem is System {
 contract EchoSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory callData) public {
-    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, callData));
+  function onBeforeCallSystem(address msgSender, bytes32 systemId, bytes memory callData) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, systemId, callData));
   }
 
-  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory callData) public {
-    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, callData));
+  function onAfterCallSystem(address msgSender, bytes32 systemId, bytes memory callData) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, systemId, callData));
   }
 }
 
@@ -158,7 +159,7 @@ contract RevertSystemHook is SystemHook {
 }
 
 contract WorldTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
 
   event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
@@ -183,12 +184,12 @@ contract WorldTest is Test, GasReporter {
   }
 
   // Expect an error when trying to write from an address that doesn't have access
-  function _expectAccessDenied(address caller, bytes16 namespace, bytes16 name) internal {
+  function _expectAccessDenied(address caller, bytes14 namespace, bytes16 name, bytes2 resourceType) internal {
     vm.prank(caller);
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceSelector.from(namespace, name).toString(),
+        ResourceId.encode(namespace, name, resourceType).toString(),
         caller
       )
     );
@@ -209,7 +210,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceSelector.from(ROOT_NAMESPACE).toString(),
+        ResourceId.encodeNamespace(ROOT_NAMESPACE).toString(),
         address(0x4242)
       )
     );
@@ -273,70 +274,80 @@ contract WorldTest is Test, GasReporter {
   function testStoreAddress() public {
     // Register a system and use it to get storeAddress
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
 
-    world.registerSystem(resourceSelector, system, false);
-    bytes memory result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
+    world.registerSystem(systemId, system, false);
+    bytes memory result = world.call(systemId, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
 
     assertEq(abi.decode(result, (address)), address(world));
   }
 
   function testRegisterNamespace() public {
+    bytes14 namespace = "testNamespace";
     startGasReport("Register a new namespace");
-    world.registerNamespace("test");
+    world.registerNamespace(namespace);
     endGasReport();
 
     // Expect the caller to be the namespace owner
-    assertEq(NamespaceOwner.get(world, "test"), address(this), "caller should be namespace owner");
+    assertEq(NamespaceOwner.get(world, namespace), address(this), "caller should be namespace owner");
 
     // Expect the caller to have access
-    assertEq(ResourceAccess.get(world, "test", address(this)), true, "caller should have access");
+    assertEq(
+      ResourceAccess.get(world, ResourceId.encodeNamespace(namespace), address(this)),
+      true,
+      "caller should have access"
+    );
 
     // Expect an error when registering an existing namespace
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, ResourceSelector.toString(bytes16("test")))
+      abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, ResourceId.encodeNamespace(namespace).toString())
     );
-    world.registerNamespace("test");
+    world.registerNamespace(namespace);
   }
 
   function testTransferNamespace() public {
-    world.registerNamespace("testTransfer");
+    bytes14 namespace = "testTransfer";
+    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+
+    world.registerNamespace(namespace);
 
     // Expect the new owner to not be namespace owner before transfer
     assertFalse(
-      (NamespaceOwner.get(world, "testTransfer") == address(1)),
+      (NamespaceOwner.get(world, namespace) == address(1)),
       "new owner should not be namespace owner before transfer"
     );
     // Expect the new owner to not have access before transfer
     assertEq(
-      ResourceAccess.get(world, "testTransfer", address(1)),
+      ResourceAccess.get(world, namespaceId, address(1)),
       false,
       "new owner should not have access before transfer"
     );
 
-    world.transferOwnership("testTransfer", address(1));
+    world.transferOwnership(namespace, address(1));
+
     // Expect the new owner to be namespace owner
-    assertEq(NamespaceOwner.get(world, "testTransfer"), address(1), "new owner should be namespace owner");
+    assertEq(NamespaceOwner.get(world, namespace), address(1), "new owner should be namespace owner");
+
     // Expect the new owner to have access
-    assertEq(ResourceAccess.get(world, "testTransfer", address(1)), true, "new owner should have access");
+    assertEq(ResourceAccess.get(world, namespaceId, address(1)), true, "new owner should have access");
+
     // Expect previous owner to no longer be owner
-    assertFalse(
-      (NamespaceOwner.get(world, "testTransfer") == address(this)),
-      "caller should no longer be namespace owner"
-    );
+    assertFalse((NamespaceOwner.get(world, namespace) == address(this)), "caller should no longer be namespace owner");
+
     // Expect previous owner to no longer have access
-    assertEq(ResourceAccess.get(world, "testTransfer", address(this)), false, "caller should no longer have access");
+    assertEq(ResourceAccess.get(world, namespaceId, address(this)), false, "caller should no longer have access");
+
     // Expect revert if caller is not the owner
-    _expectAccessDenied(address(this), "testTransfer", 0);
-    world.transferOwnership("testTransfer", address(1));
+    _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
+    world.transferOwnership(namespace, address(1));
   }
 
   function testRegisterTable() public {
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 32, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
-    bytes16 namespace = "testNamespace";
+    bytes14 namespace = "testNamespace";
     bytes16 tableName = "testTable";
-    bytes32 tableSelector = ResourceSelector.from(namespace, tableName);
+    bytes32 tableId = ResourceId.encode(namespace, tableName, RESOURCE_TABLE);
     string[] memory keyNames = new string[](1);
     keyNames[0] = "key1";
     string[] memory fieldNames = new string[](3);
@@ -345,79 +356,80 @@ contract WorldTest is Test, GasReporter {
     fieldNames[2] = "value3";
 
     startGasReport("Register a new table in the namespace");
-    world.registerTable(tableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
     endGasReport();
 
     // Expect the namespace to be created and owned by the caller
     assertEq(NamespaceOwner.get(world, namespace), address(this), "namespace should be created by caller");
 
     // Expect the table to be registered
-    assertEq(world.getFieldLayout(tableSelector).unwrap(), fieldLayout.unwrap(), "value schema should be registered");
+    assertEq(world.getFieldLayout(tableId).unwrap(), fieldLayout.unwrap(), "value schema should be registered");
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(world, tableSelector);
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(world, tableId);
     assertEq(loadedKeyNames, abi.encode(keyNames), "key names should be registered");
 
-    bytes memory loadedfieldNames = Tables.getAbiEncodedFieldNames(world, tableSelector);
+    bytes memory loadedfieldNames = Tables.getAbiEncodedFieldNames(world, tableId);
     assertEq(loadedfieldNames, abi.encode(fieldNames), "value names should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableSelector.toString()));
-    world.registerTable(tableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
+    world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
-    bytes32 otherTableSelector = ResourceSelector.from(namespace, "otherTable");
-    _expectAccessDenied(address(0x01), namespace, "");
-    world.registerTable(otherTableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    bytes32 otherTableId = ResourceId.encode(namespace, "otherTable", RESOURCE_TABLE);
+    _expectAccessDenied(address(0x01), namespace, "", RESOURCE_NAMESPACE);
+    world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect the World to not be allowed to call registerTable via an external call
-    _expectAccessDenied(address(world), namespace, "");
-    world.registerTable(otherTableSelector, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
+    _expectAccessDenied(address(world), namespace, "", RESOURCE_NAMESPACE);
+    world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
   }
 
   function testRegisterSystem() public {
     System system = new System();
-    bytes16 namespace = "";
+    bytes14 namespace = "";
+    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // !gasrepot Register a new system
-    world.registerSystem(resourceSelector, system, false);
+    world.registerSystem(systemId, system, false);
 
     // Expect the system to be registered
-    (address registeredAddress, bool publicAccess) = Systems.get(world, resourceSelector);
+    (address registeredAddress, bool publicAccess) = Systems.get(world, systemId);
     assertEq(registeredAddress, address(system));
 
     // Expect the system namespace to be owned by the caller
-    address routeOwner = NamespaceOwner.get(world, "");
+    address routeOwner = NamespaceOwner.get(world, namespace);
     assertEq(routeOwner, address(this));
 
     // Expect the system to not be publicly accessible
     assertFalse(publicAccess);
 
     // Expect the system to be accessible by the caller
-    assertTrue(ResourceAccess.get({ _store: world, resourceSelector: "", caller: address(this) }));
+    assertTrue(ResourceAccess.get({ _store: world, resourceId: namespaceId, caller: address(this) }));
 
     // Expect the system to not be accessible by another address
-    assertFalse(ResourceAccess.get({ _store: world, resourceSelector: "", caller: address(0x1) }));
+    assertFalse(ResourceAccess.get({ _store: world, resourceId: namespaceId, caller: address(0x1) }));
 
     // Expect the system to have access to its own namespace
-    assertTrue(ResourceAccess.get({ _store: world, resourceSelector: "", caller: address(system) }));
+    assertTrue(ResourceAccess.get({ _store: world, resourceId: namespaceId, caller: address(system) }));
 
     // Expect the namespace to be created if it doesn't exist yet
     assertEq(NamespaceOwner.get(world, "newNamespace"), address(0));
-    world.registerSystem(ResourceSelector.from("newNamespace", "testSystem"), new System(), false);
+    world.registerSystem(ResourceId.encode("newNamespace", "testSystem", RESOURCE_SYSTEM), new System(), false);
     assertEq(NamespaceOwner.get(world, "newNamespace"), address(this));
 
-    // Expect an error when registering an existing system at a new resource selector
+    // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));
-    world.registerSystem(ResourceSelector.from("", "newSystem"), system, true);
+    world.registerSystem(ResourceId.encode("", "newSystem", RESOURCE_SYSTEM), system, true);
 
     // Don't expect an error when updating the public access of an existing system
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
 
-    // Expect an error when registering a system at an existing resource selector of a different type
+    // Expect an error when registering a system at an existing resource ID of a different type
     System newSystem = new System();
-    bytes32 tableId = ResourceSelector.from("", "testTable");
+    bytes32 tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
     world.registerTable(
       tableId,
       Bool.getFieldLayout(),
@@ -429,14 +441,14 @@ contract WorldTest is Test, GasReporter {
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
     world.registerSystem(tableId, newSystem, true);
 
-    // Expect an error when registering a system in a namespace is not owned by the caller
+    // Expect an error when registering a system in a namespace that is not owned by the caller
     System yetAnotherSystem = new System();
-    _expectAccessDenied(address(0x01), "", "");
-    world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
+    _expectAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
+    world.registerSystem(ResourceId.encode("", "rootSystem", RESOURCE_SYSTEM), yetAnotherSystem, true);
 
     // Expect the registration to fail when coming from the World (since the World address doesn't have access)
-    _expectAccessDenied(address(world), "", "");
-    world.registerSystem(ResourceSelector.from("", "rootSystem"), yetAnotherSystem, true);
+    _expectAccessDenied(address(world), "", "", RESOURCE_NAMESPACE);
+    world.registerSystem(ResourceId.encode("", "rootSystem", RESOURCE_SYSTEM), yetAnotherSystem, true);
 
     // Expect the registration to fail if the provided address does not implement the WorldContextConsumer interface
     vm.expectRevert(
@@ -446,13 +458,18 @@ contract WorldTest is Test, GasReporter {
         WORLD_CONTEXT_CONSUMER_INTERFACE_ID
       )
     );
-    world.registerSystem(ResourceSelector.from("someNamespace", "invalidSystem"), System(address(world)), true);
+    world.registerSystem(
+      ResourceId.encode("someNamespace", "invalidSystem", RESOURCE_SYSTEM),
+      System(address(world)),
+      true
+    );
   }
 
   function testUpgradeSystem() public {
-    bytes16 namespace = "testNamespace";
+    bytes14 namespace = "testNamespace";
+    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
     bytes16 systemName = "testSystem";
-    bytes32 systemId = ResourceSelector.from(namespace, systemName);
+    bytes32 systemId = ResourceId.encode(namespace, systemName, RESOURCE_SYSTEM);
 
     // Register a system
     System oldSystem = new System();
@@ -464,32 +481,38 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the system address and public access to be updated in the System table
     (address registeredAddress, bool publicAccess) = Systems.get(world, systemId);
-    assertEq(registeredAddress, address(newSystem));
-    assertEq(publicAccess, false);
+    assertEq(registeredAddress, address(newSystem), "system address should be updated");
+    assertEq(publicAccess, false, "public access should be updated");
 
     // Expect the SystemRegistry table to not have a reference to the old system anymore
     bytes32 registeredSystemId = SystemRegistry.get(world, address(oldSystem));
-    assertEq(registeredSystemId, bytes32(0));
+    assertEq(registeredSystemId, bytes32(0), "old system should be removed from SystemRegistry");
 
     // Expect the SystemRegistry table to have a reference to the new system
     registeredSystemId = SystemRegistry.get(world, address(newSystem));
-    assertEq(registeredSystemId, systemId);
+    assertEq(registeredSystemId, systemId, "new system should be added to SystemRegistry");
 
     // Expect the old system to not have access to the namespace anymore
-    assertFalse(ResourceAccess.get(world, namespace, address(oldSystem)));
+    assertFalse(
+      ResourceAccess.get(world, namespaceId, address(oldSystem)),
+      "old system should not have access to the namespace"
+    );
 
     // Expect the new system to have access to the namespace
-    assertTrue(ResourceAccess.get(world, namespace, address(newSystem)));
+    assertTrue(
+      ResourceAccess.get(world, namespaceId, address(newSystem)),
+      "new system should have access to the namespace"
+    );
 
     // Expect the resource type to still be SYSTEM
-    assertEq(uint8(ResourceType.get(world, systemId)), uint8(Resource.SYSTEM));
+    assertEq(uint8(ResourceType.get(world, systemId)), uint8(Resource.SYSTEM), "resource type should still be SYSTEM");
   }
 
   function testDuplicateSelectors() public {
     // Register a new table
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "name");
+    bytes32 tableId = ResourceId.encode("namespace", "name", RESOURCE_TABLE);
     world.registerTable(
-      resourceSelector,
+      tableId,
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
@@ -501,17 +524,17 @@ contract WorldTest is Test, GasReporter {
     System system = new System();
 
     // Expect an error when trying to register a system at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
-    world.registerSystem(resourceSelector, system, false);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
+    world.registerSystem(tableId, system, false);
 
     // Register a new system
-    bytes32 resourceSelector2 = ResourceSelector.from("namespace2", "name");
-    world.registerSystem(resourceSelector2, new System(), false);
+    bytes32 systemId = ResourceId.encode("namespace2", "name", RESOURCE_SYSTEM);
+    world.registerSystem(systemId, new System(), false);
 
     // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector2.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, systemId.toString()));
     world.registerTable(
-      resourceSelector2,
+      systemId,
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
@@ -529,7 +552,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testSetRecord() public {
-    bytes32 tableId = ResourceSelector.from("testSetRecord", "testTable");
+    bytes32 tableId = ResourceId.encode("testSetRecord", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
       tableId,
@@ -548,7 +571,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectAccessDenied(address(0x01), "testSetRecord", "testTable");
+    _expectAccessDenied(address(0x01), "testSetRecord", "testTable", RESOURCE_TABLE);
     Bool.set(world, tableId, true);
 
     // Expect the World to have access
@@ -557,9 +580,9 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testSetField() public {
-    bytes16 namespace = "testSetField";
+    bytes14 namespace = "testSetField";
     bytes16 name = "testTable";
-    bytes32 tableId = ResourceSelector.from(namespace, name);
+    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
 
@@ -574,7 +597,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectAccessDenied(address(0x01), "testSetField", "testTable");
+    _expectAccessDenied(address(0x01), "testSetField", "testTable", RESOURCE_TABLE);
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
 
     // Expect the World to have access
@@ -583,9 +606,9 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testPushToField() public {
-    bytes16 namespace = "testPushToField";
+    bytes14 namespace = "testPushField";
     bytes16 name = "testTable";
-    bytes32 tableId = ResourceSelector.from(namespace, name);
+    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = AddressArray.getFieldLayout();
     Schema valueSchema = AddressArray.getValueSchema();
 
@@ -616,7 +639,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access
-    _expectAccessDenied(address(0x01), namespace, name);
+    _expectAccessDenied(address(0x01), namespace, name, RESOURCE_TABLE);
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
 
     // Expect the World to have access
@@ -625,9 +648,9 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testDeleteRecord() public {
-    bytes16 namespace = "testDeleteRecord";
+    bytes14 namespace = "testDeleteReco";
     bytes16 name = "testTable";
-    bytes32 tableId = ResourceSelector.from(namespace, name);
+    bytes32 tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
 
@@ -665,7 +688,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
-    _expectAccessDenied(address(0x02), "testDeleteRecord", "testTable");
+    _expectAccessDenied(address(0x02), namespace, name, RESOURCE_TABLE);
     world.deleteRecord(tableId, singletonKey, fieldLayout);
 
     // Expect the World to have access
@@ -676,19 +699,19 @@ contract WorldTest is Test, GasReporter {
   function testCall() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
-    world.registerSystem(resourceSelector, system, false);
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, false);
 
     // Call a system function without arguments via the World
     startGasReport("call a system via the World");
-    bytes memory result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    bytes memory result = world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
     endGasReport();
 
     // Expect the system to have received the caller's address
     assertEq(address(uint160(uint256(bytes32(result)))), address(this));
 
     // Call a system function with arguments via the World
-    result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.echo, (bytes32(uint256(0x123)))));
+    result = world.call(systemId, abi.encodeCall(WorldTestSystem.echo, (bytes32(uint256(0x123)))));
 
     // Expect the return data to be decodeable as a tuple
     (address returnedAddress, bytes32 returnedBytes32) = abi.decode(result, (address, bytes32));
@@ -701,33 +724,30 @@ contract WorldTest is Test, GasReporter {
     assertEq(returnStruct.input, bytes32(uint256(0x123)));
 
     // Expect an error when trying to call a private system from an address that doesn't have access
-    _expectAccessDenied(address(0x01), "namespace", "testSystem");
-    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    _expectAccessDenied(address(0x01), "namespace", "testSystem", RESOURCE_SYSTEM);
+    world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
-    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.err, ("test error")));
+    world.call(systemId, abi.encodeCall(WorldTestSystem.err, ("test error")));
 
     // Register another system in the same namespace
     WorldTestSystem subSystem = new WorldTestSystem();
-    bytes32 subsystemResourceSelector = ResourceSelector.from("namespace", "testSubSystem");
-    world.registerSystem(subsystemResourceSelector, subSystem, false);
+    bytes32 subsystemId = ResourceId.encode("namespace", "testSubSystem", RESOURCE_SYSTEM);
+    world.registerSystem(subsystemId, subSystem, false);
 
     // Call the subsystem via the World (with access to the base route)
-    returnedAddress = abi.decode(
-      world.call(subsystemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ())),
-      (address)
-    );
+    returnedAddress = abi.decode(world.call(subsystemId, abi.encodeCall(WorldTestSystem.msgSender, ())), (address));
     assertEq(returnedAddress, address(this));
 
     // Call the subsystem via delegatecall from the system
     // (Note: just for testing purposes, in reality systems can call subsystems directly instead of via two indirections like here)
     bytes memory nestedReturndata = world.call(
-      resourceSelector,
+      systemId,
       abi.encodeCall(
         WorldTestSystem.delegateCallSubSystem, // Function in system
         (
@@ -748,14 +768,14 @@ contract WorldTest is Test, GasReporter {
   function testCallFromSelf() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
-    world.registerSystem(resourceSelector, system, true);
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
 
     address caller = address(1);
 
     // Call a system via callFrom with the own address
     vm.prank(caller);
-    bytes memory returnData = world.callFrom(caller, resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    bytes memory returnData = world.callFrom(caller, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
     address returnedAddress = abi.decode(returnData, (address));
 
     // Expect the system to have received the delegator's address
@@ -765,8 +785,8 @@ contract WorldTest is Test, GasReporter {
   function testCallFromUnlimitedDelegation() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
-    world.registerSystem(resourceSelector, system, true);
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
 
     // Register an unlimited delegation
     address delegator = address(1);
@@ -779,11 +799,7 @@ contract WorldTest is Test, GasReporter {
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);
     startGasReport("call a system via an unlimited delegation");
-    bytes memory returnData = world.callFrom(
-      delegator,
-      resourceSelector,
-      abi.encodeCall(WorldTestSystem.msgSender, ())
-    );
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
 
@@ -794,8 +810,8 @@ contract WorldTest is Test, GasReporter {
   function testCallFromFailDelegationNotFound() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
-    world.registerSystem(resourceSelector, system, true);
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
 
     // Expect a revert when attempting to perform a call on behalf of an address that doesn't have a delegation
     vm.expectRevert(
@@ -806,14 +822,14 @@ contract WorldTest is Test, GasReporter {
       )
     );
     vm.prank(address(1));
-    world.callFrom(address(2), resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
+    world.callFrom(address(2), systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
   function testCallFromLimitedDelegation() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
-    world.registerSystem(resourceSelector, system, true);
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
 
     // Register a limited delegation
     address delegator = address(1);
@@ -825,7 +841,7 @@ contract WorldTest is Test, GasReporter {
   function testRegisterStoreHook() public {
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
-    bytes32 tableId = ResourceSelector.from("", "testTable");
+    bytes32 tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -898,7 +914,7 @@ contract WorldTest is Test, GasReporter {
   function testUnregisterStoreHook() public {
     FieldLayout fieldLayout = Bool.getFieldLayout();
     Schema valueSchema = Bool.getValueSchema();
-    bytes32 tableId = ResourceSelector.from("", "testTable");
+    bytes32 tableId = ResourceId.encode("", "testTable", RESOURCE_TABLE);
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -977,11 +993,11 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterSystemHook() public {
-    bytes32 systemId = ResourceSelector.from("namespace", "testTable");
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(systemId, system, false);
+    world.registerSystem(systemId, system, true);
 
     // Expect the registration to fail if the contract does not implement the system hook interface
     vm.expectRevert(
@@ -1014,7 +1030,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testUnregisterSystemHook() public {
-    bytes32 systemId = ResourceSelector.from("namespace", "testTable");
+    bytes32 systemId = ResourceId.encode("namespace", "testTable", RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -1052,7 +1068,7 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testWriteRootSystem() public {
-    bytes32 tableId = ResourceSelector.from("namespace", "testTable");
+    bytes32 tableId = ResourceId.encode("namespace", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
       tableId,
@@ -1064,22 +1080,19 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Register a new system
-    bytes32 rootSystemId = ResourceSelector.from("", "testSystem");
+    bytes32 rootSystemId = ResourceId.encode("", "testSystem", RESOURCE_SYSTEM);
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(rootSystemId, system, false);
 
     // Call a system function that writes data to the World
-    world.call(
-      rootSystemId,
-      abi.encodeCall(WorldTestSystem.writeData, (bytes16("namespace"), bytes16("testTable"), true))
-    );
+    world.call(rootSystemId, abi.encodeCall(WorldTestSystem.writeData, ("namespace", "testTable", true)));
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
   }
 
   function testWriteAutonomousSystem() public {
-    bytes32 tableId = ResourceSelector.from("namespace", "testTable");
+    bytes32 tableId = ResourceId.encode("namespace", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
       tableId,
@@ -1091,52 +1104,52 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Register a new system
-    bytes32 systemId = ResourceSelector.from("namespace", "testSystem");
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_TABLE);
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
 
     // Call a system function that writes data to the World
-    world.call(systemId, abi.encodeCall(WorldTestSystem.writeData, (bytes16("namespace"), bytes16("testTable"), true)));
+    world.call(systemId, abi.encodeCall(WorldTestSystem.writeData, ("namespace", "testTable", true)));
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
   }
 
   function testDelegatecallRootSystem() public {
-    bytes32 resourceSelector = ResourceSelector.from("", "testSystem");
+    bytes32 systemId = ResourceId.encode("", "testSystem", RESOURCE_SYSTEM);
     // Register a new root system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(resourceSelector, system, false);
+    world.registerSystem(systemId, system, false);
 
     // Call the root sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("delegatecall");
-    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.emitCallType, ()));
+    world.call(systemId, abi.encodeCall(WorldTestSystem.emitCallType, ()));
   }
 
   function testCallAutonomousSystem() public {
-    bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
+    bytes32 systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     // Register a new non-root system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(resourceSelector, system, false);
+    world.registerSystem(systemId, system, false);
 
     // Call the sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("call");
-    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.emitCallType, ()));
+    world.call(systemId, abi.encodeCall(WorldTestSystem.emitCallType, ()));
   }
 
   function testRegisterFunctionSelector() public {
-    bytes16 namespace = "testNamespace";
+    bytes14 namespace = "testNamespace";
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
 
     startGasReport("Register a function selector");
-    bytes4 functionSelector = world.registerFunctionSelector(resourceSelector, "msgSender", "()");
+    bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender", "()");
     endGasReport();
 
     string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
@@ -1150,7 +1163,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    functionSelector = world.registerFunctionSelector(resourceSelector, "err", "(string)");
+    functionSelector = world.registerFunctionSelector(systemId, "err", "(string)");
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
@@ -1158,27 +1171,27 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterRootFunctionSelector() public {
-    bytes16 namespace = "testNamespace";
+    bytes14 namespace = "testNamespace";
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
 
     bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
     bytes4 sysFunc = WorldTestSystem.msgSender.selector;
 
     // Expect an error when trying to register a root function selector from an account without access
-    _expectAccessDenied(address(0x01), "", "");
-    world.registerRootFunctionSelector(resourceSelector, worldFunc, sysFunc);
+    _expectAccessDenied(address(0x01), "", "", RESOURCE_NAMESPACE);
+    world.registerRootFunctionSelector(systemId, worldFunc, sysFunc);
 
     // Expect the World to not be able to register a root function selector when calling the function externally
-    _expectAccessDenied(address(world), "", "");
-    world.registerRootFunctionSelector(resourceSelector, "smth", "smth");
+    _expectAccessDenied(address(world), "", "", RESOURCE_NAMESPACE);
+    world.registerRootFunctionSelector(systemId, "smth", "smth");
 
     startGasReport("Register a root function selector");
-    bytes4 functionSelector = world.registerRootFunctionSelector(resourceSelector, worldFunc, sysFunc);
+    bytes4 functionSelector = world.registerRootFunctionSelector(systemId, worldFunc, sysFunc);
     endGasReport();
 
     assertEq(functionSelector, worldFunc, "wrong function selector returned");
@@ -1191,7 +1204,7 @@ contract WorldTest is Test, GasReporter {
 
     // Register a function selector to the error function
     functionSelector = world.registerRootFunctionSelector(
-      resourceSelector,
+      systemId,
       WorldTestSystem.err.selector,
       WorldTestSystem.err.selector
     );
@@ -1202,16 +1215,16 @@ contract WorldTest is Test, GasReporter {
   }
 
   function testRegisterFallbackSystem() public {
-    bytes16 namespace = "testNamespace";
+    bytes14 namespace = "testNamespace";
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
 
     startGasReport("Register a fallback system");
-    bytes4 funcSelector1 = world.registerFunctionSelector(resourceSelector, "", "");
+    bytes4 funcSelector1 = world.registerFunctionSelector(systemId, "", "");
     endGasReport();
 
     // Call the system's fallback function
@@ -1223,7 +1236,7 @@ contract WorldTest is Test, GasReporter {
     bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
 
     startGasReport("Register a root fallback system");
-    bytes4 funcSelector2 = world.registerRootFunctionSelector(resourceSelector, worldFunc, 0);
+    bytes4 funcSelector2 = world.registerRootFunctionSelector(systemId, worldFunc, 0);
     endGasReport();
 
     assertEq(funcSelector2, worldFunc, "wrong function selector returned");
@@ -1259,13 +1272,13 @@ contract WorldTest is Test, GasReporter {
   function testPayableSystem() public {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = "noroot";
+    bytes14 namespace = "noroot";
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
 
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(
-      resourceSelector,
+      systemId,
       WorldTestSystem.receiveEther.selector,
       WorldTestSystem.receiveEther.selector
     );
@@ -1290,12 +1303,12 @@ contract WorldTest is Test, GasReporter {
   function testNonPayableSystem() public {
     // Register a non-root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = "noroot";
+    bytes14 namespace = "noroot";
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-    world.registerSystem(resourceSelector, system, true);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(
-      resourceSelector,
+      systemId,
       WorldTestSystem.msgSender.selector,
       WorldTestSystem.msgSender.selector
     );
@@ -1321,15 +1334,11 @@ contract WorldTest is Test, GasReporter {
   function testNonPayableFallbackSystem() public {
     // Register a root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = ROOT_NAMESPACE;
+    bytes14 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-    world.registerSystem(resourceSelector, system, true);
-    world.registerRootFunctionSelector(
-      resourceSelector,
-      bytes4(abi.encodeWithSignature("systemFallback()")),
-      bytes4("")
-    );
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
+    world.registerRootFunctionSelector(systemId, bytes4(abi.encodeWithSignature("systemFallback()")), bytes4(""));
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1351,15 +1360,11 @@ contract WorldTest is Test, GasReporter {
   function testPayableFallbackSystem() public {
     // Register a root system with a payable function in the world
     PayableFallbackSystem system = new PayableFallbackSystem();
-    bytes16 namespace = ROOT_NAMESPACE;
+    bytes14 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-    world.registerSystem(resourceSelector, system, true);
-    world.registerRootFunctionSelector(
-      resourceSelector,
-      bytes4(abi.encodeWithSignature("systemFallback()")),
-      bytes4("")
-    );
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
+    world.registerRootFunctionSelector(systemId, bytes4(abi.encodeWithSignature("systemFallback()")), bytes4(""));
 
     // create new funded address and impersonate
     address alice = makeAddr("alice");
@@ -1381,12 +1386,12 @@ contract WorldTest is Test, GasReporter {
   function testPayableRootSystem() public {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
-    bytes16 namespace = ROOT_NAMESPACE;
+    bytes14 namespace = ROOT_NAMESPACE;
     bytes16 name = "testSystem";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-    world.registerSystem(resourceSelector, system, true);
+    bytes32 systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    world.registerSystem(systemId, system, true);
     world.registerRootFunctionSelector(
-      resourceSelector,
+      systemId,
       WorldTestSystem.receiveEther.selector,
       WorldTestSystem.receiveEther.selector
     );

@@ -13,8 +13,9 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
@@ -22,11 +23,12 @@ import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
+
   IBaseWorld private world;
   KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
 
-  bytes16 private namespace = ROOT_NAMESPACE;
+  bytes14 private namespace = ROOT_NAMESPACE;
   bytes16 private name = bytes16("source");
   bytes16 private singletonName = bytes16("singleton");
   bytes16 private compositeName = bytes16("composite");
@@ -42,9 +44,9 @@ contract KeysInTableModuleTest is Test, GasReporter {
   Schema private tableKeySchema;
   Schema private singletonKeySchema;
   Schema private compositeKeySchema;
-  bytes32 private tableId = ResourceSelector.from(namespace, name);
-  bytes32 private singletonTableId = ResourceSelector.from(namespace, singletonName);
-  bytes32 private compositeTableId = ResourceSelector.from(namespace, compositeName);
+  bytes32 private tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
+  bytes32 private singletonTableId = ResourceId.encode(namespace, singletonName, RESOURCE_TABLE);
+  bytes32 private compositeTableId = ResourceId.encode(namespace, compositeName, RESOURCE_TABLE);
 
   uint256 private val1 = 123;
   uint256 private val2 = 42;
@@ -205,7 +207,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Install the hook on the second table
     bytes16 sourceFile2 = bytes16("source2");
-    bytes32 sourceTableId2 = ResourceSelector.from(namespace, sourceFile2);
+    bytes32 sourceTableId2 = ResourceId.encode(namespace, sourceFile2, RESOURCE_TABLE);
     world.registerTable(
       sourceTableId2,
       tableFieldLayout,

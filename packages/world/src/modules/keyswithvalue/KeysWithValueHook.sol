@@ -9,12 +9,12 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { Tables } from "@latticexyz/store/src/codegen/tables/Tables.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceId } from "../../ResourceId.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
-import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
+import { getTargetTableId } from "./getTargetTableId.sol";
 
 /**
  * This is a very naive and inefficient implementation for now.
@@ -25,7 +25,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  */
 contract KeysWithValueHook is StoreHook {
   using ArrayLib for bytes32[];
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
 
   function _world() internal view returns (IBaseWorld) {
     return IBaseWorld(StoreSwitch.getStoreAddress());
@@ -39,7 +39,7 @@ contract KeysWithValueHook is StoreHook {
     bytes memory dynamicData,
     FieldLayout fieldLayout
   ) public override {
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
     bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
@@ -67,7 +67,7 @@ contract KeysWithValueHook is StoreHook {
     // Remove the key from the list of keys with the previous value
     FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
@@ -81,7 +81,7 @@ contract KeysWithValueHook is StoreHook {
     // Add the key to the list of keys with the new value
     FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 newValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
   }
 
@@ -97,7 +97,7 @@ contract KeysWithValueHook is StoreHook {
     // Remove the key from the list of keys with the previous value
     FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
@@ -113,7 +113,7 @@ contract KeysWithValueHook is StoreHook {
     // Add the key to the list of keys with the new value
     FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
     bytes32 newValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
   }
 
@@ -124,7 +124,7 @@ contract KeysWithValueHook is StoreHook {
   ) public override {
     // Remove the key from the list of keys with the previous value
     bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 

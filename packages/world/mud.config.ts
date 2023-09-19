@@ -21,7 +21,7 @@ export default mudConfig({
     },
     ResourceAccess: {
       keySchema: {
-        resourceSelector: "bytes32",
+        resourceId: "bytes32",
         caller: "address",
       },
       valueSchema: {
@@ -63,7 +63,7 @@ export default mudConfig({
     Systems: {
       directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
       valueSchema: {
         system: "address",
@@ -77,20 +77,20 @@ export default mudConfig({
         system: "address",
       },
       valueSchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
     },
     SystemHooks: {
       directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
       valueSchema: "bytes21[]",
     },
     ResourceType: {
       directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
       valueSchema: {
         resourceType: "Resource",
@@ -102,7 +102,7 @@ export default mudConfig({
         functionSelector: "bytes4",
       },
       valueSchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
@@ -149,7 +149,7 @@ export default mudConfig({
       keySchema: {
         delegator: "address",
         delegatee: "address",
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
         callDataHash: "bytes32",
       },
       valueSchema: {

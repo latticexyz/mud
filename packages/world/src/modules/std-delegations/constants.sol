@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceId } from "../../ResourceId.sol";
 import { ROOT_NAMESPACE } from "../../constants.sol";
 
 bytes16 constant MODULE_NAME = bytes16("stddelegations.m");

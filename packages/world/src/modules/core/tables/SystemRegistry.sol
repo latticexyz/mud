@@ -56,7 +56,7 @@ library SystemRegistry {
   /** Get the table's field names */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](1);
-    fieldNames[0] = "resourceSelector";
+    fieldNames[0] = "systemId";
   }
 
   /** Register the table with its config */
@@ -74,8 +74,8 @@ library SystemRegistry {
     _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
-  /** Get resourceSelector */
-  function get(address system) internal view returns (bytes32 resourceSelector) {
+  /** Get systemId */
+  function get(address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -83,8 +83,8 @@ library SystemRegistry {
     return (bytes32(_blob));
   }
 
-  /** Get resourceSelector */
-  function _get(address system) internal view returns (bytes32 resourceSelector) {
+  /** Get systemId */
+  function _get(address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -92,8 +92,8 @@ library SystemRegistry {
     return (bytes32(_blob));
   }
 
-  /** Get resourceSelector (using the specified store) */
-  function get(IStore _store, address system) internal view returns (bytes32 resourceSelector) {
+  /** Get systemId (using the specified store) */
+  function get(IStore _store, address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -101,38 +101,38 @@ library SystemRegistry {
     return (bytes32(_blob));
   }
 
-  /** Set resourceSelector */
-  function set(address system, bytes32 resourceSelector) internal {
+  /** Set systemId */
+  function set(address system, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)), _fieldLayout);
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((systemId)), _fieldLayout);
   }
 
-  /** Set resourceSelector */
-  function _set(address system, bytes32 resourceSelector) internal {
+  /** Set systemId */
+  function _set(address system, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
-    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)), _fieldLayout);
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((systemId)), _fieldLayout);
   }
 
-  /** Set resourceSelector (using the specified store) */
-  function set(IStore _store, address system, bytes32 resourceSelector) internal {
+  /** Set systemId (using the specified store) */
+  function set(IStore _store, address system, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
-    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((resourceSelector)), _fieldLayout);
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((systemId)), _fieldLayout);
   }
 
   /** Tightly pack static data using this table's schema */
-  function encodeStatic(bytes32 resourceSelector) internal pure returns (bytes memory) {
-    return abi.encodePacked(resourceSelector);
+  function encodeStatic(bytes32 systemId) internal pure returns (bytes memory) {
+    return abi.encodePacked(systemId);
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(bytes32 resourceSelector) internal pure returns (bytes memory, PackedCounter, bytes memory) {
-    bytes memory _staticData = encodeStatic(resourceSelector);
+  function encode(bytes32 systemId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData = encodeStatic(systemId);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;

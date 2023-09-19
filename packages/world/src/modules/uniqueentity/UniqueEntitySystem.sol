@@ -5,17 +5,16 @@ import { System } from "../../System.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 
-import { NAMESPACE, TABLE_NAME } from "./constants.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { TABLE_ID } from "./constants.sol";
+import { ResourceId } from "../../ResourceId.sol";
 
 contract UniqueEntitySystem is System {
   /**
    * Increment and get an entity nonce.
    */
   function getUniqueEntity() public virtual returns (bytes32) {
-    bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
-    uint256 uniqueEntity = UniqueEntity.get(tableId) + 1;
-    UniqueEntity.set(tableId, uniqueEntity);
+    uint256 uniqueEntity = UniqueEntity.get(TABLE_ID) + 1;
+    UniqueEntity.set(TABLE_ID, uniqueEntity);
 
     return bytes32(uniqueEntity);
   }

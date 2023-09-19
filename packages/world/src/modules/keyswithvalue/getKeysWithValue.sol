@@ -6,7 +6,7 @@ import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
-import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
+import { getTargetTableId } from "./getTargetTableId.sol";
 
 /**
  * Get a list of keys with the given value.
@@ -21,7 +21,7 @@ function getKeysWithValue(
   bytes memory dynamicData
 ) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
-  bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
+  bytes32 keysWithValueTableId = getTargetTableId(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
   bytes memory value;
@@ -44,7 +44,7 @@ function getKeysWithValue(
   bytes memory dynamicData
 ) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
-  bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
+  bytes32 keysWithValueTableId = getTargetTableId(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
   bytes memory value;

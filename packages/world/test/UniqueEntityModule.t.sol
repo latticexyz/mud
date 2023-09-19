@@ -14,14 +14,15 @@ import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.so
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
 
 import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 contract UniqueEntityModuleTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
+  bytes32 tableId = ResourceId.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -78,7 +79,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceSelector.from(NAMESPACE, TABLE_NAME).toString(),
+        ResourceId.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE).toString(),
         alice
       )
     );

@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IModule } from "../../../interfaces/IModule.sol";
 import { System } from "../../../System.sol";
 import { AccessControl } from "../../../AccessControl.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
+import { ResourceId } from "../../../ResourceId.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../../tables/InstalledModules.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
@@ -14,27 +14,27 @@ import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
  */
 contract AccessManagementSystem is System {
   /**
-   * Grant access to the resource at the given namespace and name.
+   * Grant access to the resource at the given resource ID.
    * Requires the caller to own the namespace.
    */
-  function grantAccess(bytes32 resourceSelector, address grantee) public virtual {
+  function grantAccess(bytes32 resourceId, address grantee) public virtual {
     // Require the caller to own the namespace
-    AccessControl.requireOwner(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceId, _msgSender());
 
     // Grant access to the given resource
-    ResourceAccess._set(resourceSelector, grantee, true);
+    ResourceAccess._set(resourceId, grantee, true);
   }
 
   /**
-   * Revoke access from the resource at the given namespace and name.
+   * Revoke access from the resource at the given resource ID.
    * Requires the caller to own the namespace.
    */
-  function revokeAccess(bytes32 resourceSelector, address grantee) public virtual {
+  function revokeAccess(bytes32 resourceId, address grantee) public virtual {
     // Require the caller to own the namespace
-    AccessControl.requireOwner(resourceSelector, _msgSender());
+    AccessControl.requireOwner(resourceId, _msgSender());
 
     // Revoke access from the given resource
-    ResourceAccess._deleteRecord(resourceSelector, grantee);
+    ResourceAccess._deleteRecord(resourceId, grantee);
   }
 
   /**
@@ -42,17 +42,19 @@ contract AccessManagementSystem is System {
    * Revoke ResourceAccess for previous owner and grant to newOwner.
    * Requires the caller to own the namespace.
    */
-  function transferOwnership(bytes16 namespace, address newOwner) public virtual {
+  function transferOwnership(bytes14 namespace, address newOwner) public virtual {
+    bytes32 namespaceId = ResourceId.encodeNamespace(namespace);
+
     // Require the caller to own the namespace
-    AccessControl.requireOwner(namespace, _msgSender());
+    AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Set namespace new owner
     NamespaceOwner._set(namespace, newOwner);
 
     // Revoke access from old owner
-    ResourceAccess._deleteRecord(namespace, _msgSender());
+    ResourceAccess._deleteRecord(namespaceId, _msgSender());
 
     // Grant access to new owner
-    ResourceAccess._set(namespace, newOwner, true);
+    ResourceAccess._set(namespaceId, newOwner, true);
   }
 }

@@ -6,13 +6,14 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Balances } from "../src/modules/core/tables/Balances.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
-using ResourceSelector for bytes32;
+using ResourceId for bytes32;
 
 contract WorldBalanceTestSystem is System {
   function echoValue() public payable returns (uint256) {
@@ -24,9 +25,9 @@ contract WorldBalanceTest is Test, GasReporter {
   IBaseWorld public world;
   WorldBalanceTestSystem public rootSystem = new WorldBalanceTestSystem();
   WorldBalanceTestSystem public nonRootSystem = new WorldBalanceTestSystem();
-  bytes16 public namespace = "namespace";
-  bytes32 public rootSystemId = ResourceSelector.from(ROOT_NAMESPACE, "testSystem");
-  bytes32 public nonRootSystemId = ResourceSelector.from(namespace, "testSystem");
+  bytes14 public namespace = "namespace";
+  bytes32 public rootSystemId = ResourceId.encode(ROOT_NAMESPACE, "testSystem", RESOURCE_SYSTEM);
+  bytes32 public nonRootSystemId = ResourceId.encode(namespace, "testSystem", RESOURCE_SYSTEM);
   address public caller = address(4242);
 
   function setUp() public {
@@ -222,7 +223,7 @@ contract WorldBalanceTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceSelector.from(ROOT_NAMESPACE).toString(),
+        ResourceId.encodeNamespace(ROOT_NAMESPACE).toString(),
         caller
       )
     );
@@ -324,7 +325,7 @@ contract WorldBalanceTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceSelector.from(ROOT_NAMESPACE).toString(),
+        ResourceId.encodeNamespace(ROOT_NAMESPACE).toString(),
         caller
       )
     );

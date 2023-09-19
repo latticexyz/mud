@@ -10,26 +10,30 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
+import { ResourceType } from "@latticexyz/store/src/ResourceType.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
-import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
+import { getTargetTableId } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
+  using ResourceType for bytes32;
+
   IBaseWorld world;
   KeysWithValueModule private keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
 
-  bytes16 private namespace = ROOT_NAMESPACE;
+  bytes14 private namespace = ROOT_NAMESPACE;
   bytes16 private sourceName = bytes16("source");
   bytes32 private key1 = keccak256("test");
   bytes32[] private keyTuple1;
@@ -52,8 +56,8 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = ResourceSelector.from(namespace, sourceName);
-    targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    sourceTableId = ResourceId.encode(namespace, sourceName, RESOURCE_TABLE);
+    targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
   }
 
   function _installKeysWithValueModule() internal {
@@ -219,17 +223,20 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
   function testGetTargetTableSelector() public {
     startGasReport("compute the target table selector");
-    bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    bytes32 targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     endGasReport();
 
-    // The first 8 bytes are the module namespace
-    assertEq(bytes8(targetTableSelector), MODULE_NAMESPACE);
+    // The first 7 bytes are the module namespace
+    assertEq(bytes7(targetTableSelector), MODULE_NAMESPACE, "module namespace does not match");
 
-    // followed by the first 4 bytes of the source table namespace
-    assertEq(bytes8(targetTableSelector << 64), bytes8(namespace));
+    // followed by the first 7 bytes of the source table namespace
+    assertEq(bytes7(targetTableSelector << (7 * 8)), bytes7(namespace), "table namespace does not match");
 
-    // The last 16 bytes are the source name
-    assertEq(targetTableSelector.getName(), sourceName);
+    // The next 16 bytes are the source name
+    assertEq(targetTableSelector.getName(), sourceName, "table name does not match");
+
+    // The last 2 bytes are the table resource type
+    assertEq(targetTableSelector.getType(), RESOURCE_TABLE, "target table resource type does not match");
   }
 
   function testGetKeysWithValueGas() public {

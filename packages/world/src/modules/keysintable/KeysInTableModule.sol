@@ -9,7 +9,7 @@ import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceId } from "../../ResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
@@ -27,7 +27,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
 contract KeysInTableModule is Module {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
 
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)

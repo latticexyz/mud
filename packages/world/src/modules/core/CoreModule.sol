@@ -10,7 +10,8 @@ import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceId } from "../../ResourceId.sol";
+import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
@@ -92,7 +93,7 @@ contract CoreModule is Module {
       target: coreSystem,
       callData: abi.encodeCall(
         WorldRegistrationSystem.registerSystem,
-        (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
+        (ResourceId.encode(ROOT_NAMESPACE, CORE_SYSTEM_NAME, RESOURCE_SYSTEM), CoreSystem(coreSystem), true)
       )
     });
   }
@@ -136,7 +137,11 @@ contract CoreModule is Module {
         target: coreSystem,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
-          (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
+          (
+            ResourceId.encode(ROOT_NAMESPACE, CORE_SYSTEM_NAME, RESOURCE_SYSTEM),
+            functionSelectors[i],
+            functionSelectors[i]
+          )
         )
       });
     }

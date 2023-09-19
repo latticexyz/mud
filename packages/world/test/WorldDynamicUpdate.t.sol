@@ -16,7 +16,8 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -28,7 +29,7 @@ import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 contract UpdateInFieldTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using ResourceId for bytes32;
 
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -40,7 +41,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   bytes32[] internal keyTuple;
   bytes32[] internal singletonKey;
 
-  bytes16 namespace;
+  bytes14 namespace;
   bytes16 name;
   bytes32 internal tableId;
   address[] internal initData;
@@ -61,7 +62,7 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     namespace = "DynamicUpdTest";
     name = "testTable";
-    tableId = ResourceSelector.from(namespace, name);
+    tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));

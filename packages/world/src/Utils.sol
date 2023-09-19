@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { ResourceSelector } from "./ResourceSelector.sol";
+import { ResourceId } from "./ResourceId.sol";
 import { SystemRegistry } from "./index.sol";
 
 library Utils {
@@ -17,8 +17,8 @@ library Utils {
     if (StoreSwitch.getStoreAddress() == address(this)) {
       return "";
     } else {
-      bytes32 resourceSelector = SystemRegistry.get(address(this));
-      return ResourceSelector.getNamespace(resourceSelector);
+      bytes32 systemId = SystemRegistry.get(address(this));
+      return ResourceId.getNamespace(systemId);
     }
   }
 }

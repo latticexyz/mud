@@ -53,7 +53,7 @@ library ResourceType {
   /** Get the table's key names */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "resourceSelector";
+    keyNames[0] = "systemId";
   }
 
   /** Get the table's field names */
@@ -78,52 +78,52 @@ library ResourceType {
   }
 
   /** Get resourceType */
-  function get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
+  function get(bytes32 systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return Resource(uint8(bytes1(_blob)));
   }
 
   /** Get resourceType */
-  function _get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
+  function _get(bytes32 systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return Resource(uint8(bytes1(_blob)));
   }
 
   /** Get resourceType (using the specified store) */
-  function get(IStore _store, bytes32 resourceSelector) internal view returns (Resource resourceType) {
+  function get(IStore _store, bytes32 systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return Resource(uint8(bytes1(_blob)));
   }
 
   /** Set resourceType */
-  function set(bytes32 resourceSelector, Resource resourceType) internal {
+  function set(bytes32 systemId, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
   }
 
   /** Set resourceType */
-  function _set(bytes32 resourceSelector, Resource resourceType) internal {
+  function _set(bytes32 systemId, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
   }
 
   /** Set resourceType (using the specified store) */
-  function set(IStore _store, bytes32 resourceSelector, Resource resourceType) internal {
+  function set(IStore _store, bytes32 systemId, Resource resourceType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
   }
@@ -144,33 +144,33 @@ library ResourceType {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(bytes32 systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     return _keyTuple;
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 resourceSelector) internal {
+  function deleteRecord(bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys */
-  function _deleteRecord(bytes32 resourceSelector) internal {
+  function _deleteRecord(bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 resourceSelector) internal {
+  function deleteRecord(IStore _store, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = resourceSelector;
+    _keyTuple[0] = systemId;
 
     _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
