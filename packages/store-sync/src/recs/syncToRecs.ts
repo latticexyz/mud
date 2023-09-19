@@ -7,7 +7,7 @@ import { singletonEntity } from "./singletonEntity";
 import { SyncStep } from "../SyncStep";
 import { Hex } from "viem";
 import { encodeEntity } from "./encodeEntity";
-import { KeySchema, ValueSchema, decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
+import { decodeValue, valueSchemaToFieldLayoutHex } from "@latticexyz/protocol-parser";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
 
 type SyncToRecsOptions<TConfig extends StoreConfig = StoreConfig> = SyncOptions<TConfig> & {
@@ -76,7 +76,7 @@ export async function syncToRecs<TConfig extends StoreConfig = StoreConfig>({
       // TODO make fieldLayout a table metadata field
       const encodedFieldLayout = valueSchemaToFieldLayoutHex(components.FunctionSelectors.metadata.valueSchema);
 
-      const [selectorRecord, ,] = await publicClient.readContract<IBaseWorldAbi, string>({
+      const [selectorRecord, ,] = await publicClient.readContract({
         address: address as Hex,
         abi: IBaseWorldAbi,
         functionName: "getRecord",
