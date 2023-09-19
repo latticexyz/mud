@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
+
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+
+import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { RESOURCE_NAMESPACE, MASK_RESOURCE_NAMESPACE } from "./worldResourceTypes.sol";
 
 bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
@@ -29,15 +31,28 @@ library WorldResourceIdLib {
     bytes14 resourceNamespace,
     bytes16 resourceName,
     bytes2 resourceType
-  ) internal pure returns (bytes32) {
-    return bytes32(resourceNamespace) | ((bytes32(resourceName) >> (14 * 8)) | (bytes32(resourceType) >> (30 * 8)));
+  ) internal pure returns (ResourceId) {
+    return
+      ResourceId.wrap(
+        bytes32(resourceNamespace) | ((bytes32(resourceName) >> (14 * 8)) | (bytes32(resourceType) >> (30 * 8)))
+      );
   }
 
   /**
    * Create a 32-byte resource ID from a namespace.
    */
-  function encodeNamespace(bytes14 resourceNamespace) internal pure returns (bytes32) {
-    return bytes32(resourceNamespace) | (bytes32(RESOURCE_NAMESPACE) >> (30 * 8));
+  function encodeNamespace(bytes14 resourceNamespace) internal pure returns (ResourceId) {
+    return ResourceId.wrap(bytes32(resourceNamespace) | (bytes32(RESOURCE_NAMESPACE) >> (30 * 8)));
+  }
+
+  /**
+   * Convert a padded string to a trimmed string (no trailing `null` ASCII characters)
+   */
+  function toTrimmedString(bytes16 paddedString) internal pure returns (string memory) {
+    uint256 length;
+    for (; length < 16; length++) if (Bytes.slice1(paddedString, length) == 0) break;
+    bytes memory packedSelector = abi.encodePacked(paddedString);
+    return string(Bytes.setLength(packedSelector, length));
   }
 }
 
@@ -69,7 +84,7 @@ library WorldResourceIdInstance {
   function toString(ResourceId resourceId) internal pure returns (string memory) {
     bytes14 resourceNamespace = getNamespace(resourceId);
     bytes16 resourceName = getName(resourceId);
-    bytes2 resourceType = ResourceId.getType(resourceId);
+    bytes2 resourceType = ResourceIdInstance.getType(resourceId);
     return
       string(
         abi.encodePacked(
@@ -80,15 +95,5 @@ library WorldResourceIdInstance {
           resourceType
         )
       );
-  }
-
-  /**
-   * Convert a selector to a trimmed string (no trailing `null` ASCII characters)
-   */
-  function toTrimmedString(bytes16 paddedString) internal pure returns (string memory) {
-    uint256 length;
-    for (; length < 16; length++) if (Bytes.slice1(paddedString, length) == 0) break;
-    bytes memory packedSelector = abi.encodePacked(paddedString);
-    return string(Bytes.setLength(packedSelector, length));
   }
 }

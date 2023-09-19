@@ -13,7 +13,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
@@ -23,7 +23,7 @@ import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueM
 import { query, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
 
 contract QueryTest is Test, GasReporter {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
   IBaseWorld private world;
   KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
   KeysWithValueModule private keysWithValueModule = new KeysWithValueModule();
@@ -36,9 +36,9 @@ contract QueryTest is Test, GasReporter {
   FieldLayout private tableFieldLayout;
   Schema private tableKeySchema;
   Schema private tableValueSchema;
-  bytes32 private table1 = ResourceId.encode(namespace, name1, RESOURCE_TABLE);
-  bytes32 private table2 = ResourceId.encode(namespace, name2, RESOURCE_TABLE);
-  bytes32 private table3 = ResourceId.encode(namespace, name3, RESOURCE_TABLE);
+  ResourceId private table1 = WorldResourceIdLib.encode(namespace, name1, RESOURCE_TABLE);
+  ResourceId private table2 = WorldResourceIdLib.encode(namespace, name2, RESOURCE_TABLE);
+  ResourceId private table3 = WorldResourceIdLib.encode(namespace, name3, RESOURCE_TABLE);
 
   uint256 private value = 1;
   bytes32[] private key1 = new bytes32[](1);

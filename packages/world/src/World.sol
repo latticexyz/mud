@@ -12,7 +12,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { System } from "./System.sol";
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE_ID, ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
@@ -36,7 +36,7 @@ import { Balances } from "./modules/core/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
   address public immutable creator;
 
   function worldVersion() public pure returns (bytes32) {

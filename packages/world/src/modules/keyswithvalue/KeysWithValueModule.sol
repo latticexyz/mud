@@ -8,7 +8,7 @@ import { Module } from "../../Module.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { WorldContextConsumer } from "../../WorldContext.sol";
-import { ResourceId } from "../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
@@ -28,7 +28,7 @@ import { getTargetTableId } from "./getTargetTableId.sol";
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
 contract KeysWithValueModule is Module {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   // The KeysWithValueHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
@@ -40,8 +40,8 @@ contract KeysWithValueModule is Module {
 
   function installRoot(bytes memory args) public {
     // Extract source table id from args
-    bytes32 sourceTableId = abi.decode(args, (bytes32));
-    bytes32 targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
+    ResourceId targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     IBaseWorld world = IBaseWorld(_world());
 

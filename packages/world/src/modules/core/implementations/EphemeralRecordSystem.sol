@@ -6,11 +6,11 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { System } from "../../../System.sol";
-import { ResourceId } from "../../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 
 contract EphemeralRecordSystem is IStoreEphemeral, System {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   /**
    * Emit the ephemeral event without modifying storage at the given namespace and name.

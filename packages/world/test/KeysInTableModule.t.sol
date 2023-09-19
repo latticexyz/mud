@@ -13,7 +13,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
@@ -23,7 +23,7 @@ import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test, GasReporter {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld private world;
   KeysInTableModule private keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
@@ -44,9 +44,9 @@ contract KeysInTableModuleTest is Test, GasReporter {
   Schema private tableKeySchema;
   Schema private singletonKeySchema;
   Schema private compositeKeySchema;
-  bytes32 private tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
-  bytes32 private singletonTableId = ResourceId.encode(namespace, singletonName, RESOURCE_TABLE);
-  bytes32 private compositeTableId = ResourceId.encode(namespace, compositeName, RESOURCE_TABLE);
+  ResourceId private tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
+  ResourceId private singletonTableId = WorldResourceIdLib.encode(namespace, singletonName, RESOURCE_TABLE);
+  ResourceId private compositeTableId = WorldResourceIdLib.encode(namespace, compositeName, RESOURCE_TABLE);
 
   uint256 private val1 = 123;
   uint256 private val2 = 42;
@@ -207,7 +207,7 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Install the hook on the second table
     bytes16 sourceFile2 = bytes16("source2");
-    bytes32 sourceTableId2 = ResourceId.encode(namespace, sourceFile2, RESOURCE_TABLE);
+    ResourceId sourceTableId2 = WorldResourceIdLib.encode(namespace, sourceFile2, RESOURCE_TABLE);
     world.registerTable(
       sourceTableId2,
       tableFieldLayout,

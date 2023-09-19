@@ -16,7 +16,7 @@ import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.so
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
@@ -29,7 +29,7 @@ import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 contract UpdateInFieldTest is Test, GasReporter {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -43,7 +43,7 @@ contract UpdateInFieldTest is Test, GasReporter {
 
   bytes14 namespace;
   bytes16 name;
-  bytes32 internal tableId;
+  ResourceId internal tableId;
   address[] internal initData;
   bytes internal encodedData;
 
@@ -62,7 +62,7 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     namespace = "DynamicUpdTest";
     name = "testTable";
-    tableId = ResourceId.encode(namespace, name, RESOURCE_TABLE);
+    tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
@@ -78,7 +78,7 @@ contract UpdateInFieldTest is Test, GasReporter {
   }
 
   // Expect an error when trying to write from an address that doesn't have access
-  function _expectAccessDenied(address _caller, bytes32 _tableId) internal {
+  function _expectAccessDenied(address _caller, ResourceId _tableId) internal {
     vm.prank(_caller);
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, _tableId.toString(), _caller));
   }

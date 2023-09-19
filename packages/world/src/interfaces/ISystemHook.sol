@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
+import { ResourceId } from "../WorldResourceId.sol";
 
 // ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
 bytes4 constant SYSTEM_HOOK_INTERFACE_ID = ISystemHook.onBeforeCallSystem.selector ^

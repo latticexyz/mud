@@ -13,7 +13,7 @@ function distance(PositionData memory a, PositionData memory b) pure returns (in
 
 contract MoveSystem is System {
   function move(int32 x, int32 y, int32 z) public {
-    bytes32 entityId = bytes32(uint256(uint160((_msgSender()))));
+    ResourceId entityId = bytes32(uint256(uint160((_msgSender()))));
 
     PositionData memory position = Position.get(entityId);
     PositionData memory newPosition = PositionData(x, y, z);

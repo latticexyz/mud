@@ -17,9 +17,13 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("SystemRegistry")));
-bytes32 constant SystemRegistryTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(bytes14(""), bytes16("SystemRegistry"), RESOURCE_TABLE))
+);
+ResourceId constant SystemRegistryTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0020010020000000000000000000000000000000000000000000000000000000
@@ -75,7 +79,7 @@ library SystemRegistry {
   }
 
   /** Get systemId */
-  function get(address system) internal view returns (ResourceId systemId) {
+  function get(address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -84,7 +88,7 @@ library SystemRegistry {
   }
 
   /** Get systemId */
-  function _get(address system) internal view returns (ResourceId systemId) {
+  function _get(address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -93,7 +97,7 @@ library SystemRegistry {
   }
 
   /** Get systemId (using the specified store) */
-  function get(IStore _store, address system) internal view returns (ResourceId systemId) {
+  function get(IStore _store, address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -102,7 +106,7 @@ library SystemRegistry {
   }
 
   /** Set systemId */
-  function set(address system, ResourceId systemId) internal {
+  function set(address system, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -110,7 +114,7 @@ library SystemRegistry {
   }
 
   /** Set systemId */
-  function _set(address system, ResourceId systemId) internal {
+  function _set(address system, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -118,7 +122,7 @@ library SystemRegistry {
   }
 
   /** Set systemId (using the specified store) */
-  function set(IStore _store, address system, ResourceId systemId) internal {
+  function set(IStore _store, address system, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
 
@@ -126,12 +130,12 @@ library SystemRegistry {
   }
 
   /** Tightly pack static data using this table's schema */
-  function encodeStatic(ResourceId systemId) internal pure returns (bytes memory) {
+  function encodeStatic(bytes32 systemId) internal pure returns (bytes memory) {
     return abi.encodePacked(systemId);
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(ResourceId systemId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+  function encode(bytes32 systemId) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(systemId);
 
     PackedCounter _encodedLengths;

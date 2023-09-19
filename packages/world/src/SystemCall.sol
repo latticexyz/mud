@@ -3,10 +3,10 @@ pragma solidity >=0.8.0;
 
 import { Hook } from "@latticexyz/store/src/Hook.sol";
 
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { AccessControl } from "./AccessControl.sol";
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "./constants.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
 import { revertWithBytes } from "./revertWithBytes.sol";
@@ -21,7 +21,7 @@ import { SystemHooks } from "./modules/core/tables/SystemHooks.sol";
 import { Balances } from "./modules/core/tables/Balances.sol";
 
 library SystemCall {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   /**
    * Calls a system via its ID and perform access control checks.

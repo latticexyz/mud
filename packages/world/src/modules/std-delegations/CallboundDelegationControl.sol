@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DelegationControl } from "../../DelegationControl.sol";
+import { ResourceId } from "../../WorldResourceId.sol";
 import { CallboundDelegations } from "./tables/CallboundDelegations.sol";
 
 contract CallboundDelegationControl is DelegationControl {
@@ -15,7 +16,7 @@ contract CallboundDelegationControl is DelegationControl {
     uint256 availableCalls = CallboundDelegations.get({
       delegator: delegator,
       delegatee: _msgSender(),
-      systemId: systemId,
+      systemId: ResourceId.unwrap(systemId),
       callDataHash: callDataHash
     });
 
@@ -24,7 +25,7 @@ contract CallboundDelegationControl is DelegationControl {
       CallboundDelegations.deleteRecord({
         delegator: delegator,
         delegatee: _msgSender(),
-        systemId: systemId,
+        systemId: ResourceId.unwrap(systemId),
         callDataHash: callDataHash
       });
       return true;
@@ -38,7 +39,7 @@ contract CallboundDelegationControl is DelegationControl {
       CallboundDelegations.set({
         delegator: delegator,
         delegatee: _msgSender(),
-        systemId: systemId,
+        systemId: ResourceId.unwrap(systemId),
         callDataHash: callDataHash,
         availableCalls: availableCalls
       });
@@ -55,7 +56,7 @@ contract CallboundDelegationControl is DelegationControl {
     CallboundDelegations.set({
       delegator: _msgSender(),
       delegatee: delegatee,
-      systemId: systemId,
+      systemId: ResourceId.unwrap(systemId),
       callDataHash: keccak256(callData),
       availableCalls: numCalls
     });

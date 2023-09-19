@@ -4,18 +4,18 @@ pragma solidity >=0.8.0;
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
-import { Schema } from "@latticexyz/store/src/Schema.sol";
-import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
-import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
+import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
-import { ResourceType } from "@latticexyz/store/src/ResourceType.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
@@ -27,8 +27,8 @@ import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.
 import { getTargetTableId } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
-  using ResourceId for bytes32;
-  using ResourceType for bytes32;
+  using ResourceIdInstance for ResourceId;
+  using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
   KeysWithValueModule private keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
@@ -43,8 +43,8 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   FieldLayout private sourceTableFieldLayout;
   Schema private sourceTableSchema;
   Schema private sourceTableKeySchema;
-  bytes32 private sourceTableId;
-  bytes32 private targetTableId;
+  ResourceId private sourceTableId;
+  ResourceId private targetTableId;
 
   function setUp() public {
     sourceTableFieldLayout = FieldLayoutEncodeHelper.encode(32, 0);
@@ -56,7 +56,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = ResourceId.encode(namespace, sourceName, RESOURCE_TABLE);
+    sourceTableId = WorldResourceIdLib.encode(namespace, sourceName, RESOURCE_TABLE);
     targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
   }
 
@@ -221,22 +221,22 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     assertEq(keysWithValue[0], key1);
   }
 
-  function testGetTargetTableSelector() public {
+  function testGetTargetTableId() public {
     startGasReport("compute the target table selector");
-    bytes32 targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
+    ResourceId _targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     endGasReport();
 
     // The first 7 bytes are the module namespace
-    assertEq(bytes7(targetTableSelector), MODULE_NAMESPACE, "module namespace does not match");
+    assertEq(bytes7(ResourceId.unwrap(_targetTableId)), MODULE_NAMESPACE, "module namespace does not match");
 
     // followed by the first 7 bytes of the source table namespace
-    assertEq(bytes7(targetTableSelector << (7 * 8)), bytes7(namespace), "table namespace does not match");
+    assertEq(bytes7(ResourceId.unwrap(_targetTableId) << (7 * 8)), bytes7(namespace), "table namespace does not match");
 
     // The next 16 bytes are the source name
-    assertEq(targetTableSelector.getName(), sourceName, "table name does not match");
+    assertEq(_targetTableId.getName(), sourceName, "table name does not match");
 
     // The last 2 bytes are the table resource type
-    assertEq(targetTableSelector.getType(), RESOURCE_TABLE, "target table resource type does not match");
+    assertEq(_targetTableId.getType(), RESOURCE_TABLE, "target table resource type does not match");
   }
 
   function testGetKeysWithValueGas() public {

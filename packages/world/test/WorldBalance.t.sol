@@ -6,14 +6,14 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Balances } from "../src/modules/core/tables/Balances.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
-using ResourceId for bytes32;
+using WorldResourceIdInstance for ResourceId;
 
 contract WorldBalanceTestSystem is System {
   function echoValue() public payable returns (uint256) {
@@ -26,8 +26,8 @@ contract WorldBalanceTest is Test, GasReporter {
   WorldBalanceTestSystem public rootSystem = new WorldBalanceTestSystem();
   WorldBalanceTestSystem public nonRootSystem = new WorldBalanceTestSystem();
   bytes14 public namespace = "namespace";
-  bytes32 public rootSystemId = ResourceId.encode(ROOT_NAMESPACE, "testSystem", RESOURCE_SYSTEM);
-  bytes32 public nonRootSystemId = ResourceId.encode(namespace, "testSystem", RESOURCE_SYSTEM);
+  ResourceId public rootSystemId = WorldResourceIdLib.encode(ROOT_NAMESPACE, "testSystem", RESOURCE_SYSTEM);
+  ResourceId public nonRootSystemId = WorldResourceIdLib.encode(namespace, "testSystem", RESOURCE_SYSTEM);
   address public caller = address(4242);
 
   function setUp() public {
@@ -223,7 +223,7 @@ contract WorldBalanceTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceId.encodeNamespace(ROOT_NAMESPACE).toString(),
+        WorldResourceIdLib.encodeNamespace(ROOT_NAMESPACE).toString(),
         caller
       )
     );
@@ -325,7 +325,7 @@ contract WorldBalanceTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceId.encodeNamespace(ROOT_NAMESPACE).toString(),
+        WorldResourceIdLib.encodeNamespace(ROOT_NAMESPACE).toString(),
         caller
       )
     );

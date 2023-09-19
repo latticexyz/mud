@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 
@@ -14,7 +15,7 @@ import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 function hasKey(ResourceId tableId, bytes32[] memory keyTuple) view returns (bool) {
   bytes32 keysHash = keccak256(abi.encode(keyTuple));
 
-  return UsedKeysIndex.getHas(tableId, keysHash);
+  return UsedKeysIndex.getHas(ResourceId.unwrap(tableId), keysHash);
 }
 
 /**
@@ -23,5 +24,5 @@ function hasKey(ResourceId tableId, bytes32[] memory keyTuple) view returns (boo
 function hasKey(IStore store, ResourceId tableId, bytes32[] memory keyTuple) view returns (bool) {
   bytes32 keysHash = keccak256(abi.encode(keyTuple));
 
-  return UsedKeysIndex.getHas(store, tableId, keysHash);
+  return UsedKeysIndex.getHas(store, ResourceId.unwrap(tableId), keysHash);
 }

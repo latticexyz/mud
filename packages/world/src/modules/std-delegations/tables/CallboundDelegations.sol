@@ -17,9 +17,13 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("CallboundDelegat")));
-bytes32 constant CallboundDelegationsTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(bytes14(""), bytes16("CallboundDelegat"), RESOURCE_TABLE))
+);
+ResourceId constant CallboundDelegationsTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0020010020000000000000000000000000000000000000000000000000000000
@@ -84,7 +88,7 @@ library CallboundDelegations {
   function get(
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -101,7 +105,7 @@ library CallboundDelegations {
   function _get(
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -119,7 +123,7 @@ library CallboundDelegations {
     IStore _store,
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash
   ) internal view returns (uint256 availableCalls) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -136,7 +140,7 @@ library CallboundDelegations {
   function set(
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
@@ -153,7 +157,7 @@ library CallboundDelegations {
   function _set(
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
@@ -171,7 +175,7 @@ library CallboundDelegations {
     IStore _store,
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash,
     uint256 availableCalls
   ) internal {
@@ -203,7 +207,7 @@ library CallboundDelegations {
   function encodeKeyTuple(
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash
   ) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](4);
@@ -216,7 +220,7 @@ library CallboundDelegations {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(address delegator, address delegatee, ResourceId systemId, bytes32 callDataHash) internal {
+  function deleteRecord(address delegator, address delegatee, bytes32 systemId, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
@@ -227,7 +231,7 @@ library CallboundDelegations {
   }
 
   /* Delete all data for given keys */
-  function _deleteRecord(address delegator, address delegatee, ResourceId systemId, bytes32 callDataHash) internal {
+  function _deleteRecord(address delegator, address delegatee, bytes32 systemId, bytes32 callDataHash) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);
     _keyTuple[0] = bytes32(uint256(uint160(delegator)));
     _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
@@ -242,7 +246,7 @@ library CallboundDelegations {
     IStore _store,
     address delegator,
     address delegatee,
-    ResourceId systemId,
+    bytes32 systemId,
     bytes32 callDataHash
   ) internal {
     bytes32[] memory _keyTuple = new bytes32[](4);

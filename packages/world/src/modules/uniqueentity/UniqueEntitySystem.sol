@@ -6,7 +6,7 @@ import { System } from "../../System.sol";
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 
 import { TABLE_ID } from "./constants.sol";
-import { ResourceId } from "../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 
 contract UniqueEntitySystem is System {
   /**

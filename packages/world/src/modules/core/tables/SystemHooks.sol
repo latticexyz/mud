@@ -17,9 +17,13 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("SystemHooks")));
-bytes32 constant SystemHooksTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(bytes14(""), bytes16("SystemHooks"), RESOURCE_TABLE))
+);
+ResourceId constant SystemHooksTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000
@@ -75,7 +79,7 @@ library SystemHooks {
   }
 
   /** Get value */
-  function get(ResourceId systemId) internal view returns (bytes21[] memory value) {
+  function get(bytes32 systemId) internal view returns (bytes21[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -84,7 +88,7 @@ library SystemHooks {
   }
 
   /** Get value */
-  function _get(ResourceId systemId) internal view returns (bytes21[] memory value) {
+  function _get(bytes32 systemId) internal view returns (bytes21[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -93,7 +97,7 @@ library SystemHooks {
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, ResourceId systemId) internal view returns (bytes21[] memory value) {
+  function get(IStore _store, bytes32 systemId) internal view returns (bytes21[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -102,7 +106,7 @@ library SystemHooks {
   }
 
   /** Set value */
-  function set(ResourceId systemId, bytes21[] memory value) internal {
+  function set(bytes32 systemId, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -110,7 +114,7 @@ library SystemHooks {
   }
 
   /** Set value */
-  function _set(ResourceId systemId, bytes21[] memory value) internal {
+  function _set(bytes32 systemId, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -118,7 +122,7 @@ library SystemHooks {
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, ResourceId systemId, bytes21[] memory value) internal {
+  function set(IStore _store, bytes32 systemId, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -126,7 +130,7 @@ library SystemHooks {
   }
 
   /** Get the length of value */
-  function length(ResourceId systemId) internal view returns (uint256) {
+  function length(bytes32 systemId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -137,7 +141,7 @@ library SystemHooks {
   }
 
   /** Get the length of value */
-  function _length(ResourceId systemId) internal view returns (uint256) {
+  function _length(bytes32 systemId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -148,7 +152,7 @@ library SystemHooks {
   }
 
   /** Get the length of value (using the specified store) */
-  function length(IStore _store, ResourceId systemId) internal view returns (uint256) {
+  function length(IStore _store, bytes32 systemId) internal view returns (uint256) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -162,7 +166,7 @@ library SystemHooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItem(ResourceId systemId, uint256 _index) internal view returns (bytes21) {
+  function getItem(bytes32 systemId, uint256 _index) internal view returns (bytes21) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -183,7 +187,7 @@ library SystemHooks {
    * Get an item of value
    * (unchecked, returns invalid data if index overflows)
    */
-  function _getItem(ResourceId systemId, uint256 _index) internal view returns (bytes21) {
+  function _getItem(bytes32 systemId, uint256 _index) internal view returns (bytes21) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -204,7 +208,7 @@ library SystemHooks {
    * Get an item of value (using the specified store)
    * (unchecked, returns invalid data if index overflows)
    */
-  function getItem(IStore _store, ResourceId systemId, uint256 _index) internal view returns (bytes21) {
+  function getItem(IStore _store, bytes32 systemId, uint256 _index) internal view returns (bytes21) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -215,7 +219,7 @@ library SystemHooks {
   }
 
   /** Push an element to value */
-  function push(ResourceId systemId, bytes21 _element) internal {
+  function push(bytes32 systemId, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -223,7 +227,7 @@ library SystemHooks {
   }
 
   /** Push an element to value */
-  function _push(ResourceId systemId, bytes21 _element) internal {
+  function _push(bytes32 systemId, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -231,7 +235,7 @@ library SystemHooks {
   }
 
   /** Push an element to value (using the specified store) */
-  function push(IStore _store, ResourceId systemId, bytes21 _element) internal {
+  function push(IStore _store, bytes32 systemId, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -239,7 +243,7 @@ library SystemHooks {
   }
 
   /** Pop an element from value */
-  function pop(ResourceId systemId) internal {
+  function pop(bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -247,7 +251,7 @@ library SystemHooks {
   }
 
   /** Pop an element from value */
-  function _pop(ResourceId systemId) internal {
+  function _pop(bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -255,7 +259,7 @@ library SystemHooks {
   }
 
   /** Pop an element from value (using the specified store) */
-  function pop(IStore _store, ResourceId systemId) internal {
+  function pop(IStore _store, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -266,7 +270,7 @@ library SystemHooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function update(ResourceId systemId, uint256 _index, bytes21 _element) internal {
+  function update(bytes32 systemId, uint256 _index, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -279,7 +283,7 @@ library SystemHooks {
    * Update an element of value at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function _update(ResourceId systemId, uint256 _index, bytes21 _element) internal {
+  function _update(bytes32 systemId, uint256 _index, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -292,7 +296,7 @@ library SystemHooks {
    * Update an element of value (using the specified store) at `_index`
    * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
    */
-  function update(IStore _store, ResourceId systemId, uint256 _index, bytes21 _element) internal {
+  function update(IStore _store, bytes32 systemId, uint256 _index, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -324,7 +328,7 @@ library SystemHooks {
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
-  function encodeKeyTuple(ResourceId systemId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(bytes32 systemId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -332,7 +336,7 @@ library SystemHooks {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(ResourceId systemId) internal {
+  function deleteRecord(bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -340,7 +344,7 @@ library SystemHooks {
   }
 
   /* Delete all data for given keys */
-  function _deleteRecord(ResourceId systemId) internal {
+  function _deleteRecord(bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 
@@ -348,7 +352,7 @@ library SystemHooks {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, ResourceId systemId) internal {
+  function deleteRecord(IStore _store, bytes32 systemId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
 

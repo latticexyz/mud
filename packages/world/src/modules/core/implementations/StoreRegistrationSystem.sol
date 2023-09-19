@@ -7,7 +7,7 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { System } from "../../../System.sol";
-import { ResourceId } from "../../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { Resource } from "../../../common.sol";
 import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
 import { AccessControl } from "../../../AccessControl.sol";
@@ -32,7 +32,7 @@ import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
  * Functions related to registering table resources in the World.
  */
 contract StoreRegistrationSystem is System, IWorldErrors {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   /**
    * Register a table with the given config
@@ -50,7 +50,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
 
     // If the namespace doesn't exist yet, register it
     ResourceId namespaceId = tableId.getNamespaceId();
-    if (ResourceType._get(namespaceId) == Resource.NONE) {
+    if (ResourceType._get(ResourceId.unwrap(namespaceId)) == Resource.NONE) {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
       (bool success, bytes memory data) = address(this).delegatecall(
@@ -63,12 +63,12 @@ contract StoreRegistrationSystem is System, IWorldErrors {
     }
 
     // Require no resource to exist at this selector yet
-    if (ResourceType._get(tableId) != Resource.NONE) {
+    if (ResourceType._get(ResourceId.unwrap(tableId)) != Resource.NONE) {
       revert ResourceExists(tableId.toString());
     }
 
     // Store the table resource type
-    ResourceType._set(tableId, Resource.TABLE);
+    ResourceType._set(ResourceId.unwrap(tableId), Resource.TABLE);
 
     // Register the table
     StoreCore.registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);

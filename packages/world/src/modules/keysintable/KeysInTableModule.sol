@@ -9,7 +9,7 @@ import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { ResourceId } from "../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
@@ -27,7 +27,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
 contract KeysInTableModule is Module {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
@@ -39,7 +39,7 @@ contract KeysInTableModule is Module {
 
   function installRoot(bytes memory args) public override {
     // Extract source table id from args
-    bytes32 sourceTableId = abi.decode(args, (bytes32));
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -47,7 +47,7 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
+    if (ResourceType._get(ResourceId.unwrap(KeysInTableTableId)) == Resource.NONE) {
       // Register the tables
       (success, returnData) = address(world).delegatecall(
         abi.encodeCall(

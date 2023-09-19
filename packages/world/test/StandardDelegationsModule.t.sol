@@ -5,7 +5,7 @@ import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 
 import { World } from "../src/World.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { System } from "../src/System.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
@@ -25,7 +25,7 @@ import { WorldTestSystem } from "./World.t.sol";
 
 contract StandardDelegationsModuleTest is Test, GasReporter {
   IBaseWorld private world;
-  bytes32 private systemId = ResourceId.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+  ResourceId private systemId = WorldResourceIdLib.encode("namespace", "testSystem", RESOURCE_SYSTEM);
   address private delegator = address(1);
   address private delegatee = address(2);
 
@@ -56,11 +56,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);
     startGasReport("call a system via a callbound delegation");
-    bytes memory returnData = world.callFrom(
-      delegator,
-      systemId,
-      abi.encodeCall(WorldTestSystem.msgSender, ())
-    );
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
 
@@ -92,11 +88,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     // Call a system from the delegatee on behalf of the delegator
     vm.prank(delegatee);
     startGasReport("call a system via a timebound delegation");
-    bytes memory returnData = world.callFrom(
-      delegator,
-      systemId,
-      abi.encodeCall(WorldTestSystem.msgSender, ())
-    );
+    bytes memory returnData = world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
 
@@ -118,7 +110,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
   function testRegisterDelegationRevertInterfaceNotSupported() public {
     // Register a system that is not a delegation control system
     System noDelegationControlSystem = new System();
-    bytes32 noDelegationControlId = ResourceId.encode("namespace", "noDelegation", RESOURCE_SYSTEM);
+    ResourceId noDelegationControlId = WorldResourceIdLib.encode("namespace", "noDelegation", RESOURCE_SYSTEM);
     world.registerSystem(noDelegationControlId, noDelegationControlSystem, true);
 
     // Expect the registration to revert if the system does not implement the delegation control interface

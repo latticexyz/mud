@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ResourceId } from "../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../../worldResourceTypes.sol";
 
 /**
@@ -12,12 +12,14 @@ import { RESOURCE_TABLE } from "../../worldResourceTypes.sol";
  *       (Note that collisions are still possible if the first 8 bytes of the namespace are the same, in which case installing the module fails)
  *  - The last 16 bytes are the source table name
  */
-function getTargetTableId(bytes7 moduleNamespace, bytes32 sourceTableId) pure returns (bytes32) {
-  bytes16 tableName = ResourceId.getName(sourceTableId);
-  bytes7 sourceTableNamespace = bytes7(bytes32(sourceTableId));
+function getTargetTableId(bytes7 moduleNamespace, ResourceId sourceTableId) pure returns (ResourceId) {
+  bytes16 tableName = WorldResourceIdInstance.getName(sourceTableId);
+  bytes7 sourceTableNamespace = bytes7(ResourceId.unwrap(sourceTableId));
   return
-    bytes32(moduleNamespace) |
-    (bytes32(sourceTableNamespace) >> (7 * 8)) |
-    (bytes32(tableName) >> (14 * 8)) |
-    (bytes32(RESOURCE_TABLE) >> (30 * 8));
+    ResourceId.wrap(
+      bytes32(moduleNamespace) |
+        (bytes32(sourceTableNamespace) >> (7 * 8)) |
+        (bytes32(tableName) >> (14 * 8)) |
+        (bytes32(RESOURCE_TABLE) >> (30 * 8))
+    );
 }

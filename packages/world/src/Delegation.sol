@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { UNLIMITED_DELEGATION } from "./constants.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 import { SystemCall } from "./SystemCall.sol";
+import { ResourceId } from "./WorldResourceId.sol";
 
 type Delegation is bytes32;
 

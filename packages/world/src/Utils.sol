@@ -2,10 +2,12 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
 import { SystemRegistry } from "./index.sol";
 
 library Utils {
+  using WorldResourceIdInstance for ResourceId;
+
   /**
    * Get the namespace of this system.
    * Must be used within the context of a system (either directly, or within libraries called by a system).
@@ -18,7 +20,7 @@ library Utils {
       return "";
     } else {
       ResourceId systemId = SystemRegistry.get(address(this));
-      return ResourceId.getNamespace(systemId);
+      return systemId.getNamespace();
     }
   }
 }

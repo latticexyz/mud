@@ -5,7 +5,7 @@ import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
-import { ResourceId } from "../../ResourceId.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";

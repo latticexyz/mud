@@ -7,7 +7,7 @@ import { Utils } from "../src/Utils.sol";
 import { System } from "../src/System.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
@@ -19,7 +19,7 @@ contract UtilsTestSystem is System {
 }
 
 contract UtilsTest is Test {
-  using ResourceId for bytes32;
+  using WorldResourceIdInstance for ResourceId;
   IBaseWorld internal world;
 
   error SomeError(uint256 someValue, string someString);
@@ -32,7 +32,7 @@ contract UtilsTest is Test {
   function _registerAndGetNamespace(bytes14 namespace) internal returns (bytes16 returnedNamespace) {
     UtilsTestSystem testSystem = new UtilsTestSystem();
     bytes16 name = "testSystem";
-    ResourceId systemId = ResourceId.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = WorldResourceIdLib.encode(namespace, name, RESOURCE_SYSTEM);
     world.registerSystem(systemId, testSystem, true);
 
     bytes memory data = world.call(systemId, abi.encodeCall(UtilsTestSystem.systemNamespace, ()));
