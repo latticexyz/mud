@@ -15,8 +15,10 @@ contract EchoSubscriber is StoreHook {
     PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
-  ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout));
+  ) public override {
+    emit HookCalled(
+      abi.encodeCall(this.onBeforeSetRecord, (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout))
+    );
   }
 
   function onAfterSetRecord(
@@ -26,35 +28,71 @@ contract EchoSubscriber is StoreHook {
     PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
-  ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout));
+  ) public override {
+    emit HookCalled(
+      abi.encodeCall(this.onAfterSetRecord, (tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout))
+    );
   }
 
-  function onBeforeSetField(
+  function onBeforeSpliceStaticData(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
-    bytes memory data,
-    FieldLayout fieldLayout
-  ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldIndex, data, fieldLayout));
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
+  ) public override {
+    emit HookCalled(abi.encodeCall(this.onBeforeSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
   }
 
-  function onAfterSetField(
+  function onAfterSpliceStaticData(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    uint8 fieldIndex,
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
+  ) public override {
+    emit HookCalled(abi.encodeCall(this.onAfterSpliceStaticData, (tableId, keyTuple, start, deleteCount, data)));
+  }
+
+  function onBeforeSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
     bytes memory data,
-    FieldLayout fieldLayout
-  ) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldIndex, data, fieldLayout));
+    PackedCounter encodedLengths
+  ) public override {
+    emit HookCalled(
+      abi.encodeCall(
+        this.onBeforeSpliceDynamicData,
+        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data, encodedLengths)
+      )
+    );
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldLayout));
+  function onAfterSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data,
+    PackedCounter encodedLengths
+  ) public override {
+    emit HookCalled(
+      abi.encodeCall(
+        this.onAfterSpliceDynamicData,
+        (tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data, encodedLengths)
+      )
+    );
   }
 
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    emit HookCalled(abi.encode(tableId, keyTuple, fieldLayout));
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
+    emit HookCalled(abi.encodeCall(this.onBeforeDeleteRecord, (tableId, keyTuple, fieldLayout)));
+  }
+
+  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
+    emit HookCalled(abi.encodeCall(this.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
   }
 }

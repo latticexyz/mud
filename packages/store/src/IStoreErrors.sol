@@ -14,4 +14,5 @@ interface IStoreErrors {
   error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
   error StoreCore_InvalidValueSchemaLength(uint256 expected, uint256 received);
   error StoreCore_DataIndexOverflow(uint256 length, uint256 received);
+  error StoreCore_InvalidSplice(uint40 startWithinField, uint40 deleteCount, uint40 fieldLength);
 }

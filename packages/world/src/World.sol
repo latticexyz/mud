@@ -117,6 +117,35 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 
+  function spliceStaticData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual {
+    // Require access to the namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Splice the static data
+    StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+  }
+
+  function spliceDynamicData(
+    bytes32 tableId,
+    bytes32[] calldata keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes calldata data
+  ) public virtual {
+    // Require access to the namespace or name
+    AccessControl.requireAccess(tableId, msg.sender);
+
+    // Splice the dynamic data
+    StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+  }
+
   /**
    * Write a field in the table at the given tableId.
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
