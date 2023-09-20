@@ -54,7 +54,7 @@ contract StoreRegistrationSystem is System, IWorldErrors {
       // Since this is a root system, we're in the context of the World contract already,
       // so we can use delegatecall to register the namespace
       (bool success, bytes memory data) = address(this).delegatecall(
-        abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId.getNamespace()))
+        abi.encodeCall(WorldRegistrationSystem.registerNamespace, (namespaceId))
       );
       if (!success) revertWithBytes(data);
     } else {

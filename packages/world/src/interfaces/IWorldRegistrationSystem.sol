@@ -8,7 +8,7 @@ import { ISystemHook } from "./ISystemHook.sol";
 import { WorldContextConsumer } from "./../WorldContext.sol";
 
 interface IWorldRegistrationSystem {
-  function registerNamespace(bytes14 namespace) external;
+  function registerNamespace(ResourceId namespaceId) external;
 
   function registerSystemHook(ResourceId systemId, ISystemHook hookAddress, uint8 enabledHooksBitmap) external;
 

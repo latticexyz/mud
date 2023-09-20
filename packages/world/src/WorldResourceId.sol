@@ -92,9 +92,9 @@ library WorldResourceIdInstance {
       string(
         abi.encodePacked(
           resourceNamespace == ROOT_NAMESPACE ? ROOT_NAMESPACE_STRING : resourceNamespace,
-          "_",
+          ":",
           resourceName == ROOT_NAME ? ROOT_NAME_STRING : resourceName,
-          ".",
+          ":",
           resourceType
         )
       );

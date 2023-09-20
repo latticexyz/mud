@@ -13,7 +13,7 @@ export default mudConfig({
      ************************************************************************/
     NamespaceOwner: {
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "bytes32",
       },
       valueSchema: {
         owner: "address",
@@ -54,7 +54,7 @@ export default mudConfig({
     Balances: {
       directory: "modules/core/tables",
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "bytes32",
       },
       valueSchema: {
         balance: "uint256",

@@ -15,36 +15,40 @@ contract BalanceTransferSystem is System, IWorldErrors {
   /**
    * Transfer balance to another namespace in the World
    */
-  function transferBalanceToNamespace(bytes14 fromNamespace, bytes14 toNamespace, uint256 amount) public virtual {
+  function transferBalanceToNamespace(
+    ResourceId fromNamespaceId,
+    ResourceId toNamespaceId,
+    uint256 amount
+  ) public virtual {
     // Require caller to have access to the namespace
-    AccessControl.requireAccess(WorldResourceIdLib.encodeNamespace(fromNamespace), _msgSender());
+    AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
-    uint256 balance = Balances._get(fromNamespace);
+    uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
 
     // Require the balance balance to be greater or equal to the amount to transfer
     if (amount > balance) revert InsufficientBalance(balance, amount);
 
     // Update the balances
-    Balances._set(fromNamespace, balance - amount);
-    Balances._set(toNamespace, Balances._get(toNamespace) + amount);
+    Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
+    Balances._set(ResourceId.unwrap(toNamespaceId), Balances._get(ResourceId.unwrap(toNamespaceId)) + amount);
   }
 
   /**
    * Transfer balance out of the World
    */
-  function transferBalanceToAddress(bytes14 fromNamespace, address toAddress, uint256 amount) public virtual {
+  function transferBalanceToAddress(ResourceId fromNamespaceId, address toAddress, uint256 amount) public virtual {
     // Require caller to have access to the namespace
-    AccessControl.requireAccess(WorldResourceIdLib.encodeNamespace(fromNamespace), _msgSender());
+    AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
     // Get current namespace balance
-    uint256 balance = Balances._get(fromNamespace);
+    uint256 balance = Balances._get(ResourceId.unwrap(fromNamespaceId));
 
     // Require the balance balance to be greater or equal to the amount to transfer
     if (amount > balance) revert InsufficientBalance(balance, amount);
 
     // Update the balances
-    Balances._set(fromNamespace, balance - amount);
+    Balances._set(ResourceId.unwrap(fromNamespaceId), balance - amount);
 
     // Transfer the balance to the given address, revert on failure
     (bool success, bytes memory data) = payable(toAddress).call{ value: amount }("");

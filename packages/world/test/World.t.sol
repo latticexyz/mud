@@ -276,7 +276,7 @@ contract WorldTest is Test, GasReporter {
 
   function testRootNamespace() public {
     // Owner of root route should be the creator of the World
-    address rootOwner = NamespaceOwner.get(world, ROOT_NAMESPACE);
+    address rootOwner = NamespaceOwner.get(world, ResourceId.unwrap(ROOT_NAMESPACE_ID));
     assertEq(rootOwner, address(this));
 
     // The creator of the World should have access to the root namespace
@@ -296,40 +296,39 @@ contract WorldTest is Test, GasReporter {
 
   function testRegisterNamespace() public {
     bytes14 namespace = "testNamespace";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     startGasReport("Register a new namespace");
-    world.registerNamespace(namespace);
+    world.registerNamespace(namespaceId);
     endGasReport();
 
     // Expect the caller to be the namespace owner
-    assertEq(NamespaceOwner.get(world, namespace), address(this), "caller should be namespace owner");
+    assertEq(
+      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
+      address(this),
+      "caller should be namespace owner"
+    );
 
     // Expect the caller to have access
     assertEq(
-      ResourceAccess.get(world, ResourceId.unwrap(WorldResourceIdLib.encodeNamespace(namespace)), address(this)),
+      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(this)),
       true,
       "caller should have access"
     );
 
     // Expect an error when registering an existing namespace
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        IWorldErrors.ResourceExists.selector,
-        WorldResourceIdLib.encodeNamespace(namespace),
-        WorldResourceIdLib.encodeNamespace(namespace).toString()
-      )
-    );
-    world.registerNamespace(namespace);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, namespaceId, namespaceId.toString()));
+    world.registerNamespace(namespaceId);
   }
 
   function testTransferNamespace() public {
     bytes14 namespace = "testTransfer";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
-    world.registerNamespace(namespace);
+    world.registerNamespace(namespaceId);
 
     // Expect the new owner to not be namespace owner before transfer
     assertFalse(
-      (NamespaceOwner.get(world, namespace) == address(1)),
+      (NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)) == address(1)),
       "new owner should not be namespace owner before transfer"
     );
     // Expect the new owner to not have access before transfer
@@ -339,10 +338,14 @@ contract WorldTest is Test, GasReporter {
       "new owner should not have access before transfer"
     );
 
-    world.transferOwnership(namespace, address(1));
+    world.transferOwnership(namespaceId, address(1));
 
     // Expect the new owner to be namespace owner
-    assertEq(NamespaceOwner.get(world, namespace), address(1), "new owner should be namespace owner");
+    assertEq(
+      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
+      address(1),
+      "new owner should be namespace owner"
+    );
 
     // Expect the new owner to have access
     assertEq(
@@ -352,7 +355,10 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Expect previous owner to no longer be owner
-    assertFalse((NamespaceOwner.get(world, namespace) == address(this)), "caller should no longer be namespace owner");
+    assertFalse(
+      (NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)) == address(this)),
+      "caller should no longer be namespace owner"
+    );
 
     // Expect previous owner to no longer have access
     assertEq(
@@ -363,7 +369,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect revert if caller is not the owner
     _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
-    world.transferOwnership(namespace, address(1));
+    world.transferOwnership(namespaceId, address(1));
   }
 
   function testRegisterTable() public {
@@ -371,6 +377,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
     bytes14 namespace = "testNamespace";
     bytes16 tableName = "testTable";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     ResourceId tableId = WorldResourceIdLib.encode(namespace, tableName, RESOURCE_TABLE);
     string[] memory keyNames = new string[](1);
     keyNames[0] = "key1";
@@ -384,7 +391,11 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the namespace to be created and owned by the caller
-    assertEq(NamespaceOwner.get(world, namespace), address(this), "namespace should be created by caller");
+    assertEq(
+      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
+      address(this),
+      "namespace should be created by caller"
+    );
 
     // Expect the table to be registered
     assertEq(world.getFieldLayout(tableId).unwrap(), fieldLayout.unwrap(), "value schema should be registered");
@@ -424,7 +435,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(registeredAddress, address(system));
 
     // Expect the system namespace to be owned by the caller
-    address routeOwner = NamespaceOwner.get(world, namespace);
+    address routeOwner = NamespaceOwner.get(world, ResourceId.unwrap(namespaceId));
     assertEq(routeOwner, address(this));
 
     // Expect the system to not be publicly accessible
@@ -445,10 +456,11 @@ contract WorldTest is Test, GasReporter {
       ResourceAccess.get({ _store: world, resourceId: ResourceId.unwrap(namespaceId), caller: address(system) })
     );
 
+    ResourceId newNamespaceId = WorldResourceIdLib.encodeNamespace("newNamespace");
     // Expect the namespace to be created if it doesn't exist yet
-    assertEq(NamespaceOwner.get(world, "newNamespace"), address(0));
+    assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(0));
     world.registerSystem(WorldResourceIdLib.encode("newNamespace", "testSystem", RESOURCE_SYSTEM), new System(), false);
-    assertEq(NamespaceOwner.get(world, "newNamespace"), address(this));
+    assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(this));
 
     // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));

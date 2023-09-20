@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
-import { ROOT_NAMESPACE } from "../../constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../../constants.sol";
 import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
@@ -77,9 +77,9 @@ contract CoreModule is Module {
     SystemRegistry.register();
     ResourceType.register();
 
-    NamespaceOwner._set(ROOT_NAMESPACE, _msgSender());
-    ResourceAccess._set(ROOT_NAMESPACE, _msgSender(), true);
-    ResourceType._set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    NamespaceOwner._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender());
+    ResourceAccess._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender(), true);
+    ResourceType._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), Resource.NAMESPACE);
   }
 
   /**

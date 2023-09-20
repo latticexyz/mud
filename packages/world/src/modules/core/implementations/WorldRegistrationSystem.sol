@@ -34,9 +34,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   /**
    * Register a new namespace
    */
-  function registerNamespace(bytes14 namespace) public virtual {
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-
+  function registerNamespace(ResourceId namespaceId) public virtual {
     // Require namespace to not exist yet
     if (ResourceType._get(ResourceId.unwrap(namespaceId)) != Resource.NONE)
       revert ResourceExists(namespaceId, namespaceId.toString());
@@ -45,7 +43,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     ResourceType._set(ResourceId.unwrap(namespaceId), Resource.NAMESPACE);
 
     // Register caller as the namespace owner
-    NamespaceOwner._set(namespace, _msgSender());
+    NamespaceOwner._set(ResourceId.unwrap(namespaceId), _msgSender());
 
     // Give caller access to the new namespace
     ResourceAccess._set(ResourceId.unwrap(namespaceId), _msgSender(), true);
@@ -105,7 +103,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // otherwise require caller to own the namespace
     ResourceId namespaceId = systemId.getNamespaceId();
     if (ResourceType._get(ResourceId.unwrap(namespaceId)) == Resource.NONE) {
-      registerNamespace(systemId.getNamespace());
+      registerNamespace(namespaceId);
     } else {
       AccessControl.requireOwner(namespaceId, _msgSender());
     }

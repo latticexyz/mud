@@ -20,7 +20,7 @@ library ResourceIdInstance {
     return bytes2(ResourceId.unwrap(resourceId) << (NAME_BYTES * BYTES_TO_BITS));
   }
 
-  function isType(ResourceId resourceId, bytes2 resourceType) internal view returns (bool) {
+  function isType(ResourceId resourceId, bytes2 resourceType) internal pure returns (bool) {
     return ResourceId.unwrap(resourceId) & TYPE_MASK == bytes32(resourceType) >> (NAME_BYTES * BYTES_TO_BITS);
   }
 }

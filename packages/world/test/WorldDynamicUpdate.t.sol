@@ -19,8 +19,6 @@ import { World } from "../src/World.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
-import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
