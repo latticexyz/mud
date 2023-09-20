@@ -12,7 +12,7 @@
 
   Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
   Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
-  We split the logic into two libraries, because `Store` also uses `ResourceId` now and needs awareness of resource types, but not of namespaces/names.
+  We split the logic into two libraries, because `Store` now also uses `ResourceId` and needs to be aware of resource types, but not of namespaces/names.
 
   ```diff
   - import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
