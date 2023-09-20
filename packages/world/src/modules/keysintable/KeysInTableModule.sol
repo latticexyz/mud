@@ -2,9 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { BEFORE_SET_RECORD, AFTER_SPLICE_STATIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
-import { ResourceType } from "../core/tables/ResourceType.sol";
-import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -47,7 +46,7 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (ResourceType._get(ResourceId.unwrap(KeysInTableTableId)) == Resource.NONE) {
+    if (!ResourceIds._getExists(ResourceId.unwrap(KeysInTableTableId))) {
       // Register the tables
       (success, returnData) = address(world).delegatecall(
         abi.encodeCall(

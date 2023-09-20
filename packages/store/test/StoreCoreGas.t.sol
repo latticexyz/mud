@@ -14,7 +14,9 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
-import { ResourceId } from "../src/ResourceId.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
+import { ResourceIds } from "../src/codegen/tables/ResourceIds.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 import { StoreMock } from "./StoreMock.sol";
@@ -33,8 +35,12 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
+  ResourceId _tableId = ResourceIdLib.encode("some table", RESOURCE_TABLE);
+  ResourceId _tableId2 = ResourceIdLib.encode("some other table", RESOURCE_TABLE);
 
   function testRegisterAndGetFieldLayout() public {
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -43,7 +49,6 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
 
     string[] memory keyNames = new string[](2);
     keyNames[0] = "key1";
@@ -72,6 +77,9 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testHasFieldLayout() public {
+    ResourceId tableId = _tableId;
+    ResourceId tableId2 = _tableId2;
+
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
       SchemaType.UINT16,
@@ -79,21 +87,19 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
-    ResourceId tableId2 = ResourceId.wrap(keccak256("other.tableId"));
     StoreCore.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     startGasReport("Check for existence of table (existent)");
-    StoreCore.hasTable(tableId);
+    ResourceIds._getExists(ResourceId.unwrap(tableId));
     endGasReport();
 
     startGasReport("check for existence of table (non-existent)");
-    StoreCore.hasTable(tableId2);
+    ResourceIds._getExists(ResourceId.unwrap(tableId2));
     endGasReport();
   }
 
   function testSetAndGetDynamicDataLength() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
 
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -129,6 +135,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetStaticData() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     Schema valueSchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -137,7 +145,6 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
       SchemaType.UINT16
     );
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     StoreCore.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -157,10 +164,11 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
     StoreCore.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
 
     // Set data
@@ -184,7 +192,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetDynamicData() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -256,7 +264,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testSetAndGetField() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
@@ -346,7 +354,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testDeleteData() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -399,7 +407,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testPushToField() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -485,9 +493,9 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testUpdateInField() public {
-    TestUpdateInFieldData memory data = TestUpdateInFieldData("", "", "", "", "", "", "");
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
 
+    TestUpdateInFieldData memory data = TestUpdateInFieldData("", "", "", "", "", "", "");
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -562,7 +570,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testAccessEmptyData() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
@@ -594,7 +603,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testHooks() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = keccak256("some key");
 
@@ -636,7 +646,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   }
 
   function testHooksDynamicData() public {
-    ResourceId tableId = ResourceId.wrap(keccak256("some.tableId"));
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = keccak256("some key");
 

@@ -3,13 +3,13 @@ pragma solidity >=0.8.0;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../../constants.sol";
-import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 
@@ -23,7 +23,6 @@ import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
 
 import { Systems } from "./tables/Systems.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
-import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { Balances } from "./tables/Balances.sol";
@@ -75,11 +74,10 @@ contract CoreModule is Module {
     FunctionSelectors.register();
     SystemHooks.register();
     SystemRegistry.register();
-    ResourceType.register();
 
+    ResourceIds._setExists(ResourceId.unwrap(ROOT_NAMESPACE_ID), true);
     NamespaceOwner._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender());
     ResourceAccess._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender(), true);
-    ResourceType._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), Resource.NAMESPACE);
   }
 
   /**

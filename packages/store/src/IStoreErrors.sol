@@ -7,6 +7,7 @@ interface IStoreErrors {
   // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
   error StoreCore_TableAlreadyExists(ResourceId tableId, string tableIdString);
   error StoreCore_TableNotFound(ResourceId tableId, string tableIdString);
+  error StoreCore_InvalidResourceType(string resourceType);
 
   error StoreCore_NotImplemented();
   error StoreCore_NotDynamicField();
