@@ -3,7 +3,7 @@ import { debug } from "./debug";
 import { World as RecsWorld, getComponentValue, hasComponent, removeComponent, setComponent } from "@latticexyz/recs";
 import { defineInternalComponents } from "./defineInternalComponents";
 import { getTableEntity } from "./getTableEntity";
-import { hexToTableId, spliceHex } from "@latticexyz/common";
+import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { decodeValueArgs } from "@latticexyz/protocol-parser";
 import { Hex } from "viem";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
@@ -58,7 +58,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
     }
 
     for (const log of logs) {
-      const { namespace, name } = hexToTableId(log.args.tableId);
+      const { namespace, name } = hexToResourceId(log.args.tableId);
       const table = getComponentValue(
         components.RegisteredTables,
         getTableEntity({ address: log.address, namespace, name })

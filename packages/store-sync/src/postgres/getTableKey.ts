@@ -1,8 +1,8 @@
 import { getAddress } from "viem";
 import { Table } from "../common";
-import { hexToTableId } from "@latticexyz/common";
+import { hexToResourceId } from "@latticexyz/common";
 
 export function getTableKey({ address, tableId }: Pick<Table, "address" | "tableId">): string {
-  const { namespace, name } = hexToTableId(tableId);
+  const { namespace, name } = hexToResourceId(tableId);
   return `${getAddress(address)}:${namespace}:${name}`;
 }

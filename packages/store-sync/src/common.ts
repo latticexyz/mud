@@ -2,7 +2,7 @@ import { Address, Block, Hex, Log, PublicClient } from "viem";
 import { StoreConfig, StoreEventsAbiItem, StoreEventsAbi } from "@latticexyz/store";
 import storeConfig from "@latticexyz/store/mud.config";
 import { Observable } from "rxjs";
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 import { UnionPick } from "@latticexyz/common/type-utils";
 import { KeySchema, TableRecord, ValueSchema } from "@latticexyz/protocol-parser";
 
@@ -77,4 +77,8 @@ export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 
 // TODO: adjust when we get namespace support (https://github.com/latticexyz/mud/issues/994) and when table has namespace key (https://github.com/latticexyz/mud/issues/1201)
 export const schemasTable = storeConfig.tables.Tables;
-export const schemasTableId = tableIdToHex(storeConfig.namespace, schemasTable.name);
+export const schemasTableId = resourceIdToHex({
+  type: schemasTable.ephemeral ? "offchainTable" : "table",
+  namespace: storeConfig.namespace,
+  name: schemasTable.name,
+});
