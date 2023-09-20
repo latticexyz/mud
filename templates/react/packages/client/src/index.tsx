@@ -2,44 +2,47 @@ import ReactDOM from "react-dom/client";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiConfig } from "wagmi";
 import { share } from "rxjs";
-import { App } from "./App";
-import { setup } from "./mud/setup";
-import { MUDProvider } from "./MUDContext";
 import mudConfig from "contracts/mud.config";
-import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
+import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import { App } from "./App";
+import { MUDProvider, useMUD } from "./MUDContext";
 
 const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
 const root = ReactDOM.createRoot(rootElement);
 
-// TODO: figure out if we actually want this to be async or if we should render something else in the meantime
-setup().then(async (result) => {
-  const {
-    network: { wagmiConfig, chain },
-  } = result;
-  root.render(
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={[chain]}>
-        <MUDProvider value={result}>
-          <App />
-        </MUDProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
-  );
+const AppWithWalletContext = () => {
+  const { network } = useMUD();
+  const { wagmiConfig, chain } = network;
 
   // https://vitejs.dev/guide/env-and-mode.html
   if (import.meta.env.DEV) {
-    const { mount: mountDevTools } = await import("@latticexyz/dev-tools");
-    mountDevTools({
-      config: mudConfig,
-      publicClient: result.network.publicClient,
-      walletClient: result.network.walletClient,
-      latestBlock$: result.network.latestBlock$,
-      storedBlockLogs$: result.network.storedBlockLogs$,
-      worldAddress: result.network.worldAddress,
-      worldAbi: IWorldAbi,
-      write$: result.network.write$.asObservable().pipe(share()),
-      recsWorld: result.network.world,
-    });
+    import("@latticexyz/dev-tools").then(({ mount: mountDevTools }) =>
+      mountDevTools({
+        config: mudConfig,
+        publicClient: network.publicClient,
+        walletClient: network.walletClient,
+        latestBlock$: network.latestBlock$,
+        storedBlockLogs$: network.storedBlockLogs$,
+        worldAddress: network.worldAddress,
+        worldAbi: IBaseWorldAbi,
+        write$: network.write$.asObservable().pipe(share()),
+        recsWorld: network.world,
+      })
+    );
   }
-});
+
+  return (
+    <WagmiConfig config={wagmiConfig}>
+      <RainbowKitProvider chains={[chain]}>
+        <App />
+      </RainbowKitProvider>
+    </WagmiConfig>
+  );
+};
+
+root.render(
+  <MUDProvider>
+    <AppWithWalletContext />
+  </MUDProvider>
+);

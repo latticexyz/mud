@@ -10,7 +10,7 @@ export function useSystemCalls(
   client: WalletClient<Transport, Chain, Account> | null | undefined
 ) {
   // TODO type systemCalls
-  const [systemCalls, setSystemCalls] = useState(undefined);
+  const [systemCalls, setSystemCalls] = useState<ReturnType<typeof createSystemCalls> | undefined>(undefined);
 
   useEffect(() => {
     if (!client) return;

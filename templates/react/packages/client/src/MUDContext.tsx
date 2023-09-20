@@ -1,17 +1,30 @@
-import { createContext, ReactNode, useContext } from "react";
-import { SetupResult } from "./mud/setup";
+import { createContext, ReactNode, useContext, useState, useEffect } from "react";
+import { setup, SetupResult } from "./mud/setup";
+import { usePromise } from "@latticexyz/react";
 
 const MUDContext = createContext<SetupResult | null>(null);
 
 type Props = {
   children: ReactNode;
-  value: SetupResult;
 };
 
-export const MUDProvider = ({ children, value }: Props) => {
+export const MUDProvider = ({ children }: Props) => {
   const currentValue = useContext(MUDContext);
   if (currentValue) throw new Error("MUDProvider can only be used once");
-  return <MUDContext.Provider value={value}>{children}</MUDContext.Provider>;
+
+  // const setupResult = usePromise(setup());
+
+  // if (setupResult.status === "rejected") throw new Error("Ecountered error while setting up MUD");
+
+  // if (setupResult.status !== "fulfilled") return;
+
+  const [setupResult, setSetupResult] = useState<Awaited<ReturnType<typeof setup>> | null>(null);
+
+  useEffect(() => {
+    setup().then((response) => setSetupResult(response));
+  }, []);
+
+  return setupResult ? <MUDContext.Provider value={setupResult}>{children}</MUDContext.Provider> : null;
 };
 
 export const useMUD = () => {

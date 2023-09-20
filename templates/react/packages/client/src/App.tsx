@@ -9,6 +9,7 @@ import { useDelegationControl } from "./mud/useDelegationControl";
 
 export const App = () => {
   const { network, components } = useMUD();
+  console.log({ network, components });
   // TODO rename to delegatee
   const { walletClient: burnerWalletClient } = network;
   const { Counter } = components;
