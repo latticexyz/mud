@@ -5,26 +5,29 @@ import { AbiEvent } from "abitype";
 
 // Make sure `storeEvents` stays in sync with Solidity definition/events
 
+function normalizeAbiEvents(abiEvents: readonly AbiEvent[]) {
+  return abiEvents
+    .map((item) => ({
+      type: item.type,
+      name: item.name,
+      inputs: item.inputs.map((input) => ({
+        type: input.type,
+        name: input.name,
+        ...(input.indexed ? { indexed: true } : null),
+      })),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
 describe("storeEventsAbi", () => {
   it("should match the store ABI", () => {
-    const expectedEvents = IStoreAbi.filter((item) => item.type === "event").filter(
-      (item) => item.name !== "HelloStore"
-    ) as readonly AbiEvent[];
+    const eventsDefined = normalizeAbiEvents(storeEventsAbi);
+    const eventsFromAbi = normalizeAbiEvents(
+      IStoreAbi.filter((item) => item.type === "event").filter(
+        (item) => item.name !== "HelloStore"
+      ) as readonly AbiEvent[]
+    );
 
-    const expectedAbi = expectedEvents
-      .map((item) => ({
-        // return data in a shape that matches abitype's parseAbi
-        type: item.type,
-        name: item.name,
-        inputs: item.inputs.map((input) => ({
-          type: input.type,
-          name: input.name,
-          ...(input.indexed ? { indexed: true } : null),
-        })),
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
-    const sortedStoreEventsAbi = [...storeEventsAbi].sort((a, b) => a.name.localeCompare(b.name));
-    expect(sortedStoreEventsAbi).toStrictEqual(expectedAbi);
+    expect(JSON.stringify(eventsDefined)).toEqual(JSON.stringify(eventsFromAbi));
   });
 });
