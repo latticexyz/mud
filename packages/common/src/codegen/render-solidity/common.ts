@@ -146,6 +146,22 @@ export function renderWithStore(
   return result;
 }
 
+export function renderWithFieldSuffix(
+  withSuffixlessFieldMethods: boolean,
+  fieldName: string,
+  callback: (_methodNameSuffix: string) => string
+): string {
+  const methodNameSuffix = `${fieldName[0].toUpperCase()}${fieldName.slice(1)}`;
+  let result = "";
+  result += callback(methodNameSuffix);
+
+  if (withSuffixlessFieldMethods) {
+    result += "\n" + callback("");
+  }
+
+  return result;
+}
+
 export function renderTableId(staticResourceData: StaticResourceData): {
   hardcodedTableId: string;
   tableIdDefinition: string;

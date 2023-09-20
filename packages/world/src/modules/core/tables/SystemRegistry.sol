@@ -79,6 +79,33 @@ library SystemRegistry {
   }
 
   /** Get systemId */
+  function getSystemId(address system) internal view returns (bytes32 systemId) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(system)));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
+  }
+
+  /** Get systemId */
+  function _getSystemId(address system) internal view returns (bytes32 systemId) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(system)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
+  }
+
+  /** Get systemId (using the specified store) */
+  function getSystemId(IStore _store, address system) internal view returns (bytes32 systemId) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(system)));
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (bytes32(_blob));
+  }
+
+  /** Get systemId */
   function get(address system) internal view returns (bytes32 systemId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(system)));
@@ -103,6 +130,30 @@ library SystemRegistry {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (bytes32(_blob));
+  }
+
+  /** Set systemId */
+  function setSystemId(address system, bytes32 systemId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(system)));
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((systemId)), _fieldLayout);
+  }
+
+  /** Set systemId */
+  function _setSystemId(address system, bytes32 systemId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(system)));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((systemId)), _fieldLayout);
+  }
+
+  /** Set systemId (using the specified store) */
+  function setSystemId(IStore _store, address system, bytes32 systemId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(system)));
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((systemId)), _fieldLayout);
   }
 
   /** Set systemId */

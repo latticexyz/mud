@@ -83,6 +83,44 @@ library Inventory {
   }
 
   /** Get amount */
+  function getAmount(address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
+    bytes32[] memory _keyTuple = new bytes32[](3);
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
+    _keyTuple[1] = bytes32(uint256(item));
+    _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get amount */
+  function _getAmount(address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
+    bytes32[] memory _keyTuple = new bytes32[](3);
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
+    _keyTuple[1] = bytes32(uint256(item));
+    _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get amount (using the specified store) */
+  function getAmount(
+    IStore _store,
+    address owner,
+    uint32 item,
+    uint32 itemVariant
+  ) internal view returns (uint32 amount) {
+    bytes32[] memory _keyTuple = new bytes32[](3);
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
+    _keyTuple[1] = bytes32(uint256(item));
+    _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get amount */
   function get(address owner, uint32 item, uint32 itemVariant) internal view returns (uint32 amount) {
     bytes32[] memory _keyTuple = new bytes32[](3);
     _keyTuple[0] = bytes32(uint256(uint160(owner)));
@@ -113,6 +151,36 @@ library Inventory {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
+  }
+
+  /** Set amount */
+  function setAmount(address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
+    _keyTuple[1] = bytes32(uint256(item));
+    _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+  }
+
+  /** Set amount */
+  function _setAmount(address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
+    _keyTuple[1] = bytes32(uint256(item));
+    _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
+  }
+
+  /** Set amount (using the specified store) */
+  function setAmount(IStore _store, address owner, uint32 item, uint32 itemVariant, uint32 amount) internal {
+    bytes32[] memory _keyTuple = new bytes32[](3);
+    _keyTuple[0] = bytes32(uint256(uint160(owner)));
+    _keyTuple[1] = bytes32(uint256(item));
+    _keyTuple[2] = bytes32(uint256(itemVariant));
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((amount)), _fieldLayout);
   }
 
   /** Set amount */

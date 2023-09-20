@@ -81,6 +81,36 @@ library ResourceAccess {
   }
 
   /** Get access */
+  function getAccess(bytes32 resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceId;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access */
+  function _getAccess(bytes32 resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceId;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access (using the specified store) */
+  function getAccess(IStore _store, bytes32 resourceId, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceId;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access */
   function get(bytes32 resourceId, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = resourceId;
@@ -108,6 +138,33 @@ library ResourceAccess {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Set access */
+  function setAccess(bytes32 resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceId;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+  }
+
+  /** Set access */
+  function _setAccess(bytes32 resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceId;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+  }
+
+  /** Set access (using the specified store) */
+  function setAccess(IStore _store, bytes32 resourceId, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceId;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */

@@ -82,6 +82,33 @@ library ResourceType {
   }
 
   /** Get resourceType */
+  function getResourceType(bytes32 systemId) internal view returns (Resource resourceType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = systemId;
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return Resource(uint8(bytes1(_blob)));
+  }
+
+  /** Get resourceType */
+  function _getResourceType(bytes32 systemId) internal view returns (Resource resourceType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = systemId;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return Resource(uint8(bytes1(_blob)));
+  }
+
+  /** Get resourceType (using the specified store) */
+  function getResourceType(IStore _store, bytes32 systemId) internal view returns (Resource resourceType) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = systemId;
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return Resource(uint8(bytes1(_blob)));
+  }
+
+  /** Get resourceType */
   function get(bytes32 systemId) internal view returns (Resource resourceType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = systemId;
@@ -106,6 +133,30 @@ library ResourceType {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return Resource(uint8(bytes1(_blob)));
+  }
+
+  /** Set resourceType */
+  function setResourceType(bytes32 systemId, Resource resourceType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = systemId;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
+  }
+
+  /** Set resourceType */
+  function _setResourceType(bytes32 systemId, Resource resourceType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = systemId;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
+  }
+
+  /** Set resourceType (using the specified store) */
+  function setResourceType(IStore _store, bytes32 systemId, Resource resourceType) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = systemId;
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(resourceType)), _fieldLayout);
   }
 
   /** Set resourceType */

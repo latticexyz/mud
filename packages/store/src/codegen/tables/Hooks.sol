@@ -74,6 +74,33 @@ library Hooks {
   }
 
   /** Get value */
+  function getValue(ResourceId _tableId, bytes32 key) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /** Get value */
+  function _getValue(ResourceId _tableId, bytes32 key) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /** Get value (using the specified store) */
+  function getValue(IStore _store, ResourceId _tableId, bytes32 key) internal view returns (bytes21[] memory value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes21());
+  }
+
+  /** Get value */
   function get(ResourceId _tableId, bytes32 key) internal view returns (bytes21[] memory value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -101,6 +128,30 @@ library Hooks {
   }
 
   /** Set value */
+  function setValue(ResourceId _tableId, bytes32 key, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), _fieldLayout);
+  }
+
+  /** Set value */
+  function _setValue(ResourceId _tableId, bytes32 key, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), _fieldLayout);
+  }
+
+  /** Set value (using the specified store) */
+  function setValue(IStore _store, ResourceId _tableId, bytes32 key, bytes21[] memory value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), _fieldLayout);
+  }
+
+  /** Set value */
   function set(ResourceId _tableId, bytes32 key, bytes21[] memory value) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -122,6 +173,39 @@ library Hooks {
     _keyTuple[0] = key;
 
     _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((value)), _fieldLayout);
+  }
+
+  /** Get the length of value */
+  function lengthValue(ResourceId _tableId, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
+    unchecked {
+      return _byteLength / 21;
+    }
+  }
+
+  /** Get the length of value */
+  function _lengthValue(ResourceId _tableId, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
+    unchecked {
+      return _byteLength / 21;
+    }
+  }
+
+  /** Get the length of value (using the specified store) */
+  function lengthValue(IStore _store, ResourceId _tableId, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
+    unchecked {
+      return _byteLength / 21;
+    }
   }
 
   /** Get the length of value */
@@ -154,6 +238,67 @@ library Hooks {
     uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
     unchecked {
       return _byteLength / 21;
+    }
+  }
+
+  /**
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function getItemValue(ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        _fieldLayout,
+        _index * 21,
+        (_index + 1) * 21
+      );
+      return (bytes21(_blob));
+    }
+  }
+
+  /**
+   * Get an item of value
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemValue(ResourceId _tableId, bytes32 key, uint256 _index) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(
+        _tableId,
+        _keyTuple,
+        0,
+        _fieldLayout,
+        _index * 21,
+        (_index + 1) * 21
+      );
+      return (bytes21(_blob));
+    }
+  }
+
+  /**
+   * Get an item of value (using the specified store)
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function getItemValue(
+    IStore _store,
+    ResourceId _tableId,
+    bytes32 key,
+    uint256 _index
+  ) internal view returns (bytes21) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 21, (_index + 1) * 21);
+      return (bytes21(_blob));
     }
   }
 
@@ -214,6 +359,30 @@ library Hooks {
   }
 
   /** Push an element to value */
+  function pushValue(ResourceId _tableId, bytes32 key, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+  }
+
+  /** Push an element to value */
+  function _pushValue(ResourceId _tableId, bytes32 key, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+  }
+
+  /** Push an element to value (using the specified store) */
+  function pushValue(IStore _store, ResourceId _tableId, bytes32 key, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+  }
+
+  /** Push an element to value */
   function push(ResourceId _tableId, bytes32 key, bytes21 _element) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -238,6 +407,30 @@ library Hooks {
   }
 
   /** Pop an element from value */
+  function popValue(ResourceId _tableId, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 21, _fieldLayout);
+  }
+
+  /** Pop an element from value */
+  function _popValue(ResourceId _tableId, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 0, 21, _fieldLayout);
+  }
+
+  /** Pop an element from value (using the specified store) */
+  function popValue(IStore _store, ResourceId _tableId, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.popFromField(_tableId, _keyTuple, 0, 21, _fieldLayout);
+  }
+
+  /** Pop an element from value */
   function pop(ResourceId _tableId, bytes32 key) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -259,6 +452,45 @@ library Hooks {
     _keyTuple[0] = key;
 
     _store.popFromField(_tableId, _keyTuple, 0, 21, _fieldLayout);
+  }
+
+  /**
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function updateValue(ResourceId _tableId, bytes32 key, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)), _fieldLayout);
+    }
+  }
+
+  /**
+   * Update an element of value at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateValue(ResourceId _tableId, bytes32 key, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)), _fieldLayout);
+    }
+  }
+
+  /**
+   * Update an element of value (using the specified store) at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function updateValue(IStore _store, ResourceId _tableId, bytes32 key, uint256 _index, bytes21 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 21, abi.encodePacked((_element)), _fieldLayout);
+    }
   }
 
   /**

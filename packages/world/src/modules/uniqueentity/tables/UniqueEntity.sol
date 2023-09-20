@@ -72,6 +72,30 @@ library UniqueEntity {
   }
 
   /** Get value */
+  function getValue(ResourceId _tableId) internal view returns (uint256 value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get value */
+  function _getValue(ResourceId _tableId) internal view returns (uint256 value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get value (using the specified store) */
+  function getValue(IStore _store, ResourceId _tableId) internal view returns (uint256 value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get value */
   function get(ResourceId _tableId) internal view returns (uint256 value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -93,6 +117,27 @@ library UniqueEntity {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
+  }
+
+  /** Set value */
+  function setValue(ResourceId _tableId, uint256 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value */
+  function _setValue(ResourceId _tableId, uint256 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value (using the specified store) */
+  function setValue(IStore _store, ResourceId _tableId, uint256 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value */

@@ -85,6 +85,58 @@ library CallboundDelegations {
   }
 
   /** Get availableCalls */
+  function getAvailableCalls(
+    address delegator,
+    address delegatee,
+    bytes32 systemId,
+    bytes32 callDataHash
+  ) internal view returns (uint256 availableCalls) {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+    _keyTuple[2] = systemId;
+    _keyTuple[3] = callDataHash;
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get availableCalls */
+  function _getAvailableCalls(
+    address delegator,
+    address delegatee,
+    bytes32 systemId,
+    bytes32 callDataHash
+  ) internal view returns (uint256 availableCalls) {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+    _keyTuple[2] = systemId;
+    _keyTuple[3] = callDataHash;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get availableCalls (using the specified store) */
+  function getAvailableCalls(
+    IStore _store,
+    address delegator,
+    address delegatee,
+    bytes32 systemId,
+    bytes32 callDataHash
+  ) internal view returns (uint256 availableCalls) {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+    _keyTuple[2] = systemId;
+    _keyTuple[3] = callDataHash;
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get availableCalls */
   function get(
     address delegator,
     address delegatee,
@@ -134,6 +186,58 @@ library CallboundDelegations {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
+  }
+
+  /** Set availableCalls */
+  function setAvailableCalls(
+    address delegator,
+    address delegatee,
+    bytes32 systemId,
+    bytes32 callDataHash,
+    uint256 availableCalls
+  ) internal {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+    _keyTuple[2] = systemId;
+    _keyTuple[3] = callDataHash;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+  }
+
+  /** Set availableCalls */
+  function _setAvailableCalls(
+    address delegator,
+    address delegatee,
+    bytes32 systemId,
+    bytes32 callDataHash,
+    uint256 availableCalls
+  ) internal {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+    _keyTuple[2] = systemId;
+    _keyTuple[3] = callDataHash;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
+  }
+
+  /** Set availableCalls (using the specified store) */
+  function setAvailableCalls(
+    IStore _store,
+    address delegator,
+    address delegatee,
+    bytes32 systemId,
+    bytes32 callDataHash,
+    uint256 availableCalls
+  ) internal {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(uint160(delegator)));
+    _keyTuple[1] = bytes32(uint256(uint160(delegatee)));
+    _keyTuple[2] = systemId;
+    _keyTuple[3] = callDataHash;
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((availableCalls)), _fieldLayout);
   }
 
   /** Set availableCalls */
