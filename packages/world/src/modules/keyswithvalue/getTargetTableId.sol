@@ -13,7 +13,7 @@ uint256 constant BYTES_TO_BITS = 8;
  * Get a deterministic selector for the reverse mapping table for the given source table.
  * The selector is constructed as follows:
  *  - The first 7 bytes are the module namespace
- *  - The next 7 bytes are the first 8 bytes of the source table namespace
+ *  - The next 7 bytes are the first 7 bytes of the source table namespace
  *    -- This is to avoid collisions between tables with the same name in different namespaces
  *       (Note that collisions are still possible if the first 8 bytes of the namespace are the same, in which case installing the module fails)
  *  - The last 16 bytes are the source table name
