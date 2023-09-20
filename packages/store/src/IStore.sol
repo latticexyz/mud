@@ -181,7 +181,7 @@ interface IStoreWrite {
 
 interface IStoreEphemeral {
   event StoreEphemeralRecord(
-    ResourceId tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
