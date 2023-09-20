@@ -14,7 +14,7 @@ type SyncToPostgresOptions<TConfig extends StoreConfig = StoreConfig> = SyncOpti
   startSync?: boolean;
 };
 
-type SyncToPostgresResult<TConfig extends StoreConfig = StoreConfig> = SyncResult<TConfig> & {
+type SyncToPostgresResult = SyncResult & {
   stopSync: () => void;
 };
 
@@ -34,9 +34,10 @@ export async function syncToPostgres<TConfig extends StoreConfig = StoreConfig>(
   indexerUrl,
   initialState,
   startSync = true,
-}: SyncToPostgresOptions<TConfig>): Promise<SyncToPostgresResult<TConfig>> {
+}: SyncToPostgresOptions<TConfig>): Promise<SyncToPostgresResult> {
+  const { storageAdapter } = await postgresStorage({ database, publicClient, config });
   const storeSync = await createStoreSync({
-    storageAdapter: await postgresStorage({ database, publicClient, config }),
+    storageAdapter,
     config,
     address,
     publicClient,
@@ -46,7 +47,7 @@ export async function syncToPostgres<TConfig extends StoreConfig = StoreConfig>(
     initialState,
   });
 
-  const sub = startSync ? storeSync.blockStorageOperations$.subscribe() : null;
+  const sub = startSync ? storeSync.storedBlockLogs$.subscribe() : null;
   const stopSync = (): void => {
     sub?.unsubscribe();
   };

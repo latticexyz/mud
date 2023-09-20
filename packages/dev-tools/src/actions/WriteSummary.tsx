@@ -1,4 +1,4 @@
-import { decodeEventLog, AbiEventSignatureNotFoundError } from "viem";
+import { decodeEventLog, AbiEventSignatureNotFoundError, decodeFunctionData, Hex } from "viem";
 import { twMerge } from "tailwind-merge";
 import { isDefined } from "@latticexyz/common/utils";
 import { PendingIcon } from "../icons/PendingIcon";
@@ -56,6 +56,17 @@ export function WriteSummary({ write }: Props) {
           .filter(isDefined)
       : null;
 
+  let functionName = write.request.functionName;
+  let functionArgs = write.request.args;
+  if (functionName === "call" || functionName === "callFrom") {
+    const functionSelectorAndArgs: Hex = write.request?.args?.length
+      ? (write.request.args[write.request.args.length - 1] as Hex)
+      : `0x`;
+    const functionData = decodeFunctionData({ abi: worldAbi, data: functionSelectorAndArgs });
+    functionName = functionData.functionName;
+    functionArgs = functionData.args;
+  }
+
   return (
     <details
       onToggle={(event) => {
@@ -73,7 +84,10 @@ export function WriteSummary({ write }: Props) {
         )}
       >
         <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
-          {write.request.functionName}({write.request.args?.map((value) => serialize(value)).join(", ")})
+          {functionName}({functionArgs?.map((value) => serialize(value)).join(", ")}){" "}
+          {write.request.functionName !== functionName ? (
+            <span className="text-xs text-white/40">via {write.request.functionName}</span>
+          ) : null}
         </div>
         {transactionReceipt.status === "fulfilled" ? (
           <a
@@ -132,6 +146,7 @@ export function WriteSummary({ write }: Props) {
             <tbody className="font-mono text-xs">
               {events.map(({ eventName, args }, i) => {
                 const table = hexToTableId((args as any).tableId);
+                // TODO: dedupe this with logs table so we can get both rendering the same
                 return (
                   <tr key={i}>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">

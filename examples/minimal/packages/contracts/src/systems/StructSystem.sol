@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { CounterTable } from "../codegen/Tables.sol";
+import { CounterTable } from "../codegen/index.sol";
 import { BytesStruct, StringStruct } from "./structs.sol";
 
 contract StructSystem is System {

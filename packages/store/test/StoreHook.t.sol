@@ -7,11 +7,11 @@ import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { EchoSubscriber } from "./EchoSubscriber.sol";
 import { RevertSubscriber } from "./RevertSubscriber.sol";
 
-import { Hook } from "../src/Hook.sol";
-import { StoreHookType } from "../src/StoreHook.sol";
-import { StoreHookLib } from "../src/StoreHook.sol";
+import { Hook, HookLib } from "../src/Hook.sol";
 import { IStoreHook } from "../src/IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 
 contract StoreHookTest is Test, GasReporter {
   event HookCalled(bytes);
@@ -21,131 +21,79 @@ contract StoreHookTest is Test, GasReporter {
   RevertSubscriber private revertSubscriber = new RevertSubscriber();
   bytes32 private tableId = "table";
   bytes32[] private key = new bytes32[](1);
-  bytes private data = "data";
+  bytes private staticData = abi.encodePacked(bytes32(0));
+  PackedCounter private encodedLengths = PackedCounter.wrap(bytes32(0));
+  bytes private dynamicData = new bytes(0);
+  uint8 private fieldIndex = 1;
   FieldLayout private fieldLayout = FieldLayout.wrap(0);
 
   function testEncodeBitmap() public {
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      }),
-      uint8(0x00),
-      "0b00000000"
-    );
+    assertEq(BEFORE_SET_RECORD, uint8(0x01), "0b00000001");
+    assertEq(AFTER_SET_RECORD, uint8(0x02), "0b00000010");
+    assertEq(BEFORE_SPLICE_STATIC_DATA, uint8(0x04), "0b00000100");
+    assertEq(AFTER_SPLICE_STATIC_DATA, uint8(0x08), "0b00001000");
+    assertEq(BEFORE_SPLICE_DYNAMIC_DATA, uint8(0x10), "0b00010000");
+    assertEq(AFTER_SPLICE_DYNAMIC_DATA, uint8(0x20), "0b00100000");
+    assertEq(BEFORE_DELETE_RECORD, uint8(0x40), "0b01000000");
+    assertEq(AFTER_DELETE_RECORD, uint8(0x80), "0b10000000");
 
     assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      }),
-      uint8(0x01),
-      "0b00000001"
-    );
-
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: true,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      }),
-      uint8(0x02),
-      "0b00000010"
-    );
-
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: true,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      }),
-      uint8(0x04),
-      "0b00000100"
-    );
-
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      }),
-      uint8(0x08),
-      "0b00001000"
-    );
-
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: false
-      }),
-      uint8(0x10),
-      "0b00010000"
-    );
-
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: true
-      }),
-      uint8(0x20),
-      "0b00100000"
-    );
-
-    assertEq(
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      }),
-      uint8(0x3f),
-      "0b00111111"
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD,
+      uint8(0xff),
+      "0b11111111"
     );
   }
 
   function testEncode() public {
     assertEq(
       Hook.unwrap(
-        StoreHookLib.encode(
-          echoSubscriber,
-          StoreHookLib.encodeBitmap({
-            onBeforeSetRecord: true,
-            onAfterSetRecord: true,
-            onBeforeSetField: true,
-            onAfterSetField: true,
-            onBeforeDeleteRecord: true,
-            onAfterDeleteRecord: true
-          })
+        HookLib.encode(
+          address(echoSubscriber),
+          BEFORE_SET_RECORD |
+            AFTER_SET_RECORD |
+            BEFORE_SPLICE_STATIC_DATA |
+            AFTER_SPLICE_STATIC_DATA |
+            BEFORE_SPLICE_DYNAMIC_DATA |
+            AFTER_SPLICE_DYNAMIC_DATA |
+            BEFORE_DELETE_RECORD |
+            AFTER_DELETE_RECORD
         )
       ),
-      bytes21(abi.encodePacked(echoSubscriber, uint8(0x3f)))
+      bytes21(abi.encodePacked(echoSubscriber, uint8(0xff)))
+    );
+  }
+
+  function testShorthands() public {
+    assertEq(
+      ALL,
+      BEFORE_SET_RECORD |
+        AFTER_SET_RECORD |
+        BEFORE_SPLICE_STATIC_DATA |
+        AFTER_SPLICE_STATIC_DATA |
+        BEFORE_SPLICE_DYNAMIC_DATA |
+        AFTER_SPLICE_DYNAMIC_DATA |
+        BEFORE_DELETE_RECORD |
+        AFTER_DELETE_RECORD,
+      "0b11111111"
+    );
+
+    assertEq(
+      BEFORE_ALL,
+      BEFORE_SET_RECORD | BEFORE_SPLICE_STATIC_DATA | BEFORE_SPLICE_DYNAMIC_DATA | BEFORE_DELETE_RECORD,
+      "0b01010101"
+    );
+
+    assertEq(
+      AFTER_ALL,
+      AFTER_SET_RECORD | AFTER_SPLICE_STATIC_DATA | AFTER_SPLICE_DYNAMIC_DATA | AFTER_DELETE_RECORD,
+      "0b10101010"
     );
   }
 
@@ -153,91 +101,81 @@ contract StoreHookTest is Test, GasReporter {
     address hookAddress,
     bool enableBeforeSetRecord,
     bool enableAfterSetRecord,
-    bool enableBeforeSetField,
-    bool enableAfterSetField,
+    bool enableBeforeSpliceStaticData,
+    bool enableAfterSpliceStaticData,
+    bool enableBeforeSpliceDynamicData,
+    bool enableAfterSpliceDynamicData,
     bool enableBeforeDeleteRecord,
     bool enableAfterDeleteRecord
   ) public {
-    uint8 encodedBitmap = StoreHookLib.encodeBitmap({
-      onBeforeSetRecord: enableBeforeSetRecord,
-      onAfterSetRecord: enableAfterSetRecord,
-      onBeforeSetField: enableBeforeSetField,
-      onAfterSetField: enableAfterSetField,
-      onBeforeDeleteRecord: enableBeforeDeleteRecord,
-      onAfterDeleteRecord: enableAfterDeleteRecord
-    });
+    uint8 enabledHooks = 0;
+    if (enableBeforeSetRecord) enabledHooks |= BEFORE_SET_RECORD;
+    if (enableAfterSetRecord) enabledHooks |= AFTER_SET_RECORD;
+    if (enableBeforeSpliceStaticData) enabledHooks |= BEFORE_SPLICE_STATIC_DATA;
+    if (enableAfterSpliceStaticData) enabledHooks |= AFTER_SPLICE_STATIC_DATA;
+    if (enableBeforeSpliceDynamicData) enabledHooks |= BEFORE_SPLICE_DYNAMIC_DATA;
+    if (enableAfterSpliceDynamicData) enabledHooks |= AFTER_SPLICE_DYNAMIC_DATA;
+    if (enableBeforeDeleteRecord) enabledHooks |= BEFORE_DELETE_RECORD;
+    if (enableAfterDeleteRecord) enabledHooks |= AFTER_DELETE_RECORD;
+
     assertEq(
-      Hook.unwrap(StoreHookLib.encode(IStoreHook(hookAddress), encodedBitmap)),
-      bytes21(abi.encodePacked(hookAddress, encodedBitmap))
+      Hook.unwrap(HookLib.encode(hookAddress, enabledHooks)),
+      bytes21(abi.encodePacked(hookAddress, enabledHooks))
     );
   }
 
   function testIsEnabled() public {
-    Hook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: true,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      })
-    );
+    Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SPLICE_STATIC_DATA | AFTER_DELETE_RECORD);
 
     startGasReport("check if store hook is enabled");
-    storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD));
+    storeHook.isEnabled(BEFORE_SET_RECORD);
     endGasReport();
 
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD)), false);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_SET_RECORD)), false);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD)), true);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD)), false);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_DELETE_RECORD)), false);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_DELETE_RECORD)), false);
+    assertFalse(storeHook.isEnabled(BEFORE_SET_RECORD), "BEFORE_SET_RECORD");
+    assertFalse(storeHook.isEnabled(AFTER_SET_RECORD), "AFTER_SET_RECORD");
+    assertTrue(storeHook.isEnabled(BEFORE_SPLICE_STATIC_DATA), "BEFORE_SPLICE_STATIC_DATA");
+    assertFalse(storeHook.isEnabled(AFTER_SPLICE_STATIC_DATA), "AFTER_SPLICE_STATIC_DATA");
+    assertFalse(storeHook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA), "BEFORE_SPLICE_DYNAMIC_DATA");
+    assertFalse(storeHook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA), "AFTER_SPLICE_DYNAMIC_DATA");
+    assertFalse(storeHook.isEnabled(BEFORE_DELETE_RECORD), "BEFORE_DELETE_RECORD");
+    assertTrue(storeHook.isEnabled(AFTER_DELETE_RECORD), "AFTER_DELETE_RECORD");
   }
 
   function testFuzzIsEnabled(
     address hookAddress,
     bool enableBeforeSetRecord,
     bool enableAfterSetRecord,
-    bool enableBeforeSetField,
-    bool enableAfterSetField,
+    bool enableBeforeSpliceStaticData,
+    bool enableAfterSpliceStaticData,
+    bool enableBeforeSpliceDynamicData,
+    bool enableAfterSpliceDynamicData,
     bool enableBeforeDeleteRecord,
     bool enableAfterDeleteRecord
   ) public {
-    Hook storeHook = StoreHookLib.encode(
-      IStoreHook(hookAddress),
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: enableBeforeSetRecord,
-        onAfterSetRecord: enableAfterSetRecord,
-        onBeforeSetField: enableBeforeSetField,
-        onAfterSetField: enableAfterSetField,
-        onBeforeDeleteRecord: enableBeforeDeleteRecord,
-        onAfterDeleteRecord: enableAfterDeleteRecord
-      })
-    );
+    uint8 enabledHooks = 0;
+    if (enableBeforeSetRecord) enabledHooks |= BEFORE_SET_RECORD;
+    if (enableAfterSetRecord) enabledHooks |= AFTER_SET_RECORD;
+    if (enableBeforeSpliceStaticData) enabledHooks |= BEFORE_SPLICE_STATIC_DATA;
+    if (enableAfterSpliceStaticData) enabledHooks |= AFTER_SPLICE_STATIC_DATA;
+    if (enableBeforeSpliceDynamicData) enabledHooks |= BEFORE_SPLICE_DYNAMIC_DATA;
+    if (enableAfterSpliceDynamicData) enabledHooks |= AFTER_SPLICE_DYNAMIC_DATA;
+    if (enableBeforeDeleteRecord) enabledHooks |= BEFORE_DELETE_RECORD;
+    if (enableAfterDeleteRecord) enabledHooks |= AFTER_DELETE_RECORD;
 
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD)), enableBeforeSetRecord);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_SET_RECORD)), enableAfterSetRecord);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_FIELD)), enableBeforeSetField);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_SET_FIELD)), enableAfterSetField);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.BEFORE_DELETE_RECORD)), enableBeforeDeleteRecord);
-    assertEq(storeHook.isEnabled(uint8(StoreHookType.AFTER_DELETE_RECORD)), enableAfterDeleteRecord);
+    Hook storeHook = HookLib.encode(hookAddress, enabledHooks);
+
+    assertEq(storeHook.isEnabled(BEFORE_SET_RECORD), enableBeforeSetRecord);
+    assertEq(storeHook.isEnabled(AFTER_SET_RECORD), enableAfterSetRecord);
+    assertEq(storeHook.isEnabled(BEFORE_SPLICE_STATIC_DATA), enableBeforeSpliceStaticData);
+    assertEq(storeHook.isEnabled(AFTER_SPLICE_STATIC_DATA), enableAfterSpliceStaticData);
+    assertEq(storeHook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA), enableBeforeSpliceDynamicData);
+    assertEq(storeHook.isEnabled(AFTER_SPLICE_DYNAMIC_DATA), enableAfterSpliceDynamicData);
+    assertEq(storeHook.isEnabled(BEFORE_DELETE_RECORD), enableBeforeDeleteRecord);
+    assertEq(storeHook.isEnabled(AFTER_DELETE_RECORD), enableAfterDeleteRecord);
   }
 
   function testGetAddress() public {
-    Hook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: true,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      })
-    );
+    Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SPLICE_STATIC_DATA);
 
     startGasReport("get store hook address");
     storeHook.getAddress();
@@ -246,62 +184,45 @@ contract StoreHookTest is Test, GasReporter {
     assertEq(storeHook.getAddress(), address(echoSubscriber));
   }
 
-  function testGetBitmap() public {
-    uint8 encodedBitmap = StoreHookLib.encodeBitmap({
-      onBeforeSetRecord: false,
-      onAfterSetRecord: false,
-      onBeforeSetField: true,
-      onAfterSetField: false,
-      onBeforeDeleteRecord: false,
-      onAfterDeleteRecord: false
-    });
-
-    Hook storeHook = StoreHookLib.encode(echoSubscriber, encodedBitmap);
-
-    startGasReport("get store hook bitmap");
-    storeHook.getBitmap();
-    endGasReport();
-
-    assertEq(storeHook.getBitmap(), encodedBitmap);
-  }
-
   function testCallHook() public {
-    Hook storeHook = StoreHookLib.encode(
-      echoSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      })
-    );
+    Hook storeHook = HookLib.encode(address(echoSubscriber), BEFORE_SET_RECORD);
+
+    // TODO temporary variable until https://github.com/foundry-rs/foundry/issues/5811 is fixed
+    bytes memory emptyDynamicData = new bytes(0);
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, data, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        echoSubscriber.onBeforeSetRecord,
+        (tableId, key, staticData, encodedLengths, emptyDynamicData, fieldLayout)
+      )
+    );
     startGasReport("call an enabled hook");
-    if (storeHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
-      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(tableId, key, data, fieldLayout);
+    if (storeHook.isEnabled(BEFORE_SET_RECORD)) {
+      IStoreHook(storeHook.getAddress()).onBeforeSetRecord(
+        tableId,
+        key,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
     endGasReport();
 
-    Hook revertHook = StoreHookLib.encode(
-      revertSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: false,
-        onAfterSetRecord: false,
-        onBeforeSetField: false,
-        onAfterSetField: false,
-        onBeforeDeleteRecord: false,
-        onAfterDeleteRecord: false
-      })
-    );
+    Hook revertHook = HookLib.encode(address(revertSubscriber), 0);
 
     // Expect the to not be called - otherwise the test will fail with a revert
     startGasReport("call a disabled hook");
-    if (revertHook.isEnabled(uint8(StoreHookType.BEFORE_SET_RECORD))) {
-      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(tableId, key, data, fieldLayout);
+    if (revertHook.isEnabled(BEFORE_SET_RECORD)) {
+      IStoreHook(revertHook.getAddress()).onBeforeSetRecord(
+        tableId,
+        key,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
     endGasReport();
   }

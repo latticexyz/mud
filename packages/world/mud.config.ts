@@ -150,7 +150,7 @@ export default mudConfig({
         delegator: "address",
         delegatee: "address",
         resourceSelector: "bytes32",
-        funcSelectorAndArgsHash: "bytes32",
+        callDataHash: "bytes32",
       },
       valueSchema: {
         availableCalls: "uint256",

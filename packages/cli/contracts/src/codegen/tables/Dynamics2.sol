@@ -21,6 +21,10 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Dynamics2")));
 bytes32 constant Dynamics2TableId = _tableId;
 
+FieldLayout constant _fieldLayout = FieldLayout.wrap(
+  0x0000000300000000000000000000000000000000000000000000000000000000
+);
+
 struct Dynamics2Data {
   uint64[] u64;
   string str;
@@ -30,9 +34,7 @@ struct Dynamics2Data {
 library Dynamics2 {
   /** Get the table values' field layout */
   function getFieldLayout() internal pure returns (FieldLayout) {
-    uint256[] memory _fieldLayout = new uint256[](0);
-
-    return FieldLayoutLib.encode(_fieldLayout, 3);
+    return _fieldLayout;
   }
 
   /** Get the table's key schema */
@@ -69,19 +71,17 @@ library Dynamics2 {
 
   /** Register the table with its config */
   function register() internal {
-    StoreSwitch.registerTable(
-      _tableId,
-      getFieldLayout(),
-      getKeySchema(),
-      getValueSchema(),
-      getKeyNames(),
-      getFieldNames()
-    );
+    StoreSwitch.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+  }
+
+  /** Register the table with its config */
+  function _register() internal {
+    StoreCore.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Register the table with its config (using the specified store) */
   function register(IStore _store) internal {
-    _store.registerTable(_tableId, getFieldLayout(), getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
+    _store.registerTable(_tableId, _fieldLayout, getKeySchema(), getValueSchema(), getKeyNames(), getFieldNames());
   }
 
   /** Get u64 */
@@ -89,7 +89,16 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
+  }
+
+  /** Get u64 */
+  function _getU64(bytes32 key) internal view returns (uint64[] memory u64) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
   }
 
@@ -98,7 +107,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 0, getFieldLayout());
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 0);
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint64());
   }
 
@@ -107,7 +116,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), _fieldLayout);
+  }
+
+  /** Set u64 */
+  function _setU64(bytes32 key, uint64[] memory u64) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), _fieldLayout);
   }
 
   /** Set u64 (using the specified store) */
@@ -115,7 +132,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 0, EncodeArray.encode((u64)), _fieldLayout);
   }
 
   /** Get the length of u64 */
@@ -123,7 +140,18 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
+    unchecked {
+      return _byteLength / 8;
+    }
+  }
+
+  /** Get the length of u64 */
+  function _lengthU64(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
     unchecked {
       return _byteLength / 8;
     }
@@ -134,7 +162,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, getFieldLayout());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 0, _fieldLayout);
     unchecked {
       return _byteLength / 8;
     }
@@ -153,11 +181,25 @@ library Dynamics2 {
         _tableId,
         _keyTuple,
         0,
-        getFieldLayout(),
+        _fieldLayout,
         _index * 8,
         (_index + 1) * 8
       );
-      return (uint64(Bytes.slice8(_blob, 0)));
+      return (uint64(bytes8(_blob)));
+    }
+  }
+
+  /**
+   * Get an item of u64
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemU64(bytes32 key, uint256 _index) internal view returns (uint64) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 8, (_index + 1) * 8);
+      return (uint64(bytes8(_blob)));
     }
   }
 
@@ -170,8 +212,8 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, getFieldLayout(), _index * 8, (_index + 1) * 8);
-      return (uint64(Bytes.slice8(_blob, 0)));
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 0, _fieldLayout, _index * 8, (_index + 1) * 8);
+      return (uint64(bytes8(_blob)));
     }
   }
 
@@ -180,7 +222,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
+  }
+
+  /** Push an element to u64 */
+  function _pushU64(bytes32 key, uint64 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
   }
 
   /** Push an element to u64 (using the specified store) */
@@ -188,7 +238,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), getFieldLayout());
+    _store.pushToField(_tableId, _keyTuple, 0, abi.encodePacked((_element)), _fieldLayout);
   }
 
   /** Pop an element from u64 */
@@ -196,7 +246,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 8, getFieldLayout());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 0, 8, _fieldLayout);
+  }
+
+  /** Pop an element from u64 */
+  function _popU64(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 0, 8, _fieldLayout);
   }
 
   /** Pop an element from u64 (using the specified store) */
@@ -204,7 +262,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 0, 8, getFieldLayout());
+    _store.popFromField(_tableId, _keyTuple, 0, 8, _fieldLayout);
   }
 
   /**
@@ -216,7 +274,20 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)), getFieldLayout());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)), _fieldLayout);
+    }
+  }
+
+  /**
+   * Update an element of u64 at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateU64(bytes32 key, uint256 _index, uint64 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)), _fieldLayout);
     }
   }
 
@@ -229,7 +300,7 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)), getFieldLayout());
+      _store.updateInField(_tableId, _keyTuple, 0, _index * 8, abi.encodePacked((_element)), _fieldLayout);
     }
   }
 
@@ -238,7 +309,16 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 1);
+    return (string(_blob));
+  }
+
+  /** Get str */
+  function _getStr(bytes32 key) internal view returns (string memory str) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
@@ -247,7 +327,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 1, getFieldLayout());
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 1);
     return (string(_blob));
   }
 
@@ -256,7 +336,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((str)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 1, bytes((str)), _fieldLayout);
+  }
+
+  /** Set str */
+  function _setStr(bytes32 key, string memory str) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 1, bytes((str)), _fieldLayout);
   }
 
   /** Set str (using the specified store) */
@@ -264,7 +352,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 1, bytes((str)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 1, bytes((str)), _fieldLayout);
   }
 
   /** Get the length of str */
@@ -272,7 +360,18 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, getFieldLayout());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 1, _fieldLayout);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /** Get the length of str */
+  function _lengthStr(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 1, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -283,7 +382,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, getFieldLayout());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 1, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -302,10 +401,24 @@ library Dynamics2 {
         _tableId,
         _keyTuple,
         1,
-        getFieldLayout(),
+        _fieldLayout,
         _index * 1,
         (_index + 1) * 1
       );
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * Get an item of str
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemStr(bytes32 key, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -319,7 +432,7 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, getFieldLayout(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 1, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (string(_blob));
     }
   }
@@ -329,7 +442,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), getFieldLayout());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), _fieldLayout);
+  }
+
+  /** Push a slice to str */
+  function _pushStr(bytes32 key, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), _fieldLayout);
   }
 
   /** Push a slice to str (using the specified store) */
@@ -337,7 +458,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), getFieldLayout());
+    _store.pushToField(_tableId, _keyTuple, 1, bytes((_slice)), _fieldLayout);
   }
 
   /** Pop a slice from str */
@@ -345,7 +466,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 1, 1, getFieldLayout());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 1, 1, _fieldLayout);
+  }
+
+  /** Pop a slice from str */
+  function _popStr(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 1, 1, _fieldLayout);
   }
 
   /** Pop a slice from str (using the specified store) */
@@ -353,7 +482,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 1, 1, getFieldLayout());
+    _store.popFromField(_tableId, _keyTuple, 1, 1, _fieldLayout);
   }
 
   /**
@@ -365,7 +494,20 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), getFieldLayout());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), _fieldLayout);
+    }
+  }
+
+  /**
+   * Update a slice of str at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateStr(bytes32 key, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -378,7 +520,7 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), getFieldLayout());
+      _store.updateInField(_tableId, _keyTuple, 1, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -387,7 +529,16 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 2);
+    return (bytes(_blob));
+  }
+
+  /** Get b */
+  function _getB(bytes32 key) internal view returns (bytes memory b) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 2);
     return (bytes(_blob));
   }
 
@@ -396,7 +547,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getField(_tableId, _keyTuple, 2, getFieldLayout());
+    bytes memory _blob = _store.getDynamicField(_tableId, _keyTuple, 2);
     return (bytes(_blob));
   }
 
@@ -405,7 +556,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, bytes((b)), getFieldLayout());
+    StoreSwitch.setField(_tableId, _keyTuple, 2, bytes((b)), _fieldLayout);
+  }
+
+  /** Set b */
+  function _setB(bytes32 key, bytes memory b) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setField(_tableId, _keyTuple, 2, bytes((b)), _fieldLayout);
   }
 
   /** Set b (using the specified store) */
@@ -413,7 +572,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setField(_tableId, _keyTuple, 2, bytes((b)), getFieldLayout());
+    _store.setField(_tableId, _keyTuple, 2, bytes((b)), _fieldLayout);
   }
 
   /** Get the length of b */
@@ -421,7 +580,18 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _keyTuple, 2, _fieldLayout);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /** Get the length of b */
+  function _lengthB(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    uint256 _byteLength = StoreCore.getFieldLength(_tableId, _keyTuple, 2, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -432,7 +602,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, getFieldLayout());
+    uint256 _byteLength = _store.getFieldLength(_tableId, _keyTuple, 2, _fieldLayout);
     unchecked {
       return _byteLength / 1;
     }
@@ -451,10 +621,24 @@ library Dynamics2 {
         _tableId,
         _keyTuple,
         2,
-        getFieldLayout(),
+        _fieldLayout,
         _index * 1,
         (_index + 1) * 1
       );
+      return (bytes(_blob));
+    }
+  }
+
+  /**
+   * Get an item of b
+   * (unchecked, returns invalid data if index overflows)
+   */
+  function _getItemB(bytes32 key, uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -468,7 +652,7 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, getFieldLayout(), _index * 1, (_index + 1) * 1);
+      bytes memory _blob = _store.getFieldSlice(_tableId, _keyTuple, 2, _fieldLayout, _index * 1, (_index + 1) * 1);
       return (bytes(_blob));
     }
   }
@@ -478,7 +662,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.pushToField(_tableId, _keyTuple, 2, bytes((_slice)), getFieldLayout());
+    StoreSwitch.pushToField(_tableId, _keyTuple, 2, bytes((_slice)), _fieldLayout);
+  }
+
+  /** Push a slice to b */
+  function _pushB(bytes32 key, bytes memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.pushToField(_tableId, _keyTuple, 2, bytes((_slice)), _fieldLayout);
   }
 
   /** Push a slice to b (using the specified store) */
@@ -486,7 +678,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.pushToField(_tableId, _keyTuple, 2, bytes((_slice)), getFieldLayout());
+    _store.pushToField(_tableId, _keyTuple, 2, bytes((_slice)), _fieldLayout);
   }
 
   /** Pop a slice from b */
@@ -494,7 +686,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 1, getFieldLayout());
+    StoreSwitch.popFromField(_tableId, _keyTuple, 2, 1, _fieldLayout);
+  }
+
+  /** Pop a slice from b */
+  function _popB(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.popFromField(_tableId, _keyTuple, 2, 1, _fieldLayout);
   }
 
   /** Pop a slice from b (using the specified store) */
@@ -502,7 +702,7 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.popFromField(_tableId, _keyTuple, 2, 1, getFieldLayout());
+    _store.popFromField(_tableId, _keyTuple, 2, 1, _fieldLayout);
   }
 
   /**
@@ -514,7 +714,20 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)), getFieldLayout());
+      StoreSwitch.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)), _fieldLayout);
+    }
+  }
+
+  /**
+   * Update a slice of b at `_index`
+   * (checked only to prevent modifying other tables; can corrupt own data if index overflows)
+   */
+  function _updateB(bytes32 key, uint256 _index, bytes memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    unchecked {
+      StoreCore.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -527,7 +740,7 @@ library Dynamics2 {
     _keyTuple[0] = key;
 
     unchecked {
-      _store.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)), getFieldLayout());
+      _store.updateInField(_tableId, _keyTuple, 2, _index * 1, bytes((_slice)), _fieldLayout);
     }
   }
 
@@ -536,8 +749,25 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getFieldLayout());
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
+  }
+
+  /** Get the full data */
+  function _get(bytes32 key) internal view returns (Dynamics2Data memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -545,32 +775,57 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, getFieldLayout());
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
-    bytes memory _data = encode(u64, str, b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+  }
+
+  /** Set the full data using individual values */
+  function _set(bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using individual values (using the specified store) */
   function set(IStore _store, bytes32 key, uint64[] memory u64, string memory str, bytes memory b) internal {
-    bytes memory _data = encode(u64, str, b);
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function set(bytes32 key, Dynamics2Data memory _table) internal {
+    set(key, _table.u64, _table.str, _table.b);
+  }
+
+  /** Set the full data using the data struct */
+  function _set(bytes32 key, Dynamics2Data memory _table) internal {
     set(key, _table.u64, _table.str, _table.b);
   }
 
@@ -580,46 +835,73 @@ library Dynamics2 {
   }
 
   /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (uint64[] memory u64, string memory str, bytes memory b) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    u64 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint64());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    str = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(2);
+    }
+    b = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
    * Decode the tightly packed blob using this table's field layout.
    * Undefined behaviour for invalid blobs.
    */
-  function decode(bytes memory _blob) internal pure returns (Dynamics2Data memory _table) {
-    // 0 is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
-
-    // Store trims the blob if dynamic fields are all empty
-    if (_blob.length > 0) {
-      // skip static data length + dynamic lengths word
-      uint256 _start = 32;
-      uint256 _end;
-      unchecked {
-        _end = 32 + _encodedLengths.atIndex(0);
-      }
-      _table.u64 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint64());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(1);
-      }
-      _table.str = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(2);
-      }
-      _table.b = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-    }
+  function decode(
+    bytes memory,
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
+  ) internal pure returns (Dynamics2Data memory _table) {
+    (_table.u64, _table.str, _table.b) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
-  /** Tightly pack full data using this table's field layout */
-  function encode(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
-    PackedCounter _encodedLengths;
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeLengths(
+    uint64[] memory u64,
+    string memory str,
+    bytes memory b
+  ) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
     unchecked {
       _encodedLengths = PackedCounterLib.pack(u64.length * 8, bytes(str).length, bytes(b).length);
     }
+  }
 
-    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((u64)), bytes((str)), bytes((b)));
+  /** Tightly pack dynamic data using this table's schema */
+  function encodeDynamic(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
+    return abi.encodePacked(EncodeArray.encode((u64)), bytes((str)), bytes((b)));
+  }
+
+  /** Tightly pack full data using this table's field layout */
+  function encode(
+    uint64[] memory u64,
+    string memory str,
+    bytes memory b
+  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
+    bytes memory _staticData;
+    PackedCounter _encodedLengths = encodeLengths(u64, str, b);
+    bytes memory _dynamicData = encodeDynamic(u64, str, b);
+
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
@@ -635,7 +917,15 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /* Delete all data for given keys */
+  function _deleteRecord(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 
   /* Delete all data for given keys (using the specified store) */
@@ -643,6 +933,6 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    _store.deleteRecord(_tableId, _keyTuple, getFieldLayout());
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }

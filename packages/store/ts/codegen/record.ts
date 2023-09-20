@@ -1,9 +1,9 @@
 import {
-  renderList,
+  RenderDynamicField,
   renderArguments,
   renderCommonData,
+  renderList,
   renderWithStore,
-  RenderDynamicField,
 } from "@latticexyz/common/codegen";
 import { renderDecodeValueType } from "./field";
 import { RenderTableOptions } from "./types";
@@ -14,35 +14,40 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Get the full data${_commentSuffix} */
-      function get(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-      ])}) internal view returns (${renderDecodedRecord(options)}) {
+      function ${_methodNamePrefix}get(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+    ])}) internal view returns (${renderDecodedRecord(options)}) {
         ${_keyTupleDefinition}
-        bytes memory _blob = ${_store}.getRecord(_tableId, _keyTuple, getFieldLayout());
-        return decode(_blob);
+
+        (
+          bytes memory _staticData,
+          PackedCounter _encodedLengths,
+          bytes memory _dynamicData
+        ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
+        return decode(_staticData, _encodedLengths, _dynamicData);
       }
     `
   );
 
   result += renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Set the full data using individual values${_commentSuffix} */
-      function set(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-      ])}) internal {
-        bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
+      function ${_methodNamePrefix}set(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+    ])}) internal {
+        ${renderRecordData(options)}
 
         ${_keyTupleDefinition}
 
-        ${_store}.setRecord(_tableId, _keyTuple, _data, getFieldLayout());
+        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
       }
     `
   );
@@ -50,14 +55,14 @@ export function renderRecordMethods(options: RenderTableOptions) {
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Set the full data using the data struct${_commentSuffix} */
-        function set(${renderArguments([
-          _typedStore,
-          _typedTableId,
-          _typedKeyArgs,
-          `${structName} memory _table`,
-        ])}) internal {
+        function ${_methodNamePrefix}set(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        `${structName} memory _table`,
+      ])}) internal {
           set(${renderArguments([
             _untypedStore,
             _tableId,
@@ -69,13 +74,38 @@ export function renderRecordMethods(options: RenderTableOptions) {
     );
   }
 
-  result += renderDecodeFunction(options);
+  result += renderDecodeFunctions(options);
+
+  return result;
+}
+
+export function renderRecordData(options: RenderTableOptions) {
+  let result = "";
+  if (options.staticFields.length > 0) {
+    result += `
+      bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+    `;
+  } else {
+    result += `bytes memory _staticData;`;
+  }
+
+  if (options.dynamicFields.length > 0) {
+    result += `
+      PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+      bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+    `;
+  } else {
+    result += `
+      PackedCounter _encodedLengths;
+      bytes memory _dynamicData;
+    `;
+  }
 
   return result;
 }
 
 // Renders the `decode` function that parses a bytes blob into the table data
-function renderDecodeFunction({ structName, fields, staticFields, dynamicFields }: RenderTableOptions) {
+function renderDecodeFunctions({ structName, fields, staticFields, dynamicFields }: RenderTableOptions) {
   // either set struct properties, or just variables
   const renderedDecodedRecord = structName
     ? `${structName} memory _table`
@@ -90,26 +120,36 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
     _acc += field.staticByteLength;
   }
 
-  if (dynamicFields.length > 0) {
-    const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
-    // decode static (optionally) and dynamic data
-    return `
-    /**
-     * Decode the tightly packed blob using this table's field layout.
-     * Undefined behaviour for invalid blobs.
-     */
-    function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
-      // ${totalStaticLength} is the total byte length of static data
-      PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
+  let result = "";
 
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-        `
-      )}
-      // Store trims the blob if dynamic fields are all empty
-      if (_blob.length > ${totalStaticLength}) {
+  if (staticFields.length > 0) {
+    result += `
+      /**
+       * Decode the tightly packed blob of static data using this table's field layout
+       * Undefined behaviour for invalid blobs
+       */
+      function decodeStatic(bytes memory _blob) internal pure returns (${renderArguments(
+        staticFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      )}) {
+        ${renderList(
+          staticFields,
+          (field, index) => `
+          ${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
+          `
+        )}
+      }
+    `;
+  }
+
+  if (dynamicFields.length > 0) {
+    result += `
+      /**
+       * Decode the tightly packed blob of static data using this table's field layout
+       * Undefined behaviour for invalid blobs
+       */
+      function decodeDynamic(PackedCounter _encodedLengths, bytes memory _blob) internal pure returns (${renderArguments(
+        dynamicFields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
+      )}) {
         ${renderList(
           dynamicFields,
           // unchecked is only dangerous if _encodedLengths (and _blob) is invalid,
@@ -117,42 +157,58 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
           (field, index) => {
             if (index === 0) {
               return `
-              // skip static data length + dynamic lengths word
-              uint256 _start = ${totalStaticLength + 32};
-              uint256 _end;
-              unchecked {
-                _end = ${totalStaticLength + 32} + _encodedLengths.atIndex(${index});
-              }
-              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+                uint256 _start;
+                uint256 _end;
+                unchecked {
+                  _end = _encodedLengths.atIndex(${index});
+                }
+                ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
               `;
             } else {
               return `
-              _start = _end;
-              unchecked {
-                _end += _encodedLengths.atIndex(${index});
-              }
-              ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+                _start = _end;
+                unchecked {
+                  _end += _encodedLengths.atIndex(${index});
+                }
+                ${field.name} = ${renderDecodeDynamicFieldPartial(field)};
               `;
             }
           }
         )}
       }
-    }
-  `;
-  } else {
-    // decode only static data
-    return `
-    /** Decode the tightly packed blob using this table's field layout */
-    function decode(bytes memory _blob) internal pure returns (${renderedDecodedRecord}) {
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
-        `
-      )}
-    }
     `;
   }
+
+  result += `
+    /**
+     * Decode the tightly packed blob using this table's field layout.
+     * Undefined behaviour for invalid blobs.
+     */
+    function decode(
+      bytes memory ${staticFields.length > 0 ? "_staticData" : ""},
+      PackedCounter ${dynamicFields.length > 0 ? "_encodedLengths" : ""},
+      bytes memory ${dynamicFields.length > 0 ? "_dynamicData" : ""}
+    ) internal pure returns (${renderedDecodedRecord}) {
+  `;
+
+  if (staticFields.length > 0) {
+    result += `
+      (${renderArguments(staticFields.map((field) => `${fieldNamePrefix}${field.name}`))}) = decodeStatic(_staticData);
+    `;
+  }
+  if (dynamicFields.length > 0) {
+    result += `
+      (${renderArguments(
+        dynamicFields.map((field) => `${fieldNamePrefix}${field.name}`)
+      )}) = decodeDynamic(_encodedLengths, _dynamicData);
+    `;
+  }
+
+  result += `
+    }
+  `;
+
+  return result;
 }
 
 // contents of `returns (...)` for record getter/decoder

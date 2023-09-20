@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/Tables.sol";
+import { Vector2, Vector2Data, Vector2TableId } from "../src/codegen/index.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";

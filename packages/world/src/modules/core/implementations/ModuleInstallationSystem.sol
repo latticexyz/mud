@@ -24,10 +24,10 @@ contract ModuleInstallationSystem is System {
       msgSender: _msgSender(),
       msgValue: 0,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args)
+      callData: abi.encodeCall(IModule.install, (args))
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(module.getName(), keccak256(args), address(module));
+    InstalledModules._set(module.getName(), keccak256(args), address(module));
   }
 }

@@ -27,8 +27,9 @@ export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
       enums: typeof DEFAULTS.enums;
       namespace: typeof DEFAULTS.namespace;
       storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
-      userTypesPath: typeof PATH_DEFAULTS.userTypesPath;
+      userTypesFilename: typeof PATH_DEFAULTS.userTypesFilename;
       codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
+      codegenIndexFilename: typeof PATH_DEFAULTS.codegenIndexFilename;
     }
   > {
   tables: ExpandTablesConfig<T["tables"]>;

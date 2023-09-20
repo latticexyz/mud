@@ -2,10 +2,12 @@
 pragma solidity >=0.8.0;
 
 import { IStore } from "./IStore.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { FieldLayout } from "./FieldLayout.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -107,12 +109,57 @@ library StoreSwitch {
     }
   }
 
-  function setRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory data, FieldLayout fieldLayout) internal {
+  function setRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
+    FieldLayout fieldLayout
+  ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, data, fieldLayout);
+      StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     } else {
-      IStore(_storeAddress).setRecord(tableId, keyTuple, data, fieldLayout);
+      IStore(_storeAddress).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    }
+  }
+
+  function spliceStaticData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    } else {
+      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    }
+  }
+
+  function spliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+    } else {
+      IStore(_storeAddress).spliceDynamicData(
+        tableId,
+        keyTuple,
+        dynamicFieldIndex,
+        startWithinField,
+        deleteCount,
+        data
+      );
     }
   }
 
@@ -189,14 +236,23 @@ library StoreSwitch {
   function emitEphemeralRecord(
     bytes32 tableId,
     bytes32[] memory keyTuple,
-    bytes memory data,
+    bytes memory staticData,
+    PackedCounter encodedLengths,
+    bytes memory dynamicData,
     FieldLayout fieldLayout
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(tableId, keyTuple, data, fieldLayout);
+      StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
     } else {
-      IStore(_storeAddress).emitEphemeralRecord(tableId, keyTuple, data, fieldLayout);
+      IStore(_storeAddress).emitEphemeralRecord(
+        tableId,
+        keyTuple,
+        staticData,
+        encodedLengths,
+        dynamicData,
+        fieldLayout
+      );
     }
   }
 
@@ -204,7 +260,7 @@ library StoreSwitch {
     bytes32 tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory, PackedCounter, bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(tableId, keyTuple, fieldLayout);
@@ -224,6 +280,33 @@ library StoreSwitch {
       return StoreCore.getField(tableId, keyTuple, fieldIndex, fieldLayout);
     } else {
       return IStore(_storeAddress).getField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getStaticField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 fieldIndex,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    } else {
+      return IStore(_storeAddress).getStaticField(tableId, keyTuple, fieldIndex, fieldLayout);
+    }
+  }
+
+  function getDynamicField(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex
+  ) internal view returns (bytes memory) {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      return StoreCore.getDynamicField(tableId, keyTuple, dynamicFieldIndex);
+    } else {
+      return IStore(_storeAddress).getDynamicField(tableId, keyTuple, dynamicFieldIndex);
     }
   }
 

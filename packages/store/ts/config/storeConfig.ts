@@ -261,10 +261,12 @@ export type MUDUserConfig<
     namespace?: string;
     /** Path for store package imports. Default is "@latticexyz/store/src/" */
     storeImportPath?: string;
-    /** Path to the file where common user types will be generated and imported from. Default is "Types" */
-    userTypesPath?: string;
+    /** Filename where common user types will be generated and imported from. Default is "common.sol" */
+    userTypesFilename?: string;
     /** Path to the directory where generated files will be placed. (Default is "codegen") */
     codegenDirectory?: string;
+    /** Filename where codegen index will be generated. Default is "index.sol" */
+    codegenIndexFilename?: string;
   };
 
 const StoreConfigUnrefined = z
@@ -272,8 +274,9 @@ const StoreConfigUnrefined = z
     namespace: zSelector.default(DEFAULTS.namespace),
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
-    userTypesPath: z.string().default(PATH_DEFAULTS.userTypesPath),
+    userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),
     codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
+    codegenIndexFilename: z.string().default(PATH_DEFAULTS.codegenIndexFilename),
   })
   .merge(zEnumsConfig);
 

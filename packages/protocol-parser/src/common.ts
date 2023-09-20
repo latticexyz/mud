@@ -1,4 +1,5 @@
 import { DynamicAbiType, SchemaAbiType, SchemaAbiTypeToPrimitiveType, StaticAbiType } from "@latticexyz/schema-type";
+import { Hex } from "viem";
 
 /** @deprecated use `KeySchema` or `ValueSchema` instead */
 export type Schema = {
@@ -28,4 +29,10 @@ export type SchemaToPrimitives<TSchema extends ValueSchema> = {
 export type TableRecord<TKeySchema extends KeySchema = KeySchema, TValueSchema extends ValueSchema = ValueSchema> = {
   key: SchemaToPrimitives<TKeySchema>;
   value: SchemaToPrimitives<TValueSchema>;
+};
+
+export type ValueArgs = {
+  staticData: Hex;
+  encodedLengths: Hex;
+  dynamicData: Hex;
 };

@@ -1,5 +1,6 @@
 import { renderArguments, renderCommonData, renderWithStore } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
+import { renderRecordData } from "./record";
 
 export function renderEphemeralMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
@@ -7,19 +8,19 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
 
   let result = renderWithStore(
     storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
       /** Emit the ephemeral event using individual values${_commentSuffix} */
-      function emitEphemeral(${renderArguments([
-        _typedStore,
-        _typedTableId,
-        _typedKeyArgs,
-        renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-      ])}) internal {
-        bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
+      function ${_methodNamePrefix}emitEphemeral(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+    ])}) internal {
+        ${renderRecordData(options)}
 
         ${_keyTupleDefinition}
 
-        ${_store}.emitEphemeralRecord(_tableId, _keyTuple, _data, getFieldLayout());
+        ${_store}.emitEphemeralRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
       }
     `
   );
@@ -27,14 +28,14 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
   if (structName !== undefined) {
     result += renderWithStore(
       storeArgument,
-      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
         /** Emit the ephemeral event using the data struct${_commentSuffix} */
-        function emitEphemeral(${renderArguments([
-          _typedStore,
-          _typedTableId,
-          _typedKeyArgs,
-          `${structName} memory _table`,
-        ])}) internal {
+        function ${_methodNamePrefix}emitEphemeral(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        `${structName} memory _table`,
+      ])}) internal {
           emitEphemeral(${renderArguments([
             _untypedStore,
             _tableId,

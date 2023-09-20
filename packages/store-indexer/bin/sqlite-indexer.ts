@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+import "dotenv/config";
 import fs from "node:fs";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
@@ -9,58 +11,29 @@ import { fastifyTRPCPlugin } from "@trpc/server/adapters/fastify";
 import { AppRouter, createAppRouter } from "@latticexyz/store-sync/trpc-indexer";
 import { chainState, schemaVersion, syncToSqlite } from "@latticexyz/store-sync/sqlite";
 import { createQueryAdapter } from "../src/sqlite/createQueryAdapter";
-import type { Chain } from "viem/chains";
-import * as mudChains from "@latticexyz/common/chains";
-import * as chains from "viem/chains";
-import { isNotNull } from "@latticexyz/common/utils";
+import { isDefined } from "@latticexyz/common/utils";
 import { combineLatest, filter, first } from "rxjs";
+import { parseEnv } from "./parseEnv";
 
-const possibleChains = Object.values({ ...mudChains, ...chains }) as Chain[];
-
-// TODO: refine zod type to be either CHAIN_ID or RPC_HTTP_URL/RPC_WS_URL
-const env = z
-  .object({
-    CHAIN_ID: z.coerce.number().positive().optional(),
-    RPC_HTTP_URL: z.string().optional(),
-    RPC_WS_URL: z.string().optional(),
-    START_BLOCK: z.coerce.bigint().nonnegative().default(0n),
-    MAX_BLOCK_RANGE: z.coerce.bigint().positive().default(1000n),
-    HOST: z.string().default("0.0.0.0"),
-    PORT: z.coerce.number().positive().default(3001),
+const env = parseEnv(
+  z.object({
     SQLITE_FILENAME: z.string().default("indexer.db"),
   })
-  .parse(process.env, {
-    errorMap: (issue) => ({
-      message: `Missing or invalid environment variable: ${issue.path.join(".")}`,
-    }),
-  });
-
-const chain = env.CHAIN_ID != null ? possibleChains.find((c) => c.id === env.CHAIN_ID) : undefined;
-if (env.CHAIN_ID != null && !chain) {
-  console.warn(`No chain found for chain ID ${env.CHAIN_ID}`);
-}
+);
 
 const transports: Transport[] = [
-  env.RPC_WS_URL ? webSocket(env.RPC_WS_URL) : null,
-  env.RPC_HTTP_URL ? http(env.RPC_HTTP_URL) : null,
-].filter(isNotNull);
+  // prefer WS when specified
+  env.RPC_WS_URL ? webSocket(env.RPC_WS_URL) : undefined,
+  // otherwise use or fallback to HTTP
+  env.RPC_HTTP_URL ? http(env.RPC_HTTP_URL) : undefined,
+].filter(isDefined);
 
 const publicClient = createPublicClient({
-  chain,
-  transport: fallback(
-    // If one or more RPC URLs are provided, we'll configure the transport with only those RPC URLs
-    transports.length > 0
-      ? transports
-      : // Otherwise use the chain defaults
-        [webSocket(), http()]
-  ),
-  pollingInterval: 1000,
+  transport: fallback(transports),
+  pollingInterval: env.POLLING_INTERVAL,
 });
 
-// Fetch the chain ID from the RPC if no chain object was found for the provided chain ID.
-// We do this to match the downstream logic, which also attempts to find the chain ID.
-const chainId = chain?.id ?? (await publicClient.getChainId());
-
+const chainId = await publicClient.getChainId();
 const database = drizzle(new Database(env.SQLITE_FILENAME));
 
 let startBlock = env.START_BLOCK;
@@ -90,14 +63,14 @@ try {
   // ignore errors, this is optional
 }
 
-const { latestBlockNumber$, blockStorageOperations$ } = await syncToSqlite({
+const { latestBlockNumber$, storedBlockLogs$ } = await syncToSqlite({
   database,
   publicClient,
   startBlock,
   maxBlockRange: env.MAX_BLOCK_RANGE,
 });
 
-combineLatest([latestBlockNumber$, blockStorageOperations$])
+combineLatest([latestBlockNumber$, storedBlockLogs$])
   .pipe(
     filter(
       ([latestBlockNumber, { blockNumber: lastBlockNumberProcessed }]) => latestBlockNumber === lastBlockNumberProcessed

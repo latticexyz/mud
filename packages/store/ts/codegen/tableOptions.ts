@@ -28,8 +28,8 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     const withStruct = tableData.dataStruct;
     // operate on all fields at once; for only 1 field keep them only if struct is also kept
     const withRecordMethods = withStruct || Object.keys(tableData.valueSchema).length > 1;
-    // field methods can be simply get/set if there's only 1 field and no record methods
-    const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
+    // field methods can include simply get/set if there's only 1 field and no record methods
+    const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
     // list of any symbols that need to be imported
     const imports: RelativeImportDatum[] = [];
 
@@ -62,7 +62,6 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         ...renderType,
         arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
-        methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
       };
       return field;
     });
@@ -100,6 +99,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         withFieldMethods: !tableData.ephemeral,
         withRecordMethods: withRecordMethods && !tableData.ephemeral,
         withEphemeralMethods: tableData.ephemeral,
+        withSuffixlessFieldMethods,
         storeArgument: tableData.storeArgument,
       },
     });

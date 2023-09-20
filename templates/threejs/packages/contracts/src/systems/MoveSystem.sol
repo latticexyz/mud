@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
-import { Position, PositionData } from "../codegen/Tables.sol";
+import { Position, PositionData } from "../codegen/index.sol";
 
 function distance(PositionData memory a, PositionData memory b) pure returns (int32) {
   int32 deltaX = a.x > b.x ? a.x - b.x : b.x - a.x;

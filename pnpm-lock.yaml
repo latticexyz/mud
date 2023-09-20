@@ -379,11 +379,11 @@ importers:
         version: 4.3.7(react@18.2.0)
     devDependencies:
       '@types/react':
-        specifier: ^18.2.6
-        version: 18.2.6
+        specifier: 18.2.22
+        version: 18.2.22
       '@types/react-dom':
-        specifier: ^18.2.4
-        version: 18.2.4
+        specifier: 18.2.7
+        version: 18.2.7
       '@types/ws':
         specifier: ^8.5.4
         version: 8.5.4
@@ -404,6 +404,46 @@ importers:
         version: 0.31.4(jsdom@22.1.0)
 
   packages/ecs-browser: {}
+
+  packages/faucet:
+    dependencies:
+      '@fastify/cors':
+        specifier: ^8.3.0
+        version: 8.3.0
+      '@trpc/client':
+        specifier: 10.34.0
+        version: 10.34.0(@trpc/server@10.34.0)
+      '@trpc/server':
+        specifier: 10.34.0
+        version: 10.34.0
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4(supports-color@8.1.1)
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
+      fastify:
+        specifier: ^4.21.0
+        version: 4.21.0
+      viem:
+        specifier: 1.6.0
+        version: 1.6.0(typescript@5.1.6)(zod@3.21.4)
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.7
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(postcss@8.4.23)(typescript@5.1.6)
+      tsx:
+        specifier: ^3.12.6
+        version: 3.12.6
+      vitest:
+        specifier: 0.31.4
+        version: 0.31.4(jsdom@22.1.0)
 
   packages/gas-report:
     dependencies:
@@ -560,10 +600,10 @@ importers:
     devDependencies:
       '@testing-library/react-hooks':
         specifier: ^8.0.1
-        version: 8.0.1(@types/react@18.2.6)(react-test-renderer@18.2.0)(react@18.2.0)
+        version: 8.0.1(@types/react@18.2.22)(react-test-renderer@18.2.0)(react@18.2.0)
       '@types/react':
-        specifier: ^18.2.6
-        version: 18.2.6
+        specifier: 18.2.22
+        version: 18.2.22
       '@vitejs/plugin-react':
         specifier: ^4.0.0
         version: 4.0.0(vite@4.3.6)
@@ -782,14 +822,17 @@ importers:
         specifier: ^0.2.22
         version: 0.2.22(typescript@5.1.6)
       better-sqlite3:
-        specifier: ^8.4.0
-        version: 8.4.0
+        specifier: ^8.6.0
+        version: 8.6.0
       debug:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
+      dotenv:
+        specifier: ^16.0.3
+        version: 16.0.3
       drizzle-orm:
-        specifier: ^0.27.0
-        version: 0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0)(postgres@3.3.5)
+        specifier: ^0.28.5
+        version: 0.28.5(@types/better-sqlite3@7.6.4)(better-sqlite3@8.6.0)(postgres@3.3.5)
       fastify:
         specifier: ^4.21.0
         version: 4.21.0
@@ -861,11 +904,11 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(supports-color@8.1.1)
       drizzle-orm:
-        specifier: ^0.27.0
-        version: 0.27.0(@types/sql.js@1.4.4)(kysely@0.26.1)(postgres@3.3.5)(sql.js@1.8.0)
+        specifier: ^0.28.5
+        version: 0.28.5(@types/sql.js@1.4.4)(kysely@0.26.3)(postgres@3.3.5)(sql.js@1.8.0)
       kysely:
-        specifier: ^0.26.1
-        version: 0.26.1
+        specifier: ^0.26.3
+        version: 0.26.3
       postgres:
         specifier: ^3.3.5
         version: 3.3.5
@@ -2986,7 +3029,7 @@ packages:
       antlr4ts: 0.5.0-alpha.4
     dev: false
 
-  /@testing-library/react-hooks@8.0.1(@types/react@18.2.6)(react-test-renderer@18.2.0)(react@18.2.0):
+  /@testing-library/react-hooks@8.0.1(@types/react@18.2.22)(react-test-renderer@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Aqhl2IVmLt8IovEVarNDFuJDVWVvhnr9/GCU6UUnrYXwgDFF9h2L2o2P9KBni1AST5sT6riAyoukFLyjQUgD/g==}
     engines: {node: '>=12'}
     peerDependencies:
@@ -3003,7 +3046,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.21.0
-      '@types/react': 18.2.6
+      '@types/react': 18.2.22
       react: 18.2.0
       react-error-boundary: 3.1.4(react@18.2.0)
       react-test-renderer: 18.2.0(react@18.2.0)
@@ -3239,14 +3282,14 @@ packages:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
     dev: true
 
-  /@types/react-dom@18.2.4:
-    resolution: {integrity: sha512-G2mHoTMTL4yoydITgOGwWdWMVd8sNgyEP85xVmMKAPUBwQWm9wBPQUmvbeF4V3WBY1P7mmL4BkjQ0SqUpf1snw==}
+  /@types/react-dom@18.2.7:
+    resolution: {integrity: sha512-GRaAEriuT4zp9N4p1i8BDBYmEyfo+xQ3yHjJU4eiK5NDa1RmUZG+unZABUTK4/Ox/M+GaHwb6Ow8rUITrtjszA==}
     dependencies:
-      '@types/react': 18.2.6
+      '@types/react': 18.2.22
     dev: true
 
-  /@types/react@18.2.6:
-    resolution: {integrity: sha512-wRZClXn//zxCFW+ye/D2qY65UsYP1Fpex2YXorHc8awoNamkMZSvBxwxdYVInsHOZZd2Ppq8isnSzJL5Mpf8OA==}
+  /@types/react@18.2.22:
+    resolution: {integrity: sha512-60fLTOLqzarLED2O3UQImc/lsNRgG0jE/a1mPW9KjMemY0LMITWEsbS4VvZ4p6rorEHd5YKxxmMKSDK505GHpA==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
@@ -4064,8 +4107,8 @@ packages:
       is-windows: 1.0.2
     dev: true
 
-  /better-sqlite3@8.4.0:
-    resolution: {integrity: sha512-NmsNW1CQvqMszu/CFAJ3pLct6NEFlNfuGM6vw72KHkjOD1UDnL96XNN1BMQc1hiHo8vE2GbOWQYIpZ+YM5wrZw==}
+  /better-sqlite3@8.6.0:
+    resolution: {integrity: sha512-jwAudeiTMTSyby+/SfbHDebShbmC2MCH8mU2+DXi0WJfv13ypEJm47cd3kljmy/H130CazEvkf2Li//ewcMJ1g==}
     requiresBuild: true
     dependencies:
       bindings: 1.5.0
@@ -4953,8 +4996,8 @@ packages:
       detect-libc: 1.0.3
     dev: true
 
-  /drizzle-orm@0.27.0(@types/better-sqlite3@7.6.4)(better-sqlite3@8.4.0)(postgres@3.3.5):
-    resolution: {integrity: sha512-LGiJ0icB+wQwgbSCOvAjONY8Ec6G/EDzQQP5PmUaQYeI9OqgpVKHC2T1fFIbvk5dabWsbokJ5NOciVAxriStig==}
+  /drizzle-orm@0.28.5(@types/better-sqlite3@7.6.4)(better-sqlite3@8.6.0)(postgres@3.3.5):
+    resolution: {integrity: sha512-6r6Iw4c38NAmW6TiKH3TUpGUQ1YdlEoLJOQptn8XPx3Z63+vFNKfAiANqrIiYZiMjKR9+NYAL219nFrmo1duXA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
@@ -5016,12 +5059,12 @@ packages:
         optional: true
     dependencies:
       '@types/better-sqlite3': 7.6.4
-      better-sqlite3: 8.4.0
+      better-sqlite3: 8.6.0
       postgres: 3.3.5
     dev: false
 
-  /drizzle-orm@0.27.0(@types/sql.js@1.4.4)(kysely@0.26.1)(postgres@3.3.5)(sql.js@1.8.0):
-    resolution: {integrity: sha512-LGiJ0icB+wQwgbSCOvAjONY8Ec6G/EDzQQP5PmUaQYeI9OqgpVKHC2T1fFIbvk5dabWsbokJ5NOciVAxriStig==}
+  /drizzle-orm@0.28.5(@types/sql.js@1.4.4)(kysely@0.26.3)(postgres@3.3.5)(sql.js@1.8.0):
+    resolution: {integrity: sha512-6r6Iw4c38NAmW6TiKH3TUpGUQ1YdlEoLJOQptn8XPx3Z63+vFNKfAiANqrIiYZiMjKR9+NYAL219nFrmo1duXA==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=3'
@@ -5083,7 +5126,7 @@ packages:
         optional: true
     dependencies:
       '@types/sql.js': 1.4.4
-      kysely: 0.26.1
+      kysely: 0.26.3
       postgres: 3.3.5
       sql.js: 1.8.0
     dev: false
@@ -7630,8 +7673,8 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /kysely@0.26.1:
-    resolution: {integrity: sha512-FVRomkdZofBu3O8SiwAOXrwbhPZZr8mBN5ZeUWyprH29jzvy6Inzqbd0IMmGxpd4rcOCL9HyyBNWBa8FBqDAdg==}
+  /kysely@0.26.3:
+    resolution: {integrity: sha512-yWSgGi9bY13b/W06DD2OCDDHQmq1kwTGYlQ4wpZkMOJqMGCstVCFIvxCCVG4KfY1/3G0MhDAcZsip/Lw8/vJWw==}
     engines: {node: '>=14.0.0'}
     dev: false
 

@@ -12,20 +12,23 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/Tables.sol";
+import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
-import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
 import { EchoSubscriber } from "@latticexyz/store/test/EchoSubscriber.sol";
 
+import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, UNLIMITED_DELEGATION } from "../src/constants.sol";
-import { Resource } from "../src/Types.sol";
+import { Resource } from "../src/common.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
-import { SystemHookLib, SystemHook } from "../src/SystemHook.sol";
+import { SystemHook } from "../src/SystemHook.sol";
+import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
 import { Module, MODULE_INTERFACE_ID } from "../src/Module.sol";
 
 import { NamespaceOwner, NamespaceOwnerTableId } from "../src/tables/NamespaceOwner.sol";
@@ -91,9 +94,23 @@ contract WorldTestSystem is System {
     FieldLayout fieldLayout = StoreSwitch.getFieldLayout(tableId);
 
     if (StoreSwitch.getStoreAddress() == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, abi.encodePacked(data), fieldLayout);
+      StoreCore.setRecord(
+        tableId,
+        keyTuple,
+        abi.encodePacked(data),
+        PackedCounter.wrap(bytes32(0)),
+        new bytes(0),
+        fieldLayout
+      );
     } else {
-      IBaseWorld(msg.sender).setRecord(tableId, keyTuple, abi.encodePacked(data), fieldLayout);
+      IBaseWorld(msg.sender).setRecord(
+        tableId,
+        keyTuple,
+        abi.encodePacked(data),
+        PackedCounter.wrap(bytes32(0)),
+        new bytes(0),
+        fieldLayout
+      );
     }
   }
 
@@ -119,12 +136,12 @@ contract PayableFallbackSystem is System {
 contract EchoSystemHook is SystemHook {
   event SystemHookCalled(bytes data);
 
-  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, funcSelectorAndArgs));
+  function onBeforeCallSystem(address msgSender, bytes32 resourceSelector, bytes memory callData) public {
+    emit SystemHookCalled(abi.encode("before", msgSender, resourceSelector, callData));
   }
 
-  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory funcSelectorAndArgs) public {
-    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, funcSelectorAndArgs));
+  function onAfterCallSystem(address msgSender, bytes32 resourceSelector, bytes memory callData) public {
+    emit SystemHookCalled(abi.encode("after", msgSender, resourceSelector, callData));
   }
 }
 
@@ -143,7 +160,7 @@ contract RevertSystemHook is SystemHook {
 contract WorldTest is Test, GasReporter {
   using ResourceSelector for bytes32;
 
-  event HelloWorld();
+  event HelloWorld(bytes32 indexed worldVersion);
   event HookCalled(bytes data);
   event SystemHookCalled(bytes data);
   event WorldTestSystemLog(string log);
@@ -181,7 +198,7 @@ contract WorldTest is Test, GasReporter {
     CoreModule coreModule = new CoreModule();
 
     vm.expectEmit(true, true, true, true);
-    emit HelloWorld();
+    emit HelloWorld(WORLD_VERSION);
     IBaseWorld newWorld = IBaseWorld(address(new World()));
 
     // Expect the creator to be the original deployer
@@ -259,10 +276,7 @@ contract WorldTest is Test, GasReporter {
     bytes32 resourceSelector = ResourceSelector.from("namespace", "testSystem");
 
     world.registerSystem(resourceSelector, system, false);
-    bytes memory result = world.call(
-      resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.getStoreAddress.selector)
-    );
+    bytes memory result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.getStoreAddress, ()));
 
     assertEq(abi.decode(result, (address)), address(world));
   }
@@ -621,7 +635,14 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      fieldLayout
+    );
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
@@ -632,7 +653,15 @@ contract WorldTest is Test, GasReporter {
     assertFalse(Bool.get(world, tableId));
 
     // Write data to the table and expect it to be written
-    world.setRecord(tableId, singletonKey, abi.encodePacked(true), fieldLayout);
+    world.setRecord(
+      tableId,
+      singletonKey,
+      abi.encodePacked(true),
+      PackedCounter.wrap(bytes32(0)),
+      new bytes(0),
+      fieldLayout
+    );
+    assertTrue(Bool.get(world, tableId));
     assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access
@@ -652,17 +681,14 @@ contract WorldTest is Test, GasReporter {
 
     // Call a system function without arguments via the World
     startGasReport("call a system via the World");
-    bytes memory result = world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    bytes memory result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
     endGasReport();
 
     // Expect the system to have received the caller's address
     assertEq(address(uint160(uint256(bytes32(result)))), address(this));
 
     // Call a system function with arguments via the World
-    result = world.call(
-      resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.echo.selector, bytes32(uint256(0x123)))
-    );
+    result = world.call(resourceSelector, abi.encodeCall(WorldTestSystem.echo, (bytes32(uint256(0x123)))));
 
     // Expect the return data to be decodeable as a tuple
     (address returnedAddress, bytes32 returnedBytes32) = abi.decode(result, (address, bytes32));
@@ -676,15 +702,15 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to call a private system from an address that doesn't have access
     _expectAccessDenied(address(0x01), "namespace", "testSystem");
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect the World to have access
     vm.prank(address(world));
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.err.selector, "test error"));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.err, ("test error")));
 
     // Register another system in the same namespace
     WorldTestSystem subSystem = new WorldTestSystem();
@@ -693,7 +719,7 @@ contract WorldTest is Test, GasReporter {
 
     // Call the subsystem via the World (with access to the base route)
     returnedAddress = abi.decode(
-      world.call(subsystemResourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector)),
+      world.call(subsystemResourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ())),
       (address)
     );
     assertEq(returnedAddress, address(this));
@@ -702,14 +728,16 @@ contract WorldTest is Test, GasReporter {
     // (Note: just for testing purposes, in reality systems can call subsystems directly instead of via two indirections like here)
     bytes memory nestedReturndata = world.call(
       resourceSelector,
-      abi.encodeWithSelector(
-        WorldTestSystem.delegateCallSubSystem.selector, // Function in system
-        address(subSystem), // Address of subsystem
-        WorldContextProvider.appendContext({
-          funcSelectorAndArgs: abi.encodeWithSelector(WorldTestSystem.msgSender.selector),
-          msgSender: address(this),
-          msgValue: uint256(0)
-        })
+      abi.encodeCall(
+        WorldTestSystem.delegateCallSubSystem, // Function in system
+        (
+          address(subSystem), // Address of subsystem
+          WorldContextProvider.appendContext({
+            callData: abi.encodeCall(WorldTestSystem.msgSender, ()),
+            msgSender: address(this),
+            msgValue: uint256(0)
+          })
+        )
       )
     );
 
@@ -727,11 +755,7 @@ contract WorldTest is Test, GasReporter {
 
     // Call a system via callFrom with the own address
     vm.prank(caller);
-    bytes memory returnData = world.callFrom(
-      caller,
-      resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
-    );
+    bytes memory returnData = world.callFrom(caller, resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
     address returnedAddress = abi.decode(returnData, (address));
 
     // Expect the system to have received the delegator's address
@@ -758,7 +782,7 @@ contract WorldTest is Test, GasReporter {
     bytes memory returnData = world.callFrom(
       delegator,
       resourceSelector,
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+      abi.encodeCall(WorldTestSystem.msgSender, ())
     );
     endGasReport();
     address returnedAddress = abi.decode(returnData, (address));
@@ -782,7 +806,7 @@ contract WorldTest is Test, GasReporter {
       )
     );
     vm.prank(address(1));
-    world.callFrom(address(2), resourceSelector, abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    world.callFrom(address(2), resourceSelector, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
   function testCallFromLimitedDelegation() public {
@@ -808,46 +832,55 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new hook
     IStoreHook tableHook = new EchoSubscriber();
-    world.registerStoreHook(
-      tableId,
-      tableHook,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
-    );
+    world.registerStoreHook(tableId, tableHook, ALL);
 
     // Prepare data to write to the table
-    bytes memory value = abi.encodePacked(true);
+    bytes memory staticData = abi.encodePacked(true);
 
     // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
+    );
 
-    world.setRecord(tableId, singletonKey, value, fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
-    // Expect the hook to be notified when a field is written (once before and once after the field is written)
+    // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
-    world.setField(tableId, singletonKey, 0, value, fieldLayout);
+    world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     world.deleteRecord(tableId, singletonKey, fieldLayout);
 
@@ -858,14 +891,7 @@ contract WorldTest is Test, GasReporter {
     world.registerStoreHook(
       tableId,
       IStoreHook(address(world)), // the World contract does not implement the store hook interface
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
+      ALL
     );
   }
 
@@ -879,43 +905,21 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new RevertSubscriber
     IStoreHook revertSubscriber = new RevertSubscriber();
-    world.registerStoreHook(
-      tableId,
-      revertSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
-    );
+    world.registerStoreHook(tableId, revertSubscriber, ALL);
     // Register a new EchoSubscriber
     IStoreHook echoSubscriber = new EchoSubscriber();
-    world.registerStoreHook(
-      tableId,
-      echoSubscriber,
-      StoreHookLib.encodeBitmap({
-        onBeforeSetRecord: true,
-        onAfterSetRecord: true,
-        onBeforeSetField: true,
-        onAfterSetField: true,
-        onBeforeDeleteRecord: true,
-        onAfterDeleteRecord: true
-      })
-    );
+    world.registerStoreHook(tableId, echoSubscriber, ALL);
 
     // Prepare data to write to the table
-    bytes memory value = abi.encodePacked(true);
+    bytes memory staticData = abi.encodePacked(true);
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    world.setRecord(tableId, singletonKey, value, fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
-    // Expect a revert when the RevertSubscriber's onBeforeSetField hook is called
-    vm.expectRevert(bytes("onBeforeSetField"));
-    world.setField(tableId, singletonKey, 0, value, fieldLayout);
+    // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
+    vm.expectRevert(bytes("onBeforeSpliceStaticData"));
+    world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
@@ -926,28 +930,48 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the hook to be notified when a record is written (once before and once after the record is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSetRecord,
+        (tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout)
+      )
+    );
 
-    world.setRecord(tableId, singletonKey, value, fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
 
-    // Expect the hook to be notified when a field is written (once before and once after the field is written)
+    // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onBeforeSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, uint8(0), value, fieldLayout));
+    emit HookCalled(
+      abi.encodeCall(
+        IStoreHook.onAfterSpliceStaticData,
+        (tableId, singletonKey, 0, uint40(staticData.length), staticData)
+      )
+    );
 
-    world.setField(tableId, singletonKey, 0, value, fieldLayout);
+    world.setField(tableId, singletonKey, 0, staticData, fieldLayout);
 
     // Expect the hook to be notified when a record is deleted (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onBeforeDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, singletonKey, fieldLayout));
+    emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
     world.deleteRecord(tableId, singletonKey, fieldLayout);
   }
@@ -966,31 +990,27 @@ contract WorldTest is Test, GasReporter {
     world.registerSystemHook(
       systemId,
       ISystemHook(address(world)), // the World contract does not implement the system hook interface
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
+      BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM
     );
 
     // Register a new hook
     ISystemHook systemHook = new EchoSystemHook();
-    world.registerSystemHook(
-      systemId,
-      systemHook,
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
-    );
+    world.registerSystemHook(systemId, systemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
-    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+    bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect the hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, callData));
 
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("fallback");
 
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, callData));
 
     // Call a system fallback function without arguments via the World
-    world.call(systemId, funcSelectorAndArgs);
+    world.call(systemId, callData);
   }
 
   function testUnregisterSystemHook() public {
@@ -1002,41 +1022,33 @@ contract WorldTest is Test, GasReporter {
 
     // Register a new RevertSystemHook
     ISystemHook revertSystemHook = new RevertSystemHook();
-    world.registerSystemHook(
-      systemId,
-      revertSystemHook,
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
-    );
+    world.registerSystemHook(systemId, revertSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
     // Register a new EchoSystemHook
     ISystemHook echoSystemHook = new EchoSystemHook();
-    world.registerSystemHook(
-      systemId,
-      echoSystemHook,
-      SystemHookLib.encodeBitmap({ onBeforeCallSystem: true, onAfterCallSystem: true })
-    );
+    world.registerSystemHook(systemId, echoSystemHook, BEFORE_CALL_SYSTEM | AFTER_CALL_SYSTEM);
 
-    bytes memory funcSelectorAndArgs = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
+    bytes memory callData = abi.encodeWithSelector(bytes4(keccak256("fallbackselector")));
 
     // Expect calls to fail while the RevertSystemHook is registered
     vm.expectRevert(bytes("onBeforeCallSystem"));
-    world.call(systemId, funcSelectorAndArgs);
+    world.call(systemId, callData);
 
     // Unregister the RevertSystemHook
     world.unregisterSystemHook(systemId, revertSystemHook);
 
     // Expect the echo hooks to be called in correct order
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("before", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("before", address(this), systemId, callData));
 
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("fallback");
 
     vm.expectEmit(true, true, true, true);
-    emit SystemHookCalled(abi.encode("after", address(this), systemId, funcSelectorAndArgs));
+    emit SystemHookCalled(abi.encode("after", address(this), systemId, callData));
 
     // Call a system fallback function without arguments via the World
-    world.call(systemId, funcSelectorAndArgs);
+    world.call(systemId, callData);
   }
 
   function testWriteRootSystem() public {
@@ -1059,7 +1071,7 @@ contract WorldTest is Test, GasReporter {
     // Call a system function that writes data to the World
     world.call(
       rootSystemId,
-      abi.encodeWithSelector(WorldTestSystem.writeData.selector, bytes16("namespace"), bytes16("testTable"), true)
+      abi.encodeCall(WorldTestSystem.writeData, (bytes16("namespace"), bytes16("testTable"), true))
     );
 
     // Expect the data to be written
@@ -1084,10 +1096,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, false);
 
     // Call a system function that writes data to the World
-    world.call(
-      systemId,
-      abi.encodeWithSelector(WorldTestSystem.writeData.selector, bytes16("namespace"), bytes16("testTable"), true)
-    );
+    world.call(systemId, abi.encodeCall(WorldTestSystem.writeData, (bytes16("namespace"), bytes16("testTable"), true)));
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
@@ -1102,7 +1111,7 @@ contract WorldTest is Test, GasReporter {
     // Call the root sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("delegatecall");
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.emitCallType, ()));
   }
 
   function testCallAutonomousSystem() public {
@@ -1114,7 +1123,7 @@ contract WorldTest is Test, GasReporter {
     // Call the sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("call");
-    world.call(resourceSelector, abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
+    world.call(resourceSelector, abi.encodeCall(WorldTestSystem.emitCallType, ()));
   }
 
   function testRegisterFunctionSelector() public {
@@ -1271,9 +1280,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's receiveEther function via the World
-    (bool success, ) = address(world).call{ value: 0.5 ether }(
-      abi.encodeWithSelector(WorldTestSystem.receiveEther.selector)
-    );
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeCall(WorldTestSystem.receiveEther, ()));
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
@@ -1303,9 +1310,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's msgSender function (non-payable) via the World
-    (bool success, ) = address(world).call{ value: 0.5 ether }(
-      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
-    );
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeCall(WorldTestSystem.msgSender, ()));
     // The call should succeed because the value is not forwarded to the system
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
@@ -1396,9 +1401,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's receiveEther function via the World
-    (bool success, ) = address(world).call{ value: 0.5 ether }(
-      abi.encodeWithSelector(WorldTestSystem.receiveEther.selector)
-    );
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeCall(WorldTestSystem.receiveEther, ()));
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");

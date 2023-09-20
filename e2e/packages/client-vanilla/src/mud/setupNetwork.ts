@@ -33,7 +33,7 @@ export async function setupNetwork() {
     walletClient: burnerWalletClient,
   });
 
-  const { components, latestBlock$, blockStorageOperations$, waitForTransaction } = await syncToRecs({
+  const { components, latestBlock$, storedBlockLogs$, waitForTransaction } = await syncToRecs({
     world,
     config: mudConfig,
     address: networkConfig.worldAddress as Hex,
@@ -74,7 +74,7 @@ export async function setupNetwork() {
     walletClient: burnerWalletClient,
     worldContract,
     latestBlock$,
-    blockStorageOperations$,
+    storedBlockLogs$,
     waitForTransaction,
   };
 }

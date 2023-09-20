@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreHook } from "@latticexyz/store/src/StoreHook.sol";
 
@@ -40,23 +41,40 @@ contract KeysInTableHook is StoreHook {
     }
   }
 
-  function onBeforeSetRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory, FieldLayout) public {
+  function onBeforeSetRecord(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    bytes memory,
+    PackedCounter,
+    bytes memory,
+    FieldLayout
+  ) public override {
     handleSet(tableId, keyTuple);
   }
 
-  function onAfterSetRecord(bytes32 tableId, bytes32[] memory keyTuple, bytes memory, FieldLayout) public {
-    // NOOP
-  }
-
-  function onBeforeSetField(bytes32 tableId, bytes32[] memory keyTuple, uint8, bytes memory, FieldLayout) public {
-    // NOOP
-  }
-
-  function onAfterSetField(bytes32 tableId, bytes32[] memory keyTuple, uint8, bytes memory, FieldLayout) public {
+  function onAfterSpliceStaticData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint48,
+    uint40,
+    bytes memory
+  ) public override {
     handleSet(tableId, keyTuple);
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout) public {
+  function onAfterSpliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8,
+    uint40,
+    uint40,
+    bytes memory,
+    PackedCounter
+  ) public override {
+    handleSet(tableId, keyTuple);
+  }
+
+  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout) public override {
     bytes32 keysHash = keccak256(abi.encode(keyTuple));
     (bool has, uint40 index) = UsedKeysIndex.get(tableId, keysHash);
 
@@ -119,9 +137,5 @@ contract KeysInTableHook is StoreHook {
         }
       }
     }
-  }
-
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    // NOOP
   }
 }

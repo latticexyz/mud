@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { StoreHookLib } from "@latticexyz/store/src/StoreHook.sol";
+import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
@@ -58,14 +58,12 @@ contract KeysWithValueModule is Module {
         (
           sourceTableId,
           hook,
-          StoreHookLib.encodeBitmap({
-            onBeforeSetRecord: true,
-            onAfterSetRecord: false,
-            onBeforeSetField: true,
-            onAfterSetField: true,
-            onBeforeDeleteRecord: true,
-            onAfterDeleteRecord: false
-          })
+          BEFORE_SET_RECORD |
+            BEFORE_SPLICE_STATIC_DATA |
+            AFTER_SPLICE_STATIC_DATA |
+            BEFORE_SPLICE_DYNAMIC_DATA |
+            AFTER_SPLICE_DYNAMIC_DATA |
+            BEFORE_DELETE_RECORD
         )
       )
     );

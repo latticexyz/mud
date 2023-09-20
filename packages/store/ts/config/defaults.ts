@@ -1,7 +1,8 @@
 export const PATH_DEFAULTS = {
   storeImportPath: "@latticexyz/store/src/",
-  userTypesPath: "Types",
+  userTypesFilename: "common.sol",
   codegenDirectory: "codegen",
+  codegenIndexFilename: "index.sol",
 } as const;
 
 export const DEFAULTS = {

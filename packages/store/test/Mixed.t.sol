@@ -3,11 +3,12 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
+import { Mixed, MixedData, MixedTableId } from "../src/codegen/index.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
+import { PackedCounter } from "../src/PackedCounter.sol";
 
 contract MixedTest is Test, GasReporter, StoreMock {
   MixedData private testMixed;
@@ -72,9 +73,9 @@ contract MixedTest is Test, GasReporter, StoreMock {
     a32[1] = 4;
     string memory s = "some string";
 
-    assertEq(
-      Mixed.encode(1, 2, a32, s),
-      hex"0000000100000000000000000000000000000002000000000000000000000000000000000000000b0000000008000000000000130000000300000004736f6d6520737472696e67"
-    );
+    (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = Mixed.encode(1, 2, a32, s);
+    assertEq(staticData, hex"0000000100000000000000000000000000000002");
+    assertEq(encodedLengths.unwrap(), hex"000000000000000000000000000000000000000b000000000800000000000013");
+    assertEq(dynamicData, hex"0000000300000004736f6d6520737472696e67");
   }
 }

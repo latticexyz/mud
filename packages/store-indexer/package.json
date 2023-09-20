@@ -13,6 +13,10 @@
     ".": "./dist/index.js"
   },
   "types": "src/index.ts",
+  "bin": {
+    "postgres-indexer": "./dist/bin/postgres-indexer.js",
+    "sqlite-indexer": "./dist/bin/sqlite-indexer.js"
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -40,9 +44,10 @@
     "@trpc/client": "10.34.0",
     "@trpc/server": "10.34.0",
     "@wagmi/chains": "^0.2.22",
-    "better-sqlite3": "^8.4.0",
+    "better-sqlite3": "^8.6.0",
     "debug": "^4.3.4",
-    "drizzle-orm": "^0.27.0",
+    "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.28.5",
     "fastify": "^4.21.0",
     "postgres": "^3.3.5",
     "rxjs": "7.5.5",

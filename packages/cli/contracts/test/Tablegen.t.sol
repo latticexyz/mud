@@ -4,9 +4,9 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 
-import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Ephemeral } from "../src/codegen/Tables.sol";
+import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Ephemeral } from "../src/codegen/index.sol";
 
-import { Enum1, Enum2 } from "../src/codegen/Types.sol";
+import { Enum1, Enum2 } from "../src/codegen/common.sol";
 
 contract TablegenTest is Test, StoreMock {
   function testStaticsSetAndGet() public {
@@ -17,15 +17,14 @@ contract TablegenTest is Test, StoreMock {
     bytes16 k3 = hex"02";
     address k4 = address(123);
     bool k5 = true;
-    Enum1 k6 = Enum1.E3;
-    Enum2 k7 = Enum2.E1;
+    Enum2 k6 = Enum2.E1;
 
-    Statics.setV1(k1, k2, k3, k4, k5, k6, k7, 4);
-    assertEq(Statics.getV1(k1, k2, k3, k4, k5, k6, k7), 4);
+    Statics.setV1(k1, k2, k3, k4, k5, k6, 4);
+    assertEq(Statics.getV1(k1, k2, k3, k4, k5, k6), 4);
 
-    StaticsData memory data = StaticsData(4, -5, hex"06", address(456), false, Enum1.E2, Enum2.E1);
-    Statics.set(k1, k2, k3, k4, k5, k6, k7, data);
-    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6, k7)), abi.encode(data));
+    StaticsData memory data = StaticsData(4, -5, hex"06", address(456), false, Enum1.E2);
+    Statics.set(k1, k2, k3, k4, k5, k6, data);
+    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6)), abi.encode(data));
   }
 
   function testDynamicsSetAndGet() public {
