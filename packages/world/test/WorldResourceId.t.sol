@@ -42,16 +42,6 @@ contract WorldResourceIdTest is Test, GasReporter {
     assertEq(resourceType, RESOURCE_SYSTEM);
   }
 
-  function testIsType() public {
-    ResourceId resourceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
-
-    startGasReport("check if a resource ID has a given type");
-    bool isType = resourceId.isType(RESOURCE_SYSTEM);
-    endGasReport();
-
-    assertTrue(isType);
-  }
-
   function testMatchResourceTypeEncoding() public {
     ResourceId resourceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
     bytes30 resourceIdWithoutType = bytes30(ResourceId.unwrap(resourceId));
@@ -77,7 +67,5 @@ contract WorldResourceIdTest is Test, GasReporter {
     assertEq(resourceId.getNamespaceId().getNamespace(), namespace);
     assertEq(resourceId.getName(), name);
     assertEq(resourceId.getType(), resourceType);
-    assertTrue(resourceId.isType(resourceType));
-    assertFalse(resourceId.isType(NOT_TYPE));
   }
 }

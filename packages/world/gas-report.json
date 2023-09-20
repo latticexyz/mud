@@ -99,7 +99,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testGetKeysWithValueGas",
     "name": "install keys with value module",
-    "gasUsed": 663833
+    "gasUsed": 663652
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -117,7 +117,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testInstall",
     "name": "install keys with value module",
-    "gasUsed": 663833
+    "gasUsed": 663652
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -129,7 +129,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetAndDeleteRecordHook",
     "name": "install keys with value module",
-    "gasUsed": 663833
+    "gasUsed": 663652
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -147,7 +147,7 @@
     "file": "test/KeysWithValueModule.t.sol",
     "test": "testSetField",
     "name": "install keys with value module",
-    "gasUsed": 663833
+    "gasUsed": 663652
   },
   {
     "file": "test/KeysWithValueModule.t.sol",
@@ -255,7 +255,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstall",
     "name": "install unique entity module",
-    "gasUsed": 688882
+    "gasUsed": 688520
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -267,7 +267,7 @@
     "file": "test/UniqueEntityModule.t.sol",
     "test": "testInstallRoot",
     "name": "installRoot unique entity module",
-    "gasUsed": 679160
+    "gasUsed": 678798
   },
   {
     "file": "test/UniqueEntityModule.t.sol",
@@ -327,7 +327,7 @@
     "file": "test/World.t.sol",
     "test": "testRegisterNamespace",
     "name": "Register a new namespace",
-    "gasUsed": 123268
+    "gasUsed": 123087
   },
   {
     "file": "test/World.t.sol",
@@ -339,13 +339,13 @@
     "file": "test/World.t.sol",
     "test": "testRegisterSystem",
     "name": "register a system",
-    "gasUsed": 165318
+    "gasUsed": 165137
   },
   {
     "file": "test/World.t.sol",
     "test": "testRegisterTable",
     "name": "Register a new table in the namespace",
-    "gasUsed": 651533
+    "gasUsed": 651352
   },
   {
     "file": "test/World.t.sol",
@@ -400,11 +400,5 @@
     "test": "testGetType",
     "name": "get type from a resource ID",
     "gasUsed": 218
-  },
-  {
-    "file": "test/WorldResourceId.t.sol",
-    "test": "testIsType",
-    "name": "check if a resource ID has a given type",
-    "gasUsed": 414
   }
 ]

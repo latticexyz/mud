@@ -38,7 +38,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerNamespace(ResourceId namespaceId) public virtual {
     // Require the provided namespace ID to have type RESOURCE_NAMESPACE
-    if (!namespaceId.isType(RESOURCE_NAMESPACE)) {
+    if (namespaceId.getType() != RESOURCE_NAMESPACE) {
       revert InvalidResourceType(string(bytes.concat(namespaceId.getType())));
     }
 
@@ -96,7 +96,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
     // Require the provided system ID to have type RESOURCE_SYSTEM
-    if (!systemId.isType(RESOURCE_SYSTEM)) {
+    if (systemId.getType() != RESOURCE_SYSTEM) {
       revert InvalidResourceType(string(bytes.concat(systemId.getType())));
     }
 

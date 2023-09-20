@@ -28,23 +28,10 @@ contract ResourceIdTest is Test, GasReporter {
     assertEq(resourceType, RESOURCE_TABLE);
   }
 
-  function testIsType() public {
-    ResourceId tableId = ResourceIdLib.encode("name", RESOURCE_TABLE);
-
-    startGasReport("check if a table ID is of type tb");
-    bool isType = tableId.isType(RESOURCE_TABLE);
-    endGasReport();
-
-    assertTrue(isType, "should be of type RESOURCE_TABLE");
-    assertFalse(tableId.isType(RESOURCE_OFFCHAIN_TABLE), "should not be of type RESOURCE_OFFCHAIN_TABLE");
-  }
-
   function testFuzz(bytes30 name, bytes2 resourceType) public {
     bytes2 NOT_TYPE = bytes2("xx");
     vm.assume(resourceType != NOT_TYPE);
     ResourceId tableId = ResourceIdLib.encode(name, resourceType);
     assertEq(tableId.getType(), resourceType);
-    assertTrue(tableId.isType(resourceType));
-    assertFalse(tableId.isType(NOT_TYPE));
   }
 }

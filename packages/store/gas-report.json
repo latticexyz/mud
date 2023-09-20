@@ -411,19 +411,13 @@
     "file": "test/ResourceId.t.sol",
     "test": "testEncode",
     "name": "encode table ID with name and type",
-    "gasUsed": 264
+    "gasUsed": 258
   },
   {
     "file": "test/ResourceId.t.sol",
     "test": "testGetType",
     "name": "get type from a table ID",
     "gasUsed": 221
-  },
-  {
-    "file": "test/ResourceId.t.sol",
-    "test": "testIsType",
-    "name": "check if a table ID is of type tb",
-    "gasUsed": 420
   },
   {
     "file": "test/Schema.t.sol",

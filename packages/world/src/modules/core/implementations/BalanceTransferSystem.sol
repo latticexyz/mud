@@ -25,7 +25,7 @@ contract BalanceTransferSystem is System, IWorldErrors {
     uint256 amount
   ) public virtual {
     // Require the target ID to be a namespace ID
-    if (!toNamespaceId.isType(RESOURCE_NAMESPACE)) {
+    if (toNamespaceId.getType() != RESOURCE_NAMESPACE) {
       revert InvalidResourceType(string(bytes.concat(toNamespaceId.getType())));
     }
 

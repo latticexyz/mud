@@ -19,8 +19,4 @@ library ResourceIdInstance {
   function getType(ResourceId resourceId) internal pure returns (bytes2) {
     return bytes2(ResourceId.unwrap(resourceId) << (NAME_BYTES * BYTES_TO_BITS));
   }
-
-  function isType(ResourceId resourceId, bytes2 resourceType) internal pure returns (bool) {
-    return ResourceId.unwrap(resourceId) & TYPE_MASK == bytes32(resourceType) >> (NAME_BYTES * BYTES_TO_BITS);
-  }
 }
