@@ -43,7 +43,6 @@ export interface RenderKeyTuple extends RenderType {
 export interface RenderField extends RenderType {
   arrayElement: RenderType | undefined;
   name: string;
-  methodNameSuffix: string;
 }
 
 export interface RenderStaticField extends RenderField {

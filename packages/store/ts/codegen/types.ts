@@ -28,6 +28,8 @@ export interface RenderTableOptions {
   withRecordMethods: boolean;
   /** Whether to render emitEphemeral methods */
   withEphemeralMethods: boolean;
+  /** Whether to additionally render field methods without a field name suffix */
+  withSuffixlessFieldMethods: boolean;
   /** Whether to render additional methods that accept a manual `IStore` argument */
   storeArgument: boolean;
 }
