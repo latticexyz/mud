@@ -70,6 +70,30 @@ library Bool {
   }
 
   /** Get value */
+  function getValue(bytes32 _tableId) internal view returns (bool value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get value */
+  function _getValue(bytes32 _tableId) internal view returns (bool value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get value (using the specified store) */
+  function getValue(IStore _store, bytes32 _tableId) internal view returns (bool value) {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get value */
   function get(bytes32 _tableId) internal view returns (bool value) {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
@@ -91,6 +115,27 @@ library Bool {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Set value */
+  function setValue(bytes32 _tableId, bool value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value */
+  function _setValue(bytes32 _tableId, bool value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value (using the specified store) */
+  function setValue(IStore _store, bytes32 _tableId, bool value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value */
