@@ -314,6 +314,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.ResourceExists.selector,
+        WorldResourceIdLib.encodeNamespace(namespace),
         WorldResourceIdLib.encodeNamespace(namespace).toString()
       )
     );
@@ -395,7 +396,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(loadedfieldNames, abi.encode(fieldNames), "value names should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId, tableId.toString()));
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
@@ -467,7 +468,7 @@ contract WorldTest is Test, GasReporter {
       new string[](1),
       new string[](1)
     );
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId, tableId.toString()));
     world.registerSystem(tableId, newSystem, true);
 
     // Expect an error when registering a system in a namespace that is not owned by the caller
@@ -557,7 +558,7 @@ contract WorldTest is Test, GasReporter {
     System system = new System();
 
     // Expect an error when trying to register a system at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId, tableId.toString()));
     world.registerSystem(tableId, system, false);
 
     // Register a new system
@@ -565,7 +566,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, new System(), false);
 
     // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, systemId.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, systemId, systemId.toString()));
     world.registerTable(
       systemId,
       Bool.getFieldLayout(),

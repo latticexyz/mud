@@ -39,7 +39,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
 
     // Require namespace to not exist yet
     if (ResourceType._get(ResourceId.unwrap(namespaceId)) != Resource.NONE)
-      revert ResourceExists(namespaceId.toString());
+      revert ResourceExists(namespaceId, namespaceId.toString());
 
     // Register namespace resource
     ResourceType._set(ResourceId.unwrap(namespaceId), Resource.NAMESPACE);
@@ -93,7 +93,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
 
     // Require the name to not be the namespace's root name
-    if (systemId.getName() == ROOT_NAME) revert InvalidSelector(systemId.toString());
+    if (systemId.getName() == ROOT_NAME) revert InvalidResourceId(systemId, systemId.toString());
 
     // Require this system to not be registered at a different system ID yet
     bytes32 existingSystemId = SystemRegistry._get(address(system));
@@ -111,7 +111,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require no resource other than a system to exist at this selector yet
     Resource resourceType = ResourceType._get(ResourceId.unwrap(systemId));
     if (resourceType != Resource.NONE && resourceType != Resource.SYSTEM) {
-      revert ResourceExists(systemId.toString());
+      revert ResourceExists(systemId, systemId.toString());
     }
 
     // Check if a system already exists at this system ID
