@@ -8,7 +8,7 @@ import { singletonEntity } from "@latticexyz/store-sync/recs";
 import { SetupNetworkResult } from "./setupNetwork";
 import { ClientComponents } from "./createClientComponents";
 import { UNLIMITED_DELEGATION } from "./constants";
-import { createContract } from "@latticexyz/common";
+import { createContract, ContractWrite } from "@latticexyz/common";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;

@@ -8,13 +8,10 @@ import { createFaucetService } from "@latticexyz/services/faucet";
 import { encodeEntity, syncToRecs } from "@latticexyz/store-sync/recs";
 import { createConfig } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
-
+import { Subject } from "rxjs";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { world } from "./world";
-
-import { createBurnerAccount, createContract, transportObserver, ContractWrite } from "@latticexyz/common";
-
-import { Subject, share } from "rxjs";
+import { createBurnerAccount, transportObserver, ContractWrite } from "@latticexyz/common";
 
 /*
  * Import our MUD config, which includes strong types for
@@ -126,6 +123,6 @@ export async function setupNetwork() {
     storedBlockLogs$,
     waitForTransaction,
     getResourceSelector,
-    write$: write$.asObservable().pipe(share()),
+    write$,
   };
 }

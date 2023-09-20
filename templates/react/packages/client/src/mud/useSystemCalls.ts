@@ -1,15 +1,15 @@
-import { Schema } from "@latticexyz/recs";
 import { useEffect, useState } from "react";
 import { WalletClient, Transport, Chain, Account } from "viem";
 import { createSystemCalls } from "./createSystemCalls";
 import { SetupNetworkResult } from "./setupNetwork";
 import { ClientComponents } from "./createClientComponents";
 
-export function useSystemCalls<S extends Schema>(
+export function useSystemCalls(
   network: SetupNetworkResult,
   components: ClientComponents,
-  client: WalletClient<Transport, Chain, Account> | undefined
+  client: WalletClient<Transport, Chain, Account> | null | undefined
 ) {
+  // TODO type systemCalls
   const [systemCalls, setSystemCalls] = useState(undefined);
 
   useEffect(() => {
