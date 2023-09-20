@@ -4,6 +4,7 @@
 "@latticexyz/config": major
 "@latticexyz/store": major
 ---
+
 - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
 
   Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
@@ -37,7 +38,7 @@
 
   ```diff
   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-  
+
   IStore {
     function setRecord(
   -   bytes32 tableId,
@@ -53,17 +54,17 @@
   }
   ```
 
-    ```diff
+  ```diff
   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-  
+
   IBaseWorld {
-    function callFrom(
-      address delegator,
+  function callFrom(
+    address delegator,
   -   bytes32 resourceSelector,
   +   ResourceId systemId,
-      bytes memory callData
-    ) external payable returns (bytes memory);
+    bytes memory callData
+  ) external payable returns (bytes memory);
 
-    // Same for all other methods
+  // Same for all other methods
   }
   ```
