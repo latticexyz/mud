@@ -59,13 +59,13 @@
   import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
   IBaseWorld {
-  function callFrom(
-    address delegator,
+    function callFrom(
+      address delegator,
   -   bytes32 resourceSelector,
   +   ResourceId systemId,
-    bytes memory callData
-  ) external payable returns (bytes memory);
+      bytes memory callData
+    ) external payable returns (bytes memory);
 
-  // Same for all other methods
+    // Same for all other methods
   }
   ```
