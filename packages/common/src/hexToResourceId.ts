@@ -1,6 +1,6 @@
 import { Hex, hexToString, sliceHex } from "viem";
 import { ResourceId } from "./common";
-import { ResourceType } from "./resourceTypes";
+import { ResourceType, resourceTypes } from "./resourceTypes";
 import { resourceTypeIds } from "./resourceIdToHex";
 import { ReverseMap } from "./type-utils/common";
 
@@ -9,8 +9,10 @@ const resourceTypeIdToType = Object.fromEntries(
 ) as ReverseMap<typeof resourceTypeIds>;
 
 function getResourceType(resourceTypeId: string): ResourceType | undefined {
-  if (Object.hasOwn(resourceTypeIdToType, resourceTypeId)) {
-    return resourceTypeIdToType[resourceTypeId as keyof typeof resourceTypeIdToType];
+  // TODO: replace Partial with `noUncheckedIndexedAccess`
+  const type = (resourceTypeIdToType as Partial<Record<string, ResourceType>>)[resourceTypeId];
+  if (resourceTypes.includes(type as ResourceType)) {
+    return type;
   }
 }
 
