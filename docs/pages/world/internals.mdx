@@ -22,7 +22,7 @@ Except `NamespaceOwner` is initialized in World's constructor, because it's need
 Internal systems are in `core` module's [implementations](https://github.com/latticexyz/mud/tree/main/packages/world/src/modules/core/implementations) folder, because they're installed by `CoreModule`.
 
 - `AccessManagementSystem` - grants/revokes access to/from resources
-- `EphemeralRecordSystem` - has `emitEphemeralRecord` for ephemeral tables
+- `BalanceTransferSystem` - handles balance transfers between namespaces and from namespaces to addresses
 - `ModuleInstallationSystem` - installation of (non-root) modules in the World
 - `StoreRegistrationSystem` - _its methods should not be used with the World framework_. Surfaces the APIs necessary to register Tables on-chain, but lacks namespaces used by World for better permission checks
 - `WorldRegistrationSystem` - surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain

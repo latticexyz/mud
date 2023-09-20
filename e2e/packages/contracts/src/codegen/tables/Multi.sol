@@ -18,7 +18,7 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
   bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Multi")))
@@ -362,6 +362,39 @@ library Multi {
     (_table.num, _table.value) = decodeStatic(_staticData);
   }
 
+  /** Delete all data for given keys */
+  function deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(a));
+    _keyTuple[1] = _boolToBytes32(b);
+    _keyTuple[2] = bytes32(uint256(c));
+    _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys */
+  function _deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(a));
+    _keyTuple[1] = _boolToBytes32(b);
+    _keyTuple[2] = bytes32(uint256(c));
+    _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal {
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(a));
+    _keyTuple[1] = _boolToBytes32(b);
+    _keyTuple[2] = bytes32(uint256(c));
+    _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
   /** Tightly pack static data using this table's schema */
   function encodeStatic(int256 num, bool value) internal pure returns (bytes memory) {
     return abi.encodePacked(num, value);
@@ -386,39 +419,6 @@ library Multi {
     _keyTuple[3] = bytes32(uint256(int256(d)));
 
     return _keyTuple;
-  }
-
-  /* Delete all data for given keys */
-  function deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys */
-  function _deleteRecord(uint32 a, bool b, uint256 c, int120 d) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, uint32 a, bool b, uint256 c, int120 d) internal {
-    bytes32[] memory _keyTuple = new bytes32[](4);
-    _keyTuple[0] = bytes32(uint256(a));
-    _keyTuple[1] = _boolToBytes32(b);
-    _keyTuple[2] = bytes32(uint256(c));
-    _keyTuple[3] = bytes32(uint256(int256(d)));
-
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
 

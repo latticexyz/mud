@@ -55,9 +55,9 @@ try {
         },
         dataStruct: false,
       },
-      Ephemeral: {
+      Offchain: {
         valueSchema: "uint256",
-        ephemeral: true,
+        offchainOnly: true,
       },
     },
 

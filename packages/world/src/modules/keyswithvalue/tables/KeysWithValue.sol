@@ -18,7 +18,7 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000
@@ -570,6 +570,30 @@ library KeysWithValue {
     }
   }
 
+  /** Delete all data for given keys */
+  function deleteRecord(ResourceId _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys */
+  function _deleteRecord(ResourceId _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, ResourceId _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = valueHash;
+
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
   /** Tightly pack dynamic data using this table's schema */
   function encodeLengths(bytes32[] memory keysWithValue) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
@@ -598,29 +622,5 @@ library KeysWithValue {
     _keyTuple[0] = valueHash;
 
     return _keyTuple;
-  }
-
-  /* Delete all data for given keys */
-  function deleteRecord(ResourceId _tableId, bytes32 valueHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = valueHash;
-
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys */
-  function _deleteRecord(ResourceId _tableId, bytes32 valueHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = valueHash;
-
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, ResourceId _tableId, bytes32 valueHash) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = valueHash;
-
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }

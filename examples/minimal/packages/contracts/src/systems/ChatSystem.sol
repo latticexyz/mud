@@ -5,6 +5,6 @@ import { MessageTable } from "../codegen/index.sol";
 
 contract ChatSystem is System {
   function sendMessage(string memory message) public {
-    MessageTable.emitEphemeral(message);
+    MessageTable.set(message);
   }
 }

@@ -162,15 +162,25 @@ export function renderWithFieldSuffix(
   return result;
 }
 
-export function renderTableId(staticResourceData: StaticResourceData): {
+export function renderTableId({ namespace, name, offchainOnly, tableIdName }: StaticResourceData): {
   hardcodedTableId: string;
   tableIdDefinition: string;
 } {
-  const hardcodedTableId = `ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("${staticResourceData.namespace}"), bytes16("${staticResourceData.name}"))))`;
+  const hardcodedTableId = `
+    ResourceId.wrap(
+      bytes32(
+        abi.encodePacked(
+          ${offchainOnly ? "RESOURCE_OFFCHAIN_TABLE" : "RESOURCE_TABLE"},
+          bytes14("${namespace}"),
+          bytes16("${name}")
+        )
+      )
+    )
+  `;
 
   const tableIdDefinition = `
     ResourceId constant _tableId = ${hardcodedTableId};
-    ResourceId constant ${staticResourceData.tableIdName} = _tableId;
+    ResourceId constant ${tableIdName} = _tableId;
   `;
   return {
     hardcodedTableId,

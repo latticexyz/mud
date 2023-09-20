@@ -18,7 +18,7 @@ import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.s
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
-import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 // Import user types
 import { Enum2, Enum1 } from "./../common.sol";
@@ -870,6 +870,45 @@ library Statics {
     (_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6) = decodeStatic(_staticData);
   }
 
+  /** Delete all data for given keys */
+  function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys */
+  function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
   /** Tightly pack static data using this table's schema */
   function encodeStatic(
     uint256 v1,
@@ -917,45 +956,6 @@ library Statics {
     _keyTuple[5] = bytes32(uint256(uint8(k6)));
 
     return _keyTuple;
-  }
-
-  /* Delete all data for given keys */
-  function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys */
-  function _deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6) internal {
-    bytes32[] memory _keyTuple = new bytes32[](6);
-    _keyTuple[0] = bytes32(uint256(k1));
-    _keyTuple[1] = bytes32(uint256(int256(k2)));
-    _keyTuple[2] = bytes32(k3);
-    _keyTuple[3] = bytes32(uint256(uint160(k4)));
-    _keyTuple[4] = _boolToBytes32(k5);
-    _keyTuple[5] = bytes32(uint256(uint8(k6)));
-
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }
 

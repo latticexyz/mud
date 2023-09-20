@@ -50,13 +50,6 @@ library StoreCore {
     bytes32 encodedLengths
   );
   event StoreDeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
-  event StoreEphemeralRecord(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    bytes staticData,
-    bytes32 encodedLengths,
-    bytes dynamicData
-  );
 
   /**
    * Intialize the store address to use in StoreSwitch.
@@ -187,6 +180,11 @@ library StoreCore {
    * Register hooks to be called when a record or field is set or deleted
    */
   function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+    // Hooks are only supported for tables, not for offchain tables
+    if (tableId.getType() != RESOURCE_TABLE) {
+      revert IStoreErrors.StoreCore_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
+
     StoreHooks.push(ResourceId.unwrap(tableId), Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
@@ -222,6 +220,11 @@ library StoreCore {
 
     // Emit event to notify indexers
     emit StoreSetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
+    }
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
@@ -302,6 +305,20 @@ library StoreCore {
   ) internal {
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
+    // Emit event to notify offchain indexers
+    emit StoreCore.StoreSpliceStaticData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      start: start,
+      deleteCount: deleteCount,
+      data: data
+    });
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
+    }
+
     // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
     for (uint256 i; i < hooks.length; i++) {
@@ -333,15 +350,6 @@ library StoreCore {
         });
       }
     }
-
-    // Emit event to notify offchain indexers
-    emit StoreCore.StoreSpliceStaticData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: start,
-      deleteCount: deleteCount,
-      data: data
-    });
   }
 
   function spliceDynamicData(
@@ -423,6 +431,11 @@ library StoreCore {
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
     emit StoreDeleteRecord(tableId, keyTuple);
+
+    // Early return if the table is an offchain table
+    if (tableId.getType() != RESOURCE_TABLE) {
+      return;
+    }
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
@@ -508,30 +521,6 @@ library StoreCore {
     }
 
     StoreCoreInternal._setDynamicFieldItem(tableId, keyTuple, fieldLayout, fieldIndex, startByteIndex, dataToSet);
-  }
-
-  /************************************************************************
-   *
-   *    EPHEMERAL SET DATA
-   *
-   ************************************************************************/
-
-  /**
-   * Emit the ephemeral event without modifying storage for the full data of the given table ID and key tuple
-   */
-  function emitEphemeralRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout fieldLayout
-  ) internal {
-    // Verify static data length + dynamic data length matches the given data
-    StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
-
-    // Emit event to notify indexers
-    emit StoreEphemeralRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
   }
 
   /************************************************************************
@@ -674,6 +663,8 @@ library StoreCore {
 }
 
 library StoreCoreInternal {
+  using ResourceIdInstance for ResourceId;
+
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant DYNMAIC_DATA_SLOT = keccak256("mud.store.dynamicData");
   bytes32 internal constant DYNAMIC_DATA_LENGTH_SLOT = keccak256("mud.store.dynamicDataLength");
@@ -693,6 +684,12 @@ library StoreCoreInternal {
     bytes memory data,
     PackedCounter previousEncodedLengths
   ) internal {
+    // Splicing dynamic data is not supported for offchain tables, because it
+    // requires reading the previous encoded lengths from storage
+    if (tableId.getType() != RESOURCE_TABLE) {
+      revert IStoreErrors.StoreCore_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
+
     uint256 previousFieldLength = previousEncodedLengths.atIndex(dynamicFieldIndex);
     uint256 updatedFieldLength = previousFieldLength - deleteCount + data.length;
 
@@ -713,6 +710,16 @@ library StoreCoreInternal {
 
     // Update the encoded length
     PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
+
+    // Emit event to notify offchain indexers
+    emit StoreCore.StoreSpliceDynamicData({
+      tableId: tableId,
+      keyTuple: keyTuple,
+      start: uint48(start),
+      deleteCount: deleteCount,
+      data: data,
+      encodedLengths: updatedEncodedLengths.unwrap()
+    });
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
     bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
@@ -758,16 +765,6 @@ library StoreCoreInternal {
         });
       }
     }
-
-    // Emit event to notify offchain indexers
-    emit StoreCore.StoreSpliceDynamicData({
-      tableId: tableId,
-      keyTuple: keyTuple,
-      start: uint48(start),
-      deleteCount: deleteCount,
-      data: data,
-      encodedLengths: updatedEncodedLengths.unwrap()
-    });
   }
 
   function _pushToDynamicField(

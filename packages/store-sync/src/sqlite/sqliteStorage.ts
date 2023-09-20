@@ -96,7 +96,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
         const uniqueKey = concatHex(log.args.keyTuple as Hex[]);
         const key = decodeKey(table.keySchema, log.args.keyTuple);
 
-        if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        if (log.eventName === "StoreSetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
           debug("upserting record", {
             namespace: table.namespace,

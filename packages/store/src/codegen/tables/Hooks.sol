@@ -18,7 +18,7 @@ import { FieldLayout, FieldLayoutLib } from "../../FieldLayout.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 import { ResourceId } from "../../ResourceId.sol";
-import { RESOURCE_TABLE } from "../../storeResourceTypes.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "../../storeResourceTypes.sol";
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000
@@ -532,6 +532,30 @@ library Hooks {
     }
   }
 
+  /** Delete all data for given keys */
+  function deleteRecord(ResourceId _tableId, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys */
+  function _deleteRecord(ResourceId _tableId, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
+  /** Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, ResourceId _tableId, bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+  }
+
   /** Tightly pack dynamic data using this table's schema */
   function encodeLengths(bytes21[] memory value) internal pure returns (PackedCounter _encodedLengths) {
     // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
@@ -560,29 +584,5 @@ library Hooks {
     _keyTuple[0] = key;
 
     return _keyTuple;
-  }
-
-  /* Delete all data for given keys */
-  function deleteRecord(ResourceId _tableId, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys */
-  function _deleteRecord(ResourceId _tableId, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
-  }
-
-  /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, ResourceId _tableId, bytes32 key) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
 }

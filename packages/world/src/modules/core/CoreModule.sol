@@ -7,7 +7,6 @@ import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../WorldResourceId.sol";
@@ -29,7 +28,6 @@ import { Balances } from "./tables/Balances.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
-import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -104,7 +102,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[17] memory functionSelectors = [
+    bytes4[16] memory functionSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -112,8 +110,6 @@ contract CoreModule is Module {
       // --- BalanceTransferSystem ---
       BalanceTransferSystem.transferBalanceToNamespace.selector,
       BalanceTransferSystem.transferBalanceToAddress.selector,
-      // --- EphemeralRecordSystem ---
-      IStoreEphemeral.emitEphemeralRecord.selector,
       // --- ModuleInstallationSystem ---
       ModuleInstallationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---

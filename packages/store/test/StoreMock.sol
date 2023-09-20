@@ -103,18 +103,6 @@ contract StoreMock is IStore, StoreRead {
     StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
   }
 
-  // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) public {
-    StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
-  }
-
   function registerTable(
     ResourceId tableId,
     FieldLayout fieldLayout,

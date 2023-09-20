@@ -26,7 +26,7 @@ export default mudConfig({
       valueSchema: {
         value: "string",
       },
-      ephemeral: true,
+      offchainOnly: true,
     },
     Inventory: {
       keySchema: {

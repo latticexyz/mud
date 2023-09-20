@@ -78,7 +78,7 @@ export type StorageAdapter = (block: StorageAdapterBlock) => Promise<void>;
 // TODO: adjust when we get namespace support (https://github.com/latticexyz/mud/issues/994) and when table has namespace key (https://github.com/latticexyz/mud/issues/1201)
 export const schemasTable = storeConfig.tables.Tables;
 export const schemasTableId = resourceIdToHex({
-  type: schemasTable.ephemeral ? "offchainTable" : "table",
+  type: schemasTable.offchainOnly ? "offchainTable" : "table",
   namespace: storeConfig.namespace,
   name: schemasTable.name,
 });
