@@ -43,7 +43,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     // Require namespace to not exist yet
-    if (ResourceIds._getExists(ResourceId.unwrap(namespaceId))) { 
+    if (ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
       revert ResourceExists(namespaceId, namespaceId.toString());
     }
 
