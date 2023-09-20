@@ -22,20 +22,22 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
   address private constant presetCaller = address(0x0123);
   address private constant caller = address(0x01);
 
-  ResourceId private tableId;
-  ResourceId private namespaceId;
+  ResourceId private _tableId;
+  ResourceId private _namespaceId;
 
   function setUp() public {
     ResourceAccess.register();
     NamespaceOwner.register();
-    tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
-    namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+    _tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
+    _namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
     NamespaceOwner.set(namespace, address(this));
-    ResourceAccess.set(ResourceId.unwrap(tableId), presetCaller, true);
+    ResourceAccess.set(ResourceId.unwrap(_tableId), presetCaller, true);
   }
 
   function testAccessControl() public {
+    ResourceId tableId = _tableId;
+    ResourceId namespaceId = _namespaceId;
     bool hasAccess;
 
     // Check that the caller has no access to the namespace or name
@@ -76,6 +78,8 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
   }
 
   function testRequireAccess() public {
+    ResourceId tableId = _tableId;
+
     startGasReport("AccessControl: requireAccess (cold)");
     AccessControl.requireAccess(tableId, presetCaller);
     endGasReport();
@@ -90,6 +94,8 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
   }
 
   function testRequireAccessRevert() public {
+    ResourceId tableId = _tableId;
+
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, tableId.toString(), caller));
     AccessControl.requireAccess(tableId, caller);
   }

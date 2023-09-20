@@ -3,37 +3,37 @@
     "file": "test/AccessControl.t.sol",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (cold)",
-    "gasUsed": 9071
+    "gasUsed": 6971
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (warm, namespace only)",
-    "gasUsed": 1649
+    "gasUsed": 1549
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testAccessControl",
     "name": "AccessControl: hasAccess (warm)",
-    "gasUsed": 3079
+    "gasUsed": 2979
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireAccess",
     "name": "AccessControl: requireAccess (cold)",
-    "gasUsed": 9114
+    "gasUsed": 7014
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireAccess",
     "name": "AccessControl: requireAccess (warm)",
-    "gasUsed": 3117
+    "gasUsed": 3017
   },
   {
     "file": "test/AccessControl.t.sol",
     "test": "testRequireAccess",
     "name": "AccessControl: requireAccess (this address)",
-    "gasUsed": 253
+    "gasUsed": 153
   },
   {
     "file": "test/KeysInTableModule.t.sol",

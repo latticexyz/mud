@@ -22,7 +22,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  ResourceId tableId = WorldResourceIdLib.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE);
+  ResourceId _tableId = WorldResourceIdLib.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -30,6 +30,8 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   }
 
   function testInstall() public {
+    ResourceId tableId = _tableId;
+
     startGasReport("install unique entity module");
     world.installModule(uniqueEntityModule, new bytes(0));
     endGasReport();
@@ -46,6 +48,8 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   }
 
   function testInstallRoot() public {
+    ResourceId tableId = _tableId;
+
     startGasReport("installRoot unique entity module");
     world.installRootModule(uniqueEntityModule, new bytes(0));
     endGasReport();
@@ -62,6 +66,8 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   }
 
   function testPublicAccess() public {
+    ResourceId tableId = _tableId;
+
     world.installModule(uniqueEntityModule, new bytes(0));
 
     // Anyone should be able to call `getUniqueEntity`
