@@ -10,8 +10,9 @@ import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { PackedCounterLib } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { StoreMock } from "../test/StoreMock.sol";
-import { ResourceId } from "../src/ResourceId.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
 
@@ -19,7 +20,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _keyTuple;
-  ResourceId internal _tableId = ResourceId.wrap(keccak256("some.tableId"));
+  ResourceId internal _tableId = ResourceIdLib.encode("some table", RESOURCE_TABLE);
 
   bytes32 internal firstDataBytes;
   uint32[] internal secondData;

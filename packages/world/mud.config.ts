@@ -13,7 +13,7 @@ export default mudConfig({
      ************************************************************************/
     NamespaceOwner: {
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "bytes32",
       },
       valueSchema: {
         owner: "address",
@@ -54,7 +54,7 @@ export default mudConfig({
     Balances: {
       directory: "modules/core/tables",
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "bytes32",
       },
       valueSchema: {
         balance: "uint256",
@@ -86,15 +86,6 @@ export default mudConfig({
         systemId: "bytes32",
       },
       valueSchema: "bytes21[]",
-    },
-    ResourceType: {
-      directory: "modules/core/tables",
-      keySchema: {
-        systemId: "bytes32",
-      },
-      valueSchema: {
-        resourceType: "Resource",
-      },
     },
     FunctionSelectors: {
       directory: "modules/core/tables",
@@ -185,10 +176,6 @@ export default mudConfig({
       tableIdArgument: true,
     },
   },
-  enums: {
-    Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
-  },
-
   excludeSystems: [
     // IUniqueEntitySystem is not part of the root namespace and
     // installed separately by UniqueEntityModule.

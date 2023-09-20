@@ -10,5 +10,5 @@ interface IAccessManagementSystem {
 
   function revokeAccess(ResourceId resourceId, address grantee) external;
 
-  function transferOwnership(bytes14 namespace, address newOwner) external;
+  function transferOwnership(ResourceId namespaceId, address newOwner) external;
 }

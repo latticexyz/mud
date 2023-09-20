@@ -36,7 +36,7 @@ library AccessControl {
    * Reverts with AccessDenied if the check fails.
    */
   function requireOwner(ResourceId resourceId, address caller) internal view {
-    if (NamespaceOwner._get(resourceId.getNamespace()) != caller) {
+    if (NamespaceOwner._get(ResourceId.unwrap(resourceId.getNamespaceId())) != caller) {
       revert IWorldErrors.AccessDenied(resourceId.toString(), caller);
     }
   }

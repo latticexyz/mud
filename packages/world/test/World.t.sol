@@ -8,13 +8,14 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "@latticexyz/store/src/IStoreHook.sol";
 import { StoreCore, StoreCoreInternal } from "@latticexyz/store/src/StoreCore.sol";
+import { IStoreErrors } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncodeHelper.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { SchemaEncodeHelper } from "@latticexyz/store/test/SchemaEncodeHelper.sol";
-import { Tables, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
+import { Tables, ResourceIds, TablesTableId } from "@latticexyz/store/src/codegen/index.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { ALL, BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { RevertSubscriber } from "@latticexyz/store/test/RevertSubscriber.sol";
@@ -26,7 +27,6 @@ import { System } from "../src/System.sol";
 import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE, ROOT_NAME, ROOT_NAMESPACE_ID, UNLIMITED_DELEGATION } from "../src/constants.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
-import { Resource } from "../src/common.sol";
 import { WorldContextProvider, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../src/WorldContext.sol";
 import { SystemHook } from "../src/SystemHook.sol";
 import { BEFORE_CALL_SYSTEM, AFTER_CALL_SYSTEM } from "../src/systemHookTypes.sol";
@@ -38,7 +38,6 @@ import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
 import { SystemRegistry } from "../src/modules/core/tables/SystemRegistry.sol";
-import { ResourceType } from "../src/modules/core/tables/ResourceType.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
@@ -276,7 +275,7 @@ contract WorldTest is Test, GasReporter {
 
   function testRootNamespace() public {
     // Owner of root route should be the creator of the World
-    address rootOwner = NamespaceOwner.get(world, ROOT_NAMESPACE);
+    address rootOwner = NamespaceOwner.get(world, ResourceId.unwrap(ROOT_NAMESPACE_ID));
     assertEq(rootOwner, address(this));
 
     // The creator of the World should have access to the root namespace
@@ -296,40 +295,52 @@ contract WorldTest is Test, GasReporter {
 
   function testRegisterNamespace() public {
     bytes14 namespace = "testNamespace";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     startGasReport("Register a new namespace");
-    world.registerNamespace(namespace);
+    world.registerNamespace(namespaceId);
     endGasReport();
 
     // Expect the caller to be the namespace owner
-    assertEq(NamespaceOwner.get(world, namespace), address(this), "caller should be namespace owner");
+    assertEq(
+      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
+      address(this),
+      "caller should be namespace owner"
+    );
 
     // Expect the caller to have access
     assertEq(
-      ResourceAccess.get(world, ResourceId.unwrap(WorldResourceIdLib.encodeNamespace(namespace)), address(this)),
+      ResourceAccess.get(world, ResourceId.unwrap(namespaceId), address(this)),
       true,
       "caller should have access"
     );
 
+    // Expect the resource ID to have been registered
+    assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(namespaceId)));
+
     // Expect an error when registering an existing namespace
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, namespaceId, namespaceId.toString()));
+    world.registerNamespace(namespaceId);
+  }
+
+  function testRegisterNamespaceRevertInvalidType() public {
+    ResourceId invalidNamespaceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_TABLE);
+
+    // Expect an error when trying to register a namespace with an invalid type
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IWorldErrors.ResourceExists.selector,
-        WorldResourceIdLib.encodeNamespace(namespace),
-        WorldResourceIdLib.encodeNamespace(namespace).toString()
-      )
+      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, string(bytes.concat(RESOURCE_TABLE)))
     );
-    world.registerNamespace(namespace);
+    world.registerNamespace(invalidNamespaceId);
   }
 
   function testTransferNamespace() public {
     bytes14 namespace = "testTransfer";
     ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
-    world.registerNamespace(namespace);
+    world.registerNamespace(namespaceId);
 
     // Expect the new owner to not be namespace owner before transfer
     assertFalse(
-      (NamespaceOwner.get(world, namespace) == address(1)),
+      (NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)) == address(1)),
       "new owner should not be namespace owner before transfer"
     );
     // Expect the new owner to not have access before transfer
@@ -339,10 +350,14 @@ contract WorldTest is Test, GasReporter {
       "new owner should not have access before transfer"
     );
 
-    world.transferOwnership(namespace, address(1));
+    world.transferOwnership(namespaceId, address(1));
 
     // Expect the new owner to be namespace owner
-    assertEq(NamespaceOwner.get(world, namespace), address(1), "new owner should be namespace owner");
+    assertEq(
+      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
+      address(1),
+      "new owner should be namespace owner"
+    );
 
     // Expect the new owner to have access
     assertEq(
@@ -352,7 +367,10 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Expect previous owner to no longer be owner
-    assertFalse((NamespaceOwner.get(world, namespace) == address(this)), "caller should no longer be namespace owner");
+    assertFalse(
+      (NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)) == address(this)),
+      "caller should no longer be namespace owner"
+    );
 
     // Expect previous owner to no longer have access
     assertEq(
@@ -363,7 +381,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect revert if caller is not the owner
     _expectAccessDenied(address(this), namespace, 0, RESOURCE_NAMESPACE);
-    world.transferOwnership(namespace, address(1));
+    world.transferOwnership(namespaceId, address(1));
   }
 
   function testRegisterTable() public {
@@ -371,6 +389,7 @@ contract WorldTest is Test, GasReporter {
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
     bytes14 namespace = "testNamespace";
     bytes16 tableName = "testTable";
+    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
     ResourceId tableId = WorldResourceIdLib.encode(namespace, tableName, RESOURCE_TABLE);
     string[] memory keyNames = new string[](1);
     keyNames[0] = "key1";
@@ -384,7 +403,11 @@ contract WorldTest is Test, GasReporter {
     endGasReport();
 
     // Expect the namespace to be created and owned by the caller
-    assertEq(NamespaceOwner.get(world, namespace), address(this), "namespace should be created by caller");
+    assertEq(
+      NamespaceOwner.get(world, ResourceId.unwrap(namespaceId)),
+      address(this),
+      "namespace should be created by caller"
+    );
 
     // Expect the table to be registered
     assertEq(world.getFieldLayout(tableId).unwrap(), fieldLayout.unwrap(), "value schema should be registered");
@@ -396,7 +419,13 @@ contract WorldTest is Test, GasReporter {
     assertEq(loadedfieldNames, abi.encode(fieldNames), "value names should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId, tableId.toString()));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        tableId,
+        string(bytes.concat(ResourceId.unwrap(tableId)))
+      )
+    );
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
@@ -416,15 +445,19 @@ contract WorldTest is Test, GasReporter {
     bytes16 name = "testSystem";
     ResourceId systemId = WorldResourceIdLib.encode(namespace, name, RESOURCE_SYSTEM);
 
-    // !gasrepot Register a new system
+    startGasReport("register a system");
     world.registerSystem(systemId, system, false);
+    endGasReport();
 
     // Expect the system to be registered
     (address registeredAddress, bool publicAccess) = Systems.get(world, ResourceId.unwrap(systemId));
     assertEq(registeredAddress, address(system));
 
+    // Expect the system's resource ID to have been registered
+    assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(systemId)));
+
     // Expect the system namespace to be owned by the caller
-    address routeOwner = NamespaceOwner.get(world, namespace);
+    address routeOwner = NamespaceOwner.get(world, ResourceId.unwrap(namespaceId));
     assertEq(routeOwner, address(this));
 
     // Expect the system to not be publicly accessible
@@ -445,10 +478,11 @@ contract WorldTest is Test, GasReporter {
       ResourceAccess.get({ _store: world, resourceId: ResourceId.unwrap(namespaceId), caller: address(system) })
     );
 
+    ResourceId newNamespaceId = WorldResourceIdLib.encodeNamespace("newNamespace");
     // Expect the namespace to be created if it doesn't exist yet
-    assertEq(NamespaceOwner.get(world, "newNamespace"), address(0));
+    assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(0));
     world.registerSystem(WorldResourceIdLib.encode("newNamespace", "testSystem", RESOURCE_SYSTEM), new System(), false);
-    assertEq(NamespaceOwner.get(world, "newNamespace"), address(this));
+    assertEq(NamespaceOwner.get(world, ResourceId.unwrap(newNamespaceId)), address(this));
 
     // Expect an error when registering an existing system at a new system ID
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));
@@ -468,7 +502,9 @@ contract WorldTest is Test, GasReporter {
       new string[](1),
       new string[](1)
     );
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId, tableId.toString()));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, string(bytes.concat(RESOURCE_TABLE)))
+    );
     world.registerSystem(tableId, newSystem, true);
 
     // Expect an error when registering a system in a namespace that is not owned by the caller
@@ -534,15 +570,11 @@ contract WorldTest is Test, GasReporter {
       "new system should have access to the namespace"
     );
 
-    // Expect the resource type to still be SYSTEM
-    assertEq(
-      uint8(ResourceType.get(world, ResourceId.unwrap(systemId))),
-      uint8(Resource.SYSTEM),
-      "resource type should still be SYSTEM"
-    );
+    // Expect the resource ID to still be registered
+    assertTrue(ResourceIds.getExists(world, ResourceId.unwrap(systemId)), "resource type should still be SYSTEM");
   }
 
-  function testDuplicateSelectors() public {
+  function testInvalidIds() public {
     // Register a new table
     ResourceId tableId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_TABLE);
     world.registerTable(
@@ -557,18 +589,39 @@ contract WorldTest is Test, GasReporter {
     // Deploy a new system
     System system = new System();
 
-    // Expect an error when trying to register a system at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableId, tableId.toString()));
+    // Expect an error when trying to register a system at the same ID
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, string(bytes.concat(RESOURCE_TABLE)))
+    );
     world.registerSystem(tableId, system, false);
 
     // Register a new system
     ResourceId systemId = WorldResourceIdLib.encode("namespace2", "name", RESOURCE_SYSTEM);
     world.registerSystem(systemId, new System(), false);
 
-    // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, systemId, systemId.toString()));
+    // Expect an error when trying to register a table at the same ID
+    vm.expectRevert(
+      abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidResourceType.selector, string(bytes.concat(RESOURCE_SYSTEM)))
+    );
     world.registerTable(
       systemId,
+      Bool.getFieldLayout(),
+      defaultKeySchema,
+      Bool.getValueSchema(),
+      new string[](1),
+      new string[](1)
+    );
+
+    // Expect an error when trying to register a new table at an existing table ID
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        ResourceId.unwrap(tableId),
+        string(bytes.concat(ResourceId.unwrap(tableId)))
+      )
+    );
+    world.registerTable(
+      tableId,
       Bool.getFieldLayout(),
       defaultKeySchema,
       Bool.getValueSchema(),
@@ -1125,7 +1178,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
   }
 
-  function testWriteAutonomousSystem() public {
+  function testWriteNonRootSystem() public {
     ResourceId tableId = WorldResourceIdLib.encode("namespace", "testTable", RESOURCE_TABLE);
     // Register a new table
     world.registerTable(
@@ -1138,7 +1191,7 @@ contract WorldTest is Test, GasReporter {
     );
 
     // Register a new system
-    ResourceId systemId = WorldResourceIdLib.encode("namespace", "testSystem", RESOURCE_TABLE);
+    ResourceId systemId = WorldResourceIdLib.encode("namespace", "testSystem", RESOURCE_SYSTEM);
     WorldTestSystem system = new WorldTestSystem();
     world.registerSystem(systemId, system, false);
 

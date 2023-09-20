@@ -42,14 +42,12 @@ contract AccessManagementSystem is System {
    * Revoke ResourceAccess for previous owner and grant to newOwner.
    * Requires the caller to own the namespace.
    */
-  function transferOwnership(bytes14 namespace, address newOwner) public virtual {
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-
+  function transferOwnership(ResourceId namespaceId, address newOwner) public virtual {
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespaceId, _msgSender());
 
     // Set namespace new owner
-    NamespaceOwner._set(namespace, newOwner);
+    NamespaceOwner._set(ResourceId.unwrap(namespaceId), newOwner);
 
     // Revoke access from old owner
     ResourceAccess._deleteRecord(ResourceId.unwrap(namespaceId), _msgSender());

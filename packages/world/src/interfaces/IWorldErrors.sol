@@ -15,4 +15,5 @@ interface IWorldErrors {
   error DelegationNotFound(address delegator, address delegatee);
   error InsufficientBalance(uint256 balance, uint256 amount);
   error InterfaceNotSupported(address contractAddress, bytes4 interfaceId);
+  error InvalidResourceType(string resourceType);
 }

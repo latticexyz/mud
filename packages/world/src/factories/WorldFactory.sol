@@ -6,7 +6,7 @@ import { World } from "../World.sol";
 import { IWorldFactory } from "./IWorldFactory.sol";
 import { IBaseWorld } from "../interfaces/IBaseWorld.sol";
 import { IModule } from "../interfaces/IModule.sol";
-import { ROOT_NAMESPACE } from "../constants.sol";
+import { ROOT_NAMESPACE_ID } from "../constants.sol";
 
 contract WorldFactory is IWorldFactory {
   IModule public coreModule;
@@ -27,7 +27,7 @@ contract WorldFactory is IWorldFactory {
 
     // Initialize the World and transfer ownership to the caller
     world.initialize(coreModule);
-    world.transferOwnership(ROOT_NAMESPACE, msg.sender);
+    world.transferOwnership(ROOT_NAMESPACE_ID, msg.sender);
 
     emit WorldDeployed(worldAddress);
   }

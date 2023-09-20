@@ -2,13 +2,15 @@
 pragma solidity >=0.8.0;
 
 import { Hook, HookLib } from "@latticexyz/store/src/Hook.sol";
+import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
 import { System } from "../../../System.sol";
 import { WorldContextConsumer, WORLD_CONTEXT_CONSUMER_INTERFACE_ID } from "../../../WorldContext.sol";
-import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
-import { Resource } from "../../../common.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { SystemCall } from "../../../SystemCall.sol";
 import { ROOT_NAMESPACE_ID, ROOT_NAME, UNLIMITED_DELEGATION } from "../../../constants.sol";
+import { RESOURCE_NAMESPACE, RESOURCE_SYSTEM } from "../../../worldResourceTypes.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 import { requireInterface } from "../../../requireInterface.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
@@ -18,7 +20,6 @@ import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../../../interfaces/ISyst
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 import { IDelegationControl, DELEGATION_CONTROL_INTERFACE_ID } from "../../../interfaces/IDelegationControl.sol";
 
-import { ResourceType } from "../tables/ResourceType.sol";
 import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
@@ -29,23 +30,28 @@ import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
  * Registering tables is implemented in StoreRegistrationSystem.sol
  */
 contract WorldRegistrationSystem is System, IWorldErrors {
+  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
    * Register a new namespace
    */
-  function registerNamespace(bytes14 namespace) public virtual {
-    ResourceId namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
+  function registerNamespace(ResourceId namespaceId) public virtual {
+    // Require the provided namespace ID to have type RESOURCE_NAMESPACE
+    if (!namespaceId.isType(RESOURCE_NAMESPACE)) {
+      revert InvalidResourceType(string(bytes.concat(namespaceId.getType())));
+    }
 
     // Require namespace to not exist yet
-    if (ResourceType._get(ResourceId.unwrap(namespaceId)) != Resource.NONE)
+    if (ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
       revert ResourceExists(namespaceId, namespaceId.toString());
+    }
 
-    // Register namespace resource
-    ResourceType._set(ResourceId.unwrap(namespaceId), Resource.NAMESPACE);
+    // Register namespace resource ID
+    ResourceIds._setExists(ResourceId.unwrap(namespaceId), true);
 
     // Register caller as the namespace owner
-    NamespaceOwner._set(namespace, _msgSender());
+    NamespaceOwner._set(ResourceId.unwrap(namespaceId), _msgSender());
 
     // Give caller access to the new namespace
     ResourceAccess._set(ResourceId.unwrap(namespaceId), _msgSender(), true);
@@ -89,6 +95,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    * making it possible to upgrade systems.
    */
   function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
+    // Require the provided system ID to have type RESOURCE_SYSTEM
+    if (!systemId.isType(RESOURCE_SYSTEM)) {
+      revert InvalidResourceType(string(bytes.concat(systemId.getType())));
+    }
+
     // Require the provided address to implement the WorldContextConsumer interface
     requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
 
@@ -102,19 +113,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     }
 
     // If the namespace doesn't exist yet, register it
-    // otherwise require caller to own the namespace
     ResourceId namespaceId = systemId.getNamespaceId();
-    if (ResourceType._get(ResourceId.unwrap(namespaceId)) == Resource.NONE) {
-      registerNamespace(systemId.getNamespace());
+    if (!ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
+      registerNamespace(namespaceId);
     } else {
+      // otherwise require caller to own the namespace
       AccessControl.requireOwner(namespaceId, _msgSender());
-    }
-
-    // TODO: this check is unnecessary with resource types, need to replace with a requirement that the system type is encoded correctly
-    // Require no resource other than a system to exist at this selector yet
-    Resource resourceType = ResourceType._get(ResourceId.unwrap(systemId));
-    if (resourceType != Resource.NONE && resourceType != Resource.SYSTEM) {
-      revert ResourceExists(systemId, systemId.toString());
     }
 
     // Check if a system already exists at this system ID
@@ -128,14 +132,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
       // Remove the existing system's access to its namespace
       ResourceAccess._deleteRecord(ResourceId.unwrap(namespaceId), existingSystem);
     } else {
-      // Otherwise, this is a new system, so register its resource type
-      ResourceType._set(ResourceId.unwrap(systemId), Resource.SYSTEM);
+      // Otherwise, this is a new system, so register its resource ID
+      ResourceIds._setExists(ResourceId.unwrap(systemId), true);
     }
 
-    // Systems = mapping from systemId to system address and publicAccess
+    // Systems = mapping from system ID to system address and public access flag
     Systems._set(ResourceId.unwrap(systemId), address(system), publicAccess);
 
-    // SystemRegistry = mapping from system address to systemId
+    // SystemRegistry = mapping from system address to system ID
     SystemRegistry._set(address(system), ResourceId.unwrap(systemId));
 
     // Grant the system access to its namespace

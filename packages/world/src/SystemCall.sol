@@ -43,9 +43,9 @@ library SystemCall {
 
     // If the msg.value is non-zero, update the namespace's balance
     if (value > 0) {
-      bytes14 namespace = systemId.getNamespace();
-      uint256 currentBalance = Balances._get(namespace);
-      Balances._set(namespace, currentBalance + value);
+      ResourceId namespaceId = systemId.getNamespaceId();
+      uint256 currentBalance = Balances._get(ResourceId.unwrap(namespaceId));
+      Balances._set(ResourceId.unwrap(namespaceId), currentBalance + value);
     }
 
     // Call the system and forward any return data
