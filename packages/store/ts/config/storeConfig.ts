@@ -11,15 +11,15 @@ import {
   // validation utils
   getDuplicates,
   parseStaticArray,
-  STORE_SELECTOR_MAX_LENGTH,
+  STORE_NAME_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
   // schemas
   zObjectName,
-  zSelector,
   zUserEnum,
   zValueName,
   zNamespace,
+  zName,
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 
@@ -128,7 +128,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
 const zFullTableConfig = z
   .object({
     directory: z.string().default(TABLE_DEFAULTS.directory),
-    name: zSelector.optional(),
+    name: zName.optional(),
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
@@ -171,7 +171,7 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
+    table.name = tableName.slice(0, STORE_NAME_MAX_LENGTH);
 
     tables[tableName] = table;
   }
