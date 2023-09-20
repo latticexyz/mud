@@ -87,15 +87,6 @@ export default mudConfig({
       },
       valueSchema: "bytes21[]",
     },
-    ResourceType: {
-      directory: "modules/core/tables",
-      keySchema: {
-        systemId: "bytes32",
-      },
-      valueSchema: {
-        resourceType: "Resource",
-      },
-    },
     FunctionSelectors: {
       directory: "modules/core/tables",
       keySchema: {
@@ -185,10 +176,6 @@ export default mudConfig({
       tableIdArgument: true,
     },
   },
-  enums: {
-    Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
-  },
-
   excludeSystems: [
     // IUniqueEntitySystem is not part of the root namespace and
     // installed separately by UniqueEntityModule.

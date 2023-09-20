@@ -9,13 +9,14 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/index.sol";
+import { StoreHooks, Tables, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
-import { ResourceId } from "./ResourceId.sol";
+import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
+import { RESOURCE_TABLE } from "./storeResourceTypes.sol";
 
 /**
  * StoreCore includes implementations for all IStore methods.
@@ -23,6 +24,8 @@ import { ResourceId } from "./ResourceId.sol";
  * It's split into a separate library to make it clear that it's not intended to be outside StoreCore.
  */
 library StoreCore {
+  using ResourceIdInstance for ResourceId;
+
   event HelloStore(bytes32 indexed version);
   event StoreSetRecord(
     ResourceId indexed tableId,
@@ -77,6 +80,7 @@ library StoreCore {
     // Register core tables
     Tables.register();
     StoreHooks.register();
+    ResourceIds.register();
   }
 
   /************************************************************************
@@ -101,7 +105,7 @@ library StoreCore {
   function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
     keySchema = Schema.wrap(Tables._getKeySchema(ResourceId.unwrap(tableId)));
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
-    if (!hasTable(tableId)) {
+    if (!ResourceIds._getExists(ResourceId.unwrap(tableId))) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
@@ -117,13 +121,6 @@ library StoreCore {
   }
 
   /**
-   * Check if a table with the given tableId exists
-   */
-  function hasTable(ResourceId tableId) internal view returns (bool) {
-    return Tables._getFieldLayout(ResourceId.unwrap(tableId)) != bytes32(0);
-  }
-
-  /**
    * Register a new table the given config
    */
   function registerTable(
@@ -134,6 +131,11 @@ library StoreCore {
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
+    // Verify the table ID is of type RESOURCE_TABLE
+    if (!tableId.isType(RESOURCE_TABLE)) {
+      revert IStoreErrors.StoreCore_InvalidResourceType(string(bytes.concat(tableId.getType())));
+    }
+
     // Verify the field layout is valid
     fieldLayout.validate({ allowEmpty: false });
 
@@ -156,8 +158,8 @@ library StoreCore {
       revert IStoreErrors.StoreCore_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
 
-    // Verify the field layout doesn't exist yet
-    if (hasTable(tableId)) {
+    // Verify there is no resource with this ID yet
+    if (ResourceIds._getExists(ResourceId.unwrap(tableId))) {
       revert IStoreErrors.StoreCore_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
@@ -170,6 +172,9 @@ library StoreCore {
       abi.encode(keyNames),
       abi.encode(fieldNames)
     );
+
+    // Register the table ID
+    ResourceIds._setExists(ResourceId.unwrap(tableId), true);
   }
 
   /************************************************************************

@@ -1,15 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { ResourceId, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
+
 import { System } from "../../../System.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
+import { RESOURCE_NAMESPACE } from "../../../worldResourceTypes.sol";
 import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { Balances } from "../tables/Balances.sol";
 
 contract BalanceTransferSystem is System, IWorldErrors {
+  using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
   /**
@@ -20,6 +24,11 @@ contract BalanceTransferSystem is System, IWorldErrors {
     ResourceId toNamespaceId,
     uint256 amount
   ) public virtual {
+    // Require the target ID to be a namespace ID
+    if (!toNamespaceId.isType(RESOURCE_NAMESPACE)) {
+      revert InvalidResourceType(string(bytes.concat(toNamespaceId.getType())));
+    }
+
     // Require caller to have access to the namespace
     AccessControl.requireAccess(fromNamespaceId, _msgSender());
 
