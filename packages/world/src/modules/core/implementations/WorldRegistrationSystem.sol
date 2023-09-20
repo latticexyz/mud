@@ -104,8 +104,11 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     ResourceId namespaceId = systemId.getNamespaceId();
-    if (ResourceType._get(ResourceId.unwrap(namespaceId)) == Resource.NONE) registerNamespace(systemId.getNamespace());
-    else AccessControl.requireOwner(namespaceId, _msgSender());
+    if (ResourceType._get(ResourceId.unwrap(namespaceId)) == Resource.NONE) {
+      registerNamespace(systemId.getNamespace());
+    } else {
+      AccessControl.requireOwner(namespaceId, _msgSender());
+    }
 
     // TODO: this check is unnecessary with resource types, need to replace with a requirement that the system type is encoded correctly
     // Require no resource other than a system to exist at this selector yet
