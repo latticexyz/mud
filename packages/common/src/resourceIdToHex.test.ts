@@ -1,12 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { resourceIdToHex } from "./resourceIdToHex";
 import { hexToResourceId } from "./hexToResourceId";
-import { resourceTypes } from "./common";
 
 describe("resourceIdToHex", () => {
   it("can convert table resource to hex string", () => {
     const hex = resourceIdToHex({
-      type: resourceTypes.table,
+      type: "table",
       namespace: "namespace",
       name: "name",
     });
@@ -15,14 +14,14 @@ describe("resourceIdToHex", () => {
       {
         "name": "name",
         "namespace": "namespace",
-        "type": "tb",
+        "type": "table",
       }
     `);
   });
 
   it("can convert offchain table resource to hex string", () => {
     const hex = resourceIdToHex({
-      type: resourceTypes.offchainTable,
+      type: "offchainTable",
       namespace: "namespace",
       name: "name",
     });
@@ -31,14 +30,14 @@ describe("resourceIdToHex", () => {
       {
         "name": "name",
         "namespace": "namespace",
-        "type": "ot",
+        "type": "offchainTable",
       }
     `);
   });
 
   it("truncates namespaces >14 bytes", () => {
     const hex = resourceIdToHex({
-      type: resourceTypes.table,
+      type: "table",
       namespace: "AVeryLongNamespace",
       name: "name",
     });
@@ -47,14 +46,14 @@ describe("resourceIdToHex", () => {
       {
         "name": "name",
         "namespace": "AVeryLongNames",
-        "type": "tb",
+        "type": "table",
       }
     `);
   });
 
   it("truncates names >16 bytes", () => {
     const hex = resourceIdToHex({
-      type: resourceTypes.table,
+      type: "table",
       namespace: "namespace",
       name: "AnUnnecessarilyLongName",
     });
@@ -63,7 +62,7 @@ describe("resourceIdToHex", () => {
       {
         "name": "AnUnnecessarilyL",
         "namespace": "namespace",
-        "type": "tb",
+        "type": "table",
       }
     `);
   });

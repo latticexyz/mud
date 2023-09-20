@@ -1,9 +1,4 @@
-export const resourceTypes = {
-  table: "tb",
-  offchainTable: "ot",
-} as const;
-
-export type ResourceType = (typeof resourceTypes)[keyof typeof resourceTypes];
+import { ResourceType } from "./resourceTypes";
 
 export type ResourceId = {
   namespace: string;
