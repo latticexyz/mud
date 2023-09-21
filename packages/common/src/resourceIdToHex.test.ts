@@ -9,7 +9,7 @@ describe("resourceIdToHex", () => {
       namespace: "namespace",
       name: "name",
     });
-    expect(hex).toMatchInlineSnapshot('"0x6e616d65737061636500000000006e616d650000000000000000000000007462"');
+    expect(hex).toMatchInlineSnapshot('"0x74626e616d65737061636500000000006e616d65000000000000000000000000"');
     expect(hexToResourceId(hex)).toMatchInlineSnapshot(`
       {
         "name": "name",
@@ -25,7 +25,7 @@ describe("resourceIdToHex", () => {
       namespace: "namespace",
       name: "name",
     });
-    expect(hex).toMatchInlineSnapshot('"0x6e616d65737061636500000000006e616d650000000000000000000000006f74"');
+    expect(hex).toMatchInlineSnapshot('"0x6f746e616d65737061636500000000006e616d65000000000000000000000000"');
     expect(hexToResourceId(hex)).toMatchInlineSnapshot(`
       {
         "name": "name",
@@ -41,7 +41,7 @@ describe("resourceIdToHex", () => {
       namespace: "AVeryLongNamespace",
       name: "name",
     });
-    expect(hex).toMatchInlineSnapshot('"0x41566572794c6f6e674e616d65736e616d650000000000000000000000007462"');
+    expect(hex).toMatchInlineSnapshot('"0x746241566572794c6f6e674e616d65736e616d65000000000000000000000000"');
     expect(hexToResourceId(hex)).toMatchInlineSnapshot(`
       {
         "name": "name",
@@ -57,7 +57,7 @@ describe("resourceIdToHex", () => {
       namespace: "namespace",
       name: "AnUnnecessarilyLongName",
     });
-    expect(hex).toMatchInlineSnapshot('"0x6e616d6573706163650000000000416e556e6e65636573736172696c794c7462"');
+    expect(hex).toMatchInlineSnapshot('"0x74626e616d6573706163650000000000416e556e6e65636573736172696c794c"');
     expect(hexToResourceId(hex)).toMatchInlineSnapshot(`
       {
         "name": "AnUnnecessarilyL",

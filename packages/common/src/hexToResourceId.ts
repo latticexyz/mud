@@ -17,9 +17,9 @@ function getResourceType(resourceTypeId: string): ResourceType | undefined {
 }
 
 export function hexToResourceId(hex: Hex): ResourceId {
-  const namespace = hexToString(sliceHex(hex, 0, 14)).replace(/\0+$/, "");
-  const name = hexToString(sliceHex(hex, 14, 30)).replace(/\0+$/, "");
-  const resourceTypeId = hexToString(sliceHex(hex, 30, 32)).replace(/\0+$/, "");
+  const resourceTypeId = hexToString(sliceHex(hex, 0, 2)).replace(/\0+$/, "");
+  const namespace = hexToString(sliceHex(hex, 2, 16)).replace(/\0+$/, "");
+  const name = hexToString(sliceHex(hex, 16, 32)).replace(/\0+$/, "");
   const type = getResourceType(resourceTypeId);
 
   if (!type) {

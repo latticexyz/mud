@@ -16,8 +16,8 @@ export const resourceTypeIds = {
 export function resourceIdToHex(resourceId: ResourceId): Hex {
   const typeId = resourceTypeIds[resourceId.type];
   return concatHex([
+    stringToHex(typeId, { size: 2 }),
     stringToHex(resourceId.namespace.slice(0, 14), { size: 14 }),
     stringToHex(resourceId.name.slice(0, 16), { size: 16 }),
-    stringToHex(typeId, { size: 2 }),
   ]);
 }
