@@ -4,7 +4,7 @@ import { tableIdToHex } from "@latticexyz/common";
 
 describe("parseConfig", () => {
   it("outputs tables from config", () => {
-    const config = parseConfig({
+    const output = parseConfig({
       tables: {
         Exists: "bool",
         Position: {
@@ -20,7 +20,7 @@ describe("parseConfig", () => {
       },
     });
 
-    expect(config).toStrictEqual({
+    const expectedOutput = {
       tables: {
         Exists: {
           type: "table",
@@ -61,42 +61,15 @@ describe("parseConfig", () => {
           },
         },
       },
-    } as const);
+    } as const;
 
-    expectTypeOf<typeof config>().toEqualTypeOf<
-      Readonly<{
-        tables: Readonly<{
-          Exists: Readonly<{
-            type: "table";
-            namespace: "";
-            name: "Exists";
-            tableId: `0x${string}`;
-            keySchema: Readonly<{ key: "bytes32" }>;
-            valueSchema: Readonly<{ value: "bool" }>;
-          }>;
-          Position: Readonly<{
-            type: "table";
-            namespace: "";
-            name: "Position";
-            tableId: `0x${string}`;
-            keySchema: Readonly<{ key: "bytes32" }>;
-            valueSchema: Readonly<{ x: "uint32"; y: "uint32" }>;
-          }>;
-          Messages: Readonly<{
-            type: "offchainTable";
-            namespace: "";
-            name: "Messages";
-            tableId: `0x${string}`;
-            keySchema: Readonly<{ key: "bytes32" }>;
-            valueSchema: Readonly<{ sender: "address"; message: "string" }>;
-          }>;
-        }>;
-      }>
-    >();
+    expect(output).toStrictEqual(expectedOutput);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("handles namespaces", () => {
-    const config = parseConfig({
+    const output = parseConfig({
       namespace: "DefaultNamespace",
       tables: {
         Exists: "bool",
@@ -122,7 +95,7 @@ describe("parseConfig", () => {
       },
     } as const);
 
-    expect(config).toStrictEqual({
+    const expectedOutput = {
       tables: {
         Exists: {
           type: "table",
@@ -162,37 +135,10 @@ describe("parseConfig", () => {
           },
         },
       },
-    });
+    } as const;
 
-    expectTypeOf<typeof config>().toMatchTypeOf<
-      Readonly<{
-        tables: Readonly<{
-          Exists: Readonly<{
-            type: "table";
-            namespace: "DefaultNamespace";
-            name: "Exists";
-            tableId: `0x${string}`;
-            keySchema: Readonly<{ key: "bytes32" }>;
-            valueSchema: Readonly<{ value: "bool" }>;
-          }>;
-          Position: Readonly<{
-            type: "table";
-            namespace: "TableNamespace";
-            name: "Position";
-            tableId: `0x${string}`;
-            keySchema: Readonly<{ key: "bytes32" }>;
-            valueSchema: Readonly<{ x: "uint32"; y: "uint32" }>;
-          }>;
-          PlayerNames: Readonly<{
-            type: "table";
-            namespace: "MyNamespace";
-            name: "PlayerNames";
-            tableId: `0x${string}`;
-            keySchema: Readonly<{ key: "bytes32" }>;
-            valueSchema: Readonly<{ value: "string" }>;
-          }>;
-        }>;
-      }>
-    >();
+    expect(output).toStrictEqual(expectedOutput);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 });

@@ -5,26 +5,34 @@ import { parseKeySchema } from "./parseKeySchema";
 
 describe("parseKeySchema", () => {
   it("outputs a key schema for uint8", () => {
-    const keySchema = parseKeySchema("uint8");
-    expect(keySchema).toStrictEqual({ key: "uint8" });
-    expectTypeOf<typeof keySchema>().toEqualTypeOf<Readonly<{ key: "uint8" }>>();
+    const output = parseKeySchema("uint8");
+    const expectedOutput = { key: "uint8" } as const;
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a key schema for bool", () => {
-    const keySchema = parseKeySchema("bool");
-    expect(keySchema).toStrictEqual({ key: "bool" });
-    expectTypeOf<typeof keySchema>().toEqualTypeOf<Readonly<{ key: "bool" }>>();
+    const output = parseKeySchema("bool");
+    const expectedOutput = { key: "bool" } as const;
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("returns a full key schema", () => {
-    const keySchema = parseKeySchema({ x: "uint32", y: "uint32" });
-    expect(keySchema).toStrictEqual({ x: "uint32", y: "uint32" });
-    expectTypeOf<typeof keySchema>().toEqualTypeOf<Readonly<{ x: "uint32"; y: "uint32" }>>();
+    const output = parseKeySchema({ x: "uint32", y: "uint32" });
+    const expectedOutput = { x: "uint32", y: "uint32" } as const;
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("defaults key schema when undefined", () => {
-    const keySchema = parseKeySchema(undefined);
-    expect(keySchema).toStrictEqual({ key: "bytes32" });
-    expectTypeOf<typeof keySchema>().toEqualTypeOf<Readonly<{ key: "bytes32" }>>();
+    const output = parseKeySchema(undefined);
+    const expectedOutput = { key: "bytes32" } as const;
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 });

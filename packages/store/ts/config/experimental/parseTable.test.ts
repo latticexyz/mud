@@ -10,224 +10,162 @@ describe("tableInputShapeKeys", () => {
 
 describe("parseTable", () => {
   it("outputs a table from just a schema ABI type", () => {
-    const table = parseTable("", "SomeTable", "uint8");
+    const output = parseTable("", "SomeTable", "uint8");
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "uint8" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ value: "uint8" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table from valueSchema shorthand", () => {
-    const table = parseTable("", "SomeTable", { valueSchema: "uint8" } as const);
+    const output = parseTable("", "SomeTable", { valueSchema: "uint8" });
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "uint8" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ value: "uint8" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table with undefined keySchema", () => {
-    const table = parseTable("", "SomeTable", { keySchema: undefined, valueSchema: "uint8" } as const);
+    const output = parseTable("", "SomeTable", { keySchema: undefined, valueSchema: "uint8" });
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "uint8" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ value: "uint8" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table from keySchema shorthand", () => {
-    const table = parseTable("", "SomeTable", { keySchema: "bool", valueSchema: "uint8" } as const);
+    const output = parseTable("", "SomeTable", { keySchema: "bool", valueSchema: "uint8" });
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { key: "bool" },
       valueSchema: { value: "uint8" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bool" }>;
-        valueSchema: Readonly<{ value: "uint8" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table from keySchema", () => {
-    const table = parseTable("", "SomeTable", {
+    const output = parseTable("", "SomeTable", {
       keySchema: { x: "uint32", y: "uint32" },
       valueSchema: "uint8",
-    } as const);
+    });
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { x: "uint32", y: "uint32" },
       valueSchema: { value: "uint8" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ x: "uint32"; y: "uint32" }>;
-        valueSchema: Readonly<{ value: "uint8" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table from valueSchema", () => {
-    const table = parseTable("", "SomeTable", { valueSchema: { exists: "bool" } } as const);
+    const output = parseTable("", "SomeTable", { valueSchema: { exists: "bool" } });
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { exists: "bool" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ exists: "bool" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table with a default namespace", () => {
-    const table = parseTable("Namespace", "SomeTable", "bytes32");
+    const output = parseTable("Namespace", "SomeTable", "bytes32");
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "Namespace",
       name: "SomeTable",
       tableId: tableIdToHex("Namespace", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "bytes32" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "Namespace";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ value: "bytes32" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs a table with a namespace override", () => {
-    const table = parseTable("Namespace", "SomeTable", {
+    const output = parseTable("Namespace", "SomeTable", {
       namespace: "CustomNamespace",
       valueSchema: "string",
+      // TODO: figure out if we can preserve namespace string literal type without as const requirement
     } as const);
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "table",
       namespace: "CustomNamespace",
       name: "SomeTable",
       tableId: tableIdToHex("CustomNamespace", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "string" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "table";
-        namespace: "CustomNamespace";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ value: "string" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 
   it("outputs an offchain table", () => {
-    const table = parseTable("", "SomeTable", { offchainOnly: true, valueSchema: "string" } as const);
+    const output = parseTable("", "SomeTable", { offchainOnly: true, valueSchema: "string" });
 
-    expect(table).toStrictEqual({
+    const expectedOutput = {
       type: "offchainTable",
       namespace: "",
       name: "SomeTable",
       tableId: tableIdToHex("", "SomeTable"),
       keySchema: { key: "bytes32" },
       valueSchema: { value: "string" },
-    });
+    } as const;
 
-    expectTypeOf<typeof table>().toEqualTypeOf<
-      Readonly<{
-        type: "offchainTable";
-        namespace: "";
-        name: "SomeTable";
-        tableId: `0x${string}`;
-        keySchema: Readonly<{ key: "bytes32" }>;
-        valueSchema: Readonly<{ value: "string" }>;
-      }>
-    >();
+    expect(output).toStrictEqual(output);
+    expectTypeOf(output).toEqualTypeOf(expectedOutput);
+    expectTypeOf(output).toMatchTypeOf(expectedOutput);
   });
 });
