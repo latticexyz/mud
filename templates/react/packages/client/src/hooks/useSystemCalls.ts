@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { WalletClient, Transport, Chain, Account } from "viem";
-import { createSystemCalls } from "./createSystemCalls";
-import { SetupNetworkResult } from "./setupNetwork";
-import { ClientComponents } from "./createClientComponents";
+import { createSystemCalls } from "../mud/createSystemCalls";
+import { SetupNetworkResult } from "../mud/setupNetwork";
+import { ClientComponents } from "../mud/createClientComponents";
 
 export function useSystemCalls(
   network: SetupNetworkResult,

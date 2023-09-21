@@ -42,9 +42,9 @@ export function createSystemCalls(
      * is in the root namespace, `.increment` can be called directly
      * on the World contract.
      */
-    const tx = await worldContract.write.increment({
-      gas: 15000000n,
-    });
+    // gas added here is a workaround for intrinsic gas too high error
+    // likely something along with commenting out the defaultPriorityFee on chain config?
+    const tx = await worldContract.write.increment({ gas: 1500000 });
     await waitForTransaction(tx);
     return getComponentValue(Counter, singletonEntity);
   };
@@ -59,10 +59,7 @@ export function createSystemCalls(
       getResourceSelector,
     });
     const callData = "0x";
-    console.log({ delegatee, UNLIMITED_DELEGATION, callData });
-    const tx = await contractWithDelegator.write.registerDelegation([delegatee, UNLIMITED_DELEGATION, callData], {
-      gas: 15000000n,
-    });
+    const tx = await contractWithDelegator.write.registerDelegation([delegatee, UNLIMITED_DELEGATION, callData]);
     await waitForTransaction(tx);
   };
 

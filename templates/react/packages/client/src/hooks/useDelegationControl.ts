@@ -2,7 +2,7 @@ import { ComponentValue, Type, getComponentValue } from "@latticexyz/recs";
 import { useEffect, useState } from "react";
 import { WalletClient, Transport, Chain, Account } from "viem";
 import { encodeEntity } from "@latticexyz/store-sync/recs";
-import { ClientComponents } from "./createClientComponents";
+import { ClientComponents } from "../mud/createClientComponents";
 
 export function useDelegationControl(
   delegator: WalletClient<Transport, Chain, Account> | null | undefined,
@@ -32,13 +32,6 @@ export function useDelegationControl(
     });
     const delegationControlId = getComponentValue(components.Delegations, delegationsKeyEntity);
 
-    console.log({
-      delegationsKeyEntity,
-      delegator: delegator.account.address,
-      delegatee: delegatee.account.address,
-      delegationControlId,
-      delegations: [...components.Delegations.entities()],
-    });
     setDelegationControlId(delegationControlId);
 
     // TODO what's the cleanup fn?

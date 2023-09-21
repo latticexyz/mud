@@ -3,12 +3,17 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useWalletClient, useAccount } from "wagmi";
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
+import { setup } from "./mud/setup";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
-import { useSystemCalls } from "./mud/useSystemCalls";
-import { useDelegationControl } from "./mud/useDelegationControl";
+import { useSystemCalls } from "./hooks/useSystemCalls";
+import { useDelegationControl } from "./hooks/useDelegationControl";
 
-export const App = () => {
-  const { network, components } = useMUD();
+type Props = {
+  setup: Awaited<ReturnType<typeof setup>>;
+};
+
+export const App = ({ setup }: Props) => {
+  const { network, components } = setup;
 
   // TODO rename to delegatee
   const { walletClient: burnerWalletClient } = network;
@@ -19,8 +24,6 @@ export const App = () => {
   const systemCalls = useSystemCalls(network, components, walletClient.data);
   const delegationControlId = useDelegationControl(walletClient.data, burnerWalletClient, components);
   const counter = useComponentValue(Counter, singletonEntity);
-
-  console.log({ account, delegationControlId });
 
   return (
     <>
