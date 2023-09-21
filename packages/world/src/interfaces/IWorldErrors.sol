@@ -16,4 +16,5 @@ interface IWorldErrors {
   error InsufficientBalance(uint256 balance, uint256 amount);
   error InterfaceNotSupported(address contractAddress, bytes4 interfaceId);
   error InvalidResourceType(bytes2 expected, ResourceId resourceId, string resourceIdString);
+  error WorldCallbackNotAllowed(bytes4 functionSelector);
 }

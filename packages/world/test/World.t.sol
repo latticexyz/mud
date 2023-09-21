@@ -44,6 +44,7 @@ import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "../src/interfaces/ISystemHook.sol";
 
 import { Bool } from "./tables/Bool.sol";
+import { TwoFields, TwoFieldsData } from "./tables/TwoFields.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
 
 interface IWorldTestSystem {
@@ -689,27 +690,30 @@ contract WorldTest is Test, GasReporter {
     // Register a new table
     world.registerTable(
       tableId,
-      Bool.getFieldLayout(),
-      defaultKeySchema,
-      Bool.getValueSchema(),
-      new string[](1),
-      new string[](1)
+      TwoFields.getFieldLayout(),
+      TwoFields.getKeySchema(),
+      TwoFields.getValueSchema(),
+      new string[](0),
+      new string[](2)
     );
 
     startGasReport("Write data to the table");
-    Bool.set(world, tableId, true);
+    TwoFields.set(world, tableId, true, true);
     endGasReport();
 
     // Expect the data to be written
-    assertTrue(Bool.get(world, tableId));
+    TwoFieldsData memory tableData = (TwoFields.get(world, tableId));
+    assertTrue(tableData.value1);
+    assertTrue(tableData.value2);
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), "testSetRecord", "testTable", RESOURCE_TABLE);
-    Bool.set(world, tableId, true);
+    TwoFields.set(world, tableId, true, true);
 
     // Expect the World to not have access
-    _expectAccessDenied(address(world), "testSetRecord", "testTable", RESOURCE_TABLE);
-    Bool.set(world, tableId, true);
+    vm.prank(address(world));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.setRecord.selector));
+    TwoFields.set(world, tableId, true, true);
   }
 
   function testSetField() public {
@@ -734,7 +738,8 @@ contract WorldTest is Test, GasReporter {
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
 
     // Expect the World to not have access
-    _expectAccessDenied(address(world), "testSetField", "testTable", RESOURCE_TABLE);
+    vm.prank(address(world));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.setField.selector));
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
@@ -776,7 +781,8 @@ contract WorldTest is Test, GasReporter {
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
 
     // Expect the World to not have access
-    _expectAccessDenied(address(world), namespace, name, RESOURCE_TABLE);
+    vm.prank(address(world));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.pushToField.selector));
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
   }
 
@@ -825,7 +831,8 @@ contract WorldTest is Test, GasReporter {
     world.deleteRecord(tableId, singletonKey, fieldLayout);
 
     // Expect the World to not have access
-    _expectAccessDenied(address(world), namespace, name, RESOURCE_TABLE);
+    vm.prank(address(world));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.deleteRecord.selector));
     world.deleteRecord(tableId, singletonKey, fieldLayout);
   }
 
@@ -865,7 +872,8 @@ contract WorldTest is Test, GasReporter {
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect the World to have not access
-    _expectAccessDenied(address(world), "namespace", "testSystem", RESOURCE_SYSTEM);
+    vm.prank(address(world));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.call.selector));
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded

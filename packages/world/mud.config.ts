@@ -170,6 +170,15 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    TwoFields: {
+      directory: "../test/tables",
+      keySchema: {},
+      valueSchema: {
+        value1: "bool",
+        value2: "bool",
+      },
+      tableIdArgument: true,
+    },
     AddressArray: {
       directory: "../test/tables",
       valueSchema: "address[]",
