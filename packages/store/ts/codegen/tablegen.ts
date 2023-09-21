@@ -1,14 +1,15 @@
 import path from "path";
-import { formatAndWriteSolidity } from "@latticexyz/common/codegen";
+import { SolidityUserDefinedType, extractUserTypes, formatAndWriteSolidity } from "@latticexyz/common/codegen";
 import { getTableOptions } from "./tableOptions";
 import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
-import { rmSync } from "fs";
+import { readFileSync, rmSync } from "fs";
 import { StoreConfig } from "../config";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
-  const allTableOptions = getTableOptions(config);
+  const solidityUserTypes = loadAndExtractUserTypes(config.userTypes, outputBaseDirectory);
+  const allTableOptions = getTableOptions(config, solidityUserTypes);
 
   const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));
   for (const tableDir of uniqueTableDirectories) {
@@ -32,4 +33,35 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
   const fullOutputPath = path.join(outputBaseDirectory, config.codegenIndexFilename);
   const output = renderTableIndex(allTableOptions);
   await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
+}
+
+function loadAndExtractUserTypes(userTypes: StoreConfig["userTypes"], outputBaseDirectory: string) {
+  const userTypesPerFile: Record<string, string[]> = {};
+  for (const [userTypeName, unresolvedFilePath] of Object.entries(userTypes)) {
+    if (!(unresolvedFilePath in userTypesPerFile)) {
+      userTypesPerFile[unresolvedFilePath] = [];
+    }
+    userTypesPerFile[unresolvedFilePath].push(userTypeName);
+  }
+  let extractedUserTypes: Record<string, SolidityUserDefinedType> = {};
+  for (const [unresolvedFilePath, userTypeNames] of Object.entries(userTypesPerFile)) {
+    const { filePath, data } = loadUserTypesFile(outputBaseDirectory, unresolvedFilePath);
+    extractedUserTypes = Object.assign(userTypes, extractUserTypes(data, userTypeNames, filePath));
+  }
+  return extractedUserTypes;
+}
+
+function loadUserTypesFile(outputBaseDirectory: string, unresolvedFilePath: string) {
+  if (unresolvedFilePath.indexOf(".") === 0) {
+    return {
+      filePath: path.relative(outputBaseDirectory, unresolvedFilePath),
+      data: readFileSync(unresolvedFilePath, "utf8"),
+    };
+  } else {
+    // TODO support remappings
+    return {
+      filePath: unresolvedFilePath,
+      data: readFileSync(path.join("node_modules", unresolvedFilePath), "utf8"),
+    };
+  }
 }

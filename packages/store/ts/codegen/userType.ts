@@ -5,7 +5,7 @@ import {
   SchemaTypeToAbiType,
 } from "@latticexyz/schema-type/deprecated";
 import { parseStaticArray } from "@latticexyz/config";
-import { RelativeImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
+import { ImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
 import { StoreConfig } from "../config";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
@@ -50,7 +50,7 @@ export function importForAbiOrUserType(
   usedInDirectory: string,
   config: StoreConfig,
   solidityUserTypes: Record<string, SolidityUserDefinedType>
-): RelativeImportDatum | undefined {
+): ImportDatum | undefined {
   // abi types which directly mirror a SchemaType
   if (abiOrUserType in AbiTypeToSchemaType) {
     return undefined;
@@ -64,11 +64,19 @@ export function importForAbiOrUserType(
   if (abiOrUserType in solidityUserTypes) {
     // these types can have a library name as their import symbol
     const solidityUserType = solidityUserTypes[abiOrUserType];
-    return {
-      symbol: solidityUserType.importSymbol,
-      fromPath: solidityUserType.fromPath,
-      usedInPath: usedInDirectory,
-    };
+    const symbol = solidityUserType.importSymbol;
+    if (solidityUserType.isRelativePath) {
+      return {
+        symbol,
+        fromPath: solidityUserType.fromPath,
+        usedInPath: usedInDirectory,
+      };
+    } else {
+      return {
+        symbol,
+        path: solidityUserType.fromPath,
+      };
+    }
   }
   // other user types
   return {
@@ -128,7 +136,7 @@ export function getUserTypeInfo(
       throw new Error(`User type "${userType}" not found in MUD config`);
     }
     const solidityUserType = solidityUserTypes[userType];
-    const schemaType = AbiTypeToSchemaType[solidityUserType.typeId];
+    const schemaType = AbiTypeToSchemaType[solidityUserType.internalTypeId];
     return {
       schemaType,
       renderType: {

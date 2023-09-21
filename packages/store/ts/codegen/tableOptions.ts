@@ -1,14 +1,12 @@
-import { readFileSync } from "fs";
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
 import {
-  RelativeImportDatum,
+  ImportDatum,
   RenderDynamicField,
   RenderField,
   RenderKeyTuple,
   RenderStaticField,
   SolidityUserDefinedType,
-  extractUserTypes,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 import { StoreConfig } from "../config";
@@ -20,9 +18,11 @@ export interface TableOptions {
   renderOptions: RenderTableOptions;
 }
 
-export function getTableOptions(config: StoreConfig): TableOptions[] {
+export function getTableOptions(
+  config: StoreConfig,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
+): TableOptions[] {
   const storeImportPath = config.storeImportPath;
-  const solidityUserTypes = loadAndExtractUserTypes(config.userTypes);
 
   const options = [];
   for (const tableName of Object.keys(config.tables)) {
@@ -35,7 +35,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // field methods can include simply get/set if there's only 1 field and no record methods
     const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
     // list of any symbols that need to be imported
-    const imports: RelativeImportDatum[] = [];
+    const imports: ImportDatum[] = [];
 
     const keyTuple = Object.keys(tableData.keySchema).map((name) => {
       const abiOrUserType = tableData.keySchema[name];
@@ -110,20 +110,4 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     });
   }
   return options;
-}
-
-function loadAndExtractUserTypes(userTypes: StoreConfig["userTypes"]) {
-  const userTypesPerFile: Record<string, string[]> = {};
-  for (const [userTypeName, filePath] of Object.entries(userTypes)) {
-    if (!(filePath in userTypesPerFile)) {
-      userTypesPerFile[filePath] = [];
-    }
-    userTypesPerFile[filePath].push(userTypeName);
-  }
-  let extractedUserTypes: Record<string, SolidityUserDefinedType> = {};
-  for (const [filePath, userTypeNames] of Object.entries(userTypesPerFile)) {
-    const data = readFileSync(filePath, "utf8");
-    extractedUserTypes = Object.assign(userTypes, extractUserTypes(data, userTypeNames, filePath));
-  }
-  return extractedUserTypes;
 }

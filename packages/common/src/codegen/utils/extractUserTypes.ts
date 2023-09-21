@@ -6,6 +6,7 @@ export interface SolidityUserDefinedType {
   internalTypeId: string;
   importSymbol: string;
   fromPath: string;
+  isRelativePath: boolean;
 }
 
 /**
@@ -20,6 +21,7 @@ export function extractUserTypes(
 ): Record<string, SolidityUserDefinedType> {
   const ast = parse(data);
 
+  const isRelativePath = fromPath.indexOf(".") === 0;
   const userDefinedTypes: Record<string, SolidityUserDefinedType> = {};
 
   visit(ast, {
@@ -36,6 +38,7 @@ export function extractUserTypes(
             internalTypeId: definition.name,
             importSymbol: parent.name,
             fromPath,
+            isRelativePath,
           };
         } else {
           userDefinedTypes[name] = {
@@ -43,6 +46,7 @@ export function extractUserTypes(
             internalTypeId: definition.name,
             importSymbol: name,
             fromPath,
+            isRelativePath,
           };
         }
       }

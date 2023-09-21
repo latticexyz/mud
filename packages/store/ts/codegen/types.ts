@@ -1,5 +1,5 @@
 import {
-  RelativeImportDatum,
+  ImportDatum,
   RenderDynamicField,
   RenderField,
   RenderKeyTuple,
@@ -9,7 +9,7 @@ import {
 
 export interface RenderTableOptions {
   /** List of symbols to import, and their file paths */
-  imports: RelativeImportDatum[];
+  imports: ImportDatum[];
   /** Name of the library to render. */
   libraryName: string;
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
