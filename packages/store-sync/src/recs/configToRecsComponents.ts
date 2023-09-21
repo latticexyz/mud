@@ -28,7 +28,7 @@ export function configToRecsComponents<TConfig extends StoreConfig>(
         {
           // TODO: support table namespaces https://github.com/latticexyz/mud/issues/994
           id: resourceIdToHex({
-            type: table.ephemeral ? "offchainTable" : "table",
+            type: table.offchainOnly ? "offchainTable" : "table",
             namespace: config.namespace,
             name: tableName,
           }),

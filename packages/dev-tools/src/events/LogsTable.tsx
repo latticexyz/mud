@@ -44,7 +44,7 @@ export function LogsTable({ logs }: Props) {
               </td>
               <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
                 {/* TODO: decode these values if we can */}
-                {log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord"
+                {log.eventName === "StoreSetRecord"
                   ? JSON.stringify({
                       staticData: log.args.staticData,
                       encodedLengths: log.args.encodedLengths,

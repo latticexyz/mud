@@ -14,8 +14,6 @@ export function EventIcon({ type }: Props) {
       return <span className="text-cyan-500 font-bold">+</span>;
     case "StoreDeleteRecord":
       return <span className="text-red-500 font-bold">-</span>;
-    case "StoreEphemeralRecord":
-      return <span className="text-violet-400 font-bold">~</span>;
     default:
       return assertExhaustive(type, `Unexpected event type: ${type}`);
   }

@@ -96,7 +96,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
         debug(log.eventName, log);
 
-        if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        if (log.eventName === "StoreSetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
           debug("upserting record", {
             namespace: table.namespace,

@@ -179,26 +179,6 @@ interface IStoreWrite {
   function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 }
 
-interface IStoreEphemeral {
-  event StoreEphemeralRecord(
-    ResourceId indexed tableId,
-    bytes32[] keyTuple,
-    bytes staticData,
-    bytes32 encodedLengths,
-    bytes dynamicData
-  );
-
-  // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(
-    ResourceId tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) external;
-}
-
 /**
  * The IStoreData interface includes methods for reading and writing table values.
  * These methods are frequently invoked during runtime, so it is essential to prioritize
@@ -230,4 +210,4 @@ interface IStoreRegistration {
   function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
+interface IStore is IStoreData, IStoreRegistration, IStoreErrors {}

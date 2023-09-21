@@ -234,29 +234,6 @@ library StoreSwitch {
     }
   }
 
-  function emitEphemeralRecord(
-    ResourceId tableId,
-    bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout fieldLayout
-  ) internal {
-    address _storeAddress = getStoreAddress();
-    if (_storeAddress == address(this)) {
-      StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
-    } else {
-      IStore(_storeAddress).emitEphemeralRecord(
-        tableId,
-        keyTuple,
-        staticData,
-        encodedLengths,
-        dynamicData,
-        fieldLayout
-      );
-    }
-  }
-
   function getRecord(
     ResourceId tableId,
     bytes32[] memory keyTuple,

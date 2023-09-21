@@ -30,7 +30,7 @@ export function getRegisterTableCallData(table: Table, storeConfig: StoreConfig)
     func: "registerTable",
     args: [
       // TODO: add support for table namespaces (https://github.com/latticexyz/mud/issues/994)
-      resourceIdToHex({ type: table.ephemeral ? "offchainTable" : "table", namespace: storeConfig.namespace, name }),
+      resourceIdToHex({ type: table.offchainOnly ? "offchainTable" : "table", namespace: storeConfig.namespace, name }),
       fieldLayoutToHex(fieldLayout),
       encodeSchema(keyTypes),
       encodeSchema(schemaTypes),

@@ -80,7 +80,7 @@ export function recsStorage<TConfig extends StoreConfig = StoreConfig>({
 
       const entity = hexKeyTupleToEntity(log.args.keyTuple);
 
-      if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+      if (log.eventName === "StoreSetRecord") {
         const value = decodeValueArgs(table.valueSchema, log.args);
         debug("setting component", {
           namespace: table.namespace,

@@ -6,6 +6,6 @@ import { MessageTable } from "../codegen/index.sol";
 // This system is supposed to have a different namespace, but otherwise be identical to ChatSystem
 contract ChatNamespacedSystem is System {
   function sendMessage(string memory message) public {
-    MessageTable.emitEphemeral(message);
+    MessageTable.set(message);
   }
 }
