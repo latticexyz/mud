@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 
@@ -10,7 +10,6 @@ bytes4 constant MODULE_INTERFACE_ID = IModule.getName.selector ^
   ERC165_INTERFACE_ID;
 
 interface IModule is IERC165 {
-  error RequiredModuleNotFound(string resourceSelector);
   error RootInstallModeNotSupported();
   error NonRootInstallNotSupported();
 

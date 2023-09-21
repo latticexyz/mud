@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -10,6 +10,8 @@ import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { PackedCounterLib } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { StoreMock } from "../test/StoreMock.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
@@ -18,7 +20,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _keyTuple;
-  bytes32 internal _tableId = keccak256("some.tableId");
+  ResourceId internal _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
 
   bytes32 internal firstDataBytes;
   uint32[] internal secondData;
@@ -28,7 +30,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
 
   // Expose an external popFromField function for testing purposes of indexers (see testHooks)
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,

@@ -10,28 +10,32 @@ import { RenderTableOptions } from "./types";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
-  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
-  let result = renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-      /** Get the full data${_commentSuffix} */
-      function ${_methodNamePrefix}get(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal view returns (${renderDecodedRecord(options)}) {
-        ${_keyTupleDefinition}
+  let result = "";
 
-        (
-          bytes memory _staticData,
-          PackedCounter _encodedLengths,
-          bytes memory _dynamicData
-        ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
-        return decode(_staticData, _encodedLengths, _dynamicData);
-      }
-    `
-  );
+  if (options.withGetters) {
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+        /** Get the full data${_commentSuffix} */
+        function ${_methodNamePrefix}get(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+      ])}) internal view returns (${renderDecodedRecord(options)}) {
+          ${_keyTupleDefinition}
+          
+          (
+            bytes memory _staticData,
+            PackedCounter _encodedLengths,
+            bytes memory _dynamicData
+            ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
+            return decode(_staticData, _encodedLengths, _dynamicData);
+          }
+        `
+    );
+  }
 
   result += renderWithStore(
     storeArgument,
@@ -63,12 +67,11 @@ export function renderRecordMethods(options: RenderTableOptions) {
         _typedKeyArgs,
         `${structName} memory _table`,
       ])}) internal {
-          set(${renderArguments([
-            _untypedStore,
-            _tableId,
-            _keyArgs,
-            renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-          ])});
+          ${renderRecordData(options, "_table.")}
+
+          ${_keyTupleDefinition}
+
+          ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
         }
       `
     );
@@ -79,11 +82,13 @@ export function renderRecordMethods(options: RenderTableOptions) {
   return result;
 }
 
-export function renderRecordData(options: RenderTableOptions) {
+export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
   let result = "";
   if (options.staticFields.length > 0) {
     result += `
-      bytes memory _staticData = encodeStatic(${renderArguments(options.staticFields.map(({ name }) => name))});
+      bytes memory _staticData = encodeStatic(
+        ${renderArguments(options.staticFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
     `;
   } else {
     result += `bytes memory _staticData;`;
@@ -91,8 +96,12 @@ export function renderRecordData(options: RenderTableOptions) {
 
   if (options.dynamicFields.length > 0) {
     result += `
-      PackedCounter _encodedLengths = encodeLengths(${renderArguments(options.dynamicFields.map(({ name }) => name))});
-      bytes memory _dynamicData = encodeDynamic(${renderArguments(options.dynamicFields.map(({ name }) => name))});
+      PackedCounter _encodedLengths = encodeLengths(
+        ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
+      bytes memory _dynamicData = encodeDynamic(
+        ${renderArguments(options.dynamicFields.map(({ name }) => `${namePrefix}${name}`))}
+      );
     `;
   } else {
     result += `
@@ -102,6 +111,26 @@ export function renderRecordData(options: RenderTableOptions) {
   }
 
   return result;
+}
+
+export function renderDeleteRecordMethods(options: RenderTableOptions) {
+  const { storeArgument } = options;
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+
+  return renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+      /** Delete all data for given keys${_commentSuffix} */
+      function ${_methodNamePrefix}deleteRecord(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+    ])}) internal {
+        ${_keyTupleDefinition}
+        ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+      }
+    `
+  );
 }
 
 // Renders the `decode` function that parses a bytes blob into the table data

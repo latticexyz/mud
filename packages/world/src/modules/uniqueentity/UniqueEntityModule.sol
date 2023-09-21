@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
 
-import { NAMESPACE, MODULE_NAME, SYSTEM_NAME, TABLE_NAME } from "./constants.sol";
+import { MODULE_NAME, TABLE_ID, SYSTEM_ID } from "./constants.sol";
 
 /**
  * This module creates a table that stores a nonce, and
@@ -33,12 +32,12 @@ contract UniqueEntityModule is Module {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register table
-    UniqueEntity.register(world, ResourceSelector.from(NAMESPACE, TABLE_NAME));
+    UniqueEntity.register(world, TABLE_ID);
 
     // Register system
-    world.registerSystem(ResourceSelector.from(NAMESPACE, SYSTEM_NAME), uniqueEntitySystem, true);
+    world.registerSystem(SYSTEM_ID, uniqueEntitySystem, true);
 
     // Register system's functions
-    world.registerFunctionSelector(ResourceSelector.from(NAMESPACE, SYSTEM_NAME), "getUniqueEntity", "()");
+    world.registerFunctionSelector(SYSTEM_ID, "getUniqueEntity", "()");
   }
 }

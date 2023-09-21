@@ -1,17 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
 import { System } from "../../../System.sol";
 import { IBaseWorld } from "../../../interfaces/IBaseWorld.sol";
 import { revertWithBytes } from "../../../revertWithBytes.sol";
-import { SystemCall } from "./SystemCall.sol";
+
+import { SystemCallData } from "../types.sol";
 
 contract CallBatchSystem is System {
   /**
-   * Call multiple systems at the given resource selectors and return the array of return data.
+   * Batch calls to multiple systems into a single transaction, return the array of return data.
    */
-  function callBatch(SystemCall[] memory systemCalls) public returns (bytes[] memory datas) {
+  function callBatch(SystemCallData[] calldata systemCalls) public returns (bytes[] memory returnDatas) {
     IBaseWorld world = IBaseWorld(_world());
-    datas = new bytes[](systemCalls.length);
+    returnDatas = new bytes[](systemCalls.length);
 
     for (uint256 i; i < systemCalls.length; i++) {
       (bool success, bytes memory returnData) = address(world).delegatecall(
@@ -19,7 +21,7 @@ contract CallBatchSystem is System {
       );
       if (!success) revertWithBytes(returnData);
 
-      datas[i] = abi.decode(returnData, (bytes));
+      returnDatas[i] = abi.decode(returnData, (bytes));
     }
   }
 }

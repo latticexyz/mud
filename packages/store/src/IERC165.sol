@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 bytes4 constant ERC165_INTERFACE_ID = IERC165.supportsInterface.selector;
 

@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
-import { ROOT_NAMESPACE } from "../../constants.sol";
-import { Resource } from "../../common.sol";
+import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../../constants.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { IStoreEphemeral } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../../WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
@@ -22,7 +22,6 @@ import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
 
 import { Systems } from "./tables/Systems.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
-import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemHooks } from "./tables/SystemHooks.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { Balances } from "./tables/Balances.sol";
@@ -30,7 +29,6 @@ import { Balances } from "./tables/Balances.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
 import { CallBatchSystem } from "./implementations/CallBatchSystem.sol";
-import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -75,11 +73,10 @@ contract CoreModule is Module {
     FunctionSelectors.register();
     SystemHooks.register();
     SystemRegistry.register();
-    ResourceType.register();
 
-    NamespaceOwner._set(ROOT_NAMESPACE, _msgSender());
-    ResourceAccess._set(ROOT_NAMESPACE, _msgSender(), true);
-    ResourceType._set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    ResourceIds._setExists(ResourceId.unwrap(ROOT_NAMESPACE_ID), true);
+    NamespaceOwner._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender());
+    ResourceAccess._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), _msgSender(), true);
   }
 
   /**
@@ -93,7 +90,11 @@ contract CoreModule is Module {
       target: coreSystem,
       callData: abi.encodeCall(
         WorldRegistrationSystem.registerSystem,
-        (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), CoreSystem(coreSystem), true)
+        (
+          WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: CORE_SYSTEM_NAME }),
+          CoreSystem(coreSystem),
+          true
+        )
       )
     });
   }
@@ -102,7 +103,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[18] memory functionSelectors = [
+    bytes4[17] memory functionSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -112,8 +113,6 @@ contract CoreModule is Module {
       BalanceTransferSystem.transferBalanceToAddress.selector,
       // --- CallBatchSystem ---
       CallBatchSystem.callBatch.selector,
-      // --- EphemeralRecordSystem ---
-      IStoreEphemeral.emitEphemeralRecord.selector,
       // --- ModuleInstallationSystem ---
       ModuleInstallationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
@@ -139,7 +138,11 @@ contract CoreModule is Module {
         target: coreSystem,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
-          (ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME), functionSelectors[i], functionSelectors[i])
+          (
+            WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: CORE_SYSTEM_NAME }),
+            functionSelectors[i],
+            functionSelectors[i]
+          )
         )
       });
     }

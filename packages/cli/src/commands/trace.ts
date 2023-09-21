@@ -9,12 +9,16 @@ import { StoreConfig } from "@latticexyz/store";
 import { resolveWorldConfig, WorldConfig } from "@latticexyz/world";
 import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json" assert { type: "json" };
 import worldConfig from "@latticexyz/world/mud.config.js";
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 import { getExistingContracts } from "../utils/getExistingContracts";
 import { getChainId } from "../utils/utils/getChainId";
 
 // TODO account for multiple namespaces (https://github.com/latticexyz/mud/issues/994)
-const systemsTableId = tableIdToHex(worldConfig.namespace, worldConfig.tables.Systems.name);
+const systemsTableId = resourceIdToHex({
+  type: "system",
+  namespace: worldConfig.namespace,
+  name: worldConfig.tables.Systems.name,
+});
 
 type Options = {
   tx: string;
@@ -76,7 +80,7 @@ const commandModule: CommandModule<Options, Options> = {
     const systemTableFieldLayout = await WorldContract.getFieldLayout(systemsTableId);
     const labels: { name: string; address: string }[] = [];
     for (const name of names) {
-      const systemSelector = tableIdToHex(namespace, name);
+      const systemSelector = resourceIdToHex({ type: "system", namespace, name });
       // Get the first field of `Systems` table (the table maps system name to its address and other data)
       const address = await WorldContract.getField(systemsTableId, [systemSelector], 0, systemTableFieldLayout);
       labels.push({ name, address });

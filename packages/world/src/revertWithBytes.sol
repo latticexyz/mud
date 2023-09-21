@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 /**
  * Utility function to revert with raw bytes (eg. coming from a low level call or from a previously encoded error)

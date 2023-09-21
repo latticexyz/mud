@@ -1,18 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Test, console } from "forge-std/Test.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
+import { ResourceId } from "../src/WorldResourceId.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
 import { InstalledModules } from "../src/tables/InstalledModules.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
-import { ROOT_NAMESPACE } from "../src/constants.sol";
+import { ROOT_NAMESPACE_ID } from "../src/constants.sol";
 
 contract FactoriesTest is Test {
   event ContractDeployed(address addr, uint256 salt);
@@ -80,6 +81,6 @@ contract FactoriesTest is Test {
     assertEq(uint256(worldFactory.worldCount()), uint256(1));
 
     // Confirm the msg.sender is owner of the root namespace of the new world
-    assertEq(NamespaceOwner.get(ROOT_NAMESPACE), address(this));
+    assertEq(NamespaceOwner.get(ResourceId.unwrap(ROOT_NAMESPACE_ID)), address(this));
   }
 }

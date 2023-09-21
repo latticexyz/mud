@@ -4,7 +4,7 @@ export type Table = {
   directory: string;
   tableIdArgument: boolean;
   storeArgument: boolean;
-  ephemeral: boolean;
+  offchainOnly: boolean;
   name?: string | undefined;
   dataStruct?: boolean | undefined;
 };

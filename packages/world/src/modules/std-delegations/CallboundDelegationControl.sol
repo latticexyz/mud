@@ -1,21 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { DelegationControl } from "../../DelegationControl.sol";
+import { ResourceId } from "../../WorldResourceId.sol";
 import { CallboundDelegations } from "./tables/CallboundDelegations.sol";
 
 contract CallboundDelegationControl is DelegationControl {
   /**
    * Verify a delegation by checking if the delegator has any available calls left in the CallboundDelegations table and decrementing the available calls if so.
    */
-  function verify(address delegator, bytes32 resourceSelector, bytes memory callData) public returns (bool) {
+  function verify(address delegator, ResourceId systemId, bytes memory callData) public returns (bool) {
     bytes32 callDataHash = keccak256(callData);
 
-    // Get the number of available calls for the given delegator, resourceSelector and callData
+    // Get the number of available calls for the given delegator, systemId and callData
     uint256 availableCalls = CallboundDelegations.get({
       delegator: delegator,
       delegatee: _msgSender(),
-      resourceSelector: resourceSelector,
+      systemId: ResourceId.unwrap(systemId),
       callDataHash: callDataHash
     });
 
@@ -24,7 +25,7 @@ contract CallboundDelegationControl is DelegationControl {
       CallboundDelegations.deleteRecord({
         delegator: delegator,
         delegatee: _msgSender(),
-        resourceSelector: resourceSelector,
+        systemId: ResourceId.unwrap(systemId),
         callDataHash: callDataHash
       });
       return true;
@@ -38,7 +39,7 @@ contract CallboundDelegationControl is DelegationControl {
       CallboundDelegations.set({
         delegator: delegator,
         delegatee: _msgSender(),
-        resourceSelector: resourceSelector,
+        systemId: ResourceId.unwrap(systemId),
         callDataHash: callDataHash,
         availableCalls: availableCalls
       });
@@ -51,11 +52,11 @@ contract CallboundDelegationControl is DelegationControl {
   /**
    * Initialize a delegation by setting the number of available calls in the CallboundDelegations table
    */
-  function initDelegation(address delegatee, bytes32 resourceSelector, bytes memory callData, uint256 numCalls) public {
+  function initDelegation(address delegatee, ResourceId systemId, bytes memory callData, uint256 numCalls) public {
     CallboundDelegations.set({
       delegator: _msgSender(),
       delegatee: delegatee,
-      resourceSelector: resourceSelector,
+      systemId: ResourceId.unwrap(systemId),
       callDataHash: keccak256(callData),
       availableCalls: numCalls
     });

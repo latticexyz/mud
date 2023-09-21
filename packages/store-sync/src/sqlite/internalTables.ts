@@ -1,5 +1,5 @@
 import { blob, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { address, json } from "./columnTypes";
+import { address, asHex, json } from "./columnTypes";
 import { KeySchema, ValueSchema } from "@latticexyz/protocol-parser";
 
 export const chainState = sqliteTable("__chainState", {
@@ -14,7 +14,7 @@ export const mudStoreTables = sqliteTable("__mudStoreTables", {
   schemaVersion: integer("schema_version").primaryKey(),
   id: text("id").notNull().primaryKey(),
   address: address("address").notNull(),
-  tableId: text("table_id").notNull(),
+  tableId: asHex("table_id").notNull(),
   namespace: text("namespace").notNull(),
   name: text("name").notNull(),
   keySchema: json<KeySchema>("key_schema").notNull(),

@@ -3,17 +3,16 @@ pragma solidity >=0.8.0;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
-
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
+import { ResourceId, WorldResourceIdLib } from "../src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
+
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { SystemCall } from "../src/modules/core/implementations/SystemCall.sol";
-
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { SystemCallData } from "../src/modules/core/types.sol";
 
 address constant caller = address(1);
 
@@ -41,12 +40,11 @@ contract TestSystem is System {
 }
 
 contract CallBatchTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
-
   IBaseWorld world;
-  bytes16 namespace = "namespace";
+  bytes14 namespace = "namespace";
   bytes16 name = "testSystem";
-  bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+
+  ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -56,20 +54,20 @@ contract CallBatchTest is Test, GasReporter {
   function testCallBatch() public {
     // Register a new system
     TestSystem system = new TestSystem();
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
 
     // Try to increment the counter without setting the admin
-    SystemCall[] memory systemCalls = new SystemCall[](1);
-    systemCalls[0] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
+    SystemCallData[] memory systemCalls = new SystemCallData[](1);
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
 
     vm.expectRevert("sender is not admin");
     world.callBatch(systemCalls);
 
     // Set the admin and increment the counter twice
-    systemCalls = new SystemCall[](3);
-    systemCalls[0] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.setAdmin.selector, caller));
-    systemCalls[1] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
-    systemCalls[2] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
+    systemCalls = new SystemCallData[](3);
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.setAdmin, (caller)));
+    systemCalls[1] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
+    systemCalls[2] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
 
     vm.expectRevert("sender is not admin");
     world.callBatch(systemCalls);
@@ -80,8 +78,8 @@ contract CallBatchTest is Test, GasReporter {
     assertEq(system.counter(), 2, "wrong counter value");
 
     // Increment the counter again
-    systemCalls = new SystemCall[](1);
-    systemCalls[0] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.increment.selector));
+    systemCalls = new SystemCallData[](1);
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.increment, ()));
 
     vm.prank(caller);
     world.callBatch(systemCalls);
@@ -92,20 +90,20 @@ contract CallBatchTest is Test, GasReporter {
   function testCallBatchReturnData() public {
     // Register a new system
     TestSystem system = new TestSystem();
-    world.registerSystem(resourceSelector, system, true);
+    world.registerSystem(systemId, system, true);
 
     // Batch call functions on the system
-    SystemCall[] memory systemCalls = new SystemCall[](2);
+    SystemCallData[] memory systemCalls = new SystemCallData[](2);
 
-    systemCalls[0] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.msgSender.selector));
-    systemCalls[1] = SystemCall(resourceSelector, abi.encodeWithSelector(TestSystem.getStoreAddress.selector));
+    systemCalls[0] = SystemCallData(systemId, abi.encodeCall(TestSystem.msgSender, ()));
+    systemCalls[1] = SystemCallData(systemId, abi.encodeCall(TestSystem.getStoreAddress, ()));
 
     vm.prank(caller);
     startGasReport("call systems with callBatch");
-    bytes[] memory datas = world.callBatch(systemCalls);
+    bytes[] memory returnDatas = world.callBatch(systemCalls);
     endGasReport();
 
-    assertEq(abi.decode(datas[0], (address)), caller, "wrong address returned");
-    assertEq(abi.decode(datas[1], (address)), address(world), "wrong store returned");
+    assertEq(abi.decode(returnDatas[0], (address)), caller, "wrong address returned");
+    assertEq(abi.decode(returnDatas[1], (address)), address(world), "wrong store returned");
   }
 }

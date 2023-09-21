@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";

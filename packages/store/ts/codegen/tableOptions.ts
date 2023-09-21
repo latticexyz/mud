@@ -26,10 +26,10 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
-    // operate on all fields at once; for only 1 field keep them only if struct is also kept
-    const withRecordMethods = withStruct || Object.keys(tableData.valueSchema).length > 1;
-    // field methods can be simply get/set if there's only 1 field and no record methods
-    const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
+    // operate on all fields at once; always render for offchain tables; for only 1 field keep them if struct is also kept
+    const withRecordMethods = withStruct || tableData.offchainOnly || Object.keys(tableData.valueSchema).length > 1;
+    // field methods can include simply get/set if there's only 1 field and no record methods
+    const withSuffixlessFieldMethods = !withRecordMethods && Object.keys(tableData.valueSchema).length === 1;
     // list of any symbols that need to be imported
     const imports: RelativeImportDatum[] = [];
 
@@ -62,7 +62,6 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         ...renderType,
         arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
-        methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
       };
       return field;
     });
@@ -80,6 +79,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
           tableIdName: tableName + "TableId",
           namespace: config.namespace,
           name: tableData.name,
+          offchainOnly: tableData.offchainOnly,
         };
       }
     })();
@@ -97,9 +97,10 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         fields,
         staticFields,
         dynamicFields,
-        withFieldMethods: !tableData.ephemeral,
-        withRecordMethods: withRecordMethods && !tableData.ephemeral,
-        withEphemeralMethods: tableData.ephemeral,
+        withGetters: !tableData.offchainOnly,
+        withRecordMethods,
+        withDynamicFieldMethods: !tableData.offchainOnly,
+        withSuffixlessFieldMethods,
         storeArgument: tableData.storeArgument,
       },
     });

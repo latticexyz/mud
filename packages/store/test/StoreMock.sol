@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
@@ -7,6 +7,7 @@ import { StoreCore } from "../src/StoreCore.sol";
 import { Schema } from "../src/Schema.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreRead } from "../src/StoreRead.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 
 /**
  * StoreMock is a contract wrapper around the StoreCore library for testing purposes.
@@ -19,7 +20,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Set full record (including full dynamic data)
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
@@ -31,7 +32,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Splice data in the static part of the record
   function spliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -42,7 +43,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Splice data in the dynamic part of the record
   function spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -54,7 +55,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Set partial data at field index
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata data,
@@ -65,7 +66,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Push encoded items to the dynamic field at field index
   function pushToField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata dataToPush,
@@ -76,7 +77,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Pop byte length from the dynamic field at field index
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
@@ -87,7 +88,7 @@ contract StoreMock is IStore, StoreRead {
 
   // Change encoded items within the dynamic field at field index
   function updateInField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
@@ -98,24 +99,12 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
     StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
   }
 
-  // Emit the ephemeral event without modifying storage
-  function emitEphemeralRecord(
-    bytes32 tableId,
-    bytes32[] calldata keyTuple,
-    bytes calldata staticData,
-    PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
-  ) public {
-    StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
-  }
-
   function registerTable(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
@@ -126,12 +115,12 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) public virtual {
     StoreCore.registerStoreHook(tableId, hookAddress, enabledHooksBitmap);
   }
 
   // Unregister hook to be called when a record or field is set or deleted
-  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) public virtual {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) public virtual {
     StoreCore.unregisterStoreHook(tableId, hookAddress);
   }
 }
