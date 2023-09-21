@@ -1,5 +1,5 @@
 ---
-"@latticexyz/store": major
+"@latticexyz/store": minor
 ---
 
-Add `namePrefix` argument to `renderRecordData`, to support inlined logic in codegenned `set` method which uses a struct.
+Add an optional `namePrefix` argument to `renderRecordData`, to support inlined logic in codegenned `set` method which uses a struct.

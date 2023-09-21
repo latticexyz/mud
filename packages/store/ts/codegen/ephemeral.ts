@@ -16,7 +16,7 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
       _typedKeyArgs,
       renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
     ])}) internal {
-        ${renderRecordData(options, "")}
+        ${renderRecordData(options)}
 
         ${_keyTupleDefinition}
 

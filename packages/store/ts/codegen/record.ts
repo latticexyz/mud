@@ -43,7 +43,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
       renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
     ])}) internal {
-        ${renderRecordData(options, "")}
+        ${renderRecordData(options)}
 
         ${_keyTupleDefinition}
 
@@ -78,7 +78,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
   return result;
 }
 
-export function renderRecordData(options: RenderTableOptions, namePrefix: string) {
+export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
   let result = "";
   if (options.staticFields.length > 0) {
     result += `
