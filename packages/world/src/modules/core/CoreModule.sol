@@ -28,6 +28,7 @@ import { Balances } from "./tables/Balances.sol";
 
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
 import { BalanceTransferSystem } from "./implementations/BalanceTransferSystem.sol";
+import { CallBatchSystem } from "./implementations/CallBatchSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSystem.sol";
@@ -102,7 +103,7 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[16] memory functionSelectors = [
+    bytes4[17] memory functionSelectors = [
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
       AccessManagementSystem.revokeAccess.selector,
@@ -110,6 +111,8 @@ contract CoreModule is Module {
       // --- BalanceTransferSystem ---
       BalanceTransferSystem.transferBalanceToNamespace.selector,
       BalanceTransferSystem.transferBalanceToAddress.selector,
+      // --- CallBatchSystem ---
+      CallBatchSystem.callBatch.selector,
       // --- ModuleInstallationSystem ---
       ModuleInstallationSystem.installModule.selector,
       // --- StoreRegistrationSystem ---
