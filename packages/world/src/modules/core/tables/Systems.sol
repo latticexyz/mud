@@ -21,7 +21,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(bytes14(""), bytes16("Systems"), RESOURCE_TABLE))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Systems")))
 );
 ResourceId constant SystemsTableId = _tableId;
 

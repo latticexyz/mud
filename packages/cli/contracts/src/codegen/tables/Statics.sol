@@ -24,7 +24,7 @@ import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 import { Enum2, Enum1 } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(bytes14(""), bytes16("Statics"), RESOURCE_TABLE))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("Statics")))
 );
 ResourceId constant StaticsTableId = _tableId;
 

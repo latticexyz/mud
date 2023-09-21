@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { TYPE_BYTES } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceId, WorldResourceIdInstance, NAME_BYTES } from "../../WorldResourceId.sol";
 import { RESOURCE_TABLE } from "../../worldResourceTypes.sol";
 
@@ -20,12 +21,12 @@ uint256 constant BYTES_TO_BITS = 8;
  */
 function getTargetTableId(bytes7 moduleNamespace, ResourceId sourceTableId) pure returns (ResourceId) {
   bytes16 tableName = WorldResourceIdInstance.getName(sourceTableId);
-  bytes7 sourceTableNamespace = bytes7(ResourceId.unwrap(sourceTableId));
+  bytes7 sourceTableNamespace = bytes7(WorldResourceIdInstance.getNamespace(sourceTableId));
   return
     ResourceId.wrap(
-      bytes32(moduleNamespace) |
-        (bytes32(sourceTableNamespace) >> (MODULE_NAMESPACE_BYTES * BYTES_TO_BITS)) |
-        (bytes32(tableName) >> ((MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES) * BYTES_TO_BITS)) |
-        (bytes32(RESOURCE_TABLE) >> ((MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
+      bytes32(RESOURCE_TABLE) |
+        (bytes32(moduleNamespace) >> (TYPE_BYTES * BYTES_TO_BITS)) |
+        (bytes32(sourceTableNamespace) >> ((TYPE_BYTES + MODULE_NAMESPACE_BYTES) * BYTES_TO_BITS)) |
+        (bytes32(tableName) >> ((TYPE_BYTES + MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES) * BYTES_TO_BITS))
     );
 }

@@ -141,7 +141,12 @@ contract StoreCoreTest is Test, StoreMock {
     ResourceId invalidTableId = ResourceIdLib.encode({ typeId: invalidType, name: "somename" });
 
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidResourceType.selector, string(bytes.concat(invalidType)))
+      abi.encodeWithSelector(
+        IStoreErrors.StoreCore_InvalidResourceType.selector,
+        RESOURCE_TABLE,
+        invalidTableId,
+        string(abi.encodePacked(invalidTableId))
+      )
     );
     IStore(this).registerTable(
       invalidTableId,

@@ -9,9 +9,9 @@ bytes14 constant ROOT_NAMESPACE = "";
 bytes16 constant ROOT_NAME = "";
 
 ResourceId constant ROOT_NAMESPACE_ID = ResourceId.wrap(
-  bytes32(abi.encodePacked(ROOT_NAMESPACE, ROOT_NAME, RESOURCE_NAMESPACE))
+  bytes32(abi.encodePacked(RESOURCE_NAMESPACE, ROOT_NAMESPACE, ROOT_NAME))
 );
 
 ResourceId constant UNLIMITED_DELEGATION = ResourceId.wrap(
-  bytes32(abi.encodePacked(ROOT_NAMESPACE, bytes16("unlimited"), RESOURCE_SYSTEM))
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("unlimited")))
 );

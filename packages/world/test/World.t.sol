@@ -335,7 +335,12 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a namespace with an invalid type
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, string(bytes.concat(RESOURCE_TABLE)))
+      abi.encodeWithSelector(
+        IWorldErrors.InvalidResourceType.selector,
+        RESOURCE_NAMESPACE,
+        invalidNamespaceId,
+        invalidNamespaceId.toString()
+      )
     );
     world.registerNamespace(invalidNamespaceId);
   }
@@ -523,7 +528,7 @@ contract WorldTest is Test, GasReporter {
       new string[](1)
     );
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, string(bytes.concat(RESOURCE_TABLE)))
+      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, RESOURCE_SYSTEM, tableId, tableId.toString())
     );
     world.registerSystem(tableId, newSystem, true);
 
@@ -623,7 +628,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a system at the same ID
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, string(bytes.concat(RESOURCE_TABLE)))
+      abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, RESOURCE_SYSTEM, tableId, tableId.toString())
     );
     world.registerSystem(tableId, system, false);
 
@@ -633,7 +638,12 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to register a table at the same ID
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidResourceType.selector, string(bytes.concat(RESOURCE_SYSTEM)))
+      abi.encodeWithSelector(
+        IStoreErrors.StoreCore_InvalidResourceType.selector,
+        RESOURCE_TABLE,
+        systemId,
+        string(abi.encodePacked(systemId))
+      )
     );
     world.registerTable(
       systemId,

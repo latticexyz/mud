@@ -12,6 +12,19 @@ contract WorldResourceIdTest is Test, GasReporter {
   using ResourceIdInstance for ResourceId;
   using WorldResourceIdInstance for ResourceId;
 
+  function testEncode() public {
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "name"
+    });
+
+    assertEq(
+      ResourceId.unwrap(resourceId),
+      bytes32(abi.encodePacked(RESOURCE_SYSTEM, bytes14("namespace"), bytes16("name")))
+    );
+  }
+
   function testGetNamespace() public {
     ResourceId resourceId = WorldResourceIdLib.encode({
       typeId: RESOURCE_SYSTEM,
@@ -60,7 +73,7 @@ contract WorldResourceIdTest is Test, GasReporter {
       namespace: "namespace",
       name: "name"
     });
-    bytes30 resourceIdWithoutType = bytes30(ResourceId.unwrap(resourceId));
+    bytes30 resourceIdWithoutType = bytes30(ResourceId.unwrap(resourceId) << (TYPE_BYTES * 8));
     assertEq(
       ResourceId.unwrap(resourceId),
       ResourceId.unwrap(ResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, name: resourceIdWithoutType }))

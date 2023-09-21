@@ -166,7 +166,7 @@ export function renderTableId(staticResourceData: StaticResourceData): {
   hardcodedTableId: string;
   tableIdDefinition: string;
 } {
-  const hardcodedTableId = `ResourceId.wrap(bytes32(abi.encodePacked(bytes14("${staticResourceData.namespace}"), bytes16("${staticResourceData.name}"), RESOURCE_TABLE)))`;
+  const hardcodedTableId = `ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("${staticResourceData.namespace}"), bytes16("${staticResourceData.name}"))))`;
 
   const tableIdDefinition = `
     ResourceId constant _tableId = ${hardcodedTableId};

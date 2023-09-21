@@ -15,7 +15,7 @@ contract ResourceIdTest is Test, GasReporter {
     ResourceId tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "name" });
     endGasReport();
 
-    assertEq(ResourceId.unwrap(tableId), bytes32(abi.encodePacked(bytes30("name"), RESOURCE_TABLE)));
+    assertEq(ResourceId.unwrap(tableId), bytes32(abi.encodePacked(RESOURCE_TABLE, bytes30("name"))));
   }
 
   function testGetType() public {

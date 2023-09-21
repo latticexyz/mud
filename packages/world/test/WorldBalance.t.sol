@@ -11,7 +11,7 @@ import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Balances } from "../src/modules/core/tables/Balances.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
-import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
+import { RESOURCE_SYSTEM, RESOURCE_NAMESPACE } from "../src/worldResourceTypes.sol";
 
 using WorldResourceIdInstance for ResourceId;
 
@@ -252,7 +252,14 @@ contract WorldBalanceTest is Test, GasReporter {
     // Expect revert when attempting to transfer to an invalid namespace
     ResourceId invalidNamespace = WorldResourceIdLib.encode({ typeId: "xx", namespace: "something", name: "invalid" });
     vm.prank(caller);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, "xx"));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IWorldErrors.InvalidResourceType.selector,
+        RESOURCE_NAMESPACE,
+        invalidNamespace,
+        invalidNamespace.toString()
+      )
+    );
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, invalidNamespace, value);
 
     // Expect the root namespace to have the value as balance

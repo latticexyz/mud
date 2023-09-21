@@ -8,10 +8,10 @@ bytes16 constant MODULE_NAME = bytes16("stddelegations.m");
 
 // Callbound delegation
 ResourceId constant CALLBOUND_DELEGATION = ResourceId.wrap(
-  bytes32(abi.encodePacked(ROOT_NAMESPACE, bytes16("callbound"), RESOURCE_SYSTEM))
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("callbound")))
 );
 
 // Timebound delegation
 ResourceId constant TIMEBOUND_DELEGATION = ResourceId.wrap(
-  bytes32(abi.encodePacked(ROOT_NAMESPACE, bytes16("timebound"), RESOURCE_SYSTEM))
+  bytes32(abi.encodePacked(RESOURCE_SYSTEM, ROOT_NAMESPACE, bytes16("timebound")))
 );

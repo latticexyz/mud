@@ -133,7 +133,7 @@ library StoreCore {
   ) internal {
     // Verify the table ID is of type RESOURCE_TABLE
     if (tableId.getType() != RESOURCE_TABLE && tableId.getType() != RESOURCE_OFFCHAIN_TABLE) {
-      revert IStoreErrors.StoreCore_InvalidResourceType(string(bytes.concat(tableId.getType())));
+      revert IStoreErrors.StoreCore_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
     }
 
     // Verify the field layout is valid

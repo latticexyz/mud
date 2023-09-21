@@ -11,7 +11,7 @@ import { ResourceId } from "../src/ResourceId.sol";
 import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 
 ResourceId constant indexerTableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(bytes14("mirror"), bytes16("indexer"), RESOURCE_TABLE))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mirror"), bytes16("indexer")))
 );
 
 contract MirrorSubscriber is StoreHook {

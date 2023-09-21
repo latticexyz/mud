@@ -21,7 +21,7 @@ import { ResourceId } from "../../ResourceId.sol";
 import { RESOURCE_TABLE } from "../../storeResourceTypes.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(bytes14("mudstore"), bytes16("ResourceIds"), RESOURCE_TABLE))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("ResourceIds")))
 );
 ResourceId constant ResourceIdsTableId = _tableId;
 

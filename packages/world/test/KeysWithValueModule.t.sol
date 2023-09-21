@@ -24,7 +24,7 @@ import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueM
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
-import { getTargetTableId, MODULE_NAMESPACE_BYTES, TABLE_NAMESPACE_BYTES } from "../src/modules/keyswithvalue/getTargetTableId.sol";
+import { getTargetTableId, MODULE_NAMESPACE_BYTES, TABLE_NAMESPACE_BYTES, TYPE_BYTES } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
   using ResourceIdInstance for ResourceId;
@@ -230,21 +230,25 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     ResourceId _targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
     endGasReport();
 
-    // The first 7 bytes are the module namespace
-    assertEq(bytes7(ResourceId.unwrap(_targetTableId)), MODULE_NAMESPACE, "module namespace does not match");
+    // The first 2 bytes are the resource type
+    assertEq(_targetTableId.getType(), RESOURCE_TABLE, "target table resource type does not match");
+
+    // The next 7 bytes are the module namespace
+    assertEq(
+      bytes7(ResourceId.unwrap(_targetTableId) << (TYPE_BYTES * 8)),
+      MODULE_NAMESPACE,
+      "module namespace does not match"
+    );
 
     // followed by the first 7 bytes of the source table namespace
     assertEq(
-      bytes7(ResourceId.unwrap(_targetTableId) << (MODULE_NAMESPACE_BYTES * 8)),
+      bytes7(ResourceId.unwrap(_targetTableId) << ((TYPE_BYTES + MODULE_NAMESPACE_BYTES) * 8)),
       bytes7(namespace),
       "table namespace does not match"
     );
 
-    // The next 16 bytes are the source name
+    // The last 16 bytes are the source name
     assertEq(_targetTableId.getName(), sourceName, "table name does not match");
-
-    // The last 2 bytes are the table resource type
-    assertEq(_targetTableId.getType(), RESOURCE_TABLE, "target table resource type does not match");
   }
 
   function testGetKeysWithValueGas() public {

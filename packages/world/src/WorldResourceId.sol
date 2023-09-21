@@ -14,7 +14,7 @@ uint256 constant BYTES_TO_BITS = 8;
 bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
 bytes16 constant ROOT_NAME_STRING = bytes16("ROOT_NAME");
 
-bytes32 constant NAMESPACE_MASK = bytes32(~bytes14(""));
+bytes32 constant NAMESPACE_MASK = bytes32(~bytes14("")) >> (TYPE_BYTES * BYTES_TO_BITS);
 
 library WorldResourceIdLib {
   /**
@@ -28,9 +28,9 @@ library WorldResourceIdLib {
   function encode(bytes2 typeId, bytes14 namespace, bytes16 name) internal pure returns (ResourceId) {
     return
       ResourceId.wrap(
-        bytes32(namespace) |
-          (bytes32(name) >> (NAMESPACE_BYTES * BYTES_TO_BITS)) |
-          (bytes32(typeId) >> ((NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
+        bytes32(typeId) |
+          (bytes32(namespace) >> (TYPE_BYTES * BYTES_TO_BITS)) |
+          (bytes32(name) >> ((TYPE_BYTES + NAMESPACE_BYTES) * BYTES_TO_BITS))
       );
   }
 
@@ -38,10 +38,7 @@ library WorldResourceIdLib {
    * Create a 32-byte resource ID from a namespace.
    */
   function encodeNamespace(bytes14 namespace) internal pure returns (ResourceId) {
-    return
-      ResourceId.wrap(
-        bytes32(namespace) | (bytes32(RESOURCE_NAMESPACE) >> ((NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
-      );
+    return ResourceId.wrap(bytes32(RESOURCE_NAMESPACE) | (bytes32(namespace) >> (TYPE_BYTES * BYTES_TO_BITS)));
   }
 
   /**
@@ -60,7 +57,7 @@ library WorldResourceIdInstance {
    * Get the namespace of a resource ID.
    */
   function getNamespace(ResourceId resourceId) internal pure returns (bytes14) {
-    return bytes14(ResourceId.unwrap(resourceId));
+    return bytes14(ResourceId.unwrap(resourceId) << (TYPE_BYTES * BYTES_TO_BITS));
   }
 
   /**
@@ -74,24 +71,24 @@ library WorldResourceIdInstance {
    * Get the name of a resource ID.
    */
   function getName(ResourceId resourceId) internal pure returns (bytes16) {
-    return bytes16(ResourceId.unwrap(resourceId) << (NAMESPACE_BYTES * BYTES_TO_BITS));
+    return bytes16(ResourceId.unwrap(resourceId) << ((TYPE_BYTES + NAMESPACE_BYTES) * BYTES_TO_BITS));
   }
 
   /**
    * Convert a resource ID to a string for more readable logs
    */
   function toString(ResourceId resourceId) internal pure returns (string memory) {
+    bytes2 resourceType = ResourceIdInstance.getType(resourceId);
     bytes14 resourceNamespace = getNamespace(resourceId);
     bytes16 resourceName = getName(resourceId);
-    bytes2 resourceType = ResourceIdInstance.getType(resourceId);
     return
       string(
         abi.encodePacked(
+          resourceType,
+          ":",
           resourceNamespace == ROOT_NAMESPACE ? ROOT_NAMESPACE_STRING : resourceNamespace,
           ":",
-          resourceName == ROOT_NAME ? ROOT_NAME_STRING : resourceName,
-          ":",
-          resourceType
+          resourceName == ROOT_NAME ? ROOT_NAME_STRING : resourceName
         )
       );
   }

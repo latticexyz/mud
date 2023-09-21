@@ -24,7 +24,7 @@ import { RESOURCE_TABLE } from "../../storeResourceTypes.sol";
 import { ExampleEnum } from "./../common.sol";
 
 ResourceId constant _tableId = ResourceId.wrap(
-  bytes32(abi.encodePacked(bytes14("mudstore"), bytes16("KeyEncoding"), RESOURCE_TABLE))
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("KeyEncoding")))
 );
 ResourceId constant KeyEncodingTableId = _tableId;
 
