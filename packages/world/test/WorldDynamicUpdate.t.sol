@@ -132,7 +132,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
 
     // Expect the World to have access
-    vm.prank(address(world));
+    _expectAccessDenied(address(world), tableId);
     world.popFromField(tableId, keyTuple, 0, 20, fieldLayout);
   }
 
@@ -170,7 +170,7 @@ contract UpdateInFieldTest is Test, GasReporter {
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
 
     // Expect the World to have access
-    vm.prank(address(world));
+    _expectAccessDenied(address(world), tableId);
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate), fieldLayout);
   }
 }

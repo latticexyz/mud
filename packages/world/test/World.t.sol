@@ -707,8 +707,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "testSetRecord", "testTable", RESOURCE_TABLE);
     Bool.set(world, tableId, true);
 
-    // Expect the World to have access
-    vm.prank(address(world));
+    // Expect the World to not have access
+    _expectAccessDenied(address(world), "testSetRecord", "testTable", RESOURCE_TABLE);
     Bool.set(world, tableId, true);
   }
 
@@ -733,8 +733,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "testSetField", "testTable", RESOURCE_TABLE);
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
 
-    // Expect the World to have access
-    vm.prank(address(world));
+    // Expect the World to not have access
+    _expectAccessDenied(address(world), "testSetField", "testTable", RESOURCE_TABLE);
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
@@ -775,8 +775,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), namespace, name, RESOURCE_TABLE);
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
 
-    // Expect the World to have access
-    vm.prank(address(world));
+    // Expect the World to not have access
+    _expectAccessDenied(address(world), namespace, name, RESOURCE_TABLE);
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
   }
 
@@ -824,8 +824,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x02), namespace, name, RESOURCE_TABLE);
     world.deleteRecord(tableId, singletonKey, fieldLayout);
 
-    // Expect the World to have access
-    vm.prank(address(world));
+    // Expect the World to not have access
+    _expectAccessDenied(address(world), namespace, name, RESOURCE_TABLE);
     world.deleteRecord(tableId, singletonKey, fieldLayout);
   }
 
@@ -864,8 +864,8 @@ contract WorldTest is Test, GasReporter {
     _expectAccessDenied(address(0x01), "namespace", "testSystem", RESOURCE_SYSTEM);
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
-    // Expect the World to have access
-    vm.prank(address(world));
+    // Expect the World to have not access
+    _expectAccessDenied(address(world), "namespace", "testSystem", RESOURCE_SYSTEM);
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded

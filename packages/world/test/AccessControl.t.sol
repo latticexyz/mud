@@ -88,6 +88,8 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
     AccessControl.requireAccess(tableId, presetCaller);
     endGasReport();
 
+    vm.prank(caller);
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, tableId.toString(), address(this)));
     startGasReport("AccessControl: requireAccess (this address)");
     AccessControl.requireAccess(tableId, address(this));
     endGasReport();
