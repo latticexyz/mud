@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Hooks } from "./codegen/tables/Hooks.sol";
+import { ResourceId } from "./ResourceId.sol";
 
 // 20 bytes address, 1 byte bitmap of enabled hooks
 type Hook is bytes21;
@@ -20,8 +21,12 @@ library HookLib {
   /**
    * Filter the given hook from the hook list at the given key in the given hook table
    */
-  function filterListByAddress(bytes32 hookTableId, bytes32 key, address hookAddressToRemove) internal {
-    bytes21[] memory currentHooks = Hooks._get(hookTableId, key);
+  function filterListByAddress(
+    ResourceId hookTableId,
+    ResourceId tableWithHooks,
+    address hookAddressToRemove
+  ) internal {
+    bytes21[] memory currentHooks = Hooks._get(hookTableId, ResourceId.unwrap(tableWithHooks));
 
     // Initialize the new hooks array with the same length because we don't know if the hook is registered yet
     bytes21[] memory newHooks = new bytes21[](currentHooks.length);
@@ -44,7 +49,7 @@ library HookLib {
     }
 
     // Set the new hooks table
-    Hooks._set(hookTableId, key, newHooks);
+    Hooks._set(hookTableId, ResourceId.unwrap(tableWithHooks), newHooks);
   }
 }
 

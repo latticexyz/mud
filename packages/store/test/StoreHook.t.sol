@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -11,6 +11,8 @@ import { Hook, HookLib } from "../src/Hook.sol";
 import { IStoreHook } from "../src/IStore.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
+import { ResourceId, ResourceIdLib } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 
 contract StoreHookTest is Test, GasReporter {
@@ -19,13 +21,17 @@ contract StoreHookTest is Test, GasReporter {
   // Testdata
   EchoSubscriber private echoSubscriber = new EchoSubscriber();
   RevertSubscriber private revertSubscriber = new RevertSubscriber();
-  bytes32 private tableId = "table";
+  ResourceId private tableId;
   bytes32[] private key = new bytes32[](1);
   bytes private staticData = abi.encodePacked(bytes32(0));
   PackedCounter private encodedLengths = PackedCounter.wrap(bytes32(0));
   bytes private dynamicData = new bytes(0);
   uint8 private fieldIndex = 1;
   FieldLayout private fieldLayout = FieldLayout.wrap(0);
+
+  constructor() {
+    tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "table" });
+  }
 
   function testEncodeBitmap() public {
     assertEq(BEFORE_SET_RECORD, uint8(0x01), "0b00000001");
@@ -193,7 +199,7 @@ contract StoreHookTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(
       abi.encodeCall(
-        echoSubscriber.onBeforeSetRecord,
+        IStoreHook.onBeforeSetRecord,
         (tableId, key, staticData, encodedLengths, emptyDynamicData, fieldLayout)
       )
     );

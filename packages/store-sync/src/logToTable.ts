@@ -1,7 +1,7 @@
 import { hexToSchema, decodeValue } from "@latticexyz/protocol-parser";
 import { concatHex, decodeAbiParameters, parseAbiParameters } from "viem";
 import { StorageAdapterLog, Table, schemasTable } from "./common";
-import { hexToTableId } from "@latticexyz/common";
+import { hexToResourceId } from "@latticexyz/common";
 
 // TODO: add tableToLog
 
@@ -11,7 +11,7 @@ export function logToTable(log: StorageAdapterLog & { eventName: "StoreSetRecord
     console.warn("registerSchema event is expected to have only one key in key tuple, but got multiple", log);
   }
 
-  const table = hexToTableId(tableId);
+  const table = hexToResourceId(tableId);
 
   const value = decodeValue(
     schemasTable.valueSchema,

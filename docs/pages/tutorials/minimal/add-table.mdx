@@ -48,6 +48,8 @@ A MUD table has two schemas:
 - `valueSchema`, the value in the entry
 
 Each schema is represented as a structure with field names as keys, and the appropriate [Solidity data types](https://docs.soliditylang.org/en/latest/types.html) as their values.
+Note that the data types in the key schema are limited to those that are fixed length such at `bytes<n>`.
+You cannot use strings, arrays, etc.
 
 In this case, the counter value is represented as a 32 bit unsigned integer, because that is what `Counter` uses.
 Block numbers and timestamps can be values up to `uint256`, so we'll use this type for these fields.

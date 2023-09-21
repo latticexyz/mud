@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { ISystemHook, SYSTEM_HOOK_INTERFACE_ID } from "./interfaces/ISystemHook.sol";
 import { ERC165_INTERFACE_ID } from "./interfaces/IERC165.sol";

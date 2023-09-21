@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
@@ -7,7 +7,7 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
-import { FieldLayout } from "../src/FieldLayout.sol";
+import { FieldLayout, FieldLayoutLib } from "../src/FieldLayout.sol";
 import { Schema } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreMock } from "../test/StoreMock.sol";
@@ -15,7 +15,9 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { IStoreHook } from "../src/IStoreHook.sol";
-import { Tables, TablesTableId } from "../src/codegen/index.sol";
+import { Tables, ResourceIds, TablesTableId } from "../src/codegen/index.sol";
+import { ResourceId, ResourceIdLib, ResourceIdInstance } from "../src/ResourceId.sol";
+import { RESOURCE_TABLE } from "../src/storeResourceTypes.sol";
 import { FieldLayoutEncodeHelper } from "./FieldLayoutEncodeHelper.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD, ALL, BEFORE_ALL, AFTER_ALL } from "../src/storeHookTypes.sol";
 import { SchemaEncodeHelper } from "./SchemaEncodeHelper.sol";
@@ -32,14 +34,20 @@ struct TestStruct {
 }
 
 contract StoreCoreTest is Test, StoreMock {
+  using ResourceIdInstance for ResourceId;
+
   TestStruct private testStruct;
   event HookCalled(bytes);
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   string[] defaultKeyNames = new string[](1);
+  ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
+  ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
 
-  function testRegisterAndGetFieldLayout() public {
+  function testRegisterTable() public {
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -57,11 +65,9 @@ contract StoreCoreTest is Test, StoreMock {
     fieldNames[2] = "value3";
     fieldNames[3] = "value4";
 
-    bytes32 tableId = keccak256("some.tableId");
-
     // Expect a StoreSetRecord event to be emitted
     bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = bytes32(tableId);
+    keyTuple[0] = ResourceId.unwrap(tableId);
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(
       TablesTableId,
@@ -76,18 +82,52 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(IStore(this).getValueSchema(tableId).unwrap(), valueSchema.unwrap());
     assertEq(IStore(this).getKeySchema(tableId).unwrap(), keySchema.unwrap());
 
-    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), tableId);
+    bytes memory loadedKeyNames = Tables.getAbiEncodedKeyNames(IStore(this), ResourceId.unwrap(tableId));
     assertEq(loadedKeyNames, abi.encode(keyNames));
 
-    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), tableId);
+    bytes memory loadedFieldNames = Tables.getAbiEncodedFieldNames(IStore(this), ResourceId.unwrap(tableId));
     assertEq(loadedFieldNames, abi.encode(fieldNames));
+
+    // Expect the table ID to be registered
+    assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
   }
 
-  function testFailRegisterInvalidFieldLayout() public {
+  function testRevertTableExists() public {
+    ResourceId tableId = _tableId;
+    FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
+    Schema keySchema = SchemaEncodeHelper.encode(SchemaType.UINT8);
+    Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT8);
+    string[] memory keyNames = new string[](1);
+    string[] memory fieldNames = new string[](1);
+
+    IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+
+    // Expect a revert when registering a table that already exists
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        ResourceId.unwrap(tableId),
+        string(bytes.concat(ResourceId.unwrap(tableId)))
+      )
+    );
+    IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, keyNames, fieldNames);
+  }
+
+  function testRevertRegisterInvalidFieldLayout() public {
+    ResourceId tableId = _tableId;
+
     string[] memory keyNames = new string[](2);
     string[] memory fieldNames = new string[](4);
+    FieldLayout invalidFieldLayout = FieldLayout.wrap(keccak256("random bytes as value field layout"));
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        FieldLayoutLib.FieldLayoutLib_InvalidLength.selector,
+        invalidFieldLayout.numDynamicFields()
+      )
+    );
     IStore(this).registerTable(
-      keccak256("tableId"),
+      tableId,
       FieldLayout.wrap(keccak256("random bytes as value field layout")),
       Schema.wrap(keccak256("random bytes as key schema")),
       Schema.wrap(keccak256("random bytes as value schema")),
@@ -96,7 +136,32 @@ contract StoreCoreTest is Test, StoreMock {
     );
   }
 
+  function testRevertRegisterInvalidTableId() public {
+    bytes2 invalidType = "xx";
+    ResourceId invalidTableId = ResourceIdLib.encode({ typeId: invalidType, name: "somename" });
+
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        IStoreErrors.StoreCore_InvalidResourceType.selector,
+        RESOURCE_TABLE,
+        invalidTableId,
+        string(abi.encodePacked(invalidTableId))
+      )
+    );
+    IStore(this).registerTable(
+      invalidTableId,
+      FieldLayoutEncodeHelper.encode(1, 0),
+      SchemaEncodeHelper.encode(SchemaType.UINT8),
+      SchemaEncodeHelper.encode(SchemaType.UINT8),
+      new string[](1),
+      new string[](1)
+    );
+  }
+
   function testHasFieldLayoutAndSchema() public {
+    ResourceId tableId = _tableId;
+    ResourceId tableId2 = _tableId2;
+
     string[] memory keyNames = new string[](1);
     string[] memory fieldNames = new string[](4);
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
@@ -106,12 +171,10 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT8,
       SchemaType.UINT16
     );
-    bytes32 tableId = keccak256("some.tableId");
-    bytes32 tableId2 = keccak256("other.tableId");
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
-    assertTrue(StoreCore.hasTable(tableId));
-    assertFalse(StoreCore.hasTable(tableId2));
+    assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
+    assertFalse(ResourceIds._getExists(ResourceId.unwrap(tableId2)));
 
     IStore(this).getFieldLayout(tableId);
     IStore(this).getValueSchema(tableId);
@@ -121,7 +184,7 @@ contract StoreCoreTest is Test, StoreMock {
       abi.encodeWithSelector(
         IStoreErrors.StoreCore_TableNotFound.selector,
         tableId2,
-        string(abi.encodePacked(tableId2))
+        string(abi.encodePacked(ResourceId.unwrap(tableId2)))
       )
     );
     IStore(this).getFieldLayout(tableId2);
@@ -146,7 +209,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testRegisterTableRevertNames() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 0);
     Schema keySchema = SchemaEncodeHelper.encode(
       SchemaType.UINT8,
@@ -168,7 +232,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetDynamicDataLength() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 4, 2);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -212,6 +276,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetStaticData() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -221,7 +287,6 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT16
     );
 
-    bytes32 tableId = keccak256("some.tableId");
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -248,7 +313,9 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(_dynamicData, "");
   }
 
-  function testFailSetAndGetStaticData() public {
+  function testRevertSetAndGetStaticData() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(1, 2, 1, 2, 0);
     Schema valueSchema = SchemaEncodeHelper.encode(
@@ -257,7 +324,6 @@ contract StoreCoreTest is Test, StoreMock {
       SchemaType.UINT8,
       SchemaType.UINT16
     );
-    bytes32 tableId = keccak256("some.tableId");
     IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](4));
 
     // Set data
@@ -267,13 +333,15 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = "some key";
 
     // This should fail because the data is not 6 bytes long
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidStaticDataLength.selector, 6, 4));
     IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
+    ResourceId tableId = _tableId;
+
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 0);
-    bytes32 tableId = keccak256("some.table");
     {
       Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT128, SchemaType.UINT256);
       IStore(this).registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](2));
@@ -307,7 +375,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -382,7 +450,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct SetAndGetData {
-    bytes32 tableId;
+    ResourceId tableId;
     FieldLayout fieldLayout;
     bytes16 firstDataBytes;
     bytes firstDataPacked;
@@ -393,8 +461,10 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testSetAndGetField() public {
+    ResourceId tableId = _tableId;
+
     SetAndGetData memory _data;
-    _data.tableId = keccak256("some.tableId");
+    _data.tableId = tableId;
 
     // Register table
     _data.fieldLayout = FieldLayoutEncodeHelper.encode(16, 32, 2);
@@ -608,7 +678,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testDeleteData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(16, 2);
@@ -687,7 +757,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct TestPushToFieldData {
-    bytes32 tableId;
+    ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
     bytes secondDataBytes;
@@ -700,9 +770,9 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testPushToField() public {
-    TestPushToFieldData memory data = TestPushToFieldData(0, new bytes32[](0), 0, "", "", "", "", "", "", "");
+    ResourceId tableId = _tableId;
 
-    data.tableId = keccak256("some.tableId");
+    TestPushToFieldData memory data = TestPushToFieldData(tableId, new bytes32[](0), 0, "", "", "", "", "", "", "");
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -826,7 +896,7 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   struct TestUpdateInFieldData {
-    bytes32 tableId;
+    ResourceId tableId;
     bytes32[] keyTuple;
     bytes32 firstDataBytes;
     uint32[] secondData;
@@ -841,8 +911,10 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testUpdateInField() public {
+    ResourceId tableId = _tableId;
+
     TestUpdateInFieldData memory data = TestUpdateInFieldData(
-      0,
+      tableId,
       new bytes32[](0),
       0,
       new uint32[](0),
@@ -855,8 +927,6 @@ contract StoreCoreTest is Test, StoreMock {
       "",
       ""
     );
-
-    data.tableId = keccak256("some.tableId");
 
     // Register table
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(32, 2);
@@ -987,7 +1057,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testAccessEmptyData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     FieldLayout fieldLayout = FieldLayoutEncodeHelper.encode(4, 1);
     Schema valueSchema = SchemaEncodeHelper.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
@@ -1014,7 +1085,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testRegisterHook() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
@@ -1059,7 +1131,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testUnregisterHook() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 
@@ -1174,7 +1247,8 @@ contract StoreCoreTest is Test, StoreMock {
   }
 
   function testHooksDynamicData() public {
-    bytes32 tableId = keccak256("some.tableId");
+    ResourceId tableId = _tableId;
+
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = "some key";
 

@@ -16,6 +16,7 @@ export interface StaticResourceData {
   tableIdName: string;
   namespace: string;
   name: string;
+  offchainOnly: boolean;
 }
 
 export interface RenderType {

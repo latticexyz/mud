@@ -1,4 +1,5 @@
 dist
-**/.next
+.next
 templates/phaser/packages/art
 CODEOWNERS
+out

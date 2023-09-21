@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { FieldLayout } from "./FieldLayout.sol";
 import { IERC165, ERC165_INTERFACE_ID } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
+import { ResourceId } from "./ResourceId.sol";
 
 // ERC-165 Interface ID (see https://eips.ethereum.org/EIPS/eip-165)
 bytes4 constant STORE_HOOK_INTERFACE_ID = IStoreHook.onBeforeSetRecord.selector ^
@@ -20,7 +21,7 @@ interface IStoreHook is IERC165 {
   error StoreHook_NotImplemented();
 
   function onBeforeSetRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -29,7 +30,7 @@ interface IStoreHook is IERC165 {
   ) external;
 
   function onAfterSetRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -38,7 +39,7 @@ interface IStoreHook is IERC165 {
   ) external;
 
   function onBeforeSpliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -46,7 +47,7 @@ interface IStoreHook is IERC165 {
   ) external;
 
   function onAfterSpliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -54,7 +55,7 @@ interface IStoreHook is IERC165 {
   ) external;
 
   function onBeforeSpliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -64,7 +65,7 @@ interface IStoreHook is IERC165 {
   ) external;
 
   function onAfterSpliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -73,7 +74,7 @@ interface IStoreHook is IERC165 {
     PackedCounter encodedLengths
   ) external;
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
+  function onBeforeDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
+  function onAfterDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
 }

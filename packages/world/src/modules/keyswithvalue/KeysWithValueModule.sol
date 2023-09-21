@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
@@ -8,13 +8,13 @@ import { Module } from "../../Module.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { WorldContextConsumer } from "../../WorldContext.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValueHook } from "./KeysWithValueHook.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
-import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
+import { getTargetTableId } from "./getTargetTableId.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -28,7 +28,7 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
 contract KeysWithValueModule is Module {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   // The KeysWithValueHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
@@ -40,8 +40,8 @@ contract KeysWithValueModule is Module {
 
   function installRoot(bytes memory args) public {
     // Extract source table id from args
-    bytes32 sourceTableId = abi.decode(args, (bytes32));
-    bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
+    ResourceId targetTableSelector = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
 
     IBaseWorld world = IBaseWorld(_world());
 

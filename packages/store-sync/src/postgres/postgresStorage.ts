@@ -7,7 +7,7 @@ import { debug } from "./debug";
 import { buildInternalTables } from "./buildInternalTables";
 import { getTables } from "./getTables";
 import { schemaVersion } from "./schemaVersion";
-import { hexToTableId, spliceHex, tableIdToHex } from "@latticexyz/common";
+import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { setupTables } from "./setupTables";
 import { getTableKey } from "./getTableKey";
 import { StorageAdapter, StorageAdapterBlock } from "../common";
@@ -40,15 +40,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
   async function postgresStorageAdapter({ blockNumber, logs }: StorageAdapterBlock): Promise<void> {
     const newTables = logs.filter(isTableRegistrationLog).map(logToTable);
-    const newSqlTables = newTables.map((table) =>
-      buildTable({
-        address: table.address,
-        namespace: table.namespace,
-        name: table.name,
-        keySchema: table.keySchema,
-        valueSchema: table.valueSchema,
-      })
-    );
+    const newSqlTables = newTables.map(buildTable);
 
     cleanUp.push(await setupTables(database, newSqlTables));
 
@@ -59,12 +51,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           .values({
             schemaVersion,
             key: getTableKey(table),
-            address: table.address,
-            tableId: tableIdToHex(table.namespace, table.name),
-            namespace: table.namespace,
-            name: table.name,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
+            ...table,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoNothing()
@@ -98,7 +85,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
           (table) => getTableKey(table) === getTableKey({ address: log.address, tableId: log.args.tableId })
         );
         if (!table) {
-          const { namespace, name } = hexToTableId(log.args.tableId);
+          const { namespace, name } = hexToResourceId(log.args.tableId);
           debug(`table ${namespace}:${name} not found, skipping log`, log);
           continue;
         }
@@ -109,7 +96,7 @@ export async function postgresStorage<TConfig extends StoreConfig = StoreConfig>
 
         debug(log.eventName, log);
 
-        if (log.eventName === "StoreSetRecord" || log.eventName === "StoreEphemeralRecord") {
+        if (log.eventName === "StoreSetRecord") {
           const value = decodeValueArgs(table.valueSchema, log.args);
           debug("upserting record", {
             namespace: table.namespace,

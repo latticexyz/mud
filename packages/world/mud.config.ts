@@ -13,7 +13,7 @@ export default mudConfig({
      ************************************************************************/
     NamespaceOwner: {
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "bytes32",
       },
       valueSchema: {
         owner: "address",
@@ -21,7 +21,7 @@ export default mudConfig({
     },
     ResourceAccess: {
       keySchema: {
-        resourceSelector: "bytes32",
+        resourceId: "bytes32",
         caller: "address",
       },
       valueSchema: {
@@ -54,7 +54,7 @@ export default mudConfig({
     Balances: {
       directory: "modules/core/tables",
       keySchema: {
-        namespace: "bytes16",
+        namespaceId: "bytes32",
       },
       valueSchema: {
         balance: "uint256",
@@ -63,7 +63,7 @@ export default mudConfig({
     Systems: {
       directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
       valueSchema: {
         system: "address",
@@ -77,24 +77,15 @@ export default mudConfig({
         system: "address",
       },
       valueSchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
     },
     SystemHooks: {
       directory: "modules/core/tables",
       keySchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
       },
       valueSchema: "bytes21[]",
-    },
-    ResourceType: {
-      directory: "modules/core/tables",
-      keySchema: {
-        resourceSelector: "bytes32",
-      },
-      valueSchema: {
-        resourceType: "Resource",
-      },
     },
     FunctionSelectors: {
       directory: "modules/core/tables",
@@ -102,7 +93,7 @@ export default mudConfig({
         functionSelector: "bytes4",
       },
       valueSchema: {
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
@@ -149,7 +140,7 @@ export default mudConfig({
       keySchema: {
         delegator: "address",
         delegatee: "address",
-        resourceSelector: "bytes32",
+        systemId: "bytes32",
         callDataHash: "bytes32",
       },
       valueSchema: {
@@ -185,10 +176,6 @@ export default mudConfig({
       tableIdArgument: true,
     },
   },
-  enums: {
-    Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
-  },
-
   excludeSystems: [
     // IUniqueEntitySystem is not part of the root namespace and
     // installed separately by UniqueEntityModule.
@@ -204,7 +191,5 @@ export default mudConfig({
     // TODO: add support for inheritance to worldgen
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
-    // Similar overlap occurs for IEphemeralRecordSystem. IWorldEphemeral is included instead.
-    "EphemeralRecordSystem",
   ],
 });

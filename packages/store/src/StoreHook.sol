@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { IStoreHook, STORE_HOOK_INTERFACE_ID } from "./IStoreHook.sol";
 import { ERC165_INTERFACE_ID } from "./IERC165.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { FieldLayout } from "./FieldLayout.sol";
+import { ResourceId } from "./ResourceId.sol";
 
 abstract contract StoreHook is IStoreHook {
   // ERC-165 supportsInterface (see https://eips.ethereum.org/EIPS/eip-165)
@@ -13,7 +14,7 @@ abstract contract StoreHook is IStoreHook {
   }
 
   function onBeforeSetRecord(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     bytes memory,
     PackedCounter,
@@ -24,7 +25,7 @@ abstract contract StoreHook is IStoreHook {
   }
 
   function onAfterSetRecord(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     bytes memory,
     PackedCounter,
@@ -34,16 +35,16 @@ abstract contract StoreHook is IStoreHook {
     revert StoreHook_NotImplemented();
   }
 
-  function onBeforeSpliceStaticData(bytes32, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
+  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
     revert StoreHook_NotImplemented();
   }
 
-  function onAfterSpliceStaticData(bytes32, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
+  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public virtual {
     revert StoreHook_NotImplemented();
   }
 
   function onBeforeSpliceDynamicData(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     uint8,
     uint40,
@@ -55,7 +56,7 @@ abstract contract StoreHook is IStoreHook {
   }
 
   function onAfterSpliceDynamicData(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     uint8,
     uint40,
@@ -66,11 +67,11 @@ abstract contract StoreHook is IStoreHook {
     revert StoreHook_NotImplemented();
   }
 
-  function onBeforeDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public virtual {
+  function onBeforeDeleteRecord(ResourceId, bytes32[] memory, FieldLayout) public virtual {
     revert StoreHook_NotImplemented();
   }
 
-  function onAfterDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public virtual {
+  function onAfterDeleteRecord(ResourceId, bytes32[] memory, FieldLayout) public virtual {
     revert StoreHook_NotImplemented();
   }
 }

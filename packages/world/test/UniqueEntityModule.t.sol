@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Test } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
@@ -14,14 +14,15 @@ import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.so
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
 
 import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 contract UniqueEntityModuleTest is Test, GasReporter {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
+  ResourceId _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME });
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -29,6 +30,8 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   }
 
   function testInstall() public {
+    ResourceId tableId = _tableId;
+
     startGasReport("install unique entity module");
     world.installModule(uniqueEntityModule, new bytes(0));
     endGasReport();
@@ -45,6 +48,8 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   }
 
   function testInstallRoot() public {
+    ResourceId tableId = _tableId;
+
     startGasReport("installRoot unique entity module");
     world.installRootModule(uniqueEntityModule, new bytes(0));
     endGasReport();
@@ -61,6 +66,8 @@ contract UniqueEntityModuleTest is Test, GasReporter {
   }
 
   function testPublicAccess() public {
+    ResourceId tableId = _tableId;
+
     world.installModule(uniqueEntityModule, new bytes(0));
 
     // Anyone should be able to call `getUniqueEntity`
@@ -78,7 +85,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        ResourceSelector.from(NAMESPACE, TABLE_NAME).toString(),
+        WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME }).toString(),
         alice
       )
     );

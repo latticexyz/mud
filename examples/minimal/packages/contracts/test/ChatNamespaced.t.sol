@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
@@ -11,11 +11,11 @@ import { MessageTable, MessageTableTableId } from "../src/codegen/index.sol";
 import { IChatNamespacedSystem } from "../src/interfaces/IChatNamespacedSystem.sol";
 
 contract ChatNamespacedTest is MudTest {
-  function testEmitEphemeral() public {
+  function testOffchain() public {
     bytes32[] memory keyTuple;
     string memory value = "test";
     vm.expectEmit(true, true, true, true);
-    emit StoreCore.StoreEphemeralRecord(
+    emit StoreCore.StoreSetRecord(
       MessageTableTableId,
       keyTuple,
       new bytes(0),
