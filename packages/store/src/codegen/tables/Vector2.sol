@@ -267,17 +267,41 @@ library Vector2 {
 
   /** Set the full data using the data struct */
   function set(bytes32 key, Vector2Data memory _table) internal {
-    set(key, _table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(bytes32 key, Vector2Data memory _table) internal {
-    set(key, _table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, bytes32 key, Vector2Data memory _table) internal {
-    set(_store, key, _table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**

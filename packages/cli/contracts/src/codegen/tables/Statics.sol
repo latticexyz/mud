@@ -816,12 +816,38 @@ library Statics {
 
   /** Set the full data using the data struct */
   function set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, StaticsData memory _table) internal {
-    set(k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+    bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum2 k6, StaticsData memory _table) internal {
-    set(k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+    bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
@@ -835,7 +861,20 @@ library Statics {
     Enum2 k6,
     StaticsData memory _table
   ) internal {
-    set(_store, k1, k2, k3, k4, k5, k6, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+    bytes memory _staticData = encodeStatic(_table.v1, _table.v2, _table.v3, _table.v4, _table.v5, _table.v6);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](6);
+    _keyTuple[0] = bytes32(uint256(k1));
+    _keyTuple[1] = bytes32(uint256(int256(k2)));
+    _keyTuple[2] = bytes32(k3);
+    _keyTuple[3] = bytes32(uint256(uint160(k4)));
+    _keyTuple[4] = _boolToBytes32(k5);
+    _keyTuple[5] = bytes32(uint256(uint8(k6)));
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**
