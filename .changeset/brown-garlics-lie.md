@@ -10,3 +10,15 @@ As this is a very important invariance, we decided to codify it in an explicit r
 
 This is a breaking change for modules that previously used external calls to the `World` in the `installRoot` method.
 In the `installRoot` method, the `World` can only be called via `delegatecall`, and table operations should be performed via the internal table methods (e.g. `_set` instead of `set`).
+
+Example for how to replacing external calls to `world` in `installRoot` with `delegatecall`:
+```diff
++ import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
+
+- world.grantAccess(tableId, address(hook));
++ (bool success, bytes memory returnData) = address(world).delegatecall(
++   abi.encodeCall(world.grantAccess, (tableId, address(hook)))
++ );
+
++ if (!success) revertWithBytes(returnData);
+```
