@@ -29,8 +29,6 @@ contract ResourceIdTest is Test, GasReporter {
   }
 
   function testFuzz(bytes30 name, bytes2 resourceType) public {
-    bytes2 NOT_TYPE = bytes2("xx");
-    vm.assume(resourceType != NOT_TYPE);
     ResourceId tableId = ResourceIdLib.encode({ typeId: resourceType, name: name });
     assertEq(tableId.getType(), resourceType);
   }
