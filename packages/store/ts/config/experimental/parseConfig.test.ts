@@ -24,8 +24,8 @@ describe("parseConfig", () => {
       tables: {
         Exists: {
           type: "table",
-          name: "Exists",
           namespace: "",
+          name: "Exists",
           tableId: tableIdToHex("", "Exists"),
           keySchema: {
             key: "bytes32",
@@ -36,8 +36,8 @@ describe("parseConfig", () => {
         },
         Position: {
           type: "table",
-          name: "Position",
           namespace: "",
+          name: "Position",
           tableId: tableIdToHex("", "Position"),
           keySchema: {
             key: "bytes32",
@@ -49,8 +49,8 @@ describe("parseConfig", () => {
         },
         Messages: {
           type: "offchainTable",
-          name: "Messages",
           namespace: "",
+          name: "Messages",
           tableId: tableIdToHex("", "Messages"),
           keySchema: {
             key: "bytes32",
@@ -63,7 +63,7 @@ describe("parseConfig", () => {
       },
     } as const);
 
-    expectTypeOf<typeof config>().toMatchTypeOf<
+    expectTypeOf<typeof config>().toEqualTypeOf<
       Readonly<{
         tables: Readonly<{
           Exists: Readonly<{
@@ -95,14 +95,29 @@ describe("parseConfig", () => {
     >();
   });
 
-  it("handles default namespace and per-table namespaces", () => {
+  it("handles namespaces", () => {
     const config = parseConfig({
-      namespace: "MyNamespace",
+      namespace: "DefaultNamespace",
       tables: {
         Exists: "bool",
         Position: {
-          namespace: "OtherNamespace",
+          namespace: "TableNamespace",
           valueSchema: { x: "uint32", y: "uint32" },
+        },
+      },
+      namespaces: {
+        MyNamespace: {
+          tables: {
+            PlayerNames: "string",
+            // TODO: make table overrides work or "throw"
+            // Exists: {
+            //   // TODO: disable overriding namespace here
+            //   namespace: "OverrideNamespace",
+            //   valueSchema: {
+            //     exists: "bool",
+            //   },
+            // },
+          },
         },
       },
     } as const);
@@ -111,9 +126,9 @@ describe("parseConfig", () => {
       tables: {
         Exists: {
           type: "table",
+          namespace: "DefaultNamespace",
           name: "Exists",
-          namespace: "MyNamespace",
-          tableId: tableIdToHex("MyNamespace", "Exists"),
+          tableId: tableIdToHex("DefaultNamespace", "Exists"),
           keySchema: {
             key: "bytes32",
           },
@@ -123,15 +138,27 @@ describe("parseConfig", () => {
         },
         Position: {
           type: "table",
+          namespace: "TableNamespace",
           name: "Position",
-          namespace: "OtherNamespace",
-          tableId: tableIdToHex("OtherNamespace", "Position"),
+          tableId: tableIdToHex("TableNamespace", "Position"),
           keySchema: {
             key: "bytes32",
           },
           valueSchema: {
             x: "uint32",
             y: "uint32",
+          },
+        },
+        PlayerNames: {
+          type: "table",
+          namespace: "MyNamespace",
+          name: "PlayerNames",
+          tableId: tableIdToHex("MyNamespace", "PlayerNames"),
+          keySchema: {
+            key: "bytes32",
+          },
+          valueSchema: {
+            value: "string",
           },
         },
       },
@@ -142,7 +169,7 @@ describe("parseConfig", () => {
         tables: Readonly<{
           Exists: Readonly<{
             type: "table";
-            namespace: "MyNamespace";
+            namespace: "DefaultNamespace";
             name: "Exists";
             tableId: `0x${string}`;
             keySchema: Readonly<{ key: "bytes32" }>;
@@ -150,11 +177,19 @@ describe("parseConfig", () => {
           }>;
           Position: Readonly<{
             type: "table";
-            namespace: "OtherNamespace";
+            namespace: "TableNamespace";
             name: "Position";
             tableId: `0x${string}`;
             keySchema: Readonly<{ key: "bytes32" }>;
             valueSchema: Readonly<{ x: "uint32"; y: "uint32" }>;
+          }>;
+          PlayerNames: Readonly<{
+            type: "table";
+            namespace: "MyNamespace";
+            name: "PlayerNames";
+            tableId: `0x${string}`;
+            keySchema: Readonly<{ key: "bytes32" }>;
+            valueSchema: Readonly<{ value: "string" }>;
           }>;
         }>;
       }>

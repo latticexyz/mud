@@ -3,10 +3,10 @@ import { ParseTableInput, ParseTableOutput, parseTable } from "./parseTable";
 export type ParseTablesInput = Readonly<Record<string, ParseTableInput>>;
 
 export type ParseTablesOutput<defaultNamespace extends string, input extends ParseTablesInput> = Readonly<{
-  [tableName in keyof input & string]: ParseTableOutput<
+  [name in keyof input & string]: ParseTableOutput<
     input["namespace"] extends string ? input["namespace"] : defaultNamespace,
-    tableName,
-    input[tableName]
+    name,
+    input[name]
   >;
 }>;
 
@@ -15,6 +15,6 @@ export function parseTables<defaultNamespace extends string, input extends Parse
   input: input
 ): ParseTablesOutput<defaultNamespace, input> {
   return Object.fromEntries(
-    Object.entries(input).map(([tableName, table]) => [tableName, parseTable(defaultNamespace, tableName, table)])
+    Object.entries(input).map(([name, tableInput]) => [name, parseTable(defaultNamespace, name, tableInput)])
   ) as ParseTablesOutput<defaultNamespace, input>;
 }
