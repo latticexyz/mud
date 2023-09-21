@@ -25,7 +25,7 @@ library WorldResourceIdLib {
    * the next 16 bytes represent the name,
    * the last 2 bytes represent the type.
    */
-  function encode(bytes14 namespace, bytes16 name, bytes2 typeId) internal pure returns (ResourceId) {
+  function encode(bytes2 typeId, bytes14 namespace, bytes16 name) internal pure returns (ResourceId) {
     return
       ResourceId.wrap(
         bytes32(namespace) |
