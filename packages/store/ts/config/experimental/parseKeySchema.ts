@@ -4,9 +4,9 @@ export type KeySchema = Readonly<Record<string, StaticAbiType>>;
 
 export const defaultKeySchema = { key: "bytes32" } as const satisfies KeySchema;
 
-export type KeySchemaInput = StaticAbiType | KeySchema | undefined;
+export type ParseKeySchemaInput = StaticAbiType | KeySchema | undefined;
 
-export type KeySchemaOutput<input extends KeySchemaInput> = input extends undefined
+export type ParseKeySchemaOutput<input extends ParseKeySchemaInput> = input extends undefined
   ? typeof defaultKeySchema
   : input extends StaticAbiType
   ? Readonly<{ key: input }>
@@ -14,8 +14,8 @@ export type KeySchemaOutput<input extends KeySchemaInput> = input extends undefi
   ? Readonly<input>
   : never;
 
-export function parseKeySchema<input extends KeySchemaInput>(input: input): KeySchemaOutput<input> {
+export function parseKeySchema<input extends ParseKeySchemaInput>(input: input): ParseKeySchemaOutput<input> {
   return (
     input === undefined ? defaultKeySchema : isStaticAbiType(input) ? { key: input } : input
-  ) as KeySchemaOutput<input>;
+  ) as ParseKeySchemaOutput<input>;
 }

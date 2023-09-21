@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { parseValueSchema } from "./valueSchema";
+import { parseValueSchema } from "./parseValueSchema";
 
 describe("parseValueSchema", () => {
   it("outputs a key schema for uint8", () => {

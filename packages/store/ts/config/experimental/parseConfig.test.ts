@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { parseConfig } from "./config";
+import { parseConfig } from "./parseConfig";
 import { tableIdToHex } from "@latticexyz/common";
 
 describe("parseConfig", () => {

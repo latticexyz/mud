@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { parseKeySchema } from "./keySchema";
+import { parseKeySchema } from "./parseKeySchema";
 
 // TODO: add tests for failing cases (dynamic ABI types)
 

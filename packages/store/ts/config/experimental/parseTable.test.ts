@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { TableShapeInput, parseTable, tableInputShapeKeys } from "./table";
+import { TableShapeInput, parseTable, tableInputShapeKeys } from "./parseTable";
 import { tableIdToHex } from "@latticexyz/common";
 
 describe("tableInputShapeKeys", () => {
