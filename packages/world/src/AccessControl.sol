@@ -15,8 +15,7 @@ library AccessControl {
    */
   function hasAccess(ResourceId resourceId, address caller) internal view returns (bool) {
     return
-      address(this) == caller || // First check if the World is calling itself
-      ResourceAccess._get(ResourceId.unwrap(resourceId.getNamespaceId()), caller) || // Then check access based on the namespace
+      ResourceAccess._get(ResourceId.unwrap(resourceId.getNamespaceId()), caller) || // First check access based on the namespace
       ResourceAccess._get(ResourceId.unwrap(resourceId), caller); // If caller has no namespace access, check access on the name
   }
 
