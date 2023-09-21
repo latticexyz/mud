@@ -3,7 +3,7 @@ import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiConfig } from "wagmi";
 import { share } from "rxjs";
 import mudConfig from "contracts/mud.config";
-import IBaseWorldAbi from "@latticexyz/world/out/IBaseWorld.sol/IBaseWorld.abi.json";
+import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 import { App } from "./App";
 import { MUDProvider, useMUD } from "./MUDContext";
 
@@ -25,7 +25,7 @@ const AppWithWalletContext = () => {
         latestBlock$: network.latestBlock$,
         storedBlockLogs$: network.storedBlockLogs$,
         worldAddress: network.worldAddress,
-        worldAbi: IBaseWorldAbi,
+        worldAbi: IWorldAbi,
         write$: network.write$.asObservable().pipe(share()),
         recsWorld: network.world,
       })

@@ -33,6 +33,7 @@ export function useDelegationControl(
     const delegationControlId = getComponentValue(components.Delegations, delegationsKeyEntity);
 
     console.log({
+      delegationsKeyEntity,
       delegator: delegator.account.address,
       delegatee: delegatee.account.address,
       delegationControlId,

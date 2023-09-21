@@ -8,7 +8,7 @@ import { singletonEntity } from "@latticexyz/store-sync/recs";
 import { SetupNetworkResult } from "./setupNetwork";
 import { ClientComponents } from "./createClientComponents";
 import { UNLIMITED_DELEGATION } from "./constants";
-import { createContract, ContractWrite } from "@latticexyz/common";
+import { createContract } from "@latticexyz/common";
 import IWorldAbi from "contracts/out/IWorld.sol/IWorld.abi.json";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
@@ -31,22 +31,10 @@ export function createSystemCalls(
    *   through createClientComponents.ts, but it originates in
    *   syncToRecs (https://github.com/latticexyz/mud/blob/26dabb34321eedff7a43f3fcb46da4f3f5ba3708/templates/react/packages/client/src/mud/setupNetwork.ts#L39).
    */
-  { worldAddress, waitForTransaction, getResourceSelector, publicClient, write$ }: SetupNetworkResult,
+  { worldAddress, waitForTransaction, getResourceSelector, publicClient, write$, worldContract }: SetupNetworkResult,
   { Counter }: ClientComponents,
   walletClient: WalletClient<Transport, Chain, Account>
 ) {
-  /*
-   * Create an object for communicating with the deployed World.
-   */
-  const worldContract = createContract({
-    address: worldAddress as Hex,
-    abi: IWorldAbi,
-    publicClient,
-    walletClient,
-    onWrite: (write) => write$.next(write),
-    getResourceSelector,
-  });
-
   const increment = async () => {
     /*
      * Because IncrementSystem
@@ -54,15 +42,25 @@ export function createSystemCalls(
      * is in the root namespace, `.increment` can be called directly
      * on the World contract.
      */
-    const tx = await worldContract.write.increment();
+    const tx = await worldContract.write.increment({
+      gas: 15000000n,
+    });
     await waitForTransaction(tx);
     return getComponentValue(Counter, singletonEntity);
   };
 
   const registerDelegation = async (delegatee: Hex) => {
+    const contractWithDelegator = createContract({
+      address: worldAddress as Hex,
+      abi: IWorldAbi,
+      publicClient,
+      walletClient,
+      onWrite: (write) => write$.next(write),
+      getResourceSelector,
+    });
     const callData = "0x";
     console.log({ delegatee, UNLIMITED_DELEGATION, callData });
-    const tx = await worldContract.write.registerDelegation([delegatee, UNLIMITED_DELEGATION, callData], {
+    const tx = await contractWithDelegator.write.registerDelegation([delegatee, UNLIMITED_DELEGATION, callData], {
       gas: 15000000n,
     });
     await waitForTransaction(tx);
