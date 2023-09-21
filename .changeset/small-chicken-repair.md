@@ -5,6 +5,7 @@
 "@latticexyz/dev-tools": patch
 "@latticexyz/store-sync": patch
 "@latticexyz/store": major
+"create-mud": minor
 ---
 
 What used to be known as `ephemeral` table is now called `offchain` table.
@@ -15,5 +16,5 @@ Unlike regular tables they don't store data on-chain but emit the same events as
 
 ```diff
 - EphemeralTable.emitEphemeral(value);
-+ OffchainTable.setRecord(value);
++ OffchainTable.set(value);
 ```
