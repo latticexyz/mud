@@ -267,17 +267,41 @@ library Vector {
 
   /** Set the full data using the data struct */
   function set(uint32 key, VectorData memory _table) internal {
-    set(key, _table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(uint32 key, VectorData memory _table) internal {
-    set(key, _table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, uint32 key, VectorData memory _table) internal {
-    set(_store, key, _table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**

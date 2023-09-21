@@ -327,17 +327,50 @@ library Multi {
 
   /** Set the full data using the data struct */
   function set(uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
-    set(a, b, c, d, _table.num, _table.value);
+    bytes memory _staticData = encodeStatic(_table.num, _table.value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(a));
+    _keyTuple[1] = _boolToBytes32(b);
+    _keyTuple[2] = bytes32(uint256(c));
+    _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
-    set(a, b, c, d, _table.num, _table.value);
+    bytes memory _staticData = encodeStatic(_table.num, _table.value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(a));
+    _keyTuple[1] = _boolToBytes32(b);
+    _keyTuple[2] = bytes32(uint256(c));
+    _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, uint32 a, bool b, uint256 c, int120 d, MultiData memory _table) internal {
-    set(_store, a, b, c, d, _table.num, _table.value);
+    bytes memory _staticData = encodeStatic(_table.num, _table.value);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](4);
+    _keyTuple[0] = bytes32(uint256(a));
+    _keyTuple[1] = _boolToBytes32(b);
+    _keyTuple[2] = bytes32(uint256(c));
+    _keyTuple[3] = bytes32(uint256(int256(d)));
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**

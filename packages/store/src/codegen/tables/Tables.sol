@@ -803,39 +803,41 @@ library Tables {
 
   /** Set the full data using the data struct */
   function set(bytes32 tableId, TablesData memory _table) internal {
-    set(
-      tableId,
-      _table.fieldLayout,
-      _table.keySchema,
-      _table.valueSchema,
-      _table.abiEncodedKeyNames,
-      _table.abiEncodedFieldNames
-    );
+    bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = tableId;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(bytes32 tableId, TablesData memory _table) internal {
-    set(
-      tableId,
-      _table.fieldLayout,
-      _table.keySchema,
-      _table.valueSchema,
-      _table.abiEncodedKeyNames,
-      _table.abiEncodedFieldNames
-    );
+    bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = tableId;
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, bytes32 tableId, TablesData memory _table) internal {
-    set(
-      _store,
-      tableId,
-      _table.fieldLayout,
-      _table.keySchema,
-      _table.valueSchema,
-      _table.abiEncodedKeyNames,
-      _table.abiEncodedFieldNames
-    );
+    bytes memory _staticData = encodeStatic(_table.fieldLayout, _table.keySchema, _table.valueSchema);
+
+    PackedCounter _encodedLengths = encodeLengths(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+    bytes memory _dynamicData = encodeDynamic(_table.abiEncodedKeyNames, _table.abiEncodedFieldNames);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = tableId;
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**
