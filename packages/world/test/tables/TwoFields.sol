@@ -242,17 +242,38 @@ library TwoFields {
 
   /** Set the full data using the data struct */
   function set(ResourceId _tableId, TwoFieldsData memory _table) internal {
-    set(_tableId, _table.value1, _table.value2);
+    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct */
   function _set(ResourceId _tableId, TwoFieldsData memory _table) internal {
-    set(_tableId, _table.value1, _table.value2);
+    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /** Set the full data using the data struct (using the specified store) */
   function set(IStore _store, ResourceId _tableId, TwoFieldsData memory _table) internal {
-    set(_store, _tableId, _table.value1, _table.value2);
+    bytes memory _staticData = encodeStatic(_table.value1, _table.value2);
+
+    PackedCounter _encodedLengths;
+    bytes memory _dynamicData;
+
+    bytes32[] memory _keyTuple = new bytes32[](0);
+
+    _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
   /**
