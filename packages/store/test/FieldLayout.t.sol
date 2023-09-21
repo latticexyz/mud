@@ -233,6 +233,9 @@ contract FieldLayoutTest is Test, GasReporter {
     _fieldLayout[23] = 32;
 
     FieldLayout encodedFieldLayout = FieldLayoutLib.encode(_fieldLayout, 4);
-    assertEq(encodedFieldLayout.unwrap(), hex"013418040102030405060708090a0b0c0d0e0f10111213141516172000000000");
+    assertEq(
+      FieldLayout.unwrap(encodedFieldLayout),
+      hex"013418040102030405060708090a0b0c0d0e0f10111213141516172000000000"
+    );
   }
 }

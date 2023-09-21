@@ -92,7 +92,7 @@ library SchemaInstance {
    */
   function atIndex(Schema schema, uint256 index) internal pure returns (SchemaType) {
     unchecked {
-      return SchemaType(uint8(uint256(schema.unwrap()) >> ((WORD_LAST_INDEX - 4 - index) * 8)));
+      return SchemaType(uint8(uint256(Schema.unwrap(schema)) >> ((WORD_LAST_INDEX - 4 - index) * 8)));
     }
   }
 
@@ -100,14 +100,14 @@ library SchemaInstance {
    * Get the number of static fields for the given schema
    */
   function numStaticFields(Schema schema) internal pure returns (uint256) {
-    return uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS);
+    return uint8(uint256(Schema.unwrap(schema)) >> LayoutOffsets.NUM_STATIC_FIELDS);
   }
 
   /**
    * Get the number of dynamic length fields for the given schema
    */
   function numDynamicFields(Schema schema) internal pure returns (uint256) {
-    return uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
+    return uint8(uint256(Schema.unwrap(schema)) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
   }
 
   /**
@@ -116,8 +116,8 @@ library SchemaInstance {
   function numFields(Schema schema) internal pure returns (uint256) {
     unchecked {
       return
-        uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS) +
-        uint8(uint256(schema.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
+        uint8(uint256(Schema.unwrap(schema)) >> LayoutOffsets.NUM_STATIC_FIELDS) +
+        uint8(uint256(Schema.unwrap(schema)) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
     }
   }
 

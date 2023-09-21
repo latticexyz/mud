@@ -70,7 +70,7 @@ library FieldLayoutInstance {
    */
   function atIndex(FieldLayout fieldLayout, uint256 index) internal pure returns (uint256) {
     unchecked {
-      return uint8(uint256(fieldLayout.unwrap()) >> ((WORD_LAST_INDEX - 4 - index) * BYTE_TO_BITS));
+      return uint8(uint256(FieldLayout.unwrap(fieldLayout)) >> ((WORD_LAST_INDEX - 4 - index) * BYTE_TO_BITS));
     }
   }
 
@@ -85,14 +85,14 @@ library FieldLayoutInstance {
    * Get the number of static fields for the field layout
    */
   function numStaticFields(FieldLayout fieldLayout) internal pure returns (uint256) {
-    return uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS);
+    return uint8(uint256(FieldLayout.unwrap(fieldLayout)) >> LayoutOffsets.NUM_STATIC_FIELDS);
   }
 
   /**
    * Get the number of dynamic length fields for the field layout
    */
   function numDynamicFields(FieldLayout fieldLayout) internal pure returns (uint256) {
-    return uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
+    return uint8(uint256(FieldLayout.unwrap(fieldLayout)) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
   }
 
   /**
@@ -101,8 +101,8 @@ library FieldLayoutInstance {
   function numFields(FieldLayout fieldLayout) internal pure returns (uint256) {
     unchecked {
       return
-        uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_STATIC_FIELDS) +
-        uint8(uint256(fieldLayout.unwrap()) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
+        uint8(uint256(FieldLayout.unwrap(fieldLayout)) >> LayoutOffsets.NUM_STATIC_FIELDS) +
+        uint8(uint256(FieldLayout.unwrap(fieldLayout)) >> LayoutOffsets.NUM_DYNAMIC_FIELDS);
     }
   }
 

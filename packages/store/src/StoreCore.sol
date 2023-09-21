@@ -219,7 +219,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(fieldLayout, staticData, encodedLengths, dynamicData);
 
     // Emit event to notify indexers
-    emit StoreSetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
+    emit StoreSetRecord(tableId, keyTuple, staticData, PackedCounter.unwrap(encodedLengths), dynamicData);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
@@ -256,7 +256,7 @@ library StoreCore {
     if (fieldLayout.numDynamicFields() > 0) {
       // Store the dynamic data length at the dynamic data length location
       uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(tableId, keyTuple);
-      Storage.store({ storagePointer: dynamicDataLengthLocation, data: encodedLengths.unwrap() });
+      Storage.store({ storagePointer: dynamicDataLengthLocation, data: PackedCounter.unwrap(encodedLengths) });
 
       // Move the memory pointer to the start of the dynamic data
       memoryPointer = Memory.dataPointer(dynamicData);
@@ -718,7 +718,7 @@ library StoreCoreInternal {
       start: uint48(start),
       deleteCount: deleteCount,
       data: data,
-      encodedLengths: updatedEncodedLengths.unwrap()
+      encodedLengths: PackedCounter.unwrap(updatedEncodedLengths)
     });
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
@@ -741,7 +741,7 @@ library StoreCoreInternal {
     // Store the updated encoded lengths in storage
     if (previousFieldLength != updatedFieldLength) {
       uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, keyTuple);
-      Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: updatedEncodedLengths.unwrap() });
+      Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: PackedCounter.unwrap(updatedEncodedLengths) });
     }
 
     // Store the provided value in storage
