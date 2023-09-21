@@ -105,7 +105,7 @@ contract StoreCoreTest is Test, StoreMock {
     // Expect a revert when registering a table that already exists
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        IStoreErrors.Store_TableAlreadyExists.selector,
         ResourceId.unwrap(tableId),
         string(bytes.concat(ResourceId.unwrap(tableId)))
       )
@@ -142,7 +142,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_InvalidResourceType.selector,
+        IStoreErrors.Store_InvalidResourceType.selector,
         RESOURCE_TABLE,
         invalidTableId,
         string(abi.encodePacked(invalidTableId))
@@ -182,7 +182,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableNotFound.selector,
+        IStoreErrors.Store_TableNotFound.selector,
         tableId2,
         string(abi.encodePacked(ResourceId.unwrap(tableId2)))
       )
@@ -190,20 +190,12 @@ contract StoreCoreTest is Test, StoreMock {
     IStore(this).getFieldLayout(tableId2);
 
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableNotFound.selector,
-        tableId2,
-        string(abi.encodePacked(tableId2))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
     );
     IStore(this).getValueSchema(tableId2);
 
     vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableNotFound.selector,
-        tableId2,
-        string(abi.encodePacked(tableId2))
-      )
+      abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
     );
     IStore(this).getKeySchema(tableId2);
   }
@@ -223,11 +215,11 @@ contract StoreCoreTest is Test, StoreMock {
     string[] memory oneName = new string[](1);
 
     // Register table with invalid key names
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidKeyNamesLength.selector, 4, 1));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidKeyNamesLength.selector, 4, 1));
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, oneName, oneName);
 
     // Register table with invalid value names
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 4));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidFieldNamesLength.selector, 1, 4));
     IStore(this).registerTable(tableId, fieldLayout, keySchema, valueSchema, fourNames, fourNames);
   }
 
@@ -333,7 +325,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = "some key";
 
     // This should fail because the data is not 6 bytes long
-    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidStaticDataLength.selector, 6, 4));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidStaticDataLength.selector, 6, 4));
     IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
   }
 
@@ -1051,7 +1043,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // startByteIndex must not overflow
     vm.expectRevert(
-      abi.encodeWithSelector(IStoreErrors.StoreCore_DataIndexOverflow.selector, type(uint40).max, type(uint56).max)
+      abi.encodeWithSelector(IStoreErrors.Store_DataIndexOverflow.selector, type(uint40).max, type(uint56).max)
     );
     IStore(this).updateInField(data.tableId, data.keyTuple, 2, type(uint56).max, data.thirdDataForUpdate, fieldLayout);
   }

@@ -435,7 +435,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when registering an existing table
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        IStoreErrors.Store_TableAlreadyExists.selector,
         tableId,
         string(bytes.concat(ResourceId.unwrap(tableId)))
       )
@@ -646,7 +646,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a table at the same ID
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_InvalidResourceType.selector,
+        IStoreErrors.Store_InvalidResourceType.selector,
         RESOURCE_TABLE,
         systemId,
         string(abi.encodePacked(systemId))
@@ -664,7 +664,7 @@ contract WorldTest is Test, GasReporter {
     // Expect an error when trying to register a new table at an existing table ID
     vm.expectRevert(
       abi.encodeWithSelector(
-        IStoreErrors.StoreCore_TableAlreadyExists.selector,
+        IStoreErrors.Store_TableAlreadyExists.selector,
         ResourceId.unwrap(tableId),
         string(bytes.concat(ResourceId.unwrap(tableId)))
       )
