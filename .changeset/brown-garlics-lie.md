@@ -1,6 +1,7 @@
 ---
 "@latticexyz/world": major
 ---
+
 All `World` methods now revert if the `World` calls itself.
 The `World` should never need to externally call itself, since all internal table operations happen via library calls, and all root system operations happen via delegate call.
 
