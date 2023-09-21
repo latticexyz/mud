@@ -35,8 +35,8 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
-  ResourceId _tableId = ResourceIdLib.encode("some table", RESOURCE_TABLE);
-  ResourceId _tableId2 = ResourceIdLib.encode("some other table", RESOURCE_TABLE);
+  ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
+  ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
 
   function testRegisterAndGetFieldLayout() public {
     ResourceId tableId = _tableId;

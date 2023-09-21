@@ -20,7 +20,7 @@ contract StoreCoreDynamicTest is Test, GasReporter, StoreMock {
   Schema internal defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
 
   bytes32[] internal _keyTuple;
-  ResourceId internal _tableId = ResourceIdLib.encode("some table", RESOURCE_TABLE);
+  ResourceId internal _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
 
   bytes32 internal firstDataBytes;
   uint32[] internal secondData;

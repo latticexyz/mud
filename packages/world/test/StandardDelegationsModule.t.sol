@@ -25,7 +25,8 @@ import { WorldTestSystem } from "./World.t.sol";
 
 contract StandardDelegationsModuleTest is Test, GasReporter {
   IBaseWorld private world;
-  ResourceId private systemId = WorldResourceIdLib.encode("namespace", "testSystem", RESOURCE_SYSTEM);
+  ResourceId private systemId =
+    WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "namespace", name: "testSystem" });
   address private delegator = address(1);
   address private delegatee = address(2);
 
@@ -110,7 +111,11 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
   function testRegisterDelegationRevertInterfaceNotSupported() public {
     // Register a system that is not a delegation control system
     System noDelegationControlSystem = new System();
-    ResourceId noDelegationControlId = WorldResourceIdLib.encode("namespace", "noDelegation", RESOURCE_SYSTEM);
+    ResourceId noDelegationControlId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "noDelegation"
+    });
     world.registerSystem(noDelegationControlId, noDelegationControlSystem, true);
 
     // Expect the registration to revert if the system does not implement the delegation control interface

@@ -20,7 +20,11 @@ contract PostDeploy is Script {
 
     // Manually deploy a system with another namespace
     ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
-    ResourceId systemId = WorldResourceIdLib.encode("namespace", "ChatNamespaced", RESOURCE_SYSTEM);
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "ChatNamespaced"
+    });
     IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
     IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage", "(string)");
     // Grant this system access to MessageTable

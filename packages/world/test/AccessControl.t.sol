@@ -28,7 +28,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
   function setUp() public {
     ResourceAccess.register();
     NamespaceOwner.register();
-    _tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
+    _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
     _namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
     NamespaceOwner.set(namespace, address(this));

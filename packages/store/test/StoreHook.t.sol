@@ -30,7 +30,7 @@ contract StoreHookTest is Test, GasReporter {
   FieldLayout private fieldLayout = FieldLayout.wrap(0);
 
   constructor() {
-    tableId = ResourceIdLib.encode("table", RESOURCE_TABLE);
+    tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "table" });
   }
 
   function testEncodeBitmap() public {

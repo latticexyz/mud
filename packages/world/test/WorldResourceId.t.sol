@@ -13,7 +13,11 @@ contract WorldResourceIdTest is Test, GasReporter {
   using WorldResourceIdInstance for ResourceId;
 
   function testGetNamespace() public {
-    ResourceId resourceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "name"
+    });
 
     startGasReport("encode namespace, name and type");
     bytes14 namespace = resourceId.getNamespace();
@@ -23,7 +27,11 @@ contract WorldResourceIdTest is Test, GasReporter {
   }
 
   function testGetNamespaceId() public {
-    ResourceId resourceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "name"
+    });
 
     startGasReport("get namespace ID from a resource ID");
     ResourceId namespaceId = resourceId.getNamespaceId();
@@ -33,7 +41,11 @@ contract WorldResourceIdTest is Test, GasReporter {
   }
 
   function testGetType() public {
-    ResourceId resourceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "name"
+    });
 
     startGasReport("get type from a resource ID");
     bytes2 resourceType = resourceId.getType();
@@ -43,11 +55,15 @@ contract WorldResourceIdTest is Test, GasReporter {
   }
 
   function testMatchResourceTypeEncoding() public {
-    ResourceId resourceId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
+    ResourceId resourceId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "name"
+    });
     bytes30 resourceIdWithoutType = bytes30(ResourceId.unwrap(resourceId));
     assertEq(
       ResourceId.unwrap(resourceId),
-      ResourceId.unwrap(ResourceIdLib.encode(resourceIdWithoutType, RESOURCE_SYSTEM))
+      ResourceId.unwrap(ResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, name: resourceIdWithoutType }))
     );
   }
 
@@ -58,7 +74,7 @@ contract WorldResourceIdTest is Test, GasReporter {
   function testFuzz(bytes14 namespace, bytes16 name, bytes2 resourceType) public {
     bytes2 NOT_TYPE = bytes2("xx");
     vm.assume(resourceType != NOT_TYPE);
-    ResourceId resourceId = WorldResourceIdLib.encode(namespace, name, resourceType);
+    ResourceId resourceId = WorldResourceIdLib.encode({ typeId: resourceType, namespace: namespace, name: name });
     assertEq(resourceId.getNamespace(), namespace);
     assertEq(
       ResourceId.unwrap(resourceId.getNamespaceId()),

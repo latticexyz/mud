@@ -36,9 +36,9 @@ contract QueryTest is Test, GasReporter {
   FieldLayout private tableFieldLayout;
   Schema private tableKeySchema;
   Schema private tableValueSchema;
-  ResourceId private table1 = WorldResourceIdLib.encode(namespace, name1, RESOURCE_TABLE);
-  ResourceId private table2 = WorldResourceIdLib.encode(namespace, name2, RESOURCE_TABLE);
-  ResourceId private table3 = WorldResourceIdLib.encode(namespace, name3, RESOURCE_TABLE);
+  ResourceId private table1 = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name1 });
+  ResourceId private table2 = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name2 });
+  ResourceId private table3 = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name3 });
 
   uint256 private value = 1;
   bytes32[] private key1 = new bytes32[](1);

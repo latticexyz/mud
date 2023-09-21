@@ -32,7 +32,7 @@ contract UtilsTest is Test {
   function _registerAndGetNamespace(bytes14 namespace) internal returns (bytes16 returnedNamespace) {
     UtilsTestSystem testSystem = new UtilsTestSystem();
     bytes16 name = "testSystem";
-    ResourceId systemId = WorldResourceIdLib.encode(namespace, name, RESOURCE_SYSTEM);
+    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
     world.registerSystem(systemId, testSystem, true);
 
     bytes memory data = world.call(systemId, abi.encodeCall(UtilsTestSystem.systemNamespace, ()));

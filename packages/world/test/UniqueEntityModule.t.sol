@@ -22,7 +22,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  ResourceId _tableId = WorldResourceIdLib.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE);
+  ResourceId _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME });
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -85,7 +85,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     vm.expectRevert(
       abi.encodeWithSelector(
         IWorldErrors.AccessDenied.selector,
-        WorldResourceIdLib.encode(NAMESPACE, TABLE_NAME, RESOURCE_TABLE).toString(),
+        WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME }).toString(),
         alice
       )
     );

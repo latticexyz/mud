@@ -12,14 +12,14 @@ contract ResourceIdTest is Test, GasReporter {
 
   function testEncode() public {
     startGasReport("encode table ID with name and type");
-    ResourceId tableId = ResourceIdLib.encode("name", RESOURCE_TABLE);
+    ResourceId tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "name" });
     endGasReport();
 
     assertEq(ResourceId.unwrap(tableId), bytes32(abi.encodePacked(bytes30("name"), RESOURCE_TABLE)));
   }
 
   function testGetType() public {
-    ResourceId tableId = ResourceIdLib.encode("name", RESOURCE_TABLE);
+    ResourceId tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "name" });
 
     startGasReport("get type from a table ID");
     bytes2 resourceType = tableId.getType();
@@ -31,7 +31,7 @@ contract ResourceIdTest is Test, GasReporter {
   function testFuzz(bytes30 name, bytes2 resourceType) public {
     bytes2 NOT_TYPE = bytes2("xx");
     vm.assume(resourceType != NOT_TYPE);
-    ResourceId tableId = ResourceIdLib.encode(name, resourceType);
+    ResourceId tableId = ResourceIdLib.encode({ typeId: resourceType, name: name });
     assertEq(tableId.getType(), resourceType);
   }
 }

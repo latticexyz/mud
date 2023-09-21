@@ -44,9 +44,11 @@ contract KeysInTableModuleTest is Test, GasReporter {
   Schema private tableKeySchema;
   Schema private singletonKeySchema;
   Schema private compositeKeySchema;
-  ResourceId private tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
-  ResourceId private singletonTableId = WorldResourceIdLib.encode(namespace, singletonName, RESOURCE_TABLE);
-  ResourceId private compositeTableId = WorldResourceIdLib.encode(namespace, compositeName, RESOURCE_TABLE);
+  ResourceId private tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
+  ResourceId private singletonTableId =
+    WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: singletonName });
+  ResourceId private compositeTableId =
+    WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: compositeName });
 
   uint256 private val1 = 123;
   uint256 private val2 = 42;
@@ -207,7 +209,11 @@ contract KeysInTableModuleTest is Test, GasReporter {
 
     // Install the hook on the second table
     bytes16 sourceFile2 = bytes16("source2");
-    ResourceId sourceTableId2 = WorldResourceIdLib.encode(namespace, sourceFile2, RESOURCE_TABLE);
+    ResourceId sourceTableId2 = WorldResourceIdLib.encode({
+      typeId: RESOURCE_TABLE,
+      namespace: namespace,
+      name: sourceFile2
+    });
     world.registerTable(
       sourceTableId2,
       tableFieldLayout,

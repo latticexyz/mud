@@ -91,7 +91,11 @@ contract CoreModule is Module {
       target: coreSystem,
       callData: abi.encodeCall(
         WorldRegistrationSystem.registerSystem,
-        (WorldResourceIdLib.encode(ROOT_NAMESPACE, CORE_SYSTEM_NAME, RESOURCE_SYSTEM), CoreSystem(coreSystem), true)
+        (
+          WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: CORE_SYSTEM_NAME }),
+          CoreSystem(coreSystem),
+          true
+        )
       )
     });
   }
@@ -136,7 +140,7 @@ contract CoreModule is Module {
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
           (
-            WorldResourceIdLib.encode(ROOT_NAMESPACE, CORE_SYSTEM_NAME, RESOURCE_SYSTEM),
+            WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: CORE_SYSTEM_NAME }),
             functionSelectors[i],
             functionSelectors[i]
           )

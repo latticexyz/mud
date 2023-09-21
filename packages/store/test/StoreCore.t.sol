@@ -42,8 +42,8 @@ contract StoreCoreTest is Test, StoreMock {
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaEncodeHelper.encode(SchemaType.BYTES32);
   string[] defaultKeyNames = new string[](1);
-  ResourceId _tableId = ResourceIdLib.encode("some table", RESOURCE_TABLE);
-  ResourceId _tableId2 = ResourceIdLib.encode("some other table", RESOURCE_TABLE);
+  ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
+  ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
 
   function testRegisterTable() public {
     ResourceId tableId = _tableId;
@@ -138,7 +138,7 @@ contract StoreCoreTest is Test, StoreMock {
 
   function testRevertRegisterInvalidTableId() public {
     bytes2 invalidType = "xx";
-    ResourceId invalidTableId = ResourceIdLib.encode("somename", invalidType);
+    ResourceId invalidTableId = ResourceIdLib.encode({ typeId: invalidType, name: "somename" });
 
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidResourceType.selector, string(bytes.concat(invalidType)))

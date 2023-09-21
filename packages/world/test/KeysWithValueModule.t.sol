@@ -56,7 +56,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = WorldResourceIdLib.encode(namespace, sourceName, RESOURCE_TABLE);
+    sourceTableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: sourceName });
     targetTableId = getTargetTableId(MODULE_NAMESPACE, sourceTableId);
   }
 

@@ -27,8 +27,10 @@ contract WorldBalanceTest is Test, GasReporter {
   WorldBalanceTestSystem public nonRootSystem = new WorldBalanceTestSystem();
   bytes14 public namespace = "namespace";
   ResourceId public namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
-  ResourceId public rootSystemId = WorldResourceIdLib.encode(ROOT_NAMESPACE, "testSystem", RESOURCE_SYSTEM);
-  ResourceId public nonRootSystemId = WorldResourceIdLib.encode(namespace, "testSystem", RESOURCE_SYSTEM);
+  ResourceId public rootSystemId =
+    WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: "testSystem" });
+  ResourceId public nonRootSystemId =
+    WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: "testSystem" });
   address public caller = address(4242);
 
   function setUp() public {
@@ -248,7 +250,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(Balances.get(world, ResourceId.unwrap(ROOT_NAMESPACE_ID)), value);
 
     // Expect revert when attempting to transfer to an invalid namespace
-    ResourceId invalidNamespace = WorldResourceIdLib.encode("something", "invalid", "xx");
+    ResourceId invalidNamespace = WorldResourceIdLib.encode({ typeId: "xx", namespace: "something", name: "invalid" });
     vm.prank(caller);
     vm.expectRevert(abi.encodeWithSelector(IWorldErrors.InvalidResourceType.selector, "xx"));
     world.transferBalanceToNamespace(ROOT_NAMESPACE_ID, invalidNamespace, value);

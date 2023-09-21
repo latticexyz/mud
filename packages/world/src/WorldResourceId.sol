@@ -25,26 +25,22 @@ library WorldResourceIdLib {
    * the next 16 bytes represent the name,
    * the last 2 bytes represent the type.
    */
-  function encode(
-    bytes14 resourceNamespace,
-    bytes16 resourceName,
-    bytes2 resourceType
-  ) internal pure returns (ResourceId) {
+  function encode(bytes14 namespace, bytes16 name, bytes2 typeId) internal pure returns (ResourceId) {
     return
       ResourceId.wrap(
-        bytes32(resourceNamespace) |
-          (bytes32(resourceName) >> (NAMESPACE_BYTES * BYTES_TO_BITS)) |
-          (bytes32(resourceType) >> ((NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
+        bytes32(namespace) |
+          (bytes32(name) >> (NAMESPACE_BYTES * BYTES_TO_BITS)) |
+          (bytes32(typeId) >> ((NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
       );
   }
 
   /**
    * Create a 32-byte resource ID from a namespace.
    */
-  function encodeNamespace(bytes14 resourceNamespace) internal pure returns (ResourceId) {
+  function encodeNamespace(bytes14 namespace) internal pure returns (ResourceId) {
     return
       ResourceId.wrap(
-        bytes32(resourceNamespace) | (bytes32(RESOURCE_NAMESPACE) >> ((NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
+        bytes32(namespace) | (bytes32(RESOURCE_NAMESPACE) >> ((NAMESPACE_BYTES + NAME_BYTES) * BYTES_TO_BITS))
       );
   }
 

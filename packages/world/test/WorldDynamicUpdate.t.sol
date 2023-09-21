@@ -60,7 +60,7 @@ contract UpdateInFieldTest is Test, GasReporter {
 
     namespace = "DynamicUpdTest";
     name = "testTable";
-    tableId = WorldResourceIdLib.encode(namespace, name, RESOURCE_TABLE);
+    tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
 
     // Register a new table
     world.registerTable(tableId, fieldLayout, defaultKeySchema, valueSchema, new string[](1), new string[](1));

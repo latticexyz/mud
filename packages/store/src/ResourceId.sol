@@ -10,8 +10,8 @@ uint256 constant BYTES_TO_BITS = 8;
 bytes32 constant TYPE_MASK = bytes32(hex"ffff") >> (NAME_BYTES * BYTES_TO_BITS);
 
 library ResourceIdLib {
-  function encode(bytes30 resourceName, bytes2 resourceType) internal pure returns (ResourceId) {
-    return ResourceId.wrap(bytes32(resourceName) | (bytes32(resourceType) >> (NAME_BYTES * BYTES_TO_BITS)));
+  function encode(bytes30 name, bytes2 typeId) internal pure returns (ResourceId) {
+    return ResourceId.wrap(bytes32(name) | (bytes32(typeId) >> (NAME_BYTES * BYTES_TO_BITS)));
   }
 }
 
