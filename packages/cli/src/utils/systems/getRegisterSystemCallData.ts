@@ -1,4 +1,4 @@
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 import { System } from "./types";
 import { CallData } from "../utils/types";
 
@@ -12,6 +12,6 @@ export async function getRegisterSystemCallData(input: {
   const systemAddress = await systemContracts[systemName];
   return {
     func: "registerSystem",
-    args: [tableIdToHex(namespace, system.name), systemAddress, system.openAccess],
+    args: [resourceIdToHex({ type: "system", namespace, name: system.name }), systemAddress, system.openAccess],
   };
 }

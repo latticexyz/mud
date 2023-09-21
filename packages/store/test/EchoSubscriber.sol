@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { PackedCounter } from "../src/PackedCounter.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { StoreHook } from "../src/StoreHook.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 
 contract EchoSubscriber is StoreHook {
   event HookCalled(bytes);
 
   function onBeforeSetRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -22,7 +23,7 @@ contract EchoSubscriber is StoreHook {
   }
 
   function onAfterSetRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -35,7 +36,7 @@ contract EchoSubscriber is StoreHook {
   }
 
   function onBeforeSpliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -45,7 +46,7 @@ contract EchoSubscriber is StoreHook {
   }
 
   function onAfterSpliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -55,7 +56,7 @@ contract EchoSubscriber is StoreHook {
   }
 
   function onBeforeSpliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -72,7 +73,7 @@ contract EchoSubscriber is StoreHook {
   }
 
   function onAfterSpliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -88,11 +89,15 @@ contract EchoSubscriber is StoreHook {
     );
   }
 
-  function onBeforeDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
+  function onBeforeDeleteRecord(
+    ResourceId tableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) public override {
     emit HookCalled(abi.encodeCall(this.onBeforeDeleteRecord, (tableId, keyTuple, fieldLayout)));
   }
 
-  function onAfterDeleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
+  function onAfterDeleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public override {
     emit HookCalled(abi.encodeCall(this.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
   }
 }

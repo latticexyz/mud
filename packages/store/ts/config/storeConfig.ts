@@ -11,14 +11,15 @@ import {
   // validation utils
   getDuplicates,
   parseStaticArray,
-  STORE_SELECTOR_MAX_LENGTH,
+  STORE_NAME_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
   // schemas
   zObjectName,
-  zSelector,
   zUserEnum,
   zValueName,
+  zNamespace,
+  zName,
 } from "@latticexyz/config";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 
@@ -85,8 +86,8 @@ export interface TableConfig<
   storeArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
-  /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
-  ephemeral?: boolean;
+  /** Offchain tables don't write to onchain storage, but only emit events for offchain clients. Default is false. */
+  offchainOnly?: boolean;
   /**
    * Table's key names mapped to their types.
    * Default is `{ key: "bytes32" }`
@@ -118,7 +119,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       // dataStruct isn't expanded, because its value is conditional on the number of value schema fields
       dataStruct: boolean;
       keySchema: typeof TABLE_DEFAULTS.keySchema;
-      ephemeral: typeof TABLE_DEFAULTS.ephemeral;
+      offchainOnly: typeof TABLE_DEFAULTS.offchainOnly;
     }
   > {
   valueSchema: ExpandSchemaConfig<T["valueSchema"]>;
@@ -127,13 +128,13 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
 const zFullTableConfig = z
   .object({
     directory: z.string().default(TABLE_DEFAULTS.directory),
-    name: zSelector.optional(),
+    name: zName.optional(),
     tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
     storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
     keySchema: zKeySchema,
     valueSchema: zSchemaConfig,
-    ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
+    offchainOnly: z.boolean().default(TABLE_DEFAULTS.offchainOnly),
   })
   .transform((arg) => {
     // default dataStruct value depends on value schema's length
@@ -170,7 +171,7 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
+    table.name = tableName.slice(0, STORE_NAME_MAX_LENGTH);
 
     tables[tableName] = table;
   }
@@ -271,7 +272,7 @@ export type MUDUserConfig<
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: zSelector.default(DEFAULTS.namespace),
+    namespace: zNamespace.default(DEFAULTS.namespace),
     storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
     userTypesFilename: z.string().default(PATH_DEFAULTS.userTypesFilename),

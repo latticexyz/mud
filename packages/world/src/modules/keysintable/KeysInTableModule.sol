@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { BEFORE_SET_RECORD, AFTER_SPLICE_STATIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
+import { ResourceIds } from "@latticexyz/store/src/codegen/tables/ResourceIds.sol";
 
-import { ResourceType } from "../core/tables/ResourceType.sol";
-import { Resource } from "../../common.sol";
 import { Module } from "../../Module.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../WorldResourceId.sol";
 import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
@@ -27,7 +26,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
  * TODO: add support for `install` (via `World.installModule`) by using `callFrom` with the `msgSender()`
  */
 contract KeysInTableModule is Module {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   // The KeysInTableHook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
@@ -39,7 +38,7 @@ contract KeysInTableModule is Module {
 
   function installRoot(bytes memory args) public override {
     // Extract source table id from args
-    bytes32 sourceTableId = abi.decode(args, (bytes32));
+    ResourceId sourceTableId = ResourceId.wrap(abi.decode(args, (bytes32)));
 
     IBaseWorld world = IBaseWorld(_world());
 
@@ -47,7 +46,7 @@ contract KeysInTableModule is Module {
     bool success;
     bytes memory returnData;
 
-    if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
+    if (!ResourceIds._getExists(ResourceId.unwrap(KeysInTableTableId))) {
       // Register the tables
       (success, returnData) = address(world).delegatecall(
         abi.encodeCall(

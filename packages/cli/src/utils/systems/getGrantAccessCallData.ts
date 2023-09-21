@@ -1,6 +1,6 @@
 import { System } from "./types";
 import { CallData } from "../utils/types";
-import { tableIdToHex } from "@latticexyz/common";
+import { resourceIdToHex } from "@latticexyz/common";
 
 export async function getGrantAccessCallData(input: {
   systems: System[];
@@ -24,6 +24,6 @@ export async function getGrantAccessCallData(input: {
 function getGrantSystemAccessCallData(name: string, namespace: string, address: string): CallData {
   return {
     func: "grantAccess",
-    args: [tableIdToHex(namespace, name), address],
+    args: [resourceIdToHex({ type: "system", namespace, name }), address],
   };
 }

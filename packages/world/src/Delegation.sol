@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { UNLIMITED_DELEGATION } from "./constants.sol";
 import { IDelegationControl } from "./interfaces/IDelegationControl.sol";
 import { SystemCall } from "./SystemCall.sol";
+import { ResourceId } from "./WorldResourceId.sol";
 
 type Delegation is bytes32;
 
@@ -15,7 +16,7 @@ library DelegationInstance {
   }
 
   function isUnlimited(Delegation self) internal pure returns (bool) {
-    return Delegation.unwrap(self) == UNLIMITED_DELEGATION;
+    return Delegation.unwrap(self) == ResourceId.unwrap(UNLIMITED_DELEGATION);
   }
 
   function isLimited(Delegation self) internal pure returns (bool) {
@@ -31,7 +32,7 @@ library DelegationInstance {
     Delegation self,
     address delegator,
     address delegatee,
-    bytes32 systemId,
+    ResourceId systemId,
     bytes memory callData
   ) internal returns (bool) {
     // Early return if there is an unlimited delegation
@@ -43,7 +44,7 @@ library DelegationInstance {
     // Call the delegation control contract to check if the delegator has granted access to the delegatee
     (bool success, bytes memory data) = SystemCall.call({
       caller: delegatee,
-      resourceSelector: Delegation.unwrap(self),
+      systemId: ResourceId.wrap(Delegation.unwrap(self)),
       callData: abi.encodeCall(IDelegationControl.verify, (delegator, systemId, callData)),
       value: 0
     });

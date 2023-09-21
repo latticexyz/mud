@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
-import { ResourceSelector } from "@latticexyz/world/src/ResourceSelector.sol";
+import { ResourceId, WorldResourceIdLib } from "@latticexyz/world/src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
 
 import { MessageTable, MessageTableTableId } from "../src/codegen/index.sol";
@@ -19,16 +20,13 @@ contract PostDeploy is Script {
 
     // Manually deploy a system with another namespace
     ChatNamespacedSystem chatNamespacedSystem = new ChatNamespacedSystem();
-    IWorld(worldAddress).registerSystem(
-      ResourceSelector.from("namespace", "ChatNamespaced"),
-      chatNamespacedSystem,
-      true
-    );
-    IWorld(worldAddress).registerFunctionSelector(
-      ResourceSelector.from("namespace", "ChatNamespaced"),
-      "sendMessage",
-      "(string)"
-    );
+    ResourceId systemId = WorldResourceIdLib.encode({
+      typeId: RESOURCE_SYSTEM,
+      namespace: "namespace",
+      name: "ChatNamespaced"
+    });
+    IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
+    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage", "(string)");
     // Grant this system access to MessageTable
     IWorld(worldAddress).grantAccess(MessageTableTableId, address(chatNamespacedSystem));
 

@@ -21,6 +21,14 @@ export default mudConfig({
         abiEncodedFieldNames: "bytes",
       },
     },
+    ResourceIds: {
+      keySchema: {
+        resourceId: "bytes32",
+      },
+      valueSchema: {
+        exists: "bool",
+      },
+    },
     // The Hooks table is a generic table used by the `filterFromList` util in `Hook.sol`
     Hooks: {
       valueSchema: "bytes21[]",

@@ -12,26 +12,30 @@ export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
   const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
 
-  let result = renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
-      /** Get the full data${_commentSuffix} */
-      function ${_methodNamePrefix}get(${renderArguments([
-      _typedStore,
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal view returns (${renderDecodedRecord(options)}) {
-        ${_keyTupleDefinition}
+  let result = "";
 
-        (
-          bytes memory _staticData,
-          PackedCounter _encodedLengths,
-          bytes memory _dynamicData
-        ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
-        return decode(_staticData, _encodedLengths, _dynamicData);
-      }
-    `
-  );
+  if (options.withGetters) {
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+        /** Get the full data${_commentSuffix} */
+        function ${_methodNamePrefix}get(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+      ])}) internal view returns (${renderDecodedRecord(options)}) {
+          ${_keyTupleDefinition}
+          
+          (
+            bytes memory _staticData,
+            PackedCounter _encodedLengths,
+            bytes memory _dynamicData
+            ) = ${_store}.getRecord(_tableId, _keyTuple, _fieldLayout);
+            return decode(_staticData, _encodedLengths, _dynamicData);
+          }
+        `
+    );
+  }
 
   result += renderWithStore(
     storeArgument,
@@ -107,6 +111,26 @@ export function renderRecordData(options: RenderTableOptions, namePrefix = "") {
   }
 
   return result;
+}
+
+export function renderDeleteRecordMethods(options: RenderTableOptions) {
+  const { storeArgument } = options;
+  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+
+  return renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix, _untypedStore, _methodNamePrefix) => `
+      /** Delete all data for given keys${_commentSuffix} */
+      function ${_methodNamePrefix}deleteRecord(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+    ])}) internal {
+        ${_keyTupleDefinition}
+        ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+      }
+    `
+  );
 }
 
 // Renders the `decode` function that parses a bytes blob into the table data

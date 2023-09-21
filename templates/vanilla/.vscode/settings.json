@@ -1,3 +1,4 @@
 {
-  "solidity.monoRepoSupport": true
+  "solidity.monoRepoSupport": true,
+  "solidity.compileUsingRemoteVersion": "v0.8.21+commit.d9974bed"
 }

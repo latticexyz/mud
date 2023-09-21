@@ -78,7 +78,7 @@ describe("postgresStorage", async () => {
           "name": "NumberList",
           "namespace": "",
           "schemaVersion": 1,
-          "tableId": "0x000000000000000000000000000000004e756d6265724c697374000000000000",
+          "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
             "value": "uint32[]",
           },
@@ -91,11 +91,14 @@ describe("postgresStorage", async () => {
       [
         {
           "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+          "key": "0x5FbDB2315678afecb367f032d93F642f64180aa3::NumberList",
           "keySchema": {},
+          "lastError": null,
           "lastUpdatedBlockNumber": 5n,
           "name": "NumberList",
           "namespace": "",
-          "tableId": "0x000000000000000000000000000000004e756d6265724c697374000000000000",
+          "schemaVersion": 1,
+          "tableId": "0x746200000000000000000000000000004e756d6265724c697374000000000000",
           "valueSchema": {
             "value": "uint32[]",
           },
