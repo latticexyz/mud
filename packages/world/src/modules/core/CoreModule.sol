@@ -18,7 +18,7 @@ import { InstalledModules } from "../../tables/InstalledModules.sol";
 import { Delegations } from "../../tables/Delegations.sol";
 
 import { CoreSystem } from "./CoreSystem.sol";
-import { CORE_MODULE_NAME, CORE_SYSTEM_NAME } from "./constants.sol";
+import { CORE_MODULE_NAME, CORE_SYSTEM_ID } from "./constants.sol";
 
 import { Systems } from "./tables/Systems.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
@@ -87,14 +87,7 @@ contract CoreModule is Module {
       msgSender: _msgSender(),
       msgValue: 0,
       target: coreSystem,
-      callData: abi.encodeCall(
-        WorldRegistrationSystem.registerSystem,
-        (
-          WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: CORE_SYSTEM_NAME }),
-          CoreSystem(coreSystem),
-          true
-        )
-      )
+      callData: abi.encodeCall(WorldRegistrationSystem.registerSystem, (CORE_SYSTEM_ID, CoreSystem(coreSystem), true))
     });
   }
 
@@ -135,11 +128,7 @@ contract CoreModule is Module {
         target: coreSystem,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
-          (
-            WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: ROOT_NAMESPACE, name: CORE_SYSTEM_NAME }),
-            functionSelectors[i],
-            functionSelectors[i]
-          )
+          (CORE_SYSTEM_ID, functionSelectors[i], functionSelectors[i])
         )
       });
     }
