@@ -7,7 +7,8 @@ import { Utils } from "../src/Utils.sol";
 import { System } from "../src/System.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
@@ -18,7 +19,7 @@ contract UtilsTestSystem is System {
 }
 
 contract UtilsTest is Test {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
   IBaseWorld internal world;
 
   error SomeError(uint256 someValue, string someString);
@@ -28,20 +29,19 @@ contract UtilsTest is Test {
     world.initialize(new CoreModule());
   }
 
-  function _registerAndGetNamespace(bytes16 namespace) internal returns (bytes16 returnedNamespace) {
+  function _registerAndGetNamespace(bytes14 namespace) internal returns (bytes16 returnedNamespace) {
     UtilsTestSystem testSystem = new UtilsTestSystem();
     bytes16 name = "testSystem";
-    world.registerSystem(ResourceSelector.from(namespace, name), testSystem, true);
+    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
+    world.registerSystem(systemId, testSystem, true);
 
-    bytes memory data = world.call(
-      ResourceSelector.from(namespace, name),
-      abi.encodeCall(UtilsTestSystem.systemNamespace, ())
-    );
+    bytes memory data = world.call(systemId, abi.encodeCall(UtilsTestSystem.systemNamespace, ()));
+
     returnedNamespace = abi.decode(data, (bytes16));
   }
 
   function testSystemNamespace() public {
-    bytes16 namespace;
+    bytes14 namespace;
     bytes16 returnedNamespace;
 
     namespace = "";
@@ -52,7 +52,7 @@ contract UtilsTest is Test {
     returnedNamespace = _registerAndGetNamespace(namespace);
     assertEq(returnedNamespace, namespace);
 
-    namespace = "maxlen_namespace";
+    namespace = "max_len_nmspce";
     returnedNamespace = _registerAndGetNamespace(namespace);
     assertEq(returnedNamespace, namespace);
   }

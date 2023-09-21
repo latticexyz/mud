@@ -12,8 +12,8 @@ import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 
 import { WORLD_VERSION } from "./version.sol";
 import { System } from "./System.sol";
-import { ResourceSelector } from "./ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
+import { ResourceId, WorldResourceIdInstance } from "./WorldResourceId.sol";
+import { ROOT_NAMESPACE_ID, ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { SystemCall } from "./SystemCall.sol";
 import { WorldContextProvider } from "./WorldContext.sol";
@@ -36,7 +36,7 @@ import { Balances } from "./modules/core/tables/Balances.sol";
 import { CORE_MODULE_NAME } from "./modules/core/constants.sol";
 
 contract World is StoreRead, IStoreData, IWorldKernel {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
   address public immutable creator;
 
   function worldVersion() public pure returns (bytes32) {
@@ -55,7 +55,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function initialize(IModule coreModule) public {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
-      revert AccessDenied(ResourceSelector.from(ROOT_NAMESPACE).toString(), msg.sender);
+      revert AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
     }
 
     // The World can only be initialized once
@@ -73,7 +73,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwner(ROOT_NAMESPACE, msg.sender);
+    AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
     _installRootModule(module, args);
   }
 
@@ -103,7 +103,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
@@ -118,7 +118,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   function spliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -132,7 +132,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   function spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -151,7 +151,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata data,
@@ -169,7 +169,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function pushToField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     bytes calldata dataToPush,
@@ -187,7 +187,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
@@ -205,7 +205,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to have access to the table's namespace or name (encoded in the tableId).
    */
   function updateInField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
@@ -223,7 +223,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes32 tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -238,40 +238,40 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    ************************************************************************/
 
   /**
-   * Call the system at the given resourceSelector.
-   * If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector).
+   * Call the system at the given system ID.
+   * If the system is not public, the caller must have access to the namespace or name (encoded in the system ID).
    */
-  function call(bytes32 resourceSelector, bytes memory callData) external payable virtual returns (bytes memory) {
-    return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
+  function call(ResourceId systemId, bytes memory callData) external payable virtual returns (bytes memory) {
+    return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
   /**
-   * Call the system at the given resourceSelector on behalf of the given delegator.
-   * If the system is not public, the delegator must have access to the namespace or name (encoded in the resourceSelector).
+   * Call the system at the given system ID on behalf of the given delegator.
+   * If the system is not public, the delegator must have access to the namespace or name (encoded in the system ID).
    */
   function callFrom(
     address delegator,
-    bytes32 resourceSelector,
+    ResourceId systemId,
     bytes memory callData
   ) external payable virtual returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
-      return SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
+      return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
     }
 
     // Check if there is an explicit authorization for this caller to perform actions on behalf of the delegator
     Delegation explicitDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: msg.sender }));
 
-    if (explicitDelegation.verify(delegator, msg.sender, resourceSelector, callData)) {
+    if (explicitDelegation.verify(delegator, msg.sender, systemId, callData)) {
       // forward the call as `delegator`
-      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, callData, msg.value);
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
     // Check if the delegator has a fallback delegation control set
     Delegation fallbackDelegation = Delegation.wrap(Delegations._get({ delegator: delegator, delegatee: address(0) }));
-    if (fallbackDelegation.verify(delegator, msg.sender, resourceSelector, callData)) {
+    if (fallbackDelegation.verify(delegator, msg.sender, systemId, callData)) {
       // forward the call with `from` as `msgSender`
-      return SystemCall.callWithHooksOrRevert(delegator, resourceSelector, callData, msg.value);
+      return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
     revert DelegationNotFound(delegator, msg.sender);
@@ -287,23 +287,28 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * ETH sent to the World without calldata is added to the root namespace's balance
    */
   receive() external payable {
-    uint256 rootBalance = Balances._get(ROOT_NAMESPACE);
-    Balances._set(ROOT_NAMESPACE, rootBalance + msg.value);
+    uint256 rootBalance = Balances._get(ResourceId.unwrap(ROOT_NAMESPACE_ID));
+    Balances._set(ResourceId.unwrap(ROOT_NAMESPACE_ID), rootBalance + msg.value);
   }
 
   /**
    * Fallback function to call registered function selectors
    */
   fallback() external payable {
-    (bytes32 resourceSelector, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
+    (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
-    if (resourceSelector == 0) revert FunctionSelectorNotFound(msg.sig);
+    if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
     // Call the function and forward the call data
-    bytes memory returnData = SystemCall.callWithHooksOrRevert(msg.sender, resourceSelector, callData, msg.value);
+    bytes memory returnData = SystemCall.callWithHooksOrRevert(
+      msg.sender,
+      ResourceId.wrap(systemId),
+      callData,
+      msg.value
+    );
 
     // If the call was successful, return the return data
     assembly {

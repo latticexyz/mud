@@ -12,7 +12,7 @@ import { schemaVersion } from "./schemaVersion";
 import { StorageAdapter } from "../common";
 import { isTableRegistrationLog } from "../isTableRegistrationLog";
 import { logToTable } from "../logToTable";
-import { hexToTableId, spliceHex, tableIdToHex } from "@latticexyz/common";
+import { hexToResourceId, spliceHex } from "@latticexyz/common";
 import { decodeKey, decodeValueArgs } from "@latticexyz/protocol-parser";
 
 // TODO: upgrade drizzle and use async sqlite interface for consistency
@@ -38,13 +38,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
       for (const table of newTables) {
         debug(`creating table ${table.namespace}:${table.name} for world ${chainId}:${table.address}`);
 
-        const sqliteTable = buildTable({
-          address: table.address,
-          namespace: table.namespace,
-          name: table.name,
-          keySchema: table.keySchema,
-          valueSchema: table.valueSchema,
-        });
+        const sqliteTable = buildTable(table);
 
         tx.run(sql.raw(sqliteTableToSql(sqliteTable)));
 
@@ -52,12 +46,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           .values({
             schemaVersion,
             id: getTableName(table.address, table.namespace, table.name),
-            address: table.address,
-            tableId: tableIdToHex(table.namespace, table.name),
-            namespace: table.namespace,
-            name: table.name,
-            keySchema: table.keySchema,
-            valueSchema: table.valueSchema,
+            ...table,
             lastUpdatedBlockNumber: blockNumber,
           })
           .onConflictDoNothing()
@@ -72,7 +61,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           logs.map((log) =>
             JSON.stringify({
               address: getAddress(log.address),
-              ...hexToTableId(log.args.tableId),
+              ...hexToResourceId(log.args.tableId),
             })
           )
         )
@@ -98,7 +87,7 @@ export async function sqliteStorage<TConfig extends StoreConfig = StoreConfig>({
           (table) => table.address === getAddress(log.address) && table.tableId === log.args.tableId
         );
         if (!table) {
-          const tableId = hexToTableId(log.args.tableId);
+          const tableId = hexToResourceId(log.args.tableId);
           debug(`table ${tableId.namespace}:${tableId.name} not found, skipping log`, log);
           continue;
         }

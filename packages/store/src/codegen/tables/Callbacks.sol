@@ -17,9 +17,13 @@ import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "../../FieldLayout.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
+import { ResourceId } from "../../ResourceId.sol";
+import { RESOURCE_TABLE } from "../../storeResourceTypes.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Callbacks")));
-bytes32 constant CallbacksTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("Callbacks")))
+);
+ResourceId constant CallbacksTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0000000100000000000000000000000000000000000000000000000000000000

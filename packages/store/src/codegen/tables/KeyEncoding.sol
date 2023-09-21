@@ -17,12 +17,16 @@ import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "../../FieldLayout.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
+import { ResourceId } from "../../ResourceId.sol";
+import { RESOURCE_TABLE } from "../../storeResourceTypes.sol";
 
 // Import user types
 import { ExampleEnum } from "./../common.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("KeyEncoding")));
-bytes32 constant KeyEncodingTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("mudstore"), bytes16("KeyEncoding")))
+);
+ResourceId constant KeyEncodingTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0001010001000000000000000000000000000000000000000000000000000000

@@ -1,6 +1,8 @@
 import { customType } from "drizzle-orm/sqlite-core";
 import superjson from "superjson";
-import { Address, getAddress } from "viem";
+import { Address, Hex, getAddress } from "viem";
+
+// TODO: migrate these to same patterns in postgres/columnTypes
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const json = <TData>(name: string) =>
@@ -27,5 +29,13 @@ export const address = (name: string) =>
     },
     fromDriver(driverData: string): Address {
       return getAddress(driverData);
+    },
+  })(name);
+
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const asHex = (name: string) =>
+  customType<{ data: Hex; driverData: Hex }>({
+    dataType() {
+      return "string";
     },
   })(name);

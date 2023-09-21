@@ -6,18 +6,18 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { System } from "../../../System.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
+import { ResourceId, WorldResourceIdInstance } from "../../../WorldResourceId.sol";
 import { AccessControl } from "../../../AccessControl.sol";
 
 contract EphemeralRecordSystem is IStoreEphemeral, System {
-  using ResourceSelector for bytes32;
+  using WorldResourceIdInstance for ResourceId;
 
   /**
    * Emit the ephemeral event without modifying storage at the given namespace and name.
-   * Requires the caller to have access to the namespace or name (encoded in the resource selector)
+   * Requires the caller to have access to the namespace or name (encoded in the table ID)
    */
   function emitEphemeralRecord(
-    bytes32 resourceSelector,
+    ResourceId tableId,
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
@@ -25,9 +25,9 @@ contract EphemeralRecordSystem is IStoreEphemeral, System {
     FieldLayout fieldLayout
   ) public virtual {
     // Require access to the namespace or name
-    AccessControl.requireAccess(resourceSelector, msg.sender);
+    AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.emitEphemeralRecord(resourceSelector, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.emitEphemeralRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
   }
 }

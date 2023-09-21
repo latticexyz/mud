@@ -17,9 +17,13 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { FieldLayout, FieldLayoutLib } from "@latticexyz/store/src/FieldLayout.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
+import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
+import { RESOURCE_TABLE } from "@latticexyz/store/src/storeResourceTypes.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("CounterTable")));
-bytes32 constant CounterTableTableId = _tableId;
+ResourceId constant _tableId = ResourceId.wrap(
+  bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14(""), bytes16("CounterTable")))
+);
+ResourceId constant CounterTableTableId = _tableId;
 
 FieldLayout constant _fieldLayout = FieldLayout.wrap(
   0x0004010004000000000000000000000000000000000000000000000000000000

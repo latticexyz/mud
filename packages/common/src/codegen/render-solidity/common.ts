@@ -44,7 +44,7 @@ export function renderCommonData({
 } {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
-  const _typedTableId = staticResourceData ? "" : "bytes32 _tableId";
+  const _typedTableId = staticResourceData ? "" : "ResourceId _tableId";
 
   const _keyArgs = renderArguments(keyTuple.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
@@ -166,11 +166,11 @@ export function renderTableId(staticResourceData: StaticResourceData): {
   hardcodedTableId: string;
   tableIdDefinition: string;
 } {
-  const hardcodedTableId = `bytes32(abi.encodePacked(bytes16("${staticResourceData.namespace}"), bytes16("${staticResourceData.name}")))`;
+  const hardcodedTableId = `ResourceId.wrap(bytes32(abi.encodePacked(RESOURCE_TABLE, bytes14("${staticResourceData.namespace}"), bytes16("${staticResourceData.name}"))))`;
 
   const tableIdDefinition = `
-    bytes32 constant _tableId = ${hardcodedTableId};
-    bytes32 constant ${staticResourceData.tableIdName} = _tableId;
+    ResourceId constant _tableId = ${hardcodedTableId};
+    ResourceId constant ${staticResourceData.tableIdName} = _tableId;
   `;
   return {
     hardcodedTableId,

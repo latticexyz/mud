@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
+import { ResourceId } from "../WorldResourceId.sol";
 
 interface IWorldModuleInstallation {
   /**
@@ -15,18 +16,18 @@ interface IWorldModuleInstallation {
 
 interface IWorldCall {
   /**
-   * Call the system at the given resourceSelector.
-   * If the system is not public, the caller must have access to the namespace or name (encoded in the resourceSelector).
+   * Call the system at the given system ID.
+   * If the system is not public, the caller must have access to the namespace or name (encoded in the system ID).
    */
-  function call(bytes32 resourceSelector, bytes memory callData) external payable returns (bytes memory);
+  function call(ResourceId systemId, bytes memory callData) external payable returns (bytes memory);
 
   /**
-   * Call the system at the given resourceSelector on behalf of the given delegator.
-   * If the system is not public, the delegator must have access to the namespace or name (encoded in the resourceSelector).
+   * Call the system at the given system ID on behalf of the given delegator.
+   * If the system is not public, the delegator must have access to the namespace or name (encoded in the system ID).
    */
   function callFrom(
     address delegator,
-    bytes32 resourceSelector,
+    ResourceId systemId,
     bytes memory callData
   ) external payable returns (bytes memory);
 }

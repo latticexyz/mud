@@ -4,10 +4,11 @@ pragma solidity >=0.8.0;
 import { StoreHook } from "../src/StoreHook.sol";
 import { FieldLayout } from "../src/FieldLayout.sol";
 import { PackedCounter } from "../src/PackedCounter.sol";
+import { ResourceId } from "../src/ResourceId.sol";
 
 contract RevertSubscriber is StoreHook {
   function onBeforeSetRecord(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     bytes memory,
     PackedCounter,
@@ -18,7 +19,7 @@ contract RevertSubscriber is StoreHook {
   }
 
   function onAfterSetRecord(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     bytes memory,
     PackedCounter,
@@ -28,16 +29,16 @@ contract RevertSubscriber is StoreHook {
     revert("onAfterSetRecord");
   }
 
-  function onBeforeSpliceStaticData(bytes32, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+  function onBeforeSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
     revert("onBeforeSpliceStaticData");
   }
 
-  function onAfterSpliceStaticData(bytes32, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
+  function onAfterSpliceStaticData(ResourceId, bytes32[] memory, uint48, uint40, bytes memory) public pure override {
     revert("onAfterSpliceStaticData");
   }
 
   function onBeforeSpliceDynamicData(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     uint8,
     uint40,
@@ -49,7 +50,7 @@ contract RevertSubscriber is StoreHook {
   }
 
   function onAfterSpliceDynamicData(
-    bytes32,
+    ResourceId,
     bytes32[] memory,
     uint8,
     uint40,
@@ -60,11 +61,11 @@ contract RevertSubscriber is StoreHook {
     revert("onAfterSpliceDynamicData");
   }
 
-  function onBeforeDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure override {
+  function onBeforeDeleteRecord(ResourceId, bytes32[] memory, FieldLayout) public pure override {
     revert("onBeforeDeleteRecord");
   }
 
-  function onAfterDeleteRecord(bytes32, bytes32[] memory, FieldLayout) public pure override {
+  function onAfterDeleteRecord(ResourceId, bytes32[] memory, FieldLayout) public pure override {
     revert("onAfterDeleteRecord");
   }
 }

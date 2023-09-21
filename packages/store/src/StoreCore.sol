@@ -9,12 +9,14 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, StoreHooksTableId } from "./codegen/index.sol";
+import { StoreHooks, Tables, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
 import { Hook, HookLib } from "./Hook.sol";
 import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD, AFTER_DELETE_RECORD } from "./storeHookTypes.sol";
+import { ResourceId, ResourceIdInstance } from "./ResourceId.sol";
+import { RESOURCE_TABLE, RESOURCE_OFFCHAIN_TABLE } from "./storeResourceTypes.sol";
 
 /**
  * StoreCore includes implementations for all IStore methods.
@@ -22,32 +24,34 @@ import { BEFORE_SET_RECORD, AFTER_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_S
  * It's split into a separate library to make it clear that it's not intended to be outside StoreCore.
  */
 library StoreCore {
+  using ResourceIdInstance for ResourceId;
+
   event HelloStore(bytes32 indexed version);
   event StoreSetRecord(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
     bytes dynamicData
   );
   event StoreSpliceStaticData(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data
   );
   event StoreSpliceDynamicData(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     uint48 start,
     uint40 deleteCount,
     bytes data,
     bytes32 encodedLengths
   );
-  event StoreDeleteRecord(bytes32 indexed tableId, bytes32[] keyTuple);
+  event StoreDeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
   event StoreEphemeralRecord(
-    bytes32 indexed tableId,
+    ResourceId indexed tableId,
     bytes32[] keyTuple,
     bytes staticData,
     bytes32 encodedLengths,
@@ -76,6 +80,7 @@ library StoreCore {
     // Register core tables
     Tables.register();
     StoreHooks.register();
+    ResourceIds.register();
   }
 
   /************************************************************************
@@ -87,8 +92,8 @@ library StoreCore {
   /**
    * Get the field layout for the given tableId
    */
-  function getFieldLayout(bytes32 tableId) internal view returns (FieldLayout fieldLayout) {
-    fieldLayout = FieldLayout.wrap(Tables._getFieldLayout(tableId));
+  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
+    fieldLayout = FieldLayout.wrap(Tables._getFieldLayout(ResourceId.unwrap(tableId)));
     if (fieldLayout.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
@@ -97,10 +102,10 @@ library StoreCore {
   /**
    * Get the key schema for the given tableId
    */
-  function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
-    keySchema = Schema.wrap(Tables._getKeySchema(tableId));
+  function getKeySchema(ResourceId tableId) internal view returns (Schema keySchema) {
+    keySchema = Schema.wrap(Tables._getKeySchema(ResourceId.unwrap(tableId)));
     // key schemas can be empty for singleton tables, so we can't depend on key schema for table check
-    if (!hasTable(tableId)) {
+    if (!ResourceIds._getExists(ResourceId.unwrap(tableId))) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
@@ -108,31 +113,29 @@ library StoreCore {
   /**
    * Get the schema for the given tableId
    */
-  function getValueSchema(bytes32 tableId) internal view returns (Schema valueSchema) {
-    valueSchema = Schema.wrap(Tables._getValueSchema(tableId));
+  function getValueSchema(ResourceId tableId) internal view returns (Schema valueSchema) {
+    valueSchema = Schema.wrap(Tables._getValueSchema(ResourceId.unwrap(tableId)));
     if (valueSchema.isEmpty()) {
       revert IStoreErrors.StoreCore_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
 
   /**
-   * Check if a table with the given tableId exists
-   */
-  function hasTable(bytes32 tableId) internal view returns (bool) {
-    return Tables._getFieldLayout(tableId) != bytes32(0);
-  }
-
-  /**
    * Register a new table the given config
    */
   function registerTable(
-    bytes32 tableId,
+    ResourceId tableId,
     FieldLayout fieldLayout,
     Schema keySchema,
     Schema valueSchema,
     string[] memory keyNames,
     string[] memory fieldNames
   ) internal {
+    // Verify the table ID is of type RESOURCE_TABLE
+    if (tableId.getType() != RESOURCE_TABLE && tableId.getType() != RESOURCE_OFFCHAIN_TABLE) {
+      revert IStoreErrors.StoreCore_InvalidResourceType(RESOURCE_TABLE, tableId, string(abi.encodePacked(tableId)));
+    }
+
     // Verify the field layout is valid
     fieldLayout.validate({ allowEmpty: false });
 
@@ -155,20 +158,23 @@ library StoreCore {
       revert IStoreErrors.StoreCore_InvalidValueSchemaLength(fieldLayout.numFields(), valueSchema.numFields());
     }
 
-    // Verify the field layout doesn't exist yet
-    if (hasTable(tableId)) {
+    // Verify there is no resource with this ID yet
+    if (ResourceIds._getExists(ResourceId.unwrap(tableId))) {
       revert IStoreErrors.StoreCore_TableAlreadyExists(tableId, string(abi.encodePacked(tableId)));
     }
 
     // Register the table metadata
     Tables._set(
-      tableId,
+      ResourceId.unwrap(tableId),
       FieldLayout.unwrap(fieldLayout),
       Schema.unwrap(keySchema),
       Schema.unwrap(valueSchema),
       abi.encode(keyNames),
       abi.encode(fieldNames)
     );
+
+    // Register the table ID
+    ResourceIds._setExists(ResourceId.unwrap(tableId), true);
   }
 
   /************************************************************************
@@ -180,14 +186,14 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
-    StoreHooks.push(tableId, Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
+  function registerStoreHook(ResourceId tableId, IStoreHook hookAddress, uint8 enabledHooksBitmap) internal {
+    StoreHooks.push(ResourceId.unwrap(tableId), Hook.unwrap(HookLib.encode(address(hookAddress), enabledHooksBitmap)));
   }
 
   /**
    * Unregister a hook from the given tableId
    */
-  function unregisterStoreHook(bytes32 tableId, IStoreHook hookAddress) internal {
+  function unregisterStoreHook(ResourceId tableId, IStoreHook hookAddress) internal {
     HookLib.filterListByAddress(StoreHooksTableId, tableId, address(hookAddress));
   }
 
@@ -201,7 +207,7 @@ library StoreCore {
    * Set full data record for the given table ID and key tuple and field layout
    */
   function setRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -218,7 +224,7 @@ library StoreCore {
     emit StoreSetRecord(tableId, keyTuple, staticData, encodedLengths.unwrap(), dynamicData);
 
     // Call onBeforeSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SET_RECORD)) {
@@ -288,7 +294,7 @@ library StoreCore {
   }
 
   function spliceStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint48 start,
     uint40 deleteCount,
@@ -297,7 +303,7 @@ library StoreCore {
     uint256 location = StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
 
     // Call onBeforeSpliceStaticData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SPLICE_STATIC_DATA)) {
@@ -339,7 +345,7 @@ library StoreCore {
   }
 
   function spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex, // need this to compute the dynamic data location
     uint40 startWithinField,
@@ -361,7 +367,7 @@ library StoreCore {
    * Set data for a field in a table with the given tableId, key tuple and value field layout
    */
   function setField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory data,
@@ -375,7 +381,7 @@ library StoreCore {
   }
 
   function setStaticField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout,
     uint8 fieldIndex,
@@ -391,7 +397,7 @@ library StoreCore {
   }
 
   function setDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     bytes memory data
@@ -414,12 +420,12 @@ library StoreCore {
   /**
    * Delete a record for the given tableId, key tuple and value field layout
    */
-  function deleteRecord(bytes32 tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
     // Emit event to notify indexers
     emit StoreDeleteRecord(tableId, keyTuple);
 
     // Call onBeforeDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_DELETE_RECORD)) {
@@ -450,7 +456,7 @@ library StoreCore {
    * Push data to a field in a table with the given tableId, keyTuple tuple and value field layout
    */
   function pushToField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     bytes memory dataToPush,
@@ -467,7 +473,7 @@ library StoreCore {
    * Pop data from a field in a table with the given tableId, key tuple and value field layout
    */
   function popFromField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     uint256 byteLengthToPop,
@@ -484,7 +490,7 @@ library StoreCore {
    * Update data in a field in a table with the given tableId, key tuple and value field layout
    */
   function updateInField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     uint256 startByteIndex,
@@ -514,7 +520,7 @@ library StoreCore {
    * Emit the ephemeral event without modifying storage for the full data of the given table ID and key tuple
    */
   function emitEphemeralRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
@@ -538,7 +544,7 @@ library StoreCore {
    * Get full record (all fields, static and dynamic data) for the given table ID and key tuple, with the given value field layout
    */
   function getRecord(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
   ) internal view returns (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) {
@@ -572,7 +578,7 @@ library StoreCore {
    * Get a single field from the given table ID and key tuple, with the given value field layout
    */
   function getField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -590,7 +596,7 @@ library StoreCore {
    * Consumers are expected to truncate the returned value as needed.
    */
   function getStaticField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -609,7 +615,7 @@ library StoreCore {
    * Get a single dynamic field from the given table ID and key tuple, with the given value field layout
    */
   function getDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex
   ) internal view returns (bytes memory) {
@@ -627,7 +633,7 @@ library StoreCore {
    * Get the byte length of a single field from the given table ID and key tuple, with the given value field layout
    */
   function getFieldLength(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -647,7 +653,7 @@ library StoreCore {
    * The slice is unchecked and will return invalid data if `start`:`end` overflow.
    */
   function getFieldSlice(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout,
@@ -679,7 +685,7 @@ library StoreCoreInternal {
    ************************************************************************/
 
   function _spliceDynamicData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 dynamicFieldIndex,
     uint40 startWithinField,
@@ -709,7 +715,7 @@ library StoreCoreInternal {
     PackedCounter updatedEncodedLengths = previousEncodedLengths.setAtIndex(dynamicFieldIndex, updatedFieldLength);
 
     // Call onBeforeSpliceDynamicData hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    bytes21[] memory hooks = StoreHooks._get(tableId);
+    bytes21[] memory hooks = StoreHooks._get(ResourceId.unwrap(tableId));
     for (uint256 i; i < hooks.length; i++) {
       Hook hook = Hook.wrap(hooks[i]);
       if (hook.isEnabled(BEFORE_SPLICE_DYNAMIC_DATA)) {
@@ -765,7 +771,7 @@ library StoreCoreInternal {
   }
 
   function _pushToDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout,
     uint8 fieldIndex,
@@ -790,7 +796,7 @@ library StoreCoreInternal {
   }
 
   function _popFromDynamicField(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout,
     uint8 fieldIndex,
@@ -815,7 +821,7 @@ library StoreCoreInternal {
   }
 
   function _setDynamicFieldItem(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout,
     uint8 fieldIndex,
@@ -843,7 +849,7 @@ library StoreCoreInternal {
    * Get full static data for the given table ID and key tuple, with the given static length
    */
   function _getStaticData(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint256 length
   ) internal view returns (bytes memory) {
@@ -859,7 +865,7 @@ library StoreCoreInternal {
    * Returns dynamic bytes memory in the size of the field.
    */
   function _getStaticFieldBytes(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex,
     FieldLayout fieldLayout
@@ -905,7 +911,7 @@ library StoreCoreInternal {
   /**
    * Compute the storage location based on tableId id and index tuple
    */
-  function _getStaticDataLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
+  function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
     return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
@@ -928,7 +934,7 @@ library StoreCoreInternal {
    * Compute the storage location based on tableId id and index tuple
    */
   function _getDynamicDataLocation(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple,
     uint8 fieldIndex
   ) internal pure returns (uint256) {
@@ -938,7 +944,10 @@ library StoreCoreInternal {
   /**
    * Compute the storage location for the length of the dynamic data
    */
-  function _getDynamicDataLengthLocation(bytes32 tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
+  function _getDynamicDataLengthLocation(
+    ResourceId tableId,
+    bytes32[] memory keyTuple
+  ) internal pure returns (uint256) {
     return uint256(DYNAMIC_DATA_LENGTH_SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
   }
 
@@ -946,7 +955,7 @@ library StoreCoreInternal {
    * Load the encoded dynamic data length from storage for the given table ID and key tuple
    */
   function _loadEncodedDynamicDataLength(
-    bytes32 tableId,
+    ResourceId tableId,
     bytes32[] memory keyTuple
   ) internal view returns (PackedCounter) {
     // Load dynamic data length from storage

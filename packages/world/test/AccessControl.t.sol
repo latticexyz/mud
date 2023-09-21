@@ -8,85 +8,95 @@ import { StoreMock } from "@latticexyz/store/test/StoreMock.sol";
 import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ResourceId, WorldResourceIdLib, WorldResourceIdInstance } from "../src/WorldResourceId.sol";
+import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 
 contract AccessControlTest is Test, GasReporter, StoreMock {
-  bytes16 constant namespace = "namespace";
-  bytes16 constant name = "name";
-  address constant presetCaller = address(0x0123);
-  address constant caller = address(0x01);
+  using WorldResourceIdInstance for ResourceId;
+
+  bytes14 private constant namespace = "namespace";
+  bytes16 private constant name = "name";
+  address private constant presetCaller = address(0x0123);
+  address private constant caller = address(0x01);
+
+  ResourceId private _tableId;
+  ResourceId private _namespaceId;
 
   function setUp() public {
     ResourceAccess.register();
     NamespaceOwner.register();
+    _tableId = WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: namespace, name: name });
+    _namespaceId = WorldResourceIdLib.encodeNamespace(namespace);
 
     NamespaceOwner.set(namespace, address(this));
-    ResourceAccess.set(ResourceSelector.from(namespace, name), presetCaller, true);
+    ResourceAccess.set(ResourceId.unwrap(_tableId), presetCaller, true);
   }
 
   function testAccessControl() public {
+    ResourceId tableId = _tableId;
+    ResourceId namespaceId = _namespaceId;
     bool hasAccess;
 
     // Check that the caller has no access to the namespace or name
     startGasReport("AccessControl: hasAccess (cold)");
-    hasAccess = AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller);
+    hasAccess = AccessControl.hasAccess(tableId, caller);
     endGasReport();
-    assertFalse(hasAccess);
+    assertFalse(hasAccess, "caller should not have access to the table");
 
     // Grant access to the namespace
-    ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, true);
+    ResourceAccess.set(ResourceId.unwrap(namespaceId), caller, true);
 
     // Check that the caller has access to the namespace or name
     startGasReport("AccessControl: hasAccess (warm, namespace only)");
-    hasAccess = AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller);
+    hasAccess = AccessControl.hasAccess(tableId, caller);
     endGasReport();
-    assertTrue(hasAccess);
+    assertTrue(hasAccess, "caller should have access to the namespace");
 
     // Revoke access to the namespace
-    ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, false);
+    ResourceAccess.set(ResourceId.unwrap(namespaceId), caller, false);
 
     // Check that the caller has no access to the namespace or name
     startGasReport("AccessControl: hasAccess (warm)");
-    hasAccess = AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller);
+    hasAccess = AccessControl.hasAccess(tableId, caller);
     endGasReport();
-    assertFalse(hasAccess);
+    assertFalse(hasAccess, "access to the namespace should have been revoked");
 
     // Grant access to the name
-    ResourceAccess.set(ResourceSelector.from(namespace, name), caller, true);
+    ResourceAccess.set(ResourceId.unwrap(tableId), caller, true);
 
     // Check that the caller has access to the name
-    assertTrue(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
+    assertTrue(AccessControl.hasAccess(tableId, caller), "access to the table should have been granted");
 
     // Revoke access to the name
-    ResourceAccess.set(ResourceSelector.from(namespace, name), caller, false);
+    ResourceAccess.set(ResourceId.unwrap(tableId), caller, false);
 
     // Check that the caller has no access to the namespace or name
-    assertFalse(AccessControl.hasAccess(ResourceSelector.from(namespace, name), caller));
+    assertFalse(AccessControl.hasAccess(tableId, caller), "access to the table should have been revoked");
   }
 
   function testRequireAccess() public {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
+    ResourceId tableId = _tableId;
+
     startGasReport("AccessControl: requireAccess (cold)");
-    AccessControl.requireAccess(resourceSelector, presetCaller);
+    AccessControl.requireAccess(tableId, presetCaller);
     endGasReport();
 
     startGasReport("AccessControl: requireAccess (warm)");
-    AccessControl.requireAccess(resourceSelector, presetCaller);
+    AccessControl.requireAccess(tableId, presetCaller);
     endGasReport();
 
     startGasReport("AccessControl: requireAccess (this address)");
-    AccessControl.requireAccess(resourceSelector, address(this));
+    AccessControl.requireAccess(tableId, address(this));
     endGasReport();
   }
 
   function testRequireAccessRevert() public {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, name);
-    vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, ResourceSelector.toString(resourceSelector), caller)
-    );
-    AccessControl.requireAccess(resourceSelector, caller);
+    ResourceId tableId = _tableId;
+
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, tableId.toString(), caller));
+    AccessControl.requireAccess(tableId, caller);
   }
 }
