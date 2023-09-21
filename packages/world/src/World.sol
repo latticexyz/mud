@@ -311,7 +311,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   /**
    * Fallback function to call registered function selectors
    */
-  fallback() external payable {
+  fallback() external payable requireNoCallback {
     (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);

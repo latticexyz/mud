@@ -452,7 +452,10 @@ contract WorldTest is Test, GasReporter {
     world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
 
     // Expect the World to not be allowed to call registerTable via an external call
-    _expectAccessDenied(address(world), namespace, "", RESOURCE_NAMESPACE);
+    vm.prank(address(world));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.registerTable.selector)
+    );
     world.registerTable(otherTableId, fieldLayout, defaultKeySchema, valueSchema, keyNames, fieldNames);
   }
 
@@ -542,8 +545,11 @@ contract WorldTest is Test, GasReporter {
       true
     );
 
-    // Expect the registration to fail when coming from the World (since the World address doesn't have access)
-    _expectAccessDenied(address(world), "", "", RESOURCE_NAMESPACE);
+    // Expect the registration to fail when coming from the World
+    vm.prank(address(world));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.registerSystem.selector)
+    );
     world.registerSystem(
       WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: "", name: "rootSystem" }),
       yetAnotherSystem,
@@ -1376,7 +1382,10 @@ contract WorldTest is Test, GasReporter {
     world.registerRootFunctionSelector(systemId, worldFunc, sysFunc);
 
     // Expect the World to not be able to register a root function selector when calling the function externally
-    _expectAccessDenied(address(world), "", "", RESOURCE_NAMESPACE);
+    vm.prank(address(world));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.registerRootFunctionSelector.selector)
+    );
     world.registerRootFunctionSelector(systemId, "smth", "smth");
 
     startGasReport("Register a root function selector");

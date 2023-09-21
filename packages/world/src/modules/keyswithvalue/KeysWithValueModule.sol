@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.21;
 
+import { console } from "forge-std/console.sol";
+
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { BEFORE_SET_RECORD, BEFORE_SPLICE_STATIC_DATA, AFTER_SPLICE_STATIC_DATA, BEFORE_SPLICE_DYNAMIC_DATA, AFTER_SPLICE_DYNAMIC_DATA, BEFORE_DELETE_RECORD } from "@latticexyz/store/src/storeHookTypes.sol";
 import { Module } from "../../Module.sol";
@@ -46,13 +48,29 @@ contract KeysWithValueModule is Module {
     IBaseWorld world = IBaseWorld(_world());
 
     // Register the target table
-    KeysWithValue.register(world, targetTableSelector);
+    (bool success, bytes memory returnData) = address(world).delegatecall(
+      abi.encodeCall(
+        world.registerTable,
+        (
+          targetTableSelector,
+          KeysWithValue.getFieldLayout(),
+          KeysWithValue.getKeySchema(),
+          KeysWithValue.getValueSchema(),
+          KeysWithValue.getKeyNames(),
+          KeysWithValue.getFieldNames()
+        )
+      )
+    );
 
     // Grant the hook access to the target table
-    world.grantAccess(targetTableSelector, address(hook));
+    (success, returnData) = address(world).delegatecall(
+      abi.encodeCall(world.grantAccess, (targetTableSelector, address(hook)))
+    );
+
+    if (!success) revertWithBytes(returnData);
 
     // Register a hook that is called when a value is set in the source table
-    (bool success, bytes memory returnData) = address(world).delegatecall(
+    (success, returnData) = address(world).delegatecall(
       abi.encodeCall(
         world.registerStoreHook,
         (

@@ -5,6 +5,7 @@ import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { Module } from "../../Module.sol";
 import { WorldContextConsumer } from "../../WorldContext.sol";
+import { revertWithBytes } from "../../revertWithBytes.sol";
 
 import { UniqueEntity } from "./tables/UniqueEntity.sol";
 import { UniqueEntitySystem } from "./UniqueEntitySystem.sol";
@@ -25,7 +26,22 @@ contract UniqueEntityModule is Module {
   }
 
   function installRoot(bytes memory args) public {
-    install(args);
+    IBaseWorld world = IBaseWorld(_world());
+
+    // Register table
+    UniqueEntity._register(TABLE_ID);
+
+    // Register system
+    (bool success, bytes memory data) = address(world).delegatecall(
+      abi.encodeCall(world.registerSystem, (SYSTEM_ID, uniqueEntitySystem, true))
+    );
+    if (!success) revertWithBytes(data);
+
+    // Register system's functions
+    (success, data) = address(world).delegatecall(
+      abi.encodeCall(world.registerFunctionSelector, (SYSTEM_ID, "getUniqueEntity", "()"))
+    );
+    if (!success) revertWithBytes(data);
   }
 
   function install(bytes memory) public {
