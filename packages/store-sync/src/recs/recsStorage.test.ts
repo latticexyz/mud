@@ -27,7 +27,7 @@ describe("recsStorage", () => {
     const world = createWorld();
     const { components } = recsStorage({ world, config: mudConfig });
     expect(components.NumberList.id).toMatchInlineSnapshot(
-      '"0x00000000000000000000000000004e756d6265724c6973740000000000007462"'
+      '"0x746200000000000000000000000000004e756d6265724c697374000000000000"'
     );
   });
 
