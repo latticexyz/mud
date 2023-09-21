@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 uint8 constant BEFORE_SET_RECORD = 1 << 0;
 uint8 constant AFTER_SET_RECORD = 1 << 1;

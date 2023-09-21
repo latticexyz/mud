@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { TYPE_BYTES } from "@latticexyz/store/src/ResourceId.sol";
 import { ResourceId, WorldResourceIdInstance, NAME_BYTES } from "../../WorldResourceId.sol";

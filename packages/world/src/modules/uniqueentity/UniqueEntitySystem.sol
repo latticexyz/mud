@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { System } from "../../System.sol";
 import { TABLE_ID } from "./constants.sol";

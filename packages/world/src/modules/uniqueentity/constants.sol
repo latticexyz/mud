@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { ResourceId } from "../../WorldResourceId.sol";
 import { RESOURCE_TABLE, RESOURCE_SYSTEM } from "../../worldResourceTypes.sol";
