@@ -1,3 +1,4 @@
+import { readFileSync } from "fs";
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type/deprecated";
 import {
@@ -6,6 +7,8 @@ import {
   RenderField,
   RenderKeyTuple,
   RenderStaticField,
+  SolidityUserDefinedType,
+  extractUserTypes,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 import { StoreConfig } from "../config";
@@ -19,6 +22,7 @@ export interface TableOptions {
 
 export function getTableOptions(config: StoreConfig): TableOptions[] {
   const storeImportPath = config.storeImportPath;
+  const solidityUserTypes = loadAndExtractUserTypes(config.userTypes);
 
   const options = [];
   for (const tableName of Object.keys(config.tables)) {
@@ -35,9 +39,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const keyTuple = Object.keys(tableData.keySchema).map((name) => {
       const abiOrUserType = tableData.keySchema[name];
-      const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
       if (renderType.isDynamic) throw new Error(`Parsing error: found dynamic key ${name} in table ${tableName}`);
@@ -52,9 +56,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const fields = Object.keys(tableData.valueSchema).map((name) => {
       const abiOrUserType = tableData.valueSchema[name];
-      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config, solidityUserTypes);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config, solidityUserTypes);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
@@ -106,4 +110,20 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     });
   }
   return options;
+}
+
+function loadAndExtractUserTypes(userTypes: StoreConfig["userTypes"]) {
+  const userTypesPerFile: Record<string, string[]> = {};
+  for (const [userTypeName, filePath] of Object.entries(userTypes)) {
+    if (!(filePath in userTypesPerFile)) {
+      userTypesPerFile[filePath] = [];
+    }
+    userTypesPerFile[filePath].push(userTypeName);
+  }
+  let extractedUserTypes: Record<string, SolidityUserDefinedType> = {};
+  for (const [filePath, userTypeNames] of Object.entries(userTypesPerFile)) {
+    const data = readFileSync(filePath, "utf8");
+    extractedUserTypes = Object.assign(userTypes, extractUserTypes(data, userTypeNames, filePath));
+  }
+  return extractedUserTypes;
 }

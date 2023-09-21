@@ -5,7 +5,7 @@ import {
   SchemaTypeToAbiType,
 } from "@latticexyz/schema-type/deprecated";
 import { parseStaticArray } from "@latticexyz/config";
-import { RelativeImportDatum, RenderType } from "@latticexyz/common/codegen";
+import { RelativeImportDatum, RenderType, SolidityUserDefinedType } from "@latticexyz/common/codegen";
 import { StoreConfig } from "../config";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
@@ -15,7 +15,8 @@ export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
  */
 export function resolveAbiOrUserType(
   abiOrUserType: string,
-  config: StoreConfig
+  config: StoreConfig,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): {
   schemaType: SchemaType;
   renderType: RenderType;
@@ -38,7 +39,7 @@ export function resolveAbiOrUserType(
     }
   }
   // user types
-  return getUserTypeInfo(abiOrUserType, config);
+  return getUserTypeInfo(abiOrUserType, config, solidityUserTypes);
 }
 
 /**
@@ -47,7 +48,8 @@ export function resolveAbiOrUserType(
 export function importForAbiOrUserType(
   abiOrUserType: string,
   usedInDirectory: string,
-  config: StoreConfig
+  config: StoreConfig,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): RelativeImportDatum | undefined {
   // abi types which directly mirror a SchemaType
   if (abiOrUserType in AbiTypeToSchemaType) {
@@ -58,7 +60,17 @@ export function importForAbiOrUserType(
   if (staticArray) {
     return undefined;
   }
-  // user types
+  // user-defined types in a user-provided file
+  if (abiOrUserType in solidityUserTypes) {
+    // these types can have a library name as their import symbol
+    const solidityUserType = solidityUserTypes[abiOrUserType];
+    return {
+      symbol: solidityUserType.importSymbol,
+      fromPath: solidityUserType.fromPath,
+      usedInPath: usedInDirectory,
+    };
+  }
+  // other user types
   return {
     symbol: abiOrUserType,
     fromPath: config.userTypesFilename,
@@ -84,7 +96,8 @@ export function getSchemaTypeInfo(schemaType: SchemaType): RenderType {
 
 export function getUserTypeInfo(
   userType: string,
-  config: StoreConfig
+  config: StoreConfig,
+  solidityUserTypes: Record<string, SolidityUserDefinedType>
 ): {
   schemaType: SchemaType;
   renderType: RenderType;
@@ -106,6 +119,27 @@ export function getUserTypeInfo(
         typeWrap: `${userType}`,
         typeUnwrap: `uint8`,
         internalTypeId: `${SchemaTypeToAbiType[schemaType]}`,
+      },
+    };
+  }
+  // user-defined types
+  if (userType in solidityUserTypes) {
+    if (!(userType in solidityUserTypes)) {
+      throw new Error(`User type "${userType}" not found in MUD config`);
+    }
+    const solidityUserType = solidityUserTypes[userType];
+    const schemaType = AbiTypeToSchemaType[solidityUserType.typeId];
+    return {
+      schemaType,
+      renderType: {
+        typeId: solidityUserType.typeId,
+        typeWithLocation: solidityUserType.typeId,
+        enumName: SchemaType[schemaType],
+        staticByteLength: getStaticByteLength(schemaType),
+        isDynamic: false,
+        typeWrap: `${userType}.wrap`,
+        typeUnwrap: `${userType}.unwrap`,
+        internalTypeId: `${solidityUserType.internalTypeId}`,
       },
     };
   }
