@@ -39,12 +39,12 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerNamespace(ResourceId namespaceId) public virtual {
     // Require the provided namespace ID to have type RESOURCE_NAMESPACE
     if (namespaceId.getType() != RESOURCE_NAMESPACE) {
-      revert InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
+      revert World_InvalidResourceType(RESOURCE_NAMESPACE, namespaceId, namespaceId.toString());
     }
 
     // Require namespace to not exist yet
     if (ResourceIds._getExists(ResourceId.unwrap(namespaceId))) {
-      revert ResourceExists(namespaceId, namespaceId.toString());
+      revert World_ResourceAlreadyExists(namespaceId, namespaceId.toString());
     }
 
     // Register namespace resource ID
@@ -97,19 +97,19 @@ contract WorldRegistrationSystem is System, IWorldErrors {
   function registerSystem(ResourceId systemId, WorldContextConsumer system, bool publicAccess) public virtual {
     // Require the provided system ID to have type RESOURCE_SYSTEM
     if (systemId.getType() != RESOURCE_SYSTEM) {
-      revert InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
+      revert World_InvalidResourceType(RESOURCE_SYSTEM, systemId, systemId.toString());
     }
 
     // Require the provided address to implement the WorldContextConsumer interface
     requireInterface(address(system), WORLD_CONTEXT_CONSUMER_INTERFACE_ID);
 
     // Require the name to not be the namespace's root name
-    if (systemId.getName() == ROOT_NAME) revert InvalidResourceId(systemId, systemId.toString());
+    if (systemId.getName() == ROOT_NAME) revert World_InvalidResourceId(systemId, systemId.toString());
 
     // Require this system to not be registered at a different system ID yet
     bytes32 existingSystemId = SystemRegistry._get(address(system));
     if (existingSystemId != 0 && existingSystemId != ResourceId.unwrap(systemId)) {
-      revert SystemExists(address(system));
+      revert World_SystemAlreadyExists(address(system));
     }
 
     // If the namespace doesn't exist yet, register it
@@ -171,7 +171,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require the function selector to be globally unique
     bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
 
-    if (existingSystemId != 0) revert FunctionSelectorExists(worldFunctionSelector);
+    if (existingSystemId != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
     bytes memory systemFunctionSignature = abi.encodePacked(systemFunctionName, systemFunctionArguments);
@@ -199,7 +199,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require the function selector to be globally unique
     bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
 
-    if (existingSystemId != 0) revert FunctionSelectorExists(worldFunctionSelector);
+    if (existingSystemId != 0) revert World_FunctionSelectorAlreadyExists(worldFunctionSelector);
 
     // Register the function selector
     FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);

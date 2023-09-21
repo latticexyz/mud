@@ -84,7 +84,7 @@ contract UniqueEntityModuleTest is Test, GasReporter {
     // But changing the table directly isn't allowed
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.AccessDenied.selector,
+        IWorldErrors.World_AccessDenied.selector,
         WorldResourceIdLib.encode({ typeId: RESOURCE_TABLE, namespace: NAMESPACE, name: TABLE_NAME }).toString(),
         alice
       )

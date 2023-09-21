@@ -98,7 +98,7 @@ contract AccessControlTest is Test, GasReporter, StoreMock {
   function testRequireAccessRevert() public {
     ResourceId tableId = _tableId;
 
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, tableId.toString(), caller));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_AccessDenied.selector, tableId.toString(), caller));
     AccessControl.requireAccess(tableId, caller);
   }
 }

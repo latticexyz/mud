@@ -21,22 +21,22 @@ library AccessControl {
 
   /**
    * Check for access at the given namespace or name.
-   * Reverts with AccessDenied if the caller has no access.
+   * Reverts with World_AccessDenied if the caller has no access.
    */
   function requireAccess(ResourceId resourceId, address caller) internal view {
     // Check if the given caller has access to the given namespace or name
     if (!hasAccess(resourceId, caller)) {
-      revert IWorldErrors.AccessDenied(resourceId.toString(), caller);
+      revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
     }
   }
 
   /**
    * Check for ownership of the namespace of the given resource ID.
-   * Reverts with AccessDenied if the check fails.
+   * Reverts with World_AccessDenied if the check fails.
    */
   function requireOwner(ResourceId resourceId, address caller) internal view {
     if (NamespaceOwner._get(ResourceId.unwrap(resourceId.getNamespaceId())) != caller) {
-      revert IWorldErrors.AccessDenied(resourceId.toString(), caller);
+      revert IWorldErrors.World_AccessDenied(resourceId.toString(), caller);
     }
   }
 }

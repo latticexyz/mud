@@ -65,12 +65,12 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   function initialize(IModule coreModule) public requireNoCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
-      revert AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
+      revert World_AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
     }
 
     // The World can only be initialized once
     if (InstalledModules._get(CORE_MODULE_NAME, keccak256("")) != address(0)) {
-      revert WorldAlreadyInitialized();
+      revert World_AlreadyInitialized();
     }
 
     // Initialize the World by installing the core module
@@ -291,7 +291,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
       return SystemCall.callWithHooksOrRevert(delegator, systemId, callData, msg.value);
     }
 
-    revert DelegationNotFound(delegator, msg.sender);
+    revert World_DelegationNotFound(delegator, msg.sender);
   }
 
   /************************************************************************
@@ -314,7 +314,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   fallback() external payable requireNoCallback {
     (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
-    if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);
+    if (systemId == 0) revert World_FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);

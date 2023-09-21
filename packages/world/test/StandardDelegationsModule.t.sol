@@ -66,7 +66,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
 
     // Expect the delegation to have been used up
     vm.prank(delegatee);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
@@ -104,11 +104,11 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     // Set the timestamp to maxTimestamp+1 and expect the delegation to be expired
     vm.warp(maxTimestamp + 1);
     vm.prank(delegatee);
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.DelegationNotFound.selector, delegator, delegatee));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_DelegationNotFound.selector, delegator, delegatee));
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
-  function testRegisterDelegationRevertInterfaceNotSupported() public {
+  function testRegisterDelegationRevertWorld_InterfaceNotSupported() public {
     // Register a system that is not a delegation control system
     System noDelegationControlSystem = new System();
     ResourceId noDelegationControlId = WorldResourceIdLib.encode({
@@ -122,7 +122,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     vm.prank(delegator);
     vm.expectRevert(
       abi.encodeWithSelector(
-        IWorldErrors.InterfaceNotSupported.selector,
+        IWorldErrors.World_InterfaceNotSupported.selector,
         address(noDelegationControlSystem),
         DELEGATION_CONTROL_INTERFACE_ID
       )

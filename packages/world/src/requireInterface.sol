@@ -10,9 +10,9 @@ import { IWorldErrors } from "./interfaces/IWorldErrors.sol";
 function requireInterface(address contractAddress, bytes4 interfaceId) view {
   try IERC165(contractAddress).supportsInterface(interfaceId) returns (bool supported) {
     if (!supported) {
-      revert IWorldErrors.InterfaceNotSupported(contractAddress, interfaceId);
+      revert IWorldErrors.World_InterfaceNotSupported(contractAddress, interfaceId);
     }
   } catch {
-    revert IWorldErrors.InterfaceNotSupported(contractAddress, interfaceId);
+    revert IWorldErrors.World_InterfaceNotSupported(contractAddress, interfaceId);
   }
 }
