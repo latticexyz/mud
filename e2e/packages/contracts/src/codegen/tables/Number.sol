@@ -75,6 +75,33 @@ library Number {
   }
 
   /** Get value */
+  function getValue(uint32 key) internal view returns (uint32 value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get value */
+  function _getValue(uint32 key) internal view returns (uint32 value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get value (using the specified store) */
+  function getValue(IStore _store, uint32 key) internal view returns (uint32 value) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint32(bytes4(_blob)));
+  }
+
+  /** Get value */
   function get(uint32 key) internal view returns (uint32 value) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(key));
@@ -99,6 +126,30 @@ library Number {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint32(bytes4(_blob)));
+  }
+
+  /** Set value */
+  function setValue(uint32 key, uint32 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value */
+  function _setValue(uint32 key, uint32 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
+  }
+
+  /** Set value (using the specified store) */
+  function setValue(IStore _store, uint32 key, uint32 value) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(key));
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((value)), _fieldLayout);
   }
 
   /** Set value */
@@ -131,13 +182,13 @@ library Number {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(uint32 value) internal pure returns (bytes memory) {
+  function encode(uint32 value) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(value);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

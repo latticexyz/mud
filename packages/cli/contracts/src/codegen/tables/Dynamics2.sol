@@ -749,8 +749,12 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -758,8 +762,12 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -767,8 +775,12 @@ library Dynamics2 {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -823,35 +835,43 @@ library Dynamics2 {
   }
 
   /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeDynamic(
+    PackedCounter _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (uint64[] memory u64, string memory str, bytes memory b) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    u64 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint64());
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(1);
+    }
+    str = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+
+    _start = _end;
+    unchecked {
+      _end += _encodedLengths.atIndex(2);
+    }
+    b = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
    * Decode the tightly packed blob using this table's field layout.
    * Undefined behaviour for invalid blobs.
    */
-  function decode(bytes memory _blob) internal pure returns (Dynamics2Data memory _table) {
-    // 0 is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
-
-    // Store trims the blob if dynamic fields are all empty
-    if (_blob.length > 0) {
-      // skip static data length + dynamic lengths word
-      uint256 _start = 32;
-      uint256 _end;
-      unchecked {
-        _end = 32 + _encodedLengths.atIndex(0);
-      }
-      _table.u64 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint64());
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(1);
-      }
-      _table.str = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-
-      _start = _end;
-      unchecked {
-        _end += _encodedLengths.atIndex(2);
-      }
-      _table.b = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
-    }
+  function decode(
+    bytes memory,
+    PackedCounter _encodedLengths,
+    bytes memory _dynamicData
+  ) internal pure returns (Dynamics2Data memory _table) {
+    (_table.u64, _table.str, _table.b) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /** Tightly pack dynamic data using this table's schema */
@@ -872,12 +892,16 @@ library Dynamics2 {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(uint64[] memory u64, string memory str, bytes memory b) internal pure returns (bytes memory) {
+  function encode(
+    uint64[] memory u64,
+    string memory str,
+    bytes memory b
+  ) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData;
     PackedCounter _encodedLengths = encodeLengths(u64, str, b);
     bytes memory _dynamicData = encodeDynamic(u64, str, b);
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

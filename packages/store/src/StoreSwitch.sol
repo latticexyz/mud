@@ -7,6 +7,7 @@ import { IStoreHook } from "./IStoreHook.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { FieldLayout } from "./FieldLayout.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -124,6 +125,44 @@ library StoreSwitch {
     }
   }
 
+  function spliceStaticData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint48 start,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    } else {
+      IStore(_storeAddress).spliceStaticData(tableId, keyTuple, start, deleteCount, data);
+    }
+  }
+
+  function spliceDynamicData(
+    bytes32 tableId,
+    bytes32[] memory keyTuple,
+    uint8 dynamicFieldIndex,
+    uint40 startWithinField,
+    uint40 deleteCount,
+    bytes memory data
+  ) internal {
+    address _storeAddress = getStoreAddress();
+    if (_storeAddress == address(this)) {
+      StoreCore.spliceDynamicData(tableId, keyTuple, dynamicFieldIndex, startWithinField, deleteCount, data);
+    } else {
+      IStore(_storeAddress).spliceDynamicData(
+        tableId,
+        keyTuple,
+        dynamicFieldIndex,
+        startWithinField,
+        deleteCount,
+        data
+      );
+    }
+  }
+
   function setField(
     bytes32 tableId,
     bytes32[] memory keyTuple,
@@ -221,7 +260,7 @@ library StoreSwitch {
     bytes32 tableId,
     bytes32[] memory keyTuple,
     FieldLayout fieldLayout
-  ) internal view returns (bytes memory) {
+  ) internal view returns (bytes memory, PackedCounter, bytes memory) {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
       return StoreCore.getRecord(tableId, keyTuple, fieldLayout);

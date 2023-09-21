@@ -75,6 +75,33 @@ library Balances {
   }
 
   /** Get balance */
+  function getBalance(bytes16 namespace) internal view returns (uint256 balance) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get balance */
+  function _getBalance(bytes16 namespace) internal view returns (uint256 balance) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get balance (using the specified store) */
+  function getBalance(IStore _store, bytes16 namespace) internal view returns (uint256 balance) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /** Get balance */
   function get(bytes16 namespace) internal view returns (uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(namespace);
@@ -99,6 +126,30 @@ library Balances {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (uint256(bytes32(_blob)));
+  }
+
+  /** Set balance */
+  function setBalance(bytes16 namespace, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /** Set balance */
+  function _setBalance(bytes16 namespace, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /** Set balance (using the specified store) */
+  function setBalance(IStore _store, bytes16 namespace, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(namespace);
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /** Set balance */
@@ -131,13 +182,13 @@ library Balances {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(uint256 balance) internal pure returns (bytes memory) {
+  function encode(uint256 balance) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(balance);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

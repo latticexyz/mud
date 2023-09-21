@@ -44,7 +44,7 @@ library DelegationInstance {
     (bool success, bytes memory data) = SystemCall.call({
       caller: delegatee,
       resourceSelector: Delegation.unwrap(self),
-      callData: abi.encodeWithSelector(IDelegationControl.verify.selector, delegator, systemId, callData),
+      callData: abi.encodeCall(IDelegationControl.verify, (delegator, systemId, callData)),
       value: 0
     });
 

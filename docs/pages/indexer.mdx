@@ -394,12 +394,14 @@ To understand the result, it is easiest to look at it inside Node.
 
 To index a different blockchain, you specify these environment variables:
 
-| Variable        | Value                                                                                                    |
-| --------------- | -------------------------------------------------------------------------------------------------------- |
-| RPC_HTTP_URL    | The URL to access the blockchain using HTTP                                                              |
-| RPC_WS_URL      | The URL to access the blockchain using WebSocket                                                         |
-| START_BLOCK     | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
-| SQLITE_FILENAME | `<blockchain name>.db`                                                                                   |
+| Variable                | Value                                                                                                    |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| RPC_HTTP_URL            | The URL to access the blockchain using HTTP                                                              |
+| RPC_WS_URL              | The URL to access the blockchain using WebSocket                                                         |
+| START_BLOCK<sup>1</sup> | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+| SQLITE_FILENAME         | `<blockchain name>.db`                                                                                   |
+
+(1) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed.
 
 After you do that, start the indexer with this command:
 
@@ -408,3 +410,110 @@ pnpm start:sqlite
 ```
 
 Note that in your queries you need to specify the correct chainId for the chain you are indexing.
+
+## Using the indexer with PostgreSQL
+
+To run the indexer with [PostgreSQL](https://www.postgresql.org/), follow these steps:
+
+1. Download and install [PostgreSQL](https://www.postgresql.org/download/).
+
+1. To use the default setting (local PostgreSQL, using the `postgres` database, indexing the local `anvil` chain), run:
+
+   ```sh copy
+   pnpm start:postgres:local
+   ```
+
+   Otherwise, set these environment variables:
+
+   | Variable                 | Value                                                                                                    |
+   | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+   | CHAIN_ID                 | ChainID for the chain you index                                                                          |
+   | RPC_HTTP_URL<sup>1</sup> | The URL to access the blockchain using HTTP                                                              |
+   | RPC_WS_URL<sup>1</sup>   | The URL to access the blockchain using WebSocket                                                         |
+   | START_BLOCK<sup>2</sup>  | The block to start indexing from. The block in which the `World` contract was deployed is a good choice. |
+   | DATABASE_URL             | URL for the database, of the form `postgres://<host>/<database>`                                         |
+
+   (1) Not necessary in the case of a Lattice testnet.
+
+   (2) This value is optional, but highly recommended in chains where the world was deployed after a large number of blocks had already passed for performance reasons.
+
+   And then run:
+
+   ```sh copy
+   pnpm start:postgres
+   ```
+
+### Reading information from PostgreSQL
+
+You can now use [`psql`](https://www.postgresql.org/docs/current/app-psql.html) to view the indexer information.
+
+Note: This example uses [the template](http://localhost:3000/tutorials/minimal).
+If you are indexing a different `World`, change the world address and use the name of a table you have rather than `Counter`.
+
+1. Get the list of schemas to verify `__mud_internal` is there.
+
+   ```sql copy
+   \dn
+   ```
+
+1. Get the list of relations in the schema.
+
+   ```sql copy
+   \dt __mud_internal.*
+   ```
+
+   You should get two tables, `chain` and `tables`.
+
+1. Get the list of chains being indexed.
+
+   ```sql copy
+   SELECT * FROM __mud_internal.chain;
+   ```
+
+1. The `tables` table is a lot bigger, so first get the list of columns within the table.
+
+   ```sql copy
+   \d+ __mud_internal.tables
+   ```
+
+1. Get the list of MUD table names.
+
+   ```sql copy
+   SELECT name FROM __mud_internal.tables;
+   ```
+
+1. Get the key and value schemas for `Counter`.
+
+   ```sql copy
+   SELECT key_schema, value_schema FROM __mud_internal.tables WHERE name='Counter';
+   ```
+
+1. The schema for a world is `<address>__`.
+   Get the list of tables for a specific world.
+
+   ```sql copy
+   \dt "0x5FbDB2315678afecb367f032d93F642f64180aa3__".*
+   ```
+
+1. Specify the world schema is the default.
+
+   ```sql copy
+   SET search_path TO "0x5FbDB2315678afecb367f032d93F642f64180aa3__";
+   ```
+
+1. Get the value of the counter.
+
+   ```sql copy
+   SELECT * FROM "Counter";
+   ```
+
+### Deleting the PostgreSQL data
+
+PostgreSQL is a persistent data storage.
+This means that if you restart the blockchain without manually deleting the data, your indexer will use old data and provide incorrect results.
+
+To avoid this, enter `psql` and run this command:
+
+```sql copy
+DROP OWNED BY <your user name>;
+```

@@ -77,6 +77,36 @@ library ResourceAccess {
   }
 
   /** Get access */
+  function getAccess(bytes32 resourceSelector, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access */
+  function _getAccess(bytes32 resourceSelector, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access (using the specified store) */
+  function getAccess(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Get access */
   function get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _keyTuple = new bytes32[](2);
     _keyTuple[0] = resourceSelector;
@@ -104,6 +134,33 @@ library ResourceAccess {
 
     bytes32 _blob = _store.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /** Set access */
+  function setAccess(bytes32 resourceSelector, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+  }
+
+  /** Set access */
+  function _setAccess(bytes32 resourceSelector, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    StoreCore.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
+  }
+
+  /** Set access (using the specified store) */
+  function setAccess(IStore _store, bytes32 resourceSelector, address caller, bool access) internal {
+    bytes32[] memory _keyTuple = new bytes32[](2);
+    _keyTuple[0] = resourceSelector;
+    _keyTuple[1] = bytes32(uint256(uint160(caller)));
+
+    _store.setField(_tableId, _keyTuple, 0, abi.encodePacked((access)), _fieldLayout);
   }
 
   /** Set access */
@@ -139,13 +196,13 @@ library ResourceAccess {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(bool access) internal pure returns (bytes memory) {
+  function encode(bool access) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(access);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */

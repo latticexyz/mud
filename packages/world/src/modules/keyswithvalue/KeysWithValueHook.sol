@@ -6,6 +6,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { FieldLayout } from "@latticexyz/store/src/FieldLayout.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { PackedCounter } from "@latticexyz/store/src/PackedCounter.sol";
+import { Tables } from "@latticexyz/store/src/codegen/tables/Tables.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -37,11 +38,11 @@ contract KeysWithValueHook is StoreHook {
     PackedCounter encodedLengths,
     bytes memory dynamicData,
     FieldLayout fieldLayout
-  ) public {
+  ) public override {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Get the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
 
     // Remove the key from the list of keys with the previous value
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
@@ -56,52 +57,92 @@ contract KeysWithValueHook is StoreHook {
     KeysWithValue.push(targetTableId, keccak256(data), keyTuple[0]);
   }
 
-  function onAfterSetRecord(
+  function onBeforeSpliceStaticData(
     bytes32 sourceTableId,
     bytes32[] memory keyTuple,
-    bytes memory staticData,
-    PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout fieldLayout
-  ) public {
-    // NOOP
-  }
-
-  function onBeforeSetField(
-    bytes32 sourceTableId,
-    bytes32[] memory keyTuple,
-    uint8,
-    bytes memory,
-    FieldLayout fieldLayout
-  ) public {
+    uint48,
+    uint40,
+    bytes memory
+  ) public override {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
-  function onAfterSetField(
+  function onAfterSpliceStaticData(
     bytes32 sourceTableId,
     bytes32[] memory keyTuple,
-    uint8,
-    bytes memory,
-    FieldLayout fieldLayout
-  ) public {
+    uint48,
+    uint40,
+    bytes memory
+  ) public override {
     // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 newValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
   }
 
-  function onBeforeDeleteRecord(bytes32 sourceTableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
+  function onBeforeSpliceDynamicData(
+    bytes32 sourceTableId,
+    bytes32[] memory keyTuple,
+    uint8,
+    uint40,
+    uint40,
+    bytes memory,
+    PackedCounter
+  ) public override {
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(_world().getRecord(sourceTableId, keyTuple, fieldLayout));
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
     _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
   }
 
-  function onAfterDeleteRecord(bytes32 sourceTableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public {
-    // NOOP
+  function onAfterSpliceDynamicData(
+    bytes32 sourceTableId,
+    bytes32[] memory keyTuple,
+    uint8,
+    uint40,
+    uint40,
+    bytes memory,
+    PackedCounter
+  ) public override {
+    // Add the key to the list of keys with the new value
+    FieldLayout fieldLayout = FieldLayout.wrap(Tables.getFieldLayout(sourceTableId));
+    bytes32 newValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    KeysWithValue.push(targetTableId, newValue, keyTuple[0]);
+  }
+
+  function onBeforeDeleteRecord(
+    bytes32 sourceTableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) public override {
+    // Remove the key from the list of keys with the previous value
+    bytes32 previousValue = _getRecordValueHash(sourceTableId, keyTuple, fieldLayout);
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    _removeKeyFromList(targetTableId, keyTuple[0], previousValue);
+  }
+
+  function _getRecordValueHash(
+    bytes32 sourceTableId,
+    bytes32[] memory keyTuple,
+    FieldLayout fieldLayout
+  ) internal view returns (bytes32 valueHash) {
+    (bytes memory staticData, PackedCounter encodedLengths, bytes memory dynamicData) = _world().getRecord(
+      sourceTableId,
+      keyTuple,
+      fieldLayout
+    );
+    if (dynamicData.length > 0) {
+      return keccak256(abi.encodePacked(staticData, encodedLengths, dynamicData));
+    } else {
+      return keccak256(staticData);
+    }
   }
 
   function _removeKeyFromList(bytes32 targetTableId, bytes32 key, bytes32 valueHash) internal {

@@ -183,8 +183,12 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data */
@@ -192,8 +196,12 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = StoreCore.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Get the full data (using the specified store) */
@@ -201,8 +209,12 @@ library Systems {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = resourceSelector;
 
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple, _fieldLayout);
-    return decode(_blob);
+    (bytes memory _staticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = _store.getRecord(
+      _tableId,
+      _keyTuple,
+      _fieldLayout
+    );
+    return decode(_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Set the full data using individual values */
@@ -244,11 +256,26 @@ library Systems {
     _store.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
 
-  /** Decode the tightly packed blob using this table's field layout */
-  function decode(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
+  /**
+   * Decode the tightly packed blob of static data using this table's field layout
+   * Undefined behaviour for invalid blobs
+   */
+  function decodeStatic(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
     system = (address(Bytes.slice20(_blob, 0)));
 
     publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
+  }
+
+  /**
+   * Decode the tightly packed blob using this table's field layout.
+   * Undefined behaviour for invalid blobs.
+   */
+  function decode(
+    bytes memory _staticData,
+    PackedCounter,
+    bytes memory
+  ) internal pure returns (address system, bool publicAccess) {
+    (system, publicAccess) = decodeStatic(_staticData);
   }
 
   /** Tightly pack static data using this table's schema */
@@ -257,13 +284,13 @@ library Systems {
   }
 
   /** Tightly pack full data using this table's field layout */
-  function encode(address system, bool publicAccess) internal pure returns (bytes memory) {
+  function encode(address system, bool publicAccess) internal pure returns (bytes memory, PackedCounter, bytes memory) {
     bytes memory _staticData = encodeStatic(system, publicAccess);
 
     PackedCounter _encodedLengths;
     bytes memory _dynamicData;
 
-    return abi.encodePacked(_staticData, _encodedLengths, _dynamicData);
+    return (_staticData, _encodedLengths, _dynamicData);
   }
 
   /** Encode keys as a bytes32 array using this table's field layout */
