@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 // - Last 7 bytes (uint56) are used for the total byte length of the dynamic data
 // - The next 5 byte (uint40) sections are used for the byte length of each field, indexed from right to left

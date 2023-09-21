@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.21;
 
 import { WorldContextProvider } from "../../WorldContext.sol";
 import { ROOT_NAMESPACE, ROOT_NAMESPACE_ID } from "../../constants.sol";
