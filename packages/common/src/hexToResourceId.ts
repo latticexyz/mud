@@ -18,13 +18,13 @@ function getResourceType(resourceTypeId: string): ResourceType | undefined {
 
 export function hexToResourceId(hex: Hex): ResourceId {
   const resourceTypeId = hexToString(sliceHex(hex, 0, 2)).replace(/\0+$/, "");
+  const type = getResourceType(resourceTypeId);
   const namespace = hexToString(sliceHex(hex, 2, 16)).replace(/\0+$/, "");
   const name = hexToString(sliceHex(hex, 16, 32)).replace(/\0+$/, "");
-  const type = getResourceType(resourceTypeId);
 
   if (!type) {
     throw new Error(`Unknown resource type: ${resourceTypeId}`);
   }
 
-  return { namespace, name, type };
+  return { type, namespace, name };
 }
