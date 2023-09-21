@@ -8,7 +8,7 @@
 - `ResourceSelector` is replaced with `ResourceId`, `ResourceIdLib`, `ResourceIdInstance`, `WorldResourceIdLib` and `WorldResourceIdInstance`.
 
   Previously a "resource selector" was a `bytes32` value with the first 16 bytes reserved for the resource's namespace, and the last 16 bytes reserved for the resource's name.
-  Now a "resource ID" is a `bytes32` value with the first 14 bytes reserved for the resource's namespace, the next 16 bytes reserved for the resource's name, and the last 2 bytes reserved for the resource type.
+  Now a "resource ID" is a `bytes32` value with the first 2 bytes reserved for the resource type, the next 14 bytes reserved for the resource's namespace, and the last  16 bytes reserved for the resource's name.
 
   Previously `ResouceSelector` was a library and the resource selector type was a plain `bytes32`.
   Now `ResourceId` is a user type, and the functionality is implemented in the `ResourceIdInstance` (for type) and `WorldResourceIdInstance` (for namespace and name) libraries.
@@ -21,7 +21,7 @@
   + import { RESOURCE_SYSTEM } from "@latticexyz/world/src/worldResourceTypes.sol";
 
   - bytes32 systemId = ResourceSelector.from("namespace", "name");
-  + ResourceId systemId = WorldResourceIdLib.encode("namespace", "name", RESOURCE_SYSTEM);
+  + ResourceId systemId = WorldResourceIdLib.encode(RESOURCE_SYSTEM, "namespace", "name");
 
   - using ResourceSelector for bytes32;
   + using WorldResourceIdInstance for ResourceId;
