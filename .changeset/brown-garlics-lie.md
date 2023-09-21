@@ -13,6 +13,7 @@ This is a breaking change for modules that previously used external calls to the
 In the `installRoot` method, the `World` can only be called via `delegatecall`, and table operations should be performed via the internal table methods (e.g. `_set` instead of `set`).
 
 Example for how to replacing external calls to `world` in `installRoot` with `delegatecall`:
+
 ```diff
 + import { revertWithBytes } from "@latticexyz/world/src/revertWithBytes.sol";
 
