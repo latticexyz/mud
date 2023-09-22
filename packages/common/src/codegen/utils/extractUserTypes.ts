@@ -21,7 +21,7 @@ export function extractUserTypes(
 ): Record<string, SolidityUserDefinedType> {
   const ast = parse(data);
 
-  const isRelativePath = fromPath.indexOf(".") === 0;
+  const isRelativePath = fromPath.at(0) === ".";
   const userDefinedTypes: Record<string, SolidityUserDefinedType> = {};
 
   visit(ast, {
