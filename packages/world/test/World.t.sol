@@ -252,7 +252,7 @@ contract WorldTest is Test, GasReporter {
     newWorld.initialize(coreModule);
   }
 
-  function testRegisterModuleRevertWorld_InterfaceNotSupported() public {
+  function testRegisterModuleRevertInterfaceNotSupported() public {
     // Expect an error when trying to register a module that doesn't implement the IModule interface
     vm.expectRevert(
       abi.encodeWithSelector(
@@ -984,7 +984,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(returnedAddress, delegator);
   }
 
-  function testCallFromFailWorld_DelegationNotFound() public {
+  function testCallFromFailDelegationNotFound() public {
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
     ResourceId systemId = WorldResourceIdLib.encode({

@@ -176,7 +176,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(Balances.get(world, ResourceId.unwrap(namespaceId)), value);
   }
 
-  function testTransferBalanceToNamespaceRevertWorld_InsufficientBalance() public {
+  function testTransferBalanceToNamespaceRevertInsufficientBalance() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
@@ -204,7 +204,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(Balances.get(world, ResourceId.unwrap(namespaceId)), 0);
   }
 
-  function testTransferBalanceToNamespaceRevertWorld_AccessDenied() public {
+  function testTransferBalanceToNamespaceRevertAccessDenied() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
@@ -235,7 +235,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(Balances.get(world, ResourceId.unwrap(namespaceId)), 0);
   }
 
-  function testTransferBalanceToNamespaceRevertWorld_InvalidResourceType() public {
+  function testTransferBalanceToNamespaceRevertInvalidResourceType() public {
     uint256 value = 1 ether;
 
     // Expect the root namespace to have no balance
@@ -302,7 +302,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(receiver.balance, value);
   }
 
-  function testTransferBalanceToAddressRevertWorld_InsufficientBalance() public {
+  function testTransferBalanceToAddressRevertInsufficientBalance() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance
@@ -334,7 +334,7 @@ contract WorldBalanceTest is Test, GasReporter {
     assertEq(receiver.balance, 0);
   }
 
-  function testTransferBalanceToAddressRevertWorld_AccessDenied() public {
+  function testTransferBalanceToAddressRevertAccessDenied() public {
     uint256 value = 1 ether;
 
     // Expect the root and non root namespaces to have no balance

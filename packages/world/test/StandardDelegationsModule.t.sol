@@ -108,7 +108,7 @@ contract StandardDelegationsModuleTest is Test, GasReporter {
     world.callFrom(delegator, systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
   }
 
-  function testRegisterDelegationRevertWorld_InterfaceNotSupported() public {
+  function testRegisterDelegationRevertInterfaceNotSupported() public {
     // Register a system that is not a delegation control system
     System noDelegationControlSystem = new System();
     ResourceId noDelegationControlId = WorldResourceIdLib.encode({
