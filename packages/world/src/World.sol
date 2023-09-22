@@ -54,7 +54,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   modifier requireNoCallback() {
     if (msg.sender == address(this)) {
-      revert WorldCallbackNotAllowed(msg.sig);
+      revert World_CallbackNotAllowed(msg.sig);
     }
     _;
   }

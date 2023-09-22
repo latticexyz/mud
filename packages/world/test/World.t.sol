@@ -730,7 +730,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.setRecord.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setRecord.selector));
     TwoFields.set(world, tableId, true, true);
   }
 
@@ -757,7 +757,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.setField.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.setField.selector));
     world.setField(tableId, singletonKey, 0, abi.encodePacked(true), fieldLayout);
   }
 
@@ -800,7 +800,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.pushToField.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.pushToField.selector));
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
   }
 
@@ -850,7 +850,9 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to not have access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.deleteRecord.selector));
+    vm.expectRevert(
+      abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.deleteRecord.selector)
+    );
     world.deleteRecord(tableId, singletonKey, fieldLayout);
   }
 
@@ -891,7 +893,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect the World to have not access
     vm.prank(address(world));
-    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.WorldCallbackNotAllowed.selector, world.call.selector));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.call.selector));
     world.call(systemId, abi.encodeCall(WorldTestSystem.msgSender, ()));
 
     // Expect errors from the system to be forwarded
