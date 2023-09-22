@@ -13,11 +13,11 @@ import { getAddress } from "viem";
  */
 export async function createQueryAdapter(database: PgDatabase<any>): Promise<QueryAdapter> {
   const adapter: QueryAdapter = {
-    async findAll(chainId, address) {
+    async findAll({ chainId, address, tableIds }) {
       const internalTables = buildInternalTables();
-      const tables = (await getTables(database)).filter(
-        (table) => address != null && getAddress(address) === getAddress(table.address)
-      );
+      const tables = (await getTables(database))
+        .filter((table) => address != null && getAddress(address) === getAddress(table.address))
+        .filter((table) => tableIds != null && tableIds.includes(table.tableId));
 
       const tablesWithRecords = await Promise.all(
         tables.map(async (table) => {
