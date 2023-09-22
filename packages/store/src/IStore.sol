@@ -107,7 +107,7 @@ interface IStoreWrite {
     bytes data,
     bytes32 encodedLengths
   );
-  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple, FieldLayout fieldLayout);
+  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
 
   // Set full record (including full dynamic data)
   function setRecord(
