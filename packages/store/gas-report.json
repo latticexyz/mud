@@ -363,7 +363,7 @@
     "file": "test/Mixed.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Mixed table",
-    "gasUsed": 582081
+    "gasUsed": 582065
   },
   {
     "file": "test/Mixed.t.sol",
@@ -579,7 +579,7 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetFieldSlice",
     "name": "get field slice (warm, 1 slot)",
-    "gasUsed": 2383
+    "gasUsed": 2382
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -603,13 +603,13 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetSecondFieldLength",
     "name": "get field length (warm, 1 slot)",
-    "gasUsed": 1749
+    "gasUsed": 1748
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testGetThirdFieldLength",
     "name": "get field length (warm due to , 2 slots)",
-    "gasUsed": 7753
+    "gasUsed": 7754
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -633,7 +633,7 @@
     "file": "test/StoreCoreDynamic.t.sol",
     "test": "testPopFromThirdField",
     "name": "pop from field (cold, 2 slots, 10 uint32 items)",
-    "gasUsed": 17247
+    "gasUsed": 17248
   },
   {
     "file": "test/StoreCoreDynamic.t.sol",
@@ -771,13 +771,13 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: get field layout (warm)",
-    "gasUsed": 1287
+    "gasUsed": 697
   },
   {
     "file": "test/StoreCoreGas.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "StoreCore: get value schema (warm)",
-    "gasUsed": 1808
+    "gasUsed": 1807
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1119,7 +1119,7 @@
     "file": "test/Vector2.t.sol",
     "test": "testRegisterAndGetFieldLayout",
     "name": "register Vector2 field layout",
-    "gasUsed": 443558
+    "gasUsed": 443574
   },
   {
     "file": "test/Vector2.t.sol",

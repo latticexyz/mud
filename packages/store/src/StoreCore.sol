@@ -83,25 +83,18 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get the field layout for the given tableId.
+   * Get the field layout for the given table ID.
    */
-  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
-    fieldLayout = FieldLayout.wrap(Tables._getFieldLayout(ResourceId.unwrap(tableId)));
-    if (fieldLayout.isEmpty()) {
-      revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
-    }
+  function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout) {
+    return
+      FieldLayout.wrap(
+        Storage.loadField({
+          storagePointer: StoreCoreInternal._getStaticDataLocation(TablesTableId, ResourceId.unwrap(tableId)),
+          length: 32,
+          offset: 0
+        })
+      );
   }
-
-  // /**
-  //  * Get FieldLayout for a table with the given table ID
-  //  */
-  // function getFiedLayout(ResourceId tableId) internal returns (FieldLayout) {
-  //     Storage.loadField({
-  //       storagePointer: StoreCoreInternal._getStaticDataLocation(ResourceId.unwrap(TableTableId), keyTuple),
-  //       length: fieldLayout.atIndex(fieldIndex),
-  //       offset: StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)
-  //     });
-  // }
 
   /**
    * Get the key schema for the given tableId

@@ -189,18 +189,11 @@ contract StoreCoreTest is Test, StoreMock {
     assertTrue(ResourceIds._getExists(ResourceId.unwrap(tableId)));
     assertFalse(ResourceIds._getExists(ResourceId.unwrap(tableId2)));
 
-    IStore(this).getFieldLayout(tableId);
-    IStore(this).getValueSchema(tableId);
-    IStore(this).getKeySchema(tableId);
+    assertEq(FieldLayout.unwrap(IStore(this).getFieldLayout(tableId)), FieldLayout.unwrap(fieldLayout));
+    assertEq(Schema.unwrap(IStore(this).getValueSchema(tableId)), Schema.unwrap(valueSchema));
+    assertEq(Schema.unwrap(IStore(this).getKeySchema(tableId)), Schema.unwrap(defaultKeySchema));
 
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        IStoreErrors.Store_TableNotFound.selector,
-        tableId2,
-        string(abi.encodePacked(ResourceId.unwrap(tableId2)))
-      )
-    );
-    IStore(this).getFieldLayout(tableId2);
+    assertTrue(IStore(this).getFieldLayout(tableId2).isEmpty());
 
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.Store_TableNotFound.selector, tableId2, string(abi.encodePacked(tableId2)))
