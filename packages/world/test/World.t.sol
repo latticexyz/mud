@@ -1362,7 +1362,7 @@ contract WorldTest is Test, GasReporter {
     world.registerSystem(systemId, system, true);
 
     startGasReport("Register a function selector");
-    bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender", "()");
+    bytes4 functionSelector = world.registerFunctionSelector(systemId, "msgSender()");
     endGasReport();
 
     string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
@@ -1376,7 +1376,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    functionSelector = world.registerFunctionSelector(systemId, "err", "(string)");
+    functionSelector = world.registerFunctionSelector(systemId, "err(string)");
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
@@ -1431,40 +1431,6 @@ contract WorldTest is Test, GasReporter {
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
     WorldTestSystem(address(world)).err("test error");
-  }
-
-  function testRegisterFallbackSystem() public {
-    bytes14 namespace = "testNamespace";
-    bytes16 name = "testSystem";
-    ResourceId systemId = WorldResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, namespace: namespace, name: name });
-
-    // Register a new system
-    WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(systemId, system, true);
-
-    startGasReport("Register a fallback system");
-    bytes4 funcSelector1 = world.registerFunctionSelector(systemId, "", "");
-    endGasReport();
-
-    // Call the system's fallback function
-    vm.expectEmit(true, true, true, true);
-    emit WorldTestSystemLog("fallback");
-    (bool success, bytes memory data) = address(world).call(abi.encodeWithSelector(funcSelector1));
-    assertTrue(success, "call failed");
-
-    bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
-
-    startGasReport("Register a root fallback system");
-    bytes4 funcSelector2 = world.registerRootFunctionSelector(systemId, worldFunc, 0);
-    endGasReport();
-
-    assertEq(funcSelector2, worldFunc, "wrong function selector returned");
-
-    // Call the system's fallback function
-    vm.expectEmit(true, true, true, true);
-    emit WorldTestSystemLog("fallback");
-    (success, data) = address(world).call(abi.encodeWithSelector(worldFunc));
-    assertTrue(success, "call failed");
   }
 
   function testPayable() public {

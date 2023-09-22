@@ -171,18 +171,18 @@ export async function deploy(
 
   console.log(chalk.blue("Registering Systems and Functions"));
   const systemCalls = await Promise.all(
-    Object.entries(resolvedConfig.systems).map(([systemName, system]) =>
+    Object.entries(resolvedConfig.systems).map(([systemKey, system]) =>
       getRegisterSystemCallData({
         systemContracts: deployedContracts,
-        systemName,
+        systemKey,
         system,
         namespace: mudConfig.namespace,
       })
     )
   );
-  const functionCalls = Object.entries(resolvedConfig.systems).flatMap(([systemName, system]) =>
+  const functionCalls = Object.entries(resolvedConfig.systems).flatMap(([systemKey, system]) =>
     getRegisterFunctionSelectorsCallData({
-      systemName,
+      systemContractName: systemKey,
       system,
       namespace: mudConfig.namespace,
       forgeOutDirectory,

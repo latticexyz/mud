@@ -26,7 +26,7 @@ contract PostDeploy is Script {
       name: "ChatNamespaced"
     });
     IWorld(worldAddress).registerSystem(systemId, chatNamespacedSystem, true);
-    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage", "(string)");
+    IWorld(worldAddress).registerFunctionSelector(systemId, "sendMessage(string)");
     // Grant this system access to MessageTable
     IWorld(worldAddress).grantAccess(MessageTableTableId, address(chatNamespacedSystem));
 
