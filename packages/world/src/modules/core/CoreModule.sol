@@ -96,33 +96,33 @@ contract CoreModule is Module {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[17] memory functionSelectors = [
+    string[17] memory functionSignatures = [
       // --- AccessManagementSystem ---
-      AccessManagementSystem.grantAccess.selector,
-      AccessManagementSystem.revokeAccess.selector,
-      AccessManagementSystem.transferOwnership.selector,
+      "grantAccess(bytes32,address)",
+      "revokeAccess(bytes32,address)",
+      "transferOwnership(bytes32,address)",
       // --- BalanceTransferSystem ---
-      BalanceTransferSystem.transferBalanceToNamespace.selector,
-      BalanceTransferSystem.transferBalanceToAddress.selector,
+      "transferBalanceToNamespace(bytes32,bytes32,uint256)",
+      "transferBalanceToAddress(bytes32,address,uint256)",
       // --- CallBatchSystem ---
-      CallBatchSystem.callBatch.selector,
+      "callBatch((bytes32,bytes)[])",
       // --- ModuleInstallationSystem ---
-      ModuleInstallationSystem.installModule.selector,
+      "installModule(address,bytes)",
       // --- StoreRegistrationSystem ---
-      StoreRegistrationSystem.registerTable.selector,
-      StoreRegistrationSystem.registerStoreHook.selector,
-      StoreRegistrationSystem.unregisterStoreHook.selector,
+      "registerTable(bytes32,bytes32,bytes32,bytes32,string[],string[])",
+      "registerStoreHook(bytes32,address,uint8)",
+      "unregisterStoreHook(bytes32,address)",
       // --- WorldRegistrationSystem ---
-      WorldRegistrationSystem.registerNamespace.selector,
-      WorldRegistrationSystem.registerSystemHook.selector,
-      WorldRegistrationSystem.unregisterSystemHook.selector,
-      WorldRegistrationSystem.registerSystem.selector,
-      WorldRegistrationSystem.registerFunctionSelector.selector,
-      WorldRegistrationSystem.registerRootFunctionSelector.selector,
-      WorldRegistrationSystem.registerDelegation.selector
+      "registerNamespace(bytes32)",
+      "registerSystemHook(bytes32,address,uint8)",
+      "unregisterSystemHook(bytes32,address)",
+      "registerSystem(bytes32,address,bool)",
+      "registerFunctionSelector(bytes32,string)",
+      "registerRootFunctionSelector(bytes32,string,bytes4)",
+      "registerDelegation(address,bytes32,bytes)"
     ];
 
-    for (uint256 i = 0; i < functionSelectors.length; i++) {
+    for (uint256 i = 0; i < functionSignatures.length; i++) {
       // Use the CoreSystem's `registerRootFunctionSelector` to register the
       // root function selectors in the World.
       WorldContextProvider.delegatecallWithContextOrRevert({
@@ -131,7 +131,7 @@ contract CoreModule is Module {
         target: coreSystem,
         callData: abi.encodeCall(
           WorldRegistrationSystem.registerRootFunctionSelector,
-          (CORE_SYSTEM_ID, functionSelectors[i], functionSelectors[i])
+          (CORE_SYSTEM_ID, functionSignatures[i], bytes4(keccak256(bytes(functionSignatures[i]))))
         )
       });
     }

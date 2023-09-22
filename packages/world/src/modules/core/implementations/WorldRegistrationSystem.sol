@@ -24,6 +24,7 @@ import { SystemHooks, SystemHooksTableId } from "../tables/SystemHooks.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
 import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { FunctionSignatures } from "../tables/FunctionSignatures.sol";
 
 /**
  * Functions related to registering resources other than tables in the World.
@@ -159,9 +160,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Compute global function selector
     string memory namespaceString = WorldResourceIdLib.toTrimmedString(systemId.getNamespace());
     string memory nameString = WorldResourceIdLib.toTrimmedString(systemId.getName());
-    worldFunctionSelector = bytes4(
-      keccak256(abi.encodePacked(namespaceString, "_", nameString, "_", systemFunctionSignature))
+    bytes memory worldFunctionSignature = abi.encodePacked(
+      namespaceString,
+      "_",
+      nameString,
+      "_",
+      systemFunctionSignature
     );
+    worldFunctionSelector = bytes4(keccak256(worldFunctionSignature));
 
     // Require the function selector to be globally unique
     bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -171,6 +177,9 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Register the function selector
     bytes4 systemFunctionSelector = bytes4(keccak256(bytes(systemFunctionSignature)));
     FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);
+
+    // Register the function signature for offchain use
+    FunctionSignatures._set(worldFunctionSelector, string(worldFunctionSignature));
   }
 
   /**
@@ -179,11 +188,14 @@ contract WorldRegistrationSystem is System, IWorldErrors {
    */
   function registerRootFunctionSelector(
     ResourceId systemId,
-    bytes4 worldFunctionSelector,
+    string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
-  ) public returns (bytes4) {
+  ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
+
+    // Compute the function selector from the provided signature
+    worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
     bytes32 existingSystemId = FunctionSelectors._getSystemId(worldFunctionSelector);
@@ -193,7 +205,8 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Register the function selector
     FunctionSelectors._set(worldFunctionSelector, ResourceId.unwrap(systemId), systemFunctionSelector);
 
-    return worldFunctionSelector;
+    // Register the function signature for offchain use
+    FunctionSignatures._set(worldFunctionSelector, worldFunctionSignature);
   }
 
   /**
