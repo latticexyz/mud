@@ -4,7 +4,7 @@ pragma solidity >=0.8.21;
 type ResourceId is bytes32;
 
 uint256 constant TYPE_BITS = 2 * 8;
-uint256 constant NAME_BITS = 256 - TYPE_BITS;
+uint256 constant NAME_BITS = 32 * 8 - TYPE_BITS;
 
 bytes32 constant TYPE_MASK = bytes32(hex"ffff");
 
