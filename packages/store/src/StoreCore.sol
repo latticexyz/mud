@@ -10,6 +10,7 @@ import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { StoreHooks, Tables, TablesTableId, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
+import { _fieldLayout as TablesTableFieldLayout } from "./codegen/tables/Tables.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
@@ -86,6 +87,10 @@ library StoreCore {
    * Get the field layout for the given table ID.
    */
   function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout) {
+    // Explicit check for the tables table to solve the bootstraping issue
+    if (ResourceId.unwrap(tableId) == ResourceId.unwrap(TablesTableId)) {
+      return TablesTableFieldLayout;
+    }
     return
       FieldLayout.wrap(
         Storage.loadField({
@@ -214,8 +219,10 @@ library StoreCore {
     bytes memory staticData,
     PackedCounter encodedLengths,
     bytes memory dynamicData,
-    FieldLayout fieldLayout
+    FieldLayout
   ) internal {
+    FieldLayout fieldLayout = getFieldLayout(tableId);
+
     // verify the value has the correct length for the tableId (based on the tableId's field layout)
     // to prevent invalid data from being stored
 
@@ -432,7 +439,9 @@ library StoreCore {
   /**
    * Delete a record for the given tableId, key tuple and value field layout
    */
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) internal {
+    FieldLayout fieldLayout = getFieldLayout(tableId);
+
     // Emit event to notify indexers
     emit Store_DeleteRecord(tableId, keyTuple);
 
