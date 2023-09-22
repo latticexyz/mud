@@ -45,6 +45,19 @@ contract StoreCoreTest is Test, StoreMock {
   ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
   ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
 
+  function testGetStaticDataLocation() public {
+    ResourceId tableId = _tableId;
+    bytes32 key = "some key";
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+
+    // Expect the two methods to return the same value
+    assertEq(
+      StoreCoreInternal._getStaticDataLocation(tableId, keyTuple),
+      StoreCoreInternal._getStaticDataLocation(tableId, key)
+    );
+  }
+
   function testRegisterTable() public {
     ResourceId tableId = _tableId;
 

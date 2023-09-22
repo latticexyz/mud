@@ -9,7 +9,7 @@ import { FieldLayout, FieldLayoutLib } from "./FieldLayout.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
-import { StoreHooks, Tables, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
+import { StoreHooks, Tables, TablesTableId, ResourceIds, StoreHooksTableId } from "./codegen/index.sol";
 import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStoreHook.sol";
 import { StoreSwitch } from "./StoreSwitch.sol";
@@ -83,7 +83,7 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get the field layout for the given tableId
+   * Get the field layout for the given tableId.
    */
   function getFieldLayout(ResourceId tableId) internal view returns (FieldLayout fieldLayout) {
     fieldLayout = FieldLayout.wrap(Tables._getFieldLayout(ResourceId.unwrap(tableId)));
@@ -91,6 +91,17 @@ library StoreCore {
       revert IStoreErrors.Store_TableNotFound(tableId, string(abi.encodePacked(tableId)));
     }
   }
+
+  // /**
+  //  * Get FieldLayout for a table with the given table ID
+  //  */
+  // function getFiedLayout(ResourceId tableId) internal returns (FieldLayout) {
+  //     Storage.loadField({
+  //       storagePointer: StoreCoreInternal._getStaticDataLocation(ResourceId.unwrap(TableTableId), keyTuple),
+  //       length: fieldLayout.atIndex(fieldIndex),
+  //       offset: StoreCoreInternal._getStaticDataOffset(fieldLayout, fieldIndex)
+  //     });
+  // }
 
   /**
    * Get the key schema for the given tableId
@@ -906,10 +917,17 @@ library StoreCoreInternal {
   /////////////////////////////////////////////////////////////////////////
 
   /**
-   * Compute the storage location based on tableId id and index tuple
+   * Compute the storage location based on tableId id and key tuple
    */
   function _getStaticDataLocation(ResourceId tableId, bytes32[] memory keyTuple) internal pure returns (uint256) {
     return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, keyTuple)));
+  }
+
+  /**
+   * Compute the storage location based on tableId id and key (equivalent to keyTuple = [key])
+   */
+  function _getStaticDataLocation(ResourceId tableId, bytes32 key) internal pure returns (uint256) {
+    return uint256(SLOT ^ keccak256(abi.encodePacked(tableId, key)));
   }
 
   /**

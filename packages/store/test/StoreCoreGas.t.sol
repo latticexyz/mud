@@ -38,6 +38,21 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
   ResourceId _tableId = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some table" });
   ResourceId _tableId2 = ResourceIdLib.encode({ typeId: RESOURCE_TABLE, name: "some other table" });
 
+  function testGetStaticDataLocation() public {
+    ResourceId tableId = _tableId;
+    bytes32 key = "some key";
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+
+    startGasReport("get static data location (single key)");
+    StoreCoreInternal._getStaticDataLocation(tableId, key);
+    endGasReport();
+
+    startGasReport("get static data location (single key tuple)");
+    StoreCoreInternal._getStaticDataLocation(tableId, keyTuple);
+    endGasReport();
+  }
+
   function testRegisterAndGetFieldLayout() public {
     ResourceId tableId = _tableId;
 

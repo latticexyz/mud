@@ -679,6 +679,18 @@
   },
   {
     "file": "test/StoreCoreGas.t.sol",
+    "test": "testGetStaticDataLocation",
+    "name": "get static data location (single key)",
+    "gasUsed": 217
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
+    "test": "testGetStaticDataLocation",
+    "name": "get static data location (single key tuple)",
+    "gasUsed": 387
+  },
+  {
+    "file": "test/StoreCoreGas.t.sol",
     "test": "testHasFieldLayout",
     "name": "Check for existence of table (existent)",
     "gasUsed": 1249
@@ -699,7 +711,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "set record on table with subscriber",
-    "gasUsed": 71248
+    "gasUsed": 71270
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -711,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 16870
+    "gasUsed": 16892
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -723,7 +735,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "set (dynamic) record on table with subscriber",
-    "gasUsed": 164402
+    "gasUsed": 164424
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -735,7 +747,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 17855
+    "gasUsed": 17877
   },
   {
     "file": "test/StoreCoreGas.t.sol",
