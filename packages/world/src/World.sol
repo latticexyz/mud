@@ -87,7 +87,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     _installRootModule(module, args);
   }
 
-  function _installRootModule(IModule module, bytes memory args) internal requireNoCallback {
+  function _installRootModule(IModule module, bytes memory args) internal {
     // Require the provided address to implement the IModule interface
     requireInterface(address(module), MODULE_INTERFACE_ID);
 
