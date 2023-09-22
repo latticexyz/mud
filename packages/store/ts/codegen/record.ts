@@ -51,7 +51,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
         ${_keyTupleDefinition}
 
-        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+        ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
       }
     `
   );
@@ -71,7 +71,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
 
           ${_keyTupleDefinition}
 
-          ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
+          ${_store}.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
         }
       `
     );

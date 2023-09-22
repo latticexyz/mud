@@ -218,8 +218,7 @@ library StoreCore {
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout
+    bytes memory dynamicData
   ) internal {
     FieldLayout fieldLayout = getFieldLayout(tableId);
 

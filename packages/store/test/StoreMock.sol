@@ -24,10 +24,9 @@ contract StoreMock is IStore, StoreRead {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
+    bytes calldata dynamicData
   ) public {
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   // Splice data in the static part of the record

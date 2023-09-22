@@ -38,7 +38,7 @@ contract MirrorSubscriber is StoreHook {
     FieldLayout fieldLayout
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid table");
-    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreSwitch.setRecord(indexerTableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   function onBeforeSpliceStaticData(

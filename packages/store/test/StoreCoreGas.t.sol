@@ -169,7 +169,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = keccak256("some.key");
 
     startGasReport("set static record (1 slot)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     // Get data
@@ -197,7 +197,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = "some key";
 
     startGasReport("set static record (2 slots)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     // Get data
@@ -252,7 +252,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Set data
     startGasReport("set complex record with dynamic data (4 slots)");
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
     endGasReport();
 
     // Get data
@@ -413,7 +413,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     keyTuple[0] = "some key";
 
     // Set data
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Delete data
     startGasReport("delete record (complex data, 3 slots)");
@@ -646,7 +646,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes memory dynamicData = new bytes(0);
 
     startGasReport("set record on table with subscriber");
-    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), dynamicData);
     endGasReport();
 
     staticData = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
@@ -694,7 +694,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     bytes memory data = abi.encodePacked(staticData, encodedArrayDataLength, dynamicData);
 
     startGasReport("set (dynamic) record on table with subscriber");
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedArrayDataLength, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedArrayDataLength, dynamicData);
     endGasReport();
 
     // Update dynamic data

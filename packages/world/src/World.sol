@@ -124,7 +124,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
   }
 
   function spliceStaticData(

@@ -115,8 +115,7 @@ interface IStoreWrite {
     bytes32[] calldata keyTuple,
     bytes calldata staticData,
     PackedCounter encodedLengths,
-    bytes calldata dynamicData,
-    FieldLayout fieldLayout
+    bytes calldata dynamicData
   ) external;
 
   // Splice data in the static part of the record

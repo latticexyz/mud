@@ -1093,7 +1093,7 @@ contract WorldTest is Test, GasReporter {
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);
@@ -1154,7 +1154,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectRevert(bytes("onBeforeSpliceStaticData"));
@@ -1184,7 +1184,7 @@ contract WorldTest is Test, GasReporter {
       )
     );
 
-    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    world.setRecord(tableId, singletonKey, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Expect the hook to be notified when a static field is written (once before and once after the field is written)
     vm.expectEmit(true, true, true, true);

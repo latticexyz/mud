@@ -115,14 +115,13 @@ library StoreSwitch {
     bytes32[] memory keyTuple,
     bytes memory staticData,
     PackedCounter encodedLengths,
-    bytes memory dynamicData,
-    FieldLayout fieldLayout
+    bytes memory dynamicData
   ) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+      StoreCore.setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
     } else {
-      IStore(_storeAddress).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+      IStore(_storeAddress).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
     }
   }
 

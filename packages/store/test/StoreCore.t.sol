@@ -297,7 +297,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit Store_SetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = IStore(this).getRecord(
@@ -332,7 +332,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // This should fail because the data is not 6 bytes long
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.Store_InvalidStaticDataLength.selector, 6, 4));
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
@@ -358,7 +358,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit Store_SetRecord(tableId, keyTuple, staticData, bytes32(0), new bytes(0));
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter _encodedLengths, bytes memory _dynamicData) = IStore(this).getRecord(
@@ -423,7 +423,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit Store_SetRecord(tableId, keyTuple, staticData, encodedDynamicLength.unwrap(), dynamicData);
 
     // Set data
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = IStore(this)
@@ -734,7 +734,7 @@ contract StoreCoreTest is Test, StoreMock {
     keyTuple[0] = bytes32("some key");
 
     // Set data
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData, fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedDynamicLength, dynamicData);
 
     // Get data
     (bytes memory loadedStaticData, PackedCounter loadedEncodedLengths, bytes memory loadedDynamicData) = IStore(this)
@@ -1113,7 +1113,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0), fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, PackedCounter.wrap(bytes32(0)), new bytes(0));
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (bytes memory indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
@@ -1160,7 +1160,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when the RevertSubscriber's onBeforeSetRecord hook is called
     vm.expectRevert(bytes("onBeforeSetRecord"));
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Expect a revert when the RevertSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectRevert(bytes("onBeforeSpliceStaticData"));
@@ -1195,7 +1195,7 @@ contract StoreCoreTest is Test, StoreMock {
       )
     );
 
-    IStore(this).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData, fieldLayout);
+    IStore(this).setRecord(tableId, keyTuple, staticData, encodedLengths, dynamicData);
 
     // Expect a HookCalled event to be emitted when the EchoSubscriber's onBeforeSpliceStaticData hook is called
     vm.expectEmit(true, true, true, true);
@@ -1282,14 +1282,7 @@ contract StoreCoreTest is Test, StoreMock {
       dynamicData: arrayDataBytes
     });
 
-    IStore(this).setRecord(
-      tableId,
-      keyTuple,
-      recordData.staticData,
-      recordData.encodedLengths,
-      recordData.dynamicData,
-      fieldLayout
-    );
+    IStore(this).setRecord(tableId, keyTuple, recordData.staticData, recordData.encodedLengths, recordData.dynamicData);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     RecordData memory loadedData;
