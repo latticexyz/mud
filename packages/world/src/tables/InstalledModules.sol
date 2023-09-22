@@ -204,7 +204,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -213,7 +213,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreCore.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys (using the specified store) */
@@ -222,7 +222,7 @@ library InstalledModules {
     _keyTuple[0] = bytes32(moduleName);
     _keyTuple[1] = argumentsHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

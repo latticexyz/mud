@@ -84,6 +84,6 @@ contract MirrorSubscriber is StoreHook {
     FieldLayout fieldLayout
   ) public override {
     if (ResourceId.unwrap(tableId) != _tableId) revert("invalid tableId");
-    StoreSwitch.deleteRecord(indexerTableId, keyTuple, fieldLayout);
+    StoreSwitch.deleteRecord(indexerTableId, keyTuple);
   }
 }

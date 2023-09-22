@@ -127,7 +127,7 @@ export function renderDeleteRecordMethods(options: RenderTableOptions) {
       _typedKeyArgs,
     ])}) internal {
         ${_keyTupleDefinition}
-        ${_store}.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+        ${_store}.deleteRecord(_tableId, _keyTuple);
       }
     `
   );

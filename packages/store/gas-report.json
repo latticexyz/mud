@@ -675,7 +675,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testDeleteData",
     "name": "delete record (complex data, 3 slots)",
-    "gasUsed": 7712
+    "gasUsed": 7707
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -723,7 +723,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooks",
     "name": "delete record on table with subscriber",
-    "gasUsed": 18727
+    "gasUsed": 18639
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -747,7 +747,7 @@
     "file": "test/StoreCoreGas.t.sol",
     "test": "testHooksDynamicData",
     "name": "delete (dynamic) record on table with subscriber",
-    "gasUsed": 19713
+    "gasUsed": 19625
   },
   {
     "file": "test/StoreCoreGas.t.sol",
@@ -1011,7 +1011,7 @@
     "file": "test/tables/StoreHooks.t.sol",
     "test": "testTable",
     "name": "StoreHooks: delete record (warm)",
-    "gasUsed": 10160
+    "gasUsed": 10132
   },
   {
     "file": "test/tables/StoreHooks.t.sol",
@@ -1035,7 +1035,7 @@
     "file": "test/tables/StoreHooksColdLoad.t.sol",
     "test": "testDelete",
     "name": "StoreHooks: delete record (cold)",
-    "gasUsed": 19018
+    "gasUsed": 18990
   },
   {
     "file": "test/tables/StoreHooksColdLoad.t.sol",

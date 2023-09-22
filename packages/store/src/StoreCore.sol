@@ -439,7 +439,7 @@ library StoreCore {
   /**
    * Delete a record for the given tableId, key tuple and value field layout
    */
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) internal {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal {
     FieldLayout fieldLayout = getFieldLayout(tableId);
 
     // Emit event to notify indexers

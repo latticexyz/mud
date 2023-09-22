@@ -99,8 +99,8 @@ contract StoreMock is IStore, StoreRead {
   }
 
   // Set full record (including full dynamic data)
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) public virtual {
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) public virtual {
+    StoreCore.deleteRecord(tableId, keyTuple);
   }
 
   function registerTable(

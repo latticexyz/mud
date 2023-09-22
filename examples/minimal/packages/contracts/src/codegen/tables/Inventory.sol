@@ -220,7 +220,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -230,7 +230,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreCore.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys (using the specified store) */
@@ -240,7 +240,7 @@ library Inventory {
     _keyTuple[1] = bytes32(uint256(item));
     _keyTuple[2] = bytes32(uint256(itemVariant));
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

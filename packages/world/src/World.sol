@@ -242,7 +242,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     AccessControl.requireAccess(tableId, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
   }
 
   /************************************************************************

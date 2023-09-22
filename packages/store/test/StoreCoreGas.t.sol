@@ -417,7 +417,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
 
     // Delete data
     startGasReport("delete record (complex data, 3 slots)");
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 
@@ -656,7 +656,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     endGasReport();
 
     startGasReport("delete record on table with subscriber");
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 
@@ -708,7 +708,7 @@ contract StoreCoreGasTest is Test, GasReporter, StoreMock {
     endGasReport();
 
     startGasReport("delete (dynamic) record on table with subscriber");
-    StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+    StoreCore.deleteRecord(tableId, keyTuple);
     endGasReport();
   }
 }

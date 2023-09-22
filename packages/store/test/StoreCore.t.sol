@@ -747,7 +747,7 @@ contract StoreCoreTest is Test, StoreMock {
     emit Store_DeleteRecord(tableId, keyTuple);
 
     // Delete data
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Verify data is deleted
     (loadedStaticData, loadedEncodedLengths, loadedDynamicData) = IStore(this).getRecord(
@@ -1127,7 +1127,7 @@ contract StoreCoreTest is Test, StoreMock {
     (indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
     assertEq(keccak256(staticData), keccak256(indexedData));
 
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (indexedData, , ) = IStore(this).getRecord(indexerTableId, keyTuple, fieldLayout);
@@ -1172,7 +1172,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Unregister the RevertSubscriber
     IStore(this).unregisterStoreHook(tableId, revertSubscriber);
@@ -1241,7 +1241,7 @@ contract StoreCoreTest is Test, StoreMock {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, keyTuple, fieldLayout)));
 
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
   }
 
   struct RecordData {
@@ -1319,7 +1319,7 @@ contract StoreCoreTest is Test, StoreMock {
     assertEq(loadedData.encodedLengths.unwrap(), recordData.encodedLengths.unwrap());
     assertEq(loadedData.dynamicData, recordData.dynamicData);
 
-    IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);
+    IStore(this).deleteRecord(tableId, keyTuple);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     (loadedData.staticData, loadedData.encodedLengths, loadedData.dynamicData) = IStore(this).getRecord(

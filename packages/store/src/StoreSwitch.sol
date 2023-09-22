@@ -225,12 +225,12 @@ library StoreSwitch {
     }
   }
 
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) internal {
     address _storeAddress = getStoreAddress();
     if (_storeAddress == address(this)) {
-      StoreCore.deleteRecord(tableId, keyTuple, fieldLayout);
+      StoreCore.deleteRecord(tableId, keyTuple);
     } else {
-      IStore(_storeAddress).deleteRecord(tableId, keyTuple, fieldLayout);
+      IStore(_storeAddress).deleteRecord(tableId, keyTuple);
     }
   }
 

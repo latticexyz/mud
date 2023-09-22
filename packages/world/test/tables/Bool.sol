@@ -165,21 +165,21 @@ library Bool {
   function deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
   function _deleteRecord(ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreCore.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, ResourceId _tableId) internal {
     bytes32[] memory _keyTuple = new bytes32[](0);
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

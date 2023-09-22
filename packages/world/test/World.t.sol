@@ -824,7 +824,7 @@ contract WorldTest is Test, GasReporter {
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Delete the data
-    world.deleteRecord(tableId, keyTuple, fieldLayout);
+    world.deleteRecord(tableId, keyTuple);
 
     // Push data to the table via direct access
     world.pushToField(tableId, keyTuple, 0, encodedData, fieldLayout);
@@ -864,7 +864,7 @@ contract WorldTest is Test, GasReporter {
     assertTrue(Bool.get(world, tableId));
 
     startGasReport("Delete record");
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
     endGasReport();
 
     // expect it to be deleted
@@ -884,14 +884,14 @@ contract WorldTest is Test, GasReporter {
 
     // Expect an error when trying to delete from an address that doesn't have access
     _expectAccessDenied(address(0x02), namespace, name, RESOURCE_TABLE);
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
 
     // Expect the World to not have access
     vm.prank(address(world));
     vm.expectRevert(
       abi.encodeWithSelector(IWorldErrors.World_CallbackNotAllowed.selector, world.deleteRecord.selector)
     );
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
   }
 
   function testCall() public {
@@ -1121,7 +1121,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
 
     // Expect an error when trying to register an address that doesn't implement the IStoreHook interface
     vm.expectRevert(
@@ -1162,7 +1162,7 @@ contract WorldTest is Test, GasReporter {
 
     // Expect a revert when the RevertSubscriber's onBeforeDeleteRecord hook is called
     vm.expectRevert(bytes("onBeforeDeleteRecord"));
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
 
     // Unregister the RevertSubscriber
     world.unregisterStoreHook(tableId, revertSubscriber);
@@ -1212,7 +1212,7 @@ contract WorldTest is Test, GasReporter {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encodeCall(IStoreHook.onAfterDeleteRecord, (tableId, singletonKey, fieldLayout)));
 
-    world.deleteRecord(tableId, singletonKey, fieldLayout);
+    world.deleteRecord(tableId, singletonKey);
   }
 
   function testRegisterSystemHook() public {

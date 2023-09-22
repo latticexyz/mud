@@ -300,7 +300,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreSwitch.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys */
@@ -311,7 +311,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    StoreCore.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Delete all data for given keys (using the specified store) */
@@ -328,7 +328,7 @@ library CallboundDelegations {
     _keyTuple[2] = systemId;
     _keyTuple[3] = callDataHash;
 
-    _store.deleteRecord(_tableId, _keyTuple, _fieldLayout);
+    _store.deleteRecord(_tableId, _keyTuple);
   }
 
   /** Tightly pack static data using this table's schema */

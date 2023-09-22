@@ -176,7 +176,7 @@ interface IStoreWrite {
   ) external;
 
   // Set full record (including full dynamic data)
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) external;
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple) external;
 }
 
 /**
