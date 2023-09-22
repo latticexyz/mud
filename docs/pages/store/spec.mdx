@@ -23,7 +23,7 @@ MUD comes with many libraries and services in order to reconstruct the state of 
 ### Data encoding
 
 `bytes data` uses custom encoding, which MUD networking stack decodes.
-Each event carries only data. To get a table's schema (information on how to decode it), use `IStore.getSchema(tableId)` or listen to `StoreSetRecord` updates of the schema table.
+Each event carries only data. To get a table's schema (information on how to decode it), use `IStore.getSchema(tableId)` or listen to `Store_SetRecord` updates of the schema table.
 
 Schema is a way to dynamically store solidity types.
 Use the [schema-type package](https://github.com/latticexyz/mud/tree/main/packages/schema-type) to work with it directly.
