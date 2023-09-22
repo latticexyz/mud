@@ -1,28 +1,20 @@
 import { ethers } from "ethers";
 import { ParamType } from "ethers/lib/utils.js";
-import { FunctionSignature } from "./types";
 import { getContractData } from "../utils/getContractData";
 
-export function loadFunctionSignatures(contractName: string, forgeOutDirectory: string): FunctionSignature[] {
+export function loadFunctionSignatures(contractName: string, forgeOutDirectory: string): string[] {
   const { abi } = getContractData(contractName, forgeOutDirectory);
 
   return abi
     .filter((item) => ["fallback", "function"].includes(item.type))
     .map((item) => {
-      if (item.type === "fallback") return { functionName: "", functionArgs: "" };
-
-      return {
-        functionName: item.name,
-        functionArgs: parseComponents(item.inputs),
-      };
+      return `${item.name}${parseComponents(item.inputs)}`;
     });
 }
 
 // TODO: move this to utils as soon as utils are usable inside cli
 // (see https://github.com/latticexyz/mud/issues/499)
-export function toFunctionSelector({ functionName, functionArgs }: FunctionSignature): string {
-  const functionSignature = functionName + functionArgs;
-  if (functionSignature === "") return "0x";
+export function toFunctionSelector(functionSignature: string): string {
   return sigHash(functionSignature);
 }
 

@@ -4,12 +4,12 @@ import { CallData } from "../utils/types";
 
 export async function getRegisterSystemCallData(input: {
   systemContracts: Record<string, Promise<string>>;
-  systemName: string;
+  systemKey: string;
   system: System;
   namespace: string;
 }): Promise<CallData> {
-  const { namespace, systemName, systemContracts, system } = input;
-  const systemAddress = await systemContracts[systemName];
+  const { namespace, systemContracts, systemKey, system } = input;
+  const systemAddress = await systemContracts[systemKey];
   return {
     func: "registerSystem",
     args: [resourceIdToHex({ type: "system", namespace, name: system.name }), systemAddress, system.openAccess],

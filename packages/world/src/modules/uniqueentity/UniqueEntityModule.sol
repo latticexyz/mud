@@ -54,6 +54,6 @@ contract UniqueEntityModule is Module {
     world.registerSystem(SYSTEM_ID, uniqueEntitySystem, true);
 
     // Register system's functions
-    world.registerFunctionSelector(SYSTEM_ID, "getUniqueEntity", "()");
+    world.registerFunctionSelector(SYSTEM_ID, "getUniqueEntity()");
   }
 }

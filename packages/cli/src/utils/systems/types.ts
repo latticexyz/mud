@@ -7,8 +7,3 @@ export type System = {
 };
 
 export type SystemsConfig = Record<string, System>;
-
-export interface FunctionSignature {
-  functionName: string;
-  functionArgs: string;
-}
