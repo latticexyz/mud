@@ -744,7 +744,7 @@ contract StoreCoreTest is Test, StoreMock {
 
     // Expect a Store_DeleteRecord event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit Store_DeleteRecord(tableId, keyTuple);
+    emit Store_DeleteRecord(tableId, keyTuple, fieldLayout);
 
     // Delete data
     IStore(this).deleteRecord(tableId, keyTuple, fieldLayout);

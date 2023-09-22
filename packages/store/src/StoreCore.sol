@@ -50,7 +50,7 @@ library StoreCore {
     bytes data,
     bytes32 encodedLengths
   );
-  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple);
+  event Store_DeleteRecord(ResourceId indexed tableId, bytes32[] keyTuple, FieldLayout fieldLayout);
 
   /**
    * Intialize the store address to use in StoreSwitch.
@@ -219,9 +219,9 @@ library StoreCore {
     bytes memory staticData,
     PackedCounter encodedLengths,
     bytes memory dynamicData,
-    FieldLayout
+    FieldLayout fieldLayout
   ) internal {
-    FieldLayout fieldLayout = getFieldLayout(tableId);
+    // FieldLayout fieldLayout = getFieldLayout(tableId);
 
     // verify the value has the correct length for the tableId (based on the tableId's field layout)
     // to prevent invalid data from being stored
@@ -439,11 +439,11 @@ library StoreCore {
   /**
    * Delete a record for the given tableId, key tuple and value field layout
    */
-  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout) internal {
-    FieldLayout fieldLayout = getFieldLayout(tableId);
+  function deleteRecord(ResourceId tableId, bytes32[] memory keyTuple, FieldLayout fieldLayout) internal {
+    // FieldLayout fieldLayout = getFieldLayout(tableId);
 
     // Emit event to notify indexers
-    emit Store_DeleteRecord(tableId, keyTuple);
+    emit Store_DeleteRecord(tableId, keyTuple, fieldLayout);
 
     // Early return if the table is an offchain table
     if (tableId.getType() != RESOURCE_TABLE) {
