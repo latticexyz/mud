@@ -244,7 +244,9 @@ export const zEnumsConfig = z.object({
 export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extends UserTypeNames
   ? {
       /**
-       * User types mapped to file paths from which to import them
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
        *
        * (user types are inferred to be absent)
        */
@@ -253,7 +255,9 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extend
   : StringForUnion extends UserTypeNames
   ? {
       /**
-       * User types mapped to file paths from which to import them
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
        *
        * (user types aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
        */
@@ -261,7 +265,9 @@ export type UserTypesConfig<UserTypeNames extends StringForUnion> = never extend
     }
   : {
       /**
-       * User types mapped to file paths from which to import them
+       * User types mapped to file paths from which to import them.
+       * Paths are treated as relative to root.
+       * Paths that don't start with a "." have foundry remappings applied to them first.
        *
        * User types defined here can be used as types in table schemas/keys
        */
