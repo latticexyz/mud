@@ -194,7 +194,7 @@ contract WorldRegistrationSystem is System, IWorldErrors {
     // Require the caller to own the root namespace
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, _msgSender());
 
-    // Compute the function signature from the provided signature
+    // Compute the function selector from the provided signature
     worldFunctionSelector = bytes4(keccak256(bytes(worldFunctionSignature)));
 
     // Require the function selector to be globally unique
