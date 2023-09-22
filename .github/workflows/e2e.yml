@@ -9,7 +9,7 @@ on:
 jobs:
   main:
     name: Run end-to-end tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     services:
       postgres:
         image: postgres:12.1-alpine
