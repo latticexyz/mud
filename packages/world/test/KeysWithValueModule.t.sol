@@ -15,7 +15,7 @@ import { FieldLayoutEncodeHelper } from "@latticexyz/store/test/FieldLayoutEncod
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BYTES, TYPE_BYTES } from "../src/WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance, NAME_BITS, TYPE_BITS } from "../src/WorldResourceId.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { RESOURCE_TABLE } from "../src/worldResourceTypes.sol";
 
@@ -24,7 +24,7 @@ import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueM
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
-import { getTargetTableId, MODULE_NAMESPACE_BYTES, TABLE_NAMESPACE_BYTES, TYPE_BYTES } from "../src/modules/keyswithvalue/getTargetTableId.sol";
+import { getTargetTableId, MODULE_NAMESPACE_BITS, TABLE_NAMESPACE_BITS } from "../src/modules/keyswithvalue/getTargetTableId.sol";
 
 contract KeysWithValueModuleTest is Test, GasReporter {
   using ResourceIdInstance for ResourceId;
@@ -80,7 +80,7 @@ contract KeysWithValueModuleTest is Test, GasReporter {
   }
 
   function testMatchingByteSizes() public {
-    assertEq(MODULE_NAMESPACE_BYTES + TABLE_NAMESPACE_BYTES + NAME_BYTES + TYPE_BYTES, 32);
+    assertEq(MODULE_NAMESPACE_BITS + TABLE_NAMESPACE_BITS + NAME_BITS + TYPE_BITS, 256);
   }
 
   function testInstall() public {
@@ -235,14 +235,14 @@ contract KeysWithValueModuleTest is Test, GasReporter {
 
     // The next 7 bytes are the module namespace
     assertEq(
-      bytes7(ResourceId.unwrap(_targetTableId) << (TYPE_BYTES * 8)),
+      bytes7(ResourceId.unwrap(_targetTableId) << (TYPE_BITS)),
       MODULE_NAMESPACE,
       "module namespace does not match"
     );
 
     // followed by the first 7 bytes of the source table namespace
     assertEq(
-      bytes7(ResourceId.unwrap(_targetTableId) << ((TYPE_BYTES + MODULE_NAMESPACE_BYTES) * 8)),
+      bytes7(ResourceId.unwrap(_targetTableId) << (TYPE_BITS + MODULE_NAMESPACE_BITS)),
       bytes7(namespace),
       "table namespace does not match"
     );

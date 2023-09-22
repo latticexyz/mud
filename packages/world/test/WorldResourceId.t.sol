@@ -5,7 +5,7 @@ import { Test, console } from "forge-std/Test.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { ResourceId, ResourceIdLib, ResourceIdInstance } from "@latticexyz/store/src/ResourceId.sol";
 
-import { WorldResourceIdLib, WorldResourceIdInstance, NAMESPACE_BYTES, NAME_BYTES, TYPE_BYTES } from "../src/WorldResourceId.sol";
+import { WorldResourceIdLib, WorldResourceIdInstance, NAMESPACE_BITS, NAME_BITS, TYPE_BITS } from "../src/WorldResourceId.sol";
 import { RESOURCE_SYSTEM } from "../src/worldResourceTypes.sol";
 
 contract WorldResourceIdTest is Test, GasReporter {
@@ -73,7 +73,7 @@ contract WorldResourceIdTest is Test, GasReporter {
       namespace: "namespace",
       name: "name"
     });
-    bytes30 resourceIdWithoutType = bytes30(ResourceId.unwrap(resourceId) << (TYPE_BYTES * 8));
+    bytes30 resourceIdWithoutType = bytes30(ResourceId.unwrap(resourceId) << TYPE_BITS);
     assertEq(
       ResourceId.unwrap(resourceId),
       ResourceId.unwrap(ResourceIdLib.encode({ typeId: RESOURCE_SYSTEM, name: resourceIdWithoutType }))
@@ -81,7 +81,7 @@ contract WorldResourceIdTest is Test, GasReporter {
   }
 
   function testMatchingByteSizes() public {
-    assertEq(NAMESPACE_BYTES + NAME_BYTES + TYPE_BYTES, 32);
+    assertEq(NAMESPACE_BITS + NAME_BITS + TYPE_BITS, 256);
   }
 
   function testFuzz(bytes14 namespace, bytes16 name, bytes2 resourceType) public {
