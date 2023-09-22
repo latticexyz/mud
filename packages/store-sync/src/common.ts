@@ -100,6 +100,10 @@ export type SyncOptions<TConfig extends StoreConfig = StoreConfig> = {
    */
   maxBlockRange?: bigint;
   /**
+   * Optional table IDs to filter indexer state and RPC state.
+   */
+  tableIds?: Hex[];
+  /**
    * Optional MUD tRPC indexer URL to fetch initial state from.
    */
   indexerUrl?: string;

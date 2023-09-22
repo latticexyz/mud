@@ -1,6 +1,6 @@
 import { ConfigToKeyPrimitives, ConfigToValuePrimitives, StoreConfig, storeEventsAbi } from "@latticexyz/store";
 import { Hex, TransactionReceiptNotFoundError } from "viem";
-import { SetRecordOperation, StorageAdapter, SyncOptions, SyncResult, TableWithRecords } from "./common";
+import { BlockLogs, SetRecordOperation, StorageAdapter, SyncOptions, SyncResult, TableWithRecords } from "./common";
 import { createBlockStream, blockRangeToLogs, groupLogsByBlockNumber } from "@latticexyz/block-logs-stream";
 import {
   filter,
@@ -19,6 +19,7 @@ import {
   combineLatest,
   scan,
   identity,
+  Observable,
 } from "rxjs";
 import { BlockStorageOperations, blockLogsToStorage } from "./blockLogsToStorage";
 import { debug as parentDebug } from "./debug";
@@ -48,6 +49,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
   publicClient,
   startBlock: initialStartBlock = 0n,
   maxBlockRange,
+  tableIds,
   initialState,
   indexerUrl,
 }: CreateStoreSyncOptions<TConfig>): Promise<CreateStoreSyncResult<TConfig>> {
@@ -74,7 +76,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
       const indexer = createIndexerClient({ url: indexerUrl });
       const chainId = publicClient.chain?.id ?? (await publicClient.getChainId());
-      const result = await indexer.findAll.query({ chainId, address });
+      const result = await indexer.findAll.query({ chainId, address, tableIds });
 
       onProgress?.({
         step: SyncStep.SNAPSHOT,
@@ -114,6 +116,13 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       (initialState): initialState is { blockNumber: bigint; tables: TableWithRecords[] } =>
         initialState != null && initialState.blockNumber != null && initialState.tables.length > 0
     ),
+    // Initial state from indexer should already be filtered by table IDs, but we should
+    // still attempt to filter in case initialState was passed in as an argument or the
+    // indexer is being silly.
+    map(({ blockNumber, tables }) => ({
+      blockNumber,
+      tables: tables.filter((table) => tableIds != null && tableIds.includes(table.tableId)),
+    })),
     concatMap(async ({ blockNumber, tables }) => {
       debug("hydrating from initial state to block", blockNumber);
 
@@ -179,7 +188,7 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
 
   let startBlock: bigint | null = null;
   let endBlock: bigint | null = null;
-  const blockLogs$ = combineLatest([startBlock$, latestBlockNumber$]).pipe(
+  const blockLogs$: Observable<BlockLogs> = combineLatest([startBlock$, latestBlockNumber$]).pipe(
     map(([startBlock, endBlock]) => ({ startBlock, endBlock })),
     tap((range) => {
       startBlock = range.startBlock;
@@ -192,6 +201,10 @@ export async function createStoreSync<TConfig extends StoreConfig = StoreConfig>
       maxBlockRange,
     }),
     mergeMap(({ toBlock, logs }) => from(groupLogsByBlockNumber(logs, toBlock))),
+    map(({ blockNumber, logs }) => ({
+      blockNumber,
+      logs: logs.filter((log) => tableIds != null && tableIds.includes(log.args.table)),
+    })),
     share()
   );
 
