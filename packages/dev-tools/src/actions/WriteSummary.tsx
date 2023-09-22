@@ -154,7 +154,9 @@ export function WriteSummary({ write }: Props) {
                     </td>
                     <td className="whitespace-nowrap">
                       {eventName === "Store_SetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
-                      {eventName === "StoreSetField" ? <span className="text-green-500 font-bold">+</span> : null}
+                      {eventName === "Store_SpliceStaticData" || eventName === "Store_SpliceDynamicData" ? (
+                        <span className="text-green-500 font-bold">+</span>
+                      ) : null}
                       {eventName === "Store_DeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
