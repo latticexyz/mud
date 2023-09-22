@@ -50,9 +50,19 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   /**
+   * Prevent the World from calling itself.
+   */
+  modifier requireNoCallback() {
+    if (msg.sender == address(this)) {
+      revert WorldCallbackNotAllowed(msg.sig);
+    }
+    _;
+  }
+
+  /**
    * Allows the creator of the World to initialize the World once.
    */
-  function initialize(IModule coreModule) public {
+  function initialize(IModule coreModule) public requireNoCallback {
     // Only the initial creator of the World can initialize it
     if (msg.sender != creator) {
       revert AccessDenied(ROOT_NAMESPACE_ID.toString(), msg.sender);
@@ -72,7 +82,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Requires the caller to own the root namespace.
    * The module is delegatecalled and installed in the root namespace.
    */
-  function installRootModule(IModule module, bytes memory args) public {
+  function installRootModule(IModule module, bytes memory args) public requireNoCallback {
     AccessControl.requireOwner(ROOT_NAMESPACE_ID, msg.sender);
     _installRootModule(module, args);
   }
@@ -109,7 +119,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     PackedCounter encodedLengths,
     bytes calldata dynamicData,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -123,7 +133,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint48 start,
     uint40 deleteCount,
     bytes calldata data
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -138,7 +148,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint40 startWithinField,
     uint40 deleteCount,
     bytes calldata data
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to the namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -156,7 +166,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 fieldIndex,
     bytes calldata data,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -174,7 +184,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 fieldIndex,
     bytes calldata dataToPush,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -192,7 +202,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint8 fieldIndex,
     uint256 byteLengthToPop,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -211,7 +221,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     uint256 startByteIndex,
     bytes calldata dataToSet,
     FieldLayout fieldLayout
-  ) public virtual {
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -223,7 +233,11 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Delete a record in the table at the given tableId.
    * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(ResourceId tableId, bytes32[] calldata keyTuple, FieldLayout fieldLayout) public virtual {
+  function deleteRecord(
+    ResourceId tableId,
+    bytes32[] calldata keyTuple,
+    FieldLayout fieldLayout
+  ) public virtual requireNoCallback {
     // Require access to namespace or name
     AccessControl.requireAccess(tableId, msg.sender);
 
@@ -241,7 +255,10 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    * Call the system at the given system ID.
    * If the system is not public, the caller must have access to the namespace or name (encoded in the system ID).
    */
-  function call(ResourceId systemId, bytes memory callData) external payable virtual returns (bytes memory) {
+  function call(
+    ResourceId systemId,
+    bytes memory callData
+  ) external payable virtual requireNoCallback returns (bytes memory) {
     return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
   }
 
@@ -253,7 +270,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     address delegator,
     ResourceId systemId,
     bytes memory callData
-  ) external payable virtual returns (bytes memory) {
+  ) external payable virtual requireNoCallback returns (bytes memory) {
     // If the delegator is the caller, call the system directly
     if (delegator == msg.sender) {
       return SystemCall.callWithHooksOrRevert(msg.sender, systemId, callData, msg.value);
@@ -294,7 +311,7 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   /**
    * Fallback function to call registered function selectors
    */
-  fallback() external payable {
+  fallback() external payable requireNoCallback {
     (bytes32 systemId, bytes4 systemFunctionSelector) = FunctionSelectors._get(msg.sig);
 
     if (systemId == 0) revert FunctionSelectorNotFound(msg.sig);

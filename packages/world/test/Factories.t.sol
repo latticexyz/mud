@@ -8,6 +8,7 @@ import { WORLD_VERSION } from "../src/version.sol";
 import { World } from "../src/World.sol";
 import { ResourceId } from "../src/WorldResourceId.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { CORE_MODULE_NAME } from "../src/modules/core/constants.sol";
 import { Create2Factory } from "../src/factories/Create2Factory.sol";
 import { WorldFactory } from "../src/factories/WorldFactory.sol";
 import { IWorldFactory } from "../src/factories/IWorldFactory.sol";
@@ -72,7 +73,7 @@ contract FactoriesTest is Test {
     StoreSwitch.setStoreAddress(calculatedAddress);
 
     // Retrieve CoreModule address from InstalledModule table
-    address installedModule = InstalledModules.get(bytes16("core.m"), keccak256(new bytes(0)));
+    address installedModule = InstalledModules.get(CORE_MODULE_NAME, keccak256(new bytes(0)));
 
     // Confirm correct Core is installed
     assertEq(installedModule, address(coreModule));
