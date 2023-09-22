@@ -23,7 +23,7 @@ interface IWorldRegistrationSystem {
 
   function registerRootFunctionSelector(
     ResourceId systemId,
-    string calldata worldFunctionSignature,
+    string memory worldFunctionSignature,
     bytes4 systemFunctionSelector
   ) external returns (bytes4 worldFunctionSelector);
 
