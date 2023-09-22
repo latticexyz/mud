@@ -15,8 +15,8 @@ export async function createQueryAdapter(database: BaseSQLiteDatabase<"sync", an
   const adapter: QueryAdapter = {
     async findAll({ chainId, address, tableIds }) {
       const tables = getTables(database)
-        .filter((table) => address != null && getAddress(address) === getAddress(table.address))
-        .filter((table) => tableIds != null && tableIds.includes(table.tableId));
+        .filter((table) => address == null || getAddress(address) === getAddress(table.address))
+        .filter((table) => tableIds == null || tableIds.includes(table.tableId));
 
       const tablesWithRecords = tables.map((table) => {
         const sqliteTable = buildTable(table);
